@@ -72,6 +72,19 @@ cc_library_static {
         "VkDecoderGlobalState.cpp", // took more than 400 seconds
         "VkDecoder.cpp",
     ],
+    target: {
+        host: {
+            cflags: [
+                "-DGFXSTREAM_GLFW",
+            ],
+            header_libs: [
+                "libglfw3_headers",
+            ],
+            shared_libs: [
+                "libglfw3",
+            ],
+        },
+    }
 }
 
 // Run with `atest --host gfxstream_vkformatutils_tests`
