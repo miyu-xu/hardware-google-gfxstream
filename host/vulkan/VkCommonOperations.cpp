@@ -542,6 +542,14 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     sVkEmulation->gvk = vk;
     auto gvk = vk;
 
+#ifdef GFXSTREAM_GLFW
+    if (!glfwInit()) {
+        VK_COMMON_ERROR("jasonjason failed to initialize glfw");
+    } else {
+        VK_COMMON_ERROR("jasonjason initialized glfw");
+    }
+#endif
+
     std::vector<const char*> externalMemoryInstanceExtNames = {
         VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
         VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
@@ -592,11 +600,19 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     std::unordered_set<const char*> enabledExtensions;
 
     const bool debugUtilsSupported = extensionsSupported(exts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
-    const bool debugUtilsRequested = false; // TODO: enable via a feature or env var?
+    const bool debugUtilsRequested = true; // TODO: enable via a feature or env var?
     const bool debugUtilsAvailableAndRequested = debugUtilsSupported && debugUtilsRequested;
     if (debugUtilsAvailableAndRequested) {
         enabledExtensions.emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
+
+#ifdef GFXSTREAM_GLFW
+    uint32_t glfwInstanceExtNamesCount = 0;
+    const char** glfwInstanceExtNames = glfwGetRequiredInstanceExtensions(&glfwInstanceExtNamesCount);
+    for (uint32_t i = 0; i < glfwInstanceExtNamesCount; i++) {
+        enabledExtensions.emplace(*(glfwInstanceExtNames + i));
+    }
+#endif
 
     if (externalMemoryCapabilitiesSupported) {
         for (auto extension : externalMemoryInstanceExtNames) {
@@ -1034,6 +1050,9 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     }
     std::vector<const char*> selectedDeviceExtensionNames(selectedDeviceExtensionNames_.begin(),
                                                           selectedDeviceExtensionNames_.end());
+#ifdef GFXSTREAM_GLFW
+    selectedDeviceExtensionNames.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+#endif
 
     VkDeviceCreateInfo dCi = {};
     dCi.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -1263,7 +1282,24 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     // LOG(VERBOSE) << "Vulkan global emulation state successfully initialized.";
     sVkEmulation->live = true;
 
+
     sVkEmulation->transferQueueCommandBufferPool.resize(0);
+
+#ifdef GFXSTREAM_GLFW
+    debugCaptureInit();
+
+#if 0
+    VK_COMMON_ERROR("jasonjason spinning for 10 seconds to allow attaching gfx debugger");
+    for (int i = 0; i < 20; i++) {
+        VK_COMMON_ERROR("jasonjason spinning to allow attaching gfx debugger... %d", i);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        debugCaptureIssueFrameDelimiterLocked(/*ignoreEveryNthFrame=*/true);
+    }
+#endif
+
+#else
+    VK_COMMON_ERROR("jasonjason GFXSTREAM_GLFW not defined");
+#endif
 
     return sVkEmulation;
 }
@@ -3591,6 +3627,261 @@ std::optional<uint32_t> findRepresentativeColorBufferMemoryTypeIndexLocked() {
     }
 
     return memoryTypeIndex;
+}
+
+bool debugCaptureInit() {
+#ifdef GFXSTREAM_GLFW
+    VK_COMMON_ERROR("jasonjason debugCaptureInit() is this updating?");
+    if (!sVkEmulation || !sVkEmulation->live) {
+        VK_COMMON_ERROR("jasonjason debugCaptureInit vk not available.\n");
+        return false;
+    }
+
+    auto ivk = sVkEmulation->ivk;
+    auto dvk = sVkEmulation->dvk;
+
+    VK_COMMON_ERROR("jasonjason initializing graphics debugger info.\n");
+
+    if (!glfwInit()) {
+        VK_COMMON_ERROR("jasonjason glfw failed to init\n");
+        return false;
+    } else {
+        VK_COMMON_ERROR("jasonjason glfw success for init");
+    }
+
+    if (!glfwVulkanSupported()) {
+        VK_COMMON_ERROR("jasonjason glfw says vulkan not supported");
+        return false;
+    } else {
+        VK_COMMON_ERROR("jasonjason glfw says vulkan supported");
+    }
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+    sVkEmulation->graphicsDebuggerInfo.window =
+        glfwCreateWindow(10,
+                            10,
+                            "Dummy Window for Graphics Debugging Gfxstream",
+                            NULL,
+                            NULL);
+    if (sVkEmulation->graphicsDebuggerInfo.window == nullptr) {
+        VK_COMMON_ERROR("jasonjason failed to create glfw window");
+        return false;
+    } else {
+        VK_COMMON_ERROR("jasonjason created glfw window");
+    }
+
+    VkResult res = glfwCreateWindowSurface(sVkEmulation->instance,
+                                            sVkEmulation->graphicsDebuggerInfo.window,
+                                            NULL,
+                                            &sVkEmulation->graphicsDebuggerInfo.surface);
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to get glfw window surface");
+        return false;
+    } else {
+        VK_COMMON_ERROR("jasonjason success to get glfw window surface");
+    }
+
+    if (ivk->vkGetPhysicalDeviceSurfaceFormatsKHR == nullptr) {
+        VK_COMMON_ERROR("jasonjason vkGetPhysicalDeviceSurfaceFormatsKHR not available.");
+        return false;
+    } else {
+        VK_COMMON_ERROR("jasonjason vkGetPhysicalDeviceSurfaceFormatsKHR available.");
+    }
+
+    uint32_t surfaceFormatsCount = 0;
+    res = ivk->vkGetPhysicalDeviceSurfaceFormatsKHR(sVkEmulation->physdev,
+                                                    sVkEmulation->graphicsDebuggerInfo.surface,
+                                                    &surfaceFormatsCount,
+                                                    nullptr);
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to query surface formats count.");
+        return false;
+    }
+
+    std::vector<VkSurfaceFormatKHR> surfaceFormats(surfaceFormatsCount);
+    res = ivk->vkGetPhysicalDeviceSurfaceFormatsKHR(sVkEmulation->physdev,
+                                                    sVkEmulation->graphicsDebuggerInfo.surface,
+                                                    &surfaceFormatsCount,
+                                                    surfaceFormats.data());
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to query surface formats.");
+        return false;
+    }
+    if (surfaceFormats.empty()) {
+        VK_COMMON_ERROR("jasonjason no surface formats available.");
+        return false;
+    }
+    const VkSurfaceFormatKHR selectedSurfaceFormat = surfaceFormats[0];
+
+    if (ivk->vkGetPhysicalDeviceSurfacePresentModesKHR == nullptr) {
+        VK_COMMON_ERROR("jasonjason vkGetPhysicalDeviceSurfacePresentModesKHR not available.");
+        return false;
+    } else {
+        VK_COMMON_ERROR("jasonjason vkGetPhysicalDeviceSurfacePresentModesKHR available.");
+    }
+
+    uint32_t surfacePresentModeCount = 0;
+    res = ivk->vkGetPhysicalDeviceSurfacePresentModesKHR(sVkEmulation->physdev,
+                                                            sVkEmulation->graphicsDebuggerInfo.surface,
+                                                            &surfacePresentModeCount,
+                                                            nullptr);
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to query present modes count.");
+        return false;
+    }
+
+    std::vector<VkPresentModeKHR> surfacePresentModes(surfacePresentModeCount);
+    res = ivk->vkGetPhysicalDeviceSurfacePresentModesKHR(sVkEmulation->physdev,
+                                                            sVkEmulation->graphicsDebuggerInfo.surface,
+                                                            &surfacePresentModeCount,
+                                                            surfacePresentModes.data());
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to query present modes.");
+        return false;
+    }
+    if (surfacePresentModes.empty()) {
+        VK_COMMON_ERROR("jasonjason no present modes available.");
+        return false;
+    }
+    const VkPresentModeKHR selectedPresentMode = surfacePresentModes[0];
+
+    if (ivk->vkGetPhysicalDeviceSurfaceCapabilitiesKHR == nullptr) {
+        VK_COMMON_ERROR("jasonjason vkGetPhysicalDeviceSurfaceCapabilitiesKHR not available.");
+        return false;
+    } else {
+        VK_COMMON_ERROR("jasonjason vkGetPhysicalDeviceSurfaceCapabilitiesKHR available.");
+    }
+
+    VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
+    res = ivk->vkGetPhysicalDeviceSurfaceCapabilitiesKHR(sVkEmulation->physdev,
+                                                            sVkEmulation->graphicsDebuggerInfo.surface,
+                                                            &surfaceCapabilities);
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to query surface capabilities.");
+        return false;
+    }
+
+    VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
+    swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    swapchainCreateInfo.surface = sVkEmulation->graphicsDebuggerInfo.surface;
+    swapchainCreateInfo.minImageCount = surfaceCapabilities.minImageCount;
+    swapchainCreateInfo.imageFormat = selectedSurfaceFormat.format;
+    swapchainCreateInfo.imageColorSpace = selectedSurfaceFormat.colorSpace;
+    swapchainCreateInfo.imageExtent = surfaceCapabilities.minImageExtent;
+    swapchainCreateInfo.imageArrayLayers = 1;
+    swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    swapchainCreateInfo.queueFamilyIndexCount = 0;
+    swapchainCreateInfo.pQueueFamilyIndices = nullptr;
+    swapchainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
+    swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    swapchainCreateInfo.presentMode = selectedPresentMode;
+    swapchainCreateInfo.clipped = VK_TRUE;
+    swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
+
+    res = dvk->vkCreateSwapchainKHR(sVkEmulation->device,
+                                    &swapchainCreateInfo,
+                                    nullptr,
+                                    &sVkEmulation->graphicsDebuggerInfo.swapchain);
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to create swapchain.");
+        return false;
+    }
+    VK_COMMON_ERROR("jasonjason created swapchain.");
+
+    constexpr const uint32_t kSemaphoreCount = 10;
+    sVkEmulation->graphicsDebuggerInfo.swapchainSemaphores.resize(kSemaphoreCount, VK_NULL_HANDLE);
+
+    VkSemaphoreCreateInfo semaphoreCreateInfo = {};
+    semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    for (uint32_t i = 0; i < kSemaphoreCount; ++i) {
+        res = dvk->vkCreateSemaphore(sVkEmulation->device,
+                                        &semaphoreCreateInfo,
+                                        nullptr,
+                                        &sVkEmulation->graphicsDebuggerInfo.swapchainSemaphores[i]);
+        if (res != VK_SUCCESS) {
+            VK_COMMON_ERROR("jasonjason failed to create semaphore");
+            return false;
+        }
+        VK_COMMON_ERROR("jasonjason created semahpre %d", i);
+    }
+
+    sVkEmulation->graphicsDebuggerInfo.initialized = true;
+    VK_COMMON_ERROR("jasonjason debug capture init initialized");
+#endif
+    return true;
+}
+
+bool debugCaptureIssueFrameDelimiter(bool ignoreEveryNthFrame) {
+    AutoLock lock(sVkEmulationLock);
+    return debugCaptureIssueFrameDelimiterLocked(ignoreEveryNthFrame);
+}
+
+bool debugCaptureIssueFrameDelimiterLocked(bool ignoreEveryNthFrame) {
+    VK_COMMON_ERROR("jasonjason debugCaptureIssueFrameDelimiter()");
+#ifdef GFXSTREAM_GLFW
+    if (!sVkEmulation || !sVkEmulation->live) {
+        VK_COMMON_ERROR("jasonjason debugCaptureIssueFrameDelimiter() vk not available.");
+        return false;
+    }
+
+    static uint32_t kFrameIndex = 0;
+
+    if (!ignoreEveryNthFrame) {
+        ++kFrameIndex;
+        if (kFrameIndex % 30 != 0) {
+            return true;
+        }
+    }
+
+    auto ivk = sVkEmulation->ivk;
+    auto dvk = sVkEmulation->dvk;
+
+    if (!sVkEmulation->graphicsDebuggerInfo.initialized) {
+        return false;
+    }
+
+    constexpr const uint64_t kMaxNanoseconds = std::numeric_limits<uint64_t>::max();
+
+    VkSwapchainKHR swapchain = sVkEmulation->graphicsDebuggerInfo.swapchain;
+
+    uint32_t swapchainSemaphoreIndex = sVkEmulation->graphicsDebuggerInfo.swapchainSemaphoreIndex;
+    VkSemaphore swapchainSemaphore = sVkEmulation->graphicsDebuggerInfo.swapchainSemaphores[swapchainSemaphoreIndex];
+
+     sVkEmulation->graphicsDebuggerInfo.swapchainSemaphoreIndex =
+        (sVkEmulation->graphicsDebuggerInfo.swapchainSemaphoreIndex + 1) %
+             sVkEmulation->graphicsDebuggerInfo.swapchainSemaphores.size();
+
+    uint32_t swapchainImageIndex = 0;
+    VkResult res = dvk->vkAcquireNextImageKHR(sVkEmulation->device,
+                                              swapchain,
+                                              kMaxNanoseconds,
+                                              swapchainSemaphore,
+                                              VK_NULL_HANDLE,
+                                              &swapchainImageIndex);
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to acquire next image.");
+        return false;
+    }
+    VK_COMMON_ERROR("jasonjason success to acquire next image.");
+
+    VkPresentInfoKHR swapchainPresentInfo = {};
+    swapchainPresentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    swapchainPresentInfo.waitSemaphoreCount = 1;
+    swapchainPresentInfo.pWaitSemaphores = &swapchainSemaphore;
+    swapchainPresentInfo.swapchainCount = 1;
+    swapchainPresentInfo.pSwapchains = &swapchain;
+    swapchainPresentInfo.pImageIndices = &swapchainImageIndex;
+
+    res = dvk->vkQueuePresentKHR(sVkEmulation->queue, &swapchainPresentInfo);
+    if (res != VK_SUCCESS) {
+        VK_COMMON_ERROR("jasonjason failed to queue present.");
+        return false;
+    }
+    VK_COMMON_ERROR("jasonjason success to queue present.");
+#endif
+    return true;
 }
 
 }  // namespace vk

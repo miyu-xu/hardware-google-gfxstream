@@ -17,6 +17,24 @@ package {
     default_applicable_licenses: ["hardware_google_gfxstream_license"],
 }
 
+cc_library_headers {
+    name: "libglfw3_headers",
+    host_supported: true,
+    export_include_dirs: [
+        "glfw",
+    ],
+}
+
+cc_prebuilt_library_shared {
+    name: "libglfw3",
+    host_supported: true,
+    target: {
+        linux_glibc_x86_64: {
+            srcs: ["glfw/libglfw3.a"],
+        },
+    },
+}
+
 cc_library_shared {
     name: "libgfxstream_backend",
     defaults: ["gfxstream_defaults"],
@@ -105,9 +123,19 @@ cc_library_shared {
     host_ldlibs: [
         "-lpthread",
     ],
+
     target: {
         host: {
-            srcs: ["NativeSubWindow_x11.cpp"],
+            srcs: ["NativeSubWindow_x11.cpp",],
+            cflags: [
+                "-DGFXSTREAM_GLFW",
+            ],
+            header_libs: [
+                "libglfw3_headers",
+            ],
+            shared_libs: [
+                "libglfw3",
+            ],
         },
         android: {
             srcs: ["NativeSubWindow_android.cpp"],

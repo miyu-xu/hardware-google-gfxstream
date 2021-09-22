@@ -112,7 +112,11 @@ std::shared_future<void> PostWorker::composeImpl(const FlatComposeRequest& compo
         }
     }
 
-    return m_compositor->compose(compositorRequest);
+    auto ret = m_compositor->compose(compositorRequest);
+
+    vk::debugCaptureIssueFrameDelimiter();
+
+    return ret;
 }
 
 void PostWorker::block(std::promise<void> scheduledSignal, std::future<void> continueSignal) {

@@ -39,6 +39,11 @@
 namespace gfxstream {
 namespace vk {
 
+#ifdef GFXSTREAM_GLFW
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#endif
+
 struct VulkanDispatch;
 
 // Returns a consistent answer for which memory type index is best for staging
@@ -177,6 +182,8 @@ struct VkEmulation {
         // Populated later when device is available.
         uint32_t memoryTypeBits = 0;
         bool memoryTypeBitsKnown = false;
+
+        VkSurfaceKHR surface;
     };
 
     std::vector<ImageSupportInfo> imageSupportInfo;
@@ -191,6 +198,7 @@ struct VkEmulation {
         bool hasSamplerYcbcrConversionExtension = false;
         bool supportsSamplerYcbcrConversion = false;
         bool glInteropSupported = false;
+        bool hasDebugExt = false;
 
         std::vector<VkExtensionProperties> extensions;
 
@@ -338,6 +346,19 @@ struct VkEmulation {
         VulkanMode vulkanMode = VulkanMode::Default;
         MTLBufferRef mtlBuffer = nullptr;
     };
+
+    #ifdef GFXSTREAM_GLFW
+    struct GraphicsDebuggerInfo {
+        bool initialized = false;
+        GLFWwindow* window = nullptr;
+        VkSurfaceKHR surface = VK_NULL_HANDLE;
+        VkSwapchainKHR swapchain = VK_NULL_HANDLE;
+        uint32_t swapchainSemaphoreIndex = 0;
+        std::vector<VkSemaphore> swapchainSemaphores;
+    };
+
+    GraphicsDebuggerInfo graphicsDebuggerInfo;
+    #endif
 
     // Track what is supported on whatever device was selected.
     DeviceSupportInfo deviceInfo;
@@ -523,6 +544,10 @@ void releaseColorBufferForGuestUse(uint32_t colorBufferHandle);
 std::unique_ptr<BorrowedImageInfoVk> borrowColorBufferForComposition(uint32_t colorBufferHandle,
                                                                      bool colorBufferIsTarget);
 std::unique_ptr<BorrowedImageInfoVk> borrowColorBufferForDisplay(uint32_t colorBufferHandle);
+
+bool debugCaptureInit();
+bool debugCaptureIssueFrameDelimiter(bool ignoreEveryNthFrame = false);
+bool debugCaptureIssueFrameDelimiterLocked(bool ignoreEveryNthFrame = false);
 
 }  // namespace vk
 }  // namespace gfxstream
