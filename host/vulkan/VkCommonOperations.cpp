@@ -575,7 +575,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     std::unordered_set<const char*> enabledExtensions;
 
     const bool debugUtilsSupported = extensionsSupported(exts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
-    const bool debugUtilsRequested = false; // TODO: enable via a feature or env var?
+    const bool debugUtilsRequested = false;  // TODO: enable via a feature or env var?
     const bool debugUtilsAvailableAndRequested = debugUtilsSupported && debugUtilsRequested;
     if (debugUtilsAvailableAndRequested) {
         enabledExtensions.emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -1242,9 +1242,10 @@ void initVkEmulationFeatures(std::unique_ptr<VkEmulationFeatures> features) {
         if (sVkEmulation->compositorVk) {
             ERR("Reset VkEmulation::compositorVk.");
         }
-        sVkEmulation->compositorVk = CompositorVk::create(
-            *sVkEmulation->ivk, sVkEmulation->device, sVkEmulation->physdev, sVkEmulation->queue,
-            sVkEmulation->queueLock, sVkEmulation->queueFamilyIndex, 3);
+        sVkEmulation->compositorVk =
+            CompositorVk::create(*sVkEmulation->ivk, sVkEmulation->device, sVkEmulation->physdev,
+                                 sVkEmulation->queue, sVkEmulation->queueLock,
+                                 sVkEmulation->queueFamilyIndex, 3, sVkEmulation->debugUtilsHelper);
     }
 
     if (features->useVulkanNativeSwapchain) {
@@ -1992,6 +1993,10 @@ bool setupVkColorBufferLocked(uint32_t width, uint32_t height, GLenum internalFo
         res.vulkanMode = VkEmulation::VulkanMode::VulkanOnly;
     }
 
+    sVkEmulation->debugUtilsHelper.addDebugLabel(res.image, "ColorBuffer:%d", colorBufferHandle);
+    sVkEmulation->debugUtilsHelper.addDebugLabel(res.memory.memory, "ColorBuffer:%d",
+                                                 colorBufferHandle);
+
     sVkEmulation->colorBuffers[colorBufferHandle] = res;
     return true;
 }
@@ -2235,6 +2240,9 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
 
     VK_CHECK(vk->vkBeginCommandBuffer(commandBuffer, &beginInfo));
 
+    sVkEmulation->debugUtilsHelper.cmdBeginDebugLabel(
+        commandBuffer, "readColorBufferToBytes(ColorBuffer:%d)", colorBufferHandle);
+
     const VkImageMemoryBarrier toTransferSrcImageBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
         .pNext = nullptr,
@@ -2264,6 +2272,8 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
     vk->vkCmdCopyImageToBuffer(commandBuffer, colorBufferInfo->image,
                                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, sVkEmulation->staging.buffer,
                                bufferImageCopies.size(), bufferImageCopies.data());
+
+    sVkEmulation->debugUtilsHelper.cmdEndDebugLabel(commandBuffer);
 
     VK_CHECK(vk->vkEndCommandBuffer(commandBuffer));
 
@@ -2429,6 +2439,9 @@ bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_t x, ui
 
     VK_CHECK(vk->vkBeginCommandBuffer(commandBuffer, &beginInfo));
 
+    sVkEmulation->debugUtilsHelper.cmdBeginDebugLabel(
+        commandBuffer, "updateColorBufferFromBytes(ColorBuffer:%d)", colorBufferHandle);
+
     const VkImageMemoryBarrier toTransferDstImageBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
         .pNext = nullptr,
@@ -2459,6 +2472,8 @@ bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_t x, ui
     vk->vkCmdCopyBufferToImage(commandBuffer, sVkEmulation->staging.buffer, colorBufferInfo->image,
                                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, bufferImageCopies.size(),
                                bufferImageCopies.data());
+
+    sVkEmulation->debugUtilsHelper.cmdEndDebugLabel(commandBuffer);
 
     VK_CHECK(vk->vkEndCommandBuffer(commandBuffer));
 
@@ -2765,6 +2780,9 @@ bool setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulkanOnly, uint32
 
     res.glExported = false;
 
+    sVkEmulation->debugUtilsHelper.addDebugLabel(res.buffer, "Buffer:%d", bufferHandle);
+    sVkEmulation->debugUtilsHelper.addDebugLabel(res.memory.memory, "Buffer:%d", bufferHandle);
+
     sVkEmulation->buffers[bufferHandle] = res;
     return allocRes;
 }
@@ -2836,6 +2854,9 @@ bool readBufferToBytes(uint32_t bufferHandle, uint64_t offset, uint64_t size, vo
 
     VK_CHECK(vk->vkBeginCommandBuffer(commandBuffer, &beginInfo));
 
+    sVkEmulation->debugUtilsHelper.cmdBeginDebugLabel(commandBuffer, "readBufferToBytes(Buffer:%d)",
+                                                      bufferHandle);
+
     const VkBufferCopy bufferCopy = {
         .srcOffset = offset,
         .dstOffset = 0,
@@ -2843,6 +2864,8 @@ bool readBufferToBytes(uint32_t bufferHandle, uint64_t offset, uint64_t size, vo
     };
     vk->vkCmdCopyBuffer(commandBuffer, bufferInfo->buffer, stagingBufferInfo.buffer, 1,
                         &bufferCopy);
+
+    sVkEmulation->debugUtilsHelper.cmdEndDebugLabel(commandBuffer);
 
     VK_CHECK(vk->vkEndCommandBuffer(commandBuffer));
 
@@ -2938,6 +2961,9 @@ bool updateBufferFromBytes(uint32_t bufferHandle, uint64_t offset, uint64_t size
 
     VK_CHECK(vk->vkBeginCommandBuffer(commandBuffer, &beginInfo));
 
+    sVkEmulation->debugUtilsHelper.cmdBeginDebugLabel(
+        commandBuffer, "updateBufferFromBytes(Buffer:%d)", bufferHandle);
+
     const VkBufferCopy bufferCopy = {
         .srcOffset = 0,
         .dstOffset = offset,
@@ -2945,6 +2971,8 @@ bool updateBufferFromBytes(uint32_t bufferHandle, uint64_t offset, uint64_t size
     };
     vk->vkCmdCopyBuffer(commandBuffer, stagingBufferInfo.buffer, bufferInfo->buffer, 1,
                         &bufferCopy);
+
+    sVkEmulation->debugUtilsHelper.cmdEndDebugLabel(commandBuffer);
 
     VK_CHECK(vk->vkEndCommandBuffer(commandBuffer));
 
@@ -3191,6 +3219,9 @@ void releaseColorBufferForGuestUse(uint32_t colorBufferHandle) {
     };
     VK_CHECK(vk->vkBeginCommandBuffer(commandBuffer, &beginInfo));
 
+    sVkEmulation->debugUtilsHelper.cmdBeginDebugLabel(
+        commandBuffer, "releaseColorBufferForGuestUse(ColorBuffer:%d)", colorBufferHandle);
+
     if (layoutTransitionBarrier) {
         vk->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
                                  VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1,
@@ -3201,6 +3232,8 @@ void releaseColorBufferForGuestUse(uint32_t colorBufferHandle) {
                                  VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1,
                                  &queueTransferBarrier.value());
     }
+
+    sVkEmulation->debugUtilsHelper.cmdEndDebugLabel(commandBuffer);
 
     VK_CHECK(vk->vkEndCommandBuffer(commandBuffer));
 

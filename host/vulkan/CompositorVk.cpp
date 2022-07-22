@@ -129,14 +129,13 @@ CompositorVk::RenderTarget::~RenderTarget() {
     }
 }
 
-std::unique_ptr<CompositorVk> CompositorVk::create(const VulkanDispatch& vk, VkDevice vkDevice,
-                                                   VkPhysicalDevice vkPhysicalDevice,
-                                                   VkQueue vkQueue,
-                                                   std::shared_ptr<android::base::Lock> queueLock,
-                                                   uint32_t queueFamilyIndex,
-                                                   uint32_t maxFramesInFlight) {
-    auto res = std::unique_ptr<CompositorVk>(new CompositorVk(
-        vk, vkDevice, vkPhysicalDevice, vkQueue, queueLock, queueFamilyIndex, maxFramesInFlight));
+std::unique_ptr<CompositorVk> CompositorVk::create(
+    const VulkanDispatch& vk, VkDevice vkDevice, VkPhysicalDevice vkPhysicalDevice, VkQueue vkQueue,
+    std::shared_ptr<android::base::Lock> queueLock, uint32_t queueFamilyIndex,
+    uint32_t maxFramesInFlight, DebugUtilsHelper debugUtils) {
+    auto res = std::unique_ptr<CompositorVk>(new CompositorVk(vk, vkDevice, vkPhysicalDevice,
+                                                              vkQueue, queueLock, queueFamilyIndex,
+                                                              maxFramesInFlight, debugUtils));
     res->setUpCommandPool();
     res->setUpSampler();
     res->setUpGraphicsPipeline();
@@ -151,9 +150,10 @@ std::unique_ptr<CompositorVk> CompositorVk::create(const VulkanDispatch& vk, VkD
 CompositorVk::CompositorVk(const VulkanDispatch& vk, VkDevice vkDevice,
                            VkPhysicalDevice vkPhysicalDevice, VkQueue vkQueue,
                            std::shared_ptr<android::base::Lock> queueLock,
-                           uint32_t queueFamilyIndex, uint32_t maxFramesInFlight)
+                           uint32_t queueFamilyIndex, uint32_t maxFramesInFlight,
+                           DebugUtilsHelper debugUtils)
     : CompositorVkBase(vk, vkDevice, vkPhysicalDevice, vkQueue, queueLock, queueFamilyIndex,
-                       maxFramesInFlight),
+                       maxFramesInFlight, debugUtils),
       m_maxFramesInFlight(maxFramesInFlight),
       m_renderTargetCache(k_renderTargetCacheSize) {}
 
@@ -496,6 +496,7 @@ void CompositorVk::setUpCommandPool() {
     VkCommandPool commandPool = VK_NULL_HANDLE;
     VK_CHECK(m_vk.vkCreateCommandPool(m_vkDevice, &commandPoolCreateInfo, nullptr, &commandPool));
     m_vkCommandPool = commandPool;
+    m_debugUtilsHelper.addDebugLabel(m_vkCommandPool, "CompositorVk command pool");
 }
 
 void CompositorVk::setUpFences() {
@@ -616,7 +617,7 @@ std::optional<std::tuple<VkBuffer, VkDeviceMemory>> CompositorVk::createBuffer(
     };
     VkDeviceMemory resMemory;
     VK_CHECK_MEMALLOC(m_vk.vkAllocateMemory(m_vkDevice, &memAllocInfo, nullptr, &resMemory),
-                    memAllocInfo);
+                      memAllocInfo);
     VK_CHECK(m_vk.vkBindBufferMemory(m_vkDevice, resBuffer, resMemory, 0));
     return std::make_tuple(resBuffer, resMemory);
 }
@@ -849,6 +850,9 @@ CompositorVk::CompositionFinishedWaitable CompositorVk::compose(
             &postCompositionLayoutTransitionBarriers, &postCompositionQueueTransferBarriers);
     }
 
+    static uint32_t sCompositionNumber = 0;
+    const uint32_t thisCompositionNumber = sCompositionNumber++;
+
     VkCommandBuffer& commandBuffer = frameResources->m_vkCommandBuffer;
     if (commandBuffer != VK_NULL_HANDLE) {
         m_vk.vkFreeCommandBuffers(m_vkDevice, m_vkCommandPool, 1, &commandBuffer);
@@ -862,11 +866,18 @@ CompositorVk::CompositionFinishedWaitable CompositorVk::compose(
     };
     VK_CHECK(m_vk.vkAllocateCommandBuffers(m_vkDevice, &commandBufferAllocInfo, &commandBuffer));
 
+    m_debugUtilsHelper.addDebugLabel(commandBuffer, "CompositorVk composition:%d command buffer",
+                                     thisCompositionNumber);
+
     const VkCommandBufferBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
     };
     VK_CHECK(m_vk.vkBeginCommandBuffer(commandBuffer, &beginInfo));
+
+    m_debugUtilsHelper.cmdBeginDebugLabel(commandBuffer,
+                                          "CompositorVk composition:%d into ColorBuffer:%d",
+                                          thisCompositionNumber, compositionVk.targetImage->id);
 
     if (!preCompositionQueueTransferBarriers.empty()) {
         m_vk.vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
@@ -942,6 +953,10 @@ CompositorVk::CompositionFinishedWaitable CompositorVk::compose(
     m_vk.vkCmdBindIndexBuffer(commandBuffer, m_indexVkBuffer, 0, VK_INDEX_TYPE_UINT16);
 
     for (int layerIndex = 0; layerIndex < compositionVk.layersSourceImages.size(); ++layerIndex) {
+        const auto* layerImage = compositionVk.layersSourceImages[layerIndex];
+        m_debugUtilsHelper.cmdBeginDebugLabel(
+            commandBuffer, "CompositorVk compose layer ColorBuffer:%d", layerImage->id);
+
         VkDescriptorSet layerDescriptorSet = frameResources->m_layerDescriptorSets[layerIndex];
 
         m_vk.vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -952,6 +967,8 @@ CompositorVk::CompositionFinishedWaitable CompositorVk::compose(
                                      /*pDynamicOffsets=*/nullptr);
 
         m_vk.vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(k_indices.size()), 1, 0, 0, 0);
+
+        m_debugUtilsHelper.cmdEndDebugLabel(commandBuffer);
     }
 
     m_vk.vkCmdEndRenderPass(commandBuffer);
@@ -999,10 +1016,15 @@ CompositorVk::CompositionFinishedWaitable CompositorVk::compose(
             postCompositionQueueTransferBarriers.data());
     }
 
+    m_debugUtilsHelper.cmdEndDebugLabel(commandBuffer);
+
     VK_CHECK(m_vk.vkEndCommandBuffer(commandBuffer));
 
     VkFence composeCompleteFence = frameResources->m_vkFence;
     VK_CHECK(m_vk.vkResetFences(m_vkDevice, 1, &composeCompleteFence));
+
+    m_debugUtilsHelper.addDebugLabel(
+        composeCompleteFence, "CompositorVk composition:%d complete fence", thisCompositionNumber);
 
     const VkPipelineStageFlags submitWaitStages[] = {
         VK_PIPELINE_STAGE_TRANSFER_BIT,

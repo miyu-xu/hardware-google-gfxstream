@@ -1466,12 +1466,23 @@ class VkDecoderGlobalState::Impl {
         mBufferInfo.erase(buffer);
     }
 
-    void setBufferMemoryBindInfoLocked(VkBuffer buffer, VkDeviceMemory memory,
+    void setBufferMemoryBindInfoLocked(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
                                        VkDeviceSize memoryOffset) {
         auto* bufferInfo = android::base::find(mBufferInfo, buffer);
         if (!bufferInfo) return;
         bufferInfo->memory = memory;
         bufferInfo->memoryOffset = memoryOffset;
+
+        auto* memoryInfo = android::base::find(mMemoryInfo, memory);
+        if (!memoryInfo) return;
+
+        if (memoryInfo->memoryFromBuffer) {
+            auto* deviceInfo = android::base::find(mDeviceInfo, device);
+            if (!deviceInfo) return;
+
+            deviceInfo->debugUtilsHelper.addDebugLabel(buffer, "Buffer:%d",
+                                                       *memoryInfo->memoryFromBuffer);
+        }
     }
 
     VkResult on_vkBindBufferMemory(android::base::BumpPool* pool, VkDevice boxed_device,
@@ -1485,7 +1496,7 @@ class VkDecoderGlobalState::Impl {
 
         if (result == VK_SUCCESS) {
             std::lock_guard<std::recursive_mutex> lock(mLock);
-            setBufferMemoryBindInfoLocked(buffer, memory, memoryOffset);
+            setBufferMemoryBindInfoLocked(device, buffer, memory, memoryOffset);
         }
         return result;
     }
@@ -1504,7 +1515,7 @@ class VkDecoderGlobalState::Impl {
         if (result == VK_SUCCESS) {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             for (uint32_t i = 0; i < bindInfoCount; ++i) {
-                setBufferMemoryBindInfoLocked(pBindInfos[i].buffer, pBindInfos[i].memory,
+                setBufferMemoryBindInfoLocked(device, pBindInfos[i].buffer, pBindInfos[i].memory,
                                               pBindInfos[i].memoryOffset);
             }
         }
@@ -1526,7 +1537,7 @@ class VkDecoderGlobalState::Impl {
         if (result == VK_SUCCESS) {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             for (uint32_t i = 0; i < bindInfoCount; ++i) {
-                setBufferMemoryBindInfoLocked(pBindInfos[i].buffer, pBindInfos[i].memory,
+                setBufferMemoryBindInfoLocked(device, pBindInfos[i].buffer, pBindInfos[i].memory,
                                               pBindInfos[i].memoryOffset);
             }
         }
@@ -1713,6 +1724,10 @@ class VkDecoderGlobalState::Impl {
             }
         }
 #endif
+        if (memoryInfo->memoryFromColorBuffer) {
+            deviceInfo->debugUtilsHelper.addDebugLabel(image, "ColorBuffer:%d",
+                                                       *memoryInfo->memoryFromColorBuffer);
+        }
         if (!deviceInfo->emulateTextureEtc2 && !deviceInfo->emulateTextureAstc) {
             return VK_SUCCESS;
         }
@@ -1775,7 +1790,25 @@ class VkDecoderGlobalState::Impl {
             return VK_SUCCESS;
         }
 
-        return vk->vkBindImageMemory2(device, bindInfoCount, pBindInfos);
+        VkResult result = vk->vkBindImageMemory2(device, bindInfoCount, pBindInfos);
+        if (result != VK_SUCCESS) {
+            return result;
+        }
+
+        if (deviceInfo->debugUtilsHelper.isEnabled()) {
+            std::lock_guard<std::recursive_mutex> lock(mLock);
+            for (uint32_t i = 0; i < bindInfoCount; i++) {
+                auto* memoryInfo = android::base::find(mMemoryInfo, pBindInfos[i].memory);
+                if (!memoryInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+
+                if (memoryInfo->memoryFromColorBuffer) {
+                    deviceInfo->debugUtilsHelper.addDebugLabel(
+                        pBindInfos[i].image, "ColorBuffer:%d", *memoryInfo->memoryFromColorBuffer);
+                }
+            }
+        }
+
+        return result;
     }
 
     VkResult on_vkCreateImageView(android::base::BumpPool* pool, VkDevice boxed_device,
@@ -3085,7 +3118,7 @@ class VkDecoderGlobalState::Impl {
         // originally created with a dedicated allocation.
         bool shouldUseDedicatedAllocInfo = dedicatedAllocInfoPtr != nullptr;
 
-        const VkImportColorBufferGOOGLE* importCbInfoPtr =
+        const VkImportColorBufferGOOGLE* importColorBufferInfoPtr =
             vk_find_struct<VkImportColorBufferGOOGLE>(pAllocateInfo);
         const VkImportBufferGOOGLE* importBufferInfoPtr =
             vk_find_struct<VkImportBufferGOOGLE>(pAllocateInfo);
@@ -3112,17 +3145,17 @@ class VkDecoderGlobalState::Impl {
 
         void* mappedPtr = nullptr;
         ManagedDescriptor externalMemoryHandle;
-        if (importCbInfoPtr) {
+        if (importColorBufferInfoPtr) {
             bool vulkanOnly = mGuestUsesAngle;
 
             bool colorBufferMemoryUsesDedicatedAlloc = false;
-            if (!getColorBufferAllocationInfo(importCbInfoPtr->colorBuffer,
+            if (!getColorBufferAllocationInfo(importColorBufferInfoPtr->colorBuffer,
                                               &localAllocInfo.allocationSize,
                                               &localAllocInfo.memoryTypeIndex,
                                               &colorBufferMemoryUsesDedicatedAlloc, &mappedPtr)) {
                 GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
                     << "Failed to get allocation info for ColorBuffer:"
-                    << importCbInfoPtr->colorBuffer;
+                    << importColorBufferInfoPtr->colorBuffer;
             }
 
             shouldUseDedicatedAllocInfo &= colorBufferMemoryUsesDedicatedAlloc;
@@ -3130,19 +3163,19 @@ class VkDecoderGlobalState::Impl {
             if (!vulkanOnly) {
                 auto fb = FrameBuffer::getFB();
                 if (fb) {
-                    fb->invalidateColorBufferForVk(importCbInfoPtr->colorBuffer);
+                    fb->invalidateColorBufferForVk(importColorBufferInfoPtr->colorBuffer);
                 }
             }
 
             if (m_emu->instanceSupportsExternalMemoryCapabilities) {
                 VK_EXT_MEMORY_HANDLE cbExtMemoryHandle =
-                    getColorBufferExtMemoryHandle(importCbInfoPtr->colorBuffer);
+                    getColorBufferExtMemoryHandle(importColorBufferInfoPtr->colorBuffer);
 
                 if (cbExtMemoryHandle == VK_EXT_MEMORY_HANDLE_INVALID) {
                     fprintf(stderr,
                             "%s: VK_ERROR_OUT_OF_DEVICE_MEMORY: "
                             "colorBuffer 0x%x does not have Vulkan external memory backing\n",
-                            __func__, importCbInfoPtr->colorBuffer);
+                            __func__, importColorBufferInfoPtr->colorBuffer);
                     return VK_ERROR_OUT_OF_DEVICE_MEMORY;
                 }
 
@@ -3346,10 +3379,17 @@ class VkDecoderGlobalState::Impl {
         memoryInfo.device = device;
         memoryInfo.memoryIndex = localAllocInfo.memoryTypeIndex;
 #ifdef VK_MVK_moltenvk
-        if (importCbInfoPtr && m_emu->instanceSupportsMoltenVK) {
-            memoryInfo.mtlTexture = getColorBufferMTLTexture(importCbInfoPtr->colorBuffer);
+        if (importColorBufferInfoPtr && m_emu->instanceSupportsMoltenVK) {
+            memoryInfo.mtlTexture = getColorBufferMTLTexture(importColorBufferInfoPtr->colorBuffer);
         }
 #endif
+
+        if (importBufferInfoPtr) {
+            memoryInfo.memoryFromBuffer = importBufferInfoPtr->buffer;
+        }
+        if (importColorBufferInfoPtr) {
+            memoryInfo.memoryFromColorBuffer = importColorBufferInfoPtr->colorBuffer;
+        }
 
         if (!hostVisible) {
             *pMemory = new_boxed_non_dispatchable_VkDeviceMemory(*pMemory);
@@ -5984,9 +6024,12 @@ class VkDecoderGlobalState::Impl {
         uint32_t memoryIndex = 0;
         // Set if the memory is backed by shared memory.
         std::optional<SharedMemory> sharedMemory;
-
         // virtio-gpu blobs
         uint64_t blobId = 0;
+        // If present, the Buffer whose memory has been imported into this VkDeviceMemory.
+        std::optional<uint32_t> memoryFromBuffer;
+        // If present, the ColorBuffer whose memory has been imported into this VkDeviceMemory.
+        std::optional<uint32_t> memoryFromColorBuffer;
     };
 
     struct InstanceInfo {
