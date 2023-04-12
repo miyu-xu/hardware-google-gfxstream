@@ -69,7 +69,7 @@ class StubVirtGpuDevice : public VirtGpuDevice {
     VirtGpuBlobPtr createVirglBlob(uint32_t width, uint32_t height, uint32_t virglFormat);
     VirtGpuBlobPtr importBlob(const struct VirtGpuExternalHandle& handle) override;
 
-    int execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob) override;
+    int execBuffer(struct VirtGpuExecBuffer& execbuffer, const VirtGpuBlob* blob) override;
 
     virtual VirtGpuBlobPtr createColorBuffer(int width, int height, uint32_t glFormat);
     virtual VirtGpuBlobPtr createColorBuffer(int size);

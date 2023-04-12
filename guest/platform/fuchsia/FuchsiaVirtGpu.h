@@ -57,5 +57,5 @@ class FuchsiaVirtGpuDevice : public VirtGpuDevice {
     VirtGpuBlobPtr createVirglBlob(uint32_t width, uint32_t height, uint32_t format) override;
     VirtGpuBlobPtr importBlob(const struct VirtGpuExternalHandle& handle) override;
 
-    int execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob) override;
+    int execBuffer(struct VirtGpuExecBuffer& execbuffer, const VirtGpuBlob* blob) override;
 };
