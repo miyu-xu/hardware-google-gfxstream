@@ -14,14 +14,20 @@
 
 #pragma once
 
+#include <lib/magma/magma_common_defs.h>
+
 #include <optional>
 #include <memory>
 
+#include "DrmBuffer.h"
+#include "MonotonicMap.h"
 #include "aemu/base/Compiler.h"
 #include "aemu/base/ManagedDescriptor.hpp"
 
 namespace gfxstream {
 namespace magma {
+
+class DrmBuffer;
 
 class DrmDevice {
    public:
@@ -41,10 +47,19 @@ class DrmDevice {
     // Returns the result of a I915_GETPARAM call, or nullopt if an error occurs.
     std::optional<int> getParam(int param);
 
+    // Creates a new buffer of the given size and returns its handle. Returns nullopt on error.
+    std::optional<magma_handle_t> createBuffer(size_t size);
+
+    // Returns the buffer for the given handle, or nullptr if invalid.
+    DrmBuffer* getBuffer(magma_handle_t handle);
+
    private:
     DrmDevice() = default;
 
     android::base::ManagedDescriptor mFd;
+
+    // Maps gem handles to buffers.
+    std::unordered_map<uint32_t, DrmBuffer> mBuffers;
 };
 
 }  // namespace magma

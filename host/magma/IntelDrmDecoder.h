@@ -30,7 +30,7 @@ class IntelDrmDecoder : public Decoder {
     IntelDrmDecoder();
     magma_status_t magma_device_import(magma_handle_t device_channel, magma_device_t* device_out) override;
     void magma_device_release(magma_device_t device) override;
-    magma_status_t magma_device_query(magma_device_t device, uint64_t id, magma_handle_t* result_buffer_out, uint64_t* result_out) override;
+    magma_status_t magma_device_query_fudge(magma_device_t device, uint64_t id, magma_bool_t host_allocate, uint64_t* result_buffer_mapping_id_inout, uint64_t* result_buffer_size_inout, uint64_t* result_out) override;
     magma_status_t magma_device_create_connection(magma_device_t device, magma_connection_t* connection_out) override;
     void magma_connection_release(magma_connection_t connection) override;
     magma_status_t magma_connection_create_buffer(magma_connection_t connection, uint64_t size, uint64_t* size_out, magma_buffer_t* buffer_out, magma_buffer_id_t* id_out) override;

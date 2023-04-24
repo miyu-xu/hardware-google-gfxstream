@@ -24,6 +24,7 @@ cc_library_static {
             srcs: [
                 "IntelDrmDecoder.cpp",
                 "DrmDevice.cpp",
+                "DrmBuffer.cpp",
             ],
             header_libs: [
                 "libdrm_headers",
@@ -36,6 +37,7 @@ cc_library_static {
             srcs: [
                 "IntelDrmDecoder.cpp",
                 "DrmDevice.cpp",
+                "DrmBuffer.cpp",
             ],
             header_libs: [
                 "libdrm_headers",

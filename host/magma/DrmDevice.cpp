@@ -84,5 +84,30 @@ std::optional<int> DrmDevice::getParam(int param) {
     return value;
 }
 
+std::optional<magma_handle_t> DrmDevice::createBuffer(size_t size) {
+    auto buffer = DrmBuffer::create(*this, size);
+    if (!buffer) {
+        ERR("Failed to create buffer of size %" PRIu64, size);
+        return std::nullopt;
+    }
+
+    auto handle = buffer->getHandle();
+    auto [_, emplaced] = mBuffers.emplace(handle, std::move(*buffer));
+    if (!emplaced) {
+        ERR("GEM produced duplicate buffer handle %" PRIu32, handle);
+        return std::nullopt;
+    }
+
+    return handle;
+}
+
+DrmBuffer* DrmDevice::getBuffer(magma_handle_t handle) {
+    auto it = mBuffers.find(handle);
+    if (it == mBuffers.end()) {
+        return nullptr;
+    }
+    return &it->second;
+}
+
 }  // namespace magma
 }  // namespace gfxstream
