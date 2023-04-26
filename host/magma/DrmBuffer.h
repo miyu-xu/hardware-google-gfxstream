@@ -19,6 +19,7 @@
 #include <unordered_set>
 
 #include "DrmDevice.h"
+#include "aemu/base/Compiler.h"
 #include "aemu/base/ManagedDescriptor.hpp"
 #include "host-common/HostmemIdMapping.h"
 
@@ -31,8 +32,7 @@ class DrmDevice;
 class DrmBuffer {
    public:
     ~DrmBuffer();
-    DrmBuffer(const DrmBuffer&) = delete;
-    DrmBuffer& operator=(const DrmBuffer&) = delete;
+    DISALLOW_COPY_AND_ASSIGN(DrmBuffer);
     DrmBuffer(DrmBuffer&&);
     DrmBuffer& operator=(DrmBuffer&&) = delete;
 
