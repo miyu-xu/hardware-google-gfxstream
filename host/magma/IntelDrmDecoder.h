@@ -38,6 +38,8 @@ class IntelDrmDecoder : public Decoder {
     void magma_connection_release_buffer(magma_connection_t connection, magma_buffer_t buffer) override;
     magma_status_t magma_connection_create_semaphore(magma_connection_t magma_connection, magma_semaphore_t* semaphore_out, magma_semaphore_id_t* id_out) override;
     void magma_connection_release_semaphore(magma_connection_t connection, magma_semaphore_t semaphore) override;
+    magma_status_t magma_buffer_get_info(magma_buffer_t buffer, magma_buffer_info_t* info_out) override;
+    magma_status_t magma_buffer_get_handle(magma_buffer_t buffer, magma_handle_t* handle_out) override;
     magma_status_t magma_buffer_export(magma_buffer_t buffer, magma_handle_t* buffer_handle_out) override;
     void magma_semaphore_signal(magma_semaphore_t semaphore) override;
     void magma_semaphore_reset(magma_semaphore_t semaphore) override;
@@ -51,6 +53,10 @@ class IntelDrmDecoder : public Decoder {
     uint32_t mContextId;
     MonotonicMap<magma_device_t, DrmDevice> mDevices;
     MonotonicMap<magma_connection_t, Connection> mConnections;
+    MonotonicMap<magma_buffer_t, DrmBuffer> mBuffers;
+
+    // Maps GEM handles to Buffers.
+    std::unordered_map<uint32_t, magma_buffer_t> mGemHandleToBuffer;
 };
 
 } // namespace magma
