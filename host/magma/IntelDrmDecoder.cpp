@@ -379,18 +379,37 @@ void IntelDrmDecoder::magma_connection_release_buffer(magma_connection_t connect
     mBuffers.erase(buffer);
 }
 
-magma_status_t IntelDrmDecoder::magma_connection_create_semaphore(
-    magma_connection_t magma_connection, magma_semaphore_t* semaphore_out,
-    magma_semaphore_id_t* id_out) {
+magma_status_t IntelDrmDecoder::magma_connection_create_semaphore(magma_connection_t connection,
+                                                                  magma_semaphore_t* semaphore_out,
+                                                                  magma_semaphore_id_t* id_out) {
     *semaphore_out = MAGMA_INVALID_OBJECT_ID;
     *id_out = MAGMA_INVALID_OBJECT_ID;
-    WARN("%s not implemented", __FUNCTION__);
-    return MAGMA_STATUS_UNIMPLEMENTED;
+
+    auto con = mConnections.get(connection);
+    if (!con) {
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+    auto semaphore = DrmSemaphore::create(con->getDevice());
+    if (!semaphore) {
+        return MAGMA_STATUS_INTERNAL_ERROR;
+    }
+    auto magma_handle = mSemaphores.create(std::move(*semaphore));
+    *semaphore_out = magma_handle;
+    *id_out = MAGMA_OBJECT_TO_ID(magma_handle);
+    return MAGMA_STATUS_OK;
 }
 
 void IntelDrmDecoder::magma_connection_release_semaphore(magma_connection_t connection,
                                                          magma_semaphore_t semaphore) {
-    WARN("%s not implemented", __FUNCTION__);
+    auto con = mConnections.get(connection);
+    if (!con) {
+        return;
+    }
+    auto sem = mSemaphores.get(semaphore);
+    if (!sem) {
+        return;
+    }
+    mSemaphores.erase(semaphore);
 }
 
 magma_status_t IntelDrmDecoder::magma_buffer_get_info(magma_buffer_t buffer,
@@ -422,11 +441,21 @@ magma_status_t IntelDrmDecoder::magma_buffer_export(magma_buffer_t buffer,
 }
 
 void IntelDrmDecoder::magma_semaphore_signal(magma_semaphore_t semaphore) {
-    WARN("%s not implemented", __FUNCTION__);
+    auto sem = mSemaphores.get(semaphore);
+    if (!sem) {
+        ERR("invalid semaphore %" PRIu64, semaphore);
+        return;
+    }
+    sem->signal();
 }
 
 void IntelDrmDecoder::magma_semaphore_reset(magma_semaphore_t semaphore) {
-    WARN("%s not implemented", __FUNCTION__);
+    auto sem = mSemaphores.get(semaphore);
+    if (!sem) {
+        ERR("invalid semaphore %" PRIu64, semaphore);
+        return;
+    }
+    sem->reset();
 }
 
 magma_status_t IntelDrmDecoder::magma_poll(magma_poll_item_t* items, uint32_t count,
@@ -461,17 +490,220 @@ void IntelDrmDecoder::magma_connection_release_context(magma_connection_t connec
     WARN("%s not implemented", __FUNCTION__);
 }
 
+constexpr uint64_t CanonicalAddress(uint64_t addr) {
+    constexpr int kShift = 63 - 47;
+    return static_cast<int64_t>(addr << kShift) >> kShift;
+}
+
 magma_status_t IntelDrmDecoder::magma_connection_map_buffer(magma_connection_t connection,
                                                             uint64_t hw_va, magma_buffer_t buffer,
                                                             uint64_t offset, uint64_t length,
                                                             uint64_t map_flags) {
-    WARN("%s not implemented", __FUNCTION__);
-    return MAGMA_STATUS_UNIMPLEMENTED;
+    auto con = mConnections.get(connection);
+    if (!con) {
+        ERR("invalid connection %" PRIu64, connection);
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+    auto buf = mBuffers.get(buffer);
+    if (!buf) {
+        ERR("invalid buffer %" PRIu64, buffer);
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+    if (offset + length > buf->size()) {
+        ERR("invalid mapping (%" PRIu64 " + %" PRIu64 " > %" PRIu64 ")", offset, length,
+            buf->size());
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+
+    // Magma doesn't send canonical (sign extended) addresses, but Intel DRM requires them.
+    auto canonical_va = CanonicalAddress(hw_va);
+
+    // TODO(b/279921814): Fail on overlapping regions.
+    mBufferMappings.emplace(buffer, canonical_va);
+
+    return MAGMA_STATUS_OK;
 }
 
 void IntelDrmDecoder::magma_connection_unmap_buffer(magma_connection_t connection, uint64_t hw_va,
                                                     magma_buffer_t buffer) {
+    auto con = mConnections.get(connection);
+    if (!con) {
+        ERR("invalid connection %" PRIu64, connection);
+        return;
+    }
+    auto buf = mBuffers.get(buffer);
+    if (!buf) {
+        ERR("invalid buffer %" PRIu64, buffer);
+        return;
+    }
+    auto it = mBufferMappings.find(buffer);
+    if (it == mBufferMappings.end()) {
+        ERR("buffer %" PRIu64 " not mapped", buffer);
+        return;
+    }
+    if (hw_va != it->second) {
+        ERR("buffer %" PRIu64 " not mapped at gpuva %" PRIu64, hw_va);
+        return;
+    }
+    mBufferMappings.erase(buffer);
+}
+
+magma_status_t IntelDrmDecoder::magma_connection_read_notification_channel(
+    magma_connection_t connection, void* buffer, uint64_t buffer_size, uint64_t* buffer_size_out,
+    magma_bool_t* more_data_out) {
     WARN("%s not implemented", __FUNCTION__);
+    return MAGMA_STATUS_UNIMPLEMENTED;
+}
+
+template <typename T>
+std::optional<T> ExtractPacked(void* data, size_t size, size_t& offset) {
+    if (offset + sizeof(T) > size) {
+        return std::nullopt;
+    }
+    T element = *reinterpret_cast<T*>(reinterpret_cast<uint8_t*>(data) + offset);
+    offset += sizeof(T);
+    return element;
+}
+
+template <typename T>
+std::optional<std::vector<T>> ExtractPacked(void* data, size_t size, size_t count, size_t& offset) {
+    if (count == 0) {
+        return std::vector<T>();
+    }
+    if (offset + sizeof(T) * count > size) {
+        return std::nullopt;
+    }
+    auto begin = reinterpret_cast<T*>(reinterpret_cast<uint8_t*>(data) + offset);
+    std::vector<T> elements(begin, begin + count);
+    offset += sizeof(T) * count;
+    return elements;
+}
+
+magma_status_t IntelDrmDecoder::magma_connection_execute_command_fudge(
+    magma_connection_t connection, uint32_t context_id, void* descriptor,
+    uint64_t descriptor_size) {
+    auto con = mConnections.get(connection);
+    if (!con) {
+        ERR("invalid connection %" PRIu64, connection);
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+    auto ctx = con->getContext(context_id);
+    if (!ctx) {
+        ERR("invalid context %" PRIu64, context_id);
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+
+    size_t offset = 0;
+    auto resource_count = ExtractPacked<uint32_t>(descriptor, descriptor_size, offset);
+    auto command_buffer_count = ExtractPacked<uint32_t>(descriptor, descriptor_size, offset);
+    auto wait_semaphore_count = ExtractPacked<uint32_t>(descriptor, descriptor_size, offset);
+    auto signal_semaphore_count = ExtractPacked<uint32_t>(descriptor, descriptor_size, offset);
+    auto flags = ExtractPacked<uint64_t>(descriptor, descriptor_size, offset);
+    if (!resource_count || !command_buffer_count || !wait_semaphore_count ||
+        !signal_semaphore_count || !flags) {
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+    auto resources = ExtractPacked<magma_exec_resource_t>(descriptor, descriptor_size,
+                                                          resource_count.value(), offset);
+    auto command_buffers = ExtractPacked<magma_exec_command_buffer_t>(
+        descriptor, descriptor_size, command_buffer_count.value(), offset);
+    auto semaphore_ids = ExtractPacked<uint64_t>(descriptor, descriptor_size,
+                                                 signal_semaphore_count.value(), offset);
+    if (!resources || !command_buffers || !semaphore_ids) {
+        return MAGMA_STATUS_INVALID_ARGS;
+    }
+
+    if (offset != descriptor_size) {
+        WARN("unused data in packed descriptor (%" PRIu64 " used vs %" PRIu64 " sent)", offset,
+             descriptor_size);
+    }
+
+    std::string dump = "DUMP:";
+    dump += "\nresources = ";
+    for (auto& res : resources.value()) {
+        dump += "(" + std::to_string(res.buffer_id) + "," + std::to_string(res.offset) + "," +
+                std::to_string(res.length) + "), ";
+    }
+    dump += "\ncommand_buffers = ";
+    for (auto& cb : command_buffers.value()) {
+        dump +=
+            "(" + std::to_string(cb.resource_index) + "," + std::to_string(cb.start_offset) + "), ";
+    }
+    dump += "\nsemaphore_ids = ";
+    for (auto& sid : semaphore_ids.value()) {
+        dump += std::to_string(sid) + ", ";
+    }
+    INFO("%s", dump.c_str());
+
+    std::vector<drm_i915_gem_exec_object2> exec_objects;
+    for (auto& resource : resources.value()) {
+        auto buffer = MAGMA_ID_TO_OBJECT(resource.buffer_id);
+        auto buf = mBuffers.get(buffer);
+        if (!buf) {
+            ERR("invalid buffer id %" PRIu64, resource.buffer_id);
+            // TODO: set connection err to INVALID_ARGS
+            return MAGMA_STATUS_OK;
+        }
+        auto it = mBufferMappings.find(buffer);
+        if (it == mBufferMappings.end()) {
+            ERR("buffer %" PRIu64 " not mapped", buffer);
+            // TODO: set connection err to INVALID_ARGS
+            return MAGMA_STATUS_OK;
+        }
+        auto addr = it->second;
+        exec_objects.push_back({.handle = buf->getHandle(),
+                                .offset = addr,
+                                .flags = EXEC_OBJECT_SUPPORTS_48B_ADDRESS | EXEC_OBJECT_PINNED});
+    }
+
+    std::vector<drm_i915_gem_exec_fence> exec_fences;
+    uint32_t semaphore_index = 0;
+    for (auto& semaphore_id : semaphore_ids.value()) {
+        auto semaphore = MAGMA_ID_TO_OBJECT(semaphore_id);
+        auto sem = mSemaphores.get(semaphore);
+        if (!sem) {
+            ERR("invalid semaphore id %" PRIu64, semaphore_id);
+            // TODO: set connection err to INVALID_ARGS
+            return MAGMA_STATUS_OK;
+        }
+        uint32_t flags = semaphore_index++ < wait_semaphore_count ? I915_EXEC_FENCE_WAIT
+                                                                  : I915_EXEC_FENCE_SIGNAL;
+        exec_fences.push_back({.handle = sem->getHandle(), .flags = flags});
+    }
+
+    auto completion_semaphore = DrmSemaphore::create(con->getDevice());
+    if (!completion_semaphore) {
+        return MAGMA_STATUS_INTERNAL_ERROR;
+    }
+    exec_fences.push_back(
+        {.handle = completion_semaphore->getHandle(), .flags = I915_EXEC_FENCE_SIGNAL});
+
+    drm_i915_gem_execbuffer2 exec_params{
+        .buffers_ptr = reinterpret_cast<uintptr_t>(exec_objects.data()),
+        .buffer_count = static_cast<uint32_t>(exec_objects.size()),
+        .batch_start_offset = static_cast<uint32_t>(command_buffers.value()[0].start_offset),
+        .batch_len = static_cast<uint32_t>(resources.value().rbegin()->length),
+        .num_cliprects = static_cast<uint32_t>(exec_fences.size()),  // Actually FENCE_ARRAY
+        .cliprects_ptr = reinterpret_cast<uintptr_t>(exec_fences.data()),
+        .flags =
+            I915_EXEC_NO_RELOC | I915_EXEC_RENDER | I915_EXEC_HANDLE_LUT | I915_EXEC_FENCE_ARRAY,
+        .rsvd1 = ctx->getId()};
+    int result = con->getDevice().ioctl(DRM_IOCTL_I915_GEM_EXECBUFFER2, &exec_params);
+    if (result) {
+        ERR("DRM_IOCTL_I915_GEM_EXECBUFFER2 failed: %d", errno);
+        // TODO: set connection err to INTERNAL_ERROR
+        return MAGMA_STATUS_OK;
+    }
+
+    std::vector<magma_buffer_id_t> buffer_ids;
+    for (auto& resource : resources.value()) {
+        buffer_ids.push_back(resource.buffer_id);
+    }
+    con->addCommand(std::move(buffer_ids), std::move(*completion_semaphore));
+
+    INFO("successfully executed %" PRIu64 " buffers", resources->size());
+
+    return MAGMA_STATUS_OK;
 }
 
 }  // namespace magma

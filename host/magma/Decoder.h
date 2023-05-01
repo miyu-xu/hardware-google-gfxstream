@@ -44,7 +44,7 @@ class Decoder : public magma_decoder_context_t {
     virtual magma_status_t magma_connection_create_buffer(magma_connection_t connection, uint64_t size, uint64_t* size_out, magma_buffer_t* buffer_out, magma_buffer_id_t* id_out);
     virtual void magma_connection_release_buffer(magma_connection_t connection, magma_buffer_t buffer);
     virtual magma_status_t magma_connection_import_buffer(magma_connection_t connection, magma_handle_t buffer_handle, uint64_t* size_out, magma_buffer_t* buffer_out, magma_buffer_id_t* id_out);
-    virtual magma_status_t magma_connection_create_semaphore(magma_connection_t magma_connection, magma_semaphore_t* semaphore_out, magma_semaphore_id_t* id_out);
+    virtual magma_status_t magma_connection_create_semaphore(magma_connection_t connection, magma_semaphore_t* semaphore_out, magma_semaphore_id_t* id_out);
     virtual void magma_connection_release_semaphore(magma_connection_t connection, magma_semaphore_t semaphore);
     virtual magma_status_t magma_connection_import_semaphore(magma_connection_t connection, magma_handle_t semaphore_handle, magma_semaphore_t* semaphore_out, magma_semaphore_id_t* id_out);
     virtual magma_status_t magma_connection_perform_buffer_op(magma_connection_t connection, magma_buffer_t buffer, uint32_t options, uint64_t start_offset, uint64_t length);

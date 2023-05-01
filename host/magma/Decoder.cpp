@@ -154,7 +154,7 @@ magma_status_t Decoder::magma_connection_import_buffer(magma_connection_t connec
     return MAGMA_STATUS_UNIMPLEMENTED;
 }
 
-magma_status_t Decoder::magma_connection_create_semaphore(magma_connection_t magma_connection,
+magma_status_t Decoder::magma_connection_create_semaphore(magma_connection_t connection,
                                                           magma_semaphore_t* semaphore_out,
                                                           magma_semaphore_id_t* id_out) {
     MAGMA_NOTIMPL();

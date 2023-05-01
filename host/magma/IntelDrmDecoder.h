@@ -17,6 +17,7 @@
 #include "Decoder.h"
 #include "MonotonicMap.h"
 #include "DrmDevice.h"
+#include "DrmSemaphore.h"
 #include "Connection.h"
 
 namespace gfxstream {
@@ -49,14 +50,23 @@ class IntelDrmDecoder : public Decoder {
     void magma_connection_release_context(magma_connection_t connection, uint32_t context_id) override;
     magma_status_t magma_connection_map_buffer(magma_connection_t connection, uint64_t hw_va, magma_buffer_t buffer, uint64_t offset, uint64_t length, uint64_t map_flags) override;
     void magma_connection_unmap_buffer(magma_connection_t connection, uint64_t hw_va, magma_buffer_t buffer) override;
+    magma_status_t magma_connection_read_notification_channel(magma_connection_t connection, void* buffer, uint64_t buffer_size, uint64_t* buffer_size_out, magma_bool_t* more_data_out) override;
+
+    magma_status_t magma_connection_execute_command_fudge(magma_connection_t connection,
+                                                          uint32_t context_id,
+                                                          void* descriptor,
+                                                          uint64_t descriptor_size) override;
 
     uint32_t mContextId;
     MonotonicMap<magma_device_t, DrmDevice> mDevices;
-    MonotonicMap<magma_buffer_t, DrmBuffer> mBuffers;
     MonotonicMap<magma_connection_t, Connection> mConnections;
+    MonotonicMap<magma_buffer_t, DrmBuffer> mBuffers;
+    MonotonicMap<magma_semaphore_t, DrmSemaphore> mSemaphores;
 
     // Maps GEM handles to Buffers.
     std::unordered_map<uint32_t, magma_buffer_t> mGemHandleToBuffer;
+
+    std::unordered_map<magma_buffer_t, uint64_t> mBufferMappings;
 };
 
 } // namespace magma

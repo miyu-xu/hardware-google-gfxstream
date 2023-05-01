@@ -17,8 +17,11 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <queue>
 
 #include "DrmContext.h"
+#include "DrmSemaphore.h"
+#include "magma/magma_common_defs.h"
 
 namespace gfxstream {
 namespace magma {
@@ -44,6 +47,9 @@ class Connection {
     // Returns the context for the given ID, or nullptr if invalid.
     DrmContext* getContext(uint32_t id);
 
+    // Adds a set of buffer IDs to the in-flight list.
+    void addCommand(std::vector<magma_buffer_id_t> buffer_ids, DrmSemaphore completion_semaphore);
+
    private:
     friend class DrmContext;
 
@@ -51,6 +57,9 @@ class Connection {
 
     // Maps context IDs to contexts.
     std::unordered_map<uint32_t, DrmContext> mContexts;
+
+    // Tracks in-flight buffers and their completion semaphores.
+    std::queue<std::pair<std::vector<magma_buffer_id_t>, DrmSemaphore>> mInflightBuffers;
 };
 
 }  // namespace magma
