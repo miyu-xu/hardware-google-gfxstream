@@ -26,9 +26,7 @@ namespace magma {
 
 Connection::Connection(DrmDevice& device) : mDevice(device) {}
 
-DrmDevice& Connection::getDevice() {
-    return mDevice;
-}
+DrmDevice& Connection::getDevice() { return mDevice; }
 
 std::optional<uint32_t> Connection::createContext() {
     auto context = DrmContext::create(*this);
@@ -53,6 +51,11 @@ DrmContext* Connection::getContext(uint32_t id) {
         return nullptr;
     }
     return &it->second;
+}
+
+void Connection::addCommand(std::vector<magma_buffer_id_t> buffer_ids,
+                            DrmSemaphore completion_semaphore) {
+    mInflightBuffers.emplace(std::move(buffer_ids), std::move(completion_semaphore));
 }
 
 }  // namespace magma
