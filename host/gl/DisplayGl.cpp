@@ -47,6 +47,8 @@ std::shared_future<void> DisplayGl::post(const Post& post) {
                 mTextureDraw->prepareForDrawLayer();
                 hasDrawLayer = true;
             }
+            //printf("calling glOpPostLayer framesize %d %d\n",
+            //    (int)post.frameWidth, (int)post.frameHeight);
             layer.colorBuffer->glOpPostLayer(*layer.layerOptions, post.frameWidth,
                                              post.frameHeight);
         } else if (layer.overlayOptions) {

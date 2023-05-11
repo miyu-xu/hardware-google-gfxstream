@@ -84,6 +84,9 @@ class ColorBuffer : public android::snapshot::LazySnapshotObj<ColorBuffer> {
     bool invalidateForGl();
     bool invalidateForVk();
 
+    void glOpResize(uint32_t width, uint32_t height);
+    uint32_t glOpGetWidth() const;
+    uint32_t glOpGetHeight() const;
     GLuint glOpGetTexture();
     bool glOpBlitFromCurrentReadBuffer();
     bool glOpBindToTexture();
@@ -115,6 +118,7 @@ class ColorBuffer : public android::snapshot::LazySnapshotObj<ColorBuffer> {
 
     // If Vk emulation is enabled.
     std::unique_ptr<vk::ColorBufferVk> mColorBufferVk;
+    int magic = 123;
 
     bool mGlAndVkAreSharingExternalMemory = false;
 };

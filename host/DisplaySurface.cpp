@@ -53,6 +53,7 @@ void DisplaySurface::updateSize(uint32_t newWidth, uint32_t newHeight) {
         if (mWidth != newWidth || mHeight != newHeight) {
             mWidth = newWidth;
             mHeight = newHeight;
+            printf("DisplaySurface::updateSize %d %d\n", newWidth, newHeight);
         }
     }
     for (auto & users : mBoundUsers) {

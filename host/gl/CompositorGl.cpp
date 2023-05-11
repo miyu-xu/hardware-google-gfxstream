@@ -71,6 +71,7 @@ Compositor::CompositionFinishedWaitable CompositorGl::compose(
 
     m_textureDraw->prepareForDrawLayer();
 
+    //printf("compose target size %d %d\n", targetWidth, targetHeight);
     for (const CompositionRequestLayer& layer : composeRequest.layers) {
         if (layer.props.composeMode == HWC2_COMPOSITION_DEVICE) {
             const BorrowedImageInfoGl* layerImage = getInfoOrAbort(layer.source);

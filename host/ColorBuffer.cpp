@@ -63,6 +63,7 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
             return nullptr;
         }
     }
+    //printf("cb %d %p gl %p\n", handle, colorBuffer.get(), colorBuffer->mColorBufferGl.get());
 
     if (emulationVk && emulationVk->live) {
         const bool vulkanOnly = colorBuffer->mColorBufferGl == nullptr;
@@ -97,7 +98,8 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
             }
         }
     }
-
+    //printf("cb2 %d %p gl %p vk %p magic %d\n", handle, colorBuffer.get(), colorBuffer->mColorBufferGl.get(),
+    //    colorBuffer->mColorBufferVk.get(), colorBuffer->magic);
     return colorBuffer;
 }
 
@@ -114,6 +116,7 @@ std::shared_ptr<ColorBuffer> ColorBuffer::onLoad(gl::EmulationGl* emulationGl, v
         new ColorBuffer(handle, width, height, format, frameworkFormat));
 
     if (emulationGl) {
+        printf("on load called\n");
         colorBuffer->mColorBufferGl = emulationGl->loadColorBuffer(stream);
         if (!colorBuffer->mColorBufferGl) {
             ERR("Failed to load ColorBufferGl.");
@@ -385,6 +388,14 @@ bool ColorBuffer::glOpBlitFromCurrentReadBuffer() {
     return mColorBufferGl->blitFromCurrentReadBuffer();
 }
 
+void ColorBuffer::glOpResize(uint32_t width, uint32_t height) {
+    if (!mColorBufferGl) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "ColorBufferGl not available.";
+    }
+    touch();
+    mColorBufferGl->resize(width, height);
+}
+
 bool ColorBuffer::glOpBindToTexture() {
     if (!mColorBufferGl) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "ColorBufferGl not available.";
@@ -411,6 +422,23 @@ bool ColorBuffer::glOpBindToRenderbuffer() {
     touch();
 
     return mColorBufferGl->bindToRenderbuffer();
+}
+
+uint32_t ColorBuffer::glOpGetWidth() const {
+    if (!mColorBufferGl) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "ColorBufferGl not available.";
+    }
+    return mColorBufferGl->getWidth();
+}
+
+uint32_t ColorBuffer::glOpGetHeight() const {
+    //return mHeight;
+    if (!mColorBufferGl) {
+        printf("cb %p has no gl %p vk %p magic %d\n", this, mColorBufferGl.get(), mColorBufferVk.get(), magic);
+        printf("%d %d %d\n", (int)mHandle, (int)mWidth, (int)mHeight);
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "ColorBufferGl not available.";
+    }
+    return mColorBufferGl->getHeight();
 }
 
 GLuint ColorBuffer::glOpGetTexture() {

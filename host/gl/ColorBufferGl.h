@@ -100,6 +100,8 @@ class ColorBufferGl {
     // with the internalformat specified.
     void reformat(GLint internalformat, GLenum type);
 
+    void resize(int width, int height);
+
     // Destructor.
     ~ColorBufferGl();
 
@@ -242,8 +244,8 @@ private:
     GLuint m_blitTex = 0;
     EGLImageKHR m_eglImage = nullptr;
     EGLImageKHR m_blitEGLImage = nullptr;
-    const GLuint m_width = 0;
-    const GLuint m_height = 0;
+    GLuint m_width = 0;
+    GLuint m_height = 0;
     GLuint m_fbo = 0;
     GLint m_internalFormat = 0;
     GLint m_sizedInternalFormat = 0;

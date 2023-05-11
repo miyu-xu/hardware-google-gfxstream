@@ -544,6 +544,49 @@ void ColorBufferGl::reformat(GLint internalformat, GLenum type) {
     m_numBytes = bpp * m_width * m_height;
 }
 
+void ColorBufferGl::resize(int width, int height) {
+    m_width = width;
+    m_height = height;
+    GLenum internalFormat = m_internalFormat;
+    GLenum texFormat = GL_RGBA;
+    GLenum pixelType = GL_UNSIGNED_BYTE;
+    GLint sizedInternalFormat = GL_RGBA8;
+    int bpp = 4;
+    bool isBlob = false;
+    if (!sGetFormatParameters(&m_internalFormat, &texFormat, &pixelType, &bpp,
+                              &sizedInternalFormat, &isBlob)) {
+        fprintf(stderr, "%s: WARNING: reformat failed. internal format: 0x%x\n",
+                __func__, m_internalFormat);
+    }
+
+    s_gles2.glBindTexture(GL_TEXTURE_2D, m_tex);
+    s_gles2.glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height,
+                         0, texFormat, pixelType, nullptr);
+
+    s_gles2.glBindTexture(GL_TEXTURE_2D, m_blitTex);
+    s_gles2.glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height,
+                         0, texFormat, pixelType, nullptr);
+
+    // EGL images need to be recreated because the EGL_KHR_image_base spec
+    // states that respecifying an image (i.e. glTexImage2D) will generally
+    // result in orphaning of the EGL image.
+    s_egl.eglDestroyImageKHR(m_display, m_eglImage);
+    m_eglImage = s_egl.eglCreateImageKHR(
+            m_display, s_egl.eglGetCurrentContext(), EGL_GL_TEXTURE_2D_KHR,
+            (EGLClientBuffer)SafePointerFromUInt(m_tex), NULL);
+
+    s_egl.eglDestroyImageKHR(m_display, m_blitEGLImage);
+    m_blitEGLImage = s_egl.eglCreateImageKHR(
+            m_display, s_egl.eglGetCurrentContext(), EGL_GL_TEXTURE_2D_KHR,
+            (EGLClientBuffer)SafePointerFromUInt(m_blitTex), NULL);
+    printf("new cb size %d %d\n", m_width, m_height);
+
+    s_gles2.glBindTexture(GL_TEXTURE_2D, 0);
+
+    m_numBytes = bpp * m_width * m_height;
+
+}
+
 void ColorBufferGl::swapYUVTextures(FrameworkFormat type, uint32_t* textures) {
     if (type == FrameworkFormat::FRAMEWORK_FORMAT_NV12) {
         m_yuv_converter->swapTextures(type, textures);

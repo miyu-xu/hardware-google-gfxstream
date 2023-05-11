@@ -62,6 +62,9 @@
 #include "vulkan/VkCommonOperations.h"
 #include "vulkan/VkDecoderGlobalState.h"
 
+
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 
 using android::base::AutoLock;
@@ -991,6 +994,33 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
                                         m_windowHeight);
             }
             m_displaySurface->updateSize(m_windowWidth, m_windowHeight);
+            /*for (uint32_t displayCb = 1; displayCb <= 3; displayCb ++) {
+            //getDisplayColorBuffer(0, &displayCb);
+                if (displayCb) {
+                    ColorBufferPtr colorBuffer = findColorBuffer(displayCb);
+                if (emugl::get_emugl_window_operations().isFolded()) {
+
+                        int displayOffsetX;
+                        int displayOffsetY;
+                        int displayW;
+                        int displayH;
+                        emugl::get_emugl_window_operations().getFoldedArea(&displayOffsetX,
+                                                                           &displayOffsetY,
+                                                                           &displayW,
+                                                                           &displayH);
+                        printf("cb ptr %p size %d %d window size %d %d\n", colorBuffer.get(),
+                                colorBuffer->glOpGetWidth(), colorBuffer->glOpGetHeight(),
+                                (int)displayW, (int)displayH);
+                        if (colorBuffer && (
+                            colorBuffer->glOpGetHeight() < displayH || colorBuffer->glOpGetWidth() < displayW)) {
+                            printf("resizing display cb\n");
+                            RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
+                            colorBuffer->glOpResize(std::max((int)colorBuffer->glOpGetWidth(), displayW),
+                                std::max((int)colorBuffer->glOpGetHeight(), displayH));
+                        }
+                    }
+                }
+            }*/
         }
         // We are safe to unblock the PostWorker thread now, because we have completed all the
         // operations that could modify the state of the m_subWin. We need to unblock the PostWorker
@@ -2861,7 +2891,30 @@ AsyncResult FrameBuffer::composeWithCallback(uint32_t bufferSize, void* buffer,
 
     case 2: {
         // support for multi-display
+        //printf("composeWithCallback v2\n");
         ComposeDevice_v2* p2 = (ComposeDevice_v2*)buffer;
+        if (emugl::get_emugl_window_operations().isFolded()) {
+
+            int displayOffsetX;
+            int displayOffsetY;
+            int displayW;
+            int displayH;
+            emugl::get_emugl_window_operations().getFoldedArea(&displayOffsetX,
+                                                               &displayOffsetY,
+                                                               &displayW,
+                                                               &displayH);
+            ColorBufferPtr colorBuffer = findColorBuffer(p2->targetHandle);
+            printf("cb ptr %p size %d %d window size %d %d\n", colorBuffer.get(),
+                    colorBuffer->glOpGetWidth(), colorBuffer->glOpGetHeight(),
+                    (int)displayW, (int)displayH);
+            if (colorBuffer && (
+                colorBuffer->glOpGetHeight() < displayH || colorBuffer->glOpGetWidth() < displayW)) {
+                printf("resizing display cb\n");
+                RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
+                colorBuffer->glOpResize(std::max((int)colorBuffer->glOpGetWidth(), displayW),
+                    std::max((int)colorBuffer->glOpGetHeight(), displayH));
+            }
+        }
         if (p2->displayId != 0) {
             mutex.unlock();
             setDisplayColorBuffer(p2->displayId, p2->targetHandle);
@@ -3317,6 +3370,7 @@ int FrameBuffer::destroyDisplay(uint32_t displayId) {
 }
 
 int FrameBuffer::setDisplayColorBuffer(uint32_t displayId, uint32_t colorBuffer) {
+    //printf("set display cb %d %d\n", (int)displayId, (int)colorBuffer);
     return emugl::get_emugl_multi_display_operations().
         setDisplayColorBuffer(displayId, colorBuffer);
 }
@@ -3497,6 +3551,7 @@ std::unique_ptr<BorrowedImageInfo> FrameBuffer::borrowColorBufferForComposition(
         ERR("Failed to get borrowed image info for ColorBuffer:%d", colorBufferHandle);
         return nullptr;
     }
+    colorBufferPtr->glOpGetHeight();
 
     if (m_useVulkanComposition) {
         invalidateColorBufferForVk(colorBufferHandle);
@@ -3510,6 +3565,7 @@ std::unique_ptr<BorrowedImageInfo> FrameBuffer::borrowColorBufferForComposition(
 
 std::unique_ptr<BorrowedImageInfo> FrameBuffer::borrowColorBufferForDisplay(
     uint32_t colorBufferHandle) {
+    printf("start borrow\n");
     ColorBufferPtr colorBufferPtr = findColorBuffer(colorBufferHandle);
     if (!colorBufferPtr) {
         ERR("Failed to get borrowed image info for ColorBuffer:%d", colorBufferHandle);
@@ -3523,6 +3579,7 @@ std::unique_ptr<BorrowedImageInfo> FrameBuffer::borrowColorBufferForDisplay(
     }
 
     const auto api = m_useVulkanComposition ? ColorBuffer::UsedApi::kVk : ColorBuffer::UsedApi::kGl;
+    printf("end borrow\n");
     return colorBufferPtr->borrowForDisplay(api);
 }
 
