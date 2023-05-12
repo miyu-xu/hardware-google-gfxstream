@@ -21,7 +21,6 @@
 #include "DrmDevice.h"
 #include "aemu/base/Compiler.h"
 #include "aemu/base/ManagedDescriptor.hpp"
-#include "host-common/HostmemIdMapping.h"
 
 namespace gfxstream {
 namespace magma {
@@ -38,7 +37,7 @@ class DrmBuffer {
 
     // Creates a new buffer using the provided device. The device must remain valid for the lifetime
     // of the buffer.
-    static std::unique_ptr<DrmBuffer> create(DrmDevice& device, uint64_t size);
+    static std::unique_ptr<DrmBuffer> create(DrmDevice& device, uint32_t context_id, uint64_t size);
 
     // Returns the gem handle for the buffer.
     uint32_t getHandle();
@@ -50,18 +49,19 @@ class DrmBuffer {
     void* map();
 
     // Returns the host-guest shared buffer ID.
-    android::emulation::HostmemIdMapping::Id getId();
+    uint64_t getId();
 
    private:
     DrmBuffer(DrmDevice& device);
 
     DrmDevice& mDevice;
+    uint32_t mContextId;
     uint32_t mGemHandle;
     uint64_t mSize;
 
     static std::atomic_uint64_t mIdNext;
     void* mHva;
-    android::emulation::HostmemIdMapping::Id mId;
+    uint64_t mId;
 };
 
 }  // namespace magma

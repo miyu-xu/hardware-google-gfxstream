@@ -210,7 +210,7 @@ magma_status_t IntelDrmDecoder::magma_device_query_fudge(magma_device_t device, 
                 WARN("Guest-allocated buffers are not currently supported.");
                 return MAGMA_STATUS_UNIMPLEMENTED;
             }
-            auto buffer = DrmBuffer::create(*dev, sizeof(magma_intel_gen_timestamp_query));
+            auto buffer = DrmBuffer::create(*dev, mContextId, sizeof(magma_intel_gen_timestamp_query));
             if (!buffer) {
                 return MAGMA_STATUS_MEMORY_ERROR;
             }
@@ -263,7 +263,7 @@ magma_status_t IntelDrmDecoder::magma_device_query_fudge(magma_device_t device, 
                 reinterpret_cast<drm_i915_query_topology_info*>(topology_buffer.data()));
 
             // Create a magma buffer and copy the layout struct to it.
-            auto buffer = DrmBuffer::create(*dev, magma_topology_buffer.size());
+            auto buffer = DrmBuffer::create(*dev, mContextId, magma_topology_buffer.size());
             if (!buffer) {
                 return MAGMA_STATUS_MEMORY_ERROR;
             }
@@ -327,7 +327,7 @@ magma_status_t IntelDrmDecoder::magma_connection_create_buffer(magma_connection_
     if (!con) {
         return MAGMA_STATUS_INVALID_ARGS;
     }
-    auto buffer = DrmBuffer::create(con->getDevice(), size);
+    auto buffer = DrmBuffer::create(con->getDevice(), mContextId, size);
     if (!buffer) {
         return MAGMA_STATUS_MEMORY_ERROR;
     }

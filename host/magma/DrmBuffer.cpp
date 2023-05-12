@@ -18,7 +18,6 @@
 #include <i915_drm.h>
 #include <sys/mman.h>
 
-#include "host-common/HostmemIdMapping.h"
 #include "host-common/logging.h"
 #include "host/BlobManager.h"
 
@@ -42,8 +41,8 @@ DrmBuffer::~DrmBuffer() {
         // Moved-from object. Return immediately.
         return;
     }
-    android::emulation::HostmemIdMapping::get()->remove(mId);
-    android::emulation::HostmemIdMapping::get()->removeDescriptorInfo(mId);
+    BlobManager::get()->removeMapping(mContextId, mId);
+    BlobManager::get()->removeDescriptorInfo(mContextId, mId);
     drm_gem_close params{.handle = mGemHandle};
     int result = mDevice.ioctl(DRM_IOCTL_GEM_CLOSE, &params);
     if (result) {
@@ -51,7 +50,8 @@ DrmBuffer::~DrmBuffer() {
     }
 }
 
-std::unique_ptr<DrmBuffer> DrmBuffer::create(DrmDevice& device, uint64_t size) {
+std::unique_ptr<DrmBuffer> DrmBuffer::create(DrmDevice& device, uint32_t context_id,
+                                             uint64_t size) {
     // Create a new GEM buffer.
     drm_i915_gem_create create_params{.size = size};
     int result = device.ioctl(DRM_IOCTL_I915_GEM_CREATE, &create_params);
@@ -78,6 +78,7 @@ std::unique_ptr<DrmBuffer> DrmBuffer::create(DrmDevice& device, uint64_t size) {
 
     // Create the container to save the various returned handles.
     std::unique_ptr<DrmBuffer> buffer(new DrmBuffer(device));
+    buffer->mContextId = context_id;
     buffer->mSize = create_params.size;  // Parameter adjusted by ioctl.
     buffer->mGemHandle = create_params.handle;
     buffer->mHva = reinterpret_cast<void*>(mmap_params.addr_ptr);
@@ -86,14 +87,13 @@ std::unique_ptr<DrmBuffer> DrmBuffer::create(DrmDevice& device, uint64_t size) {
     buffer->mId = mIdNext.fetch_add(1);
 
     // Add the descriptor entry.
-    android::emulation::HostmemIdMapping::get()->addDescriptorInfo(
-        buffer->mId,
-        handle_params.fd,  // Container takes ownership.
-        STREAM_MEM_HANDLE_TYPE_DMABUF, MAP_CACHE_CACHED, std::nullopt);
+    BlobManager::get()->addDescriptorInfo(buffer->mContextId, buffer->mId,
+                                          handle_params.fd,  // Container takes ownership.
+                                          STREAM_MEM_HANDLE_TYPE_DMABUF, MAP_CACHE_CACHED,
+                                          std::nullopt);
 
     // Add the mapping entry.
-    MemEntry entry{.hva = buffer->mHva, .size = create_params.size, .caching = MAP_CACHE_CACHED};
-    android::emulation::HostmemIdMapping::get()->addMapping(buffer->mId, &entry);
+    BlobManager::get()->addMapping(buffer->mContextId, buffer->mId, buffer->mHva, MAP_CACHE_CACHED);
 
     INFO("Created DrmBuffer addr %p size %" PRIu64 " gem %" PRIu32 " fd %" PRId32 " mid %" PRIu64,
          buffer->mHva, buffer->mSize, buffer->mGemHandle, handle_params.fd, buffer->mId);
@@ -107,7 +107,7 @@ uint64_t DrmBuffer::size() { return mSize; }
 
 void* DrmBuffer::map() { return mHva; }
 
-android::emulation::HostmemIdMapping::Id DrmBuffer::getId() { return mId; }
+uint64_t DrmBuffer::getId() { return mId; }
 
 DrmBuffer::DrmBuffer(DrmDevice& device) : mDevice(device) {}
 
