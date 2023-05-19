@@ -3957,6 +3957,8 @@ public:
             auto blob = instance->createBlob(createBlob);
             if (!blob) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
 
+            blob->wait();
+
             mapping = blob->createMapping();
             if (!mapping) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
 
