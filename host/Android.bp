@@ -245,3 +245,48 @@ cc_test_host {
         "general-tests",
     ],
 }
+
+// Run with `atest --host gfxstream_android_integration_tests`
+cc_test_host {
+    name: "gfxstream_android_integration_tests",
+    defaults: [ "gfxstream_cc_defaults" ],
+    srcs: [
+        "AndroidIntegrationTests.cpp",
+    ],
+    header_libs: [
+        "gfxstream_headers",
+    ],
+    data_libs: [
+        "//device/generic/goldfish-opengl:libGLESv1_CM_emulation",
+        "//device/generic/goldfish-opengl:libGLESv2_emulation",
+    ],
+    shared_libs: [
+        "libbase",
+        "liblog",
+        "libgfxstream_backend",
+        "//device/generic/goldfish-opengl:libEGL_emulation",
+        "//device/generic/goldfish-opengl:libOpenglSystemCommon",
+        "//device/generic/goldfish-opengl:libvulkan_enc",
+        "//device/generic/goldfish-opengl:vulkan.ranchu",
+    ],
+    static_libs: [
+        "libgmock",
+        "//device/generic/goldfish-opengl:libplatform",
+        "gfxstream_host_common",
+        "gfxstream_vulkan_cereal_host",
+    ],
+    cflags: [
+        // TODO: remove
+        "-DVK_USE_PLATFORM_ANDROID_KHR",
+        "-Wno-macro-redefined",
+        "-Wno-unused-parameter",
+    ],
+    test_options: {
+        // Disabled by default as requires Vulkan.
+        unit_test: false,
+    },
+    test_suites: [
+        "general-tests",
+    ],
+    compile_multilib: "64",
+}
