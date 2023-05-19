@@ -429,6 +429,8 @@ intptr_t RenderThread::main() {
                 processName = tInfo.m_processName.value().c_str();
             }
 
+            auto* fb = FrameBuffer::getFB();
+
             auto* healthMonitor = FrameBuffer::getFB()->getHealthMonitor();
             if (healthMonitor) {
                 if (processName) {
