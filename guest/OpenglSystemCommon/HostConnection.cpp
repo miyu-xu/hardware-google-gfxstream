@@ -203,13 +203,12 @@ public:
 static GoldfishGralloc m_goldfishGralloc;
 static GoldfishProcessPipe m_goldfishProcessPipe;
 
-HostConnection::HostConnection() :
-    exitUncleanly(false),
-    m_checksumHelper(),
-    m_hostExtensions(),
-    m_grallocOnly(true),
-    m_noHostError(true),
-    m_rendernodeFd(-1) {
+HostConnection::HostConnection()
+    : exitUncleanly(false),
+      m_checksumHelper(),
+      m_hostExtensions(),
+      m_noHostError(true),
+      m_rendernodeFd(-1) {
 #ifdef HOST_BUILD
     android::base::initializeTracing();
 #endif
