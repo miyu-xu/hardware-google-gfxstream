@@ -15,9 +15,11 @@
 */
 #include "HostConnection.h"
 
-#include "aemu/base/threads/AndroidThread.h"
+#include "GrallocGoldfish.h"
+#include "GrallocMinigbm.h"
 #include "aemu/base/AndroidHealthMonitor.h"
 #include "aemu/base/AndroidHealthMonitorConsumerBasic.h"
+#include "aemu/base/threads/AndroidThread.h"
 #include "cutils/properties.h"
 #include "renderControl_types.h"
 
@@ -37,7 +39,9 @@
 using android::base::guest::CreateHealthMonitor;
 using android::base::guest::HealthMonitor;
 using android::base::guest::HealthMonitorConsumerBasic;
+using gfxstream::GoldfishGralloc;
 using gfxstream::IOStream;
+using gfxstream::MinigbmGralloc;
 
 #ifdef GOLDFISH_NO_GL
 struct gl_client_context_t {
@@ -92,12 +96,12 @@ AddressSpaceStream* createVirtioGpuAddressSpaceStream(HealthMonitor<>* healthMon
 
 using gfxstream::vk::VkEncoder;
 
+#include <unistd.h>
+
 #include "ProcessPipe.h"
 #include "QemuPipeStream.h"
 #include "TcpStream.h"
 #include "ThreadInfo.h"
-#include <gralloc_cb_bp.h>
-#include <unistd.h>
 
 using android::base::guest::getCurrentThreadId;
 
@@ -106,9 +110,6 @@ using android::base::guest::getCurrentThreadId;
 #include "VirtGpu.h"
 #include "VirtioGpuPipeStream.h"
 #include "virtgpu_drm.h"
-
-#include <cros_gralloc/cros_gralloc_handle.h>
-#include <xf86drm.h>
 
 #endif
 
@@ -188,231 +189,6 @@ static GrallocType getGrallocTypeFromProperty() {
     if (!strcmp("minigbm", value)) return GRALLOC_TYPE_MINIGBM;
     return GRALLOC_TYPE_RANCHU;
 }
-
-class GoldfishGralloc : public Gralloc
-{
-public:
-    virtual uint32_t createColorBuffer(
-        ExtendedRCEncoderContext* rcEnc,
-        int width, int height, uint32_t glformat) {
-        return rcEnc->rcCreateColorBuffer(
-            rcEnc, width, height, glformat);
-    }
-
-    virtual uint32_t getHostHandle(native_handle_t const* handle)
-    {
-        return cb_handle_t::from(handle)->hostHandle;
-    }
-
-    virtual int getFormat(native_handle_t const* handle)
-    {
-        return cb_handle_t::from(handle)->format;
-    }
-
-    virtual size_t getAllocatedSize(native_handle_t const* handle)
-    {
-        return static_cast<size_t>(cb_handle_t::from(handle)->allocatedSize());
-    }
-};
-
-static inline uint32_t align_up(uint32_t n, uint32_t a) {
-    return ((n + a - 1) / a) * a;
-}
-
-#if defined(VIRTIO_GPU)
-
-class MinigbmGralloc : public Gralloc {
-public:
-    virtual uint32_t createColorBuffer(
-        ExtendedRCEncoderContext*,
-        int width, int height, uint32_t glformat) {
-
-        // Only supported format for pbuffers in gfxstream
-        // should be RGBA8
-        const uint32_t kGlRGB = 0x1907;
-        const uint32_t kGlRGBA = 0x1908;
-        const uint32_t kVirglFormatRGBA = 67; // VIRGL_FORMAT_R8G8B8A8_UNORM;
-        uint32_t virtgpu_format = 0;
-        uint32_t bpp = 0;
-        switch (glformat) {
-            case kGlRGB:
-                DPRINT("Note: egl wanted GL_RGB, still using RGBA");
-                virtgpu_format = kVirglFormatRGBA;
-                bpp = 4;
-                break;
-            case kGlRGBA:
-                virtgpu_format = kVirglFormatRGBA;
-                bpp = 4;
-                break;
-            default:
-                DPRINT("Note: egl wanted 0x%x, still using RGBA", glformat);
-                virtgpu_format = kVirglFormatRGBA;
-                bpp = 4;
-                break;
-        }
-        const uint32_t kPipeTexture2D = 2; // PIPE_TEXTURE_2D
-        const uint32_t kBindRenderTarget = 1 << 1; // VIRGL_BIND_RENDER_TARGET
-        struct drm_virtgpu_resource_create res_create;
-        memset(&res_create, 0, sizeof(res_create));
-        res_create.target = kPipeTexture2D;
-        res_create.format = virtgpu_format;
-        res_create.bind = kBindRenderTarget;
-        res_create.width = width;
-        res_create.height = height;
-        res_create.depth = 1;
-        res_create.array_size = 1;
-        res_create.last_level = 0;
-        res_create.nr_samples = 0;
-        res_create.stride = bpp * width;
-        res_create.size = align_up(bpp * width * height, PAGE_SIZE);
-
-        int ret = drmIoctl(m_fd, DRM_IOCTL_VIRTGPU_RESOURCE_CREATE, &res_create);
-        if (ret) {
-            ALOGE("%s: DRM_IOCTL_VIRTGPU_RESOURCE_CREATE failed with %s (%d)\n", __func__,
-                  strerror(errno), errno);
-            abort();
-        }
-
-        return res_create.res_handle;
-    }
-
-    virtual uint32_t getHostHandle(native_handle_t const* handle) {
-        struct drm_virtgpu_resource_info info;
-        if (!getResInfo(handle, &info)) {
-            ALOGE("%s: failed to get resource info\n", __func__);
-            return 0;
-        }
-
-        return info.res_handle;
-    }
-
-    virtual int getFormat(native_handle_t const* handle) {
-        return ((cros_gralloc_handle *)handle)->droid_format;
-    }
-
-    virtual uint32_t getFormatDrmFourcc(native_handle_t const* handle) override {
-	return ((cros_gralloc_handle *)handle)->format;
-    }
-
-    virtual size_t getAllocatedSize(native_handle_t const* handle) {
-        struct drm_virtgpu_resource_info info;
-        if (!getResInfo(handle, &info)) {
-            ALOGE("%s: failed to get resource info\n", __func__);
-            return 0;
-        }
-
-        return info.size;
-    }
-
-    void setFd(int fd) { m_fd = fd; }
-
-private:
-
-    bool getResInfo(native_handle_t const* handle,
-                    struct drm_virtgpu_resource_info* info) {
-        memset(info, 0x0, sizeof(*info));
-        if (m_fd < 0) {
-            ALOGE("%s: Error, rendernode fd missing\n", __func__);
-            return false;
-        }
-
-        struct drm_gem_close gem_close;
-        memset(&gem_close, 0x0, sizeof(gem_close));
-
-        cros_gralloc_handle const* cros_handle =
-            reinterpret_cast<cros_gralloc_handle const*>(handle);
-
-        uint32_t prime_handle;
-        int ret = drmPrimeFDToHandle(m_fd, cros_handle->fds[0], &prime_handle);
-        if (ret) {
-            ALOGE("%s: DRM_IOCTL_PRIME_FD_TO_HANDLE failed: %s (errno %d)\n",
-                  __func__, strerror(errno), errno);
-            return false;
-        }
-        struct ManagedDrmGem {
-            ManagedDrmGem(const ManagedDrmGem&) = delete;
-            ~ManagedDrmGem() {
-                struct drm_gem_close gem_close {
-                    .handle = m_prime_handle,
-                    .pad = 0,
-                };
-                int ret = drmIoctl(m_fd, DRM_IOCTL_GEM_CLOSE, &gem_close);
-                if (ret) {
-                    ALOGE("%s: DRM_IOCTL_GEM_CLOSE failed on handle %" PRIu32 ": %s(%d).",
-                          __func__, m_prime_handle, strerror(errno), errno);
-                }
-            }
-
-            int m_fd;
-            uint32_t m_prime_handle;
-        } managed_prime_handle{
-            .m_fd = m_fd,
-            .m_prime_handle = prime_handle,
-        };
-
-        info->bo_handle = managed_prime_handle.m_prime_handle;
-
-        struct drm_virtgpu_3d_wait virtgpuWait{
-            .handle = managed_prime_handle.m_prime_handle,
-            .flags = 0,
-        };
-        // This only works for host resources by VIRTGPU_RESOURCE_CREATE ioctl.
-        // We need to use a different mechanism to synchonize with the host if
-        // the minigbm gralloc swiches to virtio-gpu blobs or cross-domain
-        // backend.
-        ret = drmIoctl(m_fd, DRM_IOCTL_VIRTGPU_WAIT, &virtgpuWait);
-        if (ret) {
-            ALOGE("%s: DRM_IOCTL_VIRTGPU_WAIT failed: %s(%d)", __func__, strerror(errno), errno);
-            return false;
-        }
-
-        ret = drmIoctl(m_fd, DRM_IOCTL_VIRTGPU_RESOURCE_INFO, info);
-        if (ret) {
-            ALOGE("%s: DRM_IOCTL_VIRTGPU_RESOURCE_INFO failed: %s (errno %d)\n",
-                  __func__, strerror(errno), errno);
-            return false;
-        }
-
-        return true;
-    }
-
-    int m_fd = -1;
-};
-
-#else
-
-class MinigbmGralloc : public Gralloc {
-public:
-    virtual uint32_t createColorBuffer(
-        ExtendedRCEncoderContext*,
-        int width, int height, uint32_t glformat) {
-        ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
-        return 0;
-    }
-
-    virtual uint32_t getHostHandle(native_handle_t const* handle) {
-        ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
-        return 0;
-    }
-
-    virtual int getFormat(native_handle_t const* handle) {
-        ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
-        return 0;
-    }
-
-    virtual size_t getAllocatedSize(native_handle_t const* handle) {
-        ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
-        return 0;
-    }
-
-    void setFd(int fd) { m_fd = fd; }
-
-private:
-
-    int m_fd = -1;
-};
-
-#endif
 
 class GoldfishProcessPipe : public ProcessPipe
 {
@@ -574,7 +350,7 @@ std::unique_ptr<HostConnection> HostConnection::connect(uint32_t capset_id) {
                     con->m_grallocHelper = &m_goldfishGralloc;
                     break;
                 case GRALLOC_TYPE_MINIGBM: {
-                    MinigbmGralloc* m = new MinigbmGralloc;
+                    MinigbmGralloc* m = new gfxstream::MinigbmGralloc;
                     m->setFd(deviceHandle);
                     con->m_grallocHelper = m;
                     break;
