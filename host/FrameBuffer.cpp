@@ -22,6 +22,10 @@
 
 #include <iomanip>
 
+#if defined(__linux__)
+#include <sys/resource.h>
+#endif
+
 #include "ContextHelper.h"
 #include "GLESVersionDetector.h"
 #include "Hwc2.h"
@@ -195,11 +199,47 @@ void FrameBuffer::waitUntilInitialized() {
 #endif
 }
 
+void MaybeIncreaseFileDescriptorSoftLimit() {
+#if defined(__linux__)
+    // Cuttlefish with Gfxstream on Nvidia and SwiftShader often hits the default nofile
+    // soft limit (1024) when running large test suites.
+    struct rlimit nofile_limits = {
+        .rlim_cur = 0,
+        .rlim_max = 0,
+    };
+
+    int ret = getrlimit(RLIMIT_NOFILE, &nofile_limits);
+    if (ret) {
+        ERR("Warning: failed to query nofile limits.");
+        return;
+    }
+
+    constexpr const rlim_t kDesiredNofileSoftLimit = 4096;
+    const rlim_t possibleLimit = std::min(kDesiredNofileSoftLimit, nofile_limits.rlim_cur);
+
+    if (nofile_limits.rlim_cur < possibleLimit) {
+        nofile_limits.rlim_cur = possibleLimit;
+
+        ret = setrlimit(RLIMIT_NOFILE, &nofile_limits);
+        if (ret) {
+            ERR("Warning: failed to raise nofile soft limit to %d: %s (%d)",
+                static_cast<int>(possibleLimit), strerror(errno), errno);
+            return;
+        }
+
+        GL_LOG("Raised nofile soft limit to %d.", static_cast<int>(possibleLimit));
+    }
+#endif
+}
+
 bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2egl) {
     GL_LOG("FrameBuffer::initialize");
+
     if (s_theFrameBuffer != NULL) {
         return true;
     }
+
+    MaybeIncreaseFileDescriptorSoftLimit();
 
     android::base::initializeTracing();
 
