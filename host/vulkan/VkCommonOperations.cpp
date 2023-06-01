@@ -80,6 +80,11 @@ static StaticMap<VkDevice, uint32_t> sKnownStagingTypeIndices;
 static android::base::StaticLock sVkEmulationLock;
 
 VK_EXT_MEMORY_HANDLE dupExternalMemory(VK_EXT_MEMORY_HANDLE h) {
+    if (h == VK_EXT_MEMORY_HANDLE_INVALID) {
+        ERR("Failed to duplicate external memory: invalid handle provided.");
+        return VK_EXT_MEMORY_HANDLE_INVALID;
+    }
+
 #ifdef _WIN32
     auto myProcessHandle = GetCurrentProcess();
     VK_EXT_MEMORY_HANDLE res;
@@ -89,7 +94,12 @@ VK_EXT_MEMORY_HANDLE dupExternalMemory(VK_EXT_MEMORY_HANDLE h) {
                     DUPLICATE_SAME_ACCESS /* same access option */);
     return res;
 #else
-    return dup(h);
+    int ret = dup(h);
+    if (ret == -1) {
+        ERR("Failed to duplicate external memory: %s (%d)", strerror(errno), errno);
+        return VK_EXT_MEMORY_HANDLE_INVALID;
+    }
+    return ret;
 #endif
 }
 
