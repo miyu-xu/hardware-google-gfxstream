@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a361e55f_c2d6cb5e",
+        "filename": "host/gl/DisplaySurfaceGl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-06-01T18:17:46Z",
+      "side": 1,
+      "message": "I\u0027m confused... how does this destroy the main context? Does this `DisplaySurfaceGl` not destroy the newly created context from line 150?",
+      "range": {
+        "startLine": 162,
+        "startChar": 93,
+        "endLine": 162,
+        "endChar": 98
+      },
+      "revId": "539f201f51dc4c5e90c394d73e87f2470bae3f69",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
