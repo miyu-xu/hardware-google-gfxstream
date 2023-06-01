@@ -16,6 +16,29 @@
       "message": "Migrated from https://r.android.com/c/2564011",
       "revId": "6bd3510360f003d16a0005114161e72cb363f2fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b18465bf_fb2c2e58",
+        "filename": "host/magma/DrmBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-06-01T23:50:16Z",
+      "side": 1,
+      "message": "You don\u0027t need to export file descriptors or map at the same time -- just one will suffice.\n\nI think you should check `kFeature_ExternalBlob` before doing this, like the Vulkan decoder. GEM_MAP could be expensive and we should only do it when absolutely necessary.",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 0
+      },
+      "revId": "6bd3510360f003d16a0005114161e72cb363f2fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
