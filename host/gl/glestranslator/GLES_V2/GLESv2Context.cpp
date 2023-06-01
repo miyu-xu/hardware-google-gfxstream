@@ -555,7 +555,7 @@ void GLESv2Context::drawWithEmulations(
             s_glDispatch.glResumeTransformFeedback();
         }
         if (needAtt0PreDrawValidation()) {
-            if (indices) {
+            if (needClientIBOSetup) {
                 validateAtt0PreDraw(findMaxIndex(count, type, indices));
             } else {
                 validateAtt0PreDraw(count);
