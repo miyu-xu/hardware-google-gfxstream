@@ -137,7 +137,7 @@ std::unique_ptr<DisplaySurfaceGl> DisplaySurfaceGl::createPbufferSurface(
         return nullptr;
     }
 
-    return std::unique_ptr<DisplaySurfaceGl>(new DisplaySurfaceGl(display, surface, context));
+    return std::unique_ptr<DisplaySurfaceGl>(new DisplaySurfaceGl(display, surface, context, true));
 }
 
 /*static*/
@@ -159,7 +159,7 @@ std::unique_ptr<DisplaySurfaceGl> DisplaySurfaceGl::createWindowSurface(
         return nullptr;
     }
 
-    return std::unique_ptr<DisplaySurfaceGl>(new DisplaySurfaceGl(display, surface, context));
+    return std::unique_ptr<DisplaySurfaceGl>(new DisplaySurfaceGl(display, surface, context, false));
 }
 
 bool DisplaySurfaceGl::bindContext() const {
@@ -172,18 +172,20 @@ bool DisplaySurfaceGl::bindContext() const {
 
 DisplaySurfaceGl::DisplaySurfaceGl(EGLDisplay display,
                                    EGLSurface surface,
-                                   EGLContext context)
+                                   EGLContext context,
+                                   bool ownContext)
     : mDisplay(display),
       mSurface(surface),
       mContext(context),
-      mContextHelper(new DisplaySurfaceGlContextHelper(display, surface, context)) {}
+      mContextHelper(new DisplaySurfaceGlContextHelper(display, surface, context)),
+      mOwnContext(ownContext) {}
 
 DisplaySurfaceGl::~DisplaySurfaceGl() {
     if (mDisplay != EGL_NO_DISPLAY) {
         if (mSurface) {
             s_egl.eglDestroySurface(mDisplay, mSurface);
         }
-        if (mContext) {
+        if (mContext && mOwnContext) {
             s_egl.eglDestroyContext(mDisplay, mContext);
         }
     }

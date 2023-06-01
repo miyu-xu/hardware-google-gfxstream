@@ -59,13 +59,15 @@ class DisplaySurfaceGl : public gfxstream::DisplaySurfaceImpl {
 
     DisplaySurfaceGl(EGLDisplay display,
                      EGLSurface surface,
-                     EGLContext context);
+                     EGLContext context,
+                     bool ownContext);
 
     EGLDisplay mDisplay = EGL_NO_DISPLAY;
     EGLSurface mSurface = EGL_NO_SURFACE;
     EGLContext mContext = EGL_NO_CONTEXT;
 
     std::unique_ptr<ContextHelper> mContextHelper;
+    bool mOwnContext = false;
 };
 
 }  // namespace gl
