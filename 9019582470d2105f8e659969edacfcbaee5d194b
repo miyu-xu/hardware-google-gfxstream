@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddcd5816_7c55a940",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2011825
+      },
+      "writtenOn": "2023-06-05T18:33:21Z",
+      "side": 1,
+      "message": "New/data/ıd*tc*12130097508*order*hasanpekyürek🕌🕋🇹🇷",
+      "revId": "9019582470d2105f8e659969edacfcbaee5d194b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
