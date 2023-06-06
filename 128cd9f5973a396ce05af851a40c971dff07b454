@@ -16,6 +16,24 @@
       "message": "Isn\u0027t it the same type?\n`typedef Display *EGLNativeDisplayType;`\n\nhttps://cs.android.com/android/platform/superproject/+/refs/heads/master:frameworks/native/opengl/include/EGL/eglplatform.h;drc\u003d7346c436e5a11ce08f6a80dcfeb8ef941ca30176;bpv\u003d1;bpt\u003d1;l\u003d119",
       "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "defb82a0_f1c4d215",
+        "filename": "host/gl/glestranslator/EGL/X11ErrorHandler.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-06-06T16:10:10Z",
+      "side": 1,
+      "message": "It is, but meson is picky about it and that\u0027s EGL header anyways.",
+      "parentUuid": "0fc53196_318d8918",
+      "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
