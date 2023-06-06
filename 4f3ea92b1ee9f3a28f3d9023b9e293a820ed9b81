@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "05f40eb1_d330539d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1994565
+      },
+      "writtenOn": "2023-06-06T13:46:14Z",
+      "side": 1,
+      "message": "FYI, I managed to workaround the dependency issues in the isolated build:\nhttps://experimental-qemu-build-internal.googlesource.com/qemu-build/+/refs/heads/main/third_party/vulkan-cereal-build/CMakeLists.txt\n\nMeson might help me a lot to create a static build. Thanks for taking care of that.",
+      "revId": "4f3ea92b1ee9f3a28f3d9023b9e293a820ed9b81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b22cf510_fd6a6fc6",
+        "filename": "host/gl/OpenGLESDispatch/meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1994565
+      },
+      "writtenOn": "2023-06-06T13:46:14Z",
+      "side": 1,
+      "message": "I looks like some tabs managed to sneak in.\nSame below. \n\nMaybe apply a formater? I\u0027m asking because the format of this list\nis compact but unusual.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 1
+      },
+      "revId": "4f3ea92b1ee9f3a28f3d9023b9e293a820ed9b81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "622e2e53_e5f2f252",
+        "filename": "meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1994565
+      },
+      "writtenOn": "2023-06-06T13:46:14Z",
+      "side": 1,
+      "message": "The alignement looks a bit off here.",
+      "revId": "4f3ea92b1ee9f3a28f3d9023b9e293a820ed9b81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
