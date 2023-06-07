@@ -89,6 +89,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec0e6a5b_2045e775",
+        "filename": "host/gl/OpenGLESDispatch/meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-06-07T16:18:58Z",
+      "side": 1,
+      "message": "Done, I only found a few stray tabs in the magma decoder.",
+      "parentUuid": "05c959c0_f9ea358d",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 1
+      },
+      "revId": "4f3ea92b1ee9f3a28f3d9023b9e293a820ed9b81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "622e2e53_e5f2f252",
