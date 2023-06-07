@@ -52,6 +52,24 @@
       "parentUuid": "defb82a0_f1c4d215",
       "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63ea1748_60f54349",
+        "filename": "host/gl/glestranslator/EGL/X11ErrorHandler.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-06-07T16:18:24Z",
+      "side": 1,
+      "message": "I think it uses my system\u0027s EGL headers, where I believe EGL_NO_PLATFORM_SPECIFIC_TYPES is defined:\n\nhttps://registry.khronos.org/EGL/api/EGL/eglplatform.h\n\nFor those instances, the cast may be necessary.",
+      "parentUuid": "81093cd5_5489548a",
+      "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
