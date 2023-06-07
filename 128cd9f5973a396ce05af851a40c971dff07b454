@@ -34,6 +34,24 @@
       "parentUuid": "0fc53196_318d8918",
       "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "81093cd5_5489548a",
+        "filename": "host/gl/glestranslator/EGL/X11ErrorHandler.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1994565
+      },
+      "writtenOn": "2023-06-07T15:36:01Z",
+      "side": 1,
+      "message": "What happens with meson? does it pick the wrong headers?\n\nHere, I would like to avoid the type of cast that could hide an issue if someday we refactor the code.",
+      "parentUuid": "defb82a0_f1c4d215",
+      "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
