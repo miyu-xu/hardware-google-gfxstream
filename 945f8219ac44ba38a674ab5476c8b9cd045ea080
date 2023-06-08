@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84042bef_3d1d5e01",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-06-08T20:10:27Z",
+      "side": 1,
+      "message": "Mac build queued at https://android-build.googleplex.com/builds/abtd/run/L85100000961164943",
+      "revId": "945f8219ac44ba38a674ab5476c8b9cd045ea080",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
