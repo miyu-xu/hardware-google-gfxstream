@@ -165,6 +165,7 @@ static GLuint createShader(GLenum type, std::initializer_list<const char*> sourc
 
     GLuint shader = s_gles2.glCreateShader(type);
     if (shader) {
+        _PR_LINE
         s_gles2.glShaderSource(shader, source.size(), source.begin(), nullptr);
         s_gles2.glCompileShader(shader);
         s_gles2.glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -179,6 +180,7 @@ static GLuint createShader(GLenum type, std::initializer_list<const char*> sourc
             shader = 0;
         }
     }
+    _PR_LINE
     return shader;
 }
 
