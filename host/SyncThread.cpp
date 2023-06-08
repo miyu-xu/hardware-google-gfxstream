@@ -38,6 +38,8 @@ using emugl::FatalError;
 using gl::EGLDispatch;
 using gl::EmulatedEglFenceSync;
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 #define DEBUG 0
 
 #if DEBUG

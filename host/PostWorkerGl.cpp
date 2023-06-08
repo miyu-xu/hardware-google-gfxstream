@@ -60,7 +60,15 @@ PostWorkerGl::PostWorkerGl(bool mainThreadPostingOnly, FrameBuffer* fb, Composit
 
 void PostWorkerGl::screenshot(ColorBuffer* cb, int screenwidth, int screenheight, GLenum format,
                               GLenum type, int skinRotation, void* pixels, Rect rect) {
+    printf("PostWorkerGl::screenshot\n");
+    if (!mContextBound || m_mainThreadPostingOnly) {
+        // This might happen on headless mode
+        // Also if posting on main thread, the context binding can get polluted easily, which
+        // requires frequent rebinds.
+        setupContext();
+    }
     cb->readToBytesScaled(screenwidth, screenheight, format, type, skinRotation, rect, pixels);
+    printf("PostWorkerGl::screenshot done\n");
 }
 
 std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
@@ -263,7 +271,10 @@ std::shared_future<void> PostWorkerGl::composeImpl(const FlatComposeRequest& com
     return PostWorker::composeImpl(composeRequest);
 }
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 void PostWorkerGl::setupContext() {
+    static bool hasCtx = false;
     android::base::AutoLock lock(mMutex);
     const auto* surface = getBoundSurface();
     const DisplaySurfaceGl* surfaceGl = nullptr;
@@ -277,6 +288,10 @@ void PostWorkerGl::setupContext() {
             return;
         }
         surfaceGl = static_cast<const DisplaySurfaceGl*>(mFakeWindowSurface->getImpl());
+    }
+    if (!hasCtx) {
+        _PR_LINE
+        hasCtx = true;
     }
 
     // It will be no-op if it rebinds to the same context.

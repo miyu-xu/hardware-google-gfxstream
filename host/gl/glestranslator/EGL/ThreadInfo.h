@@ -33,6 +33,7 @@ struct ThreadInfo {
     GLEScontext*         glesContext = nullptr;
     ShareGroupPtr        shareGroup;
     ObjectNameManager*   objManager = nullptr;
+    void*                ctxName = nullptr;
 };
 
 ThreadInfo* getThreadInfo();

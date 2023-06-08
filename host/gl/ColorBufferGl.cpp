@@ -33,6 +33,22 @@
 
 #define DEBUG_CB_FBO 0
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
+/*#include <execinfo.h>
+#include <stdio.h>
+
+static void printCallStack() {
+    void* callstack[128];
+    int i, frames = backtrace(callstack, 128);
+    char** strs = backtrace_symbols(callstack, frames);
+    for (i = 0; i < frames; ++i) {
+        fprintf(stderr, "%s\n", strs[i]);
+    }
+    free(strs);
+}*/
+
+
 using android::base::ManagedDescriptor;
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
@@ -47,6 +63,7 @@ namespace {
 // on creation only. I.e. all rendering operations will target it.
 // returns true in case of success, false on failure.
 bool bindFbo(GLuint* fbo, GLuint tex, bool ensureTextureAttached) {
+    _PR_LINE
     if (*fbo) {
         // fbo already exist - just bind
         s_gles2.glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
@@ -77,6 +94,7 @@ bool bindFbo(GLuint* fbo, GLuint tex, bool ensureTextureAttached) {
 }
 
 void unbindFbo() {
+    _PR_LINE
     s_gles2.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -210,6 +228,9 @@ static bool sGetFormatParameters(GLint* internalFormat,
     }
 }
 
+#define _CHECK_ERROR { GLenum err = s_gles2.glGetError(); if (err) { GLenum fboStatus = s_gles2.glCheckFramebufferStatus(GL_FRAMEBUFFER); printf("GL error %d fb status %d", err, fboStatus); _PR_LINE;  } }
+
+
 // static
 std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p_width,
                                                      int p_height, GLint p_internalFormat,
@@ -250,15 +271,24 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
 
     GL_SCOPED_DEBUG_GROUP("ColorBufferGl::create(handle:%d)", hndl);
 
+    _PR_LINE
+    _CHECK_ERROR
+
     GLint prevUnpackAlignment;
     s_gles2.glGetIntegerv(GL_UNPACK_ALIGNMENT, &prevUnpackAlignment);
+    _CHECK_ERROR
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    _CHECK_ERROR
+    prevUnpackAlignment = std::max(1, prevUnpackAlignment);
 
     s_gles2.glGenTextures(1, &cb->m_tex);
+    _CHECK_ERROR
     s_gles2.glBindTexture(GL_TEXTURE_2D, cb->m_tex);
+    _CHECK_ERROR
 
     s_gles2.glTexImage2D(GL_TEXTURE_2D, 0, p_internalFormat, p_width, p_height,
                          0, texFormat, pixelType, nullptr);
+    _CHECK_ERROR
 
     s_gles2.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     s_gles2.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -270,14 +300,18 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
         s_gles2.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_BLUE);
         cb->m_BRSwizzle = true;
     }
+    _CHECK_ERROR
 
     //
     // create another texture for that colorbuffer for blit
     //
     s_gles2.glGenTextures(1, &cb->m_blitTex);
+    _CHECK_ERROR
     s_gles2.glBindTexture(GL_TEXTURE_2D, cb->m_blitTex);
+    _CHECK_ERROR
     s_gles2.glTexImage2D(GL_TEXTURE_2D, 0, p_internalFormat, p_width, p_height,
                          0, texFormat, pixelType, NULL);
+    _CHECK_ERROR
 
     s_gles2.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     s_gles2.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -289,6 +323,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
         s_gles2.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_BLUE);
         cb->m_BRSwizzle = true;
     }
+    _CHECK_ERROR
 
     cb->m_eglImage = s_egl.eglCreateImageKHR(
             p_display, s_egl.eglGetCurrentContext(), EGL_GL_TEXTURE_2D_KHR,
@@ -319,6 +354,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, prevUnpackAlignment);
 
     s_gles2.glFinish();
+    _PR_LINE
     return cb;
 }
 
@@ -332,7 +368,11 @@ ColorBufferGl::ColorBufferGl(EGLDisplay display, HandleType hndl, GLuint width, 
       mHndl(hndl) {}
 
 ColorBufferGl::~ColorBufferGl() {
+    _PR_LINE
+    printf("skipping\n");
+    return;
     RecursiveScopedContextBind context(m_helper);
+    //printCallStack();
 
     // b/284523053
     // Swiftshader logspam on exit. But it doesn't happen with SwANGLE.
@@ -375,7 +415,9 @@ ColorBufferGl::~ColorBufferGl() {
 void ColorBufferGl::readPixels(int x, int y, int width, int height, GLenum p_format, GLenum p_type,
                                void* pixels) {
     RecursiveScopedContextBind context(m_helper);
+    _PR_LINE
     if (!context.isOk()) {
+        _PR_LINE
         return;
     }
 
@@ -391,18 +433,22 @@ void ColorBufferGl::readPixels(int x, int y, int width, int height, GLenum p_for
         GLint prevAlignment = 0;
         s_gles2.glGetIntegerv(GL_PACK_ALIGNMENT, &prevAlignment);
         s_gles2.glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        // b/274313125 Some Intel drivers will tell you it is 0.
+        prevAlignment = std::max(1, prevAlignment);
         s_gles2.glReadPixels(x, y, width, height, p_format, p_type, pixels);
         s_gles2.glPixelStorei(GL_PACK_ALIGNMENT, prevAlignment);
         unbindFbo();
     }
+    _PR_LINE
 }
 
 void ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLenum p_type,
                                      int rotation, Rect rect, void* pixels) {
-    RecursiveScopedContextBind context(m_helper);
-    if (!context.isOk()) {
-        return;
-    }
+    //RecursiveScopedContextBind context(m_helper);
+    //if (!context.isOk()) {
+    //    return;
+    //}
+    _PR_LINE
     bool useSnipping = rect.size.w != 0 && rect.size.h != 0;
     // Boundary check
     if (useSnipping &&
@@ -411,6 +457,7 @@ void ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLe
         ERR("readPixelsScaled failed. Out-of-bound rectangle: (%d, %d) [%d x %d]"
             " with screen [%d x %d]",
             rect.pos.x, rect.pos.y, rect.size.w, rect.size.h);
+        _PR_LINE
         return;
     }
     p_format = sGetUnsizedColorBufferFormat(p_format);
@@ -421,6 +468,8 @@ void ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLe
         m_needFboReattach = false;
         GLint prevAlignment = 0;
         s_gles2.glGetIntegerv(GL_PACK_ALIGNMENT, &prevAlignment);
+        // b/274313125 Some Intel drivers will tell you it is 0.
+        prevAlignment = std::max(1, prevAlignment);
         s_gles2.glPixelStorei(GL_PACK_ALIGNMENT, 1);
         // SwANGLE does not suppot glReadPixels with 3 channels.
         // In fact, the spec only require RGBA8888 format support. Supports for
@@ -459,10 +508,12 @@ void ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLe
         s_gles2.glPixelStorei(GL_PACK_ALIGNMENT, prevAlignment);
         unbindFbo();
     }
+    _PR_LINE
 }
 
 void ColorBufferGl::readPixelsYUVCached(int x, int y, int width, int height, void* pixels,
                                         uint32_t pixels_size) {
+    _PR_LINE
     RecursiveScopedContextBind context(m_helper);
     if (!context.isOk()) {
         return;
@@ -565,6 +616,7 @@ bool ColorBufferGl::subUpdateFromFrameworkFormat(int x, int y, int width, int he
                                                  GLenum p_type, const void* pixels) {
     const GLenum p_unsizedFormat = sGetUnsizedColorBufferFormat(p_format);
     RecursiveScopedContextBind context(m_helper);
+    _PR_LINE
     if (!context.isOk()) {
         return false;
     }
@@ -611,6 +663,7 @@ bool ColorBufferGl::replaceContents(const void* newContents, size_t numBytes) {
 }
 
 bool ColorBufferGl::readContents(size_t* numBytes, void* pixels) {
+    _PR_LINE
     if (m_yuv_converter) {
         // common code path for vk & gles
         *numBytes = m_yuv_converter->getDataSize();
@@ -623,6 +676,7 @@ bool ColorBufferGl::readContents(size_t* numBytes, void* pixels) {
 
         if (!pixels) return true;
         RecursiveScopedContextBind context(m_helper);
+        _PR_LINE
 
         readPixels(0, 0, m_width, m_height, m_format, m_type, pixels);
 
@@ -631,6 +685,7 @@ bool ColorBufferGl::readContents(size_t* numBytes, void* pixels) {
 }
 
 bool ColorBufferGl::blitFromCurrentReadBuffer() {
+    //_PR_LINE
     RenderThreadInfoGl* const tInfo = RenderThreadInfoGl::get();
     if (!tInfo) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
@@ -765,10 +820,10 @@ bool ColorBufferGl::blitFromCurrentReadBuffer() {
             }
         }
 
-        RecursiveScopedContextBind context(m_helper);
-        if (!context.isOk()) {
-            return false;
-        }
+        //RecursiveScopedContextBind context(m_helper);
+        //if (!context.isOk()) {
+        //    return false;
+        //}
 
         if (!bindFbo(&m_fbo, m_tex, m_needFboReattach)) {
             return false;
@@ -877,6 +932,7 @@ bool ColorBufferGl::postViewportScaledWithOverlay(float rotation, float dx, floa
 
 void ColorBufferGl::readback(unsigned char* img, bool readbackBgra) {
     RecursiveScopedContextBind context(m_helper);
+    _PR_LINE
     if (!context.isOk()) {
         return;
     }
@@ -896,6 +952,7 @@ void ColorBufferGl::readback(unsigned char* img, bool readbackBgra) {
 
 void ColorBufferGl::readbackAsync(GLuint buffer, bool readbackBgra) {
     RecursiveScopedContextBind context(m_helper);
+    _PR_LINE
     if (!context.isOk()) {
         return;
     }
@@ -990,6 +1047,7 @@ void ColorBufferGl::postLayer(const ComposeLayer& l, int frameWidth, int frameHe
 bool ColorBufferGl::importMemory(ManagedDescriptor externalDescriptor, uint64_t size,
                                  bool dedicated, bool linearTiling) {
     RecursiveScopedContextBind context(m_helper);
+    _PR_LINE
     s_gles2.glCreateMemoryObjectsEXT(1, &m_memoryObject);
     if (dedicated) {
         static const GLint DEDICATED_FLAG = GL_TRUE;
@@ -1145,6 +1203,7 @@ void ColorBufferGl::restoreEglImage(EGLImageKHR image) {
 
 void ColorBufferGl::rebindEglImage(EGLImageKHR image, bool preserveContent) {
     RecursiveScopedContextBind context(m_helper);
+    _PR_LINE
 
     std::vector<uint8_t> contents;
     if (preserveContent) {
