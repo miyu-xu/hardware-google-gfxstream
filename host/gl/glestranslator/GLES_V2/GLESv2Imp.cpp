@@ -59,6 +59,20 @@
 #include <sys/time.h>
 #endif
 
+#include <execinfo.h>
+#include <stdio.h>
+
+static void printCallStack() {
+    void* callstack[128];
+    int i, frames = backtrace(callstack, 128);
+    char** strs = backtrace_symbols(callstack, frames);
+    for (i = 0; i < frames; ++i) {
+        fprintf(stderr, "%s\n", strs[i]);
+    }
+    free(strs);
+}
+
+
 #define GLES2_NAMESPACED(f) translator::gles2::f
 
 namespace translator {
@@ -3285,6 +3299,11 @@ GL_APICALL void  GL_APIENTRY glPixelStorei(GLenum pname, GLint param){
     switch (pname) {
     case GL_PACK_ALIGNMENT:
     case GL_UNPACK_ALIGNMENT:
+        if (!((param==1)||(param==2)||(param==4)||(param==8))) {
+            printf("glPixelStorei param %d\n", param);
+            printCallStack();
+            param = 1;
+        }
         SET_ERROR_IF(!((param==1)||(param==2)||(param==4)||(param==8)), GL_INVALID_VALUE);
         break;
     default:
@@ -3612,6 +3631,7 @@ GL_APICALL void  GL_APIENTRY glTexImage2D(GLenum target, GLint level, GLint inte
     GLint err = ctx->dispatcher().glGetError();
     if (err != GL_NO_ERROR) {
         fprintf(stderr, "%s: got err pre :( 0x%x internal 0x%x format 0x%x type 0x%x\n", __func__, err, internalformat, format, type);
+        printCallStack();
     }
 
     sPrepareTexImage2D(target, level, internalformat, width, height, border, format, type, 0, pixels, &type, &internalformat, &err);
@@ -3628,7 +3648,8 @@ GL_APICALL void  GL_APIENTRY glTexImage2D(GLenum target, GLint level, GLint inte
 
     err = ctx->dispatcher().glGetError();
     if (err != GL_NO_ERROR) {
-        fprintf(stderr, "%s: got err :( 0x%x internal 0x%x format 0x%x type 0x%x\n", __func__, err, internalformat, format, type);
+        fprintf(stderr, "%s: got err :( 0x%x target %d internal 0x%x format 0x%x type 0x%x\n", __func__, err, target, internalformat, format, type);
+        printCallStack();
         ctx->setGLerror(err);                                    \
     }
 }
