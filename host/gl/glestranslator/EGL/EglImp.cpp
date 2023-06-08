@@ -1107,6 +1107,10 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
 
     ThreadInfo* thread = getThreadInfo();
     ContextPtr prevCtx = thread->eglContext;
+    if (thread->ctxName == (void*)0x3 || context == (void*)0x3) {
+        //printf("eglMakeCurrent tid %p prev %p curr %p\n", thread, thread->ctxName, context);
+    }
+    thread->ctxName = context;
 
     if(releaseContext) { //releasing current context
        if(prevCtx.get()) {
