@@ -399,10 +399,10 @@ void ColorBufferGl::readPixels(int x, int y, int width, int height, GLenum p_for
 
 void ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLenum p_type,
                                      int rotation, Rect rect, void* pixels) {
-    RecursiveScopedContextBind context(m_helper);
-    if (!context.isOk()) {
-        return;
-    }
+    //RecursiveScopedContextBind context(m_helper);
+    //if (!context.isOk()) {
+    //    return;
+    //}
     bool useSnipping = rect.size.w != 0 && rect.size.h != 0;
     // Boundary check
     if (useSnipping &&

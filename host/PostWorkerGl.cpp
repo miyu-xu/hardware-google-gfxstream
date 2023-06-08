@@ -60,7 +60,9 @@ PostWorkerGl::PostWorkerGl(bool mainThreadPostingOnly, FrameBuffer* fb, Composit
 
 void PostWorkerGl::screenshot(ColorBuffer* cb, int screenwidth, int screenheight, GLenum format,
                               GLenum type, int skinRotation, void* pixels, Rect rect) {
+    printf("PostWorkerGl::screenshot\n");
     cb->readToBytesScaled(screenwidth, screenheight, format, type, skinRotation, rect, pixels);
+    printf("PostWorkerGl::screenshot done\n");
 }
 
 std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
