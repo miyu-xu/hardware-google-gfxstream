@@ -62,6 +62,8 @@
 #include "vulkan/VkCommonOperations.h"
 #include "vulkan/VkDecoderGlobalState.h"
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 
 using android::base::AutoLock;
@@ -727,13 +729,14 @@ std::future<void> FrameBuffer::sendPostWorkerCmd(Post post) {
     // For now, this fixes a screenshot issue on macOS.
     std::future<void> res = std::async(std::launch::deferred, [] {});
     res.wait();
-    if (shouldPostOnlyOnMainThread && (PostCmd::Screenshot == post.cmd) &&
+    /*if (shouldPostOnlyOnMainThread && (PostCmd::Screenshot == post.cmd) &&
         emugl::get_emugl_window_operations().isRunningInUiThread()) {
         post.cb->readToBytesScaled(post.screenshot.screenwidth, post.screenshot.screenheight,
                                    post.screenshot.format, post.screenshot.type,
                                    post.screenshot.rotation, post.screenshot.rect,
                                    post.screenshot.pixels);
-    } else {
+    } else {*/
+    {
         std::future<void> completeFuture =
             m_postThread.enqueue(Post(std::move(post)));
         if (!shouldPostOnlyOnMainThread ||
@@ -1285,6 +1288,7 @@ void FrameBuffer::destroyEmulatedEglContext(HandleType contextHandle) {
 HandleType FrameBuffer::createEmulatedEglWindowSurface(int p_config,
                                                        int p_width,
                                                        int p_height) {
+    _PR_LINE
     if (!m_emulationGl) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "EGL emulation unavailable.";
@@ -1327,15 +1331,20 @@ void FrameBuffer::destroyEmulatedEglWindowSurface(HandleType p_surface) {
     if (m_shuttingDown) {
         return;
     }
+
+    // TODO
+    return;
     AutoLock mutex(m_lock);
     destroyEmulatedEglWindowSurfaceLocked(p_surface);
 }
 
 std::vector<HandleType> FrameBuffer::destroyEmulatedEglWindowSurfaceLocked(HandleType p_surface) {
+    _PR_LINE
     std::vector<HandleType> colorBuffersToCleanUp;
     const auto w = m_windows.find(p_surface);
     if (w != m_windows.end()) {
         RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
+        _PR_LINE
         if (!m_guestManagedColorBufferLifetime) {
             if (m_refCountPipeEnabled) {
                 if (decColorBufferRefCountLocked(w->second.second)) {
@@ -1370,6 +1379,7 @@ void FrameBuffer::createEmulatedEglFenceSync(EGLenum type,
                                              int destroyWhenSignaled,
                                              uint64_t* outSync,
                                              uint64_t* outSyncThread) {
+    _PR_LINE
     if (!m_emulationGl) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "GL/EGL emulation not available.";
@@ -1413,6 +1423,7 @@ void FrameBuffer::drainGlRenderThreadResources() {
     if (isShuttingDown()) {
         return;
     }
+    _PR_LINE
 
     // Release references to the current thread's context/surfaces if any
     bindContext(0, 0, 0);
@@ -1429,6 +1440,7 @@ void FrameBuffer::drainGlRenderThreadContexts() {
     if (isShuttingDown()) {
         return;
     }
+    _PR_LINE
 
     RenderThreadInfoGl* const tinfo = RenderThreadInfoGl::get();
     if (!tinfo) {
@@ -1452,6 +1464,7 @@ void FrameBuffer::drainGlRenderThreadSurfaces() {
     if (isShuttingDown()) {
         return;
     }
+    _PR_LINE
 
     RenderThreadInfoGl* const tinfo = RenderThreadInfoGl::get();
     if (!tinfo) {
@@ -1467,6 +1480,7 @@ void FrameBuffer::drainGlRenderThreadSurfaces() {
 
     AutoLock mutex(m_lock);
     RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
+    _PR_LINE
     for (const HandleType winHandle : tinfo->m_windowSet) {
         const auto winIt = m_windows.find(winHandle);
         if (winIt != m_windows.end()) {
@@ -1676,6 +1690,7 @@ void FrameBuffer::createGraphicsProcessResources(uint64_t puid) {
 }
 
 std::unique_ptr<ProcessResources> FrameBuffer::removeGraphicsProcessResources(uint64_t puid) {
+    _PR_LINE
     std::unordered_map<uint64_t, std::unique_ptr<ProcessResources>>::node_type node;
     {
         AutoLock mutex(m_lock);
@@ -1703,7 +1718,9 @@ void FrameBuffer::cleanupProcGLObjects(uint64_t puid) {
         android::base::sleepUs(10000);
     } while (renderThreadWithThisPuidExists);
 
-
+    // TODO
+    _PR_LINE
+    return;
     AutoLock mutex(m_lock);
 
     cleanupProcGLObjects_locked(puid);
@@ -1735,6 +1752,7 @@ std::vector<HandleType> FrameBuffer::cleanupProcGLObjects_locked(uint64_t puid, 
         std::unique_ptr<RecursiveScopedContextBind> bind = nullptr;
         if (m_emulationGl) {
             bind = std::make_unique<RecursiveScopedContextBind>(getPbufferSurfaceContextHelper());
+            _PR_LINE
         }
         // Clean up window surfaces
         if (m_emulationGl) {
@@ -1929,6 +1947,8 @@ void FrameBuffer::createYUVTextures(uint32_t type,
     FrameworkFormat format = static_cast<FrameworkFormat>(type);
     AutoLock mutex(m_lock);
     RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
+    _PR_LINE
+
     for (uint32_t i = 0; i < count; ++i) {
         if (format == FRAMEWORK_FORMAT_NV12) {
             YUVConverter::createYUVGLTex(GL_TEXTURE0, width, height,
@@ -1951,6 +1971,7 @@ void FrameBuffer::destroyYUVTextures(uint32_t type,
                                      uint32_t* textures) {
     AutoLock mutex(m_lock);
     RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
+    _PR_LINE
     if (type == FRAMEWORK_FORMAT_NV12) {
         s_gles2.glDeleteTextures(2 * count, textures);
     } else if (type == FRAMEWORK_FORMAT_YUV_420_888) {
@@ -1964,6 +1985,7 @@ void FrameBuffer::updateYUVTextures(uint32_t type,
                                     void* func) {
     AutoLock mutex(m_lock);
     RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
+    _PR_LINE
 
     yuv_updater_t updater = (yuv_updater_t)func;
     uint32_t gtextures[3] = {0, 0, 0};
@@ -2439,6 +2461,7 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer,
         m_lock.lock();
         if (m_emulationGl) {
             bind = std::make_unique<RecursiveScopedContextBind>(getPbufferSurfaceContextHelper());
+            //_PR_LINE
         }
     }
     AsyncResult ret = AsyncResult::FAIL_AND_CALLBACK_NOT_SCHEDULED;
@@ -3204,6 +3227,7 @@ bool FrameBuffer::onLoad(Stream* stream,
         if (m_emulationGl) {
             // Some snapshot commands try using GL.
             bind = std::make_unique<RecursiveScopedContextBind>(getPbufferSurfaceContextHelper());
+            _PR_LINE
             if (!bind->isOk()) {
                 ERR("Failed to make context current for loading snapshot.");
             }

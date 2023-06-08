@@ -82,6 +82,7 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
     }
 
     bool b271028352Workaround = emulationGl && strstr(emulationGl->getGlesRenderer().c_str(), "Intel");
+    b271028352Workaround = true;
 
     if (colorBuffer->mColorBufferGl && colorBuffer->mColorBufferVk &&
         !b271028352Workaround && shouldAttemptExternalMemorySharing(frameworkFormat)) {
