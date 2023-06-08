@@ -353,6 +353,8 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         /*height=*/1,
         std::move(pbufferSurfaceGl));
 
+    printf("cb ctx %p\n", static_cast<const DisplaySurfaceGl*>(emulationGl->mPbufferSurface->getImpl())->getContextForShareContext());
+
     // b/283491732: we could skip the creation of subwindow if we know we will create a real
     // window.
     auto fakeWindowSurfaceGl = DisplaySurfaceGl::createPbufferSurface(emulationGl->mEglDisplay,
