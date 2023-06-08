@@ -70,6 +70,24 @@
       "parentUuid": "81093cd5_5489548a",
       "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e8bd77e_c9561e6b",
+        "filename": "host/gl/glestranslator/EGL/X11ErrorHandler.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1994565
+      },
+      "writtenOn": "2023-06-08T15:46:12Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "63ea1748_60f54349",
+      "revId": "128cd9f5973a396ce05af851a40c971dff07b454",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
