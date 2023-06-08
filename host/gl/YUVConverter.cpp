@@ -456,6 +456,8 @@ void YUVConverter::createYUVGLTex(GLenum textureUnit,
     s_gles2.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     GLint unprevAlignment = 0;
     s_gles2.glGetIntegerv(GL_UNPACK_ALIGNMENT, &unprevAlignment);
+    // b/274313125 Some Intel drivers will tell you it is 0.
+    unprevAlignment = std::max(1, unprevAlignment);
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     const GLint textureFormat = getGlTextureFormat(format, plane);
     const GLenum pixelFormat = getGlPixelFormat(format, plane);
@@ -474,6 +476,8 @@ static void readYUVTex(GLuint tex, FrameworkFormat format, YUVPlane plane, void*
     s_gles2.glBindTexture(GL_TEXTURE_2D, tex);
     GLint prevAlignment = 0;
     s_gles2.glGetIntegerv(GL_PACK_ALIGNMENT, &prevAlignment);
+    // b/274313125 Some Intel drivers will tell you it is 0.
+    prevAlignment = std::max(1, prevAlignment);
     s_gles2.glPixelStorei(GL_PACK_ALIGNMENT, 1);
     GLint prevStride = 0;
     s_gles2.glGetIntegerv(GL_PACK_ROW_LENGTH, &prevStride);
@@ -492,6 +496,8 @@ static void readYUVTex(GLuint tex, FrameworkFormat format, YUVPlane plane, void*
     s_gles2.glBindTexture(GL_TEXTURE_2D, prevTexture);
 }
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 // Updates a given YUV buffer's plane texture at the coordinates
 // (x, y, width, height), with the raw YUV data in |pixels|.  We
 // cannot view the result properly until after conversion; this is
@@ -505,6 +511,7 @@ static void subUpdateYUVGLTex(GLenum texture_unit,
                               FrameworkFormat format,
                               YUVPlane plane,
                               const void* pixels) {
+    _PR_LINE
     YUV_DEBUG_LOG("x:%d y:%d w:%d h:%d format:%d plane:%d", x, y, width, height, format, plane);
 
     const GLenum pixelFormat = getGlPixelFormat(format, plane);
@@ -514,10 +521,13 @@ static void subUpdateYUVGLTex(GLenum texture_unit,
     s_gles2.glBindTexture(GL_TEXTURE_2D, tex);
     GLint unprevAlignment = 0;
     s_gles2.glGetIntegerv(GL_UNPACK_ALIGNMENT, &unprevAlignment);
+    // b/274313125 Some Intel drivers will tell you it is 0.
+    unprevAlignment = std::max(1, unprevAlignment);
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     s_gles2.glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixelFormat, pixelType, pixels);
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, unprevAlignment);
     s_gles2.glActiveTexture(GL_TEXTURE0);
+    _PR_LINE
 }
 
 void YUVConverter::createYUVGLShader() {
@@ -666,6 +676,7 @@ void main(void) {
     const GLint vertShaderSourceLen = vertShaderSource.length();
     const GLint fragShaderSourceLen = fragShaderSource.length();
 
+    _PR_LINE
     GLuint vertShader = s_gles2.glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShader = s_gles2.glCreateShader(GL_FRAGMENT_SHADER);
     s_gles2.glShaderSource(vertShader, 1, &vertShaderSourceChars, &vertShaderSourceLen);
@@ -711,6 +722,7 @@ void main(void) {
 
     s_gles2.glDeleteShader(vertShader);
     s_gles2.glDeleteShader(fragShader);
+    _PR_LINE
 }
 
 void YUVConverter::createYUVGLFullscreenQuad() {

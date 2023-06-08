@@ -25,6 +25,9 @@
 #include <stdio.h>
 #define ERR(...)  fprintf(stderr, __VA_ARGS__)
 
+
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 namespace gl {
 namespace {
@@ -34,9 +37,11 @@ namespace {
 // |shaderText| is a 0-terminated C string for the shader source to use.
 // On success, return the handle of the new compiled shader, or 0 on failure.
 GLuint createShader(GLint shaderType, const char* shaderText) {
+    _PR_LINE
     // Create new shader handle and attach source.
     GLuint shader = s_gles2.glCreateShader(shaderType);
     if (!shader) {
+        _PR_LINE
         return 0;
     }
     const GLchar* text = static_cast<const GLchar*>(shaderText);
@@ -67,7 +72,7 @@ GLuint createShader(GLint shaderType, const char* shaderText) {
         //     "Try using software rendering; launch the emulator "
         //     "from the command line with -gpu swiftshader_indirect. ");
     }
-
+    _PR_LINE
     return shader;
 }
 
@@ -271,6 +276,7 @@ TextureDraw::TextureDraw()
 
 bool TextureDraw::drawImpl(GLuint texture, float rotation,
                            float dx, float dy, bool wantOverlay) {
+    _PR_LINE
     if (!mProgram) {
         ERR("%s: no program\n", __FUNCTION__);
         return false;
@@ -394,6 +400,8 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
             // available to be blended
             GLint prevUnpackAlignment;
             s_gles2.glGetIntegerv(GL_UNPACK_ALIGNMENT, &prevUnpackAlignment);
+            // b/274313125 Some Intel drivers will tell you it is 0.
+            prevUnpackAlignment = std::max(1, prevUnpackAlignment);
             s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
             s_gles2.glBindTexture(GL_TEXTURE_2D, mMaskTexture);
@@ -467,6 +475,7 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
     s_gles2.glDisableVertexAttribArray(mInCoordSlot);
     s_gles2.glBindBuffer(GL_ARRAY_BUFFER, 0);
     s_gles2.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    _PR_LINE
 
     return true;
 }
