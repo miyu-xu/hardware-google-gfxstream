@@ -104,7 +104,8 @@ NamedObject::~NamedObject() {
         GLEScontext::dispatcher().glDeleteRenderbuffers(1, &m_globalName);
         break;
     case NamedObjectType::FRAMEBUFFER:
-        GLEScontext::dispatcher().glDeleteFramebuffers(1, &m_globalName);
+        printf("delete framebuffer called\n");
+        //GLEScontext::dispatcher().glDeleteFramebuffers(1, &m_globalName);
         break;
     case NamedObjectType::SHADER_OR_PROGRAM:
         if (GLEScontext::dispatcher().glIsProgram(m_globalName)) {
