@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "29487339_25ee952d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2023-06-08T20:02:14Z",
+      "side": 1,
+      "message": "android/android-emugl/combined/gfxstream-stream-servers/gl/glestranslator/EGL/CMakeFiles/EGL_translator_static.dir/EglImp.cpp.o.d -o android/android-emugl/combined/gfxstream-stream-servers/gl/glestranslator/EGL/CMakeFiles/EGL_translator_static.dir/EglImp.cpp.o -c /Volumes/Android/buildbot/src/android/emu-master-dev/hardware/google/gfxstream/host/gl/glestranslator/EGL/EglImp.cpp\n11:53:53(05:12.61) bld | /Volumes/Android/buildbot/src/android/emu-master-dev/hardware/google/gfxstream/host/gl/glestranslator/EGL/EglImp.cpp:282:38: error: cannot initialize a parameter of type \u0027EGLDisplay\u0027 (aka \u0027void *\u0027) with an lvalue of type \u0027EGLNativeDisplayType\u0027 (aka \u0027int\u0027)\n11:53:53(05:12.1 ) bld | if ((dpy \u003d g_eglInfo-\u003egetDisplay(display_id))) {\n11:53:53(05:12.38) bld | ^~~~~~~~~~\n11:53:53(05:12.76) bld | /Volumes/Android/buildbot/src/android/emu-master-dev/hardware/google/gfxstream/host/gl/glestranslator/EGL/EglGlobalInfo.h:58:39: note: passing argument to parameter \u0027dpy\u0027 here\n11:53:53(05:12.12) bld | EglDisplay* getDisplay(EGLDisplay dpy) const;\n11:53:53(05:12.54) bld | ^\n11:53:53(05:12.92) bld | 1 error generated.\n11:53:53(05:12.30) bld | ninja: build stopped: subcommand failed.\n11:53:53(05:12.82) bld | Build failure due to /Volumes/Android/buildbot/src/android/emu-master-dev/prebuilts/cmake/darwin-x86/bin/cmake --build /Volumes/Android/buildbot/src/android/emu-master-dev/out --target install/strip Status: 1 !\u003d 0\nFailed to run /usr/local/opt/python@3.10/bin/python3.10 /Volumes/Android/buildbot",
+      "revId": "fdfbd698944be97d4e2b5c19724b497541454139",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
