@@ -727,13 +727,14 @@ std::future<void> FrameBuffer::sendPostWorkerCmd(Post post) {
     // For now, this fixes a screenshot issue on macOS.
     std::future<void> res = std::async(std::launch::deferred, [] {});
     res.wait();
-    if (shouldPostOnlyOnMainThread && (PostCmd::Screenshot == post.cmd) &&
+    /*if (shouldPostOnlyOnMainThread && (PostCmd::Screenshot == post.cmd) &&
         emugl::get_emugl_window_operations().isRunningInUiThread()) {
         post.cb->readToBytesScaled(post.screenshot.screenwidth, post.screenshot.screenheight,
                                    post.screenshot.format, post.screenshot.type,
                                    post.screenshot.rotation, post.screenshot.rect,
                                    post.screenshot.pixels);
-    } else {
+    } else {*/
+    {
         std::future<void> completeFuture =
             m_postThread.enqueue(Post(std::move(post)));
         if (!shouldPostOnlyOnMainThread ||
