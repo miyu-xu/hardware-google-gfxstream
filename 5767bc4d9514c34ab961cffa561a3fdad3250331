@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddb7173b_458fce29",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-06-09T19:46:28Z",
+      "side": 1,
+      "message": "Manually added Mac build targets into presubmit (aosp-emu-master-dev: emulator-mac_x64_gfxstream,emulator-mac_aarch64_gfxstream; due to capacity issues they only run if you trigger them manually). Please wait until they finish before merging. Thanks",
+      "revId": "5767bc4d9514c34ab961cffa561a3fdad3250331",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
