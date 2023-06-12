@@ -16,6 +16,23 @@
       "message": "Mac build queued at https://android-build.googleplex.com/builds/abtd/run/L85100000961164943",
       "revId": "945f8219ac44ba38a674ab5476c8b9cd045ea080",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa4c5a1c_60b4d9d5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1994565
+      },
+      "writtenOn": "2023-06-12T14:12:43Z",
+      "side": 1,
+      "message": "I think this covered by https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2620543",
+      "revId": "945f8219ac44ba38a674ab5476c8b9cd045ea080",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
