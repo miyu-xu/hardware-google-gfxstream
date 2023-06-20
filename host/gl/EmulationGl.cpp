@@ -529,6 +529,17 @@ EmulationGl::~EmulationGl() {
 
 gfxstream::DisplaySurface* EmulationGl::getFakeWindowSurface() { return mFakeWindowSurface.get(); }
 
+gfxstream::DisplaySurface* EmulationGl::createFakeWindowSurface() {
+    return new gfxstream::DisplaySurface(
+        mWidth, mHeight,
+        std::move(DisplaySurfaceGl::createPbufferSurface(mEglDisplay,
+                                                                      mEglConfig,
+                                                                      mEglContext,
+                                                                      getGlesMaxContextAttribs(),
+                                                                      mWidth,
+                                                                      mHeight)));
+}
+
 /*static*/ const GLint* EmulationGl::getGlesMaxContextAttribs() {
     int glesMaj, glesMin;
     emugl::getGlesVersion(&glesMaj, &glesMin);
