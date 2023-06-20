@@ -205,6 +205,7 @@ static std::optional<EGLConfig> getEmulationEglConfig(EGLDisplay display, bool a
 
 std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height,
                                                  bool allowWindowSurface, bool egl2egl) {
+    printf("allowWindowSurface %d\n", allowWindowSurface);
     // Loads the glestranslator function pointers.
     if (!LazyLoadedEGLDispatch::get()) {
         ERR("Failed to load EGL dispatch.");
@@ -355,7 +356,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
 
     // b/283491732: we could skip the creation of subwindow if we know we will create a real
     // window.
-    auto fakeWindowSurfaceGl = DisplaySurfaceGl::createPbufferSurface(emulationGl->mEglDisplay,
+    /*auto fakeWindowSurfaceGl = DisplaySurfaceGl::createPbufferSurface(emulationGl->mEglDisplay,
                                                                       emulationGl->mEglConfig,
                                                                       emulationGl->mEglContext,
                                                                       maxContextAttribs,
@@ -368,7 +369,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     emulationGl->mFakeWindowSurface = std::make_unique<gfxstream::DisplaySurface>(
         width,
         height,
-        std::move(fakeWindowSurfaceGl));
+        std::move(fakeWindowSurfaceGl));*/
 
     emulationGl->mEmulatedEglConfigs =
         std::make_unique<EmulatedEglConfigList>(emulationGl->mEglDisplay,
@@ -528,6 +529,17 @@ EmulationGl::~EmulationGl() {
 }
 
 gfxstream::DisplaySurface* EmulationGl::getFakeWindowSurface() { return mFakeWindowSurface.get(); }
+
+gfxstream::DisplaySurface* EmulationGl::createFakeWindowSurface() {
+    return new gfxstream::DisplaySurface(
+        mWidth, mHeight,
+        std::move(DisplaySurfaceGl::createPbufferSurface(mEglDisplay,
+                                                                      mEglConfig,
+                                                                      mEglContext,
+                                                                      getGlesMaxContextAttribs(),
+                                                                      mWidth,
+                                                                      mHeight)));
+}
 
 /*static*/ const GLint* EmulationGl::getGlesMaxContextAttribs() {
     int glesMaj, glesMin;

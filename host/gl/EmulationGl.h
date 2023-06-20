@@ -140,6 +140,7 @@ class EmulationGl {
         const EmulatedEglContextMap& contexts);
 
     gfxstream::DisplaySurface* getFakeWindowSurface();
+    gfxstream::DisplaySurface* createFakeWindowSurface();
 
    private:
     // TODO(b/233939967): Remove this after fully transitioning to EmulationGl.

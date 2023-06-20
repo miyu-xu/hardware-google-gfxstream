@@ -1041,6 +1041,9 @@ EGLAPI EGLContext EGLAPIENTRY eglLoadContext(EGLDisplay display, const EGLint *a
 }
 
 EGLAPI EGLBoolean EGLAPIENTRY eglDestroyContext(EGLDisplay display, EGLContext context) {
+    if (context == (void*)0x3) {
+        printf("destroying context 0x3!!!!!!!!!!!!!!!\n");
+    }
     VALIDATE_DISPLAY(display);
     VALIDATE_CONTEXT(context);
 
