@@ -120,6 +120,31 @@ using gfxstream::vk::VkEmulationFeatures;
 //     return android::base::getUptimeMs();
 // }
 
+namespace {
+
+class ScopedTimer {
+  public:
+    ScopedTimer(const std::string message) :
+        mMessage(message),
+        mStart(std::chrono::high_resolution_clock::now()) {}
+
+    ~ScopedTimer() {
+        const auto stop = std::chrono::high_resolution_clock::now();
+
+        const int diff = std::chrono::duration_cast<std::chrono::microseconds>(stop - mStart).count();
+        const int diffSeconds = diff / 1000000;
+        const int diffMilliseconds = (diff % 1000000) / 1000;
+        const int diffMicroseconds = (diff % 1000);
+        ERR("jasonjason %s took %d seconds %d milliseconds %d microseconds", mMessage.c_str(), diffSeconds, diffMilliseconds, diffMicroseconds);
+    }
+
+  private:
+    const std::string mMessage;
+    const std::chrono::time_point<std::chrono::high_resolution_clock> mStart;
+};
+
+}  // namespace
+
 static void dumpPerfStats() {
     // auto usage = System::get()->getMemUsage();
     // std::string memoryStats =
@@ -257,6 +282,8 @@ void MaybeIncreaseFileDescriptorSoftLimit() {
 bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2egl) {
     GL_LOG("FrameBuffer::initialize");
 
+    ScopedTimer timer("FrameBuffer::initialize()");
+
     if (s_theFrameBuffer != NULL) {
         return true;
     }
@@ -294,6 +321,9 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
             }
         }
     }
+
+
+
     // Initialize Vulkan emulation state
     //
     // Note: This must happen before any use of s_egl,
@@ -304,8 +334,11 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
     vk::VkEmulation* vkEmu = nullptr;
     vk::VulkanDispatch* vkDispatch = nullptr;
     if (feature_is_enabled(kFeature_Vulkan)) {
-        vkDispatch = vk::vkDispatch(false /* not for testing */);
-        vkEmu = vk::createGlobalVkEmulation(vkDispatch);
+        {
+            ScopedTimer timer("FrameBuffer::initialize() createGlobaVkEmulation");
+            vkDispatch = vk::vkDispatch(false /* not for testing */);
+            vkEmu = vk::createGlobalVkEmulation(vkDispatch);
+        }
         if (!vkEmu) {
             ERR("Failed to initialize global Vulkan emulation. Disable the Vulkan support.");
         }
@@ -328,7 +361,10 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
 
     // Do not initialize GL emulation if the guest is using ANGLE.
     if (!feature_is_enabled(kFeature_GuestUsesAngle)) {
-        fb->m_emulationGl = EmulationGl::create(width, height, useSubWindow, egl2egl);
+        {
+            ScopedTimer timer("FrameBuffer::initialize() EmulationGl::create()");
+            fb->m_emulationGl = EmulationGl::create(width, height, useSubWindow, egl2egl);
+        }
         if (!fb->m_emulationGl) {
             ERR("Failed to initialize GL emulation.");
             return false;
@@ -457,7 +493,10 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
     GL_LOG("glvk interop final: %d", fb->m_vulkanInteropSupported);
     vkEmulationFeatures->glInteropSupported = fb->m_vulkanInteropSupported;
     if (feature_is_enabled(kFeature_Vulkan)) {
-        vk::initVkEmulationFeatures(std::move(vkEmulationFeatures));
+        {
+            ScopedTimer timer("FrameBuffer::initialize() initVkEmulationFeatures()");
+            vk::initVkEmulationFeatures(std::move(vkEmulationFeatures));
+        }
         if (vkEmu && vkEmu->displayVk) {
             fb->m_displayVk = vkEmu->displayVk.get();
             fb->m_displaySurfaceUsers.push_back(fb->m_displayVk);
@@ -489,23 +528,31 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
     INFO("Graphics API Extensions %s", fb->m_graphicsApiExtensions.c_str());
     INFO("Graphics Device Extensions %s", fb->m_graphicsDeviceExtensions.c_str());
 
-    if (fb->m_useVulkanComposition) {
-        fb->m_postWorker.reset(new PostWorkerVk(fb.get(), fb->m_compositor, fb->m_displayVk));
-    } else {
-        const bool shouldPostOnlyOnMainThread = postOnlyOnMainThread();
 
-        PostWorkerGl* postWorkerGl =
-            new PostWorkerGl(shouldPostOnlyOnMainThread, fb.get(), fb->m_compositor,
-                             fb->m_emulationGl->getFakeWindowSurface(), fb->m_displayGl);
-        fb->m_postWorker.reset(postWorkerGl);
-        fb->m_displaySurfaceUsers.push_back(postWorkerGl);
+    {
+        ScopedTimer timer("FrameBuffer::initialize() post worker setup");
+
+        if (fb->m_useVulkanComposition) {
+            fb->m_postWorker.reset(new PostWorkerVk(fb.get(), fb->m_compositor, fb->m_displayVk));
+        } else {
+            const bool shouldPostOnlyOnMainThread = postOnlyOnMainThread();
+
+            PostWorkerGl* postWorkerGl =
+                new PostWorkerGl(shouldPostOnlyOnMainThread, fb.get(), fb->m_compositor,
+                                fb->m_emulationGl->getFakeWindowSurface(), fb->m_displayGl);
+            fb->m_postWorker.reset(postWorkerGl);
+            fb->m_displaySurfaceUsers.push_back(postWorkerGl);
+        }
     }
 
+    {
+        ScopedTimer timer("FrameBuffer::initialize() sync thread");
     // Start up the single sync thread. If we are using Vulkan native
     // swapchain, then don't initialize SyncThread worker threads with EGL
     // contexts.
     SyncThread::initialize(
         /* hasGL */ fb->m_emulationGl != nullptr, fb->getHealthMonitor());
+    }
 
     // Start the vsync thread
     const uint64_t kOneSecondNs = 1000000000ULL;
