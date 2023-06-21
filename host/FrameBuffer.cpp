@@ -120,6 +120,15 @@ using gfxstream::vk::VkEmulationFeatures;
 //     return android::base::getUptimeMs();
 // }
 
+std::string Timestamp() {
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
+
+    char buffer[1024];
+    std::strftime(buffer, sizeof(buffer), "%c", std::localtime(&t));
+    return buffer;
+}
+
 static void dumpPerfStats() {
     // auto usage = System::get()->getMemUsage();
     // std::string memoryStats =
@@ -261,6 +270,11 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         return true;
     }
 
+    {
+        const std::string timestamp = Timestamp();
+        ERR("%s jasonjason FrameBuffer::initialize()", timestamp.c_str());
+    }
+
     MaybeIncreaseFileDescriptorSoftLimit();
 
     android::base::initializeTracing();
@@ -294,6 +308,12 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
             }
         }
     }
+
+    {
+        const std::string timestamp = Timestamp();
+        ERR("%s jasonjason FrameBuffer::initialize() vkemulation", timestamp.c_str());
+    }
+
     // Initialize Vulkan emulation state
     //
     // Note: This must happen before any use of s_egl,
@@ -326,6 +346,16 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         }
     }
 
+    {
+        const std::string timestamp = Timestamp();
+        ERR("%s jasonjason FrameBuffer::initialize() vkemulation - done", timestamp.c_str());
+    }
+
+    {
+        const std::string timestamp = Timestamp();
+        ERR("%s jasonjason FrameBuffer::initialize() emulationgl", timestamp.c_str());
+    }
+
     // Do not initialize GL emulation if the guest is using ANGLE.
     if (!feature_is_enabled(kFeature_GuestUsesAngle)) {
         fb->m_emulationGl = EmulationGl::create(width, height, useSubWindow, egl2egl);
@@ -334,6 +364,12 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
             return false;
         }
     }
+
+    {
+        const std::string timestamp = Timestamp();
+        ERR("%s jasonjason FrameBuffer::initialize() emulationgl - done", timestamp.c_str());
+    }
+
 
     fb->m_guestUsesAngle =
         feature_is_enabled(
@@ -454,6 +490,12 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         vkEmulationFeatures->useDedicatedAllocations = true;
     }
 
+
+    {
+        const std::string timestamp = Timestamp();
+        ERR("%s jasonjason FrameBuffer::initialize() vkemulation features", timestamp.c_str());
+    }
+
     GL_LOG("glvk interop final: %d", fb->m_vulkanInteropSupported);
     vkEmulationFeatures->glInteropSupported = fb->m_vulkanInteropSupported;
     if (feature_is_enabled(kFeature_Vulkan)) {
@@ -463,6 +505,12 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
             fb->m_displaySurfaceUsers.push_back(fb->m_displayVk);
         }
     }
+
+    {
+        const std::string timestamp = Timestamp();
+        ERR("%s jasonjason FrameBuffer::initialize() vkemulation features - done", timestamp.c_str());
+    }
+
 
     if (fb->m_useVulkanComposition) {
         if (!vkEmu->compositorVk) {
