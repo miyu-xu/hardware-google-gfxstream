@@ -49,6 +49,33 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
+#include <chrono>
+
+namespace {
+
+class ScopedTimer {
+  public:
+    ScopedTimer(const std::string message) :
+        mMessage(message),
+        mStart(std::chrono::high_resolution_clock::now()) {}
+
+    ~ScopedTimer() {
+        const auto stop = std::chrono::high_resolution_clock::now();
+
+        const int diff = std::chrono::duration_cast<std::chrono::microseconds>(stop - mStart).count();
+        const int diffSeconds = diff / 1000000;
+        const int diffMilliseconds = (diff % 1000000) / 1000;
+        const int diffMicroseconds = (diff % 1000);
+        ERR("jasonjason %s took %d seconds %d milliseconds %d microseconds", mMessage.c_str(), diffSeconds, diffMilliseconds, diffMicroseconds);
+    }
+
+  private:
+    const std::string mMessage;
+    const std::chrono::time_point<std::chrono::high_resolution_clock> mStart;
+};
+
+}  // namespace
+
 namespace gfxstream {
 namespace vk {
 namespace {
@@ -512,6 +539,9 @@ static std::vector<VkEmulation::ImageSupportInfo> getBasicImageSupportList() {
 }
 
 VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
+
+    ScopedTimer scoped("createGlobalVkEmulation()");
+
 // Downstream branches can provide abort logic or otherwise use result without a new macro
 #define VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, ...) \
     do {                                               \
@@ -554,10 +584,16 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     };
 
     uint32_t extCount = 0;
-    gvk->vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
+    {
+        ScopedTimer scoped("vkEnumerateInstanceExtensionProperties()");
+        gvk->vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
+    }
     std::vector<VkExtensionProperties>& exts = sVkEmulation->instanceExtensions;
     exts.resize(extCount);
-    gvk->vkEnumerateInstanceExtensionProperties(nullptr, &extCount, exts.data());
+    {
+        ScopedTimer scoped("vkEnumerateInstanceExtensionProperties()");
+        gvk->vkEnumerateInstanceExtensionProperties(nullptr, &extCount, exts.data());
+    }
 
     bool externalMemoryCapabilitiesSupported =
         extensionsSupported(exts, externalMemoryInstanceExtNames);
@@ -634,7 +670,12 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     //              << VK_VERSION_MINOR(appInfo.apiVersion) << "."
     //              << VK_VERSION_PATCH(appInfo.apiVersion) << " ...";
 
-    VkResult res = gvk->vkCreateInstance(&instCi, nullptr, &sVkEmulation->instance);
+    VkResult res;
+
+    {
+        ScopedTimer scoped("vkCreateInstance()");
+        res = gvk->vkCreateInstance(&instCi, nullptr, &sVkEmulation->instance);
+    }
 
     if (res != VK_SUCCESS) {
         VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, "Failed to create Vulkan instance. Error %s.",
@@ -642,8 +683,11 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     }
 
     // Create instance level dispatch.
-    sVkEmulation->ivk = new VulkanDispatch;
-    init_vulkan_dispatch_from_instance(vk, sVkEmulation->instance, sVkEmulation->ivk);
+    {
+        ScopedTimer scoped("init_vulkan_dispatch_from_instance()");
+        sVkEmulation->ivk = new VulkanDispatch;
+        init_vulkan_dispatch_from_instance(vk, sVkEmulation->instance, sVkEmulation->ivk);
+    }
 
     auto ivk = sVkEmulation->ivk;
 
@@ -652,6 +696,8 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     }
 
     if (ivk->vkEnumerateInstanceVersion) {
+        ScopedTimer scoped("maybe upgrading instance version");
+
         uint32_t instanceVersion;
         VkResult enumInstanceRes = ivk->vkEnumerateInstanceVersion(&instanceVersion);
         if ((VK_SUCCESS == enumInstanceRes) && instanceVersion >= VK_MAKE_VERSION(1, 1, 0)) {
@@ -727,9 +773,15 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
 #endif
 
     uint32_t physdevCount = 0;
-    ivk->vkEnumeratePhysicalDevices(sVkEmulation->instance, &physdevCount, nullptr);
+    {
+        ScopedTimer scoped("vkEnumeratePhysicalDevices");
+        ivk->vkEnumeratePhysicalDevices(sVkEmulation->instance, &physdevCount, nullptr);
+    }
     std::vector<VkPhysicalDevice> physdevs(physdevCount);
-    ivk->vkEnumeratePhysicalDevices(sVkEmulation->instance, &physdevCount, physdevs.data());
+    {
+        ScopedTimer scoped("vkEnumeratePhysicalDevices");
+        ivk->vkEnumeratePhysicalDevices(sVkEmulation->instance, &physdevCount, physdevs.data());
+    }
 
     // LOG(VERBOSE) << "Found " << physdevCount << " Vulkan physical devices.";
 
@@ -740,6 +792,8 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     std::vector<VkEmulation::DeviceSupportInfo> deviceInfos(physdevCount);
 
     for (int i = 0; i < physdevCount; ++i) {
+        ScopedTimer scoped("checking physical device " + std::to_string(i));
+
         ivk->vkGetPhysicalDeviceProperties(physdevs[i], &deviceInfos[i].physdevProps);
 
         // LOG(VERBOSE) << "Considering Vulkan physical device " << i << ": "
@@ -1016,7 +1070,10 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
         vk_append_struct(&deviceCiChain, samplerYcbcrConversionFeatures.get());
     }
 
-    ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
+    {
+        ScopedTimer scoped("vkCreateDevice()");
+        ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
+    }
 
     if (res != VK_SUCCESS) {
         VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, "Failed to create Vulkan device. Error %s.",
@@ -1025,7 +1082,10 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
 
     // device created; populate dispatch table
     sVkEmulation->dvk = new VulkanDispatch;
-    init_vulkan_dispatch_from_device(ivk, sVkEmulation->device, sVkEmulation->dvk);
+    {
+        ScopedTimer scoped("init_vulkan_dispatch_from_device()");
+        init_vulkan_dispatch_from_device(ivk, sVkEmulation->device, sVkEmulation->dvk);
+    }
 
     auto dvk = sVkEmulation->dvk;
 
