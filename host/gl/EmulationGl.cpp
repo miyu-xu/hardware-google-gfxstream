@@ -15,6 +15,7 @@
 #include "EmulationGl.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cstring>
 #include <optional>
 #include <vector>
@@ -203,21 +204,51 @@ static std::optional<EGLConfig> getEmulationEglConfig(EGLDisplay display, bool a
 
 }  // namespace
 
+namespace {
+
+class ScopedTimer {
+  public:
+    ScopedTimer(const std::string message) :
+        mMessage(message),
+        mStart(std::chrono::high_resolution_clock::now()) {}
+
+    ~ScopedTimer() {
+        const auto stop = std::chrono::high_resolution_clock::now();
+
+        const int diff = std::chrono::duration_cast<std::chrono::microseconds>(stop - mStart).count();
+        const int diffSeconds = diff / 1000000;
+        const int diffMilliseconds = (diff % 1000000) / 1000;
+        const int diffMicroseconds = (diff % 1000);
+        ERR("jasonjason %s took %d seconds %d milliseconds %d microseconds", mMessage.c_str(), diffSeconds, diffMilliseconds, diffMicroseconds);
+    }
+
+  private:
+    const std::string mMessage;
+    const std::chrono::time_point<std::chrono::high_resolution_clock> mStart;
+};
+
+}  // namespace
+
 std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height,
                                                  bool allowWindowSurface, bool egl2egl) {
-    // Loads the glestranslator function pointers.
-    if (!LazyLoadedEGLDispatch::get()) {
-        ERR("Failed to load EGL dispatch.");
-        return nullptr;
+    {
+        ScopedTimer scoped("EmulationGl dispatch loading");
+
+        // Loads the glestranslator function pointers.
+        if (!LazyLoadedEGLDispatch::get()) {
+            ERR("Failed to load EGL dispatch.");
+            return nullptr;
+        }
+        if (!LazyLoadedGLESv1Dispatch::get()) {
+            ERR("Failed to load GLESv1 dispatch.");
+            return nullptr;
+        }
+        if (!LazyLoadedGLESv2Dispatch::get()) {
+            ERR("Failed to load GLESv2 dispatch.");
+            return nullptr;
+        }
     }
-    if (!LazyLoadedGLESv1Dispatch::get()) {
-        ERR("Failed to load GLESv1 dispatch.");
-        return nullptr;
-    }
-    if (!LazyLoadedGLESv2Dispatch::get()) {
-        ERR("Failed to load GLESv2 dispatch.");
-        return nullptr;
-    }
+
 
     if (s_egl.eglUseOsEglApi) {
         s_egl.eglUseOsEglApi(egl2egl, EGL_FALSE);
@@ -228,21 +259,27 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     emulationGl->mWidth = width;
     emulationGl->mHeight = height;
 
-    emulationGl->mEglDisplay = s_egl.eglGetDisplay(EGL_DEFAULT_DISPLAY);
-    if (emulationGl->mEglDisplay == EGL_NO_DISPLAY) {
-        ERR("Failed to get EGL display.");
-        return nullptr;
-    }
 
-    GL_LOG("call eglInitialize");
-    if (!s_egl.eglInitialize(emulationGl->mEglDisplay,
-                             &emulationGl->mEglVersionMajor,
-                             &emulationGl->mEglVersionMinor)) {
-        ERR("Failed to eglInitialize.");
-        return nullptr;
-    }
+    {
+        ScopedTimer scoped("EmulationGl display initialize and api bind");
 
-    s_egl.eglBindAPI(EGL_OPENGL_ES_API);
+        emulationGl->mEglDisplay = s_egl.eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        if (emulationGl->mEglDisplay == EGL_NO_DISPLAY) {
+            ERR("Failed to get EGL display.");
+            return nullptr;
+        }
+
+        GL_LOG("call eglInitialize");
+        if (!s_egl.eglInitialize(emulationGl->mEglDisplay,
+                                &emulationGl->mEglVersionMajor,
+                                &emulationGl->mEglVersionMinor)) {
+            ERR("Failed to eglInitialize.");
+            return nullptr;
+        }
+
+        s_egl.eglBindAPI(EGL_OPENGL_ES_API);
+
+    }
 
 #ifdef ENABLE_GL_LOG
     if (s_egl.eglDebugMessageControlKHR) {
@@ -452,35 +489,41 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         return nullptr;
     }
 
-    emulationGl->mCompositorGl = std::make_unique<CompositorGl>(emulationGl->mTextureDraw.get());
-
-    emulationGl->mDisplayGl = std::make_unique<DisplayGl>(emulationGl->mTextureDraw.get());
-
     {
-        auto surface1 = DisplaySurfaceGl::createPbufferSurface(emulationGl->mEglDisplay,
-                                                               emulationGl->mEglConfig,
-                                                               emulationGl->mEglContext,
-                                                               getGlesMaxContextAttribs(),
-                                                               /*width=*/1,
-                                                               /*height=*/1);
-        if (!surface1) {
-            ERR("Failed to create pbuffer surface for ReadbackWorkerGl.");
-            return nullptr;
+        ScopedTimer scoped("jasonjason EmulationGl::create() compositor / display initialize");
+
+
+        emulationGl->mCompositorGl = std::make_unique<CompositorGl>(emulationGl->mTextureDraw.get());
+
+        emulationGl->mDisplayGl = std::make_unique<DisplayGl>(emulationGl->mTextureDraw.get());
+
+        {
+            auto surface1 = DisplaySurfaceGl::createPbufferSurface(emulationGl->mEglDisplay,
+                                                                emulationGl->mEglConfig,
+                                                                emulationGl->mEglContext,
+                                                                getGlesMaxContextAttribs(),
+                                                                /*width=*/1,
+                                                                /*height=*/1);
+            if (!surface1) {
+                ERR("Failed to create pbuffer surface for ReadbackWorkerGl.");
+                return nullptr;
+            }
+
+            auto surface2 = DisplaySurfaceGl::createPbufferSurface(emulationGl->mEglDisplay,
+                                                                emulationGl->mEglConfig,
+                                                                emulationGl->mEglContext,
+                                                                getGlesMaxContextAttribs(),
+                                                                /*width=*/1,
+                                                                /*height=*/1);
+            if (!surface2) {
+                ERR("Failed to create pbuffer surface for ReadbackWorkerGl.");
+                return nullptr;
+            }
+
+            emulationGl->mReadbackWorkerGl = std::make_unique<ReadbackWorkerGl>(std::move(surface1),
+                                                                                std::move(surface2));
         }
 
-        auto surface2 = DisplaySurfaceGl::createPbufferSurface(emulationGl->mEglDisplay,
-                                                               emulationGl->mEglConfig,
-                                                               emulationGl->mEglContext,
-                                                               getGlesMaxContextAttribs(),
-                                                               /*width=*/1,
-                                                               /*height=*/1);
-        if (!surface2) {
-            ERR("Failed to create pbuffer surface for ReadbackWorkerGl.");
-            return nullptr;
-        }
-
-        emulationGl->mReadbackWorkerGl = std::make_unique<ReadbackWorkerGl>(std::move(surface1),
-                                                                            std::move(surface2));
     }
 
     return emulationGl;
