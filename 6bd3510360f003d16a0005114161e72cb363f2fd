@@ -63,6 +63,30 @@
       },
       "revId": "6bd3510360f003d16a0005114161e72cb363f2fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ee3d22a_784bd250",
+        "filename": "host/magma/DrmBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1373493
+      },
+      "writtenOn": "2023-06-26T22:24:50Z",
+      "side": 1,
+      "message": "Marking resolved per offline discussion re. necessity of map to fill query buffer contents.",
+      "parentUuid": "3cd0c28c_59375f9f",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 0
+      },
+      "revId": "6bd3510360f003d16a0005114161e72cb363f2fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
