@@ -74,7 +74,7 @@ public:
     // if size mismatches, will read nothing.
     void readPixels(uint8_t* pixels, uint32_t pixels_size);
 
-    void swapTextures(FrameworkFormat type, GLuint* textures);
+    void swapTextures(FrameworkFormat type, GLuint* textures, void* metadata = nullptr);
 
     // public so other classes can call
     static void createYUVGLTex(GLenum textureUnit,
@@ -135,6 +135,13 @@ private:
     GLint mCurrTexBind = 0;
     GLint mCurrVbo = 0;
     GLint mCurrIbo = 0;
+
+    // color aspects related information
+    uint64_t mColorPrimaries = 4;  // this is 601, the default
+    uint64_t mColorRange = 2;      // this is limited range, the default
+    uint64_t mColorTransfer = 3;   // this is the default
+
+    bool checkAndUpdateColorAspectsChanged(void* metadata);
 };
 
 }  // namespace gl

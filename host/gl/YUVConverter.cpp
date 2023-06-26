@@ -520,6 +520,28 @@ static void subUpdateYUVGLTex(GLenum texture_unit,
     s_gles2.glActiveTexture(GL_TEXTURE0);
 }
 
+bool YUVConverter::checkAndUpdateColorAspectsChanged(void* metadata) {
+    bool needToUpdateConversionShader = false;
+    if (metadata) {
+        uint64_t type = *(uint64_t*)(metadata);
+        uint8_t* pmetadata = (uint8_t*)(metadata);
+        if (type == 1) {
+            uint64_t primaries = *(uint64_t*)(pmetadata + 8);
+            uint64_t range = *(uint64_t*)(pmetadata + 16);
+            uint64_t transfer = *(uint64_t*)(pmetadata + 24);
+            if (primaries != mColorPrimaries || range != mColorRange ||
+                transfer != mColorTransfer) {
+                mColorPrimaries = primaries;
+                mColorRange = range;
+                mColorTransfer = transfer;
+                needToUpdateConversionShader = true;
+            }
+        }
+    }
+
+    return needToUpdateConversionShader;
+}
+
 void YUVConverter::createYUVGLShader() {
     YUV_DEBUG_LOG("format:%d", mFormat);
 
@@ -877,7 +899,7 @@ void YUVConverter::readPixels(uint8_t* pixels, uint32_t pixels_size) {
     readYUVTex(mTextureY, mFormat, YUVPlane::Y, pixels + yOffsetBytes, yStridePixels);
 }
 
-void YUVConverter::swapTextures(FrameworkFormat format, GLuint* textures) {
+void YUVConverter::swapTextures(FrameworkFormat format, GLuint* textures, void* metadata) {
     if (isInterleaved(format)) {
         std::swap(textures[0], mTextureY);
         std::swap(textures[1], mTextureU);
@@ -889,6 +911,14 @@ void YUVConverter::swapTextures(FrameworkFormat format, GLuint* textures) {
     }
 
     mFormat = format;
+
+    const bool needToUpdateConversionShader = checkAndUpdateColorAspectsChanged(metadata);
+    if (needToUpdateConversionShader) {
+        saveGLState();
+        reset();
+        init(mWidth, mHeight, mFormat);
+    }
+
     mTexturesSwapped = true;
 }
 
