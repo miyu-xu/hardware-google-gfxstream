@@ -2000,7 +2000,8 @@ void FrameBuffer::swapTexturesAndUpdateColorBuffer(uint32_t p_colorbuffer,
                                                    uint32_t format,
                                                    uint32_t type,
                                                    uint32_t texture_type,
-                                                   uint32_t* textures) {
+                                                   uint32_t* textures,
+                                                   void* metadata) {
     {
         AutoLock mutex(m_lock);
         ColorBufferPtr colorBuffer = findColorBuffer(p_colorbuffer);
@@ -2053,7 +2054,7 @@ bool FrameBuffer::updateColorBuffer(HandleType p_colorbuffer,
 bool FrameBuffer::updateColorBufferFromFrameworkFormat(HandleType p_colorbuffer, int x, int y,
                                                        int width, int height,
                                                        FrameworkFormat fwkFormat, GLenum format,
-                                                       GLenum type, void* pixels) {
+                                                       GLenum type, void* pixels, void* metadata) {
     if (width == 0 || height == 0) {
         return false;
     }
@@ -2066,7 +2067,7 @@ bool FrameBuffer::updateColorBufferFromFrameworkFormat(HandleType p_colorbuffer,
         return false;
     }
 
-    (*c).second.cb->updateFromBytes(x, y, width, height, fwkFormat, format, type, pixels);
+    (*c).second.cb->updateFromBytes(x, y, width, height, fwkFormat, format, type, pixels, metadata);
     return true;
 }
 
