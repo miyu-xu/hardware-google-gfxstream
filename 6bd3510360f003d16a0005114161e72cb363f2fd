@@ -39,6 +39,30 @@
       },
       "revId": "6bd3510360f003d16a0005114161e72cb363f2fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3cd0c28c_59375f9f",
+        "filename": "host/magma/DrmBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1373493
+      },
+      "writtenOn": "2023-06-26T21:10:31Z",
+      "side": 1,
+      "message": "Removed descriptor mapping path. Re. external blob, what is the alternative to mapping here?",
+      "parentUuid": "b18465bf_fb2c2e58",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 0
+      },
+      "revId": "6bd3510360f003d16a0005114161e72cb363f2fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
