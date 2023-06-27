@@ -496,7 +496,7 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
 
         PostWorkerGl* postWorkerGl =
             new PostWorkerGl(shouldPostOnlyOnMainThread, fb.get(), fb->m_compositor,
-                             fb->m_emulationGl->getFakeWindowSurface(), fb->m_displayGl);
+                             fb->m_displayGl, fb->m_emulationGl.get());
         fb->m_postWorker.reset(postWorkerGl);
         fb->m_displaySurfaceUsers.push_back(postWorkerGl);
     }
@@ -1979,7 +1979,7 @@ void FrameBuffer::updateYUVTextures(uint32_t type,
 
 #ifdef __APPLE__
     EGLContext prevContext = s_egl.eglGetCurrentContext();
-    auto mydisp = EglGlobalInfo::getInstance()->getDisplay(EGL_DEFAULT_DISPLAY);
+    auto mydisp = EglGlobalInfo::getInstance()->getDisplayFromDisplayType(EGL_DEFAULT_DISPLAY);
     void* nativecontext = mydisp->getLowLevelContext(prevContext);
     struct MediaNativeCallerData callerdata;
     callerdata.ctx = nativecontext;
