@@ -2322,7 +2322,6 @@ VG_EXPORT int stream_renderer_init(struct stream_renderer_param* stream_renderer
     }
 
     sRenderer()->init(renderer_cookie, renderer_flags, fence_callback);
-    gfxstream::FrameBuffer::waitUntilInitialized();
 
     GFXS_LOG("Started renderer");
 
