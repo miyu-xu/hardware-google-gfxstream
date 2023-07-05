@@ -571,7 +571,11 @@ FrameBuffer::~FrameBuffer() {
     AutoLock fbLock(m_lock);
 
     m_perfStats = false;
-    m_perfThread->wait(NULL);
+    printf("FrameBuffer %p\n", this);
+    printf("m_perfThread %p\n", m_perfThread);
+    if (m_perfThread) {
+        m_perfThread->wait(NULL);
+    }
 
     m_postThread.enqueue({PostCmd::Exit});
     m_postThread.join();

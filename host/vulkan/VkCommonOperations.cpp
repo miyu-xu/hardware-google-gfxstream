@@ -511,6 +511,8 @@ static std::vector<VkEmulation::ImageSupportInfo> getBasicImageSupportList() {
     return res;
 }
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
 // Downstream branches can provide abort logic or otherwise use result without a new macro
 #define VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, ...) \
@@ -519,6 +521,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
         ERR(__VA_ARGS__);                              \
         return nullptr;                                \
     } while (0)
+    _PR_LINE
 
     AutoLock lock(sVkEmulationLock);
 
@@ -1202,7 +1205,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     sVkEmulation->live = true;
 
     sVkEmulation->transferQueueCommandBufferPool.resize(0);
-
+    _PR_LINE
     return sVkEmulation;
 }
 

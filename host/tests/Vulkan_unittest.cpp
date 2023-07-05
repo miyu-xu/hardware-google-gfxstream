@@ -480,7 +480,7 @@ TEST_F(VulkanFrameBufferTest, VkColorBufferWithoutMemoryProperties) {
 }
 
 TEST_F(VulkanFrameBufferTest, VkColorBufferWithMemoryPropertyFlags) {
-    auto* vkEmulation = getGlobalVkEmulation();
+    auto* vkEmulation = createGlobalVkEmulation(&mVk);
     VkMemoryPropertyFlags kTargetMemoryPropertyFlags =
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 
@@ -521,6 +521,8 @@ TEST_F(VulkanFrameBufferTest, VkColorBufferWithMemoryPropertyFlags) {
 
     int32_t memoryTypeIndex = 31;
     do {
+        printf("vkEmulation %p\n", vkEmulation);
+        printf("memoryTypes %p\n", vkEmulation->deviceInfo.memProps.memoryTypes);
         if (((1 << memoryTypeIndex) & memReq.memoryTypeBits) &&
             (vkEmulation->deviceInfo.memProps.memoryTypes[memoryTypeIndex]
                      .propertyFlags &
