@@ -22,6 +22,30 @@
       },
       "revId": "6c1553999d4b4772e38a97ba4f86f2184c38933d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ae282e5_a73b2c55",
+        "filename": "host/magma/Connection.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1373493
+      },
+      "writtenOn": "2023-07-10T20:38:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e1073f6_777b4fcc",
+      "range": {
+        "startLine": 28,
+        "startChar": 45,
+        "endLine": 28,
+        "endChar": 74
+      },
+      "revId": "6c1553999d4b4772e38a97ba4f86f2184c38933d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
