@@ -710,6 +710,7 @@ WorkerProcessingResult FrameBuffer::postWorkerFunc(Post& post) {
             m_postWorker->clear();
             break;
         case PostCmd::Screenshot:
+            printf("screenshoting %p\n", post.screenshot.cb);
             m_postWorker->screenshot(
                     post.screenshot.cb, post.screenshot.screenwidth,
                     post.screenshot.screenheight, post.screenshot.format,
@@ -1764,6 +1765,7 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer, Post::CompletionCall
     m_lastPostedColorBuffer = p_colorbuffer;
 
     colorBuffer->touch();
+    printf("posing %d\n", p_colorbuffer);
     if (m_subWin) {
         Post postCmd;
         postCmd.cmd = PostCmd::Post;
@@ -1985,6 +1987,7 @@ int FrameBuffer::getScreenshot(unsigned int nChannels, unsigned int* width, unsi
     if (displayId == 0) {
         cb = m_lastPostedColorBuffer;
     }
+    printf("screenshotting %d\n", cb);
     ColorBufferPtr colorBuffer = findColorBuffer(cb);
     if (!colorBuffer) {
         *width = 0;
