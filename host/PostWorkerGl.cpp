@@ -60,8 +60,17 @@ PostWorkerGl::PostWorkerGl(bool mainThreadPostingOnly, FrameBuffer* fb, Composit
 
 void PostWorkerGl::screenshot(ColorBuffer* cb, int screenwidth, int screenheight, GLenum format,
                               GLenum type, int skinRotation, void* pixels, Rect rect) {
+<<<<<<< PATCH SET (527a8b Log post buffers)
+    if (!mContextBound || m_mainThreadPostingOnly) {
+        // This might happen on headless mode
+        // Also if posting on main thread, the context binding can get polluted easily, which
+        // requires frequent rebinds.
+        setupContext();
+    }
+=======
     // See b/292237104.
     mFb->lock();
+>>>>>>> BASE      (918750 Merge "Add external memory host test" into main)
     cb->readToBytesScaled(screenwidth, screenheight, format, type, skinRotation, rect, pixels);
     mFb->unlock();
 }
