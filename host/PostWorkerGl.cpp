@@ -60,6 +60,12 @@ PostWorkerGl::PostWorkerGl(bool mainThreadPostingOnly, FrameBuffer* fb, Composit
 
 void PostWorkerGl::screenshot(ColorBuffer* cb, int screenwidth, int screenheight, GLenum format,
                               GLenum type, int skinRotation, void* pixels, Rect rect) {
+    if (!mContextBound || m_mainThreadPostingOnly) {
+        // This might happen on headless mode
+        // Also if posting on main thread, the context binding can get polluted easily, which
+        // requires frequent rebinds.
+        setupContext();
+    }
     cb->readToBytesScaled(screenwidth, screenheight, format, type, skinRotation, rect, pixels);
 }
 
