@@ -78,6 +78,7 @@ struct stream_renderer_resource_info {
 
 #define STREAM_RENDERER_FLAG_FENCE (1 << 0)
 #define STREAM_RENDERER_FLAG_FENCE_RING_IDX (1 << 1)
+#define STREAM_RENDERER_FLAG_FENCE_SHAREABLE (1 << 2)
 struct stream_renderer_fence {
     uint32_t flags;
     uint64_t fence_id;
@@ -132,7 +133,18 @@ VG_EXPORT int stream_renderer_resource_create(struct stream_renderer_resource_cr
                                               struct iovec* iov, uint32_t num_iovs);
 VG_EXPORT void stream_renderer_resource_unref(uint32_t res_handle);
 VG_EXPORT void stream_renderer_context_destroy(uint32_t handle);
-VG_EXPORT int stream_renderer_submit_cmd(void* buffer, int ctx_id, int bytes);
+
+struct stream_renderer_command {
+    uint32_t ctx_id;
+    uint32_t cmd_size;
+    uint8_t *cmd;
+
+    uint32_t num_in_fences;
+    uint64_t *in_fence_descriptors;
+};
+
+VG_EXPORT int stream_renderer_submit_cmd(struct stream_renderer_command *cmd);
+
 VG_EXPORT int stream_renderer_transfer_read_iov(uint32_t handle, uint32_t ctx_id, uint32_t level,
                                                 uint32_t stride, uint32_t layer_stride,
                                                 struct stream_renderer_box* box, uint64_t offset,
