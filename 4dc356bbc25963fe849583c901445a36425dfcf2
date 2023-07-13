@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f151edc_224c98bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-07-13T17:31:57Z",
+      "side": 1,
+      "message": "Hi Bo, we are moving the whole guest graphics driver (device/generic/goldfish-opengl) into hardware/google/gfxstream, so that both the guest and host lives together, and Jason and Andrew could write tests without booting a real guest. Please take a look and raise any concerns before they are merged. Thanks!",
+      "revId": "4dc356bbc25963fe849583c901445a36425dfcf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
