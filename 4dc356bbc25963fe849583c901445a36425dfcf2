@@ -16,6 +16,24 @@
       "message": "Hi Bo, we are moving the whole guest graphics driver (device/generic/goldfish-opengl) into hardware/google/gfxstream, so that both the guest and host lives together, and Jason and Andrew could write tests without booting a real guest. Please take a look and raise any concerns before they are merged. Thanks!",
       "revId": "4dc356bbc25963fe849583c901445a36425dfcf2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14ccece3_a14a22ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-13T17:35:50Z",
+      "side": 1,
+      "message": "Prototype of the single-process-with-both-guest-and-host tests in https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2620535/19/host/AndroidIntegrationTests.cpp#1554 .\n\nAndrew was working on the single-process-with-both-guest-and-host Vulkan ICD for snapshot testing.",
+      "parentUuid": "9f151edc_224c98bc",
+      "revId": "4dc356bbc25963fe849583c901445a36425dfcf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
