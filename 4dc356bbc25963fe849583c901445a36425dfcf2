@@ -34,6 +34,24 @@
       "parentUuid": "9f151edc_224c98bc",
       "revId": "4dc356bbc25963fe849583c901445a36425dfcf2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e42582d7_b328ae0c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-13T17:47:14Z",
+      "side": 1,
+      "message": "\u003e whole guest graphics driver (device/generic/goldfish-opengl) into hardware/google/gfxstream\n\nTo clarify, this doesn\u0027t move the entirety of `device/generic/goldfish-opengl` and there is no plan to move things like hwcomposer, gralloc, etc to `hardware/google/gfxstream` (I do plan to move things like `device/generic/goldfish-opengl/android-emu`, `device/generic/goldfish-opengl/shared/OpenglCodecCommon`, etc which are just rendering specific). I think `hardware/google/gfxstream` should be self contained but then HAL implementations which happen to use Gfxstream can remain in device directories.",
+      "parentUuid": "14ccece3_a14a22ea",
+      "revId": "4dc356bbc25963fe849583c901445a36425dfcf2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
