@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4e58fd46_6f259f65",
+        "filename": "host/AndroidIntegrationTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 1271,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-07-18T16:15:46Z",
+      "side": 1,
+      "message": "We can define `VULKAN_HPP_ENABLE_DYNAMIC_LOADER_TOOL` and just use `DynamicLoader`[1] in `vulkan.hpp` for crossplatform.\n\n[1]: https://github.com/KhronosGroup/Vulkan-Hpp/blob/99027b5a249e9ec3dad2f5a9c01a7c896d857654/snippets/DynamicLoader.hpp#L2",
+      "revId": "310f1d5d6a33f25791823493fbc597e1ee9cbd5d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1988ddba_9ddccf27",
+        "filename": "host/AndroidIntegrationTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 1282,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-07-18T16:15:46Z",
+      "side": 1,
+      "message": "TIL: raii wrapper can be initialized with a customized `vkGetInstanceProcAddr`",
+      "range": {
+        "startLine": 1282,
+        "startChar": 54,
+        "endLine": 1282,
+        "endChar": 75
+      },
+      "revId": "310f1d5d6a33f25791823493fbc597e1ee9cbd5d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
