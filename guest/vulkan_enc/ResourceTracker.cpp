@@ -909,8 +909,8 @@ public:
     }
 
     void setupCaps(void) {
-        VirtGpuDevice& instance = VirtGpuDevice::getInstance((enum VirtGpuCapset)3);
-        mCaps = instance.getCaps();
+        VirtGpuDevice* instance = VirtGpuDevice::getInstance((enum VirtGpuCapset)3);
+        mCaps = instance->getCaps();
 
         // Delete once goldfish Linux drivers are gone
         if (mCaps.gfxstreamCapset.protocolVersion == 0) {
@@ -2944,13 +2944,13 @@ public:
             }
             {
                 AutoLock<RecursiveLock> lock(mLock);
-                VirtGpuDevice& instance = VirtGpuDevice::getInstance((enum VirtGpuCapset)3);
+                VirtGpuDevice* instance = VirtGpuDevice::getInstance((enum VirtGpuCapset)3);
                 createBlob.blobMem = kBlobMemHost3d;
                 createBlob.flags = kBlobFlagMappable;
                 createBlob.blobId = hvaSizeId[2];
                 createBlob.size = hostAllocationInfo.allocationSize;
 
-                auto blob = instance.createBlob(createBlob);
+                auto blob = instance->createBlob(createBlob);
                 if (!blob) {
                     ALOGE("Failed to create coherent memory: failed to create blob.");
                     res = VK_ERROR_OUT_OF_DEVICE_MEMORY;
@@ -3037,7 +3037,7 @@ public:
         if (mCaps.params[kParamCreateGuestHandle]) {
             struct VirtGpuCreateBlob createBlob = {0};
             struct VirtGpuExecBuffer exec = {};
-            VirtGpuDevice& instance = VirtGpuDevice::getInstance();
+            VirtGpuDevice* instance = VirtGpuDevice::getInstance();
             struct gfxstreamPlaceholderCommandVk placeholderCmd = {};
 
             createBlobInfo.blobId = ++mBlobId;
@@ -3050,7 +3050,7 @@ public:
             createBlob.blobId = createBlobInfo.blobId;
             createBlob.size = hostAllocationInfo.allocationSize;
 
-            guestBlob = instance.createBlob(createBlob);
+            guestBlob = instance->createBlob(createBlob);
             if (!guestBlob) {
                 ALOGE("Failed to allocate coherent memory: failed to create blob.");
                 return VK_ERROR_OUT_OF_DEVICE_MEMORY;
@@ -3061,7 +3061,7 @@ public:
             exec.command_size = sizeof(placeholderCmd);
             exec.flags = kRingIdx;
             exec.ring_idx = 1;
-            if (instance.execBuffer(exec, guestBlob)) {
+            if (instance->execBuffer(exec, guestBlob)) {
                 ALOGE("Failed to allocate coherent memory: failed to execbuffer for wait.");
                 return VK_ERROR_OUT_OF_HOST_MEMORY;
             }
@@ -3944,7 +3944,7 @@ public:
         if (info.blobId && !info.coherentMemory && !mCaps.params[kParamCreateGuestHandle]) {
             VkEncoder* enc = (VkEncoder*)context;
             VirtGpuBlobMappingPtr mapping;
-            VirtGpuDevice& instance = VirtGpuDevice::getInstance();
+            VirtGpuDevice* instance = VirtGpuDevice::getInstance();
 
             uint64_t offset;
             uint8_t* ptr;
@@ -3958,7 +3958,7 @@ public:
             createBlob.blobId = info.blobId;
             createBlob.size = info.coherentMemorySize;
 
-            auto blob = instance.createBlob(createBlob);
+            auto blob = instance->createBlob(createBlob);
             if (!blob) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
 
             mapping = blob->createMapping();
@@ -4610,7 +4610,7 @@ public:
     VkResult createFence(VkDevice device, uint64_t hostFenceHandle, int64_t& osHandle) {
         struct VirtGpuExecBuffer exec = { };
         struct gfxstreamCreateExportSyncVK exportSync = { };
-        VirtGpuDevice& instance = VirtGpuDevice::getInstance();
+        VirtGpuDevice* instance = VirtGpuDevice::getInstance();
 
         uint64_t hostDeviceHandle = get_host_u64_VkDevice(device);
 
@@ -4623,7 +4623,7 @@ public:
         exec.command = static_cast<void*>(&exportSync);
         exec.command_size = sizeof(exportSync);
         exec.flags = kFenceOut | kRingIdx;
-        if (instance.execBuffer(exec, nullptr))
+        if (instance->execBuffer(exec, nullptr))
             return VK_ERROR_OUT_OF_HOST_MEMORY;
 
         osHandle = exec.handle.osHandle;
@@ -7126,7 +7126,7 @@ public:
         if (mFeatureInfo->hasVirtioGpuNativeSync) {
             struct VirtGpuExecBuffer exec = { };
             struct gfxstreamCreateQSRIExportVK exportQSRI = { };
-            VirtGpuDevice& instance = VirtGpuDevice::getInstance();
+            VirtGpuDevice* instance = VirtGpuDevice::getInstance();
 
             uint64_t hostImageHandle = get_host_u64_VkImage(image);
 
@@ -7137,7 +7137,7 @@ public:
             exec.command = static_cast<void*>(&exportQSRI);
             exec.command_size = sizeof(exportQSRI);
             exec.flags = kFenceOut | kRingIdx;
-            if (instance.execBuffer(exec, nullptr))
+            if (instance->execBuffer(exec, nullptr))
                 return VK_ERROR_OUT_OF_HOST_MEMORY;
 
             *fd = exec.handle.osHandle;
