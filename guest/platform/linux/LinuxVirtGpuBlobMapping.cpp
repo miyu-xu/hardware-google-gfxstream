@@ -16,16 +16,15 @@
 
 #include <sys/mman.h>
 
-#include "VirtGpu.h"
+#include "LinuxVirtGpu.h"
 
-VirtGpuBlobMapping::VirtGpuBlobMapping(VirtGpuBlobPtr blob, uint8_t* ptr, uint64_t size)
+LinuxVirtGpuBlobMapping::LinuxVirtGpuBlobMapping(VirtGpuBlobPtr blob, uint8_t* ptr, uint64_t size)
     : mBlob(blob), mPtr(ptr), mSize(size) {}
 
-VirtGpuBlobMapping::~VirtGpuBlobMapping(void) {
+LinuxVirtGpuBlobMapping::~LinuxVirtGpuBlobMapping(void) {
     munmap(mPtr, mSize);
 }
 
-uint8_t* VirtGpuBlobMapping::asRawPtr(void) {
+uint8_t* LinuxVirtGpuBlobMapping::asRawPtr(void) {
     return mPtr;
 }
-
