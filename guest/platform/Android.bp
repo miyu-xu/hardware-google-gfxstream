@@ -21,11 +21,13 @@ package {
 
 cc_library_static {
     name: "libplatform",
+    host_supported: true,
     vendor: true,
     srcs: [
-        "linux/VirtGpuBlob.cpp",
-        "linux/VirtGpuBlobMapping.cpp",
-        "linux/VirtGpuDevice.cpp"
+        "VirtGpu.cpp",
+        "linux/LinuxVirtGpuBlob.cpp",
+        "linux/LinuxVirtGpuBlobMapping.cpp",
+        "linux/LinuxVirtGpuDevice.cpp"
     ],
     shared_libs: [
         "libcutils",
