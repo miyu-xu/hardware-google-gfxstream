@@ -22,6 +22,30 @@
       },
       "revId": "1d905080d384d95df2193da98014b82b167023db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4cee6f6_d2b50208",
+        "filename": "host/PostWorkerGl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2023-07-19T15:48:11Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "b3350fdf_8a445745",
+      "range": {
+        "startLine": 145,
+        "startChar": 20,
+        "endLine": 145,
+        "endChar": 21
+      },
+      "revId": "1d905080d384d95df2193da98014b82b167023db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
