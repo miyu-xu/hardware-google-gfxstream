@@ -156,10 +156,10 @@ magma_status_t MagmaClientContext::get_fd_for_buffer(magma_buffer_t buffer, int*
 
     // TODO(fxbug.dev/122604): Evaluate deferred guest resource creation.
     auto blob = VirtGpuDevice::getInstance(VirtGpuCapset::kCapsetGfxStreamVulkan)
-                    .createBlob({.size = info.size,
-                                 .flags = kBlobFlagMappable | kBlobFlagShareable,
-                                 .blobMem = kBlobMemHost3d,
-                                 .blobId = info.id});
+                    ->createBlob({.size = info.size,
+                                  .flags = kBlobFlagMappable | kBlobFlagShareable,
+                                  .blobMem = kBlobMemHost3d,
+                                  .blobId = info.id});
     if (!blob) {
         return MAGMA_STATUS_INTERNAL_ERROR;
     }
@@ -211,11 +211,19 @@ magma_status_t MagmaClientContext::magma_device_query(void* self, magma_device_t
     }
 
     ALOGI("opening blob id %lu size %lu\n", result_buffer_mapping_id, result_buffer_size);
+<<<<<<< HEAD
     auto blob = VirtGpuDevice::getInstance(VirtGpuCapset::kCapsetGfxStreamVulkan)
                     .createBlob({.size = result_buffer_size,
                                  .flags = kBlobFlagMappable | kBlobFlagShareable,
                                  .blobMem = kBlobMemHost3d,
                                  .blobId = result_buffer_mapping_id});
+=======
+    auto blob = VirtGpuDevice::getInstance(VirtGpuCapset::kCapsetGfxStream)
+                    ->createBlob({.size = result_buffer_size,
+                                  .flags = kBlobFlagMappable | kBlobFlagShareable,
+                                  .blobMem = kBlobMemHost3d,
+                                  .blobId = result_buffer_mapping_id});
+>>>>>>> efe075c4 (Make VirtGpu* interfaces)
     if (!blob) {
         ALOGE("VirtGpuDevice::createBlob failed\n");
         return MAGMA_STATUS_INTERNAL_ERROR;
@@ -241,11 +249,19 @@ magma_status_t MagmaClientContext::magma_buffer_get_handle(void* self, magma_buf
     magma_handle_t mapping_id = 0;
     status = context->magma_buffer_get_handle_enc_(self, buffer, &mapping_id);
     if (status != MAGMA_STATUS_OK) return status;
+<<<<<<< HEAD
     auto blob = VirtGpuDevice::getInstance(VirtGpuCapset::kCapsetGfxStreamVulkan)
                     .createBlob({.size = info.size,
                                  .flags = kBlobFlagMappable | kBlobFlagShareable,
                                  .blobMem = kBlobMemHost3d,
                                  .blobId = mapping_id});
+=======
+    auto blob = VirtGpuDevice::getInstance(VirtGpuCapset::kCapsetGfxStream)
+                    ->createBlob({.size = info.size,
+                                  .flags = kBlobFlagMappable | kBlobFlagShareable,
+                                  .blobMem = kBlobMemHost3d,
+                                  .blobId = mapping_id});
+>>>>>>> efe075c4 (Make VirtGpu* interfaces)
     if (!blob) {
         return MAGMA_STATUS_INTERNAL_ERROR;
     }
@@ -389,7 +405,11 @@ MagmaClientContext* GetMagmaContext() {
 
         s_context = new MagmaClientContext(stream);
         auto render_node_fd =
+<<<<<<< HEAD
             VirtGpuDevice::getInstance(VirtGpuCapset::kCapsetGfxStreamVulkan).getDeviceHandle();
+=======
+            VirtGpuDevice::getInstance(VirtGpuCapset::kCapsetGfxStream)->getDeviceHandle();
+>>>>>>> efe075c4 (Make VirtGpu* interfaces)
         s_context->render_node_fd_ = SafeCast<int>(render_node_fd);
 
         ALOGE("Created new context\n");
