@@ -58354,6 +58354,7 @@ void VkEncoder::vkCmdSetColorWriteEnableEXT(VkCommandBuffer commandBuffer, uint3
 
 #endif
 #ifdef VK_GOOGLE_gfxstream
+#if defined(__ANDROID__)
 VkResult VkEncoder::vkMapMemoryIntoAddressSpaceGOOGLE(VkDevice device, VkDeviceMemory memory,
                                                       uint64_t* pAddress, uint32_t doLock) {
     std::optional<uint32_t> healthMonitorAnnotation_seqno = std::nullopt;
@@ -58477,6 +58478,7 @@ VkResult VkEncoder::vkMapMemoryIntoAddressSpaceGOOGLE(VkDevice device, VkDeviceM
     if (!queueSubmitWithCommandsEnabled && doLock) this->unlock();
     return vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return;
 }
+#endif // defined(__ANDROID__)
 
 void VkEncoder::vkUpdateDescriptorSetWithTemplateSizedGOOGLE(
     VkDevice device, VkDescriptorSet descriptorSet,

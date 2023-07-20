@@ -8129,6 +8129,7 @@ static void dynCheck_entry_vkCmdSetColorWriteEnableEXT(VkCommandBuffer commandBu
 }
 #endif
 #ifdef VK_GOOGLE_gfxstream
+#if defined(__ANDROID__)
 static VkResult entry_vkMapMemoryIntoAddressSpaceGOOGLE(VkDevice device, VkDeviceMemory memory,
                                                         uint64_t* pAddress) {
     AEMU_SCOPED_TRACE("vkMapMemoryIntoAddressSpaceGOOGLE");
@@ -8153,6 +8154,7 @@ static VkResult dynCheck_entry_vkMapMemoryIntoAddressSpaceGOOGLE(VkDevice device
         vkEnc->vkMapMemoryIntoAddressSpaceGOOGLE(device, memory, pAddress, true /* do lock */);
     return vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return;
 }
+#endif  // defined(__ANDROID__)
 static void entry_vkUpdateDescriptorSetWithTemplateSizedGOOGLE(
     VkDevice device, VkDescriptorSet descriptorSet,
     VkDescriptorUpdateTemplate descriptorUpdateTemplate, uint32_t imageInfoCount,
@@ -12977,10 +12979,12 @@ void* goldfish_vulkan_get_instance_proc_address(VkInstance instance, const char*
     }
 #endif
 #ifdef VK_GOOGLE_gfxstream
+#if defined(__ANDROID__)
     if (!strcmp(name, "vkMapMemoryIntoAddressSpaceGOOGLE")) {
         bool hasExt = resources->hasInstanceExtension(instance, "VK_GOOGLE_gfxstream");
         return hasExt ? (void*)dynCheck_entry_vkMapMemoryIntoAddressSpaceGOOGLE : nullptr;
     }
+#endif // defined(__ANDROID__)
     if (!strcmp(name, "vkUpdateDescriptorSetWithTemplateSizedGOOGLE")) {
         bool hasExt = resources->hasInstanceExtension(instance, "VK_GOOGLE_gfxstream");
         return hasExt ? (void*)dynCheck_entry_vkUpdateDescriptorSetWithTemplateSizedGOOGLE
@@ -15227,10 +15231,12 @@ void* goldfish_vulkan_get_device_proc_address(VkDevice device, const char* name)
     }
 #endif
 #ifdef VK_GOOGLE_gfxstream
+#if defined(__ANDROID__)
     if (!strcmp(name, "vkMapMemoryIntoAddressSpaceGOOGLE")) {
         bool hasExt = resources->hasDeviceExtension(device, "VK_GOOGLE_gfxstream");
         return hasExt ? (void*)entry_vkMapMemoryIntoAddressSpaceGOOGLE : nullptr;
     }
+#endif  // defined(__ANDROID__)
     if (!strcmp(name, "vkUpdateDescriptorSetWithTemplateSizedGOOGLE")) {
         bool hasExt = resources->hasDeviceExtension(device, "VK_GOOGLE_gfxstream");
         return hasExt ? (void*)entry_vkUpdateDescriptorSetWithTemplateSizedGOOGLE : nullptr;

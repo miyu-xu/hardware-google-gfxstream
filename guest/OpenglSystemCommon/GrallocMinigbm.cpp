@@ -25,6 +25,10 @@
 #include "virtgpu_drm.h"
 #endif
 
+#ifndef PAGE_SIZE
+#define PAGE_SIZE 4096
+#endif
+
 namespace gfxstream {
 
 #if defined(VIRTIO_GPU)

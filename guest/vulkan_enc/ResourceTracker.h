@@ -470,6 +470,7 @@ public:
         uint32_t descriptorCopyCount,
         const VkCopyDescriptorSet* pDescriptorCopies);
 
+#if defined(__ANDROID__)
     VkResult on_vkMapMemoryIntoAddressSpaceGOOGLE_pre(
         void* context,
         VkResult input_result,
@@ -482,6 +483,7 @@ public:
         VkDevice device,
         VkDeviceMemory memory,
         uint64_t* pAddress);
+#endif  // defined(__ANDROID__)
 
     VkResult on_vkCreateDescriptorUpdateTemplate(
         void* context, VkResult input_result,
