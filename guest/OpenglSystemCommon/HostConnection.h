@@ -21,6 +21,7 @@
 #include "Gralloc.h"
 #include "IOStream.h"
 #include "renderControl_enc.h"
+#include "Sync.h"
 #ifdef __Fuchsia__
 struct goldfish_dma_context;
 #else
@@ -183,6 +184,9 @@ public:
     ChecksumCalculator *checksumHelper() { return &m_checksumHelper; }
     gfxstream::Gralloc* grallocHelper() { return m_grallocHelper; }
 
+    gfxstream::SyncHelper* syncHelper() { return m_syncHelper; }
+    void setSyncHelperForTesting(gfxstream::SyncHelper* sync) { m_syncHelper = sync;}
+
     void flush() {
         if (m_stream) {
             m_stream->flush();
@@ -260,6 +264,7 @@ private:
 
     ChecksumCalculator m_checksumHelper;
     gfxstream::Gralloc* m_grallocHelper = nullptr;
+    gfxstream::SyncHelper* m_syncHelper = nullptr;
     ProcessPipe* m_processPipe = nullptr;
     std::string m_hostExtensions;
     bool m_noHostError;
