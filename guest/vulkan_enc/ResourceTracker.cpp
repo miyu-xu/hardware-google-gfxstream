@@ -135,11 +135,11 @@ inline_memfd_create(const char *name, unsigned int flags) {
 #endif
 #endif
 
-using android::base::Optional;
-using android::base::guest::AutoLock;
-using android::base::guest::RecursiveLock;
-using android::base::guest::Lock;
-using android::base::guest::WorkPool;
+using gfxstream::guest::Optional;
+using gfxstream::guest::AutoLock;
+using gfxstream::guest::RecursiveLock;
+using gfxstream::guest::Lock;
+using gfxstream::guest::WorkPool;
 
 namespace gfxstream {
 namespace vk {
@@ -405,10 +405,10 @@ public:
 
     struct VkBufferCollectionFUCHSIA_Info {
 #ifdef VK_USE_PLATFORM_FUCHSIA
-        android::base::Optional<
+        gfxstream::guest::Optional<
             fuchsia_sysmem::wire::BufferCollectionConstraints>
             constraints;
-        android::base::Optional<VkBufferCollectionPropertiesFUCHSIA> properties;
+        gfxstream::guest::Optional<VkBufferCollectionPropertiesFUCHSIA> properties;
 
         // the index of corresponding createInfo for each image format
         // constraints in |constraints|.
@@ -2567,7 +2567,7 @@ public:
         if (info_VkBufferCollectionFUCHSIA.find(buffer_collection) !=
             info_VkBufferCollectionFUCHSIA.end()) {
             info_VkBufferCollectionFUCHSIA[buffer_collection].constraints =
-                android::base::makeOptional(
+                gfxstream::guest::makeOptional(
                     std::move(setConstraintsResult.constraints));
             info_VkBufferCollectionFUCHSIA[buffer_collection].createInfoIndex =
                 std::move(setConstraintsResult.createInfoIndex);
@@ -2633,7 +2633,7 @@ public:
         if (info_VkBufferCollectionFUCHSIA.find(buffer_collection) !=
             info_VkBufferCollectionFUCHSIA.end()) {
             info_VkBufferCollectionFUCHSIA[buffer_collection].constraints =
-                android::base::makeOptional(setConstraintsResult.constraints);
+                gfxstream::guest::makeOptional(setConstraintsResult.constraints);
         }
 
         return VK_SUCCESS;
@@ -2807,7 +2807,7 @@ public:
             }
 
             info_VkBufferCollectionFUCHSIA[collection].properties =
-                android::base::makeOptional(*pProperties);
+                gfxstream::guest::makeOptional(*pProperties);
 
             // We only do a shallow copy so we should remove all pNext pointers.
             info_VkBufferCollectionFUCHSIA[collection].properties->pNext =
@@ -5282,7 +5282,7 @@ public:
             if (result.ok() && result->status == ZX_OK) {
                 auto& info = result->buffer_collection_info;
                 if (index < info.buffer_count) {
-                    vmo = android::base::makeOptional(
+                    vmo = gfxstream::guest::makeOptional(
                             std::move(info.buffers[index].vmo));
                 }
             } else {
