@@ -98,7 +98,7 @@ cc_defaults {
         // See build/soong/cc/config/global.go
         "-DUSING_ANDROID_BP",
         "-D_FILE_OFFSET_BITS=64",
-        "-DVIRGL_RENDERER_UNSTABLE_APIS",
+        "-DSTREAM_RENDERER_DEBUG_LEVEL=1",
         "-Wno-unreachable-code-loop-increment",
         "-Wno-unused-parameter",
         "-Wno-unused-function",
