@@ -21,8 +21,7 @@
 #include <atomic>
 #include <vector>
 
-namespace android {
-namespace base {
+namespace gfxstream {
 namespace guest {
 
 // Tests basic default construction/deconstruction.
@@ -283,6 +282,5 @@ TEST(WorkPool, NestedWaitAll) {
     EXPECT_EQ(1, y);
 }
 
-} // namespace android
-} // namespace base
 } // namespace guest
+} // namespace gfxstream
