@@ -5,6 +5,7 @@ package {
 
 cc_library_static {
     name: "libGoldfishAddressSpace",
+    host_supported: true,
     vendor: true,
     srcs: [
         "goldfish_address_space.cpp",

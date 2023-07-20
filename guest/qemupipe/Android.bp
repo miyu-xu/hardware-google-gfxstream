@@ -21,12 +21,14 @@ package {
 
 cc_library_headers {
     name: "libqemupipe-types.ranchu",
+    host_supported: true,
     vendor_available: true,
     export_include_dirs: ["include-types"],
 }
 
 cc_library {
     name: "libqemupipe.ranchu",
+    host_supported: true,
     vendor_available: true,
     srcs: [
         "qemu_pipe_common.cpp",
