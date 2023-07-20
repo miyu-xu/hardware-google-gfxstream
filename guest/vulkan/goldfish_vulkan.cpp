@@ -637,7 +637,7 @@ struct FrameTracingState {
     bool tracingEnabled = false;
     void onSwapBuffersSuccessful(ExtendedRCEncoderContext* rcEnc) {
 #ifdef GFXSTREAM
-        bool current = android::base::isTracingEnabled();
+        bool current = gfxstream::guest::isTracingEnabled();
         // edge trigger
         if (current && !tracingEnabled) {
             if (rcEnc->hasHostSideTracing()) {
