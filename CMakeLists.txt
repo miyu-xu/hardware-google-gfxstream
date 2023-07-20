@@ -35,10 +35,7 @@ if (WIN32)
     add_definitions("-DUNICODE -D_UNICODE -DNOMINMAX -DEMUGL_BUILD -DVK_USE_PLATFORM_WIN32_KHR -DBUILDING_EMUGL_COMMON_SHARED")
 endif()
 
-option(VIRGL_RENDERER_UNSTABLE_APIS "Use unstable virglrenderer APIs" ON)
-if(VIRGL_RENDERER_UNSTABLE_APIS)
-    add_definitions(-DVIRGL_RENDERER_UNSTABLE_APIS)
-endif()
+add_definitions(-DSTREAM_RENDERER_DEBUG_LEVEL=1)
 
 option(ASTC_CPU_DECODING "Enable decoding ASTC textures on the CPU" OFF)
 
