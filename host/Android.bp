@@ -24,6 +24,7 @@ cc_library_shared {
         "-Wno-unused-variable",
         "-Wno-unused-function",
         "-Wno-unreachable-code-loop-increment",
+        "-DSTREAM_RENDERER_DEBUG_LEVEL=1"
     ],
     static_libs: [
         "gfxstream_base",
