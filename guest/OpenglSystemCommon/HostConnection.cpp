@@ -41,9 +41,9 @@
 #define DPRINT(...)
 #endif
 
-using android::base::guest::CreateHealthMonitor;
-using android::base::guest::HealthMonitor;
-using android::base::guest::HealthMonitorConsumerBasic;
+using gfxstream::guest::CreateHealthMonitor;
+using gfxstream::guest::HealthMonitor;
+using gfxstream::guest::HealthMonitorConsumerBasic;
 using gfxstream::GoldfishGralloc;
 using gfxstream::IOStream;
 using gfxstream::MinigbmGralloc;
@@ -108,7 +108,7 @@ using gfxstream::vk::VkEncoder;
 #include "TcpStream.h"
 #include "ThreadInfo.h"
 
-using android::base::guest::getCurrentThreadId;
+using gfxstream::guest::getCurrentThreadId;
 
 #ifdef VIRTIO_GPU
 
@@ -217,7 +217,7 @@ HostConnection::HostConnection()
       m_noHostError(true),
       m_rendernodeFd(-1) {
 #ifdef HOST_BUILD
-    android::base::initializeTracing();
+    gfxstream::guest::initializeTracing();
 #endif
 }
 
@@ -398,7 +398,7 @@ std::unique_ptr<HostConnection> HostConnection::connect(uint32_t capset_id) {
 #if defined(__linux__) || defined(__ANDROID__)
     auto rcEnc = con->rcEncoder();
     if (rcEnc != nullptr) {
-        auto processName = android::base::guest::getProcessName();
+        auto processName = gfxstream::guest::getProcessName();
         if (!processName.empty()) {
             rcEnc->rcSetProcessMetadata(
                 rcEnc, const_cast<char*>("process_name"),
