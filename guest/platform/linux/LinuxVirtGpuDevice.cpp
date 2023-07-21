@@ -96,13 +96,15 @@ LinuxVirtGpuDevice::LinuxVirtGpuDevice(enum VirtGpuCapset capset) {
         ctx_set_params[1].param = VIRTGPU_CONTEXT_PARAM_CAPSET_ID;
         ctx_set_params[1].value = static_cast<uint32_t>(capset);
         init.num_params++;
-    }
+
 
     init.ctx_set_params = (unsigned long long)&ctx_set_params[0];
     ret = drmIoctl(mDeviceHandle, DRM_IOCTL_VIRTGPU_CONTEXT_INIT, &init);
     if (ret) {
         ALOGE("DRM_IOCTL_VIRTGPU_CONTEXT_INIT failed with %s, continuing without context...",
                strerror(errno));
+    }
+
     }
 }
 
@@ -212,11 +214,6 @@ int LinuxVirtGpuDevice::execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpu
     return 0;
 }
 
-namespace platform_internal {
-
-VirtGpuDevice* getPlatformVirtGpuDeviceInstance(enum VirtGpuCapset capset) {
-    static LinuxVirtGpuDevice sInstance(capset);
-    return &sInstance;
+VirtGpuDevice* createPlateformVirtGpuDevice(enum VirtGpuCapset capset) {
+    return new LinuxVirtGpuDevice(capset);
 }
-
-}  // namespace platform_internal
