@@ -508,9 +508,20 @@ EGLBoolean egl_window_surface_t::init()
     if (anwHelper->dequeueBuffer(nativeWindow, &buffer, &acquireFenceFd) != 0) {
         setErrorReturn(EGL_BAD_ALLOC, EGL_FALSE);
     }
-
     if (acquireFenceFd > 0) {
-        close(acquireFenceFd);
+        auto* syncHelper = hostCon->syncHelper();
+
+        int waitRet = syncHelper->wait(acquireFenceFd, /* wait forever */-1);
+        if (waitRet < 0) {
+            ALOGE("Failed to wait for window surface's dequeued buffer.");
+            anwHelper->cancelBuffer(nativeWindow, buffer);
+        }
+
+        syncHelper->close(acquireFenceFd);
+
+        if (waitRet < 0) {
+            setErrorReturn(EGL_BAD_ALLOC, EGL_FALSE);
+        }
     }
 
     int bufferWidth = anwHelper->getWidth(buffer);
