@@ -120,6 +120,9 @@ class VirtGpuBlob {
 
     virtual VirtGpuBlobMappingPtr createMapping(void) = 0;
     virtual int exportBlob(struct VirtGpuExternalHandle& handle) = 0;
+
+    virtual int transferFromHost(uint32_t offset, uint32_t size) = 0;
+    virtual int transferToHost(uint32_t offset, uint32_t size) = 0;
 };
 
 class VirtGpuBlobMapping {

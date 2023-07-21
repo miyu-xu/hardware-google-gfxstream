@@ -111,3 +111,59 @@ int LinuxVirtGpuBlob::wait() {
 
     return 0;
 }
+
+int LinuxVirtGpuBlob::transferToHost(uint32_t offset, uint32_t size) {
+    int ret;
+    struct drm_virtgpu_3d_transfer_to_host xfer = {0};
+
+    xfer.box.x = offset;
+    xfer.box.y = 0;
+    xfer.box.w = size;
+    xfer.box.h = 1;
+    xfer.box.d = 1;
+
+    int retry = 0;
+    do {
+        if (retry > 0 && (retry % 10 == 0)) {
+            ALOGE("DRM_IOCTL_VIRTGPU_TRANSFER_TO_HOST failed with EBUSY for %d times.", retry);
+        }
+        xfer.bo_handle = mBlobHandle;
+        ret = drmIoctl(mDeviceHandle, DRM_IOCTL_VIRTGPU_TRANSFER_TO_HOST, &xfer);
+        ++retry;
+    } while (ret < 0 && errno == EBUSY);
+
+    if (ret < 0) {
+        ALOGE("DRM_IOCTL_VIRTGPU_TRANSFER_TO_HOST failed with %s", strerror(errno));
+        return ret;
+    }
+
+    return 0;
+}
+
+int LinuxVirtGpuBlob::transferFromHost(uint32_t offset, uint32_t size) {
+    int ret;
+    struct drm_virtgpu_3d_transfer_from_host xfer = {0};
+
+    xfer.box.x = offset;
+    xfer.box.y = 0;
+    xfer.box.w = size;
+    xfer.box.h = 1;
+    xfer.box.d = 1;
+
+    int retry = 0;
+    do {
+        if (retry > 0 && (retry % 10 == 0)) {
+            ALOGE("DRM_IOCTL_VIRTGPU_TRANSFER_FROM_HOST failed with EBUSY for %d times.", retry);
+        }
+        xfer.bo_handle = mBlobHandle;
+        ret = drmIoctl(mDeviceHandle, DRM_IOCTL_VIRTGPU_TRANSFER_FROM_HOST, &xfer);
+        ++retry;
+    } while (ret < 0 && errno == EBUSY);
+
+    if (ret < 0) {
+        ALOGE("DRM_IOCTL_VIRTGPU_TRANSFER_FROM_HOST failed with %s", strerror(errno));
+        return ret;
+    }
+
+    return 0;
+}
