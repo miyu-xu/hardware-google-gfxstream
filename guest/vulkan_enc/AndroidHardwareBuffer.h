@@ -40,6 +40,7 @@ VkResult getAndroidHardwareBufferPropertiesANDROID(
     VkAndroidHardwareBufferPropertiesANDROID* pProperties);
 
 VkResult getMemoryAndroidHardwareBufferANDROID(
+    Gralloc* grallocHelper,
     struct AHardwareBuffer **pBuffer);
 
 VkResult importAndroidHardwareBuffer(
@@ -48,6 +49,7 @@ VkResult importAndroidHardwareBuffer(
     struct AHardwareBuffer **importOut);
 
 VkResult createAndroidHardwareBuffer(
+    Gralloc* grallocHelper,
     bool hasDedicatedImage,
     bool hasDedicatedBuffer,
     const VkExtent3D& imageExtent,
