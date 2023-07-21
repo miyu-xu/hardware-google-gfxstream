@@ -516,7 +516,8 @@ public:
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
         if (memInfo.ahw) {
-            AHardwareBuffer_release(memInfo.ahw);
+            auto* gralloc = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper();
+            gralloc->release(memInfo.ahw);
         }
 #endif
 
@@ -1714,8 +1715,8 @@ public:
 
         auto& info = memoryIt->second;
 
-        VkResult queryRes =
-            getMemoryAndroidHardwareBufferANDROID(&info.ahw);
+        auto* gralloc = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper();
+        VkResult queryRes = getMemoryAndroidHardwareBufferANDROID(gralloc, &info.ahw);
 
         if (queryRes != VK_SUCCESS) return queryRes;
 
@@ -3443,6 +3444,7 @@ public:
 
             VkResult ahbCreateRes =
                 createAndroidHardwareBuffer(
+                    ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper(),
                     hasDedicatedImage,
                     hasDedicatedBuffer,
                     imageExtent,
@@ -3469,13 +3471,11 @@ public:
 
         if (ahw) {
             D("%s: Import AHardwareBuffer", __func__);
-            const uint32_t hostHandle =
-                ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper()
-                    ->getHostHandle(AHardwareBuffer_getNativeHandle(ahw));
 
-            AHardwareBuffer_Desc ahbDesc = {};
-            AHardwareBuffer_describe(ahw, &ahbDesc);
-            if (ahbDesc.format == AHARDWAREBUFFER_FORMAT_BLOB) {
+            auto* gralloc = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper();
+
+            const uint32_t hostHandle = gralloc->getHostHandle(ahw);
+            if (gralloc->getFormat(ahw) == AHARDWAREBUFFER_FORMAT_BLOB) {
                 importBufferInfo.buffer = hostHandle;
                 vk_append_struct(&structChainIter, &importBufferInfo);
             } else {
