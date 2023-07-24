@@ -86,6 +86,7 @@ inc_glm = include_directories('third-party/glm/include')
 #================#
 
 subdir('gl-host-common')
+subdir('guest')
 subdir('host')
 
 #================#

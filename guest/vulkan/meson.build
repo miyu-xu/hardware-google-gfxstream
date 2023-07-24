@@ -20,6 +20,8 @@ lib_vulkan_cereal = shared_library(
    install: true,
 )
 
+with_vulkan_icd_dir = join_paths(get_option('datadir'), 'vulkan/icd.d')
+
 cereal_icd = custom_target(
   'cereal_icd',
   input : [vk_icd_gen, vk_api_xml],
