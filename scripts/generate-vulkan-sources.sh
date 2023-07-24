@@ -28,11 +28,11 @@ then
     AOSP_DIR=$(pwd)/../../..
     export GOLDFISH_OPENGL_DIR=$AOSP_DIR/device/generic/goldfish-opengl
     export VULKAN_CEREAL_DIR=$AOSP_DIR/hardware/google/gfxstream
-    export VULKAN_REGISTRY_DIR=$AOSP_DIR/hardware/google/gfxstream/codegen/vulkan
+    export VULKAN_REGISTRY_DIR=$AOSP_DIR/hardware/google/gfxstream/codegen/vulkan/vulkan-docs
 else
     export GOLDFISH_OPENGL_DIR=$1
     export VULKAN_CEREAL_DIR=$2
-    export VULKAN_REGISTRY_DIR=codegen/vulkan
+    export VULKAN_REGISTRY_DIR=codegen/vulkan/vulkan-docs
 fi
 
 # Detect clang-format
@@ -89,7 +89,7 @@ if [ -d $VK_CEREAL_HOST_DECODER_DIR ]; then
     OUT_DIR=$VULKAN_HEADERS_ROOT/include
     OUT_FILE_BASENAME="vk_android_native_buffer.h"
 
-    python3 codegen/vulkan/scripts/genvk.py -registry $VULKAN_REGISTRY_XML_DIR/vk.xml -o $OUT_DIR \
+    python3 $VULKAN_REGISTRY_SCRIPTS_DIR/genvk.py -registry $VULKAN_REGISTRY_XML_DIR/vk.xml -o $OUT_DIR \
         $OUT_FILE_BASENAME
 
     if [ $? -ne 0 ]; then
@@ -106,7 +106,7 @@ fi
 for OUT_DIR in $VK_CEREAL_HOST_DECODER_DIR $VK_CEREAL_GUEST_ENCODER_DIR; do
     if [ -d "$OUT_DIR" ]; then
         OUT_FILE_BASENAME=vulkan_gfxstream.h
-        python3 codegen/vulkan/scripts/genvk.py -registry $VULKAN_REGISTRY_XML_DIR/vk.xml -o $OUT_DIR \
+        python3 $VULKAN_REGISTRY_SCRIPTS_DIR/genvk.py -registry $VULKAN_REGISTRY_XML_DIR/vk.xml -o $OUT_DIR \
             $OUT_FILE_BASENAME
 
         if [ $? -ne 0 ]; then
