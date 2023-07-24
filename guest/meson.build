@@ -1,23 +1,6 @@
 # Copyright 2022 Android Open Source Project
 # SPDX-License-Identifier: MIT
 
-project('gfxstream', 'cpp', 'c',
-         version : '0.0.1',
-         license : 'MIT OR Apache-2.0',
-         default_options : ['cpp_std=gnu++17'])
-
-cc = meson.get_compiler('cpp')
-prog_python = import('python').find_installation('python3')
-
-#===============#
-# Options       #
-#===============#
-
-with_vulkan_icd_dir = get_option('vulkan-icd-dir')
-if with_vulkan_icd_dir == ''
-  with_vulkan_icd_dir = join_paths(get_option('datadir'), 'vulkan/icd.d')
-endif
-
 #===============#
 # Configuration #
 #===============#
