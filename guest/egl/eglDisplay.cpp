@@ -26,6 +26,7 @@
 #include <dlfcn.h>
 #include <GLES3/gl31.h>
 
+#include <aemu/base/Path.h>
 #include <system/graphics.h>
 
 static const int systemEGLVersionMajor = 1;
@@ -278,23 +279,22 @@ EGLClient_glesInterface *eglDisplay::loadGLESClientAPI(const char *basename,
                                                        EGLClient_eglInterface *eglIface,
                                                        void **libHandle)
 {
-#ifdef HOST_BUILD
-    std::string baseDir =
-        gfxstream::guest::System::get()->getProgramDirectory();
-    std::string path =
-        gfxstream::guest::pj({
-            baseDir, "lib64", std::string(basename) + LIBSUFFIX});
-    void *lib = dlopen(path.c_str(), RTLD_NOW);
-#else
-    std::string path(PARTITION);
+    std::string path;
+#if defined(__ANDROID__)
+    path = PARTITION;
     path += LIBDIR;
     path += basename;
     path += LIBSUFFIX;
-    void *lib = dlopen(path.c_str(), RTLD_NOW);
+#else
+    path = gfxstream::guest::getProgramDirectory();
+    path += "/";
+    path += basename;
+    path += LIBSUFFIX;
 #endif
 
+    void *lib = dlopen(path.c_str(), RTLD_NOW);
     if (!lib) {
-        ALOGE("Failed to dlopen %s", basename);
+        ALOGE("Failed to dlopen %s", path.c_str());
         return NULL;
     }
 
