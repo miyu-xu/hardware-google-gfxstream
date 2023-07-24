@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3d0d97bc_6aeff83f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-24T20:25:07Z",
+      "side": 1,
+      "message": "I like the idea of a unified Meson build, rather than two projects. \n\nCan we:\n\n- Try not to build the guest libraries if the host os is MacOS or Windows for now?  I think there\u0027s not too much work to enable the host libraries to be built on MacOS/Windows, but for the guest side there\u0027s not a use case.\n\n- Also add an array build option to specify [\"host\", \"guest\", or \"auto\"].  For \"auto\" we can try to build them both on Linux systems.",
+      "revId": "fb6c3e420508a0006afa6c3bc6e88a78b1367239",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
