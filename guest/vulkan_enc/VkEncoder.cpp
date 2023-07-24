@@ -61,8 +61,8 @@ namespace vk {
 
 using namespace gfxstream::vk;
 
-using gfxstream::guest::BumpPool;
 using gfxstream::guest::AutoLock;
+using gfxstream::guest::BumpPool;
 using gfxstream::guest::Lock;
 
 #include "VkEncoder.cpp.inl"
