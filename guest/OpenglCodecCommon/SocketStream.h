@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "IOStream.h"
 
-class SocketStream : public gfxstream::IOStream {
+class SocketStream : public gfxstream::guest::IOStream {
 public:
     typedef enum { ERR_INVALID_SOCKET = -1000 } SocketStreamError;
 
