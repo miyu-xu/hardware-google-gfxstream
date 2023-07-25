@@ -9994,14 +9994,14 @@ typedef void <name>CAMetalLayer</name>;
             <param><type>VkDescriptorSetLayoutSupport</type>* <name>pSupport</name></param>
         </command>
         <command name="vkGetDescriptorSetLayoutSupportKHR"                     alias="vkGetDescriptorSetLayoutSupport"/>
-        <command>
+        <command successcodes="VK_SUCCESS">
             <proto><type>VkResult</type> <name>vkGetSwapchainGrallocUsageANDROID</name></proto>
             <param><type>VkDevice</type> <name>device</name></param>
             <param><type>VkFormat</type> <name>format</name></param>
             <param><type>VkImageUsageFlags</type> <name>imageUsage</name></param>
             <param><type>int</type>* <name>grallocUsage</name></param>
         </command>
-        <command>
+        <command successcodes="VK_SUCCESS">
             <proto><type>VkResult</type> <name>vkAcquireImageANDROID</name></proto>
             <param><type>VkDevice</type> <name>device</name></param>
             <param><type>VkImage</type> <name>image</name></param>
@@ -10009,7 +10009,7 @@ typedef void <name>CAMetalLayer</name>;
             <param><type>VkSemaphore</type> <name>semaphore</name></param>
             <param><type>VkFence</type> <name>fence</name></param>
         </command>
-        <command>
+        <command successcodes="VK_SUCCESS">
             <proto><type>VkResult</type> <name>vkQueueSignalReleaseImageANDROID</name></proto>
             <param><type>VkQueue</type> <name>queue</name></param>
             <param optional="true"><type>uint32_t</type> <name>waitSemaphoreCount</name></param>
