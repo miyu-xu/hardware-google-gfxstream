@@ -16,6 +16,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
+#include <vulkan/vk_android_native_buffer.h>
 #include "goldfish_vk_private_defs.h"
 
 template <class T> struct vk_get_vk_struct_id;

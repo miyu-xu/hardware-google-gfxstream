@@ -57,6 +57,7 @@ fi
 
 cd $PROJECT_ROOT
 
+export GFXSTREAM_COMMON_INCLUDE_DIR=$VULKAN_CEREAL_DIR/common/vulkan/include/vulkan
 export VK_CEREAL_GUEST_ENCODER_DIR=$VULKAN_CEREAL_DIR/guest/vulkan_enc
 export VK_CEREAL_GUEST_HAL_DIR=$VULKAN_CEREAL_DIR/guest/vulkan
 export VK_CEREAL_HOST_DECODER_DIR=$VULKAN_CEREAL_DIR/host/vulkan
@@ -86,7 +87,7 @@ python3 $VULKAN_REGISTRY_SCRIPTS_DIR/genvk.py -registry $VULKAN_REGISTRY_XML_DIR
 
 # Generate VK_ANDROID_native_buffer specific Vulkan definitions.
 if [ -d $VK_CEREAL_HOST_DECODER_DIR ]; then
-    OUT_DIR=$VULKAN_HEADERS_ROOT/include
+    OUT_DIR=$VULKAN_HEADERS_ROOT/include/vulkan
     OUT_FILE_BASENAME="vk_android_native_buffer.h"
 
     python3 $VULKAN_REGISTRY_SCRIPTS_DIR/genvk.py -registry $VULKAN_REGISTRY_XML_DIR/vk.xml -o $OUT_DIR \
