@@ -33,7 +33,7 @@
 
 #include "aemu/base/BumpPool.h"
 #include "goldfish_vk_private_defs.h"
-#include "vk_android_native_buffer.h"
+#include "vulkan/vk_android_native_buffer.h"
 #include "vulkan_gfxstream.h"
 using android::base::Allocator;
 using android::base::BumpPool;
