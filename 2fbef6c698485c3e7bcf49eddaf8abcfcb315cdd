@@ -104,6 +104,24 @@
       "parentUuid": "bf559aae_d57b91f8",
       "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22c4eafc_4a8841d4",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T20:09:34Z",
+      "side": 1,
+      "message": "Nit: Could we put this in the header so that readers looking at the callback documentation know how to configure it?",
+      "parentUuid": "2809c3f4_5147a52e",
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
