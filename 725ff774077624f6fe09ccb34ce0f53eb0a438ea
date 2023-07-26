@@ -16,6 +16,24 @@
       "message": "Can you make sure the guest Linux flow keeps building (i.e, modify the Meson files):\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#guest-side-gfxstream-libraries\n\nAlso, I think you might need to modify it to keep `stub/*` too (that\u0027s what the Fuchsia build uses, but you should be able to test stub on Linux too).",
       "revId": "725ff774077624f6fe09ccb34ce0f53eb0a438ea",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "76e54ac1_02295626",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T19:54:38Z",
+      "side": 1,
+      "message": "`meson -Ddefault_library\u003dstatic x86_64_build/ \u0026\u0026 ninja -C amd64-build` appears to be working now.",
+      "parentUuid": "b89843ac_b7677b60",
+      "revId": "725ff774077624f6fe09ccb34ce0f53eb0a438ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
