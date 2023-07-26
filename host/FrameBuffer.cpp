@@ -2377,6 +2377,7 @@ void FrameBuffer::destroySharedTrivialContext(EGLContext context,
 }
 
 bool FrameBuffer::post(HandleType p_colorbuffer, bool needLockAndBind) {
+    //printf("posing %d\n", p_colorbuffer);
     if (m_guestUsesAngle) {
         flushColorBufferFromGl(p_colorbuffer);
     }
