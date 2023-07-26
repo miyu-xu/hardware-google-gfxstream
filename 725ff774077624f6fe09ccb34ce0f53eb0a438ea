@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b89843ac_b7677b60",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T17:18:00Z",
+      "side": 1,
+      "message": "Can you make sure the guest Linux flow keeps building (i.e, modify the Meson files):\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#guest-side-gfxstream-libraries\n\nAlso, I think you might need to modify it to keep `stub/*` too (that\u0027s what the Fuchsia build uses, but you should be able to test stub on Linux too).",
+      "revId": "725ff774077624f6fe09ccb34ce0f53eb0a438ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
