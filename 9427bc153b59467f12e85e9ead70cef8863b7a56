@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c14e0d7_cb0f3bad",
+        "filename": "guest/OpenglSystemCommon/VirtioGpuPipeStream.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T20:55:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cb4f674a_08416ca2",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 20
+      },
+      "revId": "9427bc153b59467f12e85e9ead70cef8863b7a56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fcff4d1a_df99b09b",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "613f3eed_18d77e4e",
+        "filename": "guest/platform/include/VirtGpu.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T20:55:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fcff4d1a_df99b09b",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 0
+      },
+      "revId": "9427bc153b59467f12e85e9ead70cef8863b7a56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "49298f06_a1141358",
@@ -60,6 +108,30 @@
       "writtenOn": "2023-07-26T17:26:21Z",
       "side": 1,
       "message": "newer versions of the kernel don\u0027t return EBUSY at all on `transfer_to_host` or `transfer_from host`.  I think that could be an artifact of the initial implementation and should be fine to remove the EBUSY checks in both instances.\n`",
+      "range": {
+        "startLine": 118,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 0
+      },
+      "revId": "9427bc153b59467f12e85e9ead70cef8863b7a56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0be80a6d_1448cf17",
+        "filename": "guest/platform/linux/LinuxVirtGpuBlob.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T20:55:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49298f06_a1141358",
       "range": {
         "startLine": 118,
         "startChar": 0,
