@@ -34,7 +34,7 @@
 #include <memory>
 
 #include "VkDecoderContext.h"
-#include "vk_android_native_buffer.h"
+#include "vulkan/vk_android_native_buffer.h"
 #include "vulkan_gfxstream.h"
 
 namespace android {
