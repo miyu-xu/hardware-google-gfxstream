@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cee39548_8e3ab18c",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T16:17:15Z",
+      "side": 1,
+      "message": "I think if you do something like\n\n```\n#define stream_renderer_error(format, ...)                                           \n    do {\n        stream_renderer_debug(STREAM_RENDERER_DEBUG_ERROR, \n                              \"[%s(%d)] \" format,\n                              __FILE__,\n                              __LINE__,\n                              ##__VA_ARGS__);\n    } while (0)\n```\n\nthen you can simplify `stream_renderer_debug()` above to \n\n```\nvoid stream_renderer_debug(uint32_t type, const char* format, ...) {\n    char buf[MAX_DEBUG_BUFFER_SIZE];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    \n    ...\n}\n```\n\nwhich just needs the single `*nprintf`.",
+      "range": {
+        "startLine": 90,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 15
+      },
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2921ad5_9f0d67ea",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T16:17:15Z",
+      "side": 1,
+      "message": "Can we drop `debug` from the name of the callback + struct + enums and replace it with log? The commit message mentions redirecting logging to handlers and I think logging does not have the nuisance that it is disabled in release builds while we want errors (and potentially fatal logs) to always be logged (and potentially abort). I think `STREAM_RENDERER_LOGGING_LEVEL_ERROR` is easier to parse than `STREAM_RENDERER_DEBUG_ERROR` which sounds like it contains two different levels.",
+      "range": {
+        "startLine": 109,
+        "startChar": 22,
+        "endLine": 109,
+        "endChar": 28
+      },
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
