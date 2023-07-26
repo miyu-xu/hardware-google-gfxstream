@@ -49,6 +49,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d4742792_083eee7e",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T19:12:24Z",
+      "side": 1,
+      "message": "It sort of modeled on the Vulkan debug callback.\n\n https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDebugReportCallbackEXT.html\n \nGenerally, I think \"VulkanDebugCallback\" or \"RutabagaDebugCallback\" sounds a bit better than \"VulkanLogCallback\" or \"RutabagLogCallback\", and plus the rutabaga side already landed, so perhaps not worth chaning.\n\nBut I did add  `STREAM_RENDERER_LOG_LEVEL\" preprocrssor to control log-levels.  I think the log levels would be subset of the debug types, assuming we get the metrics code transition to this interface as well.",
+      "parentUuid": "e2921ad5_9f0d67ea",
+      "range": {
+        "startLine": 109,
+        "startChar": 22,
+        "endLine": 109,
+        "endChar": 28
+      },
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf559aae_d57b91f8",
         "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
         "patchSetId": 4
@@ -60,6 +84,24 @@
       "writtenOn": "2023-07-26T16:20:54Z",
       "side": 1,
       "message": "Could we also do a \n\n```\n#ifndef STREAM_RENDERER_LOGGING_LEVEL\n#define STREAM_RENDERER_LOGGING_LEVEL STREAM_RENDERER_LOGGING_LEVEL_ERROR\n#endif\n```\n\nhere? This helps document what needs to be set so readers don\u0027t have to look into the logging implementation to find out. Potentially, this let\u0027s you drop parts of aosp/2673897 and aosp/2675628.",
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2809c3f4_5147a52e",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T19:12:24Z",
+      "side": 1,
+      "message": "Done, dropped some the changes in subsequent patches too.",
+      "parentUuid": "bf559aae_d57b91f8",
       "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
