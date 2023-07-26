@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e525d765_1dc3c4bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-07-26T21:12:43Z",
+      "side": 1,
+      "message": "Try to build the goldfish target as well? (lunch sdk_phone_x86_64-userdebug)",
+      "revId": "65811a5c4e38a5d166f6f89f1c6b52aeeda8b058",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
