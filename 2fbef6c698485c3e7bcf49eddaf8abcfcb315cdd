@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "91ad981c_c7bd3b3d",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T22:02:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cee39548_8e3ab18c",
+      "range": {
+        "startLine": 90,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 15
+      },
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e2921ad5_9f0d67ea",
@@ -120,6 +144,24 @@
       "side": 1,
       "message": "Nit: Could we put this in the header so that readers looking at the callback documentation know how to configure it?",
       "parentUuid": "2809c3f4_5147a52e",
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eabf2a5f_dae33fe5",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T22:02:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22c4eafc_4a8841d4",
       "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
