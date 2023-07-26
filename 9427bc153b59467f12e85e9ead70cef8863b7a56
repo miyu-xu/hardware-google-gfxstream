@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb4f674a_08416ca2",
+        "filename": "guest/OpenglSystemCommon/VirtioGpuPipeStream.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T17:26:21Z",
+      "side": 1,
+      "message": "nit: extra white space",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 20
+      },
+      "revId": "9427bc153b59467f12e85e9ead70cef8863b7a56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fcff4d1a_df99b09b",
+        "filename": "guest/platform/include/VirtGpu.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T17:26:21Z",
+      "side": 1,
+      "message": "Add to stub build as well.",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 0
+      },
+      "revId": "9427bc153b59467f12e85e9ead70cef8863b7a56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49298f06_a1141358",
+        "filename": "guest/platform/linux/LinuxVirtGpuBlob.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-26T17:26:21Z",
+      "side": 1,
+      "message": "newer versions of the kernel don\u0027t return EBUSY at all on `transfer_to_host` or `transfer_from host`.  I think that could be an artifact of the initial implementation and should be fine to remove the EBUSY checks in both instances.\n`",
+      "range": {
+        "startLine": 118,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 0
+      },
+      "revId": "9427bc153b59467f12e85e9ead70cef8863b7a56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
