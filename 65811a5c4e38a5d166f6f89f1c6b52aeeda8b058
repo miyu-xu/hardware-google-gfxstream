@@ -16,6 +16,24 @@
       "message": "Try to build the goldfish target as well? (lunch sdk_phone_x86_64-userdebug)",
       "revId": "65811a5c4e38a5d166f6f89f1c6b52aeeda8b058",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bba16237_373c8128",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T22:14:54Z",
+      "side": 1,
+      "message": "Updated commit message. `lunch sdk_phone_x86_64-userdebug \u0026\u0026 m` builds on `aosp/main`",
+      "parentUuid": "e525d765_1dc3c4bc",
+      "revId": "65811a5c4e38a5d166f6f89f1c6b52aeeda8b058",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
