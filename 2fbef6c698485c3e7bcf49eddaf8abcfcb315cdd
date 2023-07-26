@@ -45,6 +45,23 @@
       },
       "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf559aae_d57b91f8",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-26T16:20:54Z",
+      "side": 1,
+      "message": "Could we also do a \n\n```\n#ifndef STREAM_RENDERER_LOGGING_LEVEL\n#define STREAM_RENDERER_LOGGING_LEVEL STREAM_RENDERER_LOGGING_LEVEL_ERROR\n#endif\n```\n\nhere? This helps document what needs to be set so readers don\u0027t have to look into the logging implementation to find out. Potentially, this let\u0027s you drop parts of aosp/2673897 and aosp/2675628.",
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
