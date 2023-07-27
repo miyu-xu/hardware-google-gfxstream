@@ -22,6 +22,30 @@
       },
       "revId": "f6d3fe730a45ab6a6d0f7609fd45f5915c50e630",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88c1897e_bbde5ca6",
+        "filename": "guest/OpenglSystemCommon/VirtioGpuPipeStreamFuchsia.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-27T22:59:45Z",
+      "side": 1,
+      "message": "See this for an example of how we can get pipe streams:\n\nhttps://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2673901/10",
+      "parentUuid": "95540a53_0dce78bf",
+      "range": {
+        "startLine": 1,
+        "startChar": 2,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "f6d3fe730a45ab6a6d0f7609fd45f5915c50e630",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
