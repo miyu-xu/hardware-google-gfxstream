@@ -147,7 +147,7 @@ class VirtGpuBlobMapping {
 
 class VirtGpuDevice {
   public:
-    static VirtGpuDevice& getInstance(enum VirtGpuCapset capset = kCapsetNone);
+    static VirtGpuDevice& getInstance();
     int64_t getDeviceHandle(void);
 
     struct VirtGpuCaps getCaps(void);
