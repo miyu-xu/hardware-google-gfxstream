@@ -16,8 +16,8 @@
 
 #include "VirtGpu.h"
 
-VirtGpuDevice& VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
-    static VirtGpuDevice mInstance(capset);
+VirtGpuDevice& VirtGpuDevice::getInstance() {
+    static VirtGpuDevice mInstance(kCapsetGfxStream);
     return mInstance;
 }
 
