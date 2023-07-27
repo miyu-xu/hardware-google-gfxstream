@@ -35,8 +35,8 @@
 #define VIRGL_BIND_CUSTOM (1 << 17)
 #define PIPE_BUFFER 0
 
-VirtGpuDevice& VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
-    static VirtGpuDevice mInstance(capset);
+VirtGpuDevice& VirtGpuDevice::getInstance() {
+    static VirtGpuDevice mInstance(kCapsetGfxStream);
     return mInstance;
 }
 
