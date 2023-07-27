@@ -29,22 +29,12 @@
 #include <errno.h>
 
 #ifdef __Fuchsia__
-#include <fidl/fuchsia.hardware.goldfish/cpp/wire.h>
-#include <lib/zx/vmo.h>
-
-#include "services/service_connector.h"
-
-#define GET_STATUS_SAFE(result, member) \
-    ((result).ok() ? ((result)->member) : ZX_OK)
-
-static QEMU_PIPE_HANDLE   sProcDevice = 0;
-#else // __Fuchsia__
+#include <zircon/syscalls.h>
+#endif
 
 #include "VirtioGpuPipeStream.h"
 static VirtioGpuPipeStream* sVirtioGpuPipeStream = 0;
 static int sStreamHandle = -1;
-
-#endif // !__Fuchsia__
 
 static QEMU_PIPE_HANDLE   sProcPipe = 0;
 static pthread_once_t     sProcPipeOnce = PTHREAD_ONCE_INIT;
@@ -73,134 +63,45 @@ static void initSeqno() {
 // Processes are identified by acquiring a per-process 64bit unique ID from the
 // host.
 #ifdef __Fuchsia__
-static void processPipeInitOnce() {
-    initSeqno();
-
-    fidl::ClientEnd<fuchsia_hardware_goldfish::Controller> controller_channel{
-        zx::channel(GetConnectToServiceFunction()(QEMU_PIPE_PATH))};
-    if (!controller_channel) {
-        ALOGE("%s: failed to open " QEMU_PIPE_PATH,
-              __FUNCTION__);
-        return;
-    }
-    fidl::WireSyncClient controller(std::move(controller_channel));
-    zx::result pipe_device_ends =
-        fidl::CreateEndpoints<fuchsia_hardware_goldfish::PipeDevice>();
-    if (pipe_device_ends.is_error()) {
-        ALOGE("%s: zx_channel_create failed: %s", __FUNCTION__, pipe_device_ends.status_string());
-        return;
-    }
-
-    if (fidl::Status result = controller->OpenSession(std::move(pipe_device_ends->server));
-        !result.ok()) {
-        ALOGE("%s: failed to open session: %s", __FUNCTION__, result.status_string());
-        return;
-    }
-
-    fidl::WireSyncClient device(std::move(pipe_device_ends->client));
-
-    auto pipe_ends =
-        fidl::CreateEndpoints<::fuchsia_hardware_goldfish::Pipe>();
-    if (!pipe_ends.is_ok()) {
-        ALOGE("%s: zx_channel_create failed: %d", __FUNCTION__, pipe_ends.status_value());
-        return;
-    }
-
-    fidl::WireSyncClient pipe(std::move(pipe_ends->client));
-    device->OpenPipe(std::move(pipe_ends->server));
-
-    zx::vmo vmo;
-    {
-        auto result = pipe->GetBuffer();
-        if (!result.ok() || result->res != ZX_OK) {
-            ALOGE("%s: failed to get buffer: %d:%d", __FUNCTION__,
-                  result.status(), GET_STATUS_SAFE(result, res));
-            return;
-        }
-        vmo = std::move(result->vmo);
-    }
-
-    size_t len = strlen("pipe:GLProcessPipe");
-    zx_status_t status = vmo.write("pipe:GLProcessPipe", 0, len + 1);
-    if (status != ZX_OK) {
-        ALOGE("%s: failed write pipe name", __FUNCTION__);
-        return;
-    }
-
-    {
-        auto result = pipe->Write(len + 1, 0);
-        if (!result.ok() || result->res != ZX_OK) {
-            ALOGD("%s: connecting to pipe service failed: %d:%d", __FUNCTION__,
-                  result.status(), GET_STATUS_SAFE(result, res));
-            return;
-        }
-    }
-
-    // Send a confirmation int to the host and get per-process unique ID back
-    int32_t confirmInt = 100;
-    status = vmo.write(&confirmInt, 0, sizeof(confirmInt));
-    if (status != ZX_OK) {
-        ALOGE("%s: failed write confirm int", __FUNCTION__);
-        return;
-    }
-
-    {
-        auto result = pipe->DoCall(sizeof(confirmInt), 0, sizeof(sProcUID), 0);
-        if (!result.ok() || result->res != ZX_OK) {
-            ALOGD("%s: failed to get per-process ID: %d:%d", __FUNCTION__,
-                  result.status(), GET_STATUS_SAFE(result, res));
-            return;
-        }
-    }
-
-    status = vmo.read(&sProcUID, 0, sizeof(sProcUID));
-    if (status != ZX_OK) {
-        ALOGE("%s: failed read per-process ID: %d", __FUNCTION__, status);
-        return;
-    }
-    sProcDevice = device.TakeClientEnd().TakeChannel().release();
-    sProcPipe = pipe.TakeClientEnd().TakeChannel().release();
-}
-#else // __Fuchsia__
-
-static void sQemuPipeInit() {
-    sProcPipe = qemu_pipe_open("GLProcessPipe");
-    if (!qemu_pipe_valid(sProcPipe)) {
-        sProcPipe = 0;
+extern bool QemuPipeInit(QEMU_PIPE_HANDLE* handle_out, uint64_t* proc_uid_out);
+#else
+extern bool QemuPipeInit(QEMU_PIPE_HANDLE* handle_out, uint64_t* proc_uid_out) {
+    QEMU_PIPE_HANDLE pipe_handle = qemu_pipe_open("GLProcessPipe");
+    if (!qemu_pipe_valid(pipe_handle)) {
         ALOGW("Process pipe failed");
-        return;
+        return false;
     }
     // Send a confirmation int to the host
     int32_t confirmInt = 100;
-    if (qemu_pipe_write_fully(sProcPipe, &confirmInt, sizeof(confirmInt))) { // failed
-        qemu_pipe_close(sProcPipe);
-        sProcPipe = 0;
+    if (qemu_pipe_write_fully(pipe_handle, &confirmInt, sizeof(confirmInt))) { // failed
+        qemu_pipe_close(pipe_handle);
         ALOGW("Process pipe failed");
-        return;
+        return false;
     }
 
     // Ask the host for per-process unique ID
-    if (qemu_pipe_read_fully(sProcPipe, &sProcUID, sizeof(sProcUID))) {
-        qemu_pipe_close(sProcPipe);
-        sProcPipe = 0;
-        sProcUID = 0;
+    if (qemu_pipe_read_fully(pipe_handle, proc_uid_out, sizeof(uint64_t))) {
+        qemu_pipe_close(pipe_handle);
+        *proc_uid_out = 0;
         ALOGW("Process pipe failed");
-        return;
+        return false;
     }
+    return true;
 }
+#endif // Fuchsia
 
 static void processPipeInitOnce() {
     initSeqno();
 
 #if defined(HOST_BUILD) || !defined(GFXSTREAM)
-    sQemuPipeInit();
+    QemuPipeInit(&sProcPipe, &sProcUID);
 #else // HOST_BUILD
     switch (sConnType) {
         // TODO: Move those over too
         case HOST_CONNECTION_QEMU_PIPE:
         case HOST_CONNECTION_ADDRESS_SPACE:
         case HOST_CONNECTION_TCP:
-            sQemuPipeInit();
+            QemuPipeInit(&sProcPipe, &sProcUID);
             break;
         case HOST_CONNECTION_VIRTIO_GPU_PIPE:
         case HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE: {
@@ -211,7 +112,6 @@ static void processPipeInitOnce() {
     }
 #endif // !HOST_BUILD
 }
-#endif // !__Fuchsia__
 
 bool processPipeInit(int streamHandle, HostConnectionType connType, renderControl_encoder_context_t *rcEnc) {
     sConnType = connType;

@@ -30,7 +30,6 @@
 #ifdef VK_USE_PLATFORM_FUCHSIA
 
 #include <cutils/native_handle.h>
-#include <fidl/fuchsia.hardware.goldfish/cpp/wire.h>
 #include <fidl/fuchsia.sysmem/cpp/wire.h>
 #include <lib/zx/channel.h>
 #include <lib/zx/vmo.h>
@@ -40,6 +39,12 @@
 #include <zircon/rights.h>
 #include <zircon/syscalls.h>
 #include <zircon/syscalls/object.h>
+
+#ifndef VIRTIO_GPU
+#include <fidl/fuchsia.hardware.goldfish/cpp/wire.h>
+using fuchsia_hardware_goldfish::wire::kMemoryPropertyDeviceLocal;
+using fuchsia_hardware_goldfish::wire::kMemoryPropertyHostVisible;
+#endif
 
 #include "services/service_connector.h"
 
@@ -931,6 +936,7 @@ public:
 
 #ifdef VK_USE_PLATFORM_FUCHSIA
         if (mFeatureInfo->hasVulkan) {
+#ifndef VIRTIO_GPU
             fidl::ClientEnd<fuchsia_hardware_goldfish::ControlDevice> channel{
                 zx::channel(GetConnectToServiceFunction()("/loader-gpu-devices/class/goldfish-control/000"))};
             if (!channel) {
@@ -940,7 +946,7 @@ public:
             mControlDevice =
                 fidl::WireSyncClient<fuchsia_hardware_goldfish::ControlDevice>(
                     std::move(channel));
-
+#endif
             fidl::ClientEnd<fuchsia_sysmem::Allocator> sysmem_channel{
                 zx::channel(GetConnectToServiceFunction()("/svc/fuchsia.sysmem.Allocator"))};
             if (!sysmem_channel) {
@@ -1762,8 +1768,6 @@ public:
         VkExternalMemoryHandleTypeFlagBits handleType,
         uint32_t handle,
         VkMemoryZirconHandlePropertiesFUCHSIA* pProperties) {
-        using fuchsia_hardware_goldfish::wire::kMemoryPropertyDeviceLocal;
-        using fuchsia_hardware_goldfish::wire::kMemoryPropertyHostVisible;
 
         if (handleType !=
             VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA) {
@@ -1798,6 +1802,10 @@ public:
 
         uint32_t memoryProperty = 0u;
 
+#ifdef VIRTIO_GPU
+        ALOGE("%s: unimplemented", __FUNCTION__);
+        return VK_ERROR_INITIALIZATION_FAILED;
+#else
         auto result = mControlDevice->GetBufferHandleInfo(std::move(vmo_dup));
         if (!result.ok()) {
             ALOGE(
@@ -1835,6 +1843,7 @@ public:
             }
         }
         return VK_SUCCESS;
+#endif
     }
 
     zx_koid_t getEventKoid(zx_handle_t eventHandle) {
@@ -3648,6 +3657,10 @@ public:
                     // host-visible memory.
                     bool isLinear = pImageCreateInfo->tiling == VK_IMAGE_TILING_LINEAR;
                     if (!isLinear) {
+#ifdef VIRTIO_GPU
+                        ALOGE("%s: not implemented");
+                        abort();
+#else
                         fuchsia_hardware_goldfish::wire::ColorBufferFormatType format;
                         switch (pImageCreateInfo->format) {
                             case VK_FORMAT_B8G8R8A8_SINT:
@@ -3717,10 +3730,15 @@ public:
                                 abort();
                             }
                         }
+#endif
                     }
                 }
 
                 if (pBufferConstraintsInfo) {
+#ifdef VIRTIO_GPU
+                    ALOGE("%s: not implemented");
+                    abort();
+#else
                     fidl::Arena arena;
                     fuchsia_hardware_goldfish::wire::CreateBuffer2Params createParams(arena);
                     createParams
@@ -3736,6 +3754,7 @@ public:
                               GET_STATUS_SAFE(result, error_value()));
                         abort();
                     }
+#endif
                 }
             } else {
                 ALOGW("Dedicated image / buffer not available. Cannot create "
@@ -3755,6 +3774,10 @@ public:
             }
             zx_status_t status2 = ZX_OK;
 
+#ifdef VIRTIO_GPU
+            ALOGE("%: unimplemented", __FUNCTION__);
+            abort();
+#else
             auto result = mControlDevice->GetBufferHandle(std::move(vmo_copy));
             if (!result.ok() || result->res != ZX_OK) {
                 ALOGE("GetBufferHandle failed: %d:%d", result.status(),
@@ -3773,6 +3796,7 @@ public:
                     vk_append_struct(&structChainIter, &importCbInfo);
                 }
             }
+#endif
         }
 #endif
 
@@ -4136,6 +4160,10 @@ public:
                     abort();
                 }
 
+#ifdef VIRTIO_GPU
+                ALOGE("%s: unimplemented", __FUNCTION__);
+                abort();
+#else
                 auto buffer_handle_result = mControlDevice->GetBufferHandle(std::move(vmo_dup));
                 if (!buffer_handle_result.ok()) {
                     ALOGE("%s: GetBufferHandle FIDL error: %d", __func__,
@@ -4185,7 +4213,7 @@ public:
                             GET_STATUS_SAFE(result, res));
                     }
                 }
-
+#endif
                 if (info.settings.buffer_settings.heap ==
                     fuchsia_sysmem::wire::HeapType::kGoldfishHostVisible) {
                     ALOGD(
@@ -5266,6 +5294,10 @@ public:
             }
 
             if (vmo && vmo->is_valid()) {
+#ifdef VIRTIO_GPU
+                ALOGE("%s: unimplemented", __FUNCTION__);
+                abort();
+#else
                 fidl::Arena arena;
                 fuchsia_hardware_goldfish::wire::CreateBuffer2Params createParams(arena);
                 createParams.set_size(arena, pCreateInfo->size)
@@ -5281,6 +5313,7 @@ public:
                           GET_STATUS_SAFE(result, error_value()));
                 }
                 isSysmemBackedMemory = true;
+#endif
             }
         }
 #endif  // VK_USE_PLATFORM_FUCHSIA
@@ -7437,10 +7470,10 @@ private:
 #endif
 
 #ifdef VK_USE_PLATFORM_FUCHSIA
-    fidl::WireSyncClient<fuchsia_hardware_goldfish::ControlDevice>
-        mControlDevice;
-    fidl::WireSyncClient<fuchsia_sysmem::Allocator>
-        mSysmemAllocator;
+#ifndef VIRTIO_GPU
+    fidl::WireSyncClient<fuchsia_hardware_goldfish::ControlDevice> mControlDevice;
+#endif
+    fidl::WireSyncClient<fuchsia_sysmem::Allocator> mSysmemAllocator;
 #endif
 
     WorkPool mWorkPool { 4 };
