@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95540a53_0dce78bf",
+        "filename": "guest/OpenglSystemCommon/VirtioGpuPipeStreamFuchsia.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-27T22:49:40Z",
+      "side": 1,
+      "message": "We\u0027re trying to centralize all VirtGpu access not at the PipeStream or ASG layer, but in `platform` directory.  See `/platform/stub/VirtGpuBlob.cpp` and `/platform/linux/VirtGpuBlob.cpp`.  Fuchsia -- last time I built it -- builds the stubs and those should be filled out.\n\nSo ideally, we\u0027d have one ASG and one Pipe implementation, and the platform specific bits go in `platform/fuchsia/VirtGpuBlob.cpp` or `platform/linux/VirtGpuBlob.cpp`",
+      "range": {
+        "startLine": 1,
+        "startChar": 2,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "f6d3fe730a45ab6a6d0f7609fd45f5915c50e630",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
