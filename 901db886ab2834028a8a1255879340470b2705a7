@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3890831c_b78cf507",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-07-27T21:59:42Z",
+      "side": 1,
+      "message": "Will +2 this CL and the following if we do find it unreasonable to just migrate to [`UniqueHandle`](https://github.com/KhronosGroup/Vulkan-Hpp#uniquehandle-for-automatic-resource-management) which supports `VULKAN_HPP_NO_EXCEPTIONS` properly.",
+      "revId": "901db886ab2834028a8a1255879340470b2705a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
