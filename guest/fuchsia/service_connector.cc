@@ -15,6 +15,8 @@
 
 #include "services/service_connector.h"
 
+#include <lib/zxio/zxio.h>
+
 namespace {
 PFN_ConnectToServiceAddr g_connection_function;
 }
@@ -25,4 +27,27 @@ void SetConnectToServiceFunction(PFN_ConnectToServiceAddr func) {
 
 PFN_ConnectToServiceAddr GetConnectToServiceFunction() {
   return g_connection_function;
+}
+
+bool IsFuchsiaDeviceAccessible() {
+#ifdef VIRTIO_GPU
+    const char* path = "/loader-gpu-devices/class/display-coordinator/000";
+#else
+    const char* path = QEMU_PIPE_PATH;
+#endif
+
+  zx_handle_t handle = GetConnectToServiceFunction()(path);
+  if (handle == ZX_HANDLE_INVALID)
+      return false;
+
+  zxio_storage_t io_storage;
+  zx_status_t status = zxio_create(handle, &io_storage);
+  if (status != ZX_OK)
+      return false;
+
+  status = zxio_close(&io_storage.io, /*should_wait=*/true);
+  if (status != ZX_OK)
+      return false;
+
+  return true;
 }

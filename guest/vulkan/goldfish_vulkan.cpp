@@ -22,7 +22,6 @@
 #include <lib/syslog/global.h>
 #include <lib/zx/channel.h>
 #include <lib/zx/socket.h>
-#include <lib/zxio/zxio.h>
 #include <unistd.h>
 
 #include "TraceProviderFuchsia.h"
@@ -791,7 +790,9 @@ int OpenDevice(const hw_module_t* /*module*/,
 
 class VulkanDevice {
 public:
-    VulkanDevice() : mHostSupportsGoldfish(IsAccessible(QEMU_PIPE_PATH)) {
+    VulkanDevice() : mDeviceIsSupported(IsFuchsiaDeviceAccessible()) {
+        ALOGE("*** mDeviceIsSupported: %d\n", mDeviceIsSupported);
+        printf("*** mDeviceIsSupported: %d\n", mDeviceIsSupported);fflush(stdout);
         InitLogger();
         InitTraceProvider();
         gfxstream::vk::ResourceTracker::get();
@@ -799,30 +800,13 @@ public:
 
     static void InitLogger();
 
-    static bool IsAccessible(const char* name) {
-        zx_handle_t handle = GetConnectToServiceFunction()(name);
-        if (handle == ZX_HANDLE_INVALID)
-            return false;
-
-        zxio_storage_t io_storage;
-        zx_status_t status = zxio_create(handle, &io_storage);
-        if (status != ZX_OK)
-            return false;
-
-        status = zxio_close(&io_storage.io, /*should_wait=*/true);
-        if (status != ZX_OK)
-            return false;
-
-        return true;
-    }
-
     static VulkanDevice& GetInstance() {
         static VulkanDevice g_instance;
         return g_instance;
     }
 
     PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* name) {
-        if (!mHostSupportsGoldfish) {
+        if (!mDeviceIsSupported) {
             return vkstubhal::GetInstanceProcAddr(instance, name);
         }
         return ::GetInstanceProcAddr(instance, name);
@@ -832,7 +816,7 @@ private:
     void InitTraceProvider();
 
     TraceProviderFuchsia mTraceProvider;
-    const bool mHostSupportsGoldfish;
+    const bool mDeviceIsSupported;
 };
 
 void VulkanDevice::InitLogger() {

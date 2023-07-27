@@ -108,7 +108,7 @@ using android::base::guest::getCurrentThreadId;
 #include "virtgpu_drm.h"
 
 #include <cros_gralloc_handle.h>
-#include <xf86drm.h>
+//#include <xf86drm.h>
 
 #endif
 
@@ -138,8 +138,8 @@ HealthMonitor<>* getGlobalHealthMonitor() {
 }
 
 static HostConnectionType getConnectionTypeFromProperty() {
-#ifdef __Fuchsia__
-    return HOST_CONNECTION_ADDRESS_SPACE;
+#if defined(__Fuchsia__)
+    return HOST_CONNECTION_VIRTIO_GPU_PIPE;
 #elif defined(__ANDROID__) || defined(HOST_BUILD)
     char transportValue[PROPERTY_VALUE_MAX] = "";
 
@@ -219,13 +219,13 @@ static inline uint32_t align_up(uint32_t n, uint32_t a) {
     return ((n + a - 1) / a) * a;
 }
 
-#if defined(VIRTIO_GPU)
+#if defined(VIRTIO_GPU) && !defined(__Fuchsia__)
 
 class MinigbmGralloc : public Gralloc {
 public:
     virtual uint32_t createColorBuffer(
         ExtendedRCEncoderContext*,
-        int width, int height, uint32_t glformat) {
+        int width, int height, uint32_t glformat) override {
 
         // Only supported format for pbuffers in gfxstream
         // should be RGBA8
@@ -276,7 +276,7 @@ public:
         return res_create.res_handle;
     }
 
-    virtual uint32_t getHostHandle(native_handle_t const* handle) {
+    virtual uint32_t getHostHandle(native_handle_t const* handle) override {
         struct drm_virtgpu_resource_info info;
         if (!getResInfo(handle, &info)) {
             ALOGE("%s: failed to get resource info\n", __func__);
@@ -286,7 +286,7 @@ public:
         return info.res_handle;
     }
 
-    virtual int getFormat(native_handle_t const* handle) {
+    virtual int getFormat(native_handle_t const* handle) override {
         return ((cros_gralloc_handle *)handle)->droid_format;
     }
 
@@ -294,7 +294,7 @@ public:
 	return ((cros_gralloc_handle *)handle)->format;
     }
 
-    virtual size_t getAllocatedSize(native_handle_t const* handle) {
+    virtual size_t getAllocatedSize(native_handle_t const* handle) override {
         struct drm_virtgpu_resource_info info;
         if (!getResInfo(handle, &info)) {
             ALOGE("%s: failed to get resource info\n", __func__);
