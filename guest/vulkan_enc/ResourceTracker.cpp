@@ -909,7 +909,7 @@ public:
     }
 
     void setupCaps(void) {
-        VirtGpuDevice& instance = VirtGpuDevice::getInstance((enum VirtGpuCapset)3);
+        VirtGpuDevice& instance = VirtGpuDevice::getInstance();
         mCaps = instance.getCaps();
 
         // Delete once goldfish Linux drivers are gone
@@ -2939,7 +2939,7 @@ public:
             }
             {
                 AutoLock<RecursiveLock> lock(mLock);
-                VirtGpuDevice& instance = VirtGpuDevice::getInstance((enum VirtGpuCapset)3);
+                VirtGpuDevice& instance = VirtGpuDevice::getInstance();
                 createBlob.blobMem = kBlobMemHost3d;
                 createBlob.flags = kBlobFlagMappable;
                 createBlob.blobId = hvaSizeId[2];
