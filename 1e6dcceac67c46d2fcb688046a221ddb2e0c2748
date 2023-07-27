@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b52b71c5_834f10ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-27T22:48:13Z",
+      "side": 1,
+      "message": "Currently, we only use `kParamGfxstream` in the guest side, but on the host side we parceled it out into more specific capability sets (`gfxstream-vulkan`, `gfxstream-gles`, `gfxstream-composer`, `gfxstream-magma`).\n\nhttps://github.com/google/crosvm/blob/main/rutabaga_gfx/src/rutabaga_core.rs#L252\n\nThat will allow these separate components to be versioned separately, just haven\u0027t gotten around to it..",
+      "revId": "1e6dcceac67c46d2fcb688046a221ddb2e0c2748",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
