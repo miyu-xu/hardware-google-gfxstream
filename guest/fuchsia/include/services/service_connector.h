@@ -26,4 +26,6 @@ typedef zx_handle_t (*PFN_ConnectToServiceAddr)(const char *pName);
 void SetConnectToServiceFunction(PFN_ConnectToServiceAddr func);
 PFN_ConnectToServiceAddr GetConnectToServiceFunction();
 
+bool IsFuchsiaDeviceAccessible();
+
 #endif // FUCHSIA_INCLUDE_SERVICES_SERVICE_CONNECTOR_H_

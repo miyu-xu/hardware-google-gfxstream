@@ -18,6 +18,8 @@
 #include <cutils/log.h>
 #include <errno.h>
 #include <lib/zx/channel.h>
+#include <lib/zx/event.h>
+#include <lib/zx/vmo.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,21 +30,24 @@
 
 #include "services/service_connector.h"
 
+#ifndef VIRTIO_GPU
+
+#include <fidl/fuchsia.hardware.goldfish/cpp/wire.h>
+
+struct QemuPipeStream::FuchsiaImpl {
+    std::unique_ptr<::fidl::WireSyncClient<fuchsia_hardware_goldfish::PipeDevice>> device;
+    ::fidl::WireSyncClient<fuchsia_hardware_goldfish::Pipe> pipe;
+    zx::event event;
+    zx::vmo vmo;
+};
+
 #define GET_STATUS_SAFE(result, member) \
     ((result).ok() ? ((result)->member) : ZX_OK)
 
 constexpr size_t kReadSize = 512 * 1024;
 constexpr size_t kWriteOffset = kReadSize;
 
-QemuPipeStream::QemuPipeStream(size_t bufSize) :
-    IOStream(bufSize),
-    m_sock(-1),
-    m_bufsize(bufSize),
-    m_buf(nullptr),
-    m_read(0),
-    m_readLeft(0)
-{
-}
+QemuPipeStream::QemuPipeStream(size_t bufSize) : QemuPipeStream(-1, bufSize) {}
 
 QemuPipeStream::QemuPipeStream(QEMU_PIPE_HANDLE sock, size_t bufSize) :
     IOStream(bufSize),
@@ -50,13 +55,14 @@ QemuPipeStream::QemuPipeStream(QEMU_PIPE_HANDLE sock, size_t bufSize) :
     m_bufsize(bufSize),
     m_buf(nullptr),
     m_read(0),
-    m_readLeft(0)
+    m_readLeft(0),
+    m_fuchsia(std::make_unique<FuchsiaImpl>())
 {
 }
 
 QemuPipeStream::~QemuPipeStream()
 {
-    if (m_device) {
+    if (m_fuchsia->device) {
         flush();
     }
     if (m_buf) {
@@ -93,7 +99,7 @@ int QemuPipeStream::connect(void)
         return -1;
     }
 
-    m_device = std::make_unique<
+    m_fuchsia->device = std::make_unique<
         fidl::WireSyncClient<fuchsia_hardware_goldfish::PipeDevice>>(
         std::move(pipe_device_ends->client));
 
@@ -103,8 +109,8 @@ int QemuPipeStream::connect(void)
         ALOGE("zx::channel::create failed: %d", pipe_ends.status_value());
         return ZX_HANDLE_INVALID;
     }
-    (*m_device)->OpenPipe(std::move(pipe_ends->server));
-    m_pipe =
+    (*m_fuchsia->device)->OpenPipe(std::move(pipe_ends->server));
+    m_fuchsia->pipe =
         fidl::WireSyncClient<fuchsia_hardware_goldfish::Pipe>(
             std::move(pipe_ends->client));
 
@@ -122,7 +128,7 @@ int QemuPipeStream::connect(void)
     }
 
     {
-        auto result = m_pipe->SetEvent(std::move(event_copy));
+        auto result = m_fuchsia->pipe->SetEvent(std::move(event_copy));
         if (!result.ok()) {
             ALOGE("%s: failed to set event: %d:%d", __FUNCTION__,
                   result.status());
@@ -136,14 +142,14 @@ int QemuPipeStream::connect(void)
     }
 
     size_t len = strlen("pipe:opengles");
-    status = m_vmo.write("pipe:opengles", 0, len + 1);
+    status = m_fuchsia->vmo.write("pipe:opengles", 0, len + 1);
     if (status != ZX_OK) {
         ALOGE("%s: failed write pipe name", __FUNCTION__);
         return -1;
     }
 
     {
-        auto result = m_pipe->Write(len + 1, 0);
+        auto result = m_fuchsia->pipe->Write(len + 1, 0);
         if (!result.ok() || result->res != ZX_OK) {
             ALOGD("%s: connecting to pipe service failed: %d:%d", __FUNCTION__,
                   result.status(), GET_STATUS_SAFE(result, res));
@@ -151,7 +157,7 @@ int QemuPipeStream::connect(void)
         }
     }
 
-    m_event = std::move(event);
+    m_fuchsia->event = std::move(event);
     return 0;
 }
 
@@ -178,7 +184,7 @@ void *QemuPipeStream::allocBuffer(size_t minSize)
     size_t allocSize = m_bufsize < minSize ? minSize : m_bufsize;
 
     {
-        auto result = m_pipe->SetBufferSize(allocSize);
+        auto result = m_fuchsia->pipe->SetBufferSize(allocSize);
         if (!result.ok() || result->res != ZX_OK) {
             ALOGE("%s: failed to get buffer: %d:%d", __FUNCTION__,
                   result.status(), GET_STATUS_SAFE(result, res));
@@ -188,7 +194,7 @@ void *QemuPipeStream::allocBuffer(size_t minSize)
 
     zx::vmo vmo;
     {
-        auto result = m_pipe->GetBuffer();
+        auto result = m_fuchsia->pipe->GetBuffer();
         if (!result.ok() || result->res != ZX_OK) {
             ALOGE("%s: failed to get buffer: %d:%d", __FUNCTION__,
                   result.status(), GET_STATUS_SAFE(result, res));
@@ -208,7 +214,7 @@ void *QemuPipeStream::allocBuffer(size_t minSize)
 
     m_buf = reinterpret_cast<unsigned char*>(mapped_addr);
     m_bufsize = allocSize;
-    m_vmo = std::move(vmo);
+    m_fuchsia->vmo = std::move(vmo);
     return m_buf + kWriteOffset;
 }
 
@@ -216,7 +222,7 @@ int QemuPipeStream::commitBuffer(size_t size)
 {
     if (size == 0) return 0;
 
-    auto result = m_pipe->DoCall(size, kWriteOffset, 0, 0);
+    auto result = m_fuchsia->pipe->DoCall(size, kWriteOffset, 0, 0);
     if (!result.ok() || result->res != ZX_OK) {
         ALOGD("%s: Pipe call failed: %d:%d", __FUNCTION__, result.status(),
               GET_STATUS_SAFE(result, res));
@@ -244,7 +250,7 @@ const unsigned char *QemuPipeStream::readFully(void *buf, size_t len)
 
 const unsigned char *QemuPipeStream::commitBufferAndReadFully(size_t size, void *buf, size_t len)
 {
-    if (!m_device)
+    if (!m_fuchsia->device)
         return nullptr;
 
     if (!buf) {
@@ -275,7 +281,7 @@ const unsigned char *QemuPipeStream::commitBufferAndReadFully(size_t size, void 
     // Read up to kReadSize bytes if all buffered read has been consumed.
     size_t maxRead = (m_readLeft || !remaining) ? 0 : kReadSize;
 
-    auto result = m_pipe->DoCall(size, kWriteOffset, maxRead, 0);
+    auto result = m_fuchsia->pipe->DoCall(size, kWriteOffset, maxRead, 0);
     if (!result.ok()) {
         ALOGD("%s: Pipe call failed: %d", __FUNCTION__, result.status());
         return nullptr;
@@ -298,7 +304,7 @@ const unsigned char *QemuPipeStream::commitBufferAndReadFully(size_t size, void 
             continue;
         }
 
-        auto result = m_pipe->Read(kReadSize, 0);
+        auto result = m_fuchsia->pipe->Read(kReadSize, 0);
         if (!result.ok()) {
             ALOGD("%s: Failed reading from pipe: %d:%d", __FUNCTION__,
                   result.status());
@@ -316,7 +322,7 @@ const unsigned char *QemuPipeStream::commitBufferAndReadFully(size_t size, void 
         }
 
         zx_signals_t observed = ZX_SIGNAL_NONE;
-        zx_status_t status = m_event.wait_one(
+        zx_status_t status = m_fuchsia->event.wait_one(
             fuchsia_hardware_goldfish::wire::kSignalReadable |
                 fuchsia_hardware_goldfish::wire::kSignalHangup,
             zx::time::infinite(), &observed);
@@ -346,3 +352,32 @@ int QemuPipeStream::recv(void *buf, size_t len)
     abort();
     return -1;
 }
+
+#else
+
+// Stub implementation
+struct QemuPipeStream::FuchsiaImpl {};
+
+QemuPipeStream::QemuPipeStream(size_t bufsize) : IOStream(bufsize) {}
+
+QemuPipeStream::~QemuPipeStream() {}
+
+int QemuPipeStream::connect(void) { return -1; }
+
+void *QemuPipeStream::allocBuffer(size_t minSize) { return nullptr; }
+
+int QemuPipeStream::commitBuffer(size_t size) { return 0; }
+
+const unsigned char *QemuPipeStream::readFully( void *buf, size_t len) { return nullptr; }
+
+const unsigned char *QemuPipeStream::commitBufferAndReadFully(size_t size, void *buf, size_t len) { return nullptr; }
+
+const unsigned char *QemuPipeStream::read( void *buf, size_t *inout_len) { return nullptr; }
+
+int QemuPipeStream::recv(void *buf, size_t len) { return 0; }
+
+int QemuPipeStream::writeFully(const void *buf, size_t len) { return 0; }
+
+QEMU_PIPE_HANDLE QemuPipeStream::getSocket() const { return 0; }
+
+#endif // VIRTIO_GPU
