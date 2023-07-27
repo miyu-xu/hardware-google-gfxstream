@@ -1,4 +1,65 @@
-shared_library("libvulkan_goldfish") {
+config("common_config") {
+  defines = [
+    "LOG_TAG=\"gfxstream_vulkan\"",
+    "GFXSTREAM",
+    "GOLDFISH_NO_GL",
+    "VK_GFXSTREAM_STRUCTURE_TYPE_EXT",
+    "VK_USE_PLATFORM_FUCHSIA",
+    "PLATFORM_SDK_VERSION=1",
+    "PAGE_SIZE=4096",
+  ]
+
+  include_dirs = [
+    "android-emu",
+    "host/include/libOpenglRender",
+    "GoldfishAddressSpace/include",
+    "iostream/include/libOpenglRender",
+    "OpenglCodecCommon",
+    "gralloc_cb/include",
+    "qemupipe/include",
+    "qemupipe/include-types",
+    "OpenglSystemCommon",
+    "renderControl_enc",
+    "vulkan_enc",
+    "include",
+    "platform/include",
+  ]
+
+  if (target_os == "fuchsia") {
+    include_dirs += [
+      "fuchsia/include",
+    ]
+  }
+
+  cflags = [ "-Wextra-semi" ]
+
+  cflags_c = [
+    "-Wstrict-prototypes",
+    "-Wno-missing-field-initializers",
+    "-Wno-newline-eof",
+    "-Wno-sign-compare",
+    "-Wno-unused-function",
+    "-Wno-unused-value",
+    "-Wno-unused-variable",
+  ]
+
+  cflags_cc = [
+    "-Wno-conversion",
+    "-Wno-missing-field-initializers",
+    "-Wno-newline-eof",
+    "-Wno-pessimizing-move",
+    "-Wno-sign-compare",
+    "-Wno-unused-function",
+    "-Wno-unused-value",
+    "-Wno-unused-variable",
+    "-Wno-unused-but-set-parameter",
+    "-Wno-unused-but-set-variable",
+  ]
+}
+
+source_set("gfxstream_vulkan") {
+  configs += [ ":common_config" ]
+
   sources = [
     "android-emu/aemu/base/AlignedBuf.cpp",
     "android-emu/aemu/base/AlignedBuf.h",
@@ -44,12 +105,11 @@ shared_library("libvulkan_goldfish") {
     "android-emu/aemu/base/threads/AndroidThread_pthread.cpp",
     "android-emu/aemu/base/threads/AndroidWorkPool.cpp",
     "android-emu/aemu/base/threads/AndroidWorkPool.h",
+    "GoldfishAddressSpace/include/goldfish_address_space.h",
     "platform/include/VirtGpu.h",
     "platform/stub/VirtGpuBlob.cpp",
     "platform/stub/VirtGpuBlobMapping.cpp",
     "platform/stub/VirtGpuDevice.cpp",
-    "GoldfishAddressSpace/goldfish_address_space.cpp",
-    "GoldfishAddressSpace/include/goldfish_address_space.h",
     "OpenglCodecCommon/ChecksumCalculator.cpp",
     "OpenglCodecCommon/ChecksumCalculator.h",
     "OpenglCodecCommon/glUtils.cpp",
@@ -62,10 +122,8 @@ shared_library("libvulkan_goldfish") {
     "qemupipe/qemu_pipe_common.cpp",
     "qemupipe/qemu_pipe_guest.cpp",
     "OpenglSystemCommon/AddressSpaceStream.cpp",
-    "OpenglSystemCommon/HostConnection.cpp",
-    "OpenglSystemCommon/HostConnection.h",
-    "OpenglSystemCommon/ProcessPipe.cpp",
     "OpenglSystemCommon/ProcessPipe.h",
+    "OpenglSystemCommon/ProcessPipe.cpp",
     "OpenglSystemCommon/QemuPipeStream.cpp",
     "OpenglSystemCommon/QemuPipeStream.h",
     "OpenglSystemCommon/ThreadInfo.cpp",
@@ -79,10 +137,9 @@ shared_library("libvulkan_goldfish") {
     "vulkan_enc/DescriptorSetVirtualization.h",
     "vulkan_enc/HostVisibleMemoryVirtualization.cpp",
     "vulkan_enc/HostVisibleMemoryVirtualization.h",
-    "vulkan_enc/ResourceTracker.cpp",
-    "vulkan_enc/ResourceTracker.h",
     "vulkan_enc/Resources.cpp",
     "vulkan_enc/Resources.h",
+    "vulkan_enc/ResourceTracker.h",
     "vulkan_enc/Validation.cpp",
     "vulkan_enc/Validation.h",
     "vulkan_enc/VkEncoder.cpp",
@@ -109,58 +166,6 @@ shared_library("libvulkan_goldfish") {
     "vulkan_enc/vulkan_gfxstream_structure_type.h",
   ]
 
-  include_dirs = [
-    "android-emu",
-    "host/include/libOpenglRender",
-    "GoldfishAddressSpace/include",
-    "iostream/include/libOpenglRender",
-    "OpenglCodecCommon",
-    "gralloc_cb/include",
-    "qemupipe/include",
-    "qemupipe/include-types",
-    "OpenglSystemCommon",
-    "renderControl_enc",
-    "vulkan_enc",
-    "include",
-  ]
-
-  defines = [
-    "LOG_TAG=\"goldfish_vulkan\"",
-    "GFXSTREAM",
-    "GOLDFISH_NO_GL",
-    "VK_GFXSTREAM_STRUCTURE_TYPE_EXT",
-    "VK_USE_PLATFORM_FUCHSIA",
-    "PLATFORM_SDK_VERSION=1",
-    "PAGE_SIZE=4096",
-  ]
-
-  cflags = [ "-Wextra-semi" ]
-
-  cflags_c = [
-    "-Wstrict-prototypes",
-    "-Wno-missing-field-initializers",
-    "-Wno-newline-eof",
-    "-Wno-sign-compare",
-    "-Wno-unused-function",
-    "-Wno-unused-value",
-    "-Wno-unused-variable",
-  ]
-
-  cflags_cc = [
-    "-Wno-conversion",
-    "-Wno-missing-field-initializers",
-    "-Wno-newline-eof",
-    "-Wno-pessimizing-move",
-    "-Wno-sign-compare",
-    "-Wno-unused-function",
-    "-Wno-unused-value",
-    "-Wno-unused-variable",
-    "-Wno-unused-but-set-parameter",
-    "-Wno-unused-but-set-variable",
-  ]
-
-  ldflags = [ "-static-libstdc++" ]
-
   if (target_os == "fuchsia") {
     sources -= [
       "OpenglCodecCommon/goldfish_dma.cpp",
@@ -172,20 +177,11 @@ shared_library("libvulkan_goldfish") {
     sources += [
       "fuchsia/fuchsia_stdio.cc",
       "fuchsia/port.cc",
-      "fuchsia/service_connector.cc",
-      "OpenglSystemCommon/QemuPipeStreamFuchsia.cpp",
       "OpenglSystemCommon/TraceProviderFuchsia.cpp",
       "OpenglSystemCommon/TraceProviderFuchsia.h",
     ]
 
-    include_dirs += [
-      "fuchsia/include",
-      "platform/include",
-      "//third_party/Vulkan-Headers/include",
-    ]
-
     deps = [
-      "//sdk/fidl/fuchsia.hardware.goldfish:fuchsia.hardware.goldfish_cpp_wire",
       "//sdk/fidl/fuchsia.logger:fuchsia.logger_cpp_wire",
       "//sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_cpp_wire",
       "//src/zircon/lib/zircon",
@@ -195,7 +191,10 @@ shared_library("libvulkan_goldfish") {
       "//zircon/system/ulib/trace:trace-with-static-engine",
       "//zircon/system/ulib/trace-provider:trace-provider-with-static-engine",
       "//zircon/system/ulib/zx",
-      "//zircon/system/ulib/zxio",
+    ]
+
+    public_deps = [
+      "//third_party/Vulkan-Headers:vulkan_headers",
     ]
 
     # Vulkan ICDs on Fuchsia are only allowed to depend on (parts of) libc
@@ -204,10 +203,66 @@ shared_library("libvulkan_goldfish") {
       "//sdk/lib/fdio",
       "//zircon/system/ulib/async-default",
     ]
-
-    defines += [
-      "QEMU_PIPE_PATH=\"/loader-gpu-devices/class/goldfish-pipe/000\"",
-      "GOLDFISH_ADDRESS_SPACE_DEVICE_NAME=\"/loader-gpu-devices/class/goldfish-address-space/000\"",
-    ]
   }
+}
+
+shared_library("libvulkan_goldfish") {
+  configs += [ ":common_config" ]
+
+  sources = [
+    "GoldfishAddressSpace/goldfish_address_space.cpp",
+    "OpenglSystemCommon/HostConnection.cpp",
+    "OpenglSystemCommon/HostConnection.h",
+    "OpenglSystemCommon/QemuPipeStreamFuchsia.cpp",
+    "OpenglSystemCommon/VirtioGpuPipeStreamFuchsia.cpp",
+    "OpenglSystemCommon/ProcessPipeInitFuchsia.cpp",
+    "fuchsia/service_connector.cc",
+    "vulkan_enc/ResourceTracker.cpp",
+  ]
+
+  deps = [
+    ":gfxstream_vulkan",
+    "//sdk/fidl/fuchsia.hardware.goldfish:fuchsia.hardware.goldfish_cpp_wire",
+    "//sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_cpp_wire",
+    "//zircon/system/ulib/trace:trace-with-static-engine",
+    "//zircon/system/ulib/zx",
+    "//zircon/system/ulib/zxio",
+  ]
+
+  defines = [
+    "QEMU_PIPE_PATH=\"/loader-gpu-devices/class/goldfish-pipe/000\"",
+    "GOLDFISH_ADDRESS_SPACE_DEVICE_NAME=\"/loader-gpu-devices/class/goldfish-address-space/000\"",
+  ]
+
+  ldflags = [ "-static-libstdc++" ]
+}
+
+shared_library("libvulkan_virtio") {
+  configs += [ ":common_config" ]
+
+  sources = [
+    "GoldfishAddressSpace/goldfish_address_space.cpp",
+    "OpenglSystemCommon/HostConnection.cpp",
+    "OpenglSystemCommon/HostConnection.h",
+    "OpenglSystemCommon/ProcessPipeInitFuchsia.cpp",
+    "OpenglSystemCommon/VirtioGpuPipeStreamFuchsia.cpp",
+    "OpenglSystemCommon/QemuPipeStreamFuchsia.cpp",
+    "fuchsia/service_connector.cc",
+    "vulkan_enc/ResourceTracker.cpp",
+  ]
+
+  deps = [ 
+    ":gfxstream_vulkan",
+    "//sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_cpp_wire",
+    "//third_party/mesa/include:drm-uapi",
+    "//zircon/system/ulib/trace:trace-with-static-engine",
+    "//zircon/system/ulib/zx",
+    "//zircon/system/ulib/zxio",
+  ]
+
+  defines = [
+    "VIRTIO_GPU=1",
+  ]
+
+  ldflags = [ "-static-libstdc++" ]
 }

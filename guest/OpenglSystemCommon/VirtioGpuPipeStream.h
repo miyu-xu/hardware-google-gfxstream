@@ -44,13 +44,19 @@ public:
         size_t size, void *buf, size_t len);
     virtual const unsigned char *read( void *buf, size_t *inout_len);
 
-    bool valid() { return m_fd >= 0; }
-    int getRendernodeFd() { return m_fd; }
     int recv(void *buf, size_t len);
 
     virtual int writeFully(const void *buf, size_t len);
 
     int getSocket() const;
+
+#ifdef __Fuchsia__
+    bool valid() { return false; }
+    int getRendernodeFd() { return -1; }
+#else
+    bool valid() { return m_fd >= 0; }
+    int getRendernodeFd() { return m_fd; }
+
 private:
     // sync. Also resets the write position.
     void wait();
@@ -74,4 +80,5 @@ private:
     size_t m_readLeft;
 
     size_t m_writtenPos;
+#endif
 };
