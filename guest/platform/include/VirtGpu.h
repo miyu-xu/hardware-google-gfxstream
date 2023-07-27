@@ -151,7 +151,11 @@ class VirtGpuBlobMapping {
 
 class VirtGpuDevice {
   public:
-    static VirtGpuDevice& getInstance(enum VirtGpuCapset capset = kCapsetNone);
+    VirtGpuDevice(enum VirtGpuCapset capset);
+    ~VirtGpuDevice();
+
+    static void setInstance(std::unique_ptr<VirtGpuDevice> device);
+    static VirtGpuDevice& getInstance();
     int64_t getDeviceHandle(void);
 
     struct VirtGpuCaps getCaps(void);
@@ -163,8 +167,6 @@ class VirtGpuDevice {
     int execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob);
 
   private:
-    VirtGpuDevice(enum VirtGpuCapset capset);
-    ~VirtGpuDevice();
     VirtGpuDevice(VirtGpuDevice const&);
     void operator=(VirtGpuDevice const&);
 

@@ -35,10 +35,14 @@
 #define VIRGL_BIND_CUSTOM (1 << 17)
 #define PIPE_BUFFER 0
 
-VirtGpuDevice& VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
-    static VirtGpuDevice mInstance(capset);
-    return mInstance;
+static std::unique_ptr<VirtGpuDevice> s_device;
+
+// static
+void VirtGpuDevice::setInstance(std::unique_ptr<VirtGpuDevice> device) {
+    s_device = std::move(device);
 }
+
+VirtGpuDevice& VirtGpuDevice::getInstance() { return *s_device; }
 
 VirtGpuDevice::VirtGpuDevice(enum VirtGpuCapset capset) {
     struct VirtGpuParam params[] = {
