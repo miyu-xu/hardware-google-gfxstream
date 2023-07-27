@@ -32,18 +32,28 @@
 
 #include <unordered_map>
 
-#define GET_STATUS_SAFE(result, member) \
-    ((result).ok() ? ((result)->member) : ZX_OK)
-
 using android::base::guest::AutoLock;
 using android::base::guest::Lock;
+
+#ifndef VIRTIO_GPU
+
+#include <fidl/fuchsia.hardware.goldfish/cpp/wire.h>
+
+#define GET_STATUS_SAFE(result, member) \
+    ((result).ok() ? ((result)->member) : ZX_OK)
 
 using fuchsia_hardware_goldfish::AddressSpaceChildDriver;
 using fuchsia_hardware_goldfish::AddressSpaceDevice;
 using fuchsia_hardware_goldfish::wire::AddressSpaceChildDriverType;
 using fuchsia_hardware_goldfish::wire::AddressSpaceChildDriverPingMessage;
 
-GoldfishAddressSpaceBlockProvider::GoldfishAddressSpaceBlockProvider(GoldfishAddressSpaceSubdeviceType subdevice) {
+struct GoldfishAddressSpaceBlockProvider::FuchsiaImpl {
+    ::fidl::WireSyncClient<fuchsia_hardware_goldfish::AddressSpaceDevice> device;
+    ::fidl::WireSyncClient<fuchsia_hardware_goldfish::AddressSpaceChildDriver> child_driver;
+};
+
+GoldfishAddressSpaceBlockProvider::GoldfishAddressSpaceBlockProvider(GoldfishAddressSpaceSubdeviceType subdevice)
+    : m_fuchsia(std::make_unique<FuchsiaImpl>()) {
 
     if (subdevice != GoldfishAddressSpaceSubdeviceType::NoSubdevice) {
         ALOGE("%s: Tried to use a nontrivial subdevice when support has not been added\n", __func__);
@@ -57,7 +67,7 @@ GoldfishAddressSpaceBlockProvider::GoldfishAddressSpaceBlockProvider(GoldfishAdd
               __FUNCTION__);
         return;
     }
-    m_device = fidl::WireSyncClient<AddressSpaceDevice>(std::move(channel));
+    m_fuchsia->device = fidl::WireSyncClient<AddressSpaceDevice>(std::move(channel));
 
     auto child_driver_ends =
         fidl::CreateEndpoints<::fuchsia_hardware_goldfish::AddressSpaceChildDriver>();
@@ -66,7 +76,7 @@ GoldfishAddressSpaceBlockProvider::GoldfishAddressSpaceBlockProvider(GoldfishAdd
         return;
     }
 
-    auto result = m_device->OpenChildDriver(
+    auto result = m_fuchsia->device->OpenChildDriver(
         static_cast<AddressSpaceChildDriverType>(0 /* graphics */),
         std::move(child_driver_ends->server));
     if (!result.ok()) {
@@ -74,7 +84,7 @@ GoldfishAddressSpaceBlockProvider::GoldfishAddressSpaceBlockProvider(GoldfishAdd
               __FUNCTION__, result.status());
         return;
     }
-    m_child_driver = fidl::WireSyncClient<AddressSpaceChildDriver>(
+    m_fuchsia->child_driver = fidl::WireSyncClient<AddressSpaceChildDriver>(
         std::move(child_driver_ends->client));
 }
 
@@ -84,15 +94,19 @@ GoldfishAddressSpaceBlockProvider::~GoldfishAddressSpaceBlockProvider()
 
 bool GoldfishAddressSpaceBlockProvider::is_opened() const
 {
-    return !!m_device;
+    return !!m_fuchsia->device;
 }
 
 // void GoldfishAddressSpaceBlockProvider::close() - not implemented
 // address_space_handle_t GoldfishAddressSpaceBlockProvider::release() - not imeplemented
 
+struct GoldfishAddressSpaceBlock::FuchsiaImpl {
+    ::fidl::WireSyncClient<fuchsia_hardware_goldfish::AddressSpaceChildDriver>* driver = nullptr;
+    uint32_t  vmo = ZX_HANDLE_INVALID;
+};
+
 GoldfishAddressSpaceBlock::GoldfishAddressSpaceBlock()
-    : m_driver(NULL)
-    , m_vmo(ZX_HANDLE_INVALID)
+    : m_fuchsia(std::unique_ptr<FuchsiaImpl>())
     , m_mmaped_ptr(NULL)
     , m_phys_addr(0)
     , m_host_addr(0)
@@ -106,13 +120,13 @@ GoldfishAddressSpaceBlock::~GoldfishAddressSpaceBlock()
 
 GoldfishAddressSpaceBlock &GoldfishAddressSpaceBlock::operator=(const GoldfishAddressSpaceBlock &rhs)
 {
-    m_vmo = rhs.m_vmo;
+    m_fuchsia->vmo = rhs.m_fuchsia->vmo;
+    m_fuchsia->driver = rhs.m_fuchsia->driver;
     m_mmaped_ptr = rhs.m_mmaped_ptr;
     m_phys_addr = rhs.m_phys_addr;
     m_host_addr = rhs.m_host_addr;
     m_offset = rhs.m_offset;
     m_size = rhs.m_size;
-    m_driver = rhs.m_driver;
 
     return *this;
 }
@@ -125,7 +139,7 @@ bool GoldfishAddressSpaceBlock::allocate(GoldfishAddressSpaceBlockProvider *prov
         return false;
     }
 
-    const fidl::WireSyncClient<AddressSpaceChildDriver>& driver = provider->m_child_driver;
+    const fidl::WireSyncClient<AddressSpaceChildDriver>& driver = provider->m_fuchsia->child_driver;
 
     auto result = driver->AllocateBlock(size);
     if (!result.ok() || result->res != ZX_OK) {
@@ -135,12 +149,12 @@ bool GoldfishAddressSpaceBlock::allocate(GoldfishAddressSpaceBlockProvider *prov
     m_phys_addr = result->paddr;
     // TODO(fxbug.dev/124700): Instead of storing raw handles we should
     // consider using RAII zx::object instead.
-    m_vmo = result->vmo.release();
+    m_fuchsia->vmo = result->vmo.release();
 
     m_size = size;
     m_offset = 0;
     m_is_shared_mapping = false;
-    m_driver = &provider->m_child_driver;
+    m_fuchsia->driver = &provider->m_fuchsia->child_driver;
 
     return true;
 }
@@ -179,7 +193,7 @@ void *GoldfishAddressSpaceBlock::mmap(uint64_t host_addr)
     zx_vaddr_t ptr = 0;
     zx_status_t status = zx_vmar_map(zx_vmar_root_self(),
                                      ZX_VM_PERM_READ | ZX_VM_PERM_WRITE,
-                                     0, m_vmo,
+                                     0, m_fuchsia->vmo,
                                      m_offset,
                                      m_size,
                                      &ptr);
@@ -212,8 +226,8 @@ void GoldfishAddressSpaceBlock::destroy()
     }
 
     if (m_size) {
-        zx_handle_close(m_vmo);
-        m_vmo = ZX_HANDLE_INVALID;
+        zx_handle_close(m_fuchsia->vmo);
+        m_fuchsia->vmo = ZX_HANDLE_INVALID;
         if (m_is_shared_mapping) {
             // TODO
             ALOGE("%s: unsupported: GoldfishAddressSpaceBlock destroy() for shared regions\n", __func__);
@@ -225,13 +239,13 @@ void GoldfishAddressSpaceBlock::destroy()
             //           result.status(), GET_STATUS_SAFE(result, res));
             // }
         } else {
-            auto result = (*m_driver)->DeallocateBlock(m_phys_addr);
+            auto result = (*m_fuchsia->driver)->DeallocateBlock(m_phys_addr);
             if (!result.ok() || result->res != ZX_OK) {
                 ALOGE("%s: deallocate block failed: %d:%d", __func__,
                       result.status(), GET_STATUS_SAFE(result, res));
             }
         }
-        m_driver = NULL;
+        m_fuchsia->driver = nullptr;
         m_phys_addr = 0;
         m_host_addr = 0;
         m_offset = 0;
@@ -487,3 +501,36 @@ bool goldfish_address_space_ping(
     *ping = *(struct address_space_ping*)(&res);
     return true;
 }
+
+#else
+
+// GoldfishAddressSpaceBlockProvider stubs
+struct GoldfishAddressSpaceBlockProvider::FuchsiaImpl {};
+
+GoldfishAddressSpaceBlockProvider::GoldfishAddressSpaceBlockProvider(GoldfishAddressSpaceSubdeviceType subdevice) {}
+
+GoldfishAddressSpaceBlockProvider::~GoldfishAddressSpaceBlockProvider() {}
+
+bool GoldfishAddressSpaceBlockProvider::is_opened() const { return false; }
+
+void GoldfishAddressSpaceBlockProvider::close() {}
+
+//static
+void GoldfishAddressSpaceBlockProvider::closeHandle(address_space_handle_t handle) {}
+
+// GoldfishAddressSpaceBlock stubs
+struct GoldfishAddressSpaceBlock::FuchsiaImpl {};
+
+GoldfishAddressSpaceBlock::GoldfishAddressSpaceBlock() {}
+
+GoldfishAddressSpaceBlock::~GoldfishAddressSpaceBlock() {}
+
+bool GoldfishAddressSpaceBlock::allocate(GoldfishAddressSpaceBlockProvider *provider, size_t size) { return false; }
+
+bool GoldfishAddressSpaceBlock::claimShared(GoldfishAddressSpaceBlockProvider *provider, uint64_t offset, uint64_t size) { return false; }
+
+uint64_t GoldfishAddressSpaceBlock::physAddr() const { return 0; }
+
+void *GoldfishAddressSpaceBlock::mmap(uint64_t opaque) { return nullptr; }
+
+#endif // VIRTIO_GPU
