@@ -46,6 +46,30 @@
       },
       "revId": "f6d3fe730a45ab6a6d0f7609fd45f5915c50e630",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3e340ae_353eef20",
+        "filename": "guest/OpenglSystemCommon/VirtioGpuPipeStreamFuchsia.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-27T23:04:43Z",
+      "side": 1,
+      "message": "Though I suggest just focusing on ASG-on-virtio, not pipe-on-virtio if possible.  The pipe stream has some bugs that need fixing in terms of the \"process pipe\" flow.",
+      "parentUuid": "95540a53_0dce78bf",
+      "range": {
+        "startLine": 1,
+        "startChar": 2,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "f6d3fe730a45ab6a6d0f7609fd45f5915c50e630",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
