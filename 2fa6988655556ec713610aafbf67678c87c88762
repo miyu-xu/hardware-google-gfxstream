@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca2f7815_6fa34eab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-07-27T22:01:51Z",
+      "side": 1,
+      "message": "How do we plan to mock those APIs? If on Linux, those APIs should just work out of box.",
+      "revId": "2fa6988655556ec713610aafbf67678c87c88762",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
