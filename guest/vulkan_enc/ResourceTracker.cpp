@@ -3957,6 +3957,25 @@ public:
             auto blob = instance->createBlob(createBlob);
             if (!blob) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
 
+            {
+                // Wait for host resource map command to complete.
+                struct gfxstreamPlaceholderCommandVk placeholderCmd = {
+                    .hdr = {
+                        .opCode = GFXSTREAM_PLACEHOLDER_COMMAND_VK,
+                    },
+                };
+                struct VirtGpuExecBuffer execPlaceholderCmd = {
+                    .command = static_cast<void*>(&placeholderCmd),
+                    .command_size = sizeof(placeholderCmd),
+                    .flags = kRingIdx,
+                    .ring_idx = 1,
+                };
+                if (instance->execBuffer(execPlaceholderCmd, blob)) {
+                    return VK_ERROR_OUT_OF_HOST_MEMORY;
+                }
+                blob->wait();
+            }
+
             mapping = blob->createMapping();
             if (!mapping) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
 
