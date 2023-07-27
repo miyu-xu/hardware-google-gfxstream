@@ -16,10 +16,15 @@
 
 #include "VirtGpu.h"
 
-VirtGpuDevice& VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
-    static VirtGpuDevice mInstance(capset);
-    return mInstance;
+static std::unique_ptr<VirtGpuDevice> s_device;
+
+// static
+void VirtGpuDevice::setInstance(std::unique_ptr<VirtGpuDevice> device) {
+    s_device = std::move(device);
 }
+
+// static
+VirtGpuDevice& VirtGpuDevice::getInstance() { return *s_device; }
 
 VirtGpuDevice::VirtGpuDevice(enum VirtGpuCapset capset) {
     // Unimplemented stub
