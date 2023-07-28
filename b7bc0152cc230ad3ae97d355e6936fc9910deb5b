@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ca3d310_e3c407fa",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-07-28T17:39:55Z",
+      "side": 1,
+      "message": "You might not be able to reference this from gfxstream repository. Let\u0027s wait for presubmit.",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 31
+      },
+      "revId": "b7bc0152cc230ad3ae97d355e6936fc9910deb5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
