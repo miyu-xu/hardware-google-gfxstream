@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5d24bce_9d38ebc4",
+        "filename": "codegen/vulkan/vulkan-hpp/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-07-28T18:38:52Z",
+      "side": 1,
+      "message": "It is very strange that we need to make this patch.\n\nI assume it\u0027s either a corner case where `VulkanHppGenerator.cpp` doesn\u0027t catch, or a mistake in our `vk.xml`?",
+      "revId": "a6f7b0a580b4939e23798b2b5eced694e61fe13e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
