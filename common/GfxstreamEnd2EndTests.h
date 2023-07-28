@@ -34,12 +34,11 @@
 #include "OpenGLESDispatch/RenderEGL_extensions_functions.h"
 
 #define VULKAN_HPP_NAMESPACE vkhpp
-#define VULKAN_HPP_ENABLE_DYNAMIC_LOADER_TOOL 0
+#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
+#define VULKAN_HPP_ENABLE_DYNAMIC_LOADER_TOOL 1
 #define VULKAN_HPP_NO_CONSTRUCTORS
 #define VULKAN_HPP_NO_EXCEPTIONS
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_raii.hpp>
-#include <vulkan/vulkan_to_string.hpp>
+#include <vulkan/vulkan.hpp>
 // clang-format on
 
 #include <android-base/expected.h>
@@ -67,6 +66,15 @@ MATCHER(IsError, "an error result") {
   auto& result = arg;
   if (result.ok()) {
     *result_listener << "which is an ok result";
+    return false;
+  }
+  return true;
+}
+
+MATCHER(NotNullHandle, "a non-null handle") {
+  auto& result = arg;
+  if (!result) {
+    *result_listener << "which is a VK_NULL_HANDLE";
     return false;
   }
   return true;
@@ -489,7 +497,8 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
 
     std::unique_ptr<GuestGlDispatchTable> SetupGuestGl();
 
-    std::unique_ptr<vkhpp::raii::Context> SetupGuestVk();
+    //std::unique_ptr<vkhpp::raii::Context> SetupGuestVk();
+    std::unique_ptr<vkhpp::DynamicLoader> SetupGuestVk();
 
     void SetUp() override;
 
@@ -515,6 +524,7 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     GlExpected<GLuint> SetUpProgram(const std::string& vertSource,
                                     const std::string& fragSource);
 
+    /*
     struct TypicalVkTestEnvironment {
         vkhpp::raii::Instance instance;
         vkhpp::raii::PhysicalDevice physicalDevice;
@@ -523,13 +533,24 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
         uint32_t queueFamilyIndex;
     };
     VkExpected<TypicalVkTestEnvironment> SetUpTypicalVkTestEnvironment();
+    */
+
+    struct TypicalVkTestEnvironment2 {
+        vkhpp::UniqueInstance instance;
+        vkhpp::PhysicalDevice physicalDevice;
+        vkhpp::UniqueDevice device;
+        vkhpp::Queue queue;
+        uint32_t queueFamilyIndex;
+    };
+    VkExpected<TypicalVkTestEnvironment2> SetUpTypicalVkTestEnvironment2();
 
     std::shared_ptr<TestingVirtGpuDevice> mDevice;
     std::unique_ptr<TestingVirtGpuANativeWindowHelper> mAnwHelper;
     std::unique_ptr<TestingVirtGpuGralloc> mGralloc;
     std::unique_ptr<TestingVirtGpuSyncHelper> mSync;
     std::unique_ptr<GuestGlDispatchTable> mGl;
-    std::unique_ptr<vkhpp::raii::Context> mVk;
+    //std::unique_ptr<vkhpp::raii::Context> mVk;
+    std::unique_ptr<vkhpp::DynamicLoader> mVk;
 };
 
 }  // namespace tests

@@ -1053,6 +1053,7 @@ std::unique_ptr<GfxstreamEnd2EndTest::GuestGlDispatchTable> GfxstreamEnd2EndTest
     return gl;
 }
 
+/*
 std::unique_ptr<vkhpp::raii::Context> GfxstreamEnd2EndTest::SetupGuestVk() {
     const std::filesystem::path testDirectory = android::base::getProgramDirectory();
     const std::string vkLibPath = (testDirectory / "vulkan.ranchu.so").string();
@@ -1069,6 +1070,28 @@ std::unique_ptr<vkhpp::raii::Context> GfxstreamEnd2EndTest::SetupGuestVk() {
     }
 
     return std::make_unique<vkhpp::raii::Context>(vkGetInstanceProcAddr);
+}
+*/
+
+std::unique_ptr<vkhpp::DynamicLoader> GfxstreamEnd2EndTest::SetupGuestVk() {
+    const std::filesystem::path testDirectory = android::base::getProgramDirectory();
+    const std::string vkLibPath = (testDirectory / "vulkan.ranchu.so").string();
+
+    auto dl = std::make_unique<vkhpp::DynamicLoader>(vkLibPath);
+    if (!dl->success()) {
+        ALOGE("Failed to load Vulkan from: %s", vkLibPath.c_str());
+        return nullptr;
+    }
+
+    auto getInstanceProcAddr = dl->getProcAddress<PFN_vkGetInstanceProcAddr>("vk_icdGetInstanceProcAddr");
+    if (!getInstanceProcAddr) {
+        ALOGE("Failed to load Vulkan vkGetInstanceProcAddr. %s", dlerror());
+        return nullptr;
+    }
+
+    VULKAN_HPP_DEFAULT_DISPATCHER.init(getInstanceProcAddr);
+
+    return dl;
 }
 
 void GfxstreamEnd2EndTest::SetUp() {
@@ -1334,6 +1357,7 @@ GlExpected<GLuint> GfxstreamEnd2EndTest::SetUpProgram(
     }
 }
 
+/*
 VkExpected<GfxstreamEnd2EndTest::TypicalVkTestEnvironment>
 GfxstreamEnd2EndTest::SetUpTypicalVkTestEnvironment() {
     const auto availableInstanceLayers = mVk->enumerateInstanceLayerProperties();
@@ -1427,6 +1451,116 @@ GfxstreamEnd2EndTest::SetUpTypicalVkTestEnvironment() {
         .physicalDevice = std::move(physicalDevice),
         .device = std::move(device),
         .queue= std::move(queue),
+        .queueFamilyIndex = graphicsQueueFamilyIndex,
+    };
+}
+*/
+
+VkExpected<GfxstreamEnd2EndTest::TypicalVkTestEnvironment2>
+GfxstreamEnd2EndTest::SetUpTypicalVkTestEnvironment2() {
+    const auto availableInstanceLayers = vkhpp::enumerateInstanceLayerProperties().value;
+    ALOGV("Available instance layers:");
+    for (const vkhpp::LayerProperties& layer : availableInstanceLayers) {
+        ALOGV(" - %s", layer.layerName.data());
+    }
+
+    constexpr const bool kEnableValidationLayers = true;
+
+    std::vector<const char*> requestedInstanceExtensions;
+    std::vector<const char*> requestedInstanceLayers;
+    if (kEnableValidationLayers) {
+        requestedInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
+
+    const vkhpp::ApplicationInfo applicationInfo{
+        .pApplicationName = ::testing::UnitTest::GetInstance()->current_test_info()->name(),
+        .applicationVersion = 1,
+        .pEngineName = "Gfxstream Testing Engine",
+        .engineVersion = 1,
+        .apiVersion = VK_API_VERSION_1_2,
+    };
+    const vkhpp::InstanceCreateInfo instanceCreateInfo{
+        .pApplicationInfo = &applicationInfo,
+        .enabledLayerCount = static_cast<uint32_t>(requestedInstanceLayers.size()),
+        .ppEnabledLayerNames = requestedInstanceLayers.data(),
+        .enabledExtensionCount = static_cast<uint32_t>(requestedInstanceExtensions.size()),
+        .ppEnabledExtensionNames = requestedInstanceExtensions.data(),
+    };
+
+    auto instance = vkhpp::createInstanceUnique(instanceCreateInfo).value;
+    if (!instance) {
+        ALOGE("Failed to create VkInstance.");
+        return android::base::unexpected(vkhpp::Result::eErrorUnknown);
+    }
+
+    VULKAN_HPP_DEFAULT_DISPATCHER.init(*instance);
+
+    auto physicalDevices = instance->enumeratePhysicalDevices().value;
+    ALOGV("Available physical devices:");
+    for (const auto& physicalDevice : physicalDevices) {
+        const auto physicalDeviceProps = physicalDevice.getProperties();
+        ALOGV(" - %s", physicalDeviceProps.deviceName.data());
+    }
+
+    auto physicalDevice = std::move(physicalDevices[0]);
+    {
+        const auto physicalDeviceProps = physicalDevice.getProperties();
+        ALOGV("Selected physical device: %s", physicalDeviceProps.deviceName.data());
+    }
+    {
+        const auto exts = physicalDevice.enumerateDeviceExtensionProperties().value;
+        ALOGV("Available physical device extensions:");
+        for (const auto& ext : exts) {
+            ALOGV(" - %s", ext.extensionName.data());
+        }
+    }
+
+    uint32_t graphicsQueueFamilyIndex = -1;
+    {
+        const auto props = physicalDevice.getQueueFamilyProperties();
+        for (uint32_t i = 0; i < props.size(); i++) {
+            const auto& prop = props[i];
+            if (prop.queueFlags & vkhpp::QueueFlagBits::eGraphics) {
+                graphicsQueueFamilyIndex = i;
+                break;
+            }
+        }
+    }
+    if (graphicsQueueFamilyIndex == -1) {
+        ALOGE("Failed to find graphics queue.");
+        return android::base::unexpected(vkhpp::Result::eErrorUnknown);
+    }
+
+    const float queuePriority = 1.0f;
+    const vkhpp::DeviceQueueCreateInfo deviceQueueCreateInfo = {
+        .queueFamilyIndex = graphicsQueueFamilyIndex,
+        .queueCount = 1,
+        .pQueuePriorities = &queuePriority,
+    };
+    const std::vector<const char*> deviceExtensions = {
+        VK_ANDROID_NATIVE_BUFFER_EXTENSION_NAME,
+    };
+    const vkhpp::DeviceCreateInfo deviceCreateInfo = {
+        .pQueueCreateInfos = &deviceQueueCreateInfo,
+        .queueCreateInfoCount = 1,
+        .enabledLayerCount = 0,
+        .ppEnabledLayerNames = nullptr,
+        .enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size()),
+        .ppEnabledExtensionNames = deviceExtensions.data(),
+    };
+    auto device = physicalDevice.createDeviceUnique(deviceCreateInfo).value;
+    if (!device) {
+        ALOGE("Failed to create VkDevice.");
+        return android::base::unexpected(vkhpp::Result::eErrorUnknown);
+    }
+
+    auto queue = device->getQueue(graphicsQueueFamilyIndex, 0);
+
+    return TypicalVkTestEnvironment2{
+        .instance = std::move(instance),
+        .physicalDevice = std::move(physicalDevice),
+        .device = std::move(device),
+        .queue = std::move(queue),
         .queueFamilyIndex = graphicsQueueFamilyIndex,
     };
 }
