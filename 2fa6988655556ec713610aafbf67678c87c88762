@@ -16,6 +16,24 @@
       "message": "How do we plan to mock those APIs? If on Linux, those APIs should just work out of box.",
       "revId": "2fa6988655556ec713610aafbf67678c87c88762",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3effe25e_3c6fbf11",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-07-28T18:19:12Z",
+      "side": 1,
+      "message": "The mocks are using `std::promise\u003cvoid\u003e` and `std::shared_future\u003cvoid\u003e` (see https://android-review.googlesource.com/c/platform/hardware/google/gfxstream/+/2620535/34/common/GfxstreamEnd2EndTests.h#286).\n\n\u003e If on Linux, those APIs should just work out of box.\n\nIIUC, the guest fences correspond more to the VMM\u0027s `rutabaga_fence` / `VirtioGpuTimelines`\u0027s fences than to actual host sync fds from a host driver.",
+      "parentUuid": "ca2f7815_6fa34eab",
+      "revId": "2fa6988655556ec713610aafbf67678c87c88762",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
