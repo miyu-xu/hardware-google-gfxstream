@@ -46,6 +46,7 @@
 #include "aemu/base/memory/MemoryTracker.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/system/System.h"
+#include "android/hw-sensors.h"
 #include "gl/YUVConverter.h"
 #include "gl/gles2_dec/gles2_dec.h"
 #include "gl/glestranslator/EGL/EglGlobalInfo.h"
@@ -2813,6 +2814,7 @@ bool FrameBuffer::compose(uint32_t bufferSize, void* buffer, bool needPost) {
         completeFuture.wait();
     }
 
+    const bool is_pixel_fold = android_foldable_is_pixel_fold();
     if (needPost) {
         // AEMU with -no-window mode uses this code path.
         ComposeDevice* composeDevice = (ComposeDevice*)buffer;
@@ -2824,7 +2826,7 @@ bool FrameBuffer::compose(uint32_t bufferSize, void* buffer, bool needPost) {
             }
             case 2: {
                 ComposeDevice_v2* composeDeviceV2 = (ComposeDevice_v2*)buffer;
-                if (composeDeviceV2->displayId == 0) {
+                if (is_pixel_fold || composeDeviceV2->displayId == 0) {
                     post(composeDeviceV2->targetHandle, true);
                 }
                 break;
