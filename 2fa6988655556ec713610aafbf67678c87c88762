@@ -34,6 +34,24 @@
       "parentUuid": "ca2f7815_6fa34eab",
       "revId": "2fa6988655556ec713610aafbf67678c87c88762",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b76c9085_5d2ac0e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-07-28T18:22:47Z",
+      "side": 1,
+      "message": "Thanks for the explanation. If we do want to also test host code, I agree sync fd on the host is not a choice, because we can\u0027t signal them in the userspace.",
+      "parentUuid": "3effe25e_3c6fbf11",
+      "revId": "2fa6988655556ec713610aafbf67678c87c88762",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
