@@ -70,6 +70,30 @@
       },
       "revId": "f6d3fe730a45ab6a6d0f7609fd45f5915c50e630",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c775e9e_ab86db4f",
+        "filename": "guest/OpenglSystemCommon/VirtioGpuPipeStreamFuchsia.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1019788
+      },
+      "writtenOn": "2023-07-28T00:02:51Z",
+      "side": 1,
+      "message": "Ack - this is just to satisfy the build.  I will rebase on the change you linked.",
+      "parentUuid": "c3e340ae_353eef20",
+      "range": {
+        "startLine": 1,
+        "startChar": 2,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "f6d3fe730a45ab6a6d0f7609fd45f5915c50e630",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
