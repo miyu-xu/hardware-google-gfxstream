@@ -95,6 +95,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ec6a763_535efec9",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-29T00:31:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4742792_083eee7e",
+      "range": {
+        "startLine": 109,
+        "startChar": 22,
+        "endLine": 109,
+        "endChar": 28
+      },
+      "revId": "2fbef6c698485c3e7bcf49eddaf8abcfcb315cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bf559aae_d57b91f8",
