@@ -368,6 +368,16 @@ class VulkanType(object):
         if self.staticArrExpr != "":
             return self.staticArrExpr
         if self.lenExpr:
+            # There are a couple of instances in the spec where we use a math expression to express the
+            # length. CodeGen().generalLengthAccess() has logic o parse these expressions correctly, but
+            # for now,we just use a simple lookup table.
+            known_expressions = {
+                r"latexmath:[\lceil{\mathit{samples} \over 32}\rceil]":
+                    "int(samples / 32)",
+                r"latexmath:[2 \times \mathtt{VK\_UUID\_SIZE}]": "2 * VK_UUID_SIZE",
+            }
+            if self.lenExpr in known_expressions:
+                return known_expressions[self.lenExpr]
             return self.lenExpr
         return None
 
@@ -893,6 +903,9 @@ class VulkanTypeInfo(object):
         # For aliases, the value is the name of the canonical enum
         self.enumValues: Dict[str, Union[int, str]] = {}
 
+        # Maps enum to their xml element
+        self.enumElem = {}
+
         self.feature = None
 
     def initType(self, name: str, category: str):
@@ -1038,11 +1051,13 @@ class VulkanTypeInfo(object):
         for enum in enums:
             intVal, strVal = self.generator.enumToValue(enum, True)
             self.enumValues[enum.get('name')] = intVal if intVal is not None else strVal
+            self.enumElem[enum.get('name')] = enum
 
 
     def onGenEnum(self, enuminfo, name: str, alias):
         self.initType(name, "enum")
         value: str = enuminfo.elem.get("value")
+        self.enumElem[name] = enuminfo.elem
         if value and value.isdigit():
             self.enumValues[name] = int(value)
         elif value and value[0] == '"' and value[-1] == '"':
