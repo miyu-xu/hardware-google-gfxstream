@@ -27,50 +27,6 @@
 extern "C" {
 #endif
 
-#ifndef VK_ANDROID_native_buffer
-
-#define VK_ANDROID_native_buffer 1
-#define VK_ANDROID_NATIVE_BUFFER_SPEC_VERSION 6
-#define VK_ANDROID_NATIVE_BUFFER_NUMBER 11
-#define VK_ANDROID_NATIVE_BUFFER_EXTENSION_NAME "VK_ANDROID_native_buffer"
-#define VK_ANDROID_NATIVE_BUFFER_NAME VK_ANDROID_NATIVE_BUFFER_EXTENSION_NAME
-typedef struct VkNativeBufferANDROID {
-    VkStructureType sType;
-    const void* pNext;
-    const uint32_t* handle;
-    int stride;
-    int format;
-    int usage;
-    uint64_t consumer;
-    uint64_t producer;
-} VkNativeBufferANDROID;
-
-typedef VkResult(VKAPI_PTR* PFN_vkGetSwapchainGrallocUsageANDROID)(VkDevice device, VkFormat format,
-                                                                   VkImageUsageFlags imageUsage,
-                                                                   int* grallocUsage);
-typedef VkResult(VKAPI_PTR* PFN_vkAcquireImageANDROID)(VkDevice device, VkImage image,
-                                                       int nativeFenceFd, VkSemaphore semaphore,
-                                                       VkFence fence);
-typedef VkResult(VKAPI_PTR* PFN_vkQueueSignalReleaseImageANDROID)(
-    VkQueue queue, uint32_t waitSemaphoreCount, const VkSemaphore* pWaitSemaphores, VkImage image,
-    int* pNativeFenceFd);
-
-#ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR VkResult VKAPI_CALL vkGetSwapchainGrallocUsageANDROID(VkDevice device, VkFormat format,
-                                                                 VkImageUsageFlags imageUsage,
-                                                                 int* grallocUsage);
-
-VKAPI_ATTR VkResult VKAPI_CALL vkAcquireImageANDROID(VkDevice device, VkImage image,
-                                                     int nativeFenceFd, VkSemaphore semaphore,
-                                                     VkFence fence);
-
-VKAPI_ATTR VkResult VKAPI_CALL vkQueueSignalReleaseImageANDROID(VkQueue queue,
-                                                                uint32_t waitSemaphoreCount,
-                                                                const VkSemaphore* pWaitSemaphores,
-                                                                VkImage image, int* pNativeFenceFd);
-#endif
-#endif /* VK_ANDROID_native_buffer */
-
 #ifdef __cplusplus
 }
 #endif
