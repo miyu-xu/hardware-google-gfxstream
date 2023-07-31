@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3432c31_838e782e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-07-31T16:39:13Z",
+      "side": 1,
+      "message": "The guest kernel does block during the call to GEM map to ensure that the host buffer is in guest address space.\n\nhttps://cgit.freedesktop.org/drm/drm-misc/tree/drivers/gpu/drm/virtio/virtgpu_vram.c#n44\n\nPerhaps the end2endtests should do that too?\n\nAlso, \"ring_idx \u003d 1\" is signaled by librutabaga, so unless you\u0027re linking against that, I\u0027m not sure how that\u0027ll work?\n\nhttps://github.com/google/crosvm/blob/main/rutabaga_gfx/src/gfxstream.rs#L240\n\n(FYI, using librutabaga_ffi.so during the end2end tests would be great if possible [though not necessary], since you can test cross domain/gfxstream interop without booting a VM.  other contexts too).",
+      "revId": "d1135b6c123334879055a67d9189cf76dc60e78d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
