@@ -357,7 +357,7 @@ class ValidityOutputGenerator(OutputGenerator):
 
     def isHandleOptional(self, param, params):
         # Simple, if it's optional, return true
-        if param.get('optional') is not None:
+        if param.get('optional') == "true":
             return True
 
         # If no validity is being generated, it usually means that validity is complex and not absolute, so let's say yes.
