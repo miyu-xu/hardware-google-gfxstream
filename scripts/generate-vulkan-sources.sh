@@ -26,7 +26,7 @@ fi
 if [ -z "$1" ] || [ -z "$2" ];
 then
     AOSP_DIR=$(pwd)/../../..
-    export GOLDFISH_OPENGL_DIR=$AOSP_DIR/device/generic/goldfish-opengl
+    export GOLDFISH_OPENGL_DIR=$AOSP_DIR/hardware/google/gfxstream/guest
     export VULKAN_CEREAL_DIR=$AOSP_DIR/hardware/google/gfxstream
     export VULKAN_REGISTRY_DIR=$AOSP_DIR/hardware/google/gfxstream/codegen/vulkan
 else
