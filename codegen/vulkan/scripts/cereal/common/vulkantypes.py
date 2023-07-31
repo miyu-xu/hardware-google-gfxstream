@@ -281,6 +281,15 @@ class VulkanType(object):
         if self.staticArrExpr != "":
             return self.staticArrExpr
         if self.lenExpr:
+            # There are a couple of instances in the spec where we use a math expression to express the
+            # length. CodeGen().generalLengthAccess() has logic o parse these expressions correctly, but
+            # for now,we just use a simple lookup table.
+            known_expressions = {
+                r"latexmath:[\lceil{\mathit{samples} \over 32}\rceil]":
+                    "int(samples / 32)",
+            }
+            if self.lenExpr in known_expressions:
+                return known_expressions[self.lenExpr]
             return self.lenExpr
         return None
 
