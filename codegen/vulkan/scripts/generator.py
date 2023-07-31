@@ -448,7 +448,7 @@ class OutputGenerator:
 
                 msg = 'Two enums found with the same value: {} = {} = {}'.format(
                     name, name2.get('name'), strVal)
-                self.logMsg('error', msg)
+                self.logMsg('warn', msg)
 
             # Track this enum to detect followon duplicates
             nameMap[name] = [elem, numVal, strVal]
