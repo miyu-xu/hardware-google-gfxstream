@@ -26,7 +26,7 @@ fi
 if [ -z "$1" ] || [ -z "$2" ];
 then
     AOSP_DIR=$(pwd)/../../..
-    export GOLDFISH_OPENGL_DIR=$AOSP_DIR/device/generic/goldfish-opengl
+    export GOLDFISH_OPENGL_DIR=$AOSP_DIR/hardware/google/gfxstream/guest
     export VULKAN_CEREAL_DIR=$AOSP_DIR/hardware/google/gfxstream
     export VULKAN_REGISTRY_DIR=$AOSP_DIR/hardware/google/gfxstream/codegen/vulkan
 else
@@ -57,8 +57,8 @@ fi
 
 cd $PROJECT_ROOT
 
-export VK_CEREAL_GUEST_ENCODER_DIR=$GOLDFISH_OPENGL_DIR/system/vulkan_enc
-export VK_CEREAL_GUEST_HAL_DIR=$GOLDFISH_OPENGL_DIR/system/vulkan
+export VK_CEREAL_GUEST_ENCODER_DIR=$GOLDFISH_OPENGL_DIR/vulkan_enc
+export VK_CEREAL_GUEST_HAL_DIR=$GOLDFISH_OPENGL_DIR/vulkan
 export VK_CEREAL_HOST_DECODER_DIR=$VULKAN_CEREAL_DIR/host/vulkan
 export VK_CEREAL_HOST_INCLUDE_DIR=$VULKAN_CEREAL_DIR/host
 export VK_CEREAL_HOST_SCRIPTS_DIR=$VULKAN_CEREAL_DIR/scripts
