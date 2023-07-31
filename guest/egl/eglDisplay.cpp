@@ -496,6 +496,9 @@ EGLBoolean eglDisplay::getConfigAttrib(EGLConfig config, EGLint attrib, EGLint *
             findObjectOrDefault(
                 m_attribs, attrib, EGL_DONT_CARE),
             value);
+    if (ret == EGL_FALSE) {
+        ALOGD("[%s] unsupported attribute %d value %d\n", __FUNCTION__, attrib, ret);
+    }
     pthread_mutex_unlock(&m_lock);
     return ret;
 }
