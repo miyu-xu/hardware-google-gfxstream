@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a429e57_1a87e086",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-07-31T18:43:51Z",
+      "side": 1,
+      "message": "This header is not host specific, but the guest used to use a different source of truth of this file.\n\nSee https://r.android.com/2213515 and https://r.android.com/2213516.\n\nNot sure about the current structure of the gfxstream repo. Where did we move the guest side `include/vulkan/vk_android_native_buffer.h` to?",
+      "revId": "ce2a4c14c5abaa5bb29f8aefdacdf365efeb6db9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
