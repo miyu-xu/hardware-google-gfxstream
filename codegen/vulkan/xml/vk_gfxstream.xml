@@ -236,6 +236,7 @@ specific entries.
         </command>
     </commands>
     <extensions comment="Vulkan extension interface definitions">
+        <extension name="VK_ANDROID_native_buffer" supported="vulkan"/>
         <extension name="VK_GOOGLE_gfxstream" number="386" author="GOOGLE" contact="Lingfeng Yang @frank,Roman Kiryanov @rkir,Yilong Li @liyl_google" supported="vulkan" type="instance">
             <require>
                 <enum value="0"                                             name="VK_GOOGLE_GFXSTREAM_SPEC_VERSION"/>
