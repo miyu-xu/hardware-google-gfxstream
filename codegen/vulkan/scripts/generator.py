@@ -448,7 +448,7 @@ class OutputGenerator:
 
                 msg = 'Two enums found with the same value: {} = {} = {}'.format(
                     name, name2.get('name'), strVal)
-                self.logMsg('error', msg)
+                self.logMsg('warn', msg)
 
             # Track this enum to detect followon duplicates
             nameMap[name] = [elem, numVal, strVal]
@@ -1100,7 +1100,7 @@ class OutputGenerator:
         if extname is not None:
             # 'supported' attribute was injected when the <enum> element was
             # moved into the <enums> group in Registry.parseTree()
-            if self.genOpts.defaultExtensions == elem.get('supported'):
+            if self.genOpts.defaultExtensions in elem.get('supported').split(','):
                 required = True
             elif re.match(self.genOpts.addExtensions, extname) is not None:
                 required = True
