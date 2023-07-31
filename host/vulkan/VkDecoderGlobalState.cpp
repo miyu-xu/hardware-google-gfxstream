@@ -152,7 +152,7 @@ static constexpr const char* const kEmulatedInstanceExtensions[] = {
     VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
 };
 
-static constexpr uint32_t kMaxSafeVersion = VK_MAKE_VERSION(1, 3, 0);
+static constexpr uint32_t kMaxSafeVersion = VK_MAKE_VERSION(1, 1, 0);
 static constexpr uint32_t kMinVersion = VK_MAKE_VERSION(1, 0, 0);
 
 static constexpr uint64_t kPageSizeforBlob = 4096;
@@ -5116,12 +5116,13 @@ class VkDecoderGlobalState::Impl {
                 importSource = "AHardwareBuffer";
             } else if (pNativeBufferANDROID) {
                 // For native buffer binding, we can query the creation parameters from handle.
-                auto colorBufferInfo = getColorBufferInfo(*pNativeBufferANDROID->handle);
-                if (colorBufferInfo.handle == *pNativeBufferANDROID->handle) {
+                uint32_t cbHandle = *static_cast<const uint32_t*>(pNativeBufferANDROID->handle);
+                auto colorBufferInfo = getColorBufferInfo(cbHandle);
+                if (colorBufferInfo.handle == cbHandle) {
                     colorBufferVkImageCi =
                         std::make_unique<VkImageCreateInfo>(colorBufferInfo.imageCreateInfoShallow);
                 } else {
-                    ERR("Unknown ColorBuffer handle: %" PRIu32 ".", *pNativeBufferANDROID->handle);
+                    ERR("Unknown ColorBuffer handle: %" PRIu32 ".", cbHandle);
                 }
                 importSource = "NativeBufferANDROID";
             }

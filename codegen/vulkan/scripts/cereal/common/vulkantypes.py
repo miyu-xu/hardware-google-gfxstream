@@ -276,6 +276,26 @@ STRUCT_MEMBER_FILTER_FUNC = {
     "VkFramebufferCreateInfo.pAttachments": "(eq (bitwise_and flags VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT) 0)",
 }
 
+# vk.xml added optional to some of the existing fields. For backward compatibility
+# we need to ignore those optionals.
+# We might want to add more complex safety checks in future.
+STRUCT_MEMBER_IGNORE_OPTIONAL = {
+    "VkSubmitInfo.pWaitDstStageMask",
+    "VkPipelineLayoutCreateInfo.pSetLayouts",
+    "VkGraphicsPipelineCreateInfo.pStages",
+    "VkPipelineColorBlendStateCreateInfo.pAttachments",
+    "VkFramebufferCreateInfo.attachmentCount",
+    "VkFramebufferCreateInfo.pAttachments",
+    "VkVideoProfileInfoKHR.chromaBitDepth",
+    "VkVideoDecodeInfoKHR.pSetupReferenceSlot",
+    "vkCmdBindDescriptorSets.pDescriptorSets",
+    "vkCmdBindDescriptorSets.local_pDescriptorSets",
+    "vkCmdBindVertexBuffers.pBuffers",
+    "vkCmdBindVertexBuffers.local_pBuffers",
+    "vkCmdClearColorImage.pColor",
+    "vkCmdClearColorImage.local_pColor",
+}
+
 # Holds information about a Vulkan type instance (i.e., not a type definition).
 # Type instances are used as struct field definitions or function parameters,
 # to be later fed to code generation.
@@ -368,6 +388,16 @@ class VulkanType(object):
         if self.staticArrExpr != "":
             return self.staticArrExpr
         if self.lenExpr:
+            # There are a couple of instances in the spec where we use a math expression to express the
+            # length. CodeGen().generalLengthAccess() has logic o parse these expressions correctly, but
+            # for now,we just use a simple lookup table.
+            known_expressions = {
+                r"latexmath:[\lceil{\mathit{samples} \over 32}\rceil]":
+                    "int(samples / 32)",
+                r"latexmath:[2 \times \mathtt{VK\_UUID\_SIZE}]": "2 * VK_UUID_SIZE",
+            }
+            if self.lenExpr in known_expressions:
+                return known_expressions[self.lenExpr]
             return self.lenExpr
         return None
 
@@ -514,11 +544,25 @@ class VulkanType(object):
         return None
     def isOptionalPointer(self) -> bool:
         return self.isOptional and \
+               (not self.isForceOptional()) and\
                self.pointerIndirectionLevels > 0 and \
                (not self.isNextPointer())
+    
+    def isForceOptional(self) -> bool:
+        """
+        Returns true if we should generate a placeholder for null.
+
+        Vulkan updates change certain pointers from non-optional to
+        optional. We want to keep our encoder/decoder backward compatible.
+        Thus we shoudl generate a placeholder for such APIs.
+        """
+        return self.getFullName() in STRUCT_MEMBER_IGNORE_OPTIONAL
+
+    def getFullName(self) -> str:
+        return f"{self.parent.name}.{self.paramName}" 
 
     def getProtectStreamFeature(self) -> Optional[str]:
-        key = f"{self.parent.name}.{self.paramName}"
+        key = self.getFullName()
         if key in STRUCT_MEMBER_STREAM_FEATURE.keys():
             return STRUCT_MEMBER_STREAM_FEATURE[key]
         return None
@@ -893,6 +937,9 @@ class VulkanTypeInfo(object):
         # For aliases, the value is the name of the canonical enum
         self.enumValues: Dict[str, Union[int, str]] = {}
 
+        # Maps enum to their xml element
+        self.enumElem = {}
+
         self.feature = None
 
     def initType(self, name: str, category: str):
@@ -1038,11 +1085,13 @@ class VulkanTypeInfo(object):
         for enum in enums:
             intVal, strVal = self.generator.enumToValue(enum, True)
             self.enumValues[enum.get('name')] = intVal if intVal is not None else strVal
+            self.enumElem[enum.get('name')] = enum
 
 
     def onGenEnum(self, enuminfo, name: str, alias):
         self.initType(name, "enum")
         value: str = enuminfo.elem.get("value")
+        self.enumElem[name] = enuminfo.elem
         if value and value.isdigit():
             self.enumValues[name] = int(value)
         elif value and value[0] == '"' and value[-1] == '"':
@@ -1093,7 +1142,7 @@ def iterateVulkanType(typeInfo: VulkanTypeInfo, vulkanType: VulkanType, forEachT
 
         if needCheck:
             forEachType.onCheck(vulkanType)
-
+        
         forEachType.onCompoundType(vulkanType)
 
         if needCheck:
