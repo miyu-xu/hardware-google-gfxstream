@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34589327_8c1b9020",
+        "filename": "common/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 40
+      },
+      "lineNbr": 1380,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-01T21:35:41Z",
+      "side": 1,
+      "message": "I would be in favor of not using the default dispatch, but explicitly load the dispatch and pass that to every Vulkan API call, so that we mock the Vulkan loader within the code, and we have control over which Vulkan loader to use at runtime.\n\n```\ninline std::vector\u003cPhysicalDeviceInfo\u003e selectPhysicalDevices(\n    vk::Instance instance, const vk::DispatchLoaderDynamic\u0026 instanceDispatch) {\n    vk::Result result;\n    // Choose the physical device.\n    std::vector\u003cvk::PhysicalDevice\u003e physicalDevices;\n    std::tie(result, physicalDevices) \u003d instance.enumeratePhysicalDevices(instanceDispatch);\n    ...\n```\n\nCheck http://go/user.git/kaiyili/vk-astc-decoder-bench/+/refs/heads/main/src/VkUtils.hpp#60 for examples.\n\nHowever, given that this is just testing code, I am Ok with it as long as we can run it.",
+      "revId": "48e6e07dbe397b70d6b884225ba6f0c525b21b63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89a6bf71_0d80fcf1",
+        "filename": "common/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 40
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-01T21:35:41Z",
+      "side": 1,
+      "message": "I would just use `std::optional\u003cuint32_t\u003e` here.\n\n```\nstd::optional\u003cuint32_t\u003e x \u003d std::nullopt;\nuint32_t y \u003d x.value();\n```\n\nis guaranteed to throw an exception: https://en.cppreference.com/w/cpp/utility/optional/value, so the test is guaranteed to fail if we use `value` to access the underlying value, while `operator *` doesn\u0027t have this check.\n\nI am Ok if we keep the code as is, since this is the testing code.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 9
+      },
+      "revId": "48e6e07dbe397b70d6b884225ba6f0c525b21b63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
