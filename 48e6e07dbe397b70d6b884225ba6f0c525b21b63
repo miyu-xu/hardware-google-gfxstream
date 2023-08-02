@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d4e8aff_fec4b33a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 40
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-02T17:49:55Z",
+      "side": 1,
+      "message": "One thing that would be cool would be running `deqp-vk` or any headless app (`vulkaninfo\u0027) without booting a VM.  virglrenderer does this via vtest, and it\u0027s built into libvirgl_dri.so\n\nhttps://cgit.freedesktop.org/mesa/mesa/commit/?id\u003db3b82fe8ea1f7d02c93513920143cba2fe145b6c\n\nEssentially, if \"virpipe\" is true, it tries to send commands over a socket.  Can we build the test backend into libvulkan_ranchu.so rather than the testing binary so any app could potentially use it?\n\nAnd have an environment variable or equivalent allow piping commands to that?\n\nSo rather than \"common/GfxBackendTests.cpp\",you would probably have \"platform/test\" backend or something.\n\nFor virgl, the server binary is launched separately.  The client library connects to it.  I believe this is what the Android emulator socket stream does too but it\u0027s unforunately unmaintained:\n\nhttps://android.googlesource.com/platform/external/qemu/+/bcde1092aca184dbd7860078af020de7d1e4e22f/hw/android/goldfish/pipe.c",
+      "revId": "48e6e07dbe397b70d6b884225ba6f0c525b21b63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "34589327_8c1b9020",
