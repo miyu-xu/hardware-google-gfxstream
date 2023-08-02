@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7688b7c1_0667da4f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-02T16:54:07Z",
+      "side": 1,
+      "message": "Since we haven\u0027t GfxstreamMagma capset host side yet, still calls GfxstreamVUlkan FYI.",
+      "revId": "89c339809a110feb66c54d981acc2709416b586f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
