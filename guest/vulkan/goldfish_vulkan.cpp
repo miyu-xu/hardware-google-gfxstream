@@ -790,7 +790,7 @@ int OpenDevice(const hw_module_t* /*module*/,
 
 class VulkanDevice {
 public:
-    VulkanDevice() : mDeviceIsSupported(IsFuchsiaDeviceAccessible()) {
+    VulkanDevice() : mDeviceIsSupported(FuchsiaIsDeviceAccessible()) {
         ALOGE("*** mDeviceIsSupported: %d\n", mDeviceIsSupported);
         printf("*** mDeviceIsSupported: %d\n", mDeviceIsSupported);fflush(stdout);
         InitLogger();
