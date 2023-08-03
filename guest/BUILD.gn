@@ -23,6 +23,7 @@ config("common_config") {
     "renderControl_enc",
     "vulkan_enc",
     "platform/include",
+    "include",
   ]
 
   if (target_os == "fuchsia") {
@@ -210,6 +211,9 @@ loadable_module("libvulkan_gfxstream") {
       "OpenglSystemCommon/QemuPipeStream.cpp",
       "qemupipe/qemu_pipe_common.cpp",
       "qemupipe/qemu_pipe_guest.cpp",
+      "platform/stub/StubVirtGpuBlob.cpp",
+      "platform/stub/StubVirtGpuBlobMapping.cpp",
+      "platform/stub/StubVirtGpuDevice.cpp",
     ]
     sources += [
       "OpenglSystemCommon/TraceProviderFuchsia.cpp",
@@ -217,6 +221,9 @@ loadable_module("libvulkan_gfxstream") {
       "fuchsia/fuchsia_stdio.cc",
       "fuchsia/port.cc",
       "fuchsia/service_connector.cc",
+      "platform/fuchsia/FuchsiaVirtGpuBlob.cpp",
+      "platform/fuchsia/FuchsiaVirtGpuBlobMapping.cpp",
+      "platform/fuchsia/FuchsiaVirtGpuDevice.cpp",
     ]
 
     include_dirs = [
@@ -227,6 +234,7 @@ loadable_module("libvulkan_gfxstream") {
 
     deps = [
       ":goldfish_srcs",
+      "//sdk/fidl/fuchsia.gpu.virtio:fuchsia.gpu.virtio_cpp",
       "//sdk/fidl/fuchsia.logger:fuchsia.logger_cpp",
       "//sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_cpp",
       "//src/zircon/lib/zircon",
