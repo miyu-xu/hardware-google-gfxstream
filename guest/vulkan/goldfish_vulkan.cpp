@@ -229,30 +229,13 @@ int OpenDevice(const hw_module_t* /*module*/,
 
 class VulkanDevice {
 public:
-    VulkanDevice() : mHostSupportsGoldfish(IsAccessible(QEMU_PIPE_PATH)) {
+    VulkanDevice() : mDeviceIsSupported(FuchsiaIsDeviceAccessible()) {
         InitLogger();
         InitTraceProvider();
         gfxstream::vk::ResourceTracker::get();
     }
 
     static void InitLogger();
-
-    static bool IsAccessible(const char* name) {
-        zx_handle_t handle = GetConnectToServiceFunction()(name);
-        if (handle == ZX_HANDLE_INVALID)
-            return false;
-
-        zxio_storage_t io_storage;
-        zx_status_t status = zxio_create(handle, &io_storage);
-        if (status != ZX_OK)
-            return false;
-
-        status = zxio_close(&io_storage.io, /*should_wait=*/true);
-        if (status != ZX_OK)
-            return false;
-
-        return true;
-    }
 
     static VulkanDevice& GetInstance() {
         static VulkanDevice g_instance;
@@ -267,7 +250,7 @@ private:
     void InitTraceProvider();
 
     TraceProviderFuchsia mTraceProvider;
-    const bool mHostSupportsGoldfish;
+    const bool mDeviceIsSupported;
 };
 
 void VulkanDevice::InitLogger() {
