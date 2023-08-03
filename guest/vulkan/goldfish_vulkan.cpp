@@ -229,7 +229,9 @@ int OpenDevice(const hw_module_t* /*module*/,
 
 class VulkanDevice {
 public:
-    VulkanDevice() : mHostSupportsGoldfish(IsAccessible(QEMU_PIPE_PATH)) {
+    VulkanDevice() : mDeviceIsSupported(FuchsiaIsDeviceAccessible()) {
+        ALOGE("*** mDeviceIsSupported: %d\n", mDeviceIsSupported);
+        printf("*** mDeviceIsSupported: %d\n", mDeviceIsSupported);fflush(stdout);
         InitLogger();
         InitTraceProvider();
         gfxstream::vk::ResourceTracker::get();
@@ -267,7 +269,7 @@ private:
     void InitTraceProvider();
 
     TraceProviderFuchsia mTraceProvider;
-    const bool mHostSupportsGoldfish;
+    const bool mDeviceIsSupported;
 };
 
 void VulkanDevice::InitLogger() {
