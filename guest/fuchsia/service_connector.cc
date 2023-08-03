@@ -31,12 +31,73 @@ PFN_ConnectToServiceAddr GetConnectToServiceFunction() {
   return g_connection_function;
 }
 
-bool IsFuchsiaDeviceAccessible() {
+std::vector<std::string> FuchsiaGetVirtioGpuDevices() {
+  const char* path = "/loader-gpu-devices/class/virtio-gpu";
+
+  zxio_storage_t io_storage;
+  {
+    zx_handle_t handle = GetConnectToServiceFunction()(path);
+    if (handle == ZX_HANDLE_INVALID) {
+      ALOGE("Failed to connect to path: %s", path);
+      return {};
+    }
+
+    // Consumes handle.
+    zx_status_t status = zxio_create(handle, &io_storage);
+    if (status != ZX_OK) {
+      ALOGE("zxio_create failed: %d", status);
+      return {};
+    }
+  }
+
+  zxio_dirent_iterator_t iterator;
+  {
+    zx_status_t status = zxio_dirent_iterator_init(&iterator, &io_storage.io);
+    if (status != ZX_OK) {
+      ALOGE("zxio_dirent_iterator_init failed: %d", status);
+      return {};
+    }
+  }
+
+  std::vector<std::string> devices;
+
+  while (true) {
+    char name[ZXIO_MAX_FILENAME + 1];
+    zxio_dirent_t dirent = {.name = name};
+
+    zx_status_t status = zxio_dirent_iterator_next(&iterator, &dirent);
+    if (status != ZX_OK) {
+      if (status != ZX_ERR_NOT_FOUND) {
+        ALOGE("zxio_dirent_iterator_next failed: %d", status);
+      }
+      break;
+    }
+
+    name[dirent.name_length] = '\0';
+    ALOGE("*** got name %s", name);
+
+    if (name[0] != '.') {
+      devices.push_back(path + std::string("/") + std::string(name));
+    }
+  }
+
+  {
+    zx_status_t status = zxio_close(&io_storage.io, /*should_wait=*/true);
+    if (status != ZX_OK) {
+      ALOGE("zxio_close failed: %d", status);
+    }
+  }
+
+  return devices;
+}
+
+bool FuchsiaIsDeviceAccessible() {
 #ifdef VIRTIO_GPU
-    const char* path = "/loader-gpu-devices/class/virtio-gpu";
+  auto devices = FuchsiaGetVirtioGpuDevices();
+  ALOGE("*** devices.size() %zd", devices.size());
+  return devices.size() > 0;
 #else
-    const char* path = QEMU_PIPE_PATH;
-#endif
+  const char* path = QEMU_PIPE_PATH;
 
   zx_handle_t handle = GetConnectToServiceFunction()(path);
   if (handle == ZX_HANDLE_INVALID)
@@ -76,4 +137,5 @@ bool IsFuchsiaDeviceAccessible() {
       return false;
 
   return true;
+#endif
 }
