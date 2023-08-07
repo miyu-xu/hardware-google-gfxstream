@@ -233,6 +233,18 @@ STRUCT_MEMBER_STREAM_FEATURE = {
     "VkGraphicsPipelineCreateInfo.pRasterizationState": "VULKAN_STREAM_FEATURE_IGNORED_HANDLES_BIT",
 }
 
+STRUCT_MEMBER_FILTER_VAR = {
+    "VkGraphicsPipelineCreateInfo.pTessellationState": "hasTessellation",
+    "VkGraphicsPipelineCreateInfo.pViewportState": "hasRasterization",
+    "VkGraphicsPipelineCreateInfo.pMultisampleState": "hasRasterization",
+    "VkGraphicsPipelineCreateInfo.pDepthStencilState": "hasRasterization",
+    "VkGraphicsPipelineCreateInfo.pColorBlendState": "hasRasterization",
+    "VkWriteDescriptorSet.pImageInfo": "descriptorType",
+    "VkWriteDescriptorSet.pBufferInfo": "descriptorType",
+    "VkWriteDescriptorSet.pTexelBufferView": "descriptorType",
+    "VkFramebufferCreateInfo.attachmentCount": "flags",
+}
+
 # Holds information about a Vulkan type instance (i.e., not a type definition).
 # Type instances are used as struct field definitions or function parameters,
 # to be later fed to code generation.
@@ -586,7 +598,7 @@ def parseLetBodyExpr(expr):
     return res
 
 
-def makeVulkanTypeFromXMLTag(typeInfo, tag: Element) -> VulkanType:
+def makeVulkanTypeFromXMLTag(typeInfo, parentName: str, tag: Element) -> VulkanType:
     res = VulkanType()
 
     # Process the length expression
@@ -672,8 +684,9 @@ def makeVulkanTypeFromXMLTag(typeInfo, tag: Element) -> VulkanType:
         res.binds = dict(map(lambda sp: (sp[0].strip(), sp[1].strip()), bindPairsSplit))
 
     # Annotations: Filters
-    if tag.attrib.get("filterVar") is not None:
-        res.filterVar = tag.attrib.get("filterVar").strip()
+    structMemberName = f"{parentName}.{res.paramName}"
+    if structMemberName in STRUCT_MEMBER_FILTER_VAR.keys():
+        res.filterVar = STRUCT_MEMBER_FILTER_VAR[structMemberName]
 
     if tag.attrib.get("filterVals") is not None:
         res.filterVals = \
@@ -969,7 +982,7 @@ class VulkanTypeInfo(object):
                     }
 
             for member in typeinfo.elem.findall(".//member"):
-                vulkanType = makeVulkanTypeFromXMLTag(self, member)
+                vulkanType = makeVulkanTypeFromXMLTag(self, typeName, member)
                 initialEnv[vulkanType.paramName] = {
                     "type": vulkanType.typeName,
                     "binding": vulkanType.paramName,
@@ -1025,8 +1038,8 @@ class VulkanTypeInfo(object):
         self.apis[name] = \
             VulkanAPI(
                 name,
-                makeVulkanTypeFromXMLTag(self, proto),
-                list(map(lambda p: makeVulkanTypeFromXMLTag(self, p),
+                makeVulkanTypeFromXMLTag(self, name, proto),
+                list(map(lambda p: makeVulkanTypeFromXMLTag(self, name, p),
                          params)))
         self.apis[name].initCopies()
 
