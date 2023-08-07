@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "14f5a4bc_4dc89070",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 40
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-08-07T16:30:52Z",
+      "side": 1,
+      "message": "\u003e Can we build the test backend into libvulkan_ranchu.so rather than the testing binary so any app could potentially use it?\n\nawoloszyn@ mentioned he was going to do exactly this in order to support running snapshot tests for VK.",
+      "parentUuid": "2d4e8aff_fec4b33a",
+      "revId": "48e6e07dbe397b70d6b884225ba6f0c525b21b63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "34589327_8c1b9020",
