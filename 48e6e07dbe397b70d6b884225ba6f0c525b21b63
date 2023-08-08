@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c98fd7f_92f01859",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 40
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-08T17:19:02Z",
+      "side": 1,
+      "message": "Cool, the key thing is using virtio-gpu interfaces rather than the old goldfish flow.  I can even see the possibility of the testing backend connecting the vhost-user GPU process, which could work on the chimera VMM (that is potentially useful to both CF and AEMU).\n\nhttp://goto.google.com/cf-chimera-vmm\n\nCC: awolosyzn@",
+      "parentUuid": "14f5a4bc_4dc89070",
+      "revId": "48e6e07dbe397b70d6b884225ba6f0c525b21b63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "34589327_8c1b9020",
