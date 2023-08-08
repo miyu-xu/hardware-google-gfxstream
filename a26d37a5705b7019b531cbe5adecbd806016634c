@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8583732a_3c5968fe",
+        "filename": "guest/egl/egl.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 513,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-08T20:20:23Z",
+      "side": 1,
+      "message": "Should we wait and check the return code for `close`? I am not familiar with the behavior of `dequeueBuffer_DEPRECATED`.",
+      "revId": "a26d37a5705b7019b531cbe5adecbd806016634c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
