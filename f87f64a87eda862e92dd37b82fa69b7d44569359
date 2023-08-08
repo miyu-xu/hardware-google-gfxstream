@@ -22,6 +22,30 @@
       },
       "revId": "f87f64a87eda862e92dd37b82fa69b7d44569359",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "371fb5d1_0670e713",
+        "filename": "guest/egl/egl.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 511,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-08-08T22:47:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90c1dbc2_2b314eea",
+      "range": {
+        "startLine": 511,
+        "startChar": 23,
+        "endLine": 511,
+        "endChar": 24
+      },
+      "revId": "f87f64a87eda862e92dd37b82fa69b7d44569359",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
