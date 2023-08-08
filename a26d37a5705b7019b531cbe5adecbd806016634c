@@ -16,6 +16,24 @@
       "message": "Should we wait and check the return code for `close`? I am not familiar with the behavior of `dequeueBuffer_DEPRECATED`.",
       "revId": "a26d37a5705b7019b531cbe5adecbd806016634c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54f7f51a_959819a1",
+        "filename": "guest/egl/egl.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 513,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-08-08T22:40:24Z",
+      "side": 1,
+      "message": "Updated based on https://cs.android.com/android/platform/superproject/main/+/refs/heads/main:frameworks/native/libs/gui/Surface.cpp;l\u003d441;drc\u003d35d9a70606a19acf4186519ff5adad3c8a61ab31;bpv\u003d0;bpt\u003d1",
+      "parentUuid": "8583732a_3c5968fe",
+      "revId": "a26d37a5705b7019b531cbe5adecbd806016634c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
