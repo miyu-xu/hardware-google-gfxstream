@@ -22,6 +22,30 @@
       },
       "revId": "b5ce9bbda1134cfbe0973d9ffedd597d01911eea",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd116292_39024ceb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-10T16:08:50Z",
+      "side": 1,
+      "message": "Still Meson, and same compiler has host gLinux.  But I copied significant portions of mesa over when building, and maybe it has different options.",
+      "parentUuid": "4328651c_2126b537",
+      "range": {
+        "startLine": 7,
+        "startChar": 27,
+        "endLine": 7,
+        "endChar": 74
+      },
+      "revId": "b5ce9bbda1134cfbe0973d9ffedd597d01911eea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
