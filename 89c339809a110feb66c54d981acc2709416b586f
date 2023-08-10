@@ -33,6 +33,24 @@
       "message": "I could be misunderstanding the usage, but I feel like having individual capsets for each backend, which iirc map to the virtio-gpu context type, conflates two separate concepts. If a host doesn\u0027t support GLES, for example, does it make sense to indicate that at the virtio level, or should that just be discoverable via standard gles usage? I\u0027ll follow up offline with more details.",
       "revId": "89c339809a110feb66c54d981acc2709416b586f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b26379d_7df477e3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-10T02:29:57Z",
+      "side": 1,
+      "message": "We can discuss over chat later, but yes for separate versioning via virtio-gpu capabilities we need separate capsets!",
+      "parentUuid": "11f2ed1c_e8c066d9",
+      "revId": "89c339809a110feb66c54d981acc2709416b586f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
