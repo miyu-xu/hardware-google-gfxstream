@@ -68,6 +68,9 @@ cc_library_static {
 	"-Wl,-Bsymbolic",
 	"-Wl,--gc-sections",
     ],
+    export_generated_headers: [
+	"gfxstream_vk_entrypoints_header",
+    ],
 }
 
 cc_defaults {
@@ -94,6 +97,8 @@ cc_defaults {
         "libdrm",
         "libGoldfishAddressSpace",
         "libgfxstream_guest_gralloc",
+        "libmesa_vulkan_util_gfxstream",
+        "libmesa_vulkan_runtime_gfxstream",
         "libgfxstream_vk_entrypoints",
         "libmesa_util_gfxstream",
     ],
