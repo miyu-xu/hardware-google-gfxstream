@@ -132,6 +132,7 @@ SUPPORTED_FEATURES = [
 SUPPORTED_WRAPPERS = {
     "VK_EXT_debug_utils": [cereal.VulkanDispatch],
     "VK_KHR_surface": [cereal.VulkanDispatch],
+    "VK_KHR_swapchain": [cereal.VulkanDispatch],
     "VK_KHR_xcb_surface": [cereal.VulkanDispatch],
     "VK_KHR_win32_surface": [cereal.VulkanDispatch],
     "VK_EXT_metal_surface": [cereal.VulkanDispatch],
@@ -331,6 +332,7 @@ class IOStream;
 #include "VkEncoder.h"
 #include "../OpenglSystemCommon/HostConnection.h"
 #include "ResourceTracker.h"
+#include "gfxstream_vk_entrypoints.h"
 
 #include "goldfish_vk_private_defs.h"
 
@@ -590,7 +592,8 @@ class BumpPool;
             suppressVulkanHeaders=True,
             extraHeader=createVkExtensionStructureTypePreamble('VK_GOOGLE_GFXSTREAM'))
 
-        self.addGuestEncoderModule("func_table", extraImpl=functableImplInclude)
+        self.addGuestEncoderModule("func_table", extraImpl=functableImplInclude, implOnly = True,
+                                    useNamespace = False)
 
         self.addCppModule("common", "goldfish_vk_extension_structs",
                        extraHeader=extensionStructsInclude)
@@ -681,13 +684,13 @@ class BumpPool;
 
     def addGuestEncoderModule(
             self, basename, extraHeader="", extraImpl="", useNamespace=True, headerOnly=False,
-            suppressFeatureGuards=False, moduleName=None, suppressVulkanHeaders=False):
+            suppressFeatureGuards=False, moduleName=None, suppressVulkanHeaders=False, implOnly=False):
         if not os.path.exists(self.guest_abs_encoder_destination):
             print("Path [%s] not found (guest encoder path), skipping" % self.guest_abs_encoder_destination)
             return
         self.addCppModule(self.guest_encoder_tag, basename, extraHeader=extraHeader,
                        extraImpl=extraImpl, customAbsDir=self.guest_abs_encoder_destination,
-                       useNamespace=useNamespace, headerOnly=headerOnly,
+                       useNamespace=useNamespace, implOnly=implOnly, headerOnly=headerOnly,
                        suppressFeatureGuards=suppressFeatureGuards, moduleName=moduleName,
                        suppressVulkanHeaders=suppressVulkanHeaders)
 
