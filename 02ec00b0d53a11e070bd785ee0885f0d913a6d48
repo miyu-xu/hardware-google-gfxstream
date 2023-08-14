@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54106b75_886c4327",
+        "filename": "guest/vulkan_enc/func_table.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4466,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-08-14T20:39:21Z",
+      "side": 1,
+      "message": "ideally we want to auto-generate this code. Let\u0027s figure it out later.",
+      "range": {
+        "startLine": 4466,
+        "startChar": 38,
+        "endLine": 4466,
+        "endChar": 68
+      },
+      "revId": "02ec00b0d53a11e070bd785ee0885f0d913a6d48",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
