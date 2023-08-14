@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a9ce52f_49c40eaa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-08-14T17:41:42Z",
+      "side": 1,
+      "message": "Please include the codegen changes with the change that introduces them so that future people that regenerate do not have to track down where changes came from.",
+      "range": {
+        "startLine": 13,
+        "startChar": 18,
+        "endLine": 13,
+        "endChar": 65
+      },
+      "revId": "56596cd2fe9c01d4cbbef299727f182bae4604b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
