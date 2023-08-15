@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b884848_d8cb57d3",
+        "filename": "codegen/vulkan/xml/vk.xml",
+        "patchSetId": 37
+      },
+      "lineNbr": 6109,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-08-15T19:20:48Z",
+      "side": 1,
+      "message": "Thinking about future updates and given the relatively small number of changes needed to `vk.xml` after your changes here, what do you think about leaving the original `vk.xml` unchanged and adding in a small little python wrapper to apply the edits?\n\nWe could create a `hardware/google/gfxstream/codegen/vulkan/xml/vk_gfxstream.xml` which is\n\n```\n\u003c?xml version\u003d\"1.0\" encoding\u003d\"UTF-8\"?\u003e\n\u003cregistry\u003e\n \u003ctypes comment\u003d\"Vulkan type definitions\"\u003e\n   \u003ctype category\u003d\"struct\" name\u003d\"VkImportColorBufferGOOGLE\" ...\u003e\n   ...\n   \u003c/type\u003e\n \u003c/types\u003e\n \u003cextensions\u003e\n   \u003cextension name\u003d\"VK_GOOGLE_gfxstream\" ...\u003e\n   ...\n   \u003c/extension\u003e\n \u003c/extensions\u003e\n\u003c/registry\u003e\n```\n\nwhich just has additions.\n\nThen we could create a `hardware/google/gfxstream/codegen/vulkan/scripts/generate_codegen_vk_xml.py` which is like\n\n```\nimport argparse\nimport xml.etree.ElementTree\n\n# b/295587347 - VkNativeBufferANDROID diverged from upstream\ndef FixUpAndroidNativeBuffer(vk_xml):\n    # Gfxstream uses the `handle` member to pass ColorBuffer/Buffer ids.\n    nb \u003d vk_xml.find(\u0027types\u0027).find(\u0027VkNativeBufferANDROID)\n    nb.find(\u0027member\u0027).find(\u0027handle\u0027).set(\u0027noautovalidity\u0027, \u0027true\u0027)\n    \n    # Update codegen to actually output things for this extension by default:\n    nbe \u003d vk_xml.find(\u0027extensions\u0027).find(\u0027[name \u003d VK_ANDROID_native_buffer\u0027])\n    nbe.set(\u0027supported\u0027, \u0027vulkan\u0027)\n    \n    # etc\n    \n\ndef main():\n    # Input\n    parser \u003d argparse.ArgumentParser()\n    parser.add_argument(\u0027input_vk_xml_path\u0027)\n    parser.add_argument(\u0027input_gfxstream_vk_xml_path\u0027)\n    parser.add_argument(\u0027output_vk_xml_path\u0027)\n    args \u003d parser.parse_args()\n    \n    vk_xml_tree \u003d xml.etree.ElementTree.Parse(args.input_vk_xml_path)\n    vk_xml \u003d vk_xml_tree.getroot()\n    \u003cerror check\u003e\n    \n    gfxstream_vk_xml_tree \u003d xml.etree.ElementTree.Parse(args.input_gfxstream_vk_xml_path)\n    gfxstream_vk_xml \u003d gfxstream_vk_xml_tree.getroot()\n    \u003cerror check\u003e\n    \n    # Additions:\n    for t in gfxstream_vk_xml.find(\u0027types\u0027).children():\n      vk_xml.find(\u0027types\u0027).append(t)\n    for e in gfxstream_vk_xml.find(\u0027extensions\u0027).children():\n      vk_xml.find(\u0027extensions\u0027).append(e)\n\n    # Fixups\n    FixUpAndroidNativeBuffer(vk_xml)\n  \n    # Output\n    with open(args.output_vk_xml_path, \u0027w\u0027) as output_file:\n      vk_xml_tree.write(output_file, encoding\u003d\u0027unicode\u0027)\n\n\nif __name__ \u003d\u003d \"__main__\":\n    main()\n```\n\nThis makes it much easier to see where the edits and to potentially apply edits in the future. WDYT?",
+      "range": {
+        "startLine": 6109,
+        "startChar": 8,
+        "endLine": 6109,
+        "endChar": 102
+      },
+      "revId": "d78b6bf1fbe0480d3137302a5e368475be864e05",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
