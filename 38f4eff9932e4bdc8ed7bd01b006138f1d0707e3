@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbe169a0_558a9315",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-08-15T18:56:06Z",
+      "side": 1,
+      "message": "Please include a `to \u003cnew version\u003e` in the first line of commit message for posterity",
+      "range": {
+        "startLine": 7,
+        "startChar": 23,
+        "endLine": 7,
+        "endChar": 32
+      },
+      "revId": "38f4eff9932e4bdc8ed7bd01b006138f1d0707e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
