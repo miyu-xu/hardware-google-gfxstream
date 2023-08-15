@@ -22,6 +22,30 @@
       },
       "revId": "d78b6bf1fbe0480d3137302a5e368475be864e05",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0da27de_5ef31a0a",
+        "filename": "codegen/vulkan/xml/vk.xml",
+        "patchSetId": 37
+      },
+      "lineNbr": 6109,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-08-15T19:57:14Z",
+      "side": 1,
+      "message": "This is a good idea.",
+      "parentUuid": "8b884848_d8cb57d3",
+      "range": {
+        "startLine": 6109,
+        "startChar": 8,
+        "endLine": 6109,
+        "endChar": 102
+      },
+      "revId": "d78b6bf1fbe0480d3137302a5e368475be864e05",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
