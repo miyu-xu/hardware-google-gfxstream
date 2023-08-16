@@ -774,6 +774,9 @@ if __name__ == '__main__':
     parser.add_argument('-registry', action='store',
                         default='vk.xml',
                         help='Use specified registry file instead of vk.xml')
+    parser.add_argument('-registryGfxstream', action='store',
+                        default=None,
+                        help='Use specified gfxstream registry file')
     parser.add_argument('-time', action='store_true',
                         help='Enable timing')
     parser.add_argument('-validate', action='store_true',
@@ -828,6 +831,17 @@ if __name__ == '__main__':
     startTimer(args.time)
     tree = etree.parse(args.registry)
     endTimer(args.time, '* Time to make ElementTree =')
+
+    # Parse the specified gfxstream registry XML and merge it with the
+    # ElementTree
+    if args.registryGfxstream is not None:
+        treeGfxstream = etree.parse(args.registryGfxstream)
+        treeRoot = tree.getroot()
+        treeGfxstreamRoot = treeGfxstream.getroot()
+        for entriesName in ['types', 'commands', 'extensions']:
+            treeEntries = treeRoot.find(entriesName)
+            for entry in treeGfxstreamRoot.find(entriesName):
+                treeEntries.append(entry)
 
     # Load the XML tree into the registry object
     startTimer(args.time)

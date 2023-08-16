@@ -9825,38 +9825,6 @@ VKAPI_ATTR void VKAPI_CALL vkSetHdrMetadataEXT(
 #define VK_MVK_moltenvk 1
 #define VK_MVK_MOLTENVK_SPEC_VERSION      0
 #define VK_MVK_MOLTENVK_EXTENSION_NAME    "VK_MVK_moltenvk"
-typedef void (VKAPI_PTR *PFN_vkGetMTLDeviceMVK)(VkPhysicalDevice physicalDevice, void** pMTLDevice);
-typedef VkResult (VKAPI_PTR *PFN_vkSetMTLTextureMVK)(VkImage image, void* mtlTexture);
-typedef void (VKAPI_PTR *PFN_vkGetMTLTextureMVK)(VkImage image, void** pMTLTexture);
-typedef void (VKAPI_PTR *PFN_vkGetMTLBufferMVK)(VkBuffer buffer, void** pMTLBuffer);
-typedef VkResult (VKAPI_PTR *PFN_vkUseIOSurfaceMVK)(VkImage image, void* ioSurface);
-typedef void (VKAPI_PTR *PFN_vkGetIOSurfaceMVK)(VkImage image, void**  pIOSurface);
-
-#ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR void VKAPI_CALL vkGetMTLDeviceMVK(
-    VkPhysicalDevice                            physicalDevice,
-    void**                                      pMTLDevice);
-
-VKAPI_ATTR VkResult VKAPI_CALL vkSetMTLTextureMVK(
-    VkImage                                     image,
-    void*                                       mtlTexture);
-
-VKAPI_ATTR void VKAPI_CALL vkGetMTLTextureMVK(
-    VkImage                                     image,
-    void**                                      pMTLTexture);
-
-VKAPI_ATTR void VKAPI_CALL vkGetMTLBufferMVK(
-    VkBuffer                                    buffer,
-    void**                                      pMTLBuffer);
-
-VKAPI_ATTR VkResult VKAPI_CALL vkUseIOSurfaceMVK(
-    VkImage                                     image,
-    void*                                       ioSurface);
-
-VKAPI_ATTR void VKAPI_CALL vkGetIOSurfaceMVK(
-    VkImage                                     image,
-    void**                                      pIOSurface);
-#endif
 
 
 #define VK_EXT_external_memory_dma_buf 1
