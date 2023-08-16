@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "59bc318a_922ffd8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-16T21:57:39Z",
+      "side": 1,
+      "message": "Can you use the Meson build?  We would like to deprecate the CMake DOWNLOAD-dependency logic long-term.\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#build-gfxstream",
+      "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
