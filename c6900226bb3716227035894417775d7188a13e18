@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab3db4ef_37610d30",
+        "filename": "host/VirtioGpuTimelines.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-16T17:19:32Z",
+      "side": 1,
+      "message": "If so, the unstable header shouldn\u0027t need them as well as long as we move them to the VirtioGpuTimelines.h header so that the compile won\u0027t fail.",
+      "parentUuid": "924078e4_344d7d45",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 33
+      },
+      "revId": "c6900226bb3716227035894417775d7188a13e18",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "9e4d243d_ceb88d97",
