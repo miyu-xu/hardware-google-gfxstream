@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e18b3a6_c3aa8e3e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-16T21:59:55Z",
+      "side": 1,
+      "message": "It\u0027s customary to put BUG and TEST.\n\nI think for BUG you can use the following.\n\nBUG\u003d287086290\n\nThere\u0027s a bug for the Meson build, which is also at:\n\nBUG\u003d287082350\n\nso you may use both",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 4
+      },
+      "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "59bc318a_922ffd8d",
