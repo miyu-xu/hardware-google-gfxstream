@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cdd38ed8_91c888c2",
+        "filename": "host/VirtioGpuTimelines.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-16T16:06:43Z",
+      "side": 1,
+      "message": "I am wondering why those types can\u0027t be part of the stable header?",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 33
+      },
+      "revId": "c6900226bb3716227035894417775d7188a13e18",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e4d243d_ceb88d97",
+        "filename": "include/render-utils/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-16T16:06:43Z",
+      "side": 1,
+      "message": "If we don\u0027t think these types are part of the external interface, we can just remove them. B* doesn\u0027t use them.",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 33
+      },
+      "revId": "c6900226bb3716227035894417775d7188a13e18",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
