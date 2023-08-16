@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "924078e4_344d7d45",
+        "filename": "host/VirtioGpuTimelines.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-16T16:25:03Z",
+      "side": 1,
+      "message": "The stable header uses primitive types anyways, so it\u0027s not really used there so removed as part of cleanup.",
+      "parentUuid": "cdd38ed8_91c888c2",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 33
+      },
+      "revId": "c6900226bb3716227035894417775d7188a13e18",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9e4d243d_ceb88d97",
         "filename": "include/render-utils/virtio-gpu-gfxstream-renderer-unstable.h",
         "patchSetId": 1
