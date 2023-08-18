@@ -89,6 +89,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ee1e14c_3fc72730",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1889140
+      },
+      "writtenOn": "2023-08-18T18:26:47Z",
+      "side": 1,
+      "message": "I think the include file for Fuchsia is:\n\nhttps://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/guest/GoldfishAddressSpace/include/goldfish_address_space_fuchsia.impl",
+      "parentUuid": "e82b5e2f_48ff9c24",
+      "revId": "50388c65d5599324953afdd36ec58b99cbe71189",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd94877c_b0458967",
