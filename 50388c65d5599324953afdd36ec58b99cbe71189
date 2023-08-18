@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd7cd976_2117961e",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1499410
+      },
+      "writtenOn": "2023-08-18T16:26:32Z",
+      "side": 1,
+      "message": "We can use the inlined `page_size()` and it avoid the #ifdefs above.",
+      "range": {
+        "startLine": 272,
+        "startChar": 57,
+        "endLine": 272,
+        "endChar": 66
+      },
+      "revId": "50388c65d5599324953afdd36ec58b99cbe71189",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
