@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "caaa9ba5_50913150",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-18T16:36:56Z",
+      "side": 1,
+      "message": "We may compile this project outside the Android tree using meson, under which case, any libc may be used.",
+      "parentUuid": "1e170ba6_5beb991b",
+      "revId": "50388c65d5599324953afdd36ec58b99cbe71189",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bd94877c_b0458967",
         "filename": "guest/GoldfishAddressSpace/include/goldfish_address_space_android.impl",
         "patchSetId": 3
