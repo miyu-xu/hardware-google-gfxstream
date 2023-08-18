@@ -38,6 +38,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "bd94877c_b0458967",
+        "filename": "guest/GoldfishAddressSpace/include/goldfish_address_space_android.impl",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-18T16:35:49Z",
+      "side": 1,
+      "message": "Can we use\n```\n#ifdef PAGE_SIZE\nstatic const size_t kPageSize \u003d PAGE_SIZE;\n#else\nstatic const size_t kPageSize \u003d getpagesize();\n#endif\n```\n\nor other macro to identify if `PAGE_SIZE` exists, like `ANDROID`, `__ANDROID__`, or `__BIONIC__`?",
+      "revId": "50388c65d5599324953afdd36ec58b99cbe71189",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bd7cd976_2117961e",
         "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
         "patchSetId": 3
