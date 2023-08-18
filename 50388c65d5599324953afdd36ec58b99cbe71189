@@ -106,6 +106,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d0dfb62_cee1db33",
+        "filename": "guest/GoldfishAddressSpace/include/goldfish_address_space_android.impl",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1889140
+      },
+      "writtenOn": "2023-08-18T18:24:50Z",
+      "side": 1,
+      "message": "Done.\n\nSimilar to https://android-review.git.corp.google.com/c/platform/bionic/+/2675944/15/libc/platform/bionic/page.h",
+      "parentUuid": "bd94877c_b0458967",
+      "revId": "50388c65d5599324953afdd36ec58b99cbe71189",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd7cd976_2117961e",
@@ -119,6 +137,30 @@
       "writtenOn": "2023-08-18T16:26:32Z",
       "side": 1,
       "message": "We can use the inlined `page_size()` and it avoid the #ifdefs above.",
+      "range": {
+        "startLine": 272,
+        "startChar": 57,
+        "endLine": 272,
+        "endChar": 66
+      },
+      "revId": "50388c65d5599324953afdd36ec58b99cbe71189",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0bd86387_2e57027c",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1889140
+      },
+      "writtenOn": "2023-08-18T18:24:50Z",
+      "side": 1,
+      "message": "AFAIK, \"platform/bionic/page.h\" library, which includes page_size(), it is only intended to be used by bionic.",
+      "parentUuid": "bd7cd976_2117961e",
       "range": {
         "startLine": 272,
         "startChar": 57,
