@@ -72,6 +72,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "26392d4f_c0c94519",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-18T17:51:12Z",
+      "side": 1,
+      "message": "`getpagesize()` works with Linux guest build.  I think the Fuchsia build should be easy to fix too, since that OS implements a subset of POSIX and getpagesize(..) is probably one of them.  If not, it should be fairly easy to fix once Fuchsia build is back up and running (it\u0027s not at the moment).",
+      "revId": "50388c65d5599324953afdd36ec58b99cbe71189",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd94877c_b0458967",
