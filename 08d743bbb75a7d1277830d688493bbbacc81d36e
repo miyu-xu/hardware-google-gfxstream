@@ -16,6 +16,24 @@
       "message": "If we don\u0027t remove the generated files, it is possible that the generated files are not regenerated, because `make` is used, and I am not sure if the existing `make` script correctly tracks the modification of all dependent files.\n\nCan we change it to `rm -rf $VULKAN_HEADERS_ROOT/include`?",
       "revId": "08d743bbb75a7d1277830d688493bbbacc81d36e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "610f6374_8a2bf6a1",
+        "filename": "scripts/generate-vulkan-sources.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-21T21:09:15Z",
+      "side": 1,
+      "message": "I did modify vk.xml and few args, and the files seem to be re-generated files has exptected.  Let\u0027s be optimistic and go without deleting the directory, we can always change it later if we run into issues.",
+      "parentUuid": "31bb7da5_67dd6453",
+      "revId": "08d743bbb75a7d1277830d688493bbbacc81d36e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
