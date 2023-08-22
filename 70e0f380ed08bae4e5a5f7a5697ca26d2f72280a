@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a6751900_5f9c5a24",
+        "filename": "codegen/vulkan/scripts/genvk.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 780,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-08-22T21:39:36Z",
+      "side": 1,
+      "message": "optional: Since we are going through the effort to minimize changes to the original upstream sources, potentially all of the additions in this file could be split off into a separate simple python file like `generate_combined_vulkan_xml.py`, `generate-vulkan-sources.sh` could then be updated to just have the additional step of doing\n\n```\npython generate_combined_vulkan_xml.py \\\n  --input_registery\u003dhardware/google/gfxstream/codegen/vulkan/xml/vk.xml \\\n  --input_gfxstream_registery\u003dhardware/google/gfxstream/codegen/vulkan/xml/vk_gfxstream.xml\n  --output_combined_registery\u003d/tmp/vk.xml\n```\n\nand then the `genvk.py` step could just use `-registry /tmp/vk/xml`.",
+      "range": {
+        "startLine": 778,
+        "startChar": 4,
+        "endLine": 780,
+        "endChar": 69
+      },
+      "revId": "70e0f380ed08bae4e5a5f7a5697ca26d2f72280a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
