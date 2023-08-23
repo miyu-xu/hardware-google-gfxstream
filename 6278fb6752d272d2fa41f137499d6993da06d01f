@@ -16,6 +16,24 @@
       "message": "I would prefer to set up this one in presubmit tests.",
       "revId": "6278fb6752d272d2fa41f137499d6993da06d01f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06bc8dcd_f05f807c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-23T17:46:38Z",
+      "side": 1,
+      "message": "I\u0027m curious if that use case wouldn\u0027t be already covered by testing strategies already in the works.  For example,\n\nhttps://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2620535/comments/2d4e8aff_fec4b33a\n\nseemed to imply that `libvulkan_ranchu.so` would eventually be able to run any Vulkan binary (without a VM) and not just ones we write.\n\nI think it is completely possible to run a significant fraction of dEQP tests in presubmit.  I believe Mesa CI already does this, using the parallel dEQP runner (pretty fast) using virgl: \n\nhttps://gitlab.freedesktop.org/anholt/deqp-runner\n\nIf we can test via a higher level interface, that would cover the use case this test was designed for and then some.  Plus, it really hasn\u0027t been in use so not sure if it works at all, thus delete.",
+      "parentUuid": "1d521cc5_d37f88f0",
+      "revId": "6278fb6752d272d2fa41f137499d6993da06d01f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
