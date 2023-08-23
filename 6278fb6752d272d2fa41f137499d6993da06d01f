@@ -34,6 +34,24 @@
       "parentUuid": "1d521cc5_d37f88f0",
       "revId": "6278fb6752d272d2fa41f137499d6993da06d01f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01c6a0e4_b0f4da55",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-08-23T20:37:08Z",
+      "side": 1,
+      "message": "This one is lower level that could provide more useful debug info, especially when we update code generators or the stream implementation.\n\nThe fact that it is not running (nor building) is a concern. It might be more broken than it looks. I would still suggest to keep it if it is not difficult to fix, but I will leave the judgement to you.",
+      "parentUuid": "06bc8dcd_f05f807c",
+      "revId": "6278fb6752d272d2fa41f137499d6993da06d01f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
