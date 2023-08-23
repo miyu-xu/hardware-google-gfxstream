@@ -16,6 +16,24 @@
       "message": "This one looks like it should be renamed and moved to guest/android-emu/aemu/base/threads/AndroidWorkPool_unittests.cpp",
       "revId": "f67db52fe745fb75ed2c1f65df09c65e991f48a5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "273a1628_461c846a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-23T18:56:00Z",
+      "side": 1,
+      "message": "There\u0027s a few things going on with this:\n\n1) AEMU-base and guest AEMU base differences (https://buganizer.corp.google.com/issues/295896925).  \n\n\nIf we are going to run ThreadPool tests, we should probably be running it in AEMU base repo, not here.  It has its own version of a thread pool (ThreadPool.h).\n\n2) Do we need to have adequate coverage for the features without this unittest?  \n\nWorkPool was added due to sync_fd support in Android:\n\nhttps://b.corp.google.com/issues/139194471\nhttps://android-review.git.corp.google.com/c/device/generic/goldfish-opengl/+/1106733\n\nBut that seems testable via:\n\ndEQP-VK.api.external.fence.sync_fd.*\ndEQP-VK.api.external.semaphore.sync_fd.*\nhttps://android-review.git.corp.google.com/c/device/generic/goldfish-opengl/+/1104241\n\nSo we can probably get the same Vulkan level API coverage if we solve the more generic problem of how to run dEQP-vk without VM.\n\n3) Should be using a WorkPool to schedule sync waits?\n\nLong-term, probably not since launching a thread inside the driver is probably un-Vulkanic. For example, there\u0027s going to be a new fence passing the virtio-gpu API that\u0027ll allow us (crrev.com/c/4679609) to send the fence to the host.  \n\nEven without, there\u0027s SYNC_IOC_MERGE that merges various sync_fds into one (if they are on the same timeline, which is almost always the case).  So just for a code simplicity perspective I don\u0027t why we need it.\n\nHonestly, given the original commit doesn\u0027t really give a reason for the WorkPool (performance?), I\u0027d be inclined to delete using it in the ResourceTracker if the relevant high-level (dEQP-vk) tests pass.\n\n4) Fake Android guests\n\nCurrently, the test seems only to be run on the emulator \"fake android guest\" build, which creates CMaketests out of Android.mk.  But also needs to be deprecated/replaced (https://buganizer.corp.google.com/issues/282966708) as well, since everyone is going to Android.bp and then Bazel (goto.google.com/roboleaf) as well. \n\nAnyways sorry for the long reason, but tl;dr I think it\u0027s simplest to delete the test.",
+      "parentUuid": "d536e15a_34f378f5",
+      "revId": "f67db52fe745fb75ed2c1f65df09c65e991f48a5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
