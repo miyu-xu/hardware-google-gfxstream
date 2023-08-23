@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a85f122d_e68c1c81",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-23T19:11:51Z",
+      "side": 1,
+      "message": "Removed `VulkanHandle.h\" file that accidently was added.",
+      "revId": "971c11d620ab035ee75105e7bf5b905f86a1e6d5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
