@@ -445,6 +445,11 @@ intptr_t RenderThread::main() {
                                 .setHangType(EventHangMetadata::HangType::kRenderThread)
                                 .setAnnotations(std::move(renderThreadData))
                                 .build();
+            if (!tInfo.m_puid) {
+                tInfo.m_puid = mContextId;
+                fprintf(stderr, "*** %s:%d setting m_puid to mContextId %u\n", __FILE__, __LINE__, mContextId);fflush(stderr);
+                FrameBuffer::getFB()->createGraphicsProcessResources(tInfo.m_puid);
+            }
 
             if (!processResources && tInfo.m_puid) {
                 processResources = FrameBuffer::getFB()->getProcessResources(tInfo.m_puid);
