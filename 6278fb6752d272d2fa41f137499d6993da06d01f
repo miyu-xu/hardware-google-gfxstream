@@ -52,6 +52,24 @@
       "parentUuid": "06bc8dcd_f05f807c",
       "revId": "6278fb6752d272d2fa41f137499d6993da06d01f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "628f99ed_236f08af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-24T02:22:10Z",
+      "side": 1,
+      "message": "Ack.  I do think it\u0027s going to be superseded to a degree by end2end tests.  `TEST(VulkanStream, Basic)` is the only slightly low-level test and `testMarshalVulkanStruct` is the main function.  Plus, I\u0027m generally a fan of testing public interfaces that have to be maintained (just a personal preferenced) like VK.  Tests that function with internals typically have to be constantly moved around/refactored with code, and many times they are written and completely forgotten about.",
+      "parentUuid": "01c6a0e4_b0f4da55",
+      "revId": "6278fb6752d272d2fa41f137499d6993da06d01f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
