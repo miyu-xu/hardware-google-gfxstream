@@ -39,8 +39,6 @@
 #define RENDERDOC_CC
 #elif defined(__APPLE__)
 #define RENDERDOC_CC
-#elif defined(__QNX__)
-#define RENDERDOC_CC
 #else
 #error "Unknown platform"
 #endif

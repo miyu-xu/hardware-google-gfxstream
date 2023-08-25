@@ -32,10 +32,6 @@
 #include "X11ErrorHandler.h"
 #endif
 
-#ifdef __QNX__
-#include "screen/screen.h"
-#endif
-
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <GLES2/gl2.h>
@@ -71,11 +67,6 @@ static const char* kGLES2LibName = "libGLESv2.so";
 
 static const char* kEGLLibNameAlt = "libEGL.so.1";
 static const char* kGLES2LibNameAlt = "libGLESv2.so.2";
-
-#elif defined(__QNX__)
-
-static const char* kEGLLibName = "libEGL.so";
-static const char* kGLES2LibName = "libGLESv2.so";
 
 #else // __APPLE__
 
@@ -782,9 +773,6 @@ bool EglOsEglDisplay::isValidNativeWin(EGLNativeWindowType win) {
     unsigned int u;
     X11ErrorHandler handler(mGlxDisplay);
     return getX11Api()->XGetGeometry(mGlxDisplay, win, &root, &t, &t, &u, &u, &u, &u) != 0;
-#elif defined(__QNX__)
-    int size[2];
-    return screen_get_window_property_iv(win, SCREEN_PROPERTY_SIZE, size) != -1;
 #else // __APPLE__
     unsigned int width, height;
     return nsGetWinDims(win, &width, &height);
@@ -815,14 +803,6 @@ bool EglOsEglDisplay::checkWindowPixelFormatMatch(EGLNativeWindowType win,
     X11ErrorHandler handler(mGlxDisplay);
     return getX11Api()->XGetGeometry(
             mGlxDisplay, win, &root, &x, &y, width, height, &border, &depth);
-#elif defined(__QNX__)
-    int size[2];
-    if (screen_get_window_property_iv(win, SCREEN_PROPERTY_SIZE, size) == -1) {
-        return false;
-    }
-    *width = size[0];
-    *height = size[1];
-    return true;
 #else // __APPLE__
     bool ret = nsGetWinDims(win, width, height);
 
@@ -844,41 +824,33 @@ static EglOsEglDisplay* sHostDisplay(bool nullEgl = false) {
 
 class EglEngine : public EglOS::Engine {
 public:
- EglEngine(bool nullEgl)
-     :
-#ifdef __QNX__  // Ensure libEGL is loaded prior to libGLES
-       mDisplay(sHostDisplay(nullEgl)),
-#endif
-       EglOS::Engine(),
-       mUseNullEgl(nullEgl) {
- }
+    EglEngine(bool nullEgl) : EglOS::Engine(), mUseNullEgl(nullEgl) {}
+    ~EglEngine() = default;
 
- ~EglEngine() = default;
+    EglOS::Display* getDefaultDisplay() {
+        D("%s\n", __FUNCTION__);
+        return sHostDisplay(mUseNullEgl);
+    }
+    GlLibrary* getGlLibrary() {
+        D("%s\n", __FUNCTION__);
+        return &mGlLib;
+    }
+    void* eglGetProcAddress(const char* func) {
+        return sHostDisplay()->eglGetProcAddress(func);
+    }
+    virtual EglOS::Surface* createWindowSurface(PixelFormat* pf,
+                                                EGLNativeWindowType wnd) {
+        D("%s\n", __FUNCTION__);
+        return sHostDisplay()->createWindowSurface(pf, wnd);
+    }
 
- EglOS::Display* getDefaultDisplay() {
-     D("%s\n", __FUNCTION__);
-     return sHostDisplay(mUseNullEgl);
- }
- GlLibrary* getGlLibrary() {
-     D("%s\n", __FUNCTION__);
-     return &mGlLib;
- }
- void* eglGetProcAddress(const char* func) { return sHostDisplay()->eglGetProcAddress(func); }
- virtual EglOS::Surface* createWindowSurface(PixelFormat* pf, EGLNativeWindowType wnd) {
-     D("%s\n", __FUNCTION__);
-     return sHostDisplay()->createWindowSurface(pf, wnd);
- }
-
- EGLint eglDebugMessageControlKHR(EGLDEBUGPROCKHR callback, const EGLAttrib* attribs) override {
-     return sHostDisplay()->eglDebugMessageControlKHR(callback, attribs);
- }
+    EGLint eglDebugMessageControlKHR(EGLDEBUGPROCKHR callback, const EGLAttrib* attribs) override {
+        return sHostDisplay()->eglDebugMessageControlKHR(callback, attribs);
+    }
 
 private:
-#ifdef __QNX__
- EglOsEglDisplay* mDisplay;
-#endif
- EglOsGlLibrary mGlLib;
- bool mUseNullEgl;
+    EglOsGlLibrary mGlLib;
+    bool mUseNullEgl;
 };
 
 }  // namespace

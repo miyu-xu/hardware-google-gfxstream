@@ -50,7 +50,7 @@ static std::string icdJsonNameToProgramAndLauncherPaths(const std::string& icdFi
 static const char* getTestIcdFilename() {
 #if defined(__APPLE__)
     return "libvk_swiftshader.dylib";
-#elif defined(__linux__) || defined(__QNX__)
+#elif defined(__linux__)
     return "libvk_swiftshader.so";
 #elif defined(_WIN32) || defined(_MSC_VER)
     return "vk_swiftshader.dll";
