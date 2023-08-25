@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "d2225ebe_68b850cb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 2036360
+      },
+      "writtenOn": "2023-08-25T14:50:37Z",
+      "side": 1,
+      "message": "added BUG\u003d287086290\nI\u0027ll add the other with meson build",
+      "parentUuid": "3e18b3a6_c3aa8e3e",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 4
+      },
+      "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "59bc318a_922ffd8d",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -37,6 +61,24 @@
       "writtenOn": "2023-08-16T21:57:39Z",
       "side": 1,
       "message": "Can you use the Meson build?  We would like to deprecate the CMake DOWNLOAD-dependency logic long-term.\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#build-gfxstream",
+      "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ae71018_524e5887",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2036360
+      },
+      "writtenOn": "2023-08-25T14:50:37Z",
+      "side": 1,
+      "message": "yes, that\u0027s the next item on my gfxstream list. If you really don\u0027t want these cmake changes, I\u0027ll amend this change when meson build is ready",
+      "parentUuid": "59bc318a_922ffd8d",
       "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
