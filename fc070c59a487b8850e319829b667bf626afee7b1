@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e313a47f_50c517c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-25T15:54:55Z",
+      "side": 1,
+      "message": "Cool, change looks good.  Though clang-format has detected some anamolies.  Can you run the `git clang-format HEAD~1` command?\n\nIt\u0027s important that you use the right clang format.  We use the one from Chromium build tools:\n\ngit clone https://chromium.googlesource.com/chromium/src/buildtools\n\npython ~/depot_tools/download_from_google_storage.py -b chromium-clang-format -s \u003cFILENAME\u003e.sha1\n\nThe current sha1 given at:\n\n~/buildtools/linux64/clang-format.sha1.\n\nAfter that, upload the change and run \"Presubmit-Ready+1\" and \"Autosubmit +1\".  That\u0027ll trigger the CI.",
+      "revId": "fc070c59a487b8850e319829b667bf626afee7b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

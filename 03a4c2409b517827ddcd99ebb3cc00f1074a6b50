@@ -50,6 +50,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "4b2f6c40_ac6ac3eb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-25T15:54:55Z",
+      "side": 1,
+      "message": "Ack.",
+      "parentUuid": "d2225ebe_68b850cb",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 4
+      },
+      "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "59bc318a_922ffd8d",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -79,6 +103,24 @@
       "side": 1,
       "message": "yes, that\u0027s the next item on my gfxstream list. If you really don\u0027t want these cmake changes, I\u0027ll amend this change when meson build is ready",
       "parentUuid": "59bc318a_922ffd8d",
+      "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4265f94c_5e33f4a0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-25T15:54:55Z",
+      "side": 1,
+      "message": "Cool, as long as it\u0027s being worked, I\u0027m fine with landing CMake support for now.",
+      "parentUuid": "8ae71018_524e5887",
       "revId": "03a4c2409b517827ddcd99ebb3cc00f1074a6b50",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
