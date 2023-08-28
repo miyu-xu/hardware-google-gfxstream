@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "510c505c_eaebc18c",
+        "filename": "codegen/vulkan/vulkan-docs/scripts/genvk.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-08-28T20:17:44Z",
+      "side": 1,
+      "message": "The proposed solution is to always use what gfxstream generates, so we can just use the bundled vulkan/vulkan_core.h instead of generating any extra headers, and never use what Vulkan header is installed on the build host system.\n\nThis should help reduce the complexity of the codegen process.",
+      "range": {
+        "startLine": 344,
+        "startChar": 0,
+        "endLine": 346,
+        "endChar": 34
+      },
+      "revId": "9227d0befec7a704c2cb4995bf9cb15f6e395031",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
