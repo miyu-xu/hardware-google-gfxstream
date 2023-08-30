@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee7ed362_eb3e2a29",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 3079,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-08-30T22:04:02Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by Check Contents: Please remove the trailing whitespace.\n\nAnalyzer Description: Validates that changes do not have prohibited expressions in them.\nOwner: ayeaye-team@google.com\n\nPlease remove the trailing whitespace.",
+      "range": {
+        "startLine": 3079,
+        "startChar": 74,
+        "endLine": 3079,
+        "endChar": 75
+      },
+      "revId": "bf7b3a6c7b0db4b1b7b9d60c472fe072a0060e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
