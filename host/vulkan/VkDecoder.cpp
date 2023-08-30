@@ -1899,29 +1899,52 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     // This is to deal with a deficiency in the encoder,
                     // where usingDirectMapping fails to set the proper packet size,
                     // meaning we can read off the end of the packet.
+<<<<<<< HEAD   (a59ecb Merge "Fix race condition when copying inbetween vk/gl frame)
                     VkDeviceSize totalMemorySize = 8 * memoryRangeCount;
+=======
+                    uint64_t sizeLeft = end - *readStreamPtrPtr;
+>>>>>>> CHANGE (5f0ce5 One more fix for !usingDirectMapping.)
                     for (uint32_t i = 0; i < memoryRangeCount; ++i) {
+<<<<<<< HEAD   (a59ecb Merge "Fix race condition when copying inbetween vk/gl frame)
                         totalMemorySize += pMemoryRanges[i].size;
                     }
                     if ((end - *readStreamPtrPtr) < totalMemorySize) {
                         if (m_logCalls) {
                             fprintf(stderr, "stream %p: Retrying vkFlushMappedMemoryRanges\n", ioStream);
+=======
+                        if (sizeLeft < sizeof(uint64_t)) {
+                            if (m_prevSeqno) {
+                                m_prevSeqno = m_prevSeqno.value() -1;
+                            }
+                            return ptr - (unsigned char*)buf;
+>>>>>>> CHANGE (5f0ce5 One more fix for !usingDirectMapping.)
                         }
+<<<<<<< HEAD   (a59ecb Merge "Fix race condition when copying inbetween vk/gl frame)
                         return ptr - (unsigned char*)buf;
                     }
 
                     for (uint32_t i = 0; i < memoryRangeCount; ++i) {
+=======
+>>>>>>> CHANGE (5f0ce5 One more fix for !usingDirectMapping.)
                         auto range = pMemoryRanges[i];
                         auto memory = pMemoryRanges[i].memory;
                         auto size = pMemoryRanges[i].size;
                         auto offset = pMemoryRanges[i].offset;
                         uint64_t readStream = 0;
                         memcpy(&readStream, *readStreamPtrPtr, sizeof(uint64_t));
+                        sizeLeft -= sizeof(uint64_t);
                         *readStreamPtrPtr += sizeof(uint64_t);
                         auto hostPtr = m_state->getMappedHostPointer(memory);
                         if (!hostPtr && readStream > 0)
                             GFXSTREAM_ABORT(::emugl::FatalError(::emugl::ABORT_REASON_OTHER));
                         if (!hostPtr) continue;
+                        if (sizeLeft < readStream) {
+                            if (m_prevSeqno) {
+                                m_prevSeqno = m_prevSeqno.value() -1;
+                            }
+                            return ptr - (unsigned char*)buf;
+                        }
+                        sizeLeft -= readStream;
                         uint8_t* targetRange = hostPtr + offset;
                         memcpy(targetRange, *readStreamPtrPtr, readStream);
                         *readStreamPtrPtr += readStream;
