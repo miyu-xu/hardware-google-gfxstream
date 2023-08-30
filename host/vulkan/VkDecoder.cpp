@@ -1899,29 +1899,34 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     // This is to deal with a deficiency in the encoder,
                     // where usingDirectMapping fails to set the proper packet size,
                     // meaning we can read off the end of the packet.
-                    VkDeviceSize totalMemorySize = 8 * memoryRangeCount;
-                    for (uint32_t i = 0; i < memoryRangeCount; ++i) {
-                        totalMemorySize += pMemoryRanges[i].size;
-                    }
-                    if ((end - *readStreamPtrPtr) < totalMemorySize) {
-                        if (m_logCalls) {
-                            fprintf(stderr, "stream %p: Retrying vkFlushMappedMemoryRanges\n", ioStream);
-                        }
-                        return ptr - (unsigned char*)buf;
-                    }
+                    uint64_t sizeLeft = end - *readStreamPtrPtr;
 
                     for (uint32_t i = 0; i < memoryRangeCount; ++i) {
+                        if (sizeLeft < sizeof(uint64_t)) {
+                            if (m_prevSeqno) {
+                                m_prevSeqno = m_prevSeqno.value() -1;
+                            }
+                            return ptr - (unsigned char*)buf;
+                        }
                         auto range = pMemoryRanges[i];
                         auto memory = pMemoryRanges[i].memory;
                         auto size = pMemoryRanges[i].size;
                         auto offset = pMemoryRanges[i].offset;
                         uint64_t readStream = 0;
                         memcpy(&readStream, *readStreamPtrPtr, sizeof(uint64_t));
+                        sizeLeft -= sizeof(uint64_t);
                         *readStreamPtrPtr += sizeof(uint64_t);
                         auto hostPtr = m_state->getMappedHostPointer(memory);
                         if (!hostPtr && readStream > 0)
                             GFXSTREAM_ABORT(::emugl::FatalError(::emugl::ABORT_REASON_OTHER));
                         if (!hostPtr) continue;
+                        if (sizeLeft < readStream) {
+                            if (m_prevSeqno) {
+                                m_prevSeqno = m_prevSeqno.value() -1;
+                            }
+                            return ptr - (unsigned char*)buf;
+                        }
+                        sizeLeft -= readStream;
                         uint8_t* targetRange = hostPtr + offset;
                         memcpy(targetRange, *readStreamPtrPtr, readStream);
                         *readStreamPtrPtr += readStream;
