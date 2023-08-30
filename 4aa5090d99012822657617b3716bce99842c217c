@@ -22,6 +22,30 @@
       },
       "revId": "4aa5090d99012822657617b3716bce99842c217c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4d27fb0_25f2cc0c",
+        "filename": "codegen/vulkan/scripts/cerealgenerator.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-08-30T18:28:42Z",
+      "side": 1,
+      "message": "The problem is we don\u0027t generate an `vk_android_native_buffer.h`, but define `VK_ANDROID_native_buffer` in `vulkan_core.h`.  Other vulkan headers don\u0027t do this.  I do think we want to undo that, but that\u0027s more complicated since I believe the host side also depends on the `VK_ANDROID_native_buffer` being defined on non-Android builds.\n\nI think we\u0027ll have to go to another generic ColorBuffer protocol long-term.  For now, I just do this to fix the build.",
+      "parentUuid": "8c3a46ca_39027b86",
+      "range": {
+        "startLine": 241,
+        "startChar": 7,
+        "endLine": 241,
+        "endChar": 31
+      },
+      "revId": "4aa5090d99012822657617b3716bce99842c217c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
