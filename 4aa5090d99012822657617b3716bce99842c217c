@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c3a46ca_39027b86",
+        "filename": "codegen/vulkan/scripts/cerealgenerator.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-08-30T17:35:41Z",
+      "side": 1,
+      "message": "This is defined in vk_android_native_buffer.h. Is it possible to just don\u0027t include that header for linux builds? That should be much cleaner.",
+      "range": {
+        "startLine": 241,
+        "startChar": 7,
+        "endLine": 241,
+        "endChar": 31
+      },
+      "revId": "4aa5090d99012822657617b3716bce99842c217c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
