@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d614535a_5f92a8c8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-09-01T19:36:36Z",
+      "side": 1,
+      "message": "Could you make sure this is still supported before merging this CL?",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 9
+      },
+      "revId": "05865a5f26a4d5e5c5fba8585dcd4529d110cfcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
