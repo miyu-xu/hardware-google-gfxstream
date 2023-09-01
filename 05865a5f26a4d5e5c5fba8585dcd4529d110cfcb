@@ -117,6 +117,30 @@
       },
       "revId": "05865a5f26a4d5e5c5fba8585dcd4529d110cfcb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a99cbe38_5b21b20a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-09-01T22:06:28Z",
+      "side": 1,
+      "message": "For the emulator binary you might need to use the ToT gfxstream build (https://android-build.corp.google.com/builds/submitted/10752487/emulator-linux_x64_gfxstream/latest/sdk-repo-linux-emulator-10752487.zip)\n\nGiven the recent vk1.3 changes, we do not expect the public emulator to work.",
+      "parentUuid": "f36f6b00_60a22a32",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 9
+      },
+      "revId": "05865a5f26a4d5e5c5fba8585dcd4529d110cfcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
