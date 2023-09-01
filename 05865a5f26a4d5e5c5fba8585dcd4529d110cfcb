@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc318664_105cb45e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-01T20:53:13Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "331f8464_041e3641",
+      "range": {
+        "startLine": 17,
+        "startChar": 37,
+        "endLine": 18,
+        "endChar": 29
+      },
+      "revId": "05865a5f26a4d5e5c5fba8585dcd4529d110cfcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d614535a_5f92a8c8",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-09-01T19:36:36Z",
       "side": 1,
       "message": "Could you make sure this is still supported before merging this CL?",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 9
+      },
+      "revId": "05865a5f26a4d5e5c5fba8585dcd4529d110cfcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dafd9d3e_e7b65cfa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-01T20:53:13Z",
+      "side": 1,
+      "message": "I added the emulator and system image changes here:\n\nhttps://android-review.git.corp.google.com/q/topic:%22remove-stub-hal%22\n\nThough, I don\u0027t know how to test it, i.e does the emulator boot AOSP images?  I don\u0027t see any emu targets there:\n\nhttps://ci.android.com/builds/branches/aosp-main/grid?legacy\u003d1\n\nSame with `git_master` on goto.google.com/abtd?",
+      "parentUuid": "d614535a_5f92a8c8",
       "range": {
         "startLine": 20,
         "startChar": 0,
