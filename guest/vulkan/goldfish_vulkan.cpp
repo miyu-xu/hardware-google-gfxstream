@@ -18,6 +18,13 @@
 
 #include <log/log.h>
 
+#include "gfxstream_vk_private.h"
+#include "gfxstream_vk_entrypoints.h"
+
+#include "vk_instance.h"
+#include "vk_log.h"
+#include "vk_alloc.h"
+
 #include <errno.h>
 #include <string.h>
 #ifdef VK_USE_PLATFORM_FUCHSIA
@@ -37,8 +44,6 @@
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
 #include "func_table.h"
-
-namespace {
 
 #if defined(__ANDROID__)
 
@@ -310,17 +315,6 @@ void VulkanDevice::InitTraceProvider() {
     }
 }
 
-extern "C" __attribute__((visibility("default"))) PFN_vkVoidFunction
-vk_icdGetInstanceProcAddr(VkInstance instance, const char* name) {
-    return VulkanDevice::GetInstance().GetInstanceProcAddr(instance, name);
-}
-
-extern "C" __attribute__((visibility("default"))) VkResult
-vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t* pSupportedVersion) {
-    *pSupportedVersion = std::min(*pSupportedVersion, 3u);
-    return VK_SUCCESS;
-}
-
 typedef VkResult(VKAPI_PTR *PFN_vkOpenInNamespaceAddr)(const char *pName, uint32_t handle);
 
 namespace {
@@ -366,17 +360,109 @@ public:
     }
 };
 
-extern "C" __attribute__((visibility("default"))) PFN_vkVoidFunction
-vk_icdGetInstanceProcAddr(VkInstance instance, const char* name) {
-    return VulkanDevice::GetInstance().GetInstanceProcAddr(instance, name);
+static const struct vk_instance_extension_table gfxstream_vk_instance_extensions = {
+   .KHR_get_physical_device_properties2 = true,
+   .EXT_debug_report = true,
+   .EXT_debug_utils = true,
+};
+
+VkResult
+gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
+                            const VkAllocationCallbacks *pAllocator,
+                            VkInstance *pInstance)
+{
+   struct gfxstream_vk_instance *instance;
+   VkInstance internal;
+   VkResult result;
+
+   pAllocator = pAllocator ?: vk_default_allocator();
+   instance = (struct gfxstream_vk_instance*)vk_zalloc(pAllocator, sizeof(*instance), 8,
+                        VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
+   if (!instance)
+      return vk_error(NULL, VK_ERROR_OUT_OF_HOST_MEMORY);
+
+   VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
+   result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &internal, true /* do lock */);
+
+   struct vk_instance_dispatch_table dispatch_table;
+
+   vk_instance_dispatch_table_from_entrypoints(
+      &dispatch_table, &gfxstream_vk_instance_entrypoints, true);
+
+   result = vk_instance_init(&instance->vk, &gfxstream_vk_instance_extensions,
+                             &dispatch_table, pCreateInfo, pAllocator);
+
+   if (result != VK_SUCCESS) {
+      vk_free(pAllocator, instance);
+      return vk_error(NULL, result);
+   }
+
+   instance->internal_object = internal;
+   *pInstance = gfxstream_vk_instance_to_handle(instance);
+   return VK_SUCCESS;
 }
 
-extern "C" __attribute__((visibility("default"))) VkResult
-vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t* pSupportedVersion) {
-    *pSupportedVersion = std::min(*pSupportedVersion, 3u);
-    return VK_SUCCESS;
+void
+gfxstream_vk_DestroyInstance(VkInstance _instance,
+                             const VkAllocationCallbacks *pAllocator)
+{
+   VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
+
+   if (!instance)
+      return;
+
+   vk_instance_finish(&instance->vk);
+   vk_free(&instance->vk.alloc, instance);
+}
+
+PFN_vkVoidFunction
+gfxstream_vk_GetInstanceProcAddr(VkInstance _instance, const char *pName)
+{
+   VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
+   return vk_instance_get_proc_addr(&instance->vk, &gfxstream_vk_instance_entrypoints,
+                                    pName);
+}
+
+/* The loader wants us to expose a second GetInstanceProcAddr function
+ * to work around certain LD_PRELOAD issues seen in apps.
+ */
+PUBLIC
+VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
+vk_icdGetInstanceProcAddr(VkInstance instance, const char *pName);
+
+PUBLIC
+VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
+vk_icdGetInstanceProcAddr(VkInstance instance, const char *pName)
+{
+   return gfxstream_vk_GetInstanceProcAddr(instance, pName);
+}
+
+/* With version 4+ of the loader interface the ICD should expose
+ * vk_icdGetPhysicalDeviceProcAddr()
+ */
+PUBLIC
+VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
+vk_icdGetPhysicalDeviceProcAddr(VkInstance _instance, const char *pName);
+
+PFN_vkVoidFunction
+vk_icdGetPhysicalDeviceProcAddr(VkInstance _instance, const char *pName)
+{
+   VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
+
+   return vk_instance_get_physical_device_proc_addr(&instance->vk, pName);
+}
+
+/* vk_icd.h does not declare this function, so we declare it here to
+ * suppress Wmissing-prototypes.
+ */
+PUBLIC VKAPI_ATTR VkResult VKAPI_CALL
+vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t *pSupportedVersion);
+
+PUBLIC VKAPI_ATTR VkResult VKAPI_CALL
+vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t *pSupportedVersion)
+{
+   *pSupportedVersion = std::min(*pSupportedVersion, 3u);
+   return VK_SUCCESS;
 }
 
 #endif
-
-} // namespace

@@ -15,9 +15,15 @@ lib_vulkan_gfxstream = shared_library(
    include_directories: [inc_vulkan_headers, inc_opengl_headers, inc_android_emu,
                          inc_android_compat, inc_opengl_system, inc_guest_iostream,
                          inc_opengl_codec, inc_render_enc, inc_vulkan_enc, inc_platform,
-                         inc_goldfish_address_space, inc_system],
+                         inc_goldfish_address_space, inc_system, inc_include, inc_src],
+   link_whole: [lib_vulkan_enc],
    link_with: [lib_android_compat, lib_emu_android_base, lib_stream,
-               lib_vulkan_enc, libvulkan_wsi],
+               libvulkan_wsi],
+   link_args: [vulkan_icd_link_args, ld_args_bsymbolic, ld_args_gc_sections],
+   link_depends: vulkan_icd_link_depends,
+   dependencies: [dependency('libdrm'), idep_vulkan_wsi_headers,
+                  idep_vulkan_runtime_headers, idep_vulkan_runtime,
+                  idep_vulkan_util_headers],
    install: true,
 )
 
