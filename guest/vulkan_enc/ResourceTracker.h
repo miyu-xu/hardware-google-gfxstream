@@ -541,9 +541,9 @@ class ResourceTracker {
     void resetCommandPoolStagingInfo(VkCommandPool commandPool);
 
 #ifdef __GNUC__
-#define ALWAYS_INLINE
+#define ALWAYS_INLINE_GFXSTREAM
 #elif
-#define ALWAYS_INLINE __attribute__((always_inline))
+#define ALWAYS_INLINE_GFXSTREAM __attribute__((always_inline))
 #endif
 
     static VkEncoder* getCommandBufferEncoder(VkCommandBuffer commandBuffer);
@@ -551,8 +551,8 @@ class ResourceTracker {
     static VkEncoder* getThreadLocalEncoder();
 
     static void setSeqnoPtr(uint32_t* seqnoptr);
-    static ALWAYS_INLINE uint32_t nextSeqno();
-    static ALWAYS_INLINE uint32_t getSeqno();
+    static ALWAYS_INLINE_GFXSTREAM uint32_t nextSeqno();
+    static ALWAYS_INLINE_GFXSTREAM uint32_t getSeqno();
 
     // Transforms
     void deviceMemoryTransform_tohost(VkDeviceMemory* memory, uint32_t memoryCount,
