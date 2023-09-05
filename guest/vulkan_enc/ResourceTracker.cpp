@@ -6978,7 +6978,7 @@ ResourceTracker* ResourceTracker::get() {
 }
 
 // static
-ALWAYS_INLINE VkEncoder* ResourceTracker::getCommandBufferEncoder(VkCommandBuffer commandBuffer) {
+ALWAYS_INLINE_GFXSTREAM VkEncoder* ResourceTracker::getCommandBufferEncoder(VkCommandBuffer commandBuffer) {
     if (!(ResourceTracker::streamFeatureBits &
           VULKAN_STREAM_FEATURE_QUEUE_SUBMIT_WITH_COMMANDS_BIT)) {
         auto enc = ResourceTracker::getThreadLocalEncoder();
@@ -6999,7 +6999,7 @@ ALWAYS_INLINE VkEncoder* ResourceTracker::getCommandBufferEncoder(VkCommandBuffe
 }
 
 // static
-ALWAYS_INLINE VkEncoder* ResourceTracker::getQueueEncoder(VkQueue queue) {
+ALWAYS_INLINE_GFXSTREAM VkEncoder* ResourceTracker::getQueueEncoder(VkQueue queue) {
     auto enc = ResourceTracker::getThreadLocalEncoder();
     if (!(ResourceTracker::streamFeatureBits &
           VULKAN_STREAM_FEATURE_QUEUE_SUBMIT_WITH_COMMANDS_BIT)) {
@@ -7009,7 +7009,7 @@ ALWAYS_INLINE VkEncoder* ResourceTracker::getQueueEncoder(VkQueue queue) {
 }
 
 // static
-ALWAYS_INLINE VkEncoder* ResourceTracker::getThreadLocalEncoder() {
+ALWAYS_INLINE_GFXSTREAM VkEncoder* ResourceTracker::getThreadLocalEncoder() {
     auto hostConn = ResourceTracker::threadingCallbacks.hostConnectionGetFunc();
     auto vkEncoder = ResourceTracker::threadingCallbacks.vkEncoderGetFunc(hostConn);
     return vkEncoder;
@@ -7019,13 +7019,13 @@ ALWAYS_INLINE VkEncoder* ResourceTracker::getThreadLocalEncoder() {
 void ResourceTracker::setSeqnoPtr(uint32_t* seqnoptr) { sSeqnoPtr = seqnoptr; }
 
 // static
-ALWAYS_INLINE uint32_t ResourceTracker::nextSeqno() {
+ALWAYS_INLINE_GFXSTREAM uint32_t ResourceTracker::nextSeqno() {
     uint32_t res = __atomic_add_fetch(sSeqnoPtr, 1, __ATOMIC_SEQ_CST);
     return res;
 }
 
 // static
-ALWAYS_INLINE uint32_t ResourceTracker::getSeqno() {
+ALWAYS_INLINE_GFXSTREAM uint32_t ResourceTracker::getSeqno() {
     uint32_t res = __atomic_load_n(sSeqnoPtr, __ATOMIC_SEQ_CST);
     return res;
 }

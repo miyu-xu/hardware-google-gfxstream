@@ -25,13 +25,29 @@ cc_defaults {
     vendor: true,
     defaults: [
         "libgfxstream_guest_cc_defaults",
+        "mesa_common_defaults_gfxstream",
+    ],
+    generated_headers: [
+        "vk_cmd_queue_header",
+        "vk_physical_device_features_header",
+        "vk_physical_device_properties_header",
     ],
     header_libs: [
         "gfxstream_vulkan_headers",
+        "mesa_common_headers_gfxstream",
+    ],
+    static_libs: [
+        "libmesa_util_c11_gfxstream",
+        "libmesa_vulkan_util_gfxstream",
+        "libmesa_vulkan_runtime_gfxstream",
+        "libmesa_vulkan_wsi_gfxstream",
+        "libgfxstream_vk_entrypoints",
+        "libmesa_util_gfxstream",
     ],
     shared_libs: [
         "libandroidemu",
         "liblog",
+        "libcutils",
         "lib_renderControl_enc",
         "libOpenglCodecCommon",
     ],
@@ -45,6 +61,10 @@ cc_defaults {
         "-Wno-unused-function",
         "-Wno-unused-parameter",
         "-Wno-cast-calling-convention",
+    ],
+    ldflags: [
+        "-Wl,-Bsymbolic",
+        "-Wl,--gc-sections",
     ],
     include_dirs: [
         "hardware/google/gfxstream/guest/GoldfishAddressSpace/include",
