@@ -44,3 +44,4 @@ extern void disableProcessPipeForTesting();
 
 // Each process gets a sequence number field.
 uint32_t* getSeqnoPtrForProcess();
+void initSeqnoOnce(void);
