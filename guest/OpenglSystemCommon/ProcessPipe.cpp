@@ -56,7 +56,7 @@ static volatile HostConnectionType sConnType = HOST_CONNECTION_VIRTIO_GPU_PIPE;
 static uint32_t* sSeqnoPtr = 0;
 
 // Meant to be called only once per process.
-static void initSeqno() {
+static void initSeqno(void) {
     // So why do we reinitialize here? It's for testing purposes only;
     // we have a unit test that exercise the case where this sequence
     // number is reset as a result of guest process kill.
@@ -312,3 +312,5 @@ uint32_t* getSeqnoPtrForProcess() {
     // It's assumed process pipe state has already been initialized.
     return sSeqnoPtr;
 }
+
+void initSeqnoOnce(void) { pthread_once(&sProcPipeOnce, initSeqno); }
