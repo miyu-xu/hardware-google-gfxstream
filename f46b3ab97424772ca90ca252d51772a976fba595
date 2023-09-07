@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb4e7270_a92701d5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 30
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-07T22:53:14Z",
+      "side": 1,
+      "message": "PTAL! aosp/2740996 helped uncover an issue where this change previously accidentally made all `VirtioGpuPipeStream`s use the same underlying `VirtGpuDevice` whereas `VirtioGpuPipeStream` currently creates a opens a new rendernode for each stream.",
+      "revId": "f46b3ab97424772ca90ca252d51772a976fba595",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
