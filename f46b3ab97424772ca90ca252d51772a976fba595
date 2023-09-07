@@ -16,6 +16,29 @@
       "message": "PTAL! aosp/2740996 helped uncover an issue where this change previously accidentally made all `VirtioGpuPipeStream`s use the same underlying `VirtGpuDevice` whereas `VirtioGpuPipeStream` currently creates a opens a new rendernode for each stream.",
       "revId": "f46b3ab97424772ca90ca252d51772a976fba595",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43a992dc_363b5590",
+        "filename": "guest/platform/VirtGpu.cpp",
+        "patchSetId": 30
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-07T23:42:24Z",
+      "side": 1,
+      "message": "nit: `platform`",
+      "range": {
+        "startLine": 27,
+        "startChar": 24,
+        "endLine": 27,
+        "endChar": 30
+      },
+      "revId": "f46b3ab97424772ca90ca252d51772a976fba595",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
