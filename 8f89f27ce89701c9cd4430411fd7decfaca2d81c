@@ -16,6 +16,24 @@
       "message": "Can we keep this one? I actually found this extremely useful for debugging. When you turn on `VK_EXT_debug_utils`, the process name is used to annotate command buffers from the guest which can be viewed in renderdoc/ngfx.",
       "revId": "8f89f27ce89701c9cd4430411fd7decfaca2d81c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "250e150f_02f447b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-07T15:58:35Z",
+      "side": 1,
+      "message": "Cleared offline, the context name should be recognizable as well.",
+      "parentUuid": "8468df78_cdbb59b9",
+      "revId": "8f89f27ce89701c9cd4430411fd7decfaca2d81c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
