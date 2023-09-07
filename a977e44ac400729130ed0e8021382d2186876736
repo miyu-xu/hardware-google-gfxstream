@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3b5c3bc_6f6ce047",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 24
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-07T22:54:55Z",
+      "side": 1,
+      "message": "(ready for re-review again, rebased and reran codegen after aosp/2744795)",
+      "revId": "a977e44ac400729130ed0e8021382d2186876736",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
