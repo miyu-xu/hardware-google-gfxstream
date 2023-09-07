@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6a49fb8_470faf42",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-07T15:13:55Z",
+      "side": 1,
+      "message": "https://android-review.googlesource.com/c/platform/hardware/google/gfxstream/+/2670099/14..16 ready for re-review",
+      "revId": "232c785e771653d8a4554ed64aec0b81daee1c8d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
