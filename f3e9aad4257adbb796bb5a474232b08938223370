@@ -34,6 +34,24 @@
       "parentUuid": "d0ed82b7_6c9f3800",
       "revId": "f3e9aad4257adbb796bb5a474232b08938223370",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d300d2cf_9e0f59ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-08T02:24:47Z",
+      "side": 1,
+      "message": "I\u0027m sure it did, but as build cop do some discretion/analysis here.  or i\u0027m going to revert right after your revert with this fix :-)\n\nhttps://android-review.git.corp.google.com/c/device/generic/goldfish-opengl/+/2746102",
+      "parentUuid": "1652569f_0274a9e6",
+      "revId": "f3e9aad4257adbb796bb5a474232b08938223370",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
