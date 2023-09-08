@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fac3e1ef_1de688c1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-08T02:15:56Z",
+      "side": 1,
+      "message": "You only need to revert this commit.  The rest don\u0027t modify add the \"VirtGpu.h\" include path.\n\nI believe there is a simpler solution available:\n\nhttps://android-review.googlesource.com/c/device/generic/goldfish-opengl/+/2746102",
+      "revId": "62dff781400078ec9cac17ac95e1285990b29ef0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
