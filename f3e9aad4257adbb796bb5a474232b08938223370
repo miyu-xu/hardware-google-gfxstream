@@ -52,6 +52,24 @@
       "parentUuid": "1652569f_0274a9e6",
       "revId": "f3e9aad4257adbb796bb5a474232b08938223370",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01e78855_b2f7808b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1871191
+      },
+      "writtenOn": "2023-09-08T02:42:00Z",
+      "side": 1,
+      "message": "Thanks for the quick fix.",
+      "parentUuid": "d300d2cf_9e0f59ff",
+      "revId": "f3e9aad4257adbb796bb5a474232b08938223370",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
