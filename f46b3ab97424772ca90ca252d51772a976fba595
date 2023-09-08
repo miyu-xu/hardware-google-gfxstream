@@ -39,6 +39,30 @@
       },
       "revId": "f46b3ab97424772ca90ca252d51772a976fba595",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6cc13203_1077d5e3",
+        "filename": "guest/platform/VirtGpu.cpp",
+        "patchSetId": 30
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-08T17:32:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43a992dc_363b5590",
+      "range": {
+        "startLine": 27,
+        "startChar": 24,
+        "endLine": 27,
+        "endChar": 30
+      },
+      "revId": "f46b3ab97424772ca90ca252d51772a976fba595",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
