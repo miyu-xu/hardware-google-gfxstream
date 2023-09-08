@@ -278,7 +278,7 @@ VirtGpuCaps TestingVirtGpuDevice::getCaps() {
         },
     };
 
-    stream_renderer_fill_caps(0, 0, &caps.gfxstreamCapset);
+    stream_renderer_fill_caps(0, 0, &caps.vulkanCapset);
 
     return caps;
 }
