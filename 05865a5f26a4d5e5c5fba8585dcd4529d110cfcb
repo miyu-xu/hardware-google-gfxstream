@@ -141,6 +141,30 @@
       },
       "revId": "05865a5f26a4d5e5c5fba8585dcd4529d110cfcb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35b900a5_47fcd8e3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-08T17:25:53Z",
+      "side": 1,
+      "message": "Done, added https://googleplex-android-review.git.corp.google.com/c/device/generic/goldfish/+/24706742 as changing aosp goldfish results in merge conflicts.",
+      "parentUuid": "a99cbe38_5b21b20a",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 9
+      },
+      "revId": "05865a5f26a4d5e5c5fba8585dcd4529d110cfcb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
