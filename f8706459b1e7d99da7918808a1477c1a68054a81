@@ -16,6 +16,24 @@
       "message": "How do we send the guest process PID/thread ID to the host and other possible metadata for debugging?",
       "revId": "f8706459b1e7d99da7918808a1477c1a68054a81",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4075202_70505474",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-11T23:59:15Z",
+      "side": 1,
+      "message": "We\u0027ve rigged so PID \u003d virtio-gpu ctx id.  Currently, the metadata set used by `rcSetProcessMetadata` is the process name, and that is accounted for by the virtio-spec.  For thread id, there isn\u0027t currently a way, but when the need arises we could just add it to the Vulkan decoder.  The problem is the rcControl decoder uses guest memory for resource create 3d, which complicates other virtgpu ports (i.e, fuchsia).",
+      "parentUuid": "a4d932c3_097ee558",
+      "revId": "f8706459b1e7d99da7918808a1477c1a68054a81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
