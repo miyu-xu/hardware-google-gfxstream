@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4d932c3_097ee558",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-09-11T19:45:08Z",
+      "side": 1,
+      "message": "How do we send the guest process PID/thread ID to the host and other possible metadata for debugging?",
+      "revId": "f8706459b1e7d99da7918808a1477c1a68054a81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
