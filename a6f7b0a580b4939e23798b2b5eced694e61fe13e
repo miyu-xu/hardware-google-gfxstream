@@ -34,6 +34,24 @@
       "parentUuid": "d5d24bce_9d38ebc4",
       "revId": "a6f7b0a580b4939e23798b2b5eced694e61fe13e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8112aee0_09bba3e4",
+        "filename": "codegen/vulkan/vulkan-hpp/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-09-11T17:45:18Z",
+      "side": 1,
+      "message": "This extra patch may bring long term maintenance issue which makes evolving `vk.xml` a little more troublesome.",
+      "parentUuid": "6626eea4_5faef48b",
+      "revId": "a6f7b0a580b4939e23798b2b5eced694e61fe13e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
