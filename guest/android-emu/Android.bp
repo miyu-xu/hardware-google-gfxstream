@@ -5,10 +5,6 @@ package {
 
 cc_library_shared {
     name: "libandroidemu",
-    defaults: [
-        "libgfxstream_guest_cc_defaults",
-    ],
-    host_supported: true,
     vendor: true,
     srcs: [
         "aemu/base/AlignedBuf.cpp",
@@ -47,7 +43,6 @@ cc_library_shared {
 
 cc_library_static {
     name: "libringbuffer",
-    host_supported: true,
     vendor: true,
     srcs: [
         "aemu/base/ring_buffer.c",

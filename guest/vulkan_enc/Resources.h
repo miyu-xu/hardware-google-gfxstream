@@ -13,9 +13,7 @@
 // limitations under the License.
 #pragma once
 
-#if defined(__ANDROID__)
 #include <hardware/hwvulkan.h>
-#endif  // defined(__ANDROID__)
 #include <vulkan/vulkan.h>
 
 #include "VulkanHandles.h"
@@ -47,15 +45,9 @@ struct goldfish_vk_object_list {
     struct goldfish_vk_object_list* next;
 };
 
-#if defined(__ANDROID__)
-#define DECLARE_ANDROID_HWVULKAN_DISPATCH hwvulkan_dispatch_t dispatch;
-#else
-#define DECLARE_ANDROID_HWVULKAN_DISPATCH
-#endif  // defined(__ANDROID__)
-
 #define GOLDFISH_VK_DEFINE_DISPATCHABLE_HANDLE_STRUCT(type) \
     struct goldfish_##type { \
-        DECLARE_ANDROID_HWVULKAN_DISPATCH \
+        hwvulkan_dispatch_t dispatch; \
         uint64_t underlying; \
         gfxstream::vk::VkEncoder* lastUsedEncoder; \
         uint32_t sequenceNumber; \
@@ -132,7 +124,7 @@ struct goldfish_VkDescriptorSetLayout {
 };
 
 struct goldfish_VkCommandBuffer {
-    DECLARE_ANDROID_HWVULKAN_DISPATCH
+    hwvulkan_dispatch_t dispatch;
     uint64_t underlying;
     gfxstream::vk::VkEncoder* lastUsedEncoder;
     uint32_t sequenceNumber;
