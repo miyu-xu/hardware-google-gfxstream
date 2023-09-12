@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "211b1bef_7621b811",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-12T20:54:23Z",
+      "side": 1,
+      "message": "Note: presubmit failures with\n\n```\ndependency \"aemu_common_headers\" of \"gfxstream_headers\" missing variant:\n```\n\nare from the need for aosp/2676077 to finish auto-merging from the https://android-review.git.corp.google.com/q/topic:%22gfxstream-end2end-tests%22 topic.",
+      "revId": "2fe7bab2b2a13c1e1ce6e8cbd8c9c1d01ee0f2ab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
