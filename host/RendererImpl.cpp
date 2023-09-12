@@ -88,7 +88,6 @@ public:
 
     void stop() {
         mCleanupWorker.enqueue(Exit{});
-        mCleanupWorker.join();
     }
 
     void waitForCleanup() {
