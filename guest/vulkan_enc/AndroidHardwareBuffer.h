@@ -17,6 +17,7 @@
 #include "HostVisibleMemoryVirtualization.h"
 
 #include <vulkan/vulkan.h>
+#include <vndk/hardware_buffer.h>
 
 // Structure similar to
 // https://github.com/mesa3d/mesa/blob/master/src/intel/vulkan/anv_android.c
@@ -39,7 +40,6 @@ VkResult getAndroidHardwareBufferPropertiesANDROID(
     VkAndroidHardwareBufferPropertiesANDROID* pProperties);
 
 VkResult getMemoryAndroidHardwareBufferANDROID(
-    Gralloc* grallocHelper,
     struct AHardwareBuffer **pBuffer);
 
 VkResult importAndroidHardwareBuffer(
@@ -48,7 +48,6 @@ VkResult importAndroidHardwareBuffer(
     struct AHardwareBuffer **importOut);
 
 VkResult createAndroidHardwareBuffer(
-    Gralloc* grallocHelper,
     bool hasDedicatedImage,
     bool hasDedicatedBuffer,
     const VkExtent3D& imageExtent,
