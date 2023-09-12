@@ -1,5 +1,29 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c065b332_b1effa45",
+        "filename": "guest/OpenglSystemCommon/GrallocMinigbm.cpp",
+        "patchSetId": 19
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1499410
+      },
+      "writtenOn": "2023-09-12T22:34:42Z",
+      "side": 1,
+      "message": "Please use kPageSize  as queried from the aux vector. PAGE_SIZE is going away.\n\n```\nhardware/google/gfxstream/guest/OpenglSystemCommon/GrallocMinigbm.cpp:144:54: error: use of undeclared identifier \u0027\nPAGE_SIZE\u0027\n    res_create.size \u003d align_up(bpp * width * height, PAGE_SIZE);\n                                                     ^\n1 error generated.\n15:08:53 ninja failed with: exit status \n```",
+      "range": {
+        "startLine": 145,
+        "startChar": 53,
+        "endLine": 145,
+        "endChar": 62
+      },
+      "revId": "fa9ea24289ee5d8f0cb6a0f6beefe805597a0f97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
