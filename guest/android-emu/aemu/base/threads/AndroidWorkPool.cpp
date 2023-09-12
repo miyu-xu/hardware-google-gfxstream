@@ -24,13 +24,14 @@
 #include <unordered_map>
 #include <sys/time.h>
 
-using gfxstream::guest::AutoLock;
-using gfxstream::guest::ConditionVariable;
-using gfxstream::guest::FunctorThread;
-using gfxstream::guest::Lock;
-using gfxstream::guest::MessageChannel;
+using android::base::guest::AutoLock;
+using android::base::guest::ConditionVariable;
+using android::base::guest::FunctorThread;
+using android::base::guest::Lock;
+using android::base::guest::MessageChannel;
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 class WaitGroup { // intrusive refcounted
@@ -42,7 +43,7 @@ public:
 
     ~WaitGroup() = default;
 
-    gfxstream::guest::Lock& getLock() { return mLock; }
+    android::base::guest::Lock& getLock() { return mLock; }
 
     void acquire() {
         if (0 == mRefCount.fetch_add(1, std::memory_order_seq_cst)) {
@@ -133,7 +134,7 @@ private:
             if (!conditionFunc()) {
                 // Decrement timeout for wakeups
                 uint64_t nextTime = currTimeUs();
-                WorkPool::TimeoutUs waited =
+                WorkPool::TimeoutUs waited = 
                     nextTime - currTime;
                 currTime = nextTime;
 
@@ -464,4 +465,5 @@ bool WorkPool::waitAll(WorkPool::WaitGroupHandle waitGroup, WorkPool::TimeoutUs 
 }
 
 } // namespace guest
-} // namespace gfxstream
+} // namespace base
+} // namespace android

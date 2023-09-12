@@ -30,8 +30,7 @@
 #include <malloc.h>
 #endif
 
-namespace gfxstream {
-namespace guest {
+namespace android {
 
 template <class T, size_t align>
 class AlignedBuf {
@@ -150,5 +149,4 @@ private:
 void* aligned_buf_alloc(size_t align, size_t size);
 void aligned_buf_free(void* buf);
 
-}  // namespace guest
-}  // namespace gfxstream
+}  // namespace android

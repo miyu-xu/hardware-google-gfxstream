@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace gfxstream::guest {
+namespace android::base {
 namespace fit {
 namespace internal {
 
@@ -143,4 +143,4 @@ struct IsNothrowSwappable<T, std::void_t<decltype(swap(std::declval<T&>(), std::
 
 }  // namespace internal
 }  // namespace fit
-}  // namespace gfxstream::guest
+}  // namespace android::base

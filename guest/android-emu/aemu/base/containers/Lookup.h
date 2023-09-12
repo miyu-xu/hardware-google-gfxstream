@@ -32,8 +32,8 @@
 // Note: these don't work for multimaps, as there's no single value
 //  to return (and, more importantly, as those are completely useless).
 
-namespace gfxstream {
-namespace guest {
+namespace android {
+namespace base {
 
 // Helper predicates that check if the template argument is a map / set /
 // a mutlikey collection of any kind.

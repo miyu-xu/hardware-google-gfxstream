@@ -19,8 +19,8 @@
 
 #include <vector>
 
-namespace gfxstream {
-namespace guest {
+namespace android {
+namespace base {
 
 // An implementation of the Stream interface on top of a vector.
 class MemStream : public Stream {

@@ -33,7 +33,8 @@
 #define AEMU_IF_DEBUG(x)
 #endif
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 template <class Lockable>
@@ -51,7 +52,7 @@ class StaticLock;
 template <>
 class StaticLock<false> {
 public:
-    using AutoLock = gfxstream::guest::AutoLock<StaticLock>;
+    using AutoLock = android::base::guest::AutoLock<StaticLock>;
 
     constexpr StaticLock() = default;
 
@@ -108,7 +109,7 @@ protected:
 template <>
 class StaticLock<true> {
 public:
-    using AutoLock = gfxstream::guest::AutoLock<StaticLock>;
+    using AutoLock = android::base::guest::AutoLock<StaticLock>;
 
     StaticLock() {
 #ifdef _WIN32
@@ -200,8 +201,8 @@ public:
 
 class ReadWriteLock {
 public:
-    using AutoWriteLock = gfxstream::guest::AutoWriteLock;
-    using AutoReadLock = gfxstream::guest::AutoReadLock;
+    using AutoWriteLock = android::base::guest::AutoWriteLock;
+    using AutoReadLock = android::base::guest::AutoReadLock;
 
 #ifdef _WIN32
     constexpr ReadWriteLock() = default;
@@ -328,5 +329,6 @@ private:
     DISALLOW_COPY_ASSIGN_AND_MOVE(AutoReadLock);
 };
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

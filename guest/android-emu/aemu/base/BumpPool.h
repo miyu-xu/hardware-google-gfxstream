@@ -21,8 +21,8 @@
 
 #include <inttypes.h>
 
-namespace gfxstream {
-namespace guest {
+namespace android {
+namespace base {
 
 // Class to make it easier to set up memory regions where it is fast
 // to allocate buffers AND we don't care about freeing individual pieces,

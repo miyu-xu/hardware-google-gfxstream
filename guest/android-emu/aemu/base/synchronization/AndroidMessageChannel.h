@@ -21,7 +21,8 @@
 #include <utility>
 #include <stddef.h>
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 // Base non-templated class used to reduce the amount of template
@@ -204,5 +205,6 @@ private:
     T mItems[CAPACITY];
 };
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

@@ -16,7 +16,8 @@
 
 #include "AndroidHealthMonitorConsumer.h"
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 class HealthMonitorConsumerBasic: public HealthMonitorConsumer {
 public:
@@ -26,5 +27,6 @@ public:
                             int64_t hungMs) override;
 
 };
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

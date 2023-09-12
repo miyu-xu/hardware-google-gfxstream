@@ -41,9 +41,9 @@
 #define DPRINT(...)
 #endif
 
-using gfxstream::guest::CreateHealthMonitor;
-using gfxstream::guest::HealthMonitor;
-using gfxstream::guest::HealthMonitorConsumerBasic;
+using android::base::guest::CreateHealthMonitor;
+using android::base::guest::HealthMonitor;
+using android::base::guest::HealthMonitorConsumerBasic;
 using gfxstream::GoldfishGralloc;
 using gfxstream::IOStream;
 using gfxstream::MinigbmGralloc;
@@ -107,7 +107,7 @@ using gfxstream::vk::VkEncoder;
 #include "QemuPipeStream.h"
 #include "ThreadInfo.h"
 
-using gfxstream::guest::getCurrentThreadId;
+using android::base::guest::getCurrentThreadId;
 
 #ifdef VIRTIO_GPU
 
@@ -231,7 +231,7 @@ HostConnection::HostConnection()
       m_noHostError(true),
       m_rendernodeFd(-1) {
 #ifdef HOST_BUILD
-    gfxstream::guest::initializeTracing();
+    android::base::initializeTracing();
 #endif
 }
 

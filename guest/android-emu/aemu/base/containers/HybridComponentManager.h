@@ -18,8 +18,8 @@
 
 #include <unordered_map>
 
-namespace gfxstream {
-namespace guest {
+namespace android {
+namespace base {
 
 template <size_t maxIndex,
           class IndexType, // must be castable to uint64_t
@@ -64,7 +64,7 @@ public:
             auto internal_handle = index2Handle(index_u64);
             return mComponentManager.get(internal_handle);
         } else {
-            return gfxstream::guest::find(mMap, index);
+            return android::base::find(mMap, index);
         }
     }
 
@@ -74,7 +74,7 @@ public:
             auto internal_handle = index2Handle(index_u64);
             return mComponentManager.get_const(internal_handle);
         } else {
-            return gfxstream::guest::find(mMap, index);
+            return android::base::find(mMap, index);
         }
     }
 

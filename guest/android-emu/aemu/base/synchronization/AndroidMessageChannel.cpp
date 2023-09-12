@@ -14,7 +14,8 @@
 
 #include "aemu/base/synchronization/AndroidMessageChannel.h"
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 MessageChannelBase::MessageChannelBase(size_t capacity) : mCapacity(capacity) {}
@@ -25,7 +26,7 @@ size_t MessageChannelBase::size() const {
 }
 
 void MessageChannelBase::stop() {
-    gfxstream::guest::AutoLock<Lock> lock(mLock);
+    android::base::guest::AutoLock<Lock> lock(mLock);
     mStopped = true;
     mCount = 0;
     mCanRead.broadcast();
@@ -116,5 +117,6 @@ void MessageChannelBase::afterRead(bool success) {
     mCanWrite.signalAndUnlock(&mLock);
 }
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android
