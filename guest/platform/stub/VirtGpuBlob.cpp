@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
- #include "VirtGpu.h"
+#include "VirtGpu.h"
 
-namespace {
+VirtGpuBlob::VirtGpuBlob(int64_t deviceHandle, uint32_t blobHandle, uint32_t resourceHandle,
+                         uint64_t size)
+    : mDeviceHandle(deviceHandle),
+      mBlobHandle(blobHandle),
+      mResourceHandle(resourceHandle),
+      mSize(size) {}
 
-static VirtGpuDevice* sDevice = nullptr;
-
-}  // namespace
-
-VirtGpuDevice* VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
-    if (!sDevice) {
-        sDevice = platform_internal::getPlatformVirtGpuDeviceInstance(capset);
-    }
-    return sDevice;
+VirtGpuBlob::~VirtGpuBlob(void) {
+    // Unimplemented stub
 }
 
-void VirtGpuDevice::setInstanceForTesting(VirtGpuDevice* device) {
-    sDevice = device;
+uint32_t VirtGpuBlob::getBlobHandle(void) {
+    return 0;
+}
+
+uint32_t VirtGpuBlob::getResourceHandle(void) {
+    return 0;
+}
+
+VirtGpuBlobMappingPtr VirtGpuBlob::createMapping(void) {
+    return nullptr;
+}
+
+int VirtGpuBlob::wait() {
+    return -1;
 }
