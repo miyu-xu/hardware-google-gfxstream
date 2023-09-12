@@ -44,7 +44,6 @@ cc_library_shared {
     ],
     static_libs: [
         "libarect",
-        "libplatform",
         "libqemupipe.ranchu",
     ],
     cflags: [
