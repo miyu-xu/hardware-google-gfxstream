@@ -18,7 +18,6 @@ license {
 cc_library_headers {
     name: "gfxstream_renderdoc_headers",
     defaults: ["gfxstream_defaults"],
-    vendor_available: true,
     host_supported: true,
     export_include_dirs: [ ".", "include" ],
 }
