@@ -23,12 +23,7 @@
 #include <functional>
 
 namespace gfxstream {
-namespace guest {
 class IOStream;
-}  // namespace guest
-}  // namespace gfxstream
-
-namespace gfxstream {
 namespace vk {
 class VkEncoder;
 struct DescriptorPoolAllocationInfo;
@@ -52,7 +47,7 @@ struct goldfish_vk_object_list {
         gfxstream::vk::VkEncoder* lastUsedEncoder; \
         uint32_t sequenceNumber; \
         gfxstream::vk::VkEncoder* privateEncoder; \
-        gfxstream::guest::IOStream* privateStream; \
+        gfxstream::IOStream* privateStream; \
         uint32_t flags; \
         struct goldfish_vk_object_list* poolObjects; \
         struct goldfish_vk_object_list* subObjects; \
@@ -129,7 +124,7 @@ struct goldfish_VkCommandBuffer {
     gfxstream::vk::VkEncoder* lastUsedEncoder;
     uint32_t sequenceNumber;
     gfxstream::vk::VkEncoder* privateEncoder;
-    gfxstream::guest::IOStream* privateStream;
+    gfxstream::IOStream* privateStream;
     uint32_t flags;
     struct goldfish_vk_object_list* poolObjects;
     struct goldfish_vk_object_list* subObjects;

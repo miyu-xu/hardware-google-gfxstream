@@ -32,12 +32,14 @@
 #include <log/log.h>
 #include <inttypes.h>
 
+class IOStream;
+
 namespace gfxstream {
 namespace vk {
 
 class VulkanStreamGuest : public gfxstream::guest::Stream {
 public:
-    VulkanStreamGuest(gfxstream::guest::IOStream* stream);
+    VulkanStreamGuest(IOStream* stream);
     ~VulkanStreamGuest();
 
     // Returns whether the connection is valid.
@@ -78,7 +80,7 @@ public:
 private:
     gfxstream::guest::BumpPool mPool;
     std::vector<uint8_t> mWriteBuffer;
-    gfxstream::guest::IOStream* mStream = nullptr;
+    IOStream* mStream = nullptr;
     DefaultHandleMapping mDefaultHandleMapping;
     VulkanHandleMapping* mCurrentHandleMapping;
     uint32_t mFeatureBits = 0;

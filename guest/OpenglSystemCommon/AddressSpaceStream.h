@@ -23,7 +23,7 @@
 #include "goldfish_address_space.h"
 
 using gfxstream::guest::HealthMonitor;
-using gfxstream::guest::IOStream;
+using gfxstream::IOStream;
 
 class AddressSpaceStream;
 

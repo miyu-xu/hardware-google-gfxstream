@@ -26,7 +26,7 @@
  * service on the host side.
  */
 
-class VirtioGpuPipeStream : public gfxstream::guest::IOStream {
+class VirtioGpuPipeStream : public gfxstream::IOStream {
 public:
     typedef enum { ERR_INVALID_SOCKET = -1000 } QemuPipeStreamError;
 
