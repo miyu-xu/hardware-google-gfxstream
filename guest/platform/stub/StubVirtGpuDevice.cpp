@@ -46,6 +46,11 @@ StubVirtGpuDevice::~StubVirtGpuDevice() {
     // Unimplemented stub
 }
 
-VirtGpuDevice* createPlatformVirtGpuDevice(enum VirtGpuCapset capset, int) {
-    return new StubVirtGpuDevice(capset);
+namespace platform_internal {
+
+VirtGpuDevice* getPlatformVirtGpuDeviceInstance(enum VirtGpuCapset capset) {
+    static StubVirtGpuDevice sInstance(capset);
+    return &sInstance;
 }
+
+}  // namespace platform_internal
