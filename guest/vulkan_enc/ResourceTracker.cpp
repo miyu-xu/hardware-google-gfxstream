@@ -100,10 +100,12 @@ void zx_event_create(int, zx_handle_t*) { }
 #include <vndk/hardware_buffer.h>
 #include <log/log.h>
 #include <stdlib.h>
+#include <sync/sync.h>
 
 #if defined(__ANDROID__) || defined(__linux__) || defined(__APPLE__)
 
 #include <sys/mman.h>
+#include <unistd.h>
 #include <sys/syscall.h>
 
 #ifdef HOST_BUILD
@@ -557,8 +559,7 @@ public:
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
         if (semInfo.syncFd.value_or(-1) >= 0) {
-            auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-            syncHelper->close(semInfo.syncFd.value());
+            close(semInfo.syncFd.value());
         }
 #endif
 
@@ -599,8 +600,7 @@ public:
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
         if (fenceInfo.syncFd >= 0) {
-            auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-            syncHelper->close(fenceInfo.syncFd);
+            close(fenceInfo.syncFd);
         }
 #endif
 
@@ -4543,8 +4543,7 @@ public:
             if (info.syncFd >= 0) {
                 ALOGV("%s: resetting fence. make fd -1\n", __func__);
                 goldfish_sync_signal(info.syncFd);
-                auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-                syncHelper->close(info.syncFd);
+                close(info.syncFd);
                 info.syncFd = -1;
             }
 #endif
@@ -4591,11 +4590,10 @@ public:
 
         auto& info = it->second;
 
-        auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
         if (info.syncFd >= 0) {
             ALOGV("%s: previous sync fd exists, close it\n", __func__);
             goldfish_sync_signal(info.syncFd);
-            syncHelper->close(info.syncFd);
+            close(info.syncFd);
         }
 
         if (pImportFenceFdInfo->fd < 0) {
@@ -4603,8 +4601,8 @@ public:
             info.syncFd = -1;
         } else {
             ALOGV("%s: import actual fd, dup and close()\n", __func__);
-            info.syncFd = syncHelper->dup(pImportFenceFdInfo->fd);
-            syncHelper->close(pImportFenceFdInfo->fd);
+            info.syncFd = dup(pImportFenceFdInfo->fd);
+            close(pImportFenceFdInfo->fd);
         }
         return VK_SUCCESS;
 #else
@@ -4773,8 +4771,7 @@ public:
             for (auto fd : fencesExternalWaitFds) {
                 ALOGV("%s: wait on %d\n", __func__, fd);
                 tasks.push_back([fd] {
-                    auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-                    syncHelper->wait(fd, 3000);
+                    sync_wait(fd, 3000);
                     ALOGV("done waiting on fd %d\n", fd);
                 });
             }
@@ -5092,7 +5089,6 @@ public:
         VkDevice device, VkImage image, const VkAllocationCallbacks *pAllocator) {
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
-        auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
         {
           AutoLock<RecursiveLock> lock(mLock); // do not guard encoder may cause
                                                // deadlock b/243339973
@@ -5106,12 +5102,12 @@ public:
           if (imageInfoIt != info_VkImage.end()) {
             auto& imageInfo = imageInfoIt->second;
             for (int syncFd : imageInfo.pendingQsriSyncFds) {
-                int syncWaitRet = syncHelper->wait(syncFd, 3000);
+                int syncWaitRet = sync_wait(syncFd, 3000);
                 if (syncWaitRet < 0) {
                     ALOGE("%s: Failed to wait for pending QSRI sync: sterror: %s errno: %d",
                           __func__, strerror(errno), errno);
                 }
-                syncHelper->close(syncFd);
+                close(syncFd);
             }
             imageInfo.pendingQsriSyncFds.clear();
           }
@@ -5574,8 +5570,7 @@ public:
             if (it == info_VkSemaphore.end()) return VK_ERROR_OUT_OF_HOST_MEMORY;
             auto& semInfo = it->second;
             // syncFd is supposed to have value.
-            auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-            *pFd = syncHelper->dup(semInfo.syncFd.value_or(-1));
+            *pFd = dup(semInfo.syncFd.value_or(-1));
             return VK_SUCCESS;
         } else {
             // opaque fd
@@ -5607,8 +5602,6 @@ public:
             return input_result;
         }
 
-        auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-
         if (pImportSemaphoreFdInfo->handleType &
             VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT) {
             VkImportSemaphoreFdInfoKHR tmpInfo = *pImportSemaphoreFdInfo;
@@ -5619,7 +5612,7 @@ public:
             auto& info = semaphoreIt->second;
 
             if (info.syncFd.value_or(-1) >= 0) {
-                syncHelper->close(info.syncFd.value());
+                close(info.syncFd.value());
             }
 
             info.syncFd.emplace(pImportSemaphoreFdInfo->fd);
@@ -5636,7 +5629,7 @@ public:
             VkImportSemaphoreFdInfoKHR tmpInfo = *pImportSemaphoreFdInfo;
             tmpInfo.fd = hostFd;
             VkResult result = enc->vkImportSemaphoreFdKHR(device, &tmpInfo, true /* do lock */);
-            syncHelper->close(fd);
+            close(fd);
             return result;
         }
 #else
@@ -6006,8 +5999,7 @@ public:
                 // fd == -1 is treated as already signaled
                 if (fd != -1) {
                     preSignalTasks.push_back([fd] {
-                        auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-                        syncHelper->wait(fd, 3000);
+                        sync_wait(fd, 3000);
                     });
                 }
             }
@@ -6164,8 +6156,7 @@ public:
         if (fd != -1) {
             AEMU_SCOPED_TRACE("waitNativeFenceInAcquire");
             // Implicit Synchronization
-            auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-            syncHelper->wait(fd, 3000);
+            sync_wait(fd, 3000);
             // From libvulkan's swapchain.cpp:
             // """
             // NOTE: we're relying on AcquireImageANDROID to close fence_clone,
@@ -6177,7 +6168,7 @@ public:
             // failure, or *never* closes it on failure.
             // """
             // Therefore, assume contract where we need to close fd in this driver
-            syncHelper->close(fd);
+            close(fd);
         }
     }
 
@@ -7190,17 +7181,15 @@ public:
         if (imageInfoIt != info_VkImage.end()) {
             auto& imageInfo = imageInfoIt->second;
 
-            auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-
             // Remove any pending QSRI sync fds that are already signaled.
             auto syncFdIt = imageInfo.pendingQsriSyncFds.begin();
             while (syncFdIt != imageInfo.pendingQsriSyncFds.end()) {
                 int syncFd = *syncFdIt;
-                int syncWaitRet = syncHelper->wait(syncFd, /*timeout msecs*/0);
+                int syncWaitRet = sync_wait(syncFd, /*timeout msecs*/0);
                 if (syncWaitRet == 0) {
                     // Sync fd is signaled.
                     syncFdIt = imageInfo.pendingQsriSyncFds.erase(syncFdIt);
-                    syncHelper->close(syncFd);
+                    close(syncFd);
                 } else {
                     if (errno != ETIME) {
                         ALOGE("%s: Failed to wait for pending QSRI sync: sterror: %s errno: %d",
@@ -7210,7 +7199,7 @@ public:
                 }
             }
 
-            int syncFdDup = syncHelper->dup(*fd);
+            int syncFdDup = dup(*fd);
             if (syncFdDup < 0) {
                 ALOGE("%s: Failed to dup() QSRI sync fd : sterror: %s errno: %d",
                       __func__, strerror(errno), errno);
@@ -7259,10 +7248,8 @@ public:
             int syncFd;
             result = exportSyncFdForQSRILocked(image, &syncFd);
 
-            if (syncFd >= 0) {
-                auto* syncHelper = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->syncHelper();
-                syncHelper->close(syncFd);
-            }
+            if (syncFd >= 0)
+                close(syncFd);
         }
 
         return result;
