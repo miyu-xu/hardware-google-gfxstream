@@ -86,11 +86,7 @@ cc_library_shared {
     target: {
         android: {
             shared_libs: [
-                "libnativewindow",
                 "libsync",
-            ],
-            srcs: [
-                "ANativeWindowAndroid.cpp",
             ],
         },
     },

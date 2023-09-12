@@ -50,11 +50,6 @@ static EGLClient_glesInterface * s_gl = NULL;
     if (!grallocHelper) {                                            \
         ALOGE("egl: Failed to get grallocHelper\n");                 \
         return ret;                                                  \
-    }                                                                \
-    auto* anwHelper = hostCon->anwHelper();                          \
-    if (!anwHelper) {                                                \
-        ALOGE("egl: Failed to get anwHelper\n");                     \
-        return ret;                                                  \
     }
 
 //GL extensions
@@ -68,24 +63,29 @@ void glEGLImageTargetTexture2DOES(void * self, GLenum target, GLeglImageOES img)
     EGLImage_t *image = (EGLImage_t*)img;
     GLeglImageOES hostImage = reinterpret_cast<GLeglImageOES>((intptr_t)image->host_egl_image);
 
-    GET_CONTEXT;
-    DEFINE_AND_VALIDATE_HOST_CONNECTION();
-
     if (image->target == EGL_NATIVE_BUFFER_ANDROID) {
-        EGLClientBuffer buffer = image->buffer;
+        //TODO: check error - we don't have a way to set gl error
+        android_native_buffer_t* native_buffer = image->native_buffer;
 
-        if (!anwHelper->isValid(buffer)) {
-            ALOGE("Invalid native buffer.");
+        if (native_buffer->common.magic != ANDROID_NATIVE_BUFFER_MAGIC) {
             return;
         }
 
+        if (native_buffer->common.version != sizeof(android_native_buffer_t)) {
+            return;
+        }
+
+        GET_CONTEXT;
+        DEFINE_AND_VALIDATE_HOST_CONNECTION();
+
         ctx->override2DTextureTarget(target);
         ctx->associateEGLImage(target, hostImage, image->width, image->height);
-
-        const int hostHandle = anwHelper->getHostHandle(buffer, grallocHelper);
-        rcEnc->rcBindTexture(rcEnc, hostHandle);
+        rcEnc->rcBindTexture(rcEnc,
+                grallocHelper->getHostHandle(native_buffer->handle));
         ctx->restore2DTextureTarget(target);
-    } else if (image->target == EGL_GL_TEXTURE_2D_KHR) {
+    }
+    else if (image->target == EGL_GL_TEXTURE_2D_KHR) {
+        GET_CONTEXT;
         ctx->override2DTextureTarget(target);
         ctx->associateEGLImage(target, hostImage, image->width, image->height);
         ctx->m_glEGLImageTargetTexture2DOES_enc(self, GL_TEXTURE_2D, hostImage);
@@ -104,19 +104,21 @@ void glEGLImageTargetRenderbufferStorageOES(void *self, GLenum target, GLeglImag
     GLeglImageOES hostImage = reinterpret_cast<GLeglImageOES>((intptr_t)image->host_egl_image);
 
     if (image->target == EGL_NATIVE_BUFFER_ANDROID) {
-        DEFINE_AND_VALIDATE_HOST_CONNECTION();
+        android_native_buffer_t* native_buffer = ((EGLImage_t*)image)->native_buffer;
 
-        EGLClientBuffer buffer = image->buffer;
-        if (!anwHelper->isValid(buffer)) {
-            ALOGE("Invalid native buffer.");
+        if (native_buffer->common.magic != ANDROID_NATIVE_BUFFER_MAGIC) {
             return;
         }
 
+        if (native_buffer->common.version != sizeof(android_native_buffer_t)) {
+            return;
+        }
+
+        DEFINE_AND_VALIDATE_HOST_CONNECTION();
         GET_CONTEXT;
         ctx->associateEGLImage(target, hostImage, image->width, image->height);
-
-        const int hostHandle = anwHelper->getHostHandle(buffer, grallocHelper);
-        rcEnc->rcBindRenderbuffer(rcEnc, hostHandle);
+        rcEnc->rcBindRenderbuffer(rcEnc,
+                grallocHelper->getHostHandle(native_buffer->handle));
     } else {
         //TODO
     }
