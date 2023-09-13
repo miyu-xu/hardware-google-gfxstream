@@ -2,7 +2,7 @@
 #define VIRTGPU_GFXSTREAM_RENDERER_UNSTABLE_H
 
 #include "host-common/goldfish_pipe.h"
-#include "render-utils/virtio-gpu-gfxstream-renderer.h"
+#include "gfxstream/virtio-gpu-gfxstream-renderer.h"
 
 #ifdef __cplusplus
 extern "C" {

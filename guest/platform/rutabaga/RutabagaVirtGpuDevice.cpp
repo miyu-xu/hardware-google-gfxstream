@@ -1,0 +1,68 @@
+/*
+ * Copyright 2023 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "RutabagaVirtGpu.h"
+
+#include <log/log.h>
+
+#include "RutabagaLayer.h"
+
+namespace gfxstream {
+
+RutabagaVirtGpuDevice::RutabagaVirtGpuDevice(uint32_t contextId) : mContextId(contextId) {}
+
+RutabagaVirtGpuDevice::~RutabagaVirtGpuDevice() {}
+
+int64_t RutabagaVirtGpuDevice::getDeviceHandle() { return -1; }
+
+VirtGpuCaps RutabagaVirtGpuDevice::getCaps() {
+    return EmulatedVirtioGpu::Get().GetCaps();
+}
+
+VirtGpuBlobPtr RutabagaVirtGpuDevice::createBlob(const struct VirtGpuCreateBlob& blobCreate) {
+    const auto resourceIdOpt = EmulatedVirtioGpu::Get().CreateBlob(mContextId, blobCreate);
+    if (!resourceIdOpt) {
+        return nullptr;
+    }
+
+    return VirtGpuBlobPtr(
+        new RutabagaVirtGpuResource(*resourceIdOpt,
+                                    RutabagaVirtGpuResource::ResourceType::kBlob,
+                                    shared_from_this()));
+}
+
+VirtGpuBlobPtr RutabagaVirtGpuDevice::createPipeBlob(uint32_t size) {
+    const auto resourceIdOpt = EmulatedVirtioGpu::Get().CreatePipeBlob(mContextId, size);
+    if (!resourceIdOpt) {
+        return nullptr;
+    }
+
+    return VirtGpuBlobPtr(
+        new RutabagaVirtGpuResource(*resourceIdOpt,
+                                    RutabagaVirtGpuResource::ResourceType::kPipe,
+                                    shared_from_this()));
+}
+
+int RutabagaVirtGpuDevice::execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob) {
+    return EmulatedVirtioGpu::Get().ExecBuffer(mContextId, execbuffer, blob->getResourceHandle());
+}
+
+VirtGpuBlobPtr RutabagaVirtGpuDevice::importBlob(const struct VirtGpuExternalHandle&) {
+    ALOGE("Unimplemented %s", __FUNCTION__);
+    return nullptr;
+}
+
+}  // namespace gfxstream
