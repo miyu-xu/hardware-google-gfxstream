@@ -29,4 +29,6 @@ class LinuxSyncHelper : public SyncHelper {
     int close(int syncFd) override;
 };
 
+SyncHelper* createPlatformSyncHelper();
+
 }  // namespace gfxstream

@@ -244,6 +244,11 @@ HostConnection::~HostConnection()
     if (m_stream) {
         m_stream->decRef();
     }
+
+    if (m_connectionType == HOST_CONNECTION_VIRTIO_GPU_PIPE ||
+        m_connectionType == HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE) {
+        VirtGpuDevice::resetInstance();
+    }
 }
 
 
