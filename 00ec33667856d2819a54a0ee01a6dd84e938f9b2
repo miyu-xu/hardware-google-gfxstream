@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb3e53bb_78b2958b",
+        "filename": "host/RenderThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-13T19:11:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f2dc477_bfcf90f4",
+      "range": {
+        "startLine": 301,
+        "startChar": 1,
+        "endLine": 301,
+        "endChar": 6
+      },
+      "revId": "00ec33667856d2819a54a0ee01a6dd84e938f9b2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "15bf8123_235adfac",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-09-13T18:13:23Z",
       "side": 1,
       "message": "Just confirming, this will be set in at least some of the automated builds? I\u0027d want to avoid the case where the magma path is only being built manually.",
+      "range": {
+        "startLine": 71,
+        "startChar": 3,
+        "endLine": 71,
+        "endChar": 12
+      },
+      "revId": "00ec33667856d2819a54a0ee01a6dd84e938f9b2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35c308d4_687745ed",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-13T19:11:32Z",
+      "side": 1,
+      "message": "Long-term, yes.  Right now, we have no automated testing for the Meson build at all.  I think the best solution is just to work towards goto.google.com/gfxstream-guest-linux.",
+      "parentUuid": "15bf8123_235adfac",
       "range": {
         "startLine": 71,
         "startChar": 3,
