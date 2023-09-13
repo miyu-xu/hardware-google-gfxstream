@@ -228,6 +228,7 @@ class TestingVirtGpuDevice : public std::enable_shared_from_this<TestingVirtGpuD
     int64_t getDeviceHandle() override;
 
     VirtGpuCaps getCaps() override;
+    void getRingMetadata(uint32_t& ringSize, uint32_t& bufferSize, uint32_t& blobAlignment);
 
     VirtGpuBlobPtr createBlob(const struct VirtGpuCreateBlob& blobCreate) override;
 
