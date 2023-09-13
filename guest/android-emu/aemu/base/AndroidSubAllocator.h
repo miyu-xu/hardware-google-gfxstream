@@ -17,10 +17,18 @@
 #include <stddef.h>
 #include <string.h>
 
-namespace gfxstream {
-namespace guest {
+namespace android {
+namespace base {
 
 class Stream;
+
+} // namespace base
+} // namespace android
+
+namespace android {
+namespace base {
+namespace guest {
+
 
 // Class to create sub-allocations in an existing buffer. Similar interface to
 // Pool, but underlying mechanism is different as it's difficult to combine
@@ -91,4 +99,5 @@ private:
 };
 
 } // namespace guest
-} // namespace gfxstream
+} // namespace base
+} // namespace android

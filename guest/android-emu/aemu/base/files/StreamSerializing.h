@@ -22,8 +22,8 @@
 #include <string>
 #include <vector>
 
-namespace gfxstream {
-namespace guest {
+namespace android {
+namespace base {
 
 //
 // Save/load operations for different types.

@@ -19,7 +19,8 @@
 #include <memory>
 #include <vector>
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 // WorkPool provides a way to queue several different + arbitrary wait / signal
@@ -45,5 +46,6 @@ private:
     std::unique_ptr<Impl> mImpl;
 };
 
+} // namespace android
+} // namespace base
 } // namespace guest
-} // namespace gfxstream

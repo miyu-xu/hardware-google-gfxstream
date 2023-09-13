@@ -19,7 +19,8 @@
 #include <functional>
 #include <stdint.h>
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 // a functor which can run in a separate thread
@@ -35,5 +36,6 @@ enum class ThreadFlags : unsigned char {
     Detach = 1 << 1
 };
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

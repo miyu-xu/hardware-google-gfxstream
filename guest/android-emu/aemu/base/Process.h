@@ -17,10 +17,12 @@
 
 #include <string>
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 std::string getProcessName();
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

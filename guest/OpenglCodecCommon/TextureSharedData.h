@@ -22,7 +22,7 @@
 
 #include "aemu/base/synchronization/AndroidLock.h"
 
-using gfxstream::guest::ReadWriteLock;
+using android::base::guest::ReadWriteLock;
 
 struct TextureDims {
     std::map<GLsizei, GLsizei> widths;

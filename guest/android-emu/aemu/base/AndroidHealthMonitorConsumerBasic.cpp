@@ -18,7 +18,8 @@
 
 #include "aemu/base/Process.h"
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 void logEventHangMetadata(const EventHangMetadata* metadata) {
@@ -53,5 +54,6 @@ void HealthMonitorConsumerBasic::consumeUnHangEvent(uint64_t,
     logEventHangMetadata(metadata);
 }
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

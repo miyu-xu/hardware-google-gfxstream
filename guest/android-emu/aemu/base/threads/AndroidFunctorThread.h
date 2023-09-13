@@ -25,12 +25,13 @@
 // convenience class so one doesn't need to create a separate class if the only
 // needed thing is to run a specific existing function in a thread.
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
-class FunctorThread : public gfxstream::guest::Thread {
+class FunctorThread : public android::base::guest::Thread {
 public:
-    using Functor = gfxstream::guest::ThreadFunctor;
+    using Functor = android::base::guest::ThreadFunctor;
 
     explicit FunctorThread(const Functor& func,
                            ThreadFlags flags = ThreadFlags::MaskSignals)
@@ -54,5 +55,6 @@ private:
     Functor mThreadFunc;
 };
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

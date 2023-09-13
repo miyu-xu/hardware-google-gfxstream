@@ -34,7 +34,7 @@
 
 #define ATTRIBUTE_NONE (-1)
 //FIXME: are we in this namespace?
-using namespace gfxstream::guest;
+using namespace android;
 
 class eglDisplay
 {

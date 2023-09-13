@@ -20,7 +20,8 @@
 #endif
 #include <string>
 
-namespace gfxstream {
+namespace android {
+namespace base {
 namespace guest {
 
 std::string getProcessName() {
@@ -40,5 +41,6 @@ std::string getProcessName() {
     return processName;
 }
 
-} // namespace guest
-} // namespace gfxstream
+}  // namespace guest
+}  // namespace base
+}  // namespace android

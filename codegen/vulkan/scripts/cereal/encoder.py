@@ -18,7 +18,7 @@ from .wrapperdefs import ROOT_TYPE_DEFAULT_VALUE
 from .wrapperdefs import VULKAN_STREAM_TYPE_GUEST
 
 encoder_decl_preamble = """
-using gfxstream::guest::HealthMonitor;
+using android::base::guest::HealthMonitor;
 
 class VkEncoder {
 public:
@@ -40,9 +40,9 @@ encoder_impl_preamble ="""
 
 using namespace gfxstream::vk;
 
-using gfxstream::guest::AutoLock;
-using gfxstream::guest::Lock;
-using gfxstream::guest::BumpPool;
+using android::base::guest::AutoLock;
+using android::base::guest::Lock;
+using android::base::BumpPool;
 
 #include "VkEncoder.cpp.inl"
 

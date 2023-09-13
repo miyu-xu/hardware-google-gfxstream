@@ -44,7 +44,7 @@ class IOStream;
 namespace gfxstream {
 namespace vk {
 
-using gfxstream::guest::HealthMonitor;
+using android::base::guest::HealthMonitor;
 
 class VkEncoder {
    public:
