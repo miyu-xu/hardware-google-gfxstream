@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f2dc477_bfcf90f4",
+        "filename": "host/RenderThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1373493
+      },
+      "writtenOn": "2023-09-13T18:13:23Z",
+      "side": 1,
+      "message": "nit: I don\u0027t see any official guidance in the style guide, but afaik `#if USE_MAGMA` is preferred these days. You\u0027d also need to add `-DUSE_MAGMA\u003d0` to the else branch of the build file. In conjunction with `-Wundef` compile flag this can help reduce typo-induced problems.",
+      "range": {
+        "startLine": 301,
+        "startChar": 1,
+        "endLine": 301,
+        "endChar": 6
+      },
+      "revId": "00ec33667856d2819a54a0ee01a6dd84e938f9b2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "15bf8123_235adfac",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1373493
+      },
+      "writtenOn": "2023-09-13T18:13:23Z",
+      "side": 1,
+      "message": "Just confirming, this will be set in at least some of the automated builds? I\u0027d want to avoid the case where the magma path is only being built manually.",
+      "range": {
+        "startLine": 71,
+        "startChar": 3,
+        "endLine": 71,
+        "endChar": 12
+      },
+      "revId": "00ec33667856d2819a54a0ee01a6dd84e938f9b2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
