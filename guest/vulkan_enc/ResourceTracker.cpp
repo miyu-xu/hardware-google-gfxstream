@@ -6332,7 +6332,7 @@ public:
                         ++info.bufferViewCount;
                     } else {
                         ALOGE("%s: FATAL: Unknown descriptor type %d\n", __func__, descType);
-                        // abort();
+                        abort();
                     }
                 }
             }
