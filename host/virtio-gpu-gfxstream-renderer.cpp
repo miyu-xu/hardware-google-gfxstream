@@ -1372,9 +1372,8 @@ class PipeVirglRenderer {
 
             if (vk_emu && vk_emu->live) {
                 capset->deferredMapping = 1;
+                capset->blobAlignment = mPageSize;
             }
-
-            capset->blobAlignment = mPageSize;
         }
     }
 
