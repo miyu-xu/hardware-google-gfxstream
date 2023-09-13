@@ -52,7 +52,6 @@ def emit_unmarshal(typeInfo, param, cgen, output=False, destroy=False, noUnbox=F
     if destroy:
         iterateVulkanType(typeInfo, param, VulkanReservedMarshalingCodegen(
             cgen,
-            "host",
             READ_STREAM,
             ROOT_TYPE_DEFAULT_VALUE,
             param.paramName,
@@ -90,7 +89,6 @@ def emit_unmarshal(typeInfo, param, cgen, output=False, destroy=False, noUnbox=F
 
         iterateVulkanType(typeInfo, param, VulkanReservedMarshalingCodegen(
             cgen,
-            "host",
             READ_STREAM,
             ROOT_TYPE_DEFAULT_VALUE,
             param.paramName,
@@ -109,7 +107,6 @@ def emit_dispatch_unmarshal(typeInfo, param, cgen, globalWrapped):
             "// Begin global wrapped dispatchable handle unboxing for %s" % param.paramName)
         iterateVulkanType(typeInfo, param, VulkanReservedMarshalingCodegen(
             cgen,
-            "host",
             READ_STREAM,
             ROOT_TYPE_DEFAULT_VALUE,
             param.paramName,
@@ -124,7 +121,6 @@ def emit_dispatch_unmarshal(typeInfo, param, cgen, globalWrapped):
         # cgen.stmt("%s->unsetHandleMapping()" % READ_STREAM)
         iterateVulkanType(typeInfo, param, VulkanReservedMarshalingCodegen(
             cgen,
-            "host",
             READ_STREAM,
             ROOT_TYPE_DEFAULT_VALUE,
             param.paramName,
