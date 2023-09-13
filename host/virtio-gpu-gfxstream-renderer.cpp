@@ -635,7 +635,7 @@ class PipeVirglRenderer {
                       uint32_t context_init) {
         std::string contextName(name, nlen);
 
-        stream_renderer_info("ctxid: %u len: %u name: %s", ctx_id, nlen, contextName.c_str());
+        stream_renderer_info("%s: ctxid: %u len: %u name: %s", __func__, ctx_id, nlen, contextName.c_str());
         auto ops = ensureAndGetServiceOps();
         auto hostPipe = ops->guest_open_with_flags(reinterpret_cast<GoldfishHwPipe*>(ctx_id),
                                                    0x1 /* is virtio */);
@@ -664,7 +664,7 @@ class PipeVirglRenderer {
     }
 
     int destroyContext(VirtioGpuCtxId handle) {
-        stream_renderer_info("ctxid: %u", handle);
+        stream_renderer_info("%s: ctxid: %u", __func__, handle);
 
         auto it = mContexts.find(handle);
         if (it == mContexts.end()) {
@@ -1562,6 +1562,8 @@ class PipeVirglRenderer {
     int createBlob(uint32_t ctx_id, uint32_t res_handle,
                    const struct stream_renderer_create_blob* create_blob,
                    const struct stream_renderer_handle* handle) {
+        stream_renderer_info("%s: ctx:%u res:%u blob-id:%u blob-size:%u", __func__, ctx_id, res_handle, create_blob->blob_id, create_blob->size);
+
         PipeResEntry e;
         struct stream_renderer_resource_create_args args = {0};
         e.args = args;
