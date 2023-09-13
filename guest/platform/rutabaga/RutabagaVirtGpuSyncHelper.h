@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Android Open Source Project
+ * Copyright 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
- #include "VirtGpu.h"
+#include "Sync.h"
 
-namespace {
+namespace gfxstream {
 
-static VirtGpuDevice* sDevice = nullptr;
+class RutabagaVirtGpuSyncHelper : public SyncHelper {
+  public:
+    RutabagaVirtGpuSyncHelper();
 
-}  // namespace
+    int wait(int syncFd, int timeoutMilliseconds) override;
 
-VirtGpuDevice* VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
-    if (!sDevice) {
-        sDevice = createPlatformVirtGpuDevice(capset);
-    }
-    return sDevice;
-}
+    int dup(int syncFd) override;
 
-void VirtGpuDevice::resetInstance() {
-    if (sDevice) {
-        delete sDevice;
-        sDevice = nullptr;
-    }
-}
+    int close(int) override;
+};
 
-void VirtGpuDevice::setInstanceForTesting(VirtGpuDevice* device) {
-    sDevice = device;
-}
+SyncHelper* createPlatformSyncHelper();
+
+}  // namespace gfxstream
