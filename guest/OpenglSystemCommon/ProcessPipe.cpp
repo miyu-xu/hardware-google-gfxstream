@@ -193,16 +193,11 @@ namespace {
 
 static std::mutex sNeedInitMutex;
 static bool sNeedInit = true;
-static bool sProcessPipeEnabled = true;
 
 }  // namespace
 
 static void processPipeDoInit() {
     initSeqno();
-
-    if (!sProcessPipeEnabled) {
-        return;
-    }
 
 #if defined(HOST_BUILD) || !defined(GFXSTREAM)
     sQemuPipeInit();
@@ -288,18 +283,12 @@ void processPipeRestart() {
             sProcPipe = 0;
         }
     } else {
-        if (sVirtioGpuPipeStream) {
-            delete sVirtioGpuPipeStream;
-            sVirtioGpuPipeStream = nullptr;
-        }
+        delete sVirtioGpuPipeStream;
+        sVirtioGpuPipeStream = nullptr;
     }
 #endif // __Fuchsia__
 
     sNeedInit = true;
-}
-
-void disableProcessPipeForTesting() {
-    sProcessPipeEnabled = false;
 }
 
 void refreshHostConnection() {
