@@ -278,9 +278,30 @@ VirtGpuCaps TestingVirtGpuDevice::getCaps() {
         },
     };
 
-        stream_renderer_fill_caps(0, 0, &caps.vulkanCapset);
-
+        stream_renderer_fill_caps(3, 0, &caps.vulkanCapset);
         return caps;
+}
+
+void TestingVirtGpuDevice::getRingMetadata(uint32_t& ringSize, uint32_t& bufferSize,
+                                           uint32_t& blobAlignment) {
+    VirtGpuCaps caps = {
+        .params =
+            {
+                [kParam3D] = 1,
+                [kParamCapsetFix] = 1,
+                [kParamResourceBlob] = 1,
+                [kParamHostVisible] = 1,
+                [kParamCrossDevice] = 0,
+                [kParamContextInit] = 1,
+                [kParamSupportedCapsetIds] = 0,
+                [kParamCreateGuestHandle] = 0,
+            },
+    };
+
+    stream_renderer_fill_caps(3, 0, &caps.vulkanCapset);
+    ringSize = caps.vulkanCapset.ringSize;
+    bufferSize = caps.vulkanCapset.bufferSize;
+    blobAlignment = caps.vulkanCapset.blobAlignment;
 }
 
 VirtGpuBlobPtr TestingVirtGpuDevice::createBlob(const struct VirtGpuCreateBlob& blobCreate) {
