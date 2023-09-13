@@ -14,24 +14,29 @@
 
 #include "GrallocMinigbm.h"
 
-#include <cinttypes>
-#include <cstring>
-
+#if defined(VIRTIO_GPU)
 #include <cros_gralloc/cros_gralloc_handle.h>
 #include <errno.h>
 #include <xf86drm.h>
-#include <vndk/hardware_buffer.h>
+#include <unistd.h>
+
+#include <cinttypes>
+#include <cstring>
 
 #include "virtgpu_drm.h"
-
-#if defined(VIRTIO_GPU)
-#include <unistd.h>
 static const size_t kPageSize = getpagesize();
 #else
 constexpr size_t kPageSize = PAGE_SIZE;
 #endif
 
+#ifndef PAGE_SIZE
+#define PAGE_SIZE 4096
+#endif
+
 namespace gfxstream {
+
+#if defined(VIRTIO_GPU)
+
 namespace {
 
 static inline uint32_t align_up(uint32_t n, uint32_t a) { return ((n + a - 1) / a) * a; }
@@ -153,32 +158,7 @@ uint32_t MinigbmGralloc::createColorBuffer(renderControl_client_context_t*, int 
     return res_create.res_handle;
 }
 
-int MinigbmGralloc::allocate(uint32_t width,
-                             uint32_t height,
-                             uint32_t format,
-                             uint64_t usage,
-                             AHardwareBuffer** outputAhb) {
-
-    struct AHardwareBuffer_Desc desc = {
-        .width = width,
-        .height = height,
-        .layers = 1,
-        .format = format,
-        .usage = usage,
-    };
-
-    return AHardwareBuffer_allocate(&desc, outputAhb);
-}
-
-void MinigbmGralloc::acquire(AHardwareBuffer* ahb) {
-    AHardwareBuffer_acquire(ahb);
-}
-
-void MinigbmGralloc::release(AHardwareBuffer* ahb) {
-    AHardwareBuffer_release(ahb);
-}
-
-uint32_t MinigbmGralloc::getHostHandle(const native_handle_t* handle) {
+uint32_t MinigbmGralloc::getHostHandle(native_handle_t const* handle) {
     struct drm_virtgpu_resource_info info;
     if (!getVirtioGpuResourceInfo(m_fd, handle, &info)) {
         ALOGE("%s: failed to get resource info\n", __func__);
@@ -188,42 +168,52 @@ uint32_t MinigbmGralloc::getHostHandle(const native_handle_t* handle) {
     return info.res_handle;
 }
 
-uint32_t MinigbmGralloc::getHostHandle(const AHardwareBuffer* ahb) {
-    const native_handle_t* handle = AHardwareBuffer_getNativeHandle(ahb);
-    return getHostHandle(handle);
-}
-
-int MinigbmGralloc::getFormat(const native_handle_t* handle) {
+int MinigbmGralloc::getFormat(native_handle_t const* handle) {
     return ((cros_gralloc_handle*)handle)->droid_format;
 }
 
-int MinigbmGralloc::getFormat(const AHardwareBuffer* ahb) {
-    const native_handle_t* handle = AHardwareBuffer_getNativeHandle(ahb);
-
-    return ((cros_gralloc_handle*)handle)->droid_format;
-}
-
-uint32_t MinigbmGralloc::getFormatDrmFourcc(const native_handle_t* handle) {
+uint32_t MinigbmGralloc::getFormatDrmFourcc(native_handle_t const* handle) {
     return ((cros_gralloc_handle*)handle)->format;
 }
 
-uint32_t MinigbmGralloc::getFormatDrmFourcc(const AHardwareBuffer* ahb) {
-    const native_handle_t* handle = AHardwareBuffer_getNativeHandle(ahb);
-    return getFormatDrmFourcc(handle);
-}
-
-size_t MinigbmGralloc::getAllocatedSize(const native_handle_t* handle) {
+size_t MinigbmGralloc::getAllocatedSize(native_handle_t const* handle) {
     struct drm_virtgpu_resource_info info;
     if (!getVirtioGpuResourceInfo(m_fd, handle, &info)) {
         ALOGE("%s: failed to get resource info\n", __func__);
         return 0;
     }
+
     return info.size;
 }
 
-size_t MinigbmGralloc::getAllocatedSize(const AHardwareBuffer* ahb) {
-    const native_handle_t* handle = AHardwareBuffer_getNativeHandle(ahb);
-    return getAllocatedSize(handle);
+#else
+
+uint32_t MinigbmGralloc::createColorBuffer(renderControl_client_context_t*, int width, int height,
+                                           uint32_t glformat) {
+    ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
+    return 0;
 }
+
+uint32_t MinigbmGralloc::getHostHandle(native_handle_t const* handle) {
+    ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
+    return 0;
+}
+
+int MinigbmGralloc::getFormat(native_handle_t const* handle) {
+    ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
+    return 0;
+}
+
+uint32_t MinigbmGralloc::getFormatDrmFourcc(native_handle_t const* handle) {
+    ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
+    return 0;
+}
+
+size_t MinigbmGralloc::getAllocatedSize(native_handle_t const* handle) {
+    ALOGE("%s: Error: using minigbm without -DVIRTIO_GPU\n", __func__);
+    return 0;
+}
+
+#endif
 
 }  // namespace gfxstream
