@@ -83,11 +83,4 @@ cc_library_shared {
     export_include_dirs: [
         "."
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "libsync",
-            ],
-        },
-    },
 }

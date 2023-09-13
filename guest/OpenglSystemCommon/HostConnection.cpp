@@ -17,7 +17,6 @@
 
 #include "GrallocGoldfish.h"
 #include "GrallocMinigbm.h"
-#include "SyncAndroid.h"
 #include "aemu/base/AndroidHealthMonitor.h"
 #include "aemu/base/AndroidHealthMonitorConsumerBasic.h"
 #include "aemu/base/threads/AndroidThread.h"
@@ -365,12 +364,6 @@ std::unique_ptr<HostConnection> HostConnection::connect(enum VirtGpuCapset capse
         default:
             break;
     }
-
-#if defined(__ANDROID__)
-    con->m_syncHelper = new gfxstream::SyncHelperAndroid();
-#else
-    // Host builds are expected to set a sync helper for testing.
-#endif
 
     // send zero 'clientFlags' to the host.
     unsigned int *pClientFlags =

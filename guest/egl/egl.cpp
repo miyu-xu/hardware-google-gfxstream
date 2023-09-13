@@ -803,8 +803,7 @@ EGLBoolean egl_window_surface_t::swapBuffers()
     DPRINT("dequeueBuffer with fence %d", acquireFenceFd);
 
     if (acquireFenceFd > 0) {
-        auto* syncHelper = hostCon->syncHelper();
-        syncHelper->close(acquireFenceFd);
+        close(acquireFenceFd);
     }
 
     rcEnc->rcSetWindowColorBuffer(rcEnc, rcSurface,
