@@ -14,43 +14,39 @@
  * limitations under the License.
  */
 
-#include "StubVirtGpu.h"
+#include "VirtGpu.h"
 
-StubVirtGpuDevice::StubVirtGpuDevice(enum VirtGpuCapset) {
+VirtGpuDevice& VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
+    static VirtGpuDevice mInstance(capset);
+    return mInstance;
+}
+
+VirtGpuDevice::VirtGpuDevice(enum VirtGpuCapset capset) {
     // Unimplemented stub
 }
 
-struct VirtGpuCaps StubVirtGpuDevice::getCaps(void) { return mCaps; }
+struct VirtGpuCaps VirtGpuDevice::getCaps(void) { return mCaps; }
 
-int64_t StubVirtGpuDevice::getDeviceHandle(void) {
+int64_t VirtGpuDevice::getDeviceHandle(void) {
     return mDeviceHandle;
 }
 
-VirtGpuBlobPtr StubVirtGpuDevice::createPipeBlob(uint32_t) {
+VirtGpuBlobPtr VirtGpuDevice::createPipeBlob(uint32_t size) {
     return nullptr;
 }
 
-VirtGpuBlobPtr StubVirtGpuDevice::createBlob(const struct VirtGpuCreateBlob&) {
+VirtGpuBlobPtr VirtGpuDevice::createBlob(const struct VirtGpuCreateBlob& blobCreate) {
     return nullptr;
 }
 
-VirtGpuBlobPtr StubVirtGpuDevice::importBlob(const struct VirtGpuExternalHandle&) {
+VirtGpuBlobPtr VirtGpuDevice::importBlob(const struct VirtGpuExternalHandle& handle) {
     return nullptr;
 }
 
-int StubVirtGpuDevice::execBuffer(struct VirtGpuExecBuffer&, VirtGpuBlobPtr) {
+int VirtGpuDevice::execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob) {
     return -1;
 }
 
-StubVirtGpuDevice::~StubVirtGpuDevice() {
+VirtGpuDevice::~VirtGpuDevice() {
     // Unimplemented stub
 }
-
-namespace platform_internal {
-
-VirtGpuDevice* getPlatformVirtGpuDeviceInstance(enum VirtGpuCapset capset) {
-    static StubVirtGpuDevice sInstance(capset);
-    return &sInstance;
-}
-
-}  // namespace platform_internal
