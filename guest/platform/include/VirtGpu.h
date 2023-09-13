@@ -149,6 +149,8 @@ class VirtGpuDevice {
     virtual int64_t getDeviceHandle(void) = 0;
 
     virtual struct VirtGpuCaps getCaps(void) = 0;
+    virtual void getRingMetadata(uint32_t& ringSize, uint32_t& bufferSize,
+                                 uint32_t& blobAlignment) = 0;
 
     virtual VirtGpuBlobPtr createBlob(const struct VirtGpuCreateBlob& blobCreate) = 0;
     virtual VirtGpuBlobPtr createPipeBlob(uint32_t size) = 0;

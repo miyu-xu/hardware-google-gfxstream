@@ -142,6 +142,34 @@ int64_t LinuxVirtGpuDevice::getDeviceHandle(void) {
     return mDeviceHandle;
 }
 
+void LinuxVirtGpuDevice::getRingMetadata(uint32_t& ringSize, uint32_t& bufferSize,
+                                         uint32_t& blobAlignment) {
+    switch (mCapset) {
+        case kCapsetGfxStreamVulkan:
+            ringSize = mCaps.vulkanCapset.ringSize;
+            bufferSize = mCaps.vulkanCapset.bufferSize;
+            blobAlignment = mCaps.vulkanCapset.blobAlignment;
+            break;
+        case kCapsetGfxStreamMagma:
+            ringSize = mCaps.magmaCapset.ringSize;
+            bufferSize = mCaps.magmaCapset.bufferSize;
+            blobAlignment = mCaps.magmaCapset.blobAlignment;
+            break;
+        case kCapsetGfxStreamGles:
+            ringSize = mCaps.glesCapset.ringSize;
+            bufferSize = mCaps.glesCapset.bufferSize;
+            blobAlignment = mCaps.glesCapset.blobAlignment;
+            break;
+        case kCapsetGfxStreamComposer:
+            ringSize = mCaps.composerCapset.ringSize;
+            bufferSize = mCaps.composerCapset.bufferSize;
+            blobAlignment = mCaps.composerCapset.blobAlignment;
+            break;
+        default:
+            return;
+    }
+}
+
 VirtGpuBlobPtr LinuxVirtGpuDevice::createPipeBlob(uint32_t size) {
     drm_virtgpu_resource_create create = {
             .target = PIPE_BUFFER,
