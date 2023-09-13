@@ -11,10 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-#if defined(__ANDROID__)
 #include <hardware/hwvulkan.h>
-#endif  // defined(__ANDROID__)
 
 #include <log/log.h>
 
@@ -67,30 +64,19 @@ VkResult CreateInstance(const VkInstanceCreateInfo* /*create_info*/,
                         const VkAllocationCallbacks* /*allocator*/,
                         VkInstance* instance) {
     AEMU_SCOPED_TRACE("vkstubhal::CreateInstance");
-#if defined(__ANDROID__)
     auto dispatch = new hwvulkan_dispatch_t;
     dispatch->magic = HWVULKAN_DISPATCH_MAGIC;
     *instance = reinterpret_cast<VkInstance>(dispatch);
-#else
-    auto* placeholder = new int();
-    *placeholder = 0x01CDC0DE;
-    *instance = reinterpret_cast<VkInstance>(placeholder);
-#endif  // defined(__ANDROID__)
     return VK_SUCCESS;
 }
 
 void DestroyInstance(VkInstance instance,
                      const VkAllocationCallbacks* /*allocator*/) {
     AEMU_SCOPED_TRACE("vkstubhal::DestroyInstance");
-#if defined(__ANDROID__)
     auto dispatch = reinterpret_cast<hwvulkan_dispatch_t*>(instance);
     ALOG_ASSERT(dispatch->magic == HWVULKAN_DISPATCH_MAGIC,
                 "DestroyInstance: invalid instance handle");
     delete dispatch;
-#else
-    auto placeholder = reinterpret_cast<int*>(instance);
-    delete placeholder;
-#endif  // defined(__ANDROID__)
 }
 
 VkResult EnumeratePhysicalDevices(VkInstance /*instance*/,
@@ -342,7 +328,7 @@ PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance,
 
 namespace {
 
-#if defined(__ANDROID__)
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
 
 int OpenDevice(const hw_module_t* module, const char* id, hw_device_t** device);
 
@@ -368,7 +354,7 @@ int CloseDevice(struct hw_device_t* /*device*/) {
     return 0;
 }
 
-#endif // defined(__ANDROID__)
+#endif
 
 #define VK_HOST_CONNECTION(ret)                                                              \
     HostConnection* hostCon = HostConnection::getOrCreate(kCapsetGfxStreamVulkan);           \
@@ -700,7 +686,7 @@ PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* name) {
     return (PFN_vkVoidFunction)(gfxstream::vk::goldfish_vulkan_get_instance_proc_address(instance, name));
 }
 
-#if defined(__ANDROID__)
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
 
 hwvulkan_device_t goldfish_vulkan_device = {
     .common = {

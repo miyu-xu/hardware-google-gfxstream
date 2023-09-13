@@ -28,7 +28,7 @@
 #include <thread>
 #include <unordered_map>
 
-#include "VirtioGpuAddressSpaceStream.h"
+#include "AddressSpaceStream.h"
 #include "EncoderDebug.h"
 #include "magma_enc.h"
 
