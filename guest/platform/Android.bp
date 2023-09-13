@@ -27,7 +27,8 @@ cc_library_static {
         "VirtGpu.cpp",
         "linux/LinuxVirtGpuBlob.cpp",
         "linux/LinuxVirtGpuBlobMapping.cpp",
-        "linux/LinuxVirtGpuDevice.cpp"
+        "linux/LinuxVirtGpuDevice.cpp",
+        "linux/LinuxSync.cpp",
     ],
     shared_libs: [
         "libcutils",
@@ -50,6 +51,59 @@ cc_library_static {
     local_include_dirs: [
         "include",
     ],
+    target: {
+        android: {
+            shared_libs: [
+                "libsync",
+            ],
+        }
+    }
+}
+
+cc_library_static {
+    name: "libplatform_rutabaga",
+    host_supported: true,
+    vendor_available: true,
+    srcs: [
+        "VirtGpu.cpp",
+        "rutabaga/RutabagaLayer.cpp",
+        "rutabaga/RutabagaVirtGpuBlob.cpp",
+        "rutabaga/RutabagaVirtGpuBlobMapping.cpp",
+        "rutabaga/RutabagaVirtGpuDevice.cpp",
+        "rutabaga/RutabagaVirtGpuSyncHelper.cpp",
+    ],
+    shared_libs: [
+        "libcutils",
+        "libdrm",
+        "libgfxstream_backend",
+        "liblog",
+        "libutils",
+    ],
+    export_shared_lib_headers: [
+        "libdrm",
+    ],
+    export_include_dirs: [
+        "include",
+        "rutabaga/include",
+    ],
+    cflags: [
+        "-DLOG_TAG=\"platform\"",
+        "-Wno-missing-field-initializers",
+        "-fvisibility=default",
+        "-fstrict-aliasing",
+    ],
+    local_include_dirs: [
+        "include",
+        "rutabaga/include",
+    ],
+    target: {
+        host: {
+            compile_multilib: "64",
+        },
+        android: {
+            compile_multilib: "64",
+        },
+    },
 }
 
 cc_library_static {

@@ -87,7 +87,7 @@ struct stream_renderer_handle {
 
 // Log level of gfxstream
 #ifndef STREAM_RENDERER_LOG_LEVEL
-#define STREAM_RENDERER_LOG_LEVEL 1
+#define STREAM_RENDERER_LOG_LEVEL 5
 #endif
 
 // @user_data: custom user data passed during `stream_renderer_init`
