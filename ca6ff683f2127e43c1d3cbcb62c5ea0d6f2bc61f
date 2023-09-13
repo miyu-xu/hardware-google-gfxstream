@@ -22,6 +22,30 @@
       },
       "revId": "ca6ff683f2127e43c1d3cbcb62c5ea0d6f2bc61f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e76d6a8c_bdbef274",
+        "filename": "guest/OpenglSystemCommon/GrallocMinigbm.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1097044
+      },
+      "writtenOn": "2023-09-13T01:15:29Z",
+      "side": 1,
+      "message": "We may need this define for fuschia? I am not too familiar with which bits of gfxstream are used there.",
+      "parentUuid": "0c10fd63_e60a8ce6",
+      "range": {
+        "startLine": 28,
+        "startChar": 23,
+        "endLine": 28,
+        "endChar": 45
+      },
+      "revId": "ca6ff683f2127e43c1d3cbcb62c5ea0d6f2bc61f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
