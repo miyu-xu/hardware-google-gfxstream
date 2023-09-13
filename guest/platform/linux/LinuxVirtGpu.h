@@ -64,6 +64,7 @@ class LinuxVirtGpuDevice : public VirtGpuDevice {
     virtual int64_t getDeviceHandle(void);
 
     virtual struct VirtGpuCaps getCaps(void);
+    virtual void getRingMetadata(uint32_t& ringSize, uint32_t& bufferSize, uint32_t& blobAlignment);
 
     virtual VirtGpuBlobPtr createBlob(const struct VirtGpuCreateBlob& blobCreate);
     virtual VirtGpuBlobPtr createPipeBlob(uint32_t size);
