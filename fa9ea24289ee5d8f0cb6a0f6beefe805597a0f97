@@ -22,6 +22,30 @@
       },
       "revId": "fa9ea24289ee5d8f0cb6a0f6beefe805597a0f97",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9fd3d92_4679ee05",
+        "filename": "guest/OpenglSystemCommon/GrallocMinigbm.cpp",
+        "patchSetId": 19
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-13T15:29:57Z",
+      "side": 1,
+      "message": "Addressed in aosp/2749249. Sorry for the trouble!",
+      "parentUuid": "c065b332_b1effa45",
+      "range": {
+        "startLine": 145,
+        "startChar": 53,
+        "endLine": 145,
+        "endChar": 62
+      },
+      "revId": "fa9ea24289ee5d8f0cb6a0f6beefe805597a0f97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
