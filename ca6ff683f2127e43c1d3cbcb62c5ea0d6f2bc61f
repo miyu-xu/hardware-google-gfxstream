@@ -46,6 +46,30 @@
       },
       "revId": "ca6ff683f2127e43c1d3cbcb62c5ea0d6f2bc61f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2df3ccf_bbf1c1bf",
+        "filename": "guest/OpenglSystemCommon/GrallocMinigbm.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1889140
+      },
+      "writtenOn": "2023-09-13T02:59:46Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "e76d6a8c_bdbef274",
+      "range": {
+        "startLine": 28,
+        "startChar": 23,
+        "endLine": 28,
+        "endChar": 45
+      },
+      "revId": "ca6ff683f2127e43c1d3cbcb62c5ea0d6f2bc61f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
