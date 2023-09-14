@@ -451,6 +451,16 @@ intptr_t RenderThread::main() {
                                 .setAnnotations(std::move(renderThreadData))
                                 .build();
 
+<<<<<<< HEAD   (a59ecb Merge "Fix race condition when copying inbetween vk/gl frame)
+=======
+#ifndef AEMU_BUILD
+            if (!tInfo.m_puid) {
+                tInfo.m_puid = mContextId;
+                FrameBuffer::getFB()->createGraphicsProcessResources(tInfo.m_puid);
+            }
+#endif
+
+>>>>>>> CHANGE (4b6493 Reduce logspam)
             if (!processResources && tInfo.m_puid) {
                 processResources = FrameBuffer::getFB()->getProcessResources(tInfo.m_puid);
             }
