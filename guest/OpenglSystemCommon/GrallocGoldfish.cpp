@@ -79,4 +79,6 @@ size_t GoldfishGralloc::getAllocatedSize(const AHardwareBuffer* ahb) {
     return getAllocatedSize(handle);
 }
 
+bool treatBlobAsImage() { return true; }
+
 }  // namespace gfxstream
