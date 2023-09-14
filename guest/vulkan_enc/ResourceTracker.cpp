@@ -1668,12 +1668,21 @@ public:
             ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper();
 
         // Delete once goldfish Linux drivers are gone
-	if (mCaps.gfxstreamCapset.colorBufferMemoryIndex == 0xFFFFFFFF) {
+        if (mCaps.gfxstreamCapset.colorBufferMemoryIndex == 0xFFFFFFFF) {
             const VkPhysicalDeviceMemoryProperties& memProps =
                 getPhysicalDeviceMemoryProperties(context, device, VK_NULL_HANDLE);
 
-            mCaps.gfxstreamCapset.colorBufferMemoryIndex =
-                (1u << memProps.memoryTypeCount) - 1;
+            // Currently, host looks for the last index that has with memory
+            // property type VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+            VkMemoryPropertyFlags memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+            mCaps.gfxstreamCapset.colorBufferMemoryIndex = 0;
+            for (int i = VK_MAX_MEMORY_TYPES - 1; i >= 0; --i) {
+                if ((pProperties->memoryTypeBits & (1u << i)) &&
+                    (memProps.memoryTypes[i].propertyFlags & memoryProperty)) {
+                    mCaps.gfxstreamCapset.colorBufferMemoryIndex = i;
+                    break;
+                }
+            }
         }
 
         updateMemoryTypeBits(&pProperties->memoryTypeBits,
