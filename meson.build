@@ -26,13 +26,54 @@ default_cpp_args = [
   '-Wno-implicit-fallthrough',
 ]
 
+if host_machine.system() == 'qnx'
+  default_cpp_args += '-D_QNX_SOURCE'
+  qnx_target = get_option('qnx_target')
+  if qnx_target == ''
+    error('option qnx_target is not set')
+  endif
+endif
+
 #===============#
 # Dependencies  #
 #===============#
-aemu_base_dep = dependency('aemu_base')
-aemu_common_dep = dependency('aemu_host_common')
-aemu_logging_dep = dependency('aemu_logging')
-aemu_snapshot_dep = dependency('aemu_snapshot')
+if host_machine.system() == 'qnx'
+  ## have not yet got pkgconfig to work with cross-compile,
+  ## finding libraries manually in the meantime.
+
+  ## ERROR: Dependency "screen" not found, tried pkgconfig
+  # libscreen = dependency('screen')
+
+  rel_path_prefix = meson.get_external_property('path_prefix')
+  abs_path_prefix = meson.current_source_dir() + '/' + rel_path_prefix
+
+  aemu_incl_path = rel_path_prefix + '/aemu/install/include'
+  aemu_libs_path = abs_path_prefix + '/aemu/install/lib'
+
+  incl_aemu_headers = include_directories(aemu_incl_path)
+
+  aemu_base_dep = cc.find_library('aemu-base', dirs: aemu_libs_path)
+  aemu_base_dep = declare_dependency(include_directories : incl_aemu_headers, dependencies : [aemu_base_dep])
+
+  aemu_common_dep = cc.find_library('aemu-host-common', dirs: aemu_libs_path)
+  aemu_common_dep = declare_dependency(include_directories : incl_aemu_headers, dependencies : [aemu_common_dep])
+
+  aemu_logging_dep = cc.find_library('logging-base', dirs: aemu_libs_path)
+  aemu_logging_dep = declare_dependency(include_directories : incl_aemu_headers, dependencies : [aemu_logging_dep])
+
+  aemu_snapshot_dep = cc.find_library('gfxstream-snapshot', dirs: aemu_libs_path)
+  aemu_snapshot_dep = declare_dependency(include_directories : incl_aemu_headers, dependencies : [aemu_snapshot_dep])
+
+  inc_qnx_headers = include_directories(join_paths(qnx_target, 'usr/include'))
+  libscreen = cc.find_library('screen', required : true)
+  libscreen = declare_dependency(include_directories: inc_qnx_headers, dependencies: [libscreen])
+
+else
+  aemu_base_dep = dependency('aemu_base')
+  aemu_common_dep = dependency('aemu_host_common')
+  aemu_logging_dep = dependency('logging_base')
+  aemu_snapshot_dep = dependency('aemu_snapshot')
+endif
 
 #========================#
 # Logging + error report #
