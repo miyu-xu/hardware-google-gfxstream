@@ -22,6 +22,30 @@
       },
       "revId": "3920f97aa102e4283d38214814445732eb5887b5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfcb4683_ff455b8a",
+        "filename": "host/meson.build",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-15T21:36:17Z",
+      "side": 1,
+      "message": "Originally it has its roots in how rust packages are created (by default, everything is \"0.1.0\").  But now we are advertising this version scheme publicly:\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#latest-releases-for-potential-packaging",
+      "parentUuid": "09207173_afc4b1cb",
+      "range": {
+        "startLine": 95,
+        "startChar": 12,
+        "endLine": 95,
+        "endChar": 17
+      },
+      "revId": "3920f97aa102e4283d38214814445732eb5887b5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
