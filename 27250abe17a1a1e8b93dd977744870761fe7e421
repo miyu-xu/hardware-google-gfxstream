@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e73da3e_f4c9addc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2023-09-15T20:24:58Z",
+      "side": 1,
+      "message": "CtsSkQPTestCases down to 1 failure with `-gpu host`.",
+      "revId": "27250abe17a1a1e8b93dd977744870761fe7e421",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
