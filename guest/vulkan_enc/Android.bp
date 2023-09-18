@@ -84,6 +84,12 @@ cc_defaults {
         "gfxstream_vulkan_headers",
         "libgfxstream_guest_iostream",
         "libnativewindow_headers",
+        "mesa_common_headers_gfxstream",
+    ],
+    generated_headers: [
+        "vk_cmd_queue_header",
+        "vk_physical_device_features_header",
+        "vk_physical_device_properties_header",
     ],
     shared_libs: [
         "libandroidemu",
@@ -101,6 +107,7 @@ cc_defaults {
         "libmesa_vulkan_runtime_gfxstream",
         "libgfxstream_vk_entrypoints",
         "libmesa_util_gfxstream",
+        "libmesa_util_c11_gfxstream",
     ],
     cflags: [
         "-DLOG_TAG=\"goldfish_vulkan\"",
@@ -114,6 +121,9 @@ cc_defaults {
         "-Werror",
         "-Wno-missing-field-initializers",
         "-Wno-unused-parameter",
+        "-DHAVE_PTHREAD=1",
+        "-DHAVE_TIMESPEC_GET",
+        "-DHAVE_STRUCT_TIMESPEC",
     ],
     srcs: [
         "AndroidHardwareBuffer.cpp",

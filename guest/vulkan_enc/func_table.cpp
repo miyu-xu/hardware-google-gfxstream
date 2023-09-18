@@ -38,6 +38,7 @@
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
 #include "gfxstream_vk_entrypoints.h"
+#include "gfxstream_vk_private.h"
 #include "goldfish_vk_private_defs.h"
 
 // Stuff we are not going to use but if included,
@@ -49,21 +50,6 @@
 #undef VK_ANDROID_native_buffer
 #endif
 #ifdef VK_VERSION_1_0
-VkResult gfxstream_vk_CreateInstance(const VkInstanceCreateInfo* pCreateInfo,
-                                     const VkAllocationCallbacks* pAllocator,
-                                     VkInstance* pInstance) {
-    AEMU_SCOPED_TRACE("vkCreateInstance");
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    VkResult vkCreateInstance_VkResult_return = (VkResult)0;
-    vkCreateInstance_VkResult_return =
-        vkEnc->vkCreateInstance(pCreateInfo, pAllocator, pInstance, true /* do lock */);
-    return vkCreateInstance_VkResult_return;
-}
-void gfxstream_vk_DestroyInstance(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
-    AEMU_SCOPED_TRACE("vkDestroyInstance");
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    vkEnc->vkDestroyInstance(instance, pAllocator, true /* do lock */);
-}
 VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
                                                VkPhysicalDevice* pPhysicalDevices) {
     AEMU_SCOPED_TRACE("vkEnumeratePhysicalDevices");
@@ -122,14 +108,6 @@ void gfxstream_vk_GetPhysicalDeviceMemoryProperties(
     vkEnc->vkGetPhysicalDeviceMemoryProperties(physicalDevice, pMemoryProperties,
                                                true /* do lock */);
 }
-PFN_vkVoidFunction gfxstream_vk_GetInstanceProcAddr(VkInstance instance, const char* pName) {
-    AEMU_SCOPED_TRACE("vkGetInstanceProcAddr");
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    PFN_vkVoidFunction vkGetInstanceProcAddr_PFN_vkVoidFunction_return = (PFN_vkVoidFunction)0;
-    vkGetInstanceProcAddr_PFN_vkVoidFunction_return =
-        vkEnc->vkGetInstanceProcAddr(instance, pName, true /* do lock */);
-    return vkGetInstanceProcAddr_PFN_vkVoidFunction_return;
-}
 PFN_vkVoidFunction gfxstream_vk_GetDeviceProcAddr(VkDevice device, const char* pName) {
     AEMU_SCOPED_TRACE("vkGetDeviceProcAddr");
     auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -152,18 +130,6 @@ void gfxstream_vk_DestroyDevice(VkDevice device, const VkAllocationCallbacks* pA
     AEMU_SCOPED_TRACE("vkDestroyDevice");
     auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
     vkEnc->vkDestroyDevice(device, pAllocator, true /* do lock */);
-}
-VkResult gfxstream_vk_EnumerateInstanceExtensionProperties(const char* pLayerName,
-                                                           uint32_t* pPropertyCount,
-                                                           VkExtensionProperties* pProperties) {
-    AEMU_SCOPED_TRACE("vkEnumerateInstanceExtensionProperties");
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    VkResult vkEnumerateInstanceExtensionProperties_VkResult_return = (VkResult)0;
-    auto resources = gfxstream::vk::ResourceTracker::get();
-    vkEnumerateInstanceExtensionProperties_VkResult_return =
-        resources->on_vkEnumerateInstanceExtensionProperties(vkEnc, VK_SUCCESS, pLayerName,
-                                                             pPropertyCount, pProperties);
-    return vkEnumerateInstanceExtensionProperties_VkResult_return;
 }
 VkResult gfxstream_vk_EnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice,
                                                          const char* pLayerName,
