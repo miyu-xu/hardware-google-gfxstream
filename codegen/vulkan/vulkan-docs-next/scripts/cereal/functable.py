@@ -87,6 +87,14 @@ RESOURCE_TRACKER_ENTRIES = [
     "vkGetBufferCollectionPropertiesFUCHSIA",
 ]
 
+SPECIAL_ENTRIES = [
+    "vkCreateInstance",
+    "vkDestroyInstance",
+    "vkGetInstanceProcAddr",
+    "vkEnumerateInstanceExtensionProperties",
+]
+
+
 SUCCESS_VAL = {
     "VkResult" : ["VK_SUCCESS"],
 }
@@ -176,12 +184,12 @@ class VulkanFuncTable(VulkanWrapperGenerator):
 
         api_entry = api.withModifiedName("gfxstream_vk_" + api.name[2:])
 
-        cgen.line(self.cgen.makeFuncProto(api_entry))
-        cgen.beginBlock()
-        genEncoderOrResourceTrackerCall(cgen, api)
-        cgen.endBlock()
-
-        self.module.appendImpl(cgen.swapCode())
+        if api.name not in SPECIAL_ENTRIES:
+            cgen.line(self.cgen.makeFuncProto(api_entry))
+            cgen.beginBlock()
+            genEncoderOrResourceTrackerCall(cgen, api)
+            cgen.endBlock()
+            self.module.appendImpl(cgen.swapCode())
 
     def onEnd(self,):
         pass
