@@ -333,6 +333,7 @@ class IOStream;
 #include "../OpenglSystemCommon/HostConnection.h"
 #include "ResourceTracker.h"
 #include "gfxstream_vk_entrypoints.h"
+#include "gfxstream_vk_private.h"
 
 #include "goldfish_vk_private_defs.h"
 

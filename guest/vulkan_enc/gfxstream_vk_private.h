@@ -50,7 +50,8 @@
 #include "vk_pipeline_layout.h"
 #include "vk_queue.h"
 #include "vk_sync.h"
-#include "wsi_common.h"
+
+#include "vulkan/wsi/wsi_common.h"
 
 #include "vk_extensions.h"
 
