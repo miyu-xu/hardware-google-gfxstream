@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fcfb8892_1884bece",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2036360
+      },
+      "writtenOn": "2023-09-18T16:05:44Z",
+      "side": 1,
+      "message": "The manual dependency resolution in meson is a little messy... hopefully I can get pkgconfig to work for the cross build and clean that up soon.\n\nThis change allows the meson build to run to completion, but there are still a few missing pieces before libgfxstream will run in qnx hypervisor.",
+      "revId": "d7e81ab226eae73bb3c485ef798959908f22b1d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
