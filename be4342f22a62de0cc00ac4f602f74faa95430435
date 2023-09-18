@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "494ff6ed_1a6ee609",
+        "filename": "guest/platform/include/VirtGpu.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-18T16:35:42Z",
+      "side": 1,
+      "message": "Can this just be a simple helper function like\n\n```\nbool GetRingParamsFromCapset(const VirtGpuCaps\u0026 capset, uint32_t\u0026, uint32_t\u0026, uint32_t\u0026);\n```\n\ninside of `VirtioGpuAddressSpaceStream.cpp` in the next change? \n\nThe ASG ring is something Gfxstream builds on top of Virtio GPU so the Virtio GPU layer should not really know about it. IIUC, the implementation would be the same for all of the different platform implementations as well?",
+      "range": {
+        "startLine": 152,
+        "startChar": 4,
+        "endLine": 154,
+        "endChar": 0
+      },
+      "revId": "be4342f22a62de0cc00ac4f602f74faa95430435",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
