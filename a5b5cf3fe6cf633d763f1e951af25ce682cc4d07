@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "472aa548_dff4ecae",
+        "filename": "guest/OpenglSystemCommon/ProcessPipe.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-09-18T17:30:33Z",
+      "side": 1,
+      "message": "IIUC, you are introducing this function so that the guest VK implementation doesn\u0027t need to setup/use the rendercontrol encoder. Instead of introducing another thing that needs to be initialized, can we just move the\n\n```\nif (m_processPipe) {\n   auto fd \u003d (m_connectionType \u003d\u003d HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE) ? m_rendernodeFd : -1;\n   m_processPipe-\u003eprocessPipeInit(fd, m_connectionType, rcEnc);\n}\n```\n\nout of `HostConnection::rcEncoder()` and into the end of `HostConnection::connect()`. Then, we can remove the `rcEnc` parameter from `processPipeInit()` function and just have `HostConnection::rcEncoder()` call `m_rcEnc-\u003ercSetPuid(m_rcEnc, sProcUID);` at the end of the `m_rcEnc` init block.",
+      "range": {
+        "startLine": 47,
+        "startChar": 5,
+        "endLine": 47,
+        "endChar": 18
+      },
+      "revId": "a5b5cf3fe6cf633d763f1e951af25ce682cc4d07",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
