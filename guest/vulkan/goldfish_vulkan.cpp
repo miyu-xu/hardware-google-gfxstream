@@ -44,6 +44,7 @@
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
 #include "func_table.h"
+#include "VirtGpu.h"
 
 #if defined(__ANDROID__)
 
@@ -371,6 +372,8 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
                             const VkAllocationCallbacks *pAllocator,
                             VkInstance *pInstance)
 {
+    AEMU_SCOPED_TRACE("goldfish_vulkan::CreateInstance");
+
    struct gfxstream_vk_instance *instance;
    VkInstance internal;
    VkResult result;
@@ -380,6 +383,11 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
                         VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
    if (!instance)
       return vk_error(NULL, VK_ERROR_OUT_OF_HOST_MEMORY);
+
+    VkResult res = SetupInstance();
+    if (res != VK_SUCCESS) {
+        return res;
+    }
 
    VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
    result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &internal, true /* do lock */);
@@ -406,13 +414,40 @@ void
 gfxstream_vk_DestroyInstance(VkInstance _instance,
                              const VkAllocationCallbacks *pAllocator)
 {
-   VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
+    VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
+    AEMU_SCOPED_TRACE("goldfish_vulkan::EnumerateInstanceExtensionProperties");
 
    if (!instance)
       return;
 
+    if (instance->internal_object) {
+        VK_HOST_CONNECTION()
+        vkEnc->vkDestroyInstance(instance->internal_object, pAllocator, true /* do lock */);
+    }
+
    vk_instance_finish(&instance->vk);
    vk_free(&instance->vk.alloc, instance);
+}
+
+VkResult
+gfxstream_vk_EnumerateInstanceExtensionProperties(const char* pLayerName,
+                                                           uint32_t* pPropertyCount,
+                                                           VkExtensionProperties* pProperties) {
+    AEMU_SCOPED_TRACE("goldfish_vulkan::vkEnumerateInstanceExtensionProperties");
+
+    VkResult res = SetupInstance();
+    if (res != VK_SUCCESS) {
+        return res;
+    }
+
+    VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST)
+
+    VkResult vkEnumerateInstanceExtensionProperties_VkResult_return = (VkResult)0;
+    auto resources = gfxstream::vk::ResourceTracker::get();
+    vkEnumerateInstanceExtensionProperties_VkResult_return =
+        resources->on_vkEnumerateInstanceExtensionProperties(vkEnc, VK_SUCCESS, pLayerName,
+                                                             pPropertyCount, pProperties);
+    return vkEnumerateInstanceExtensionProperties_VkResult_return;
 }
 
 PFN_vkVoidFunction
