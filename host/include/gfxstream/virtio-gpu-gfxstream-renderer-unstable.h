@@ -101,6 +101,9 @@ struct stream_renderer_resource_info {
 VG_EXPORT int stream_renderer_resource_get_info(int res_handle,
                                                 struct stream_renderer_resource_info* info);
 
+// For testing only
+VG_EXPORT int stream_renderer_assign_id(uint32_t *out_res_handle);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
