@@ -2,6 +2,10 @@ from .common.codegen import CodeGen, VulkanWrapperGenerator
 from .common.vulkantypes import \
         VulkanAPI, makeVulkanTypeSimple, iterateVulkanType
 from .common.vulkantypes import EXCLUDED_APIS
+from .common.vulkantypes import HANDLE_TYPES
+
+import copy
+import re
 
 RESOURCE_TRACKER_ENTRIES = [
     "vkEnumerateInstanceExtensionProperties",
@@ -87,14 +91,6 @@ RESOURCE_TRACKER_ENTRIES = [
     "vkGetBufferCollectionPropertiesFUCHSIA",
 ]
 
-SPECIAL_ENTRIES = [
-    "vkCreateInstance",
-    "vkDestroyInstance",
-    "vkGetInstanceProcAddr",
-    "vkEnumerateInstanceExtensionProperties",
-]
-
-
 SUCCESS_VAL = {
     "VkResult" : ["VK_SUCCESS"],
 }
@@ -108,11 +104,103 @@ POSTPROCESSES = {
     }""",
 }
 
+HANDWRITTEN_ENTRY_POINTS = [
+    # Instance-level special-handling
+    "vkCreateInstance",
+    "vkDestroyInstance",
+    "vkGetInstanceProcAddr",
+    "vkEnumerateInstanceExtensionProperties",
+    # Device-level special handling
+    "vkGetDeviceProcAddr",
+    "vkEnumeratePhysicalDevices",
+    # Need manual object alloc+init (i.e. vk_zalloc() + vk_device_init())
+    "vkCreateDevice",
+    "vkDestroyDevice",
+    "vkGetDeviceQueue",
+    "vkGetDeviceQueue2",
+    # Special cases to handle array create/destroy
+    "vkAllocateCommandBuffers",
+    "vkFreeCommandBuffers",
+    "vkAllocateDescriptorSets",
+    "vkFreeDescriptorSets",
+    # Mesa objects have a create (i.e. vk_buffer_create)
+    # but params dont't line up in create() call
+    "vkCreateImageWithRequirementsGOOGLE",
+    "vkCreateBufferWithRequirementsGOOGLE",
+]
+
+# TODO: handles with no equivalent gfxstream objects (yet).
+#  Might need some special handling.
+HANDLES_DONT_TRANSLATE = {
+    "VkSurfaceKHR",
+}
+
+# Handles that have an equivalent mesa create call (i.e. vk_image_create())
+HANDLES_MESA_CREATE = {
+    "VkDeviceMemory",
+    "VkQueryPool",
+    "VkBuffer",
+    "VkBufferView",
+    "VkImage",
+    "VkImageView",
+    "VkSampler",
+}
+
 def is_cmdbuf_dispatch(api):
     return "VkCommandBuffer" == api.parameters[0].typeName
 
 def is_queue_dispatch(api):
     return "VkQueue" == api.parameters[0].typeName
+
+def getCreateParam(api):
+    for param in api.parameters:
+        if param.isCreatedBy(api):
+            return param
+    return None
+
+def getDestroyParam(api):
+    for param in api.parameters:
+        if param.isDestroyedBy(api):
+            return param
+    return None
+
+# i.e. VkQueryPool --> vk_query_pool
+def typeNameToMesaType(typeName):
+    vkTypeNameRegex = "(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])"
+    words = re.split(vkTypeNameRegex, typeName)
+    outputType = "vk"
+    for word in words[1:]:
+        outputType += "_"
+        outputType += word.lower()
+    return outputType
+
+def typeNameToBaseName(typeName):
+    return typeNameToMesaType(typeName)[len("vk_"):]
+
+def paramNameToObjectName(paramName):
+    return "gfxstream_%s" % paramName
+
+def typeNameToObjectType(typeName):
+    return "gfxstream_vk_%s" % typeNameToBaseName(typeName)
+
+def translationRequired(typeName):
+    return typeName in HANDLE_TYPES and typeName not in HANDLES_DONT_TRANSLATE
+
+def mesaObjectHasCreate(typeName):
+    return typeName in HANDLES_MESA_CREATE
+
+ALLOCATOR_TYPE_NAME = "VkAllocationCallbacks"
+MESA_ALLOCATOR_PARAM_NAME = "pMesaAllocator"
+def isAllocatorParam(param):
+    return (param.pointerIndirectionLevels == 1
+            and param.isConst
+            and param.typeName == ALLOCATOR_TYPE_NAME)
+
+def isArrayParam(param):
+    return 1 == param.pointerIndirectionLevels and param.isConst
+
+def internalArrayParamName(arrayParamName):
+    return "internal_%s" % arrayParamName
 
 class VulkanFuncTable(VulkanWrapperGenerator):
     def __init__(self, module, typeInfo):
@@ -148,9 +236,160 @@ class VulkanFuncTable(VulkanWrapperGenerator):
         self.entries.append(api)
         self.entryFeatures.append(self.feature)
 
-        def genEncoderOrResourceTrackerCall(cgen, api, declareResources=True):
-            cgen.stmt("AEMU_SCOPED_TRACE(\"%s\")" % api.name)
+        def genMesaAllocatorParam(cgen, api):
+            primaryObjectName = paramNameToObjectName(api.parameters[0].paramName)
+            defaultAllocator = "&%s->vk.alloc" % primaryObjectName
+            inAllocator = None
+            for param in api.parameters:
+                if isAllocatorParam(param):
+                    inAllocator = param.paramName
+                    break
+            if inAllocator:
+                cgen.stmt("const %s *%s = %s ? %s : %s" %
+                          (ALLOCATOR_TYPE_NAME, MESA_ALLOCATOR_PARAM_NAME, inAllocator, inAllocator, defaultAllocator))
+                outAllocator = MESA_ALLOCATOR_PARAM_NAME
+            else:
+                outAllocator = defaultAllocator
+            return outAllocator
 
+        def genDestroyGfxstreamObjects(cgen, api):
+            destroyParam = getDestroyParam(api)
+            if not destroyParam:
+                return
+            if not translationRequired(destroyParam.typeName):
+                return
+            objectName = paramNameToObjectName(destroyParam.paramName)
+            mesaAllocator = genMesaAllocatorParam(cgen, api)
+            if not mesaObjectHasCreate(destroyParam.typeName):
+                # call vk_free() directly
+                mesaObjectDestroy = "(void *)%s" % objectName
+                cgen.funcCall(
+                    None,
+                    "vk_free",
+                    [mesaAllocator, mesaObjectDestroy]
+                )
+            else:
+                baseName = typeNameToBaseName(destroyParam.typeName)
+                # TODO: hasFinish?
+                # finishCallParam = ("&%s" % typeNameToObjectName(typeName))
+                # cgen.funcCall(
+                #     None,
+                #     "vk_%s_finish" % (baseName),
+                #     [finishCallParam]
+                # )
+                # objectName for destroy always at the back
+                mesaObjectPrimary = "&%s->vk" % paramNameToObjectName(api.parameters[0].paramName)
+                mesaObjectDestroy = "&%s->vk" % objectName
+                cgen.funcCall(
+                    None,
+                    "vk_%s_destroy" % (baseName),
+                    [mesaObjectPrimary, mesaAllocator, mesaObjectDestroy]
+                )
+
+        # Mod params for mesa object create or destroy functions (i.e. vk_buffer_create(...))
+        def getMesaCreateParams(api):
+            createParam = getCreateParam(api)
+            outParams = copy.deepcopy(api.parameters)
+            for p in outParams:
+                if isAllocatorParam(p):
+                    p.paramName = MESA_ALLOCATOR_PARAM_NAME
+                    continue
+                if not translationRequired(p.typeName):
+                    continue
+                # Remove destroyParam or createParam from list
+                # They are handled in their respective functions
+                if createParam and p.paramName == createParam.paramName:
+                    outParams.remove(p)
+                    continue
+                # Otherwise, Change the paramName for the mesa call
+                p.paramName = ("(%s*)%s" % (typeNameToMesaType(p.typeName), paramNameToObjectName(p.paramName)))
+            return outParams
+
+        def genCreateGfxstreamObjects(cgen, api):
+            createParam = getCreateParam(api)
+            if not createParam:
+                return False
+            if not translationRequired(createParam.typeName):
+                return False
+            objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
+            objectName = "%s" % paramNameToObjectName(createParam.paramName)
+            mesaAllocator = genMesaAllocatorParam(cgen, api)
+            # Alloc/create gfxstream_vk_* object
+            callLhs = "%s *%s" % (objectType, objectName)
+            if not mesaObjectHasCreate(createParam.typeName):
+                # Call vk_zalloc directly
+                cgen.funcCall(
+                    callLhs,
+                    "(%s *)vk_zalloc" % objectType,
+                    # TODO: Always 8-byte align and SCOPE_OBJECT ?
+                    [mesaAllocator, ("sizeof(%s)" % objectType), "8", "VK_SYSTEM_ALLOCATION_SCOPE_OBJECT"]
+                )
+            else:
+                modParams = getMesaCreateParams(api)
+                # Call the objects vk_%_create() functions
+                cgen.funcCall(
+                    callLhs,
+                    "(%s *)vk_%s_create" % (objectType, typeNameToBaseName(createParam.typeName)),
+                    [p.paramName for p in modParams] + ["sizeof(%s)" % objectType]
+                )
+            retTypeName = api.getRetTypeExpr()
+            retVar = api.getRetVarExpr()
+            if retVar:
+                # ex: vkCreateBuffer_VkResult_return = gfxstream_buffer ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+                cgen.stmt("%s = %s ? %s : %s" % 
+                          (retVar, objectName, SUCCESS_VAL[retTypeName][0], "VK_ERROR_OUT_OF_HOST_MEMORY"))
+            # An object was created
+            return True
+
+        def genInternalObjectArray(cgen, api, arrayParam):
+            # Contains the "len" param for this arrayParam
+            countParamName = arrayParam.attribs["len"]
+            if not countParamName:
+                print("Error: Could not find the 'count' param for param %s (API %s)" % (arrayParam.paramName, api.name))
+                raise
+            internalArray = internalArrayParamName(arrayParam.paramName)
+            cgen.stmt("std::vector<%s> %s(%s)" % (arrayParam.typeName, internalArray, countParamName))
+            cgen.beginFor("uint32_t i = 0", "i < %s" % countParamName, "++i")
+            cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i])" % (typeNameToObjectType(arrayParam.typeName), paramNameToObjectName(arrayParam.paramName), arrayParam.paramName))
+            cgen.stmt("%s[i] = %s->internal_object" % (internalArray, paramNameToObjectName(arrayParam.paramName)))
+            cgen.endFor()
+
+        def genGetGfxstreamHandles(cgen, api):
+            createParam = getCreateParam(api)
+            # Convert handles first
+            for param in api.parameters:
+                if not translationRequired(param.typeName):
+                    continue
+                if isArrayParam(param):
+                    # Special handling for arrays of internal objects
+                    genInternalObjectArray(cgen, api, param)
+                elif param.pointerIndirectionLevels > 0 and param != createParam:
+                    print("Error: don't know how to handle pointerIndirectionLevels > 1 for API %s (param %s)" % (api.name, param.paramName))
+                    raise
+                elif param != createParam:
+                    cgen.stmt("VK_FROM_HANDLE(%s, %s, %s)" % (typeNameToObjectType(param.typeName), paramNameToObjectName(param.paramName), param.paramName))
+
+        # Translate params into params needed for gfxstream-internal
+        #  encoder/resource-tracker calls
+        def getEncoderOrResourceTrackerParams(api):
+            createParam = getCreateParam(api)
+            outParams = copy.deepcopy(api.parameters)
+            for param in outParams:
+                if not translationRequired(param.typeName):
+                    continue
+                objectName = paramNameToObjectName(param.paramName)
+                if isArrayParam(param):
+                    param.paramName = "%s.data()" % internalArrayParamName(param.paramName)
+                elif 0 == param.pointerIndirectionLevels:
+                    param.paramName = ("%s" % objectName) + "->internal_object"
+                elif createParam and param.paramName == createParam.paramName:
+                    param.paramName = ("&%s" % objectName) + "->internal_object"
+                else:
+                    print("Error: don't know how to handle pointerIndirectionLevels = %i for API %s (param %s)" % (param.pointerIndirectionLevels, api.name, param.paramName))
+                    raise
+            return outParams
+
+        def genEncoderOrResourceTrackerCall(cgen, api, declareResources=True):
             if is_cmdbuf_dispatch(api):
                 cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer)")
             elif is_queue_dispatch(api):
@@ -160,36 +399,73 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             callLhs = None
             retTypeName = api.getRetTypeExpr()
             if retTypeName != "void":
-                retVar = api.getRetVarExpr()
-                cgen.stmt("%s %s = (%s)0" % (retTypeName, retVar, retTypeName))
-                callLhs = retVar
+                callLhs = api.getRetVarExpr()
 
+            # Get parameter list modded for gfxstream-internal call
+            parameters = getEncoderOrResourceTrackerParams(api)
             if name in RESOURCE_TRACKER_ENTRIES:
                 if declareResources:
                     cgen.stmt("auto resources = gfxstream::vk::ResourceTracker::get()")
                 cgen.funcCall(
                     callLhs, "resources->" + "on_" + api.name,
                     ["vkEnc"] + SUCCESS_VAL.get(retTypeName, []) + \
-                    [p.paramName for p in api.parameters])
+                    [p.paramName for p in parameters])
             else:
                 cgen.funcCall(
-                    callLhs, "vkEnc->" + api.name, [p.paramName for p in api.parameters] + ["true /* do lock */"])
+                    callLhs, "vkEnc->" + api.name, [p.paramName for p in parameters] + ["true /* do lock */"])
 
             if name in POSTPROCESSES:
                 cgen.line(POSTPROCESSES[name])
 
+        def genReturnExpression(cgen, api):
+            retTypeName = api.getRetTypeExpr()
+            # Set the createParam output, if applicable
+            createParam = getCreateParam(api)
+            if createParam:
+                if 1 != createParam.pointerIndirectionLevels:
+                    print("Error: don't know how to handle pointerIndirectionLevels != 1 in return for API %s (createParam %s)" % api.name, createParam.paramName)
+                    raise
+                # ex: *pBuffer = gfxstream_vk_buffer_to_handle(gfxstream_buffer)
+                cgen.funcCall(
+                    "*%s" % createParam.paramName,
+                    "%s_to_handle" % typeNameToObjectType(createParam.typeName),
+                    [paramNameToObjectName(createParam.paramName)]
+                )
+
             if retTypeName != "void":
-                cgen.stmt("return %s" % retVar)
+                cgen.stmt("return %s" % api.getRetVarExpr())
 
-
-        api_entry = api.withModifiedName("gfxstream_vk_" + api.name[2:])
-
-        if api.name not in SPECIAL_ENTRIES:
-            cgen.line(self.cgen.makeFuncProto(api_entry))
-            cgen.beginBlock()
+        def genGfxstreamEntry(cgen, api, declareResources=True):
+            cgen.stmt("AEMU_SCOPED_TRACE(\"%s\")" % api.name)
+            # Translate handles
+            genGetGfxstreamHandles(cgen, api)
+            # declare returnVar
+            retTypeName = api.getRetTypeExpr()
+            retVar = api.getRetVarExpr()
+            if retVar:
+                cgen.stmt("%s %s = (%s)0" % (retTypeName, retVar, retTypeName))
+            # Translation/creation of objects
+            createdObject = genCreateGfxstreamObjects(cgen, api)
+            # Make encoder/resource-tracker call
+            if retVar and createdObject:
+                cgen.beginIf("%s == %s" % (SUCCESS_VAL[retTypeName][0], retVar))
+            else:
+                cgen.beginBlock()            
             genEncoderOrResourceTrackerCall(cgen, api)
             cgen.endBlock()
+            # Destroy gfxstream objects
+            genDestroyGfxstreamObjects(cgen, api)
+            # Set output / return variables
+            genReturnExpression(cgen, api)
+
+        api_entry = api.withModifiedName("gfxstream_vk_" + api.name[2:])
+        if api.name not in HANDWRITTEN_ENTRY_POINTS:
+            cgen.line(self.cgen.makeFuncProto(api_entry))
+            cgen.beginBlock()
+            genGfxstreamEntry(cgen, api)
+            cgen.endBlock()
             self.module.appendImpl(cgen.swapCode())
+
 
     def onEnd(self,):
         pass

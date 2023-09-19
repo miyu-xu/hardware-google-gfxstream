@@ -43,6 +43,7 @@ cc_defaults {
         "libmesa_vulkan_wsi_gfxstream",
         "libgfxstream_vk_entrypoints",
         "libmesa_util_gfxstream",
+        "libmesa_util_format_gfxstream",
     ],
     shared_libs: [
         "libandroidemu",
