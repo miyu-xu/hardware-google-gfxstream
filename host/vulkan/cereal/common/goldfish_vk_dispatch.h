@@ -488,6 +488,8 @@ struct VulkanDispatch {
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -550,9 +552,6 @@ struct VulkanDispatch {
     PFN_vkCopyImageToImageEXT vkCopyImageToImageEXT;
     PFN_vkTransitionImageLayoutEXT vkTransitionImageLayoutEXT;
     PFN_vkGetImageSubresourceLayout2EXT vkGetImageSubresourceLayout2EXT;
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-    PFN_vkReleaseSwapchainImagesEXT vkReleaseSwapchainImagesEXT;
 #endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
@@ -618,6 +617,9 @@ struct VulkanDispatch {
 #ifdef VK_EXT_load_store_op_none
 #endif
 #ifdef VK_EXT_image_compression_control_swapchain
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
+    PFN_vkGetScreenBufferPropertiesQNX vkGetScreenBufferPropertiesQNX;
 #endif
 };
 

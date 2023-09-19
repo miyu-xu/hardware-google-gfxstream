@@ -75,8 +75,8 @@ SUPPORTED_FEATURES = [
     "VK_KHR_create_renderpass2",
     "VK_KHR_imageless_framebuffer",
     "VK_KHR_descriptor_update_template",
+    "VK_EXT_depth_clip_enable",
     # see aosp/2736079 + b/268351352
-    "VK_EXT_swapchain_maintenance1",
     "VK_KHR_maintenance5",
     "VK_EXT_host_image_copy",
     "VK_EXT_image_compression_control",
@@ -124,6 +124,8 @@ SUPPORTED_FEATURES = [
     "VK_GOOGLE_gfxstream",
     # Used in tests without proper support checks
     "VK_EXT_graphics_pipeline_library",
+    # QNX
+    "VK_QNX_external_memory_screen_buffer",
 ]
 
 # By default, the all wrappers are run all on all features.  In certain cases,
@@ -132,6 +134,7 @@ SUPPORTED_FEATURES = [
 SUPPORTED_WRAPPERS = {
     "VK_EXT_debug_utils": [cereal.VulkanDispatch],
     "VK_KHR_surface": [cereal.VulkanDispatch],
+    "VK_KHR_swapchain": [cereal.VulkanDispatch],
     "VK_KHR_xcb_surface": [cereal.VulkanDispatch],
     "VK_KHR_win32_surface": [cereal.VulkanDispatch],
     "VK_EXT_metal_surface": [cereal.VulkanDispatch],
@@ -143,6 +146,7 @@ SUPPORTED_WRAPPERS = {
     "VK_KHR_external_memory_fd": [cereal.VulkanDispatch],
     "VK_ANDROID_external_memory_android_hardware_buffer": [cereal.VulkanFuncTable],
     "VK_KHR_android_surface": [cereal.VulkanFuncTable],
+    "VK_QNX_external_memory_screen_buffer": [cereal.VulkanDispatch],
 }
 
 copyrightHeader = """// Copyright (C) 2018 The Android Open Source Project
@@ -331,6 +335,8 @@ class IOStream;
 #include "VkEncoder.h"
 #include "../OpenglSystemCommon/HostConnection.h"
 #include "ResourceTracker.h"
+#include "gfxstream_vk_entrypoints.h"
+#include "gfxstream_vk_private.h"
 
 #include "goldfish_vk_private_defs.h"
 
@@ -590,7 +596,8 @@ class BumpPool;
             suppressVulkanHeaders=True,
             extraHeader=createVkExtensionStructureTypePreamble('VK_GOOGLE_GFXSTREAM'))
 
-        self.addGuestEncoderModule("func_table", extraImpl=functableImplInclude)
+        self.addGuestEncoderModule("func_table", extraImpl=functableImplInclude, implOnly = True,
+                                    useNamespace = False)
 
         self.addCppModule("common", "goldfish_vk_extension_structs",
                        extraHeader=extensionStructsInclude)
@@ -681,13 +688,13 @@ class BumpPool;
 
     def addGuestEncoderModule(
             self, basename, extraHeader="", extraImpl="", useNamespace=True, headerOnly=False,
-            suppressFeatureGuards=False, moduleName=None, suppressVulkanHeaders=False):
+            suppressFeatureGuards=False, moduleName=None, suppressVulkanHeaders=False, implOnly=False):
         if not os.path.exists(self.guest_abs_encoder_destination):
             print("Path [%s] not found (guest encoder path), skipping" % self.guest_abs_encoder_destination)
             return
         self.addCppModule(self.guest_encoder_tag, basename, extraHeader=extraHeader,
                        extraImpl=extraImpl, customAbsDir=self.guest_abs_encoder_destination,
-                       useNamespace=useNamespace, headerOnly=headerOnly,
+                       useNamespace=useNamespace, implOnly=implOnly, headerOnly=headerOnly,
                        suppressFeatureGuards=suppressFeatureGuards, moduleName=moduleName,
                        suppressVulkanHeaders=suppressVulkanHeaders)
 

@@ -160,6 +160,8 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -192,8 +194,6 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
 #endif
 #ifdef VK_EXT_host_image_copy
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
@@ -225,6 +225,8 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
 #ifdef VK_EXT_load_store_op_none
 #endif
 #ifdef VK_EXT_image_compression_control_swapchain
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
 }  // namespace vk

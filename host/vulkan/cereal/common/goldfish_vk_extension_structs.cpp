@@ -140,6 +140,8 @@ namespace vk {
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -172,8 +174,6 @@ namespace vk {
 #endif
 #ifdef VK_EXT_host_image_copy
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
@@ -205,6 +205,8 @@ namespace vk {
 #ifdef VK_EXT_load_store_op_none
 #endif
 #ifdef VK_EXT_image_compression_control_swapchain
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 uint32_t goldfish_vk_struct_type(const void* structExtension) {
     const uint32_t asStructType = *(reinterpret_cast<const uint32_t*>(structExtension));
@@ -546,20 +548,6 @@ size_t goldfish_vk_extension_struct_size(VkStructureType rootType, const void* s
             return sizeof(VkPhysicalDeviceMaintenance4Properties);
         }
 #endif
-#ifdef VK_KHR_swapchain
-        case VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR: {
-            return sizeof(VkImageSwapchainCreateInfoKHR);
-        }
-        case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR: {
-            return sizeof(VkBindImageMemorySwapchainInfoKHR);
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR: {
-            return sizeof(VkDeviceGroupPresentInfoKHR);
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR: {
-            return sizeof(VkDeviceGroupSwapchainCreateInfoKHR);
-        }
-#endif
 #ifdef VK_KHR_dynamic_rendering
         case VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR: {
             return sizeof(VkRenderingFragmentShadingRateAttachmentInfoKHR);
@@ -619,6 +607,14 @@ size_t goldfish_vk_extension_struct_size(VkStructureType rootType, const void* s
             return sizeof(VkPipelineRasterizationStateStreamCreateInfoEXT);
         }
 #endif
+#ifdef VK_EXT_depth_clip_enable
+        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_ENABLE_FEATURES_EXT: {
+            return sizeof(VkPhysicalDeviceDepthClipEnableFeaturesEXT);
+        }
+        case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT: {
+            return sizeof(VkPipelineRasterizationDepthClipStateCreateInfoEXT);
+        }
+#endif
 #ifdef VK_EXT_provoking_vertex
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_FEATURES_EXT: {
             return sizeof(VkPhysicalDeviceProvokingVertexFeaturesEXT);
@@ -663,23 +659,6 @@ size_t goldfish_vk_extension_struct_size(VkStructureType rootType, const void* s
         }
         case VK_STRUCTURE_TYPE_HOST_IMAGE_COPY_DEVICE_PERFORMANCE_QUERY_EXT: {
             return sizeof(VkHostImageCopyDevicePerformanceQueryEXT);
-        }
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT: {
-            return sizeof(VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentFenceInfoEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentModesCreateInfoEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentModeInfoEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentScalingCreateInfoEXT);
         }
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
@@ -1111,20 +1090,6 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
             return sizeof(VkPhysicalDeviceMaintenance4Properties);
         }
 #endif
-#ifdef VK_KHR_swapchain
-        case VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR: {
-            return sizeof(VkImageSwapchainCreateInfoKHR);
-        }
-        case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR: {
-            return sizeof(VkBindImageMemorySwapchainInfoKHR);
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR: {
-            return sizeof(VkDeviceGroupPresentInfoKHR);
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR: {
-            return sizeof(VkDeviceGroupSwapchainCreateInfoKHR);
-        }
-#endif
 #ifdef VK_KHR_dynamic_rendering
         case VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR: {
             return sizeof(VkRenderingFragmentShadingRateAttachmentInfoKHR);
@@ -1184,6 +1149,14 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
             return sizeof(VkPipelineRasterizationStateStreamCreateInfoEXT);
         }
 #endif
+#ifdef VK_EXT_depth_clip_enable
+        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_ENABLE_FEATURES_EXT: {
+            return sizeof(VkPhysicalDeviceDepthClipEnableFeaturesEXT);
+        }
+        case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT: {
+            return sizeof(VkPipelineRasterizationDepthClipStateCreateInfoEXT);
+        }
+#endif
 #ifdef VK_EXT_provoking_vertex
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_FEATURES_EXT: {
             return sizeof(VkPhysicalDeviceProvokingVertexFeaturesEXT);
@@ -1228,23 +1201,6 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
         }
         case VK_STRUCTURE_TYPE_HOST_IMAGE_COPY_DEVICE_PERFORMANCE_QUERY_EXT: {
             return sizeof(VkHostImageCopyDevicePerformanceQueryEXT);
-        }
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT: {
-            return sizeof(VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentFenceInfoEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentModesCreateInfoEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentModeInfoEXT);
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT: {
-            return sizeof(VkSwapchainPresentScalingCreateInfoEXT);
         }
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
