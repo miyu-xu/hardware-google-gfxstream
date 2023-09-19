@@ -145,6 +145,8 @@ namespace vk {
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -177,8 +179,6 @@ namespace vk {
 #endif
 #ifdef VK_EXT_host_image_copy
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
@@ -210,6 +210,8 @@ namespace vk {
 #ifdef VK_EXT_load_store_op_none
 #endif
 #ifdef VK_EXT_image_compression_control_swapchain
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
 void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dlSymFunc,
@@ -866,10 +868,6 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
     out->vkGetImageSubresourceLayout2EXT =
         (PFN_vkGetImageSubresourceLayout2EXT)dlSymFunc(lib, "vkGetImageSubresourceLayout2EXT");
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    out->vkReleaseSwapchainImagesEXT =
-        (PFN_vkReleaseSwapchainImagesEXT)dlSymFunc(lib, "vkReleaseSwapchainImagesEXT");
-#endif
 #ifdef VK_EXT_private_data
     out->vkCreatePrivateDataSlotEXT =
         (PFN_vkCreatePrivateDataSlotEXT)dlSymFunc(lib, "vkCreatePrivateDataSlotEXT");
@@ -941,6 +939,10 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
             lib, "vkUpdateDescriptorSetWithTemplateSized2GOOGLE");
     out->vkQueueSubmitAsync2GOOGLE =
         (PFN_vkQueueSubmitAsync2GOOGLE)dlSymFunc(lib, "vkQueueSubmitAsync2GOOGLE");
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
+    out->vkGetScreenBufferPropertiesQNX =
+        (PFN_vkGetScreenBufferPropertiesQNX)dlSymFunc(lib, "vkGetScreenBufferPropertiesQNX");
 #endif
 }
 
@@ -1788,10 +1790,6 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
         (PFN_vkGetImageSubresourceLayout2EXT)vk->vkGetInstanceProcAddr(
             instance, "vkGetImageSubresourceLayout2EXT");
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    out->vkReleaseSwapchainImagesEXT = (PFN_vkReleaseSwapchainImagesEXT)vk->vkGetInstanceProcAddr(
-        instance, "vkReleaseSwapchainImagesEXT");
-#endif
 #ifdef VK_EXT_private_data
     out->vkCreatePrivateDataSlotEXT = (PFN_vkCreatePrivateDataSlotEXT)vk->vkGetInstanceProcAddr(
         instance, "vkCreatePrivateDataSlotEXT");
@@ -1881,6 +1879,11 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
             instance, "vkUpdateDescriptorSetWithTemplateSized2GOOGLE");
     out->vkQueueSubmitAsync2GOOGLE = (PFN_vkQueueSubmitAsync2GOOGLE)vk->vkGetInstanceProcAddr(
         instance, "vkQueueSubmitAsync2GOOGLE");
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
+    out->vkGetScreenBufferPropertiesQNX =
+        (PFN_vkGetScreenBufferPropertiesQNX)vk->vkGetInstanceProcAddr(
+            instance, "vkGetScreenBufferPropertiesQNX");
 #endif
 }
 
@@ -2706,10 +2709,6 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
         (PFN_vkGetImageSubresourceLayout2EXT)vk->vkGetDeviceProcAddr(
             device, "vkGetImageSubresourceLayout2EXT");
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    out->vkReleaseSwapchainImagesEXT = (PFN_vkReleaseSwapchainImagesEXT)vk->vkGetDeviceProcAddr(
-        device, "vkReleaseSwapchainImagesEXT");
-#endif
 #ifdef VK_EXT_private_data
     out->vkCreatePrivateDataSlotEXT = (PFN_vkCreatePrivateDataSlotEXT)vk->vkGetDeviceProcAddr(
         device, "vkCreatePrivateDataSlotEXT");
@@ -2794,6 +2793,11 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
             device, "vkUpdateDescriptorSetWithTemplateSized2GOOGLE");
     out->vkQueueSubmitAsync2GOOGLE =
         (PFN_vkQueueSubmitAsync2GOOGLE)vk->vkGetDeviceProcAddr(device, "vkQueueSubmitAsync2GOOGLE");
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
+    out->vkGetScreenBufferPropertiesQNX =
+        (PFN_vkGetScreenBufferPropertiesQNX)vk->vkGetDeviceProcAddr(
+            device, "vkGetScreenBufferPropertiesQNX");
 #endif
 }
 

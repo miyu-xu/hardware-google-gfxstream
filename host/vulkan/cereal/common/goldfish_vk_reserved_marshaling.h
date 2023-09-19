@@ -1116,38 +1116,6 @@ void reservedunmarshal_VkDeviceImageMemoryRequirements(
 #ifdef VK_KHR_surface
 #endif
 #ifdef VK_KHR_swapchain
-void reservedunmarshal_VkSwapchainCreateInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
-                                                VkSwapchainCreateInfoKHR* forUnmarshaling,
-                                                uint8_t** ptr);
-
-void reservedunmarshal_VkPresentInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
-                                        VkPresentInfoKHR* forUnmarshaling, uint8_t** ptr);
-
-void reservedunmarshal_VkImageSwapchainCreateInfoKHR(VulkanStream* vkStream,
-                                                     VkStructureType rootType,
-                                                     VkImageSwapchainCreateInfoKHR* forUnmarshaling,
-                                                     uint8_t** ptr);
-
-void reservedunmarshal_VkBindImageMemorySwapchainInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkBindImageMemorySwapchainInfoKHR* forUnmarshaling, uint8_t** ptr);
-
-void reservedunmarshal_VkAcquireNextImageInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
-                                                 VkAcquireNextImageInfoKHR* forUnmarshaling,
-                                                 uint8_t** ptr);
-
-void reservedunmarshal_VkDeviceGroupPresentCapabilitiesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkDeviceGroupPresentCapabilitiesKHR* forUnmarshaling, uint8_t** ptr);
-
-void reservedunmarshal_VkDeviceGroupPresentInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
-                                                   VkDeviceGroupPresentInfoKHR* forUnmarshaling,
-                                                   uint8_t** ptr);
-
-void reservedunmarshal_VkDeviceGroupSwapchainCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkDeviceGroupSwapchainCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
-
 #endif
 #ifdef VK_KHR_xcb_surface
 #endif
@@ -1674,6 +1642,16 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceTextureCompressionASTCHD
                       reservedunmarshal_VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT)
 
 #endif
+#ifdef VK_EXT_depth_clip_enable
+void reservedunmarshal_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VulkanStream* vkStream, VkStructureType rootType,
+    VkPhysicalDeviceDepthClipEnableFeaturesEXT* forUnmarshaling, uint8_t** ptr);
+
+void reservedunmarshal_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VulkanStream* vkStream, VkStructureType rootType,
+    VkPipelineRasterizationDepthClipStateCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
+
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -1814,33 +1792,6 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkImageSubresource2KHR,
                       reservedunmarshal_VkImageSubresource2EXT)
 
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void reservedunmarshal_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* forUnmarshaling, uint8_t** ptr);
-
-void reservedunmarshal_VkSwapchainPresentFenceInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkSwapchainPresentFenceInfoEXT* forUnmarshaling, uint8_t** ptr);
-
-void reservedunmarshal_VkSwapchainPresentModesCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkSwapchainPresentModesCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
-
-void reservedunmarshal_VkSwapchainPresentModeInfoEXT(VulkanStream* vkStream,
-                                                     VkStructureType rootType,
-                                                     VkSwapchainPresentModeInfoEXT* forUnmarshaling,
-                                                     uint8_t** ptr);
-
-void reservedunmarshal_VkSwapchainPresentScalingCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkSwapchainPresentScalingCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
-
-void reservedunmarshal_VkReleaseSwapchainImagesInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkReleaseSwapchainImagesInfoEXT* forUnmarshaling, uint8_t** ptr);
-
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures,
                       reservedunmarshal_VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT)
@@ -1976,6 +1927,8 @@ void reservedunmarshal_VkPhysicalDeviceImageCompressionControlSwapchainFeaturesE
     VulkanStream* vkStream, VkStructureType rootType,
     VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
 }  // namespace vk
