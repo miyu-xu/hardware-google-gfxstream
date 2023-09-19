@@ -897,42 +897,6 @@ class VkDecoderSnapshot {
 #ifdef VK_KHR_surface
 #endif
 #ifdef VK_KHR_swapchain
-    void vkCreateSwapchainKHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                              android::base::BumpPool* pool, VkResult input_result, VkDevice device,
-                              const VkSwapchainCreateInfoKHR* pCreateInfo,
-                              const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain);
-    void vkDestroySwapchainKHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                               android::base::BumpPool* pool, VkDevice device,
-                               VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator);
-    void vkGetSwapchainImagesKHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                                 android::base::BumpPool* pool, VkResult input_result,
-                                 VkDevice device, VkSwapchainKHR swapchain,
-                                 uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages);
-    void vkAcquireNextImageKHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                               android::base::BumpPool* pool, VkResult input_result,
-                               VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
-                               VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex);
-    void vkQueuePresentKHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                           android::base::BumpPool* pool, VkResult input_result, VkQueue queue,
-                           const VkPresentInfoKHR* pPresentInfo);
-    void vkGetDeviceGroupPresentCapabilitiesKHR(
-        const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes, android::base::BumpPool* pool,
-        VkResult input_result, VkDevice device,
-        VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities);
-    void vkGetDeviceGroupSurfacePresentModesKHR(const uint8_t* snapshotTraceBegin,
-                                                size_t snapshotTraceBytes,
-                                                android::base::BumpPool* pool,
-                                                VkResult input_result, VkDevice device,
-                                                VkSurfaceKHR surface,
-                                                VkDeviceGroupPresentModeFlagsKHR* pModes);
-    void vkGetPhysicalDevicePresentRectanglesKHR(
-        const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes, android::base::BumpPool* pool,
-        VkResult input_result, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
-        uint32_t* pRectCount, VkRect2D* pRects);
-    void vkAcquireNextImage2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                                android::base::BumpPool* pool, VkResult input_result,
-                                VkDevice device, const VkAcquireNextImageInfoKHR* pAcquireInfo,
-                                uint32_t* pImageIndex);
 #endif
 #ifdef VK_KHR_xcb_surface
 #endif
@@ -1315,6 +1279,8 @@ class VkDecoderSnapshot {
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -1415,12 +1381,6 @@ class VkDecoderSnapshot {
                                          VkDevice device, VkImage image,
                                          const VkImageSubresource2KHR* pSubresource,
                                          VkSubresourceLayout2KHR* pLayout);
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-    void vkReleaseSwapchainImagesEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                                     android::base::BumpPool* pool, VkResult input_result,
-                                     VkDevice device,
-                                     const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo);
 #endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
@@ -1600,6 +1560,8 @@ class VkDecoderSnapshot {
 #ifdef VK_EXT_load_store_op_none
 #endif
 #ifdef VK_EXT_image_compression_control_swapchain
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
    private:
