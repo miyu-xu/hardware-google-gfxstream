@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a026429_110c8d31",
+        "filename": "common/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-19T21:50:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21352431_e2e3bb09",
+      "range": {
+        "startLine": 286,
+        "startChar": 5,
+        "endLine": 286,
+        "endChar": 42
+      },
+      "revId": "70fc87a79b86528cd921be5c9e4a85a28d11f12a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74a6d642_b8d2acf0",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-09-19T21:08:16Z",
       "side": 1,
       "message": "I think we can remove this function now?",
+      "range": {
+        "startLine": 231,
+        "startChar": 4,
+        "endLine": 231,
+        "endChar": 92
+      },
+      "revId": "70fc87a79b86528cd921be5c9e4a85a28d11f12a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9905dba1_59fffda2",
+        "filename": "common/GfxstreamEnd2EndTests.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-19T21:50:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74a6d642_b8d2acf0",
       "range": {
         "startLine": 231,
         "startChar": 4,
