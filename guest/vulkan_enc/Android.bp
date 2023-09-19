@@ -90,6 +90,7 @@ cc_defaults {
         "vk_cmd_queue_header",
         "vk_physical_device_features_header",
         "vk_physical_device_properties_header",
+        "u_format_pack_header",
     ],
     shared_libs: [
         "libandroidemu",
@@ -107,6 +108,7 @@ cc_defaults {
         "libmesa_vulkan_runtime_gfxstream",
         "libgfxstream_vk_entrypoints",
         "libmesa_util_gfxstream",
+        "libmesa_util_format_gfxstream",
         "libmesa_util_c11_gfxstream",
     ],
     cflags: [
