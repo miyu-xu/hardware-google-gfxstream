@@ -620,30 +620,6 @@ class VkEncoder {
 #ifdef VK_KHR_surface
 #endif
 #ifdef VK_KHR_swapchain
-    VkResult vkCreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo,
-                                  const VkAllocationCallbacks* pAllocator,
-                                  VkSwapchainKHR* pSwapchain, uint32_t doLock);
-    void vkDestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain,
-                               const VkAllocationCallbacks* pAllocator, uint32_t doLock);
-    VkResult vkGetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain,
-                                     uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages,
-                                     uint32_t doLock);
-    VkResult vkAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
-                                   VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex,
-                                   uint32_t doLock);
-    VkResult vkQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo,
-                               uint32_t doLock);
-    VkResult vkGetDeviceGroupPresentCapabilitiesKHR(
-        VkDevice device, VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities,
-        uint32_t doLock);
-    VkResult vkGetDeviceGroupSurfacePresentModesKHR(VkDevice device, VkSurfaceKHR surface,
-                                                    VkDeviceGroupPresentModeFlagsKHR* pModes,
-                                                    uint32_t doLock);
-    VkResult vkGetPhysicalDevicePresentRectanglesKHR(VkPhysicalDevice physicalDevice,
-                                                     VkSurfaceKHR surface, uint32_t* pRectCount,
-                                                     VkRect2D* pRects, uint32_t doLock);
-    VkResult vkAcquireNextImage2KHR(VkDevice device, const VkAcquireNextImageInfoKHR* pAcquireInfo,
-                                    uint32_t* pImageIndex, uint32_t doLock);
 #endif
 #ifdef VK_KHR_xcb_surface
 #endif
@@ -943,6 +919,8 @@ class VkEncoder {
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -1022,11 +1000,6 @@ class VkEncoder {
     void vkGetImageSubresourceLayout2EXT(VkDevice device, VkImage image,
                                          const VkImageSubresource2KHR* pSubresource,
                                          VkSubresourceLayout2KHR* pLayout, uint32_t doLock);
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-    VkResult vkReleaseSwapchainImagesEXT(VkDevice device,
-                                         const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo,
-                                         uint32_t doLock);
 #endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
@@ -1155,6 +1128,8 @@ class VkEncoder {
 #ifdef VK_EXT_load_store_op_none
 #endif
 #ifdef VK_EXT_image_compression_control_swapchain
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
    private:

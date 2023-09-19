@@ -6141,152 +6141,6 @@ void transform_fromhost_VkDeviceImageMemoryRequirements(
 #ifdef VK_KHR_surface
 #endif
 #ifdef VK_KHR_swapchain
-void transform_tohost_VkSwapchainCreateInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                               VkSwapchainCreateInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-    transform_tohost_VkExtent2D(resourceTracker, (VkExtent2D*)(&toTransform->imageExtent));
-}
-
-void transform_fromhost_VkSwapchainCreateInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                                 VkSwapchainCreateInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-    transform_fromhost_VkExtent2D(resourceTracker, (VkExtent2D*)(&toTransform->imageExtent));
-}
-
-void transform_tohost_VkPresentInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                       VkPresentInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkPresentInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                         VkPresentInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkImageSwapchainCreateInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                                    VkImageSwapchainCreateInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkImageSwapchainCreateInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                                      VkImageSwapchainCreateInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkBindImageMemorySwapchainInfoKHR(
-    VkDecoderGlobalState* resourceTracker, VkBindImageMemorySwapchainInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkBindImageMemorySwapchainInfoKHR(
-    VkDecoderGlobalState* resourceTracker, VkBindImageMemorySwapchainInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkAcquireNextImageInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                                VkAcquireNextImageInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkAcquireNextImageInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                                  VkAcquireNextImageInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkDeviceGroupPresentCapabilitiesKHR(
-    VkDecoderGlobalState* resourceTracker, VkDeviceGroupPresentCapabilitiesKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkDeviceGroupPresentCapabilitiesKHR(
-    VkDecoderGlobalState* resourceTracker, VkDeviceGroupPresentCapabilitiesKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkDeviceGroupPresentInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                                  VkDeviceGroupPresentInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkDeviceGroupPresentInfoKHR(VkDecoderGlobalState* resourceTracker,
-                                                    VkDeviceGroupPresentInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkDeviceGroupSwapchainCreateInfoKHR(
-    VkDecoderGlobalState* resourceTracker, VkDeviceGroupSwapchainCreateInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkDeviceGroupSwapchainCreateInfoKHR(
-    VkDecoderGlobalState* resourceTracker, VkDeviceGroupSwapchainCreateInfoKHR* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
 #endif
 #ifdef VK_KHR_xcb_surface
 #endif
@@ -7078,6 +6932,48 @@ void transform_fromhost_VkPipelineRasterizationStateStreamCreateInfoEXT(
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+void transform_tohost_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VkDecoderGlobalState* resourceTracker,
+    VkPhysicalDeviceDepthClipEnableFeaturesEXT* toTransform) {
+    (void)resourceTracker;
+    (void)toTransform;
+    if (toTransform->pNext) {
+        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
+    }
+}
+
+void transform_fromhost_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VkDecoderGlobalState* resourceTracker,
+    VkPhysicalDeviceDepthClipEnableFeaturesEXT* toTransform) {
+    (void)resourceTracker;
+    (void)toTransform;
+    if (toTransform->pNext) {
+        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
+    }
+}
+
+void transform_tohost_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VkDecoderGlobalState* resourceTracker,
+    VkPipelineRasterizationDepthClipStateCreateInfoEXT* toTransform) {
+    (void)resourceTracker;
+    (void)toTransform;
+    if (toTransform->pNext) {
+        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
+    }
+}
+
+void transform_fromhost_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VkDecoderGlobalState* resourceTracker,
+    VkPipelineRasterizationDepthClipStateCreateInfoEXT* toTransform) {
+    (void)resourceTracker;
+    (void)toTransform;
+    if (toTransform->pNext) {
+        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
+    }
+}
+
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -7510,118 +7406,6 @@ void transform_tohost_VkHostImageCopyDevicePerformanceQueryEXT(
 
 void transform_fromhost_VkHostImageCopyDevicePerformanceQueryEXT(
     VkDecoderGlobalState* resourceTracker, VkHostImageCopyDevicePerformanceQueryEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-void transform_tohost_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VkDecoderGlobalState* resourceTracker,
-    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VkDecoderGlobalState* resourceTracker,
-    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkSwapchainPresentFenceInfoEXT(VkDecoderGlobalState* resourceTracker,
-                                                     VkSwapchainPresentFenceInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkSwapchainPresentFenceInfoEXT(
-    VkDecoderGlobalState* resourceTracker, VkSwapchainPresentFenceInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkSwapchainPresentModesCreateInfoEXT(
-    VkDecoderGlobalState* resourceTracker, VkSwapchainPresentModesCreateInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkSwapchainPresentModesCreateInfoEXT(
-    VkDecoderGlobalState* resourceTracker, VkSwapchainPresentModesCreateInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkSwapchainPresentModeInfoEXT(VkDecoderGlobalState* resourceTracker,
-                                                    VkSwapchainPresentModeInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkSwapchainPresentModeInfoEXT(VkDecoderGlobalState* resourceTracker,
-                                                      VkSwapchainPresentModeInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkSwapchainPresentScalingCreateInfoEXT(
-    VkDecoderGlobalState* resourceTracker, VkSwapchainPresentScalingCreateInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkSwapchainPresentScalingCreateInfoEXT(
-    VkDecoderGlobalState* resourceTracker, VkSwapchainPresentScalingCreateInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_fromhost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_tohost_VkReleaseSwapchainImagesInfoEXT(
-    VkDecoderGlobalState* resourceTracker, VkReleaseSwapchainImagesInfoEXT* toTransform) {
-    (void)resourceTracker;
-    (void)toTransform;
-    if (toTransform->pNext) {
-        transform_tohost_extension_struct(resourceTracker, (void*)(toTransform->pNext));
-    }
-}
-
-void transform_fromhost_VkReleaseSwapchainImagesInfoEXT(
-    VkDecoderGlobalState* resourceTracker, VkReleaseSwapchainImagesInfoEXT* toTransform) {
     (void)resourceTracker;
     (void)toTransform;
     if (toTransform->pNext) {
@@ -8065,6 +7849,8 @@ void transform_fromhost_VkPhysicalDeviceImageCompressionControlSwapchainFeatures
     }
 }
 
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 void transform_tohost_extension_struct(VkDecoderGlobalState* resourceTracker,
                                        void* structExtension_out) {
@@ -8737,32 +8523,6 @@ void transform_tohost_extension_struct(VkDecoderGlobalState* resourceTracker,
             break;
         }
 #endif
-#ifdef VK_KHR_swapchain
-        case VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR: {
-            transform_tohost_VkImageSwapchainCreateInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkImageSwapchainCreateInfoKHR*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR: {
-            transform_tohost_VkBindImageMemorySwapchainInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkBindImageMemorySwapchainInfoKHR*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR: {
-            transform_tohost_VkDeviceGroupPresentInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkDeviceGroupPresentInfoKHR*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR: {
-            transform_tohost_VkDeviceGroupSwapchainCreateInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkDeviceGroupSwapchainCreateInfoKHR*>(structExtension_out));
-            break;
-        }
-#endif
 #ifdef VK_KHR_dynamic_rendering
         case VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR: {
             transform_tohost_VkRenderingFragmentShadingRateAttachmentInfoKHR(
@@ -8866,6 +8626,21 @@ void transform_tohost_extension_struct(VkDecoderGlobalState* resourceTracker,
             break;
         }
 #endif
+#ifdef VK_EXT_depth_clip_enable
+        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_ENABLE_FEATURES_EXT: {
+            transform_tohost_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+                resourceTracker,
+                reinterpret_cast<VkPhysicalDeviceDepthClipEnableFeaturesEXT*>(structExtension_out));
+            break;
+        }
+        case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT: {
+            transform_tohost_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+                resourceTracker,
+                reinterpret_cast<VkPipelineRasterizationDepthClipStateCreateInfoEXT*>(
+                    structExtension_out));
+            break;
+        }
+#endif
 #ifdef VK_EXT_provoking_vertex
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_FEATURES_EXT: {
             transform_tohost_VkPhysicalDeviceProvokingVertexFeaturesEXT(
@@ -8946,39 +8721,6 @@ void transform_tohost_extension_struct(VkDecoderGlobalState* resourceTracker,
             transform_tohost_VkHostImageCopyDevicePerformanceQueryEXT(
                 resourceTracker,
                 reinterpret_cast<VkHostImageCopyDevicePerformanceQueryEXT*>(structExtension_out));
-            break;
-        }
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT: {
-            transform_tohost_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-                resourceTracker,
-                reinterpret_cast<VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT*>(
-                    structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT: {
-            transform_tohost_VkSwapchainPresentFenceInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentFenceInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT: {
-            transform_tohost_VkSwapchainPresentModesCreateInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentModesCreateInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT: {
-            transform_tohost_VkSwapchainPresentModeInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentModeInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT: {
-            transform_tohost_VkSwapchainPresentScalingCreateInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentScalingCreateInfoEXT*>(structExtension_out));
             break;
         }
 #endif
@@ -9805,32 +9547,6 @@ void transform_fromhost_extension_struct(VkDecoderGlobalState* resourceTracker,
             break;
         }
 #endif
-#ifdef VK_KHR_swapchain
-        case VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR: {
-            transform_fromhost_VkImageSwapchainCreateInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkImageSwapchainCreateInfoKHR*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR: {
-            transform_fromhost_VkBindImageMemorySwapchainInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkBindImageMemorySwapchainInfoKHR*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR: {
-            transform_fromhost_VkDeviceGroupPresentInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkDeviceGroupPresentInfoKHR*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR: {
-            transform_fromhost_VkDeviceGroupSwapchainCreateInfoKHR(
-                resourceTracker,
-                reinterpret_cast<VkDeviceGroupSwapchainCreateInfoKHR*>(structExtension_out));
-            break;
-        }
-#endif
 #ifdef VK_KHR_dynamic_rendering
         case VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR: {
             transform_fromhost_VkRenderingFragmentShadingRateAttachmentInfoKHR(
@@ -9934,6 +9650,21 @@ void transform_fromhost_extension_struct(VkDecoderGlobalState* resourceTracker,
             break;
         }
 #endif
+#ifdef VK_EXT_depth_clip_enable
+        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_ENABLE_FEATURES_EXT: {
+            transform_fromhost_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+                resourceTracker,
+                reinterpret_cast<VkPhysicalDeviceDepthClipEnableFeaturesEXT*>(structExtension_out));
+            break;
+        }
+        case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT: {
+            transform_fromhost_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+                resourceTracker,
+                reinterpret_cast<VkPipelineRasterizationDepthClipStateCreateInfoEXT*>(
+                    structExtension_out));
+            break;
+        }
+#endif
 #ifdef VK_EXT_provoking_vertex
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_FEATURES_EXT: {
             transform_fromhost_VkPhysicalDeviceProvokingVertexFeaturesEXT(
@@ -10014,39 +9745,6 @@ void transform_fromhost_extension_struct(VkDecoderGlobalState* resourceTracker,
             transform_fromhost_VkHostImageCopyDevicePerformanceQueryEXT(
                 resourceTracker,
                 reinterpret_cast<VkHostImageCopyDevicePerformanceQueryEXT*>(structExtension_out));
-            break;
-        }
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT: {
-            transform_fromhost_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-                resourceTracker,
-                reinterpret_cast<VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT*>(
-                    structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT: {
-            transform_fromhost_VkSwapchainPresentFenceInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentFenceInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT: {
-            transform_fromhost_VkSwapchainPresentModesCreateInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentModesCreateInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT: {
-            transform_fromhost_VkSwapchainPresentModeInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentModeInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT: {
-            transform_fromhost_VkSwapchainPresentScalingCreateInfoEXT(
-                resourceTracker,
-                reinterpret_cast<VkSwapchainPresentScalingCreateInfoEXT*>(structExtension_out));
             break;
         }
 #endif
