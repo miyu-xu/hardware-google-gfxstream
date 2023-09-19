@@ -42,6 +42,7 @@
 #include "vk_command_pool.h"
 #include "vk_descriptor_set_layout.h"
 #include "vk_device.h"
+#include "vk_device_memory.h"
 #include "vk_image.h"
 #include "vk_instance.h"
 #include "vk_log.h"
@@ -50,6 +51,15 @@
 #include "vk_pipeline_layout.h"
 #include "vk_queue.h"
 #include "vk_sync.h"
+#include "vk_render_pass.h"
+#include "vk_framebuffer.h"
+#include "vk_buffer_view.h"
+#include "vk_sampler.h"
+#include "vk_fence.h"
+#include "vk_semaphore.h"
+#include "vk_query_pool.h"
+#include "vk_ycbcr_conversion.h"
+#include "vk_descriptor_update_template.h"
 
 #include "vulkan/wsi/wsi_common.h"
 
@@ -60,11 +70,6 @@
 
 #include "gfxstream_vk_entrypoints.h"
 
-struct gfxstream_vk_physical_device {
-   struct vk_physical_device vk;
-   struct wsi_device wsi_device;
-   VkPhysicalDevice internal_object;
-};
 
 struct gfxstream_vk_instance {
    struct vk_instance vk;
@@ -72,10 +77,19 @@ struct gfxstream_vk_instance {
    VkInstance internal_object;
 };
 
-struct gfxstream_vk_pipeline_cache {
-   struct vk_object_base base;
-   VkAllocationCallbacks alloc;
-   VkInstance internal_object;
+struct gfxstream_vk_physical_device {
+   struct vk_physical_device vk;
+   struct gfxstream_vk_instance *instance;
+   VkPhysicalDevice internal_object;
+};
+
+struct gfxstream_vk_device {
+   struct vk_device vk;
+
+   struct wsi_device wsi_device;
+   struct vk_device_dispatch_table cmd_dispatch;
+   struct gfxstream_vk_physical_device *physical_device;
+   VkDevice internal_object;
 };
 
 struct gfxstream_vk_queue {
@@ -84,17 +98,13 @@ struct gfxstream_vk_queue {
    VkQueue internal_object;
 };
 
-struct gfxstream_vk_device {
-   struct vk_device vk;
-
-   struct vk_device_dispatch_table cmd_dispatch;
-   struct gfxstream_vk_instance *instance;
-   struct gfxstream_vk_physical_device *physical_device;
-   VkDevice internal_object;
+struct gfxstream_vk_pipeline_cache {
+   struct vk_object_base base;
+   VkPipelineCache internal_object;
 };
 
 struct gfxstream_vk_device_memory {
-   struct vk_object_base base;
+   struct vk_device_memory vk;
    VkDeviceMemory internal_object;
 };
 
@@ -123,12 +133,12 @@ struct gfxstream_vk_buffer {
    VkBuffer internal_object;
 };
 
-struct gfxstream_vk_cmd_pool {
+struct gfxstream_vk_command_pool {
    struct vk_command_pool vk;
    VkCommandPool internal_object;
 };
 
-struct gfxstream_vk_cmd_buffer {
+struct gfxstream_vk_command_buffer {
    struct vk_command_buffer vk;
    VkCommandBuffer internal_object;
 };
@@ -154,12 +164,12 @@ struct gfxstream_vk_image_view {
 };
 
 struct gfxstream_vk_sampler {
-   struct vk_object_base base;
+   struct vk_sampler vk;
    VkSampler internal_object;
 };
 
 struct gfxstream_vk_buffer_view {
-   struct vk_object_base base;
+   struct vk_buffer_view vk;
    VkBufferView internal_object;
 };
 
@@ -173,7 +183,37 @@ struct gfxstream_vk_render_pass {
    VkRenderPass internal_object;
 };
 
-VK_DEFINE_HANDLE_CASTS(gfxstream_vk_cmd_buffer, vk.base, VkCommandBuffer,
+struct gfxstream_vk_fence {
+   struct vk_fence vk;
+   VkFence internal_object;
+};
+
+struct gfxstream_vk_semaphore {
+   struct vk_semaphore vk;
+   VkSemaphore internal_object;
+};
+
+struct gfxstream_vk_query_pool {
+   struct vk_query_pool vk;
+   VkQueryPool internal_object;
+};
+
+struct gfxstream_vk_shader_module {
+   struct vk_object_base vk;
+   VkShaderModule internal_object;
+};
+
+struct gfxstream_vk_sampler_ycbcr_conversion {
+   struct vk_ycbcr_conversion vk;
+   VkSamplerYcbcrConversion internal_object;
+};
+
+struct gfxstream_vk_descriptor_update_template {
+   struct vk_descriptor_update_template vk;
+   VkDescriptorUpdateTemplate internal_object;
+};
+
+VK_DEFINE_HANDLE_CASTS(gfxstream_vk_command_buffer, vk.base, VkCommandBuffer,
                        VK_OBJECT_TYPE_COMMAND_BUFFER)
 VK_DEFINE_HANDLE_CASTS(gfxstream_vk_device, vk.base, VkDevice, VK_OBJECT_TYPE_DEVICE)
 VK_DEFINE_HANDLE_CASTS(gfxstream_vk_instance, vk.base, VkInstance,
@@ -182,11 +222,11 @@ VK_DEFINE_HANDLE_CASTS(gfxstream_vk_physical_device, vk.base, VkPhysicalDevice,
                        VK_OBJECT_TYPE_PHYSICAL_DEVICE)
 VK_DEFINE_HANDLE_CASTS(gfxstream_vk_queue, vk.base, VkQueue, VK_OBJECT_TYPE_QUEUE)
 
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_cmd_pool, vk.base, VkCommandPool,
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_command_pool, vk.base, VkCommandPool,
                                VK_OBJECT_TYPE_COMMAND_POOL)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_buffer, vk.base, VkBuffer,
                                VK_OBJECT_TYPE_BUFFER)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_buffer_view, base, VkBufferView,
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_buffer_view, vk.base, VkBufferView,
                                VK_OBJECT_TYPE_BUFFER_VIEW)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_pool, base, VkDescriptorPool,
                                VK_OBJECT_TYPE_DESCRIPTOR_POOL)
@@ -195,7 +235,7 @@ VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_set, base, VkDescriptorSe
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_set_layout, vk.base,
                                VkDescriptorSetLayout,
                                VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_device_memory, base, VkDeviceMemory,
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_device_memory, vk.base, VkDeviceMemory,
                                VK_OBJECT_TYPE_DEVICE_MEMORY)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_event, base, VkEvent, VK_OBJECT_TYPE_EVENT)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_framebuffer, base, VkFramebuffer,
@@ -212,9 +252,20 @@ VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_pipeline_layout, vk.base, VkPipeline
                                VK_OBJECT_TYPE_PIPELINE_LAYOUT)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_render_pass, base, VkRenderPass,
                                VK_OBJECT_TYPE_RENDER_PASS)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_sampler, base, VkSampler,
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_sampler, vk.base, VkSampler,
                                VK_OBJECT_TYPE_SAMPLER)
-
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_fence, vk.base, VkFence,
+                               VK_OBJECT_TYPE_FENCE)
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_semaphore, vk.base, VkSemaphore,
+                               VK_OBJECT_TYPE_SEMAPHORE)
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_query_pool, vk.base, VkQueryPool,
+                               VK_OBJECT_TYPE_QUERY_POOL)
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_shader_module, vk, VkShaderModule,
+                               VK_OBJECT_TYPE_SHADER_MODULE)
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_sampler_ycbcr_conversion, vk.base, VkSamplerYcbcrConversion,
+                               VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION)
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_update_template, vk.base, VkDescriptorUpdateTemplate,
+                               VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE)
 //VkResult gfxstream_vk_wsi_init(struct gfxstream_vk_physical_device *physical_device);
 
 //void gfxstream_vk_wsi_finish(struct gfxstream_vk_physical_device *physical_device);
