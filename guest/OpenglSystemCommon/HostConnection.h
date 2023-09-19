@@ -178,8 +178,8 @@ public:
     gfxstream::Gralloc* grallocHelper() { return m_grallocHelper; }
     void setGrallocHelperForTesting(gfxstream::Gralloc* gralloc) { m_grallocHelper = gralloc; }
 
-    gfxstream::SyncHelper* syncHelper() { return m_syncHelper; }
-    void setSyncHelperForTesting(gfxstream::SyncHelper* sync) { m_syncHelper = sync;}
+    gfxstream::SyncHelper* syncHelper() { return m_syncHelper.get(); }
+    void setSyncHelperForTesting(gfxstream::SyncHelper* sync) { m_syncHelper.reset(sync); }
 
     gfxstream::ANativeWindowHelper* anwHelper() { return m_anwHelper; }
     void setANativeWindowHelperForTesting(gfxstream::ANativeWindowHelper* anw) { m_anwHelper = anw; }
@@ -262,7 +262,7 @@ private:
     ChecksumCalculator m_checksumHelper;
     gfxstream::ANativeWindowHelper* m_anwHelper = nullptr;
     gfxstream::Gralloc* m_grallocHelper = nullptr;
-    gfxstream::SyncHelper* m_syncHelper = nullptr;
+    std::unique_ptr<gfxstream::SyncHelper> m_syncHelper;
     ProcessPipe* m_processPipe = nullptr;
     std::string m_hostExtensions;
     bool m_noHostError;
