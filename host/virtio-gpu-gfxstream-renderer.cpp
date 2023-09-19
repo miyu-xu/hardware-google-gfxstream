@@ -2506,4 +2506,12 @@ VG_EXPORT void stream_renderer_set_service_ops(const GoldfishPipeServiceOps* ops
 
 #endif  // CONFIG_AEMU
 
+static uint32_t sResourceId = 1;
+
+VG_EXPORT int stream_renderer_assign_id(uint32_t *out_res_handle) {
+    *out_res_handle = sResourceId;
+    sResourceId++;
+    return 0;
+}
+
 }  // extern "C"
