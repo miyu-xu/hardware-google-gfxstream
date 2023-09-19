@@ -67,6 +67,7 @@ TEST_P(GfxstreamEnd2EndVkTest, ImportAHB) {
     const VkNativeBufferANDROID imageNativeBufferInfo = {
         .sType = VK_STRUCTURE_TYPE_NATIVE_BUFFER_ANDROID,
         .handle = ahb->asBufferHandle(),
+        .usage3 = ahb->getResourceId(),
     };
 
     auto vkQueueSignalReleaseImageANDROID = PFN_vkQueueSignalReleaseImageANDROID(
@@ -216,6 +217,7 @@ TEST_P(GfxstreamEnd2EndVkTest, DeferredImportAHB) {
     const VkNativeBufferANDROID imageNativeBufferInfo = {
         .sType = VK_STRUCTURE_TYPE_NATIVE_BUFFER_ANDROID,
         .handle = ahb->asBufferHandle(),
+        .usage3 = ahb->getResourceId(),
     };
 
     const vkhpp::BindImageMemoryInfo imageBindMemoryInfo = {

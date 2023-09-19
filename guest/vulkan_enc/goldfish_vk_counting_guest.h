@@ -1036,34 +1036,6 @@ void count_VkDeviceImageMemoryRequirements(uint32_t featureBits, VkStructureType
 #ifdef VK_KHR_surface
 #endif
 #ifdef VK_KHR_swapchain
-void count_VkSwapchainCreateInfoKHR(uint32_t featureBits, VkStructureType rootType,
-                                    const VkSwapchainCreateInfoKHR* toCount, size_t* count);
-
-void count_VkPresentInfoKHR(uint32_t featureBits, VkStructureType rootType,
-                            const VkPresentInfoKHR* toCount, size_t* count);
-
-void count_VkImageSwapchainCreateInfoKHR(uint32_t featureBits, VkStructureType rootType,
-                                         const VkImageSwapchainCreateInfoKHR* toCount,
-                                         size_t* count);
-
-void count_VkBindImageMemorySwapchainInfoKHR(uint32_t featureBits, VkStructureType rootType,
-                                             const VkBindImageMemorySwapchainInfoKHR* toCount,
-                                             size_t* count);
-
-void count_VkAcquireNextImageInfoKHR(uint32_t featureBits, VkStructureType rootType,
-                                     const VkAcquireNextImageInfoKHR* toCount, size_t* count);
-
-void count_VkDeviceGroupPresentCapabilitiesKHR(uint32_t featureBits, VkStructureType rootType,
-                                               const VkDeviceGroupPresentCapabilitiesKHR* toCount,
-                                               size_t* count);
-
-void count_VkDeviceGroupPresentInfoKHR(uint32_t featureBits, VkStructureType rootType,
-                                       const VkDeviceGroupPresentInfoKHR* toCount, size_t* count);
-
-void count_VkDeviceGroupSwapchainCreateInfoKHR(uint32_t featureBits, VkStructureType rootType,
-                                               const VkDeviceGroupSwapchainCreateInfoKHR* toCount,
-                                               size_t* count);
-
 #endif
 #ifdef VK_KHR_xcb_surface
 #endif
@@ -1540,6 +1512,16 @@ DEFINE_ALIAS_FUNCTION(count_VkPhysicalDeviceTextureCompressionASTCHDRFeatures,
                       count_VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT)
 
 #endif
+#ifdef VK_EXT_depth_clip_enable
+void count_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    uint32_t featureBits, VkStructureType rootType,
+    const VkPhysicalDeviceDepthClipEnableFeaturesEXT* toCount, size_t* count);
+
+void count_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    uint32_t featureBits, VkStructureType rootType,
+    const VkPipelineRasterizationDepthClipStateCreateInfoEXT* toCount, size_t* count);
+
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -1669,32 +1651,6 @@ void count_VkHostImageCopyDevicePerformanceQueryEXT(
 DEFINE_ALIAS_FUNCTION(count_VkSubresourceLayout2KHR, count_VkSubresourceLayout2EXT)
 
 DEFINE_ALIAS_FUNCTION(count_VkImageSubresource2KHR, count_VkImageSubresource2EXT)
-
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-void count_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    uint32_t featureBits, VkStructureType rootType,
-    const VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toCount, size_t* count);
-
-void count_VkSwapchainPresentFenceInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                          const VkSwapchainPresentFenceInfoEXT* toCount,
-                                          size_t* count);
-
-void count_VkSwapchainPresentModesCreateInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                                const VkSwapchainPresentModesCreateInfoEXT* toCount,
-                                                size_t* count);
-
-void count_VkSwapchainPresentModeInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                         const VkSwapchainPresentModeInfoEXT* toCount,
-                                         size_t* count);
-
-void count_VkSwapchainPresentScalingCreateInfoEXT(
-    uint32_t featureBits, VkStructureType rootType,
-    const VkSwapchainPresentScalingCreateInfoEXT* toCount, size_t* count);
-
-void count_VkReleaseSwapchainImagesInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                           const VkReleaseSwapchainImagesInfoEXT* toCount,
-                                           size_t* count);
 
 #endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
@@ -1827,6 +1783,8 @@ void count_VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT(
     uint32_t featureBits, VkStructureType rootType,
     const VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT* toCount, size_t* count);
 
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
 }  // namespace vk

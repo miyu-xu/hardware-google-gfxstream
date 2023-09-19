@@ -817,29 +817,6 @@ void handlemap_VkDeviceImageMemoryRequirements(VulkanHandleMapping* handlemap,
 #ifdef VK_KHR_surface
 #endif
 #ifdef VK_KHR_swapchain
-void handlemap_VkSwapchainCreateInfoKHR(VulkanHandleMapping* handlemap,
-                                        VkSwapchainCreateInfoKHR* toMap);
-
-void handlemap_VkPresentInfoKHR(VulkanHandleMapping* handlemap, VkPresentInfoKHR* toMap);
-
-void handlemap_VkImageSwapchainCreateInfoKHR(VulkanHandleMapping* handlemap,
-                                             VkImageSwapchainCreateInfoKHR* toMap);
-
-void handlemap_VkBindImageMemorySwapchainInfoKHR(VulkanHandleMapping* handlemap,
-                                                 VkBindImageMemorySwapchainInfoKHR* toMap);
-
-void handlemap_VkAcquireNextImageInfoKHR(VulkanHandleMapping* handlemap,
-                                         VkAcquireNextImageInfoKHR* toMap);
-
-void handlemap_VkDeviceGroupPresentCapabilitiesKHR(VulkanHandleMapping* handlemap,
-                                                   VkDeviceGroupPresentCapabilitiesKHR* toMap);
-
-void handlemap_VkDeviceGroupPresentInfoKHR(VulkanHandleMapping* handlemap,
-                                           VkDeviceGroupPresentInfoKHR* toMap);
-
-void handlemap_VkDeviceGroupSwapchainCreateInfoKHR(VulkanHandleMapping* handlemap,
-                                                   VkDeviceGroupSwapchainCreateInfoKHR* toMap);
-
 #endif
 #ifdef VK_KHR_xcb_surface
 #endif
@@ -1302,6 +1279,14 @@ DEFINE_ALIAS_FUNCTION(handlemap_VkPhysicalDeviceTextureCompressionASTCHDRFeature
                       handlemap_VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT)
 
 #endif
+#ifdef VK_EXT_depth_clip_enable
+void handlemap_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VulkanHandleMapping* handlemap, VkPhysicalDeviceDepthClipEnableFeaturesEXT* toMap);
+
+void handlemap_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VulkanHandleMapping* handlemap, VkPipelineRasterizationDepthClipStateCreateInfoEXT* toMap);
+
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -1422,26 +1407,6 @@ DEFINE_ALIAS_FUNCTION(handlemap_VkSubresourceLayout2KHR, handlemap_VkSubresource
 DEFINE_ALIAS_FUNCTION(handlemap_VkImageSubresource2KHR, handlemap_VkImageSubresource2EXT)
 
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void handlemap_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VulkanHandleMapping* handlemap, VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toMap);
-
-void handlemap_VkSwapchainPresentFenceInfoEXT(VulkanHandleMapping* handlemap,
-                                              VkSwapchainPresentFenceInfoEXT* toMap);
-
-void handlemap_VkSwapchainPresentModesCreateInfoEXT(VulkanHandleMapping* handlemap,
-                                                    VkSwapchainPresentModesCreateInfoEXT* toMap);
-
-void handlemap_VkSwapchainPresentModeInfoEXT(VulkanHandleMapping* handlemap,
-                                             VkSwapchainPresentModeInfoEXT* toMap);
-
-void handlemap_VkSwapchainPresentScalingCreateInfoEXT(
-    VulkanHandleMapping* handlemap, VkSwapchainPresentScalingCreateInfoEXT* toMap);
-
-void handlemap_VkReleaseSwapchainImagesInfoEXT(VulkanHandleMapping* handlemap,
-                                               VkReleaseSwapchainImagesInfoEXT* toMap);
-
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 DEFINE_ALIAS_FUNCTION(handlemap_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures,
                       handlemap_VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT)
@@ -1556,6 +1521,8 @@ void handlemap_VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT(
     VulkanHandleMapping* handlemap,
     VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT* toMap);
 
+#endif
+#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
 }  // namespace vk
