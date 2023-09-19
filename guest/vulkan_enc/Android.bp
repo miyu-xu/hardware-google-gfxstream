@@ -45,6 +45,7 @@ cc_defaults {
         "libdrm",
         "libGoldfishAddressSpace",
         "libgfxstream_guest_gralloc",
+        "libmesa_util_gfxstream",
     ],
     cflags: [
         "-DLOG_TAG=\"goldfish_vulkan\"",
