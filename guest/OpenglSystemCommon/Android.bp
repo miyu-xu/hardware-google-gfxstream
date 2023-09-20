@@ -139,6 +139,12 @@ cc_defaults {
     ],
     target: {
         android: {
+            header_libs: [
+                "gfxstream_opengl_headers",
+            ],
+            export_header_lib_headers: [
+                "gfxstream_opengl_headers",
+            ],
             shared_libs: [
                 "libnativewindow",
                 "libsync",
