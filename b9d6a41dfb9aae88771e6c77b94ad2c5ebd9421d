@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "27453381_5a7ddf4d",
+        "filename": "codegen/vulkan/vulkan-docs/scripts/cereal/decoder.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 770,
+      "author": {
+        "id": 1097044
+      },
+      "writtenOn": "2023-09-22T17:52:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4f76f024_30799b94",
+      "range": {
+        "startLine": 770,
+        "startChar": 8,
+        "endLine": 770,
+        "endChar": 12
+      },
+      "revId": "b9d6a41dfb9aae88771e6c77b94ad2c5ebd9421d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "91af5cf8_6faa2361",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-09-22T14:36:05Z",
       "side": 1,
       "message": "nit: extra whitespace here and other places found by lint.",
+      "range": {
+        "startLine": 330,
+        "startChar": 66,
+        "endLine": 330,
+        "endChar": 67
+      },
+      "revId": "b9d6a41dfb9aae88771e6c77b94ad2c5ebd9421d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dcfac209_a6b9810b",
+        "filename": "host/vulkan/VkDecoderGlobalState.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1097044
+      },
+      "writtenOn": "2023-09-22T17:52:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91af5cf8_6faa2361",
       "range": {
         "startLine": 330,
         "startChar": 66,
