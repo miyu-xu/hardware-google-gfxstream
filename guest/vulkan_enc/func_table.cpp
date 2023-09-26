@@ -162,21 +162,6 @@ VkResult gfxstream_vk_EnumerateDeviceLayerProperties(VkPhysicalDevice physicalDe
     }
     return vkEnumerateDeviceLayerProperties_VkResult_return;
 }
-VkResult gfxstream_vk_QueueSubmit(VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits,
-                                  VkFence fence) {
-    AEMU_SCOPED_TRACE("vkQueueSubmit");
-    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
-    VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
-    VkResult vkQueueSubmit_VkResult_return = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
-        auto resources = gfxstream::vk::ResourceTracker::get();
-        vkQueueSubmit_VkResult_return =
-            resources->on_vkQueueSubmit(vkEnc, VK_SUCCESS, gfxstream_queue->internal_object,
-                                        submitCount, pSubmits, gfxstream_fence->internal_object);
-    }
-    return vkQueueSubmit_VkResult_return;
-}
 VkResult gfxstream_vk_QueueWaitIdle(VkQueue queue) {
     AEMU_SCOPED_TRACE("vkQueueWaitIdle");
     VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
@@ -382,20 +367,6 @@ void gfxstream_vk_GetPhysicalDeviceSparseImageFormatProperties(
             pPropertyCount, pProperties, true /* do lock */);
     }
 }
-VkResult gfxstream_vk_QueueBindSparse(VkQueue queue, uint32_t bindInfoCount,
-                                      const VkBindSparseInfo* pBindInfo, VkFence fence) {
-    AEMU_SCOPED_TRACE("vkQueueBindSparse");
-    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
-    VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
-    VkResult vkQueueBindSparse_VkResult_return = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
-        vkQueueBindSparse_VkResult_return =
-            vkEnc->vkQueueBindSparse(gfxstream_queue->internal_object, bindInfoCount, pBindInfo,
-                                     gfxstream_fence->internal_object, true /* do lock */);
-    }
-    return vkQueueBindSparse_VkResult_return;
-}
 VkResult gfxstream_vk_CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                                   const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
     AEMU_SCOPED_TRACE("vkCreateFence");
@@ -433,14 +404,14 @@ void gfxstream_vk_DestroyFence(VkDevice device, VkFence fence,
 VkResult gfxstream_vk_ResetFences(VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
     AEMU_SCOPED_TRACE("vkResetFences");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    std::vector<VkFence> internal_pFences(fenceCount);
-    for (uint32_t i = 0; i < fenceCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_pFences, pFences[i]);
-        internal_pFences[i] = gfxstream_pFences->internal_object;
-    }
     VkResult vkResetFences_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkFence> internal_pFences(fenceCount);
+        for (uint32_t i = 0; i < fenceCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_pFences, pFences[i]);
+            internal_pFences[i] = gfxstream_pFences->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkResetFences_VkResult_return =
             resources->on_vkResetFences(vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
@@ -465,14 +436,14 @@ VkResult gfxstream_vk_WaitForFences(VkDevice device, uint32_t fenceCount, const 
                                     VkBool32 waitAll, uint64_t timeout) {
     AEMU_SCOPED_TRACE("vkWaitForFences");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    std::vector<VkFence> internal_pFences(fenceCount);
-    for (uint32_t i = 0; i < fenceCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_pFences, pFences[i]);
-        internal_pFences[i] = gfxstream_pFences->internal_object;
-    }
     VkResult vkWaitForFences_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkFence> internal_pFences(fenceCount);
+        for (uint32_t i = 0; i < fenceCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_pFences, pFences[i]);
+            internal_pFences[i] = gfxstream_pFences->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkWaitForFences_VkResult_return =
             resources->on_vkWaitForFences(vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
@@ -879,14 +850,14 @@ VkResult gfxstream_vk_MergePipelineCaches(VkDevice device, VkPipelineCache dstCa
     AEMU_SCOPED_TRACE("vkMergePipelineCaches");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_dstCache, dstCache);
-    std::vector<VkPipelineCache> internal_pSrcCaches(srcCacheCount);
-    for (uint32_t i = 0; i < srcCacheCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_pSrcCaches, pSrcCaches[i]);
-        internal_pSrcCaches[i] = gfxstream_pSrcCaches->internal_object;
-    }
     VkResult vkMergePipelineCaches_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkPipelineCache> internal_pSrcCaches(srcCacheCount);
+        for (uint32_t i = 0; i < srcCacheCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_pSrcCaches, pSrcCaches[i]);
+            internal_pSrcCaches[i] = gfxstream_pSrcCaches->internal_object;
+        }
         vkMergePipelineCaches_VkResult_return = vkEnc->vkMergePipelineCaches(
             gfxstream_device->internal_object, gfxstream_dstCache->internal_object, srcCacheCount,
             internal_pSrcCaches.data(), true /* do lock */);
@@ -958,30 +929,6 @@ void gfxstream_vk_DestroyPipeline(VkDevice device, VkPipeline pipeline,
     const VkAllocationCallbacks* pMesaAllocator =
         pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     vk_free(pMesaAllocator, (void*)gfxstream_pipeline);
-}
-VkResult gfxstream_vk_CreatePipelineLayout(VkDevice device,
-                                           const VkPipelineLayoutCreateInfo* pCreateInfo,
-                                           const VkAllocationCallbacks* pAllocator,
-                                           VkPipelineLayout* pPipelineLayout) {
-    AEMU_SCOPED_TRACE("vkCreatePipelineLayout");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VkResult vkCreatePipelineLayout_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    struct gfxstream_vk_pipeline_layout* gfxstream_pPipelineLayout =
-        (struct gfxstream_vk_pipeline_layout*)vk_zalloc(pMesaAllocator,
-                                                        sizeof(struct gfxstream_vk_pipeline_layout),
-                                                        8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-    vkCreatePipelineLayout_VkResult_return =
-        gfxstream_pPipelineLayout ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == vkCreatePipelineLayout_VkResult_return) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkCreatePipelineLayout_VkResult_return = vkEnc->vkCreatePipelineLayout(
-            gfxstream_device->internal_object, pCreateInfo, pAllocator,
-            &gfxstream_pPipelineLayout->internal_object, true /* do lock */);
-    }
-    *pPipelineLayout = gfxstream_vk_pipeline_layout_to_handle(gfxstream_pPipelineLayout);
-    return vkCreatePipelineLayout_VkResult_return;
 }
 void gfxstream_vk_DestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout,
                                         const VkAllocationCallbacks* pAllocator) {
@@ -1132,43 +1079,6 @@ VkResult gfxstream_vk_ResetDescriptorPool(VkDevice device, VkDescriptorPool desc
             gfxstream_descriptorPool->internal_object, flags);
     }
     return vkResetDescriptorPool_VkResult_return;
-}
-void gfxstream_vk_UpdateDescriptorSets(VkDevice device, uint32_t descriptorWriteCount,
-                                       const VkWriteDescriptorSet* pDescriptorWrites,
-                                       uint32_t descriptorCopyCount,
-                                       const VkCopyDescriptorSet* pDescriptorCopies) {
-    AEMU_SCOPED_TRACE("vkUpdateDescriptorSets");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkUpdateDescriptorSets(vkEnc, gfxstream_device->internal_object,
-                                             descriptorWriteCount, pDescriptorWrites,
-                                             descriptorCopyCount, pDescriptorCopies);
-    }
-}
-VkResult gfxstream_vk_CreateFramebuffer(VkDevice device, const VkFramebufferCreateInfo* pCreateInfo,
-                                        const VkAllocationCallbacks* pAllocator,
-                                        VkFramebuffer* pFramebuffer) {
-    AEMU_SCOPED_TRACE("vkCreateFramebuffer");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VkResult vkCreateFramebuffer_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    struct gfxstream_vk_framebuffer* gfxstream_pFramebuffer =
-        (struct gfxstream_vk_framebuffer*)vk_zalloc(pMesaAllocator,
-                                                    sizeof(struct gfxstream_vk_framebuffer), 8,
-                                                    VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-    vkCreateFramebuffer_VkResult_return =
-        gfxstream_pFramebuffer ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == vkCreateFramebuffer_VkResult_return) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkCreateFramebuffer_VkResult_return = vkEnc->vkCreateFramebuffer(
-            gfxstream_device->internal_object, pCreateInfo, pAllocator,
-            &gfxstream_pFramebuffer->internal_object, true /* do lock */);
-    }
-    *pFramebuffer = gfxstream_vk_framebuffer_to_handle(gfxstream_pFramebuffer);
-    return vkCreateFramebuffer_VkResult_return;
 }
 void gfxstream_vk_DestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
                                      const VkAllocationCallbacks* pAllocator) {
@@ -1435,13 +1345,14 @@ void gfxstream_vk_CmdBindDescriptorSets(
     AEMU_SCOPED_TRACE("vkCmdBindDescriptorSets");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     VK_FROM_HANDLE(gfxstream_vk_pipeline_layout, gfxstream_layout, layout);
-    std::vector<VkDescriptorSet> internal_pDescriptorSets(descriptorSetCount);
-    for (uint32_t i = 0; i < descriptorSetCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_pDescriptorSets, pDescriptorSets[i]);
-        internal_pDescriptorSets[i] = gfxstream_pDescriptorSets->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkDescriptorSet> internal_pDescriptorSets(descriptorSetCount);
+        for (uint32_t i = 0; i < descriptorSetCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_pDescriptorSets,
+                           pDescriptorSets[i]);
+            internal_pDescriptorSets[i] = gfxstream_pDescriptorSets->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         resources->on_vkCmdBindDescriptorSets(
             vkEnc, gfxstream_commandBuffer->internal_object, pipelineBindPoint,
@@ -1466,13 +1377,13 @@ void gfxstream_vk_CmdBindVertexBuffers(VkCommandBuffer commandBuffer, uint32_t f
                                        const VkDeviceSize* pOffsets) {
     AEMU_SCOPED_TRACE("vkCmdBindVertexBuffers");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkBuffer> internal_pBuffers(bindingCount);
-    for (uint32_t i = 0; i < bindingCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
-        internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkBuffer> internal_pBuffers(bindingCount);
+        for (uint32_t i = 0; i < bindingCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
+            internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
+        }
         vkEnc->vkCmdBindVertexBuffers(gfxstream_commandBuffer->internal_object, firstBinding,
                                       bindingCount, internal_pBuffers.data(), pOffsets,
                                       true /* do lock */);
@@ -1732,13 +1643,13 @@ void gfxstream_vk_CmdWaitEvents(VkCommandBuffer commandBuffer, uint32_t eventCou
                                 const VkImageMemoryBarrier* pImageMemoryBarriers) {
     AEMU_SCOPED_TRACE("vkCmdWaitEvents");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkEvent> internal_pEvents(eventCount);
-    for (uint32_t i = 0; i < eventCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
-        internal_pEvents[i] = gfxstream_pEvents->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkEvent> internal_pEvents(eventCount);
+        for (uint32_t i = 0; i < eventCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
+            internal_pEvents[i] = gfxstream_pEvents->internal_object;
+        }
         vkEnc->vkCmdWaitEvents(gfxstream_commandBuffer->internal_object, eventCount,
                                internal_pEvents.data(), srcStageMask, dstStageMask,
                                memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
@@ -1871,13 +1782,14 @@ void gfxstream_vk_CmdExecuteCommands(VkCommandBuffer commandBuffer, uint32_t com
                                      const VkCommandBuffer* pCommandBuffers) {
     AEMU_SCOPED_TRACE("vkCmdExecuteCommands");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkCommandBuffer> internal_pCommandBuffers(commandBufferCount);
-    for (uint32_t i = 0; i < commandBufferCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_pCommandBuffers, pCommandBuffers[i]);
-        internal_pCommandBuffers[i] = gfxstream_pCommandBuffers->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkCommandBuffer> internal_pCommandBuffers(commandBufferCount);
+        for (uint32_t i = 0; i < commandBufferCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_pCommandBuffers,
+                           pCommandBuffers[i]);
+            internal_pCommandBuffers[i] = gfxstream_pCommandBuffers->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         resources->on_vkCmdExecuteCommands(vkEnc, gfxstream_commandBuffer->internal_object,
                                            commandBufferCount, internal_pCommandBuffers.data());
@@ -2364,18 +2276,6 @@ VkResult gfxstream_vk_GetSemaphoreCounterValue(VkDevice device, VkSemaphore sema
     }
     return vkGetSemaphoreCounterValue_VkResult_return;
 }
-VkResult gfxstream_vk_WaitSemaphores(VkDevice device, const VkSemaphoreWaitInfo* pWaitInfo,
-                                     uint64_t timeout) {
-    AEMU_SCOPED_TRACE("vkWaitSemaphores");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VkResult vkWaitSemaphores_VkResult_return = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkWaitSemaphores_VkResult_return = vkEnc->vkWaitSemaphores(
-            gfxstream_device->internal_object, pWaitInfo, timeout, true /* do lock */);
-    }
-    return vkWaitSemaphores_VkResult_return;
-}
 VkResult gfxstream_vk_SignalSemaphore(VkDevice device, const VkSemaphoreSignalInfo* pSignalInfo) {
     AEMU_SCOPED_TRACE("vkSignalSemaphore");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
@@ -2517,13 +2417,13 @@ void gfxstream_vk_CmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCo
                                  const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
     AEMU_SCOPED_TRACE("vkCmdWaitEvents2");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkEvent> internal_pEvents(eventCount);
-    for (uint32_t i = 0; i < eventCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
-        internal_pEvents[i] = gfxstream_pEvents->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkEvent> internal_pEvents(eventCount);
+        for (uint32_t i = 0; i < eventCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
+            internal_pEvents[i] = gfxstream_pEvents->internal_object;
+        }
         vkEnc->vkCmdWaitEvents2(gfxstream_commandBuffer->internal_object, eventCount,
                                 internal_pEvents.data(), pDependencyInfos, true /* do lock */);
     }
@@ -2697,13 +2597,13 @@ void gfxstream_vk_CmdBindVertexBuffers2(VkCommandBuffer commandBuffer, uint32_t 
                                         const VkDeviceSize* pStrides) {
     AEMU_SCOPED_TRACE("vkCmdBindVertexBuffers2");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkBuffer> internal_pBuffers(bindingCount);
-    for (uint32_t i = 0; i < bindingCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
-        internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkBuffer> internal_pBuffers(bindingCount);
+        for (uint32_t i = 0; i < bindingCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
+            internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
+        }
         vkEnc->vkCmdBindVertexBuffers2(gfxstream_commandBuffer->internal_object, firstBinding,
                                        bindingCount, internal_pBuffers.data(), pOffsets, pSizes,
                                        pStrides, true /* do lock */);
@@ -3472,13 +3372,13 @@ void gfxstream_vk_CmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t even
                                     const VkDependencyInfo* pDependencyInfos) {
     AEMU_SCOPED_TRACE("vkCmdWaitEvents2KHR");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkEvent> internal_pEvents(eventCount);
-    for (uint32_t i = 0; i < eventCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
-        internal_pEvents[i] = gfxstream_pEvents->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkEvent> internal_pEvents(eventCount);
+        for (uint32_t i = 0; i < eventCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
+            internal_pEvents[i] = gfxstream_pEvents->internal_object;
+        }
         vkEnc->vkCmdWaitEvents2KHR(gfxstream_commandBuffer->internal_object, eventCount,
                                    internal_pEvents.data(), pDependencyInfos, true /* do lock */);
     }
@@ -3734,15 +3634,15 @@ VkResult gfxstream_vk_QueueSignalReleaseImageANDROID(VkQueue queue, uint32_t wai
                                                      VkImage image, int* pNativeFenceFd) {
     AEMU_SCOPED_TRACE("vkQueueSignalReleaseImageANDROID");
     VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
-    std::vector<VkSemaphore> internal_pWaitSemaphores(waitSemaphoreCount);
-    for (uint32_t i = 0; i < waitSemaphoreCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores, pWaitSemaphores[i]);
-        internal_pWaitSemaphores[i] = gfxstream_pWaitSemaphores->internal_object;
-    }
     VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, image);
     VkResult vkQueueSignalReleaseImageANDROID_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
+        std::vector<VkSemaphore> internal_pWaitSemaphores(waitSemaphoreCount);
+        for (uint32_t i = 0; i < waitSemaphoreCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores, pWaitSemaphores[i]);
+            internal_pWaitSemaphores[i] = gfxstream_pWaitSemaphores->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkQueueSignalReleaseImageANDROID_VkResult_return =
             resources->on_vkQueueSignalReleaseImageANDROID(
@@ -3776,13 +3676,13 @@ void gfxstream_vk_CmdBindTransformFeedbackBuffersEXT(VkCommandBuffer commandBuff
                                                      const VkDeviceSize* pSizes) {
     AEMU_SCOPED_TRACE("vkCmdBindTransformFeedbackBuffersEXT");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkBuffer> internal_pBuffers(bindingCount);
-    for (uint32_t i = 0; i < bindingCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
-        internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkBuffer> internal_pBuffers(bindingCount);
+        for (uint32_t i = 0; i < bindingCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
+            internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
+        }
         vkEnc->vkCmdBindTransformFeedbackBuffersEXT(
             gfxstream_commandBuffer->internal_object, firstBinding, bindingCount,
             internal_pBuffers.data(), pOffsets, pSizes, true /* do lock */);
@@ -3795,13 +3695,13 @@ void gfxstream_vk_CmdBeginTransformFeedbackEXT(VkCommandBuffer commandBuffer,
                                                const VkDeviceSize* pCounterBufferOffsets) {
     AEMU_SCOPED_TRACE("vkCmdBeginTransformFeedbackEXT");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkBuffer> internal_pCounterBuffers(counterBufferCount);
-    for (uint32_t i = 0; i < counterBufferCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pCounterBuffers, pCounterBuffers[i]);
-        internal_pCounterBuffers[i] = gfxstream_pCounterBuffers->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkBuffer> internal_pCounterBuffers(counterBufferCount);
+        for (uint32_t i = 0; i < counterBufferCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pCounterBuffers, pCounterBuffers[i]);
+            internal_pCounterBuffers[i] = gfxstream_pCounterBuffers->internal_object;
+        }
         vkEnc->vkCmdBeginTransformFeedbackEXT(
             gfxstream_commandBuffer->internal_object, firstCounterBuffer, counterBufferCount,
             internal_pCounterBuffers.data(), pCounterBufferOffsets, true /* do lock */);
@@ -3814,13 +3714,13 @@ void gfxstream_vk_CmdEndTransformFeedbackEXT(VkCommandBuffer commandBuffer,
                                              const VkDeviceSize* pCounterBufferOffsets) {
     AEMU_SCOPED_TRACE("vkCmdEndTransformFeedbackEXT");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkBuffer> internal_pCounterBuffers(counterBufferCount);
-    for (uint32_t i = 0; i < counterBufferCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pCounterBuffers, pCounterBuffers[i]);
-        internal_pCounterBuffers[i] = gfxstream_pCounterBuffers->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkBuffer> internal_pCounterBuffers(counterBufferCount);
+        for (uint32_t i = 0; i < counterBufferCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pCounterBuffers, pCounterBuffers[i]);
+            internal_pCounterBuffers[i] = gfxstream_pCounterBuffers->internal_object;
+        }
         vkEnc->vkCmdEndTransformFeedbackEXT(
             gfxstream_commandBuffer->internal_object, firstCounterBuffer, counterBufferCount,
             internal_pCounterBuffers.data(), pCounterBufferOffsets, true /* do lock */);
@@ -4009,13 +3909,13 @@ void gfxstream_vk_CmdBindVertexBuffers2EXT(VkCommandBuffer commandBuffer, uint32
                                            const VkDeviceSize* pStrides) {
     AEMU_SCOPED_TRACE("vkCmdBindVertexBuffers2EXT");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    std::vector<VkBuffer> internal_pBuffers(bindingCount);
-    for (uint32_t i = 0; i < bindingCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
-        internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkBuffer> internal_pBuffers(bindingCount);
+        for (uint32_t i = 0; i < bindingCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_pBuffers, pBuffers[i]);
+            internal_pBuffers[i] = gfxstream_pBuffers->internal_object;
+        }
         vkEnc->vkCmdBindVertexBuffers2EXT(gfxstream_commandBuffer->internal_object, firstBinding,
                                           bindingCount, internal_pBuffers.data(), pOffsets, pSizes,
                                           pStrides, true /* do lock */);
@@ -4313,13 +4213,13 @@ void gfxstream_vk_UpdateDescriptorSetWithTemplateSizedGOOGLE(
     VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_descriptorSet, descriptorSet);
     VK_FROM_HANDLE(gfxstream_vk_descriptor_update_template, gfxstream_descriptorUpdateTemplate,
                    descriptorUpdateTemplate);
-    std::vector<VkBufferView> internal_pBufferViews(bufferViewCount);
-    for (uint32_t i = 0; i < bufferViewCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pBufferViews, pBufferViews[i]);
-        internal_pBufferViews[i] = gfxstream_pBufferViews->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferView> internal_pBufferViews(bufferViewCount);
+        for (uint32_t i = 0; i < bufferViewCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pBufferViews, pBufferViews[i]);
+            internal_pBufferViews[i] = gfxstream_pBufferViews->internal_object;
+        }
         vkEnc->vkUpdateDescriptorSetWithTemplateSizedGOOGLE(
             gfxstream_device->internal_object, gfxstream_descriptorSet->internal_object,
             gfxstream_descriptorUpdateTemplate->internal_object, imageInfoCount, bufferInfoCount,
@@ -4409,35 +4309,12 @@ void gfxstream_vk_QueueHostSyncGOOGLE(VkQueue queue, uint32_t needHostSync,
                                      true /* do lock */);
     }
 }
-void gfxstream_vk_QueueSubmitAsyncGOOGLE(VkQueue queue, uint32_t submitCount,
-                                         const VkSubmitInfo* pSubmits, VkFence fence) {
-    AEMU_SCOPED_TRACE("vkQueueSubmitAsyncGOOGLE");
-    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
-    VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
-        vkEnc->vkQueueSubmitAsyncGOOGLE(gfxstream_queue->internal_object, submitCount, pSubmits,
-                                        gfxstream_fence->internal_object, true /* do lock */);
-    }
-}
 void gfxstream_vk_QueueWaitIdleAsyncGOOGLE(VkQueue queue) {
     AEMU_SCOPED_TRACE("vkQueueWaitIdleAsyncGOOGLE");
     VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
         vkEnc->vkQueueWaitIdleAsyncGOOGLE(gfxstream_queue->internal_object, true /* do lock */);
-    }
-}
-void gfxstream_vk_QueueBindSparseAsyncGOOGLE(VkQueue queue, uint32_t bindInfoCount,
-                                             const VkBindSparseInfo* pBindInfo, VkFence fence) {
-    AEMU_SCOPED_TRACE("vkQueueBindSparseAsyncGOOGLE");
-    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
-    VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
-        vkEnc->vkQueueBindSparseAsyncGOOGLE(gfxstream_queue->internal_object, bindInfoCount,
-                                            pBindInfo, gfxstream_fence->internal_object,
-                                            true /* do lock */);
     }
 }
 void gfxstream_vk_GetLinearImageLayoutGOOGLE(VkDevice device, VkFormat format,
@@ -4474,36 +4351,6 @@ void gfxstream_vk_QueueFlushCommandsGOOGLE(VkQueue queue, VkCommandBuffer comman
                                           true /* do lock */);
     }
 }
-void gfxstream_vk_QueueCommitDescriptorSetUpdatesGOOGLE(
-    VkQueue queue, uint32_t descriptorPoolCount, const VkDescriptorPool* pDescriptorPools,
-    uint32_t descriptorSetCount, const VkDescriptorSetLayout* pSetLayouts,
-    const uint64_t* pDescriptorSetPoolIds, const uint32_t* pDescriptorSetWhichPool,
-    const uint32_t* pDescriptorSetPendingAllocation,
-    const uint32_t* pDescriptorWriteStartingIndices, uint32_t pendingDescriptorWriteCount,
-    const VkWriteDescriptorSet* pPendingDescriptorWrites) {
-    AEMU_SCOPED_TRACE("vkQueueCommitDescriptorSetUpdatesGOOGLE");
-    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
-    std::vector<VkDescriptorPool> internal_pDescriptorPools(descriptorPoolCount);
-    for (uint32_t i = 0; i < descriptorPoolCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_descriptor_pool, gfxstream_pDescriptorPools,
-                       pDescriptorPools[i]);
-        internal_pDescriptorPools[i] = gfxstream_pDescriptorPools->internal_object;
-    }
-    std::vector<VkDescriptorSetLayout> internal_pSetLayouts(descriptorSetCount);
-    for (uint32_t i = 0; i < descriptorSetCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_descriptor_set_layout, gfxstream_pSetLayouts, pSetLayouts[i]);
-        internal_pSetLayouts[i] = gfxstream_pSetLayouts->internal_object;
-    }
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
-        vkEnc->vkQueueCommitDescriptorSetUpdatesGOOGLE(
-            gfxstream_queue->internal_object, descriptorPoolCount, internal_pDescriptorPools.data(),
-            descriptorSetCount, internal_pSetLayouts.data(), pDescriptorSetPoolIds,
-            pDescriptorSetWhichPool, pDescriptorSetPendingAllocation,
-            pDescriptorWriteStartingIndices, pendingDescriptorWriteCount, pPendingDescriptorWrites,
-            true /* do lock */);
-    }
-}
 void gfxstream_vk_CollectDescriptorPoolIdsGOOGLE(VkDevice device, VkDescriptorPool descriptorPool,
                                                  uint32_t* pPoolIdCount, uint64_t* pPoolIds) {
     AEMU_SCOPED_TRACE("vkCollectDescriptorPoolIdsGOOGLE");
@@ -4522,14 +4369,14 @@ void gfxstream_vk_QueueSignalReleaseImageANDROIDAsyncGOOGLE(VkQueue queue,
                                                             VkImage image) {
     AEMU_SCOPED_TRACE("vkQueueSignalReleaseImageANDROIDAsyncGOOGLE");
     VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
-    std::vector<VkSemaphore> internal_pWaitSemaphores(waitSemaphoreCount);
-    for (uint32_t i = 0; i < waitSemaphoreCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores, pWaitSemaphores[i]);
-        internal_pWaitSemaphores[i] = gfxstream_pWaitSemaphores->internal_object;
-    }
     VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, image);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue);
+        std::vector<VkSemaphore> internal_pWaitSemaphores(waitSemaphoreCount);
+        for (uint32_t i = 0; i < waitSemaphoreCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores, pWaitSemaphores[i]);
+            internal_pWaitSemaphores[i] = gfxstream_pWaitSemaphores->internal_object;
+        }
         vkEnc->vkQueueSignalReleaseImageANDROIDAsyncGOOGLE(
             gfxstream_queue->internal_object, waitSemaphoreCount, internal_pWaitSemaphores.data(),
             gfxstream_image->internal_object, true /* do lock */);
@@ -4577,13 +4424,13 @@ void gfxstream_vk_UpdateDescriptorSetWithTemplateSized2GOOGLE(
     VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_descriptorSet, descriptorSet);
     VK_FROM_HANDLE(gfxstream_vk_descriptor_update_template, gfxstream_descriptorUpdateTemplate,
                    descriptorUpdateTemplate);
-    std::vector<VkBufferView> internal_pBufferViews(bufferViewCount);
-    for (uint32_t i = 0; i < bufferViewCount; ++i) {
-        VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pBufferViews, pBufferViews[i]);
-        internal_pBufferViews[i] = gfxstream_pBufferViews->internal_object;
-    }
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferView> internal_pBufferViews(bufferViewCount);
+        for (uint32_t i = 0; i < bufferViewCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pBufferViews, pBufferViews[i]);
+            internal_pBufferViews[i] = gfxstream_pBufferViews->internal_object;
+        }
         vkEnc->vkUpdateDescriptorSetWithTemplateSized2GOOGLE(
             gfxstream_device->internal_object, gfxstream_descriptorSet->internal_object,
             gfxstream_descriptorUpdateTemplate->internal_object, imageInfoCount, bufferInfoCount,

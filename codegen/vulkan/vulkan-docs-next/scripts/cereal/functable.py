@@ -125,8 +125,20 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkFreeDescriptorSets",
     # Mesa objects have a create (i.e. vk_buffer_create)
     # but params dont't line up in create() call
+    "vkCreateImageView",
     "vkCreateImageWithRequirementsGOOGLE",
     "vkCreateBufferWithRequirementsGOOGLE",
+
+    # TODO: Arrays in the compoundType ...
+    "vkQueueSubmit",
+    "vkQueueBindSparse",
+    "vkCreatePipelineLayout",
+    "vkUpdateDescriptorSets",
+    "vkCreateFramebuffer",
+    "vkWaitSemaphores",
+    "vkQueueSubmitAsyncGOOGLE",
+    "vkQueueBindSparseAsyncGOOGLE",
+    "vkQueueCommitDescriptorSetUpdatesGOOGLE",
 ]
 
 # TODO: handles with no equivalent gfxstream objects (yet).
@@ -183,9 +195,6 @@ def paramNameToObjectName(paramName):
 def typeNameToObjectType(typeName):
     return "gfxstream_vk_%s" % typeNameToBaseName(typeName)
 
-def translationRequired(typeName):
-    return typeName in HANDLE_TYPES and typeName not in HANDLES_DONT_TRANSLATE
-
 def mesaObjectHasCreate(typeName):
     return typeName in HANDLES_MESA_CREATE
 
@@ -198,9 +207,6 @@ def isAllocatorParam(param):
 
 def isArrayParam(param):
     return 1 == param.pointerIndirectionLevels and param.isConst
-
-def internalArrayParamName(arrayParamName):
-    return "internal_%s" % arrayParamName
 
 class VulkanFuncTable(VulkanWrapperGenerator):
     def __init__(self, module, typeInfo):
@@ -236,6 +242,24 @@ class VulkanFuncTable(VulkanWrapperGenerator):
         self.entries.append(api)
         self.entryFeatures.append(self.feature)
 
+        def isCompoundType(typeName):
+            return typeInfo.isCompoundType(typeName)
+
+        def handleTranslationRequired(typeName):
+            return typeName in HANDLE_TYPES and typeName not in HANDLES_DONT_TRANSLATE
+
+        def translationRequired(typeName):
+            hasNestedHandles = False
+            if isCompoundType(typeName):
+                struct = typeInfo.structs[typeName]
+                for member in struct.members:
+                    if handleTranslationRequired(member.typeName):
+                        hasNestedHandles = True
+                        if isArrayParam(member):
+                            print("ERROR: Array of handles in compoundType: %s, API: %s" % (typeName, api.name))
+                            raise
+            return handleTranslationRequired(typeName) or hasNestedHandles
+
         def genMesaAllocatorParam(cgen, api):
             primaryObjectName = paramNameToObjectName(api.parameters[0].paramName)
             defaultAllocator = "&%s->vk.alloc" % primaryObjectName
@@ -255,8 +279,6 @@ class VulkanFuncTable(VulkanWrapperGenerator):
         def genDestroyGfxstreamObjects(cgen, api):
             destroyParam = getDestroyParam(api)
             if not destroyParam:
-                return
-            if not translationRequired(destroyParam.typeName):
                 return
             objectName = paramNameToObjectName(destroyParam.paramName)
             mesaAllocator = genMesaAllocatorParam(cgen, api)
@@ -286,30 +308,9 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     [mesaObjectPrimary, mesaAllocator, mesaObjectDestroy]
                 )
 
-        # Mod params for mesa object create or destroy functions (i.e. vk_buffer_create(...))
-        def getMesaCreateParams(api):
-            createParam = getCreateParam(api)
-            outParams = copy.deepcopy(api.parameters)
-            for p in outParams:
-                if isAllocatorParam(p):
-                    p.paramName = MESA_ALLOCATOR_PARAM_NAME
-                    continue
-                if not translationRequired(p.typeName):
-                    continue
-                # Remove destroyParam or createParam from list
-                # They are handled in their respective functions
-                if createParam and p.paramName == createParam.paramName:
-                    outParams.remove(p)
-                    continue
-                # Otherwise, Change the paramName for the mesa call
-                p.paramName = ("(%s*)%s" % (typeNameToMesaType(p.typeName), paramNameToObjectName(p.paramName)))
-            return outParams
-
         def genCreateGfxstreamObjects(cgen, api):
             createParam = getCreateParam(api)
             if not createParam:
-                return False
-            if not translationRequired(createParam.typeName):
                 return False
             objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
             objectName = "%s" % paramNameToObjectName(createParam.paramName)
@@ -325,8 +326,20 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     [mesaAllocator, ("sizeof(%s)" % objectType), "8", "VK_SYSTEM_ALLOCATION_SCOPE_OBJECT"]
                 )
             else:
+                def getMesaCreateParams(api):
+                    createParam = getCreateParam(api)
+                    outParams = copy.deepcopy(api.parameters)
+                    for p in outParams:
+                        if isAllocatorParam(p):
+                            p.paramName = MESA_ALLOCATOR_PARAM_NAME
+                        elif p.paramName == createParam.paramName:
+                            outParams.remove(p)
+                        elif p.typeName in HANDLE_TYPES:
+                            # Cast handle to the mesa type
+                            p.paramName = ("(%s*)%s" % (typeNameToMesaType(p.typeName), paramNameToObjectName(p.paramName)))
+                    return outParams
+                # Mod params for the vk_%s_create() call i..e vk_buffer_create()
                 modParams = getMesaCreateParams(api)
-                # Call the objects vk_%_create() functions
                 cgen.funcCall(
                     callLhs,
                     "(%s *)vk_%s_create" % (objectType, typeNameToBaseName(createParam.typeName)),
@@ -347,27 +360,38 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             if not countParamName:
                 print("Error: Could not find the 'count' param for param %s (API %s)" % (arrayParam.paramName, api.name))
                 raise
-            internalArray = internalArrayParamName(arrayParam.paramName)
+            internalArray = "internal_%s" % arrayParam.paramName
             cgen.stmt("std::vector<%s> %s(%s)" % (arrayParam.typeName, internalArray, countParamName))
             cgen.beginFor("uint32_t i = 0", "i < %s" % countParamName, "++i")
             cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i])" % (typeNameToObjectType(arrayParam.typeName), paramNameToObjectName(arrayParam.paramName), arrayParam.paramName))
             cgen.stmt("%s[i] = %s->internal_object" % (internalArray, paramNameToObjectName(arrayParam.paramName)))
             cgen.endFor()
+            return "%s.data()" % internalArray
 
         def genGetGfxstreamHandles(cgen, api):
             createParam = getCreateParam(api)
             # Convert handles first
             for param in api.parameters:
-                if not translationRequired(param.typeName):
+                if not handleTranslationRequired(param.typeName):
                     continue
-                if isArrayParam(param):
-                    # Special handling for arrays of internal objects
-                    genInternalObjectArray(cgen, api, param)
+                elif isArrayParam(param):
+                    continue
                 elif param.pointerIndirectionLevels > 0 and param != createParam:
                     print("Error: don't know how to handle pointerIndirectionLevels > 1 for API %s (param %s)" % (api.name, param.paramName))
                     raise
                 elif param != createParam:
                     cgen.stmt("VK_FROM_HANDLE(%s, %s, %s)" % (typeNameToObjectType(param.typeName), paramNameToObjectName(param.paramName), param.paramName))
+
+        def genInternalCompoundType(param):
+            # struct = typeInfo.structs[typeName]
+            # for member in struct.members:
+            #     if handleTranslationRequired(member.typeName):
+            #         hasNestedHandles = True
+            #         if isArrayParam(member):
+            #             print("ERROR: Array of handles in compoundType: %s, API: %s" % (typeName, api.name))
+            #             raise
+            internalParamName = "TEST.data()"
+            return internalParamName
 
         # Translate params into params needed for gfxstream-internal
         #  encoder/resource-tracker calls
@@ -377,9 +401,14 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             for param in outParams:
                 if not translationRequired(param.typeName):
                     continue
+                if isCompoundType(param.typeName):
+                    # TODO: Handle the compoundType here ...
+                    genInternalCompoundType(param)
+                    # param.paramName = genInternalCompoundType(param)
+                    continue
                 objectName = paramNameToObjectName(param.paramName)
                 if isArrayParam(param):
-                    param.paramName = "%s.data()" % internalArrayParamName(param.paramName)
+                    param.paramName = genInternalObjectArray(cgen, api, param)
                 elif 0 == param.pointerIndirectionLevels:
                     param.paramName = ("%s" % objectName) + "->internal_object"
                 elif createParam and param.paramName == createParam.paramName:
