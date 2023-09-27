@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "241db041_95918080",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2036360
+      },
+      "writtenOn": "2023-09-27T15:04:08Z",
+      "side": 1,
+      "message": "platform_qnx.cpp has a little hack that was needed to correctly link QNX EGL and GLES libraries. I don\u0027t fully understand the issue or how this corrects it. If you have any ideas that will allow me to get rid of this, please let me know.",
+      "revId": "32c357c682654b525d55cead8d4d9ae5da54b116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
