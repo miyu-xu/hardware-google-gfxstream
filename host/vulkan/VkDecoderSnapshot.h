@@ -1380,12 +1380,6 @@ class VkDecoderSnapshot {
                                          const VkImageSubresource2KHR* pSubresource,
                                          VkSubresourceLayout2KHR* pLayout);
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    void vkReleaseSwapchainImagesEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                                     android::base::BumpPool* pool, VkResult input_result,
-                                     VkDevice device,
-                                     const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo);
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment

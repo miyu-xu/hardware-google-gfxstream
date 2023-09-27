@@ -1399,26 +1399,6 @@ DEFINE_ALIAS_FUNCTION(handlemap_VkSubresourceLayout2KHR, handlemap_VkSubresource
 DEFINE_ALIAS_FUNCTION(handlemap_VkImageSubresource2KHR, handlemap_VkImageSubresource2EXT)
 
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void handlemap_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VulkanHandleMapping* handlemap, VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toMap);
-
-void handlemap_VkSwapchainPresentFenceInfoEXT(VulkanHandleMapping* handlemap,
-                                              VkSwapchainPresentFenceInfoEXT* toMap);
-
-void handlemap_VkSwapchainPresentModesCreateInfoEXT(VulkanHandleMapping* handlemap,
-                                                    VkSwapchainPresentModesCreateInfoEXT* toMap);
-
-void handlemap_VkSwapchainPresentModeInfoEXT(VulkanHandleMapping* handlemap,
-                                             VkSwapchainPresentModeInfoEXT* toMap);
-
-void handlemap_VkSwapchainPresentScalingCreateInfoEXT(
-    VulkanHandleMapping* handlemap, VkSwapchainPresentScalingCreateInfoEXT* toMap);
-
-void handlemap_VkReleaseSwapchainImagesInfoEXT(VulkanHandleMapping* handlemap,
-                                               VkReleaseSwapchainImagesInfoEXT* toMap);
-
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 DEFINE_ALIAS_FUNCTION(handlemap_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures,
                       handlemap_VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT)

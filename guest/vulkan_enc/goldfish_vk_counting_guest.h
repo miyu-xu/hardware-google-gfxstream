@@ -1643,32 +1643,6 @@ DEFINE_ALIAS_FUNCTION(count_VkSubresourceLayout2KHR, count_VkSubresourceLayout2E
 DEFINE_ALIAS_FUNCTION(count_VkImageSubresource2KHR, count_VkImageSubresource2EXT)
 
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void count_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    uint32_t featureBits, VkStructureType rootType,
-    const VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toCount, size_t* count);
-
-void count_VkSwapchainPresentFenceInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                          const VkSwapchainPresentFenceInfoEXT* toCount,
-                                          size_t* count);
-
-void count_VkSwapchainPresentModesCreateInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                                const VkSwapchainPresentModesCreateInfoEXT* toCount,
-                                                size_t* count);
-
-void count_VkSwapchainPresentModeInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                         const VkSwapchainPresentModeInfoEXT* toCount,
-                                         size_t* count);
-
-void count_VkSwapchainPresentScalingCreateInfoEXT(
-    uint32_t featureBits, VkStructureType rootType,
-    const VkSwapchainPresentScalingCreateInfoEXT* toCount, size_t* count);
-
-void count_VkReleaseSwapchainImagesInfoEXT(uint32_t featureBits, VkStructureType rootType,
-                                           const VkReleaseSwapchainImagesInfoEXT* toCount,
-                                           size_t* count);
-
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 DEFINE_ALIAS_FUNCTION(count_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures,
                       count_VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT)

@@ -3683,66 +3683,6 @@ void handlemap_VkHostImageCopyDevicePerformanceQueryEXT(
 }
 
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void handlemap_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VulkanHandleMapping* handlemap, VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toMap) {
-    (void)handlemap;
-    (void)toMap;
-    if (toMap->pNext) {
-        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
-    }
-}
-
-void handlemap_VkSwapchainPresentFenceInfoEXT(VulkanHandleMapping* handlemap,
-                                              VkSwapchainPresentFenceInfoEXT* toMap) {
-    (void)handlemap;
-    (void)toMap;
-    if (toMap->pNext) {
-        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
-    }
-    if (toMap->pFences) {
-        handlemap->mapHandles_VkFence((VkFence*)toMap->pFences, toMap->swapchainCount);
-    }
-}
-
-void handlemap_VkSwapchainPresentModesCreateInfoEXT(VulkanHandleMapping* handlemap,
-                                                    VkSwapchainPresentModesCreateInfoEXT* toMap) {
-    (void)handlemap;
-    (void)toMap;
-    if (toMap->pNext) {
-        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
-    }
-}
-
-void handlemap_VkSwapchainPresentModeInfoEXT(VulkanHandleMapping* handlemap,
-                                             VkSwapchainPresentModeInfoEXT* toMap) {
-    (void)handlemap;
-    (void)toMap;
-    if (toMap->pNext) {
-        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
-    }
-}
-
-void handlemap_VkSwapchainPresentScalingCreateInfoEXT(
-    VulkanHandleMapping* handlemap, VkSwapchainPresentScalingCreateInfoEXT* toMap) {
-    (void)handlemap;
-    (void)toMap;
-    if (toMap->pNext) {
-        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
-    }
-}
-
-void handlemap_VkReleaseSwapchainImagesInfoEXT(VulkanHandleMapping* handlemap,
-                                               VkReleaseSwapchainImagesInfoEXT* toMap) {
-    (void)handlemap;
-    (void)toMap;
-    if (toMap->pNext) {
-        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
-    }
-    handlemap->mapHandles_VkSwapchainKHR((VkSwapchainKHR*)&toMap->swapchain);
-}
-
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
@@ -4775,36 +4715,6 @@ void handlemap_extension_struct(VulkanHandleMapping* handlemap, void* structExte
             handlemap_VkHostImageCopyDevicePerformanceQueryEXT(
                 handlemap,
                 reinterpret_cast<VkHostImageCopyDevicePerformanceQueryEXT*>(structExtension_out));
-            break;
-        }
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT: {
-            handlemap_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-                handlemap, reinterpret_cast<VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT*>(
-                               structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT: {
-            handlemap_VkSwapchainPresentFenceInfoEXT(
-                handlemap, reinterpret_cast<VkSwapchainPresentFenceInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT: {
-            handlemap_VkSwapchainPresentModesCreateInfoEXT(
-                handlemap,
-                reinterpret_cast<VkSwapchainPresentModesCreateInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT: {
-            handlemap_VkSwapchainPresentModeInfoEXT(
-                handlemap, reinterpret_cast<VkSwapchainPresentModeInfoEXT*>(structExtension_out));
-            break;
-        }
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT: {
-            handlemap_VkSwapchainPresentScalingCreateInfoEXT(
-                handlemap,
-                reinterpret_cast<VkSwapchainPresentScalingCreateInfoEXT*>(structExtension_out));
             break;
         }
 #endif
