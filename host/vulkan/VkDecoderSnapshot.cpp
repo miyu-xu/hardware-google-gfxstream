@@ -2478,14 +2478,6 @@ class VkDecoderSnapshot::Impl {
         // TODO: Implement
     }
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    void vkReleaseSwapchainImagesEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                                     android::base::BumpPool* pool, VkResult input_result,
-                                     VkDevice device,
-                                     const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo) {
-        // TODO: Implement
-    }
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
@@ -5704,14 +5696,6 @@ void VkDecoderSnapshot::vkGetImageSubresourceLayout2EXT(const uint8_t* snapshotT
                                                         VkSubresourceLayout2KHR* pLayout) {
     mImpl->vkGetImageSubresourceLayout2EXT(snapshotTraceBegin, snapshotTraceBytes, pool, device,
                                            image, pSubresource, pLayout);
-}
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-void VkDecoderSnapshot::vkReleaseSwapchainImagesEXT(
-    const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes, android::base::BumpPool* pool,
-    VkResult input_result, VkDevice device, const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo) {
-    mImpl->vkReleaseSwapchainImagesEXT(snapshotTraceBegin, snapshotTraceBytes, pool, input_result,
-                                       device, pReleaseInfo);
 }
 #endif
 #ifdef VK_EXT_private_data

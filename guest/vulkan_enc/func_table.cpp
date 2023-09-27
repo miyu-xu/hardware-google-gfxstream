@@ -254,8 +254,16 @@ VkResult gfxstream_vk_FlushMappedMemoryRanges(VkDevice device, uint32_t memoryRa
     VkResult vkFlushMappedMemoryRanges_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkFlushMappedMemoryRanges_VkResult_return = vkEnc->vkFlushMappedMemoryRanges(
-            gfxstream_device->internal_object, memoryRangeCount, pMemoryRanges, true /* do lock */);
+        std::vector<VkMappedMemoryRange> internal_pMemoryRanges(memoryRangeCount);
+        for (uint32_t i = 0; i < memoryRangeCount; ++i) {
+            internal_pMemoryRanges[i] = pMemoryRanges[i];
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                           internal_pMemoryRanges[i].memory);
+            internal_pMemoryRanges[i].memory = gfxstream_memory->internal_object;
+        }
+        vkFlushMappedMemoryRanges_VkResult_return =
+            vkEnc->vkFlushMappedMemoryRanges(gfxstream_device->internal_object, memoryRangeCount,
+                                             internal_pMemoryRanges.data(), true /* do lock */);
     }
     return vkFlushMappedMemoryRanges_VkResult_return;
 }
@@ -266,8 +274,16 @@ VkResult gfxstream_vk_InvalidateMappedMemoryRanges(VkDevice device, uint32_t mem
     VkResult vkInvalidateMappedMemoryRanges_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkMappedMemoryRange> internal_pMemoryRanges(memoryRangeCount);
+        for (uint32_t i = 0; i < memoryRangeCount; ++i) {
+            internal_pMemoryRanges[i] = pMemoryRanges[i];
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                           internal_pMemoryRanges[i].memory);
+            internal_pMemoryRanges[i].memory = gfxstream_memory->internal_object;
+        }
         vkInvalidateMappedMemoryRanges_VkResult_return = vkEnc->vkInvalidateMappedMemoryRanges(
-            gfxstream_device->internal_object, memoryRangeCount, pMemoryRanges, true /* do lock */);
+            gfxstream_device->internal_object, memoryRangeCount, internal_pMemoryRanges.data(),
+            true /* do lock */);
     }
     return vkInvalidateMappedMemoryRanges_VkResult_return;
 }
@@ -666,9 +682,15 @@ VkResult gfxstream_vk_CreateBufferView(VkDevice device, const VkBufferViewCreate
     vkCreateBufferView_VkResult_return = gfxstream_pView ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateBufferView_VkResult_return) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkCreateBufferView_VkResult_return =
-            vkEnc->vkCreateBufferView(gfxstream_device->internal_object, pCreateInfo, pAllocator,
-                                      &gfxstream_pView->internal_object, true /* do lock */);
+        std::vector<VkBufferViewCreateInfo> internal_pCreateInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCreateInfo[i] = pCreateInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pCreateInfo[i].buffer);
+            internal_pCreateInfo[i].buffer = gfxstream_buffer->internal_object;
+        }
+        vkCreateBufferView_VkResult_return = vkEnc->vkCreateBufferView(
+            gfxstream_device->internal_object, internal_pCreateInfo.data(), pAllocator,
+            &gfxstream_pView->internal_object, true /* do lock */);
     }
     *pView = gfxstream_vk_buffer_view_to_handle(gfxstream_pView);
     return vkCreateBufferView_VkResult_return;
@@ -863,57 +885,6 @@ VkResult gfxstream_vk_MergePipelineCaches(VkDevice device, VkPipelineCache dstCa
             internal_pSrcCaches.data(), true /* do lock */);
     }
     return vkMergePipelineCaches_VkResult_return;
-}
-VkResult gfxstream_vk_CreateGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache,
-                                              uint32_t createInfoCount,
-                                              const VkGraphicsPipelineCreateInfo* pCreateInfos,
-                                              const VkAllocationCallbacks* pAllocator,
-                                              VkPipeline* pPipelines) {
-    AEMU_SCOPED_TRACE("vkCreateGraphicsPipelines");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_pipelineCache, pipelineCache);
-    VkResult vkCreateGraphicsPipelines_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    struct gfxstream_vk_pipeline* gfxstream_pPipelines = (struct gfxstream_vk_pipeline*)vk_zalloc(
-        pMesaAllocator, sizeof(struct gfxstream_vk_pipeline), 8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-    vkCreateGraphicsPipelines_VkResult_return =
-        gfxstream_pPipelines ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == vkCreateGraphicsPipelines_VkResult_return) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        auto resources = gfxstream::vk::ResourceTracker::get();
-        vkCreateGraphicsPipelines_VkResult_return = resources->on_vkCreateGraphicsPipelines(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
-            gfxstream_pipelineCache->internal_object, createInfoCount, pCreateInfos, pAllocator,
-            &gfxstream_pPipelines->internal_object);
-    }
-    *pPipelines = gfxstream_vk_pipeline_to_handle(gfxstream_pPipelines);
-    return vkCreateGraphicsPipelines_VkResult_return;
-}
-VkResult gfxstream_vk_CreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache,
-                                             uint32_t createInfoCount,
-                                             const VkComputePipelineCreateInfo* pCreateInfos,
-                                             const VkAllocationCallbacks* pAllocator,
-                                             VkPipeline* pPipelines) {
-    AEMU_SCOPED_TRACE("vkCreateComputePipelines");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_pipelineCache, pipelineCache);
-    VkResult vkCreateComputePipelines_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    struct gfxstream_vk_pipeline* gfxstream_pPipelines = (struct gfxstream_vk_pipeline*)vk_zalloc(
-        pMesaAllocator, sizeof(struct gfxstream_vk_pipeline), 8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-    vkCreateComputePipelines_VkResult_return =
-        gfxstream_pPipelines ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == vkCreateComputePipelines_VkResult_return) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkCreateComputePipelines_VkResult_return = vkEnc->vkCreateComputePipelines(
-            gfxstream_device->internal_object, gfxstream_pipelineCache->internal_object,
-            createInfoCount, pCreateInfos, pAllocator, &gfxstream_pPipelines->internal_object,
-            true /* do lock */);
-    }
-    *pPipelines = gfxstream_vk_pipeline_to_handle(gfxstream_pPipelines);
-    return vkCreateComputePipelines_VkResult_return;
 }
 void gfxstream_vk_DestroyPipeline(VkDevice device, VkPipeline pipeline,
                                   const VkAllocationCallbacks* pAllocator) {
@@ -1650,11 +1621,25 @@ void gfxstream_vk_CmdWaitEvents(VkCommandBuffer commandBuffer, uint32_t eventCou
             VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
             internal_pEvents[i] = gfxstream_pEvents->internal_object;
         }
+        std::vector<VkBufferMemoryBarrier> internal_pBufferMemoryBarriers(bufferMemoryBarrierCount);
+        for (uint32_t i = 0; i < bufferMemoryBarrierCount; ++i) {
+            internal_pBufferMemoryBarriers[i] = pBufferMemoryBarriers[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                           internal_pBufferMemoryBarriers[i].buffer);
+            internal_pBufferMemoryBarriers[i].buffer = gfxstream_buffer->internal_object;
+        }
+        std::vector<VkImageMemoryBarrier> internal_pImageMemoryBarriers(imageMemoryBarrierCount);
+        for (uint32_t i = 0; i < imageMemoryBarrierCount; ++i) {
+            internal_pImageMemoryBarriers[i] = pImageMemoryBarriers[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                           internal_pImageMemoryBarriers[i].image);
+            internal_pImageMemoryBarriers[i].image = gfxstream_image->internal_object;
+        }
         vkEnc->vkCmdWaitEvents(gfxstream_commandBuffer->internal_object, eventCount,
                                internal_pEvents.data(), srcStageMask, dstStageMask,
                                memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
-                               pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers,
-                               true /* do lock */);
+                               internal_pBufferMemoryBarriers.data(), imageMemoryBarrierCount,
+                               internal_pImageMemoryBarriers.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdPipelineBarrier(
@@ -1667,11 +1652,26 @@ void gfxstream_vk_CmdPipelineBarrier(
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkBufferMemoryBarrier> internal_pBufferMemoryBarriers(bufferMemoryBarrierCount);
+        for (uint32_t i = 0; i < bufferMemoryBarrierCount; ++i) {
+            internal_pBufferMemoryBarriers[i] = pBufferMemoryBarriers[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                           internal_pBufferMemoryBarriers[i].buffer);
+            internal_pBufferMemoryBarriers[i].buffer = gfxstream_buffer->internal_object;
+        }
+        std::vector<VkImageMemoryBarrier> internal_pImageMemoryBarriers(imageMemoryBarrierCount);
+        for (uint32_t i = 0; i < imageMemoryBarrierCount; ++i) {
+            internal_pImageMemoryBarriers[i] = pImageMemoryBarriers[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                           internal_pImageMemoryBarriers[i].image);
+            internal_pImageMemoryBarriers[i].image = gfxstream_image->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         resources->on_vkCmdPipelineBarrier(
             vkEnc, gfxstream_commandBuffer->internal_object, srcStageMask, dstStageMask,
             dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
-            pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
+            internal_pBufferMemoryBarriers.data(), imageMemoryBarrierCount,
+            internal_pImageMemoryBarriers.data());
     }
 }
 void gfxstream_vk_CmdBeginQuery(VkCommandBuffer commandBuffer, VkQueryPool queryPool,
@@ -1757,8 +1757,18 @@ void gfxstream_vk_CmdBeginRenderPass(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdBeginRenderPass(gfxstream_commandBuffer->internal_object, pRenderPassBegin,
-                                    contents, true /* do lock */);
+        std::vector<VkRenderPassBeginInfo> internal_pRenderPassBegin(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pRenderPassBegin[i] = pRenderPassBegin[i];
+            VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
+                           internal_pRenderPassBegin[i].renderPass);
+            internal_pRenderPassBegin[i].renderPass = gfxstream_renderPass->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer,
+                           internal_pRenderPassBegin[i].framebuffer);
+            internal_pRenderPassBegin[i].framebuffer = gfxstream_framebuffer->internal_object;
+        }
+        vkEnc->vkCmdBeginRenderPass(gfxstream_commandBuffer->internal_object,
+                                    internal_pRenderPassBegin.data(), contents, true /* do lock */);
     }
 }
 void gfxstream_vk_CmdNextSubpass(VkCommandBuffer commandBuffer, VkSubpassContents contents) {
@@ -1814,9 +1824,19 @@ VkResult gfxstream_vk_BindBufferMemory2(VkDevice device, uint32_t bindInfoCount,
     VkResult vkBindBufferMemory2_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBindBufferMemoryInfo> internal_pBindInfos(bindInfoCount);
+        for (uint32_t i = 0; i < bindInfoCount; ++i) {
+            internal_pBindInfos[i] = pBindInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pBindInfos[i].buffer);
+            internal_pBindInfos[i].buffer = gfxstream_buffer->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                           internal_pBindInfos[i].memory);
+            internal_pBindInfos[i].memory = gfxstream_memory->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
-        vkBindBufferMemory2_VkResult_return = resources->on_vkBindBufferMemory2(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, bindInfoCount, pBindInfos);
+        vkBindBufferMemory2_VkResult_return =
+            resources->on_vkBindBufferMemory2(vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
+                                              bindInfoCount, internal_pBindInfos.data());
     }
     return vkBindBufferMemory2_VkResult_return;
 }
@@ -1827,9 +1847,19 @@ VkResult gfxstream_vk_BindImageMemory2(VkDevice device, uint32_t bindInfoCount,
     VkResult vkBindImageMemory2_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBindImageMemoryInfo> internal_pBindInfos(bindInfoCount);
+        for (uint32_t i = 0; i < bindInfoCount; ++i) {
+            internal_pBindInfos[i] = pBindInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pBindInfos[i].image);
+            internal_pBindInfos[i].image = gfxstream_image->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                           internal_pBindInfos[i].memory);
+            internal_pBindInfos[i].memory = gfxstream_memory->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
-        vkBindImageMemory2_VkResult_return = resources->on_vkBindImageMemory2(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, bindInfoCount, pBindInfos);
+        vkBindImageMemory2_VkResult_return =
+            resources->on_vkBindImageMemory2(vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
+                                             bindInfoCount, internal_pBindInfos.data());
     }
     return vkBindImageMemory2_VkResult_return;
 }
@@ -1867,20 +1897,6 @@ void gfxstream_vk_CmdDispatchBase(VkCommandBuffer commandBuffer, uint32_t baseGr
                                  true /* do lock */);
     }
 }
-VkResult gfxstream_vk_EnumeratePhysicalDeviceGroups(
-    VkInstance instance, uint32_t* pPhysicalDeviceGroupCount,
-    VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties) {
-    AEMU_SCOPED_TRACE("vkEnumeratePhysicalDeviceGroups");
-    VK_FROM_HANDLE(gfxstream_vk_instance, gfxstream_instance, instance);
-    VkResult vkEnumeratePhysicalDeviceGroups_VkResult_return = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnumeratePhysicalDeviceGroups_VkResult_return = vkEnc->vkEnumeratePhysicalDeviceGroups(
-            gfxstream_instance->internal_object, pPhysicalDeviceGroupCount,
-            pPhysicalDeviceGroupProperties, true /* do lock */);
-    }
-    return vkEnumeratePhysicalDeviceGroups_VkResult_return;
-}
 void gfxstream_vk_GetImageMemoryRequirements2(VkDevice device,
                                               const VkImageMemoryRequirementsInfo2* pInfo,
                                               VkMemoryRequirements2* pMemoryRequirements) {
@@ -1888,9 +1904,15 @@ void gfxstream_vk_GetImageMemoryRequirements2(VkDevice device,
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkImageMemoryRequirementsInfo2> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pInfo[i].image);
+            internal_pInfo[i].image = gfxstream_image->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkGetImageMemoryRequirements2(vkEnc, gfxstream_device->internal_object, pInfo,
-                                                    pMemoryRequirements);
+        resources->on_vkGetImageMemoryRequirements2(vkEnc, gfxstream_device->internal_object,
+                                                    internal_pInfo.data(), pMemoryRequirements);
     }
 }
 void gfxstream_vk_GetBufferMemoryRequirements2(VkDevice device,
@@ -1900,9 +1922,15 @@ void gfxstream_vk_GetBufferMemoryRequirements2(VkDevice device,
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferMemoryRequirementsInfo2> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pInfo[i].buffer);
+            internal_pInfo[i].buffer = gfxstream_buffer->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         resources->on_vkGetBufferMemoryRequirements2(vkEnc, gfxstream_device->internal_object,
-                                                     pInfo, pMemoryRequirements);
+                                                     internal_pInfo.data(), pMemoryRequirements);
     }
 }
 void gfxstream_vk_GetImageSparseMemoryRequirements2(
@@ -1913,9 +1941,15 @@ void gfxstream_vk_GetImageSparseMemoryRequirements2(
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkGetImageSparseMemoryRequirements2(gfxstream_device->internal_object, pInfo,
-                                                   pSparseMemoryRequirementCount,
-                                                   pSparseMemoryRequirements, true /* do lock */);
+        std::vector<VkImageSparseMemoryRequirementsInfo2> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pInfo[i].image);
+            internal_pInfo[i].image = gfxstream_image->internal_object;
+        }
+        vkEnc->vkGetImageSparseMemoryRequirements2(
+            gfxstream_device->internal_object, internal_pInfo.data(), pSparseMemoryRequirementCount,
+            pSparseMemoryRequirements, true /* do lock */);
     }
 }
 void gfxstream_vk_GetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice,
@@ -2070,8 +2104,19 @@ VkResult gfxstream_vk_CreateDescriptorUpdateTemplate(
         gfxstream_pDescriptorUpdateTemplate ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateDescriptorUpdateTemplate_VkResult_return) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDescriptorUpdateTemplateCreateInfo> internal_pCreateInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCreateInfo[i] = pCreateInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set_layout, gfxstream_descriptorSetLayout,
+                           internal_pCreateInfo[i].descriptorSetLayout);
+            internal_pCreateInfo[i].descriptorSetLayout =
+                gfxstream_descriptorSetLayout->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_pipeline_layout, gfxstream_pipelineLayout,
+                           internal_pCreateInfo[i].pipelineLayout);
+            internal_pCreateInfo[i].pipelineLayout = gfxstream_pipelineLayout->internal_object;
+        }
         vkCreateDescriptorUpdateTemplate_VkResult_return = vkEnc->vkCreateDescriptorUpdateTemplate(
-            gfxstream_device->internal_object, pCreateInfo, pAllocator,
+            gfxstream_device->internal_object, internal_pCreateInfo.data(), pAllocator,
             &gfxstream_pDescriptorUpdateTemplate->internal_object, true /* do lock */);
     }
     *pDescriptorUpdateTemplate =
@@ -2225,8 +2270,19 @@ void gfxstream_vk_CmdBeginRenderPass2(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdBeginRenderPass2(gfxstream_commandBuffer->internal_object, pRenderPassBegin,
-                                     pSubpassBeginInfo, true /* do lock */);
+        std::vector<VkRenderPassBeginInfo> internal_pRenderPassBegin(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pRenderPassBegin[i] = pRenderPassBegin[i];
+            VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
+                           internal_pRenderPassBegin[i].renderPass);
+            internal_pRenderPassBegin[i].renderPass = gfxstream_renderPass->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer,
+                           internal_pRenderPassBegin[i].framebuffer);
+            internal_pRenderPassBegin[i].framebuffer = gfxstream_framebuffer->internal_object;
+        }
+        vkEnc->vkCmdBeginRenderPass2(gfxstream_commandBuffer->internal_object,
+                                     internal_pRenderPassBegin.data(), pSubpassBeginInfo,
+                                     true /* do lock */);
     }
 }
 void gfxstream_vk_CmdNextSubpass2(VkCommandBuffer commandBuffer,
@@ -2282,8 +2338,15 @@ VkResult gfxstream_vk_SignalSemaphore(VkDevice device, const VkSemaphoreSignalIn
     VkResult vkSignalSemaphore_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkSemaphoreSignalInfo> internal_pSignalInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pSignalInfo[i] = pSignalInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
+                           internal_pSignalInfo[i].semaphore);
+            internal_pSignalInfo[i].semaphore = gfxstream_semaphore->internal_object;
+        }
         vkSignalSemaphore_VkResult_return = vkEnc->vkSignalSemaphore(
-            gfxstream_device->internal_object, pSignalInfo, true /* do lock */);
+            gfxstream_device->internal_object, internal_pSignalInfo.data(), true /* do lock */);
     }
     return vkSignalSemaphore_VkResult_return;
 }
@@ -2294,8 +2357,14 @@ VkDeviceAddress gfxstream_vk_GetBufferDeviceAddress(VkDevice device,
     VkDeviceAddress vkGetBufferDeviceAddress_VkDeviceAddress_return = (VkDeviceAddress)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferDeviceAddressInfo> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pInfo[i].buffer);
+            internal_pInfo[i].buffer = gfxstream_buffer->internal_object;
+        }
         vkGetBufferDeviceAddress_VkDeviceAddress_return = vkEnc->vkGetBufferDeviceAddress(
-            gfxstream_device->internal_object, pInfo, true /* do lock */);
+            gfxstream_device->internal_object, internal_pInfo.data(), true /* do lock */);
     }
     return vkGetBufferDeviceAddress_VkDeviceAddress_return;
 }
@@ -2306,8 +2375,14 @@ uint64_t gfxstream_vk_GetBufferOpaqueCaptureAddress(VkDevice device,
     uint64_t vkGetBufferOpaqueCaptureAddress_uint64_t_return = (uint64_t)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferDeviceAddressInfo> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pInfo[i].buffer);
+            internal_pInfo[i].buffer = gfxstream_buffer->internal_object;
+        }
         vkGetBufferOpaqueCaptureAddress_uint64_t_return = vkEnc->vkGetBufferOpaqueCaptureAddress(
-            gfxstream_device->internal_object, pInfo, true /* do lock */);
+            gfxstream_device->internal_object, internal_pInfo.data(), true /* do lock */);
     }
     return vkGetBufferOpaqueCaptureAddress_uint64_t_return;
 }
@@ -2318,9 +2393,15 @@ uint64_t gfxstream_vk_GetDeviceMemoryOpaqueCaptureAddress(
     uint64_t vkGetDeviceMemoryOpaqueCaptureAddress_uint64_t_return = (uint64_t)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDeviceMemoryOpaqueCaptureAddressInfo> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory, internal_pInfo[i].memory);
+            internal_pInfo[i].memory = gfxstream_memory->internal_object;
+        }
         vkGetDeviceMemoryOpaqueCaptureAddress_uint64_t_return =
-            vkEnc->vkGetDeviceMemoryOpaqueCaptureAddress(gfxstream_device->internal_object, pInfo,
-                                                         true /* do lock */);
+            vkEnc->vkGetDeviceMemoryOpaqueCaptureAddress(gfxstream_device->internal_object,
+                                                         internal_pInfo.data(), true /* do lock */);
     }
     return vkGetDeviceMemoryOpaqueCaptureAddress_uint64_t_return;
 }
@@ -2471,8 +2552,18 @@ void gfxstream_vk_CmdCopyBuffer2(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdCopyBuffer2(gfxstream_commandBuffer->internal_object, pCopyBufferInfo,
-                                true /* do lock */);
+        std::vector<VkCopyBufferInfo2> internal_pCopyBufferInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyBufferInfo[i] = pCopyBufferInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_srcBuffer,
+                           internal_pCopyBufferInfo[i].srcBuffer);
+            internal_pCopyBufferInfo[i].srcBuffer = gfxstream_srcBuffer->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_dstBuffer,
+                           internal_pCopyBufferInfo[i].dstBuffer);
+            internal_pCopyBufferInfo[i].dstBuffer = gfxstream_dstBuffer->internal_object;
+        }
+        vkEnc->vkCmdCopyBuffer2(gfxstream_commandBuffer->internal_object,
+                                internal_pCopyBufferInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdCopyImage2(VkCommandBuffer commandBuffer,
@@ -2481,8 +2572,18 @@ void gfxstream_vk_CmdCopyImage2(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdCopyImage2(gfxstream_commandBuffer->internal_object, pCopyImageInfo,
-                               true /* do lock */);
+        std::vector<VkCopyImageInfo2> internal_pCopyImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyImageInfo[i] = pCopyImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pCopyImageInfo[i].srcImage);
+            internal_pCopyImageInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pCopyImageInfo[i].dstImage);
+            internal_pCopyImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
+        vkEnc->vkCmdCopyImage2(gfxstream_commandBuffer->internal_object,
+                               internal_pCopyImageInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdCopyBufferToImage2(VkCommandBuffer commandBuffer,
@@ -2491,8 +2592,18 @@ void gfxstream_vk_CmdCopyBufferToImage2(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkCopyBufferToImageInfo2> internal_pCopyBufferToImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyBufferToImageInfo[i] = pCopyBufferToImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_srcBuffer,
+                           internal_pCopyBufferToImageInfo[i].srcBuffer);
+            internal_pCopyBufferToImageInfo[i].srcBuffer = gfxstream_srcBuffer->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pCopyBufferToImageInfo[i].dstImage);
+            internal_pCopyBufferToImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
         vkEnc->vkCmdCopyBufferToImage2(gfxstream_commandBuffer->internal_object,
-                                       pCopyBufferToImageInfo, true /* do lock */);
+                                       internal_pCopyBufferToImageInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdCopyImageToBuffer2(VkCommandBuffer commandBuffer,
@@ -2501,8 +2612,18 @@ void gfxstream_vk_CmdCopyImageToBuffer2(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkCopyImageToBufferInfo2> internal_pCopyImageToBufferInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyImageToBufferInfo[i] = pCopyImageToBufferInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pCopyImageToBufferInfo[i].srcImage);
+            internal_pCopyImageToBufferInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_dstBuffer,
+                           internal_pCopyImageToBufferInfo[i].dstBuffer);
+            internal_pCopyImageToBufferInfo[i].dstBuffer = gfxstream_dstBuffer->internal_object;
+        }
         vkEnc->vkCmdCopyImageToBuffer2(gfxstream_commandBuffer->internal_object,
-                                       pCopyImageToBufferInfo, true /* do lock */);
+                                       internal_pCopyImageToBufferInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdBlitImage2(VkCommandBuffer commandBuffer,
@@ -2511,8 +2632,18 @@ void gfxstream_vk_CmdBlitImage2(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdBlitImage2(gfxstream_commandBuffer->internal_object, pBlitImageInfo,
-                               true /* do lock */);
+        std::vector<VkBlitImageInfo2> internal_pBlitImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pBlitImageInfo[i] = pBlitImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pBlitImageInfo[i].srcImage);
+            internal_pBlitImageInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pBlitImageInfo[i].dstImage);
+            internal_pBlitImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
+        vkEnc->vkCmdBlitImage2(gfxstream_commandBuffer->internal_object,
+                               internal_pBlitImageInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdResolveImage2(VkCommandBuffer commandBuffer,
@@ -2521,8 +2652,18 @@ void gfxstream_vk_CmdResolveImage2(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdResolveImage2(gfxstream_commandBuffer->internal_object, pResolveImageInfo,
-                                  true /* do lock */);
+        std::vector<VkResolveImageInfo2> internal_pResolveImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pResolveImageInfo[i] = pResolveImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pResolveImageInfo[i].srcImage);
+            internal_pResolveImageInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pResolveImageInfo[i].dstImage);
+            internal_pResolveImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
+        vkEnc->vkCmdResolveImage2(gfxstream_commandBuffer->internal_object,
+                                  internal_pResolveImageInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdBeginRendering(VkCommandBuffer commandBuffer,
@@ -2923,9 +3064,17 @@ VkResult gfxstream_vk_ImportSemaphoreFdKHR(
     VkResult vkImportSemaphoreFdKHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkImportSemaphoreFdInfoKHR> internal_pImportSemaphoreFdInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pImportSemaphoreFdInfo[i] = pImportSemaphoreFdInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
+                           internal_pImportSemaphoreFdInfo[i].semaphore);
+            internal_pImportSemaphoreFdInfo[i].semaphore = gfxstream_semaphore->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkImportSemaphoreFdKHR_VkResult_return = resources->on_vkImportSemaphoreFdKHR(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pImportSemaphoreFdInfo);
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
+            internal_pImportSemaphoreFdInfo.data());
     }
     return vkImportSemaphoreFdKHR_VkResult_return;
 }
@@ -2936,9 +3085,16 @@ VkResult gfxstream_vk_GetSemaphoreFdKHR(VkDevice device, const VkSemaphoreGetFdI
     VkResult vkGetSemaphoreFdKHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkSemaphoreGetFdInfoKHR> internal_pGetFdInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pGetFdInfo[i] = pGetFdInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
+                           internal_pGetFdInfo[i].semaphore);
+            internal_pGetFdInfo[i].semaphore = gfxstream_semaphore->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkGetSemaphoreFdKHR_VkResult_return = resources->on_vkGetSemaphoreFdKHR(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pGetFdInfo, pFd);
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, internal_pGetFdInfo.data(), pFd);
     }
     return vkGetSemaphoreFdKHR_VkResult_return;
 }
@@ -2965,9 +3121,20 @@ VkResult gfxstream_vk_CreateDescriptorUpdateTemplateKHR(
         gfxstream_pDescriptorUpdateTemplate ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateDescriptorUpdateTemplateKHR_VkResult_return) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDescriptorUpdateTemplateCreateInfo> internal_pCreateInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCreateInfo[i] = pCreateInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set_layout, gfxstream_descriptorSetLayout,
+                           internal_pCreateInfo[i].descriptorSetLayout);
+            internal_pCreateInfo[i].descriptorSetLayout =
+                gfxstream_descriptorSetLayout->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_pipeline_layout, gfxstream_pipelineLayout,
+                           internal_pCreateInfo[i].pipelineLayout);
+            internal_pCreateInfo[i].pipelineLayout = gfxstream_pipelineLayout->internal_object;
+        }
         vkCreateDescriptorUpdateTemplateKHR_VkResult_return =
             vkEnc->vkCreateDescriptorUpdateTemplateKHR(
-                gfxstream_device->internal_object, pCreateInfo, pAllocator,
+                gfxstream_device->internal_object, internal_pCreateInfo.data(), pAllocator,
                 &gfxstream_pDescriptorUpdateTemplate->internal_object, true /* do lock */);
     }
     *pDescriptorUpdateTemplate =
@@ -3041,8 +3208,19 @@ void gfxstream_vk_CmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdBeginRenderPass2KHR(gfxstream_commandBuffer->internal_object, pRenderPassBegin,
-                                        pSubpassBeginInfo, true /* do lock */);
+        std::vector<VkRenderPassBeginInfo> internal_pRenderPassBegin(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pRenderPassBegin[i] = pRenderPassBegin[i];
+            VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
+                           internal_pRenderPassBegin[i].renderPass);
+            internal_pRenderPassBegin[i].renderPass = gfxstream_renderPass->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer,
+                           internal_pRenderPassBegin[i].framebuffer);
+            internal_pRenderPassBegin[i].framebuffer = gfxstream_framebuffer->internal_object;
+        }
+        vkEnc->vkCmdBeginRenderPass2KHR(gfxstream_commandBuffer->internal_object,
+                                        internal_pRenderPassBegin.data(), pSubpassBeginInfo,
+                                        true /* do lock */);
     }
 }
 void gfxstream_vk_CmdNextSubpass2KHR(VkCommandBuffer commandBuffer,
@@ -3092,9 +3270,17 @@ VkResult gfxstream_vk_ImportFenceFdKHR(VkDevice device,
     VkResult vkImportFenceFdKHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkImportFenceFdInfoKHR> internal_pImportFenceFdInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pImportFenceFdInfo[i] = pImportFenceFdInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence,
+                           internal_pImportFenceFdInfo[i].fence);
+            internal_pImportFenceFdInfo[i].fence = gfxstream_fence->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
-        vkImportFenceFdKHR_VkResult_return = resources->on_vkImportFenceFdKHR(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pImportFenceFdInfo);
+        vkImportFenceFdKHR_VkResult_return =
+            resources->on_vkImportFenceFdKHR(vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
+                                             internal_pImportFenceFdInfo.data());
     }
     return vkImportFenceFdKHR_VkResult_return;
 }
@@ -3105,9 +3291,15 @@ VkResult gfxstream_vk_GetFenceFdKHR(VkDevice device, const VkFenceGetFdInfoKHR* 
     VkResult vkGetFenceFdKHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkFenceGetFdInfoKHR> internal_pGetFdInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pGetFdInfo[i] = pGetFdInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, internal_pGetFdInfo[i].fence);
+            internal_pGetFdInfo[i].fence = gfxstream_fence->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkGetFenceFdKHR_VkResult_return = resources->on_vkGetFenceFdKHR(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pGetFdInfo, pFd);
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, internal_pGetFdInfo.data(), pFd);
     }
     return vkGetFenceFdKHR_VkResult_return;
 }
@@ -3126,9 +3318,15 @@ void gfxstream_vk_GetImageMemoryRequirements2KHR(VkDevice device,
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkImageMemoryRequirementsInfo2> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pInfo[i].image);
+            internal_pInfo[i].image = gfxstream_image->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         resources->on_vkGetImageMemoryRequirements2KHR(vkEnc, gfxstream_device->internal_object,
-                                                       pInfo, pMemoryRequirements);
+                                                       internal_pInfo.data(), pMemoryRequirements);
     }
 }
 void gfxstream_vk_GetBufferMemoryRequirements2KHR(VkDevice device,
@@ -3138,9 +3336,15 @@ void gfxstream_vk_GetBufferMemoryRequirements2KHR(VkDevice device,
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferMemoryRequirementsInfo2> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pInfo[i].buffer);
+            internal_pInfo[i].buffer = gfxstream_buffer->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         resources->on_vkGetBufferMemoryRequirements2KHR(vkEnc, gfxstream_device->internal_object,
-                                                        pInfo, pMemoryRequirements);
+                                                        internal_pInfo.data(), pMemoryRequirements);
     }
 }
 void gfxstream_vk_GetImageSparseMemoryRequirements2KHR(
@@ -3151,8 +3355,14 @@ void gfxstream_vk_GetImageSparseMemoryRequirements2KHR(
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkImageSparseMemoryRequirementsInfo2> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pInfo[i].image);
+            internal_pInfo[i].image = gfxstream_image->internal_object;
+        }
         vkEnc->vkGetImageSparseMemoryRequirements2KHR(
-            gfxstream_device->internal_object, pInfo, pSparseMemoryRequirementCount,
+            gfxstream_device->internal_object, internal_pInfo.data(), pSparseMemoryRequirementCount,
             pSparseMemoryRequirements, true /* do lock */);
     }
 }
@@ -3212,9 +3422,19 @@ VkResult gfxstream_vk_BindBufferMemory2KHR(VkDevice device, uint32_t bindInfoCou
     VkResult vkBindBufferMemory2KHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBindBufferMemoryInfo> internal_pBindInfos(bindInfoCount);
+        for (uint32_t i = 0; i < bindInfoCount; ++i) {
+            internal_pBindInfos[i] = pBindInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pBindInfos[i].buffer);
+            internal_pBindInfos[i].buffer = gfxstream_buffer->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                           internal_pBindInfos[i].memory);
+            internal_pBindInfos[i].memory = gfxstream_memory->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkBindBufferMemory2KHR_VkResult_return = resources->on_vkBindBufferMemory2KHR(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, bindInfoCount, pBindInfos);
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, bindInfoCount,
+            internal_pBindInfos.data());
     }
     return vkBindBufferMemory2KHR_VkResult_return;
 }
@@ -3225,9 +3445,19 @@ VkResult gfxstream_vk_BindImageMemory2KHR(VkDevice device, uint32_t bindInfoCoun
     VkResult vkBindImageMemory2KHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBindImageMemoryInfo> internal_pBindInfos(bindInfoCount);
+        for (uint32_t i = 0; i < bindInfoCount; ++i) {
+            internal_pBindInfos[i] = pBindInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pBindInfos[i].image);
+            internal_pBindInfos[i].image = gfxstream_image->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                           internal_pBindInfos[i].memory);
+            internal_pBindInfos[i].memory = gfxstream_memory->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkBindImageMemory2KHR_VkResult_return = resources->on_vkBindImageMemory2KHR(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, bindInfoCount, pBindInfos);
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, bindInfoCount,
+            internal_pBindInfos.data());
     }
     return vkBindImageMemory2KHR_VkResult_return;
 }
@@ -3259,8 +3489,14 @@ VkDeviceAddress gfxstream_vk_GetBufferDeviceAddressKHR(VkDevice device,
     VkDeviceAddress vkGetBufferDeviceAddressKHR_VkDeviceAddress_return = (VkDeviceAddress)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferDeviceAddressInfo> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pInfo[i].buffer);
+            internal_pInfo[i].buffer = gfxstream_buffer->internal_object;
+        }
         vkGetBufferDeviceAddressKHR_VkDeviceAddress_return = vkEnc->vkGetBufferDeviceAddressKHR(
-            gfxstream_device->internal_object, pInfo, true /* do lock */);
+            gfxstream_device->internal_object, internal_pInfo.data(), true /* do lock */);
     }
     return vkGetBufferDeviceAddressKHR_VkDeviceAddress_return;
 }
@@ -3271,9 +3507,15 @@ uint64_t gfxstream_vk_GetBufferOpaqueCaptureAddressKHR(VkDevice device,
     uint64_t vkGetBufferOpaqueCaptureAddressKHR_uint64_t_return = (uint64_t)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkBufferDeviceAddressInfo> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pInfo[i].buffer);
+            internal_pInfo[i].buffer = gfxstream_buffer->internal_object;
+        }
         vkGetBufferOpaqueCaptureAddressKHR_uint64_t_return =
-            vkEnc->vkGetBufferOpaqueCaptureAddressKHR(gfxstream_device->internal_object, pInfo,
-                                                      true /* do lock */);
+            vkEnc->vkGetBufferOpaqueCaptureAddressKHR(gfxstream_device->internal_object,
+                                                      internal_pInfo.data(), true /* do lock */);
     }
     return vkGetBufferOpaqueCaptureAddressKHR_uint64_t_return;
 }
@@ -3284,9 +3526,15 @@ uint64_t gfxstream_vk_GetDeviceMemoryOpaqueCaptureAddressKHR(
     uint64_t vkGetDeviceMemoryOpaqueCaptureAddressKHR_uint64_t_return = (uint64_t)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDeviceMemoryOpaqueCaptureAddressInfo> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory, internal_pInfo[i].memory);
+            internal_pInfo[i].memory = gfxstream_memory->internal_object;
+        }
         vkGetDeviceMemoryOpaqueCaptureAddressKHR_uint64_t_return =
-            vkEnc->vkGetDeviceMemoryOpaqueCaptureAddressKHR(gfxstream_device->internal_object,
-                                                            pInfo, true /* do lock */);
+            vkEnc->vkGetDeviceMemoryOpaqueCaptureAddressKHR(
+                gfxstream_device->internal_object, internal_pInfo.data(), true /* do lock */);
     }
     return vkGetDeviceMemoryOpaqueCaptureAddressKHR_uint64_t_return;
 }
@@ -3300,10 +3548,17 @@ VkResult gfxstream_vk_GetPipelineExecutablePropertiesKHR(
     VkResult vkGetPipelineExecutablePropertiesKHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkPipelineInfoKHR> internal_pPipelineInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pPipelineInfo[i] = pPipelineInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_pipeline, gfxstream_pipeline,
+                           internal_pPipelineInfo[i].pipeline);
+            internal_pPipelineInfo[i].pipeline = gfxstream_pipeline->internal_object;
+        }
         vkGetPipelineExecutablePropertiesKHR_VkResult_return =
-            vkEnc->vkGetPipelineExecutablePropertiesKHR(gfxstream_device->internal_object,
-                                                        pPipelineInfo, pExecutableCount,
-                                                        pProperties, true /* do lock */);
+            vkEnc->vkGetPipelineExecutablePropertiesKHR(
+                gfxstream_device->internal_object, internal_pPipelineInfo.data(), pExecutableCount,
+                pProperties, true /* do lock */);
     }
     return vkGetPipelineExecutablePropertiesKHR_VkResult_return;
 }
@@ -3315,10 +3570,17 @@ VkResult gfxstream_vk_GetPipelineExecutableStatisticsKHR(
     VkResult vkGetPipelineExecutableStatisticsKHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkPipelineExecutableInfoKHR> internal_pExecutableInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pExecutableInfo[i] = pExecutableInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_pipeline, gfxstream_pipeline,
+                           internal_pExecutableInfo[i].pipeline);
+            internal_pExecutableInfo[i].pipeline = gfxstream_pipeline->internal_object;
+        }
         vkGetPipelineExecutableStatisticsKHR_VkResult_return =
-            vkEnc->vkGetPipelineExecutableStatisticsKHR(gfxstream_device->internal_object,
-                                                        pExecutableInfo, pStatisticCount,
-                                                        pStatistics, true /* do lock */);
+            vkEnc->vkGetPipelineExecutableStatisticsKHR(
+                gfxstream_device->internal_object, internal_pExecutableInfo.data(), pStatisticCount,
+                pStatistics, true /* do lock */);
     }
     return vkGetPipelineExecutableStatisticsKHR_VkResult_return;
 }
@@ -3331,10 +3593,17 @@ VkResult gfxstream_vk_GetPipelineExecutableInternalRepresentationsKHR(
     VkResult vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkPipelineExecutableInfoKHR> internal_pExecutableInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pExecutableInfo[i] = pExecutableInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_pipeline, gfxstream_pipeline,
+                           internal_pExecutableInfo[i].pipeline);
+            internal_pExecutableInfo[i].pipeline = gfxstream_pipeline->internal_object;
+        }
         vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return =
             vkEnc->vkGetPipelineExecutableInternalRepresentationsKHR(
-                gfxstream_device->internal_object, pExecutableInfo, pInternalRepresentationCount,
-                pInternalRepresentations, true /* do lock */);
+                gfxstream_device->internal_object, internal_pExecutableInfo.data(),
+                pInternalRepresentationCount, pInternalRepresentations, true /* do lock */);
     }
     return vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return;
 }
@@ -3452,8 +3721,18 @@ void gfxstream_vk_CmdCopyBuffer2KHR(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdCopyBuffer2KHR(gfxstream_commandBuffer->internal_object, pCopyBufferInfo,
-                                   true /* do lock */);
+        std::vector<VkCopyBufferInfo2> internal_pCopyBufferInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyBufferInfo[i] = pCopyBufferInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_srcBuffer,
+                           internal_pCopyBufferInfo[i].srcBuffer);
+            internal_pCopyBufferInfo[i].srcBuffer = gfxstream_srcBuffer->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_dstBuffer,
+                           internal_pCopyBufferInfo[i].dstBuffer);
+            internal_pCopyBufferInfo[i].dstBuffer = gfxstream_dstBuffer->internal_object;
+        }
+        vkEnc->vkCmdCopyBuffer2KHR(gfxstream_commandBuffer->internal_object,
+                                   internal_pCopyBufferInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdCopyImage2KHR(VkCommandBuffer commandBuffer,
@@ -3462,8 +3741,18 @@ void gfxstream_vk_CmdCopyImage2KHR(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdCopyImage2KHR(gfxstream_commandBuffer->internal_object, pCopyImageInfo,
-                                  true /* do lock */);
+        std::vector<VkCopyImageInfo2> internal_pCopyImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyImageInfo[i] = pCopyImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pCopyImageInfo[i].srcImage);
+            internal_pCopyImageInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pCopyImageInfo[i].dstImage);
+            internal_pCopyImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
+        vkEnc->vkCmdCopyImage2KHR(gfxstream_commandBuffer->internal_object,
+                                  internal_pCopyImageInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdCopyBufferToImage2KHR(VkCommandBuffer commandBuffer,
@@ -3472,8 +3761,19 @@ void gfxstream_vk_CmdCopyBufferToImage2KHR(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkCopyBufferToImageInfo2> internal_pCopyBufferToImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyBufferToImageInfo[i] = pCopyBufferToImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_srcBuffer,
+                           internal_pCopyBufferToImageInfo[i].srcBuffer);
+            internal_pCopyBufferToImageInfo[i].srcBuffer = gfxstream_srcBuffer->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pCopyBufferToImageInfo[i].dstImage);
+            internal_pCopyBufferToImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
         vkEnc->vkCmdCopyBufferToImage2KHR(gfxstream_commandBuffer->internal_object,
-                                          pCopyBufferToImageInfo, true /* do lock */);
+                                          internal_pCopyBufferToImageInfo.data(),
+                                          true /* do lock */);
     }
 }
 void gfxstream_vk_CmdCopyImageToBuffer2KHR(VkCommandBuffer commandBuffer,
@@ -3482,8 +3782,19 @@ void gfxstream_vk_CmdCopyImageToBuffer2KHR(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
+        std::vector<VkCopyImageToBufferInfo2> internal_pCopyImageToBufferInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyImageToBufferInfo[i] = pCopyImageToBufferInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pCopyImageToBufferInfo[i].srcImage);
+            internal_pCopyImageToBufferInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_dstBuffer,
+                           internal_pCopyImageToBufferInfo[i].dstBuffer);
+            internal_pCopyImageToBufferInfo[i].dstBuffer = gfxstream_dstBuffer->internal_object;
+        }
         vkEnc->vkCmdCopyImageToBuffer2KHR(gfxstream_commandBuffer->internal_object,
-                                          pCopyImageToBufferInfo, true /* do lock */);
+                                          internal_pCopyImageToBufferInfo.data(),
+                                          true /* do lock */);
     }
 }
 void gfxstream_vk_CmdBlitImage2KHR(VkCommandBuffer commandBuffer,
@@ -3492,8 +3803,18 @@ void gfxstream_vk_CmdBlitImage2KHR(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdBlitImage2KHR(gfxstream_commandBuffer->internal_object, pBlitImageInfo,
-                                  true /* do lock */);
+        std::vector<VkBlitImageInfo2> internal_pBlitImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pBlitImageInfo[i] = pBlitImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pBlitImageInfo[i].srcImage);
+            internal_pBlitImageInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pBlitImageInfo[i].dstImage);
+            internal_pBlitImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
+        vkEnc->vkCmdBlitImage2KHR(gfxstream_commandBuffer->internal_object,
+                                  internal_pBlitImageInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdResolveImage2KHR(VkCommandBuffer commandBuffer,
@@ -3502,8 +3823,18 @@ void gfxstream_vk_CmdResolveImage2KHR(VkCommandBuffer commandBuffer,
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer);
-        vkEnc->vkCmdResolveImage2KHR(gfxstream_commandBuffer->internal_object, pResolveImageInfo,
-                                     true /* do lock */);
+        std::vector<VkResolveImageInfo2> internal_pResolveImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pResolveImageInfo[i] = pResolveImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pResolveImageInfo[i].srcImage);
+            internal_pResolveImageInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pResolveImageInfo[i].dstImage);
+            internal_pResolveImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
+        vkEnc->vkCmdResolveImage2KHR(gfxstream_commandBuffer->internal_object,
+                                     internal_pResolveImageInfo.data(), true /* do lock */);
     }
 }
 #endif
@@ -3801,10 +4132,17 @@ VkResult gfxstream_vk_GetMemoryAndroidHardwareBufferANDROID(
     VkResult vkGetMemoryAndroidHardwareBufferANDROID_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkMemoryGetAndroidHardwareBufferInfoANDROID> internal_pInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pInfo[i] = pInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory, internal_pInfo[i].memory);
+            internal_pInfo[i].memory = gfxstream_memory->internal_object;
+        }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkGetMemoryAndroidHardwareBufferANDROID_VkResult_return =
-            resources->on_vkGetMemoryAndroidHardwareBufferANDROID(
-                vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pInfo, pBuffer);
+            resources->on_vkGetMemoryAndroidHardwareBufferANDROID(vkEnc, VK_SUCCESS,
+                                                                  gfxstream_device->internal_object,
+                                                                  internal_pInfo.data(), pBuffer);
     }
     return vkGetMemoryAndroidHardwareBufferANDROID_VkResult_return;
 }
@@ -3991,8 +4329,16 @@ VkResult gfxstream_vk_CopyMemoryToImageEXT(
     VkResult vkCopyMemoryToImageEXT_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkCopyMemoryToImageInfoEXT> internal_pCopyMemoryToImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyMemoryToImageInfo[i] = pCopyMemoryToImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pCopyMemoryToImageInfo[i].dstImage);
+            internal_pCopyMemoryToImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
         vkCopyMemoryToImageEXT_VkResult_return = vkEnc->vkCopyMemoryToImageEXT(
-            gfxstream_device->internal_object, pCopyMemoryToImageInfo, true /* do lock */);
+            gfxstream_device->internal_object, internal_pCopyMemoryToImageInfo.data(),
+            true /* do lock */);
     }
     return vkCopyMemoryToImageEXT_VkResult_return;
 }
@@ -4003,8 +4349,16 @@ VkResult gfxstream_vk_CopyImageToMemoryEXT(
     VkResult vkCopyImageToMemoryEXT_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkCopyImageToMemoryInfoEXT> internal_pCopyImageToMemoryInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyImageToMemoryInfo[i] = pCopyImageToMemoryInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pCopyImageToMemoryInfo[i].srcImage);
+            internal_pCopyImageToMemoryInfo[i].srcImage = gfxstream_srcImage->internal_object;
+        }
         vkCopyImageToMemoryEXT_VkResult_return = vkEnc->vkCopyImageToMemoryEXT(
-            gfxstream_device->internal_object, pCopyImageToMemoryInfo, true /* do lock */);
+            gfxstream_device->internal_object, internal_pCopyImageToMemoryInfo.data(),
+            true /* do lock */);
     }
     return vkCopyImageToMemoryEXT_VkResult_return;
 }
@@ -4015,8 +4369,19 @@ VkResult gfxstream_vk_CopyImageToImageEXT(VkDevice device,
     VkResult vkCopyImageToImageEXT_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkCopyImageToImageEXT_VkResult_return = vkEnc->vkCopyImageToImageEXT(
-            gfxstream_device->internal_object, pCopyImageToImageInfo, true /* do lock */);
+        std::vector<VkCopyImageToImageInfoEXT> internal_pCopyImageToImageInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCopyImageToImageInfo[i] = pCopyImageToImageInfo[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_srcImage,
+                           internal_pCopyImageToImageInfo[i].srcImage);
+            internal_pCopyImageToImageInfo[i].srcImage = gfxstream_srcImage->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_dstImage,
+                           internal_pCopyImageToImageInfo[i].dstImage);
+            internal_pCopyImageToImageInfo[i].dstImage = gfxstream_dstImage->internal_object;
+        }
+        vkCopyImageToImageEXT_VkResult_return =
+            vkEnc->vkCopyImageToImageEXT(gfxstream_device->internal_object,
+                                         internal_pCopyImageToImageInfo.data(), true /* do lock */);
     }
     return vkCopyImageToImageEXT_VkResult_return;
 }
@@ -4028,8 +4393,15 @@ VkResult gfxstream_vk_TransitionImageLayoutEXT(
     VkResult vkTransitionImageLayoutEXT_VkResult_return = (VkResult)0;
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkTransitionImageLayoutEXT_VkResult_return = vkEnc->vkTransitionImageLayoutEXT(
-            gfxstream_device->internal_object, transitionCount, pTransitions, true /* do lock */);
+        std::vector<VkHostImageLayoutTransitionInfoEXT> internal_pTransitions(transitionCount);
+        for (uint32_t i = 0; i < transitionCount; ++i) {
+            internal_pTransitions[i] = pTransitions[i];
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pTransitions[i].image);
+            internal_pTransitions[i].image = gfxstream_image->internal_object;
+        }
+        vkTransitionImageLayoutEXT_VkResult_return =
+            vkEnc->vkTransitionImageLayoutEXT(gfxstream_device->internal_object, transitionCount,
+                                              internal_pTransitions.data(), true /* do lock */);
     }
     return vkTransitionImageLayoutEXT_VkResult_return;
 }
@@ -4045,20 +4417,6 @@ void gfxstream_vk_GetImageSubresourceLayout2EXT(VkDevice device, VkImage image,
                                                gfxstream_image->internal_object, pSubresource,
                                                pLayout, true /* do lock */);
     }
-}
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-VkResult gfxstream_vk_ReleaseSwapchainImagesEXT(
-    VkDevice device, const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo) {
-    AEMU_SCOPED_TRACE("vkReleaseSwapchainImagesEXT");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VkResult vkReleaseSwapchainImagesEXT_VkResult_return = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkReleaseSwapchainImagesEXT_VkResult_return = vkEnc->vkReleaseSwapchainImagesEXT(
-            gfxstream_device->internal_object, pReleaseInfo, true /* do lock */);
-    }
-    return vkReleaseSwapchainImagesEXT_VkResult_return;
 }
 #endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
@@ -4215,6 +4573,22 @@ void gfxstream_vk_UpdateDescriptorSetWithTemplateSizedGOOGLE(
                    descriptorUpdateTemplate);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDescriptorImageInfo> internal_pImageInfos(imageInfoCount);
+        for (uint32_t i = 0; i < imageInfoCount; ++i) {
+            internal_pImageInfos[i] = pImageInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_sampler,
+                           internal_pImageInfos[i].sampler);
+            internal_pImageInfos[i].sampler = gfxstream_sampler->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
+                           internal_pImageInfos[i].imageView);
+            internal_pImageInfos[i].imageView = gfxstream_imageView->internal_object;
+        }
+        std::vector<VkDescriptorBufferInfo> internal_pBufferInfos(bufferInfoCount);
+        for (uint32_t i = 0; i < bufferInfoCount; ++i) {
+            internal_pBufferInfos[i] = pBufferInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pBufferInfos[i].buffer);
+            internal_pBufferInfos[i].buffer = gfxstream_buffer->internal_object;
+        }
         std::vector<VkBufferView> internal_pBufferViews(bufferViewCount);
         for (uint32_t i = 0; i < bufferViewCount; ++i) {
             VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pBufferViews, pBufferViews[i]);
@@ -4224,8 +4598,8 @@ void gfxstream_vk_UpdateDescriptorSetWithTemplateSizedGOOGLE(
             gfxstream_device->internal_object, gfxstream_descriptorSet->internal_object,
             gfxstream_descriptorUpdateTemplate->internal_object, imageInfoCount, bufferInfoCount,
             bufferViewCount, pImageInfoEntryIndices, pBufferInfoEntryIndices,
-            pBufferViewEntryIndices, pImageInfos, pBufferInfos, internal_pBufferViews.data(),
-            true /* do lock */);
+            pBufferViewEntryIndices, internal_pImageInfos.data(), internal_pBufferInfos.data(),
+            internal_pBufferViews.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_BeginCommandBufferAsyncGOOGLE(VkCommandBuffer commandBuffer,
@@ -4426,6 +4800,22 @@ void gfxstream_vk_UpdateDescriptorSetWithTemplateSized2GOOGLE(
                    descriptorUpdateTemplate);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDescriptorImageInfo> internal_pImageInfos(imageInfoCount);
+        for (uint32_t i = 0; i < imageInfoCount; ++i) {
+            internal_pImageInfos[i] = pImageInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_sampler,
+                           internal_pImageInfos[i].sampler);
+            internal_pImageInfos[i].sampler = gfxstream_sampler->internal_object;
+            VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
+                           internal_pImageInfos[i].imageView);
+            internal_pImageInfos[i].imageView = gfxstream_imageView->internal_object;
+        }
+        std::vector<VkDescriptorBufferInfo> internal_pBufferInfos(bufferInfoCount);
+        for (uint32_t i = 0; i < bufferInfoCount; ++i) {
+            internal_pBufferInfos[i] = pBufferInfos[i];
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internal_pBufferInfos[i].buffer);
+            internal_pBufferInfos[i].buffer = gfxstream_buffer->internal_object;
+        }
         std::vector<VkBufferView> internal_pBufferViews(bufferViewCount);
         for (uint32_t i = 0; i < bufferViewCount; ++i) {
             VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pBufferViews, pBufferViews[i]);
@@ -4435,8 +4825,9 @@ void gfxstream_vk_UpdateDescriptorSetWithTemplateSized2GOOGLE(
             gfxstream_device->internal_object, gfxstream_descriptorSet->internal_object,
             gfxstream_descriptorUpdateTemplate->internal_object, imageInfoCount, bufferInfoCount,
             bufferViewCount, inlineUniformBlockCount, pImageInfoEntryIndices,
-            pBufferInfoEntryIndices, pBufferViewEntryIndices, pImageInfos, pBufferInfos,
-            internal_pBufferViews.data(), pInlineUniformBlockData, true /* do lock */);
+            pBufferInfoEntryIndices, pBufferViewEntryIndices, internal_pImageInfos.data(),
+            internal_pBufferInfos.data(), internal_pBufferViews.data(), pInlineUniformBlockData,
+            true /* do lock */);
     }
 }
 void gfxstream_vk_QueueSubmitAsync2GOOGLE(VkQueue queue, uint32_t submitCount,
