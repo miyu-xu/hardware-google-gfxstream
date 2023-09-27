@@ -2877,46 +2877,6 @@ DEFINE_ALIAS_FUNCTION(transform_fromhost_VkImageSubresource2KHR,
                       transform_fromhost_VkImageSubresource2EXT)
 
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void transform_tohost_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    ResourceTracker* resourceTracker,
-    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toTransform);
-
-void transform_fromhost_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    ResourceTracker* resourceTracker,
-    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* toTransform);
-
-void transform_tohost_VkSwapchainPresentFenceInfoEXT(ResourceTracker* resourceTracker,
-                                                     VkSwapchainPresentFenceInfoEXT* toTransform);
-
-void transform_fromhost_VkSwapchainPresentFenceInfoEXT(ResourceTracker* resourceTracker,
-                                                       VkSwapchainPresentFenceInfoEXT* toTransform);
-
-void transform_tohost_VkSwapchainPresentModesCreateInfoEXT(
-    ResourceTracker* resourceTracker, VkSwapchainPresentModesCreateInfoEXT* toTransform);
-
-void transform_fromhost_VkSwapchainPresentModesCreateInfoEXT(
-    ResourceTracker* resourceTracker, VkSwapchainPresentModesCreateInfoEXT* toTransform);
-
-void transform_tohost_VkSwapchainPresentModeInfoEXT(ResourceTracker* resourceTracker,
-                                                    VkSwapchainPresentModeInfoEXT* toTransform);
-
-void transform_fromhost_VkSwapchainPresentModeInfoEXT(ResourceTracker* resourceTracker,
-                                                      VkSwapchainPresentModeInfoEXT* toTransform);
-
-void transform_tohost_VkSwapchainPresentScalingCreateInfoEXT(
-    ResourceTracker* resourceTracker, VkSwapchainPresentScalingCreateInfoEXT* toTransform);
-
-void transform_fromhost_VkSwapchainPresentScalingCreateInfoEXT(
-    ResourceTracker* resourceTracker, VkSwapchainPresentScalingCreateInfoEXT* toTransform);
-
-void transform_tohost_VkReleaseSwapchainImagesInfoEXT(ResourceTracker* resourceTracker,
-                                                      VkReleaseSwapchainImagesInfoEXT* toTransform);
-
-void transform_fromhost_VkReleaseSwapchainImagesInfoEXT(
-    ResourceTracker* resourceTracker, VkReleaseSwapchainImagesInfoEXT* toTransform);
-
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 DEFINE_ALIAS_FUNCTION(transform_tohost_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures,
                       transform_tohost_VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT)

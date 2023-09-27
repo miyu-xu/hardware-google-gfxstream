@@ -177,8 +177,6 @@ namespace vk {
 #endif
 #ifdef VK_EXT_host_image_copy
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
@@ -865,10 +863,6 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
         (PFN_vkTransitionImageLayoutEXT)dlSymFunc(lib, "vkTransitionImageLayoutEXT");
     out->vkGetImageSubresourceLayout2EXT =
         (PFN_vkGetImageSubresourceLayout2EXT)dlSymFunc(lib, "vkGetImageSubresourceLayout2EXT");
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-    out->vkReleaseSwapchainImagesEXT =
-        (PFN_vkReleaseSwapchainImagesEXT)dlSymFunc(lib, "vkReleaseSwapchainImagesEXT");
 #endif
 #ifdef VK_EXT_private_data
     out->vkCreatePrivateDataSlotEXT =
@@ -1788,10 +1782,6 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
         (PFN_vkGetImageSubresourceLayout2EXT)vk->vkGetInstanceProcAddr(
             instance, "vkGetImageSubresourceLayout2EXT");
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    out->vkReleaseSwapchainImagesEXT = (PFN_vkReleaseSwapchainImagesEXT)vk->vkGetInstanceProcAddr(
-        instance, "vkReleaseSwapchainImagesEXT");
-#endif
 #ifdef VK_EXT_private_data
     out->vkCreatePrivateDataSlotEXT = (PFN_vkCreatePrivateDataSlotEXT)vk->vkGetInstanceProcAddr(
         instance, "vkCreatePrivateDataSlotEXT");
@@ -2705,10 +2695,6 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
     out->vkGetImageSubresourceLayout2EXT =
         (PFN_vkGetImageSubresourceLayout2EXT)vk->vkGetDeviceProcAddr(
             device, "vkGetImageSubresourceLayout2EXT");
-#endif
-#ifdef VK_EXT_swapchain_maintenance1
-    out->vkReleaseSwapchainImagesEXT = (PFN_vkReleaseSwapchainImagesEXT)vk->vkGetDeviceProcAddr(
-        device, "vkReleaseSwapchainImagesEXT");
 #endif
 #ifdef VK_EXT_private_data
     out->vkCreatePrivateDataSlotEXT = (PFN_vkCreatePrivateDataSlotEXT)vk->vkGetDeviceProcAddr(
