@@ -130,14 +130,15 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkCreateBufferWithRequirementsGOOGLE",
     # Compound type output
     "vkEnumeratePhysicalDeviceGroups",
-
     # Handle types in nested compoundTypes
-    "vkQueueBindSparse",
-    "vkQueueBindSparseAsyncGOOGLE",
-    "vkUpdateDescriptorSets",
-    "vkQueueCommitDescriptorSetUpdatesGOOGLE",
     "vkCreateGraphicsPipelines",
     "vkCreateComputePipelines",
+    "vkUpdateDescriptorSets",
+    "vkQueueCommitDescriptorSetUpdatesGOOGLE",
+
+    # TODO: Add handwritten implementations ...
+    "vkQueueBindSparse",
+    "vkQueueBindSparseAsyncGOOGLE",
 ]
 
 # TODO: handles with no equivalent gfxstream objects (yet).
