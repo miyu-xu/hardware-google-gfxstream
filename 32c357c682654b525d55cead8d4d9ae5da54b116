@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "028af34e_ad3c9d71",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-27T15:57:26Z",
+      "side": 1,
+      "message": "not sure why you need this workaround.  If you need to open EGL before GLES, you can probably make that happen though\n\n```\ndiff --git a/host/gl/glestranslator/EGL/EglGlobalInfo.cpp b/host/gl/glestranslator/EGL/EglGlobalInfo.cpp\nindex 1603f41a..f4e17c52 100644\n--- a/host/gl/glestranslator/EGL/EglGlobalInfo.cpp\n+++ b/host/gl/glestranslator/EGL/EglGlobalInfo.cpp\n@@ -68,6 +68,7 @@ EglGlobalInfo* EglGlobalInfo::getInstance(bool nullEgl) {\n }\n \n EglGlobalInfo::EglGlobalInfo(bool nullEgl) {\n+    m_display \u003d m_engine-\u003egetDefaultDisplay();\n #ifdef ANDROID\n     sEgl2Egl \u003d true;\n     sEgl2EglSyncSafeToUse \u003d true;\n@@ -80,7 +81,6 @@ EglGlobalInfo::EglGlobalInfo(bool nullEgl) {\n         m_engine \u003d EglOS::Engine::getHostInstance();\n     }\n #endif\n-    m_display \u003d m_engine-\u003egetDefaultDisplay();\n }\n ```",
+      "revId": "32c357c682654b525d55cead8d4d9ae5da54b116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c343bc09_100be832",
