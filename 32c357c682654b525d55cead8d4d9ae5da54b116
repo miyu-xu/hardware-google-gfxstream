@@ -16,6 +16,29 @@
       "message": "platform_qnx.cpp has a little hack that was needed to correctly link QNX EGL and GLES libraries. I don\u0027t fully understand the issue or how this corrects it. If you have any ideas that will allow me to get rid of this, please let me know.",
       "revId": "32c357c682654b525d55cead8d4d9ae5da54b116",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c343bc09_100be832",
+        "filename": "qnx/host/platform_qnx.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-09-27T15:40:01Z",
+      "side": 1,
+      "message": "please add copyright header used by AOSP projects (essentially mit license)",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 4,
+        "endChar": 0
+      },
+      "revId": "32c357c682654b525d55cead8d4d9ae5da54b116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
