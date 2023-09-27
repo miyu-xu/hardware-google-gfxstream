@@ -551,9 +551,6 @@ struct VulkanDispatch {
     PFN_vkTransitionImageLayoutEXT vkTransitionImageLayoutEXT;
     PFN_vkGetImageSubresourceLayout2EXT vkGetImageSubresourceLayout2EXT;
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    PFN_vkReleaseSwapchainImagesEXT vkReleaseSwapchainImagesEXT;
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment

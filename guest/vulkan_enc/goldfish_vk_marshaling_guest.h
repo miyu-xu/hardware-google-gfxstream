@@ -3397,52 +3397,6 @@ DEFINE_ALIAS_FUNCTION(unmarshal_VkImageSubresource2KHR, unmarshal_VkImageSubreso
 #define OP_vkTransitionImageLayoutEXT 242817558
 #define OP_vkGetImageSubresourceLayout2EXT 296152177
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void marshal_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VulkanStreamGuest* vkStream, VkStructureType rootType,
-    const VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* forMarshaling);
-
-void unmarshal_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VulkanStreamGuest* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* forUnmarshaling);
-
-void marshal_VkSwapchainPresentFenceInfoEXT(VulkanStreamGuest* vkStream, VkStructureType rootType,
-                                            const VkSwapchainPresentFenceInfoEXT* forMarshaling);
-
-void unmarshal_VkSwapchainPresentFenceInfoEXT(VulkanStreamGuest* vkStream, VkStructureType rootType,
-                                              VkSwapchainPresentFenceInfoEXT* forUnmarshaling);
-
-void marshal_VkSwapchainPresentModesCreateInfoEXT(
-    VulkanStreamGuest* vkStream, VkStructureType rootType,
-    const VkSwapchainPresentModesCreateInfoEXT* forMarshaling);
-
-void unmarshal_VkSwapchainPresentModesCreateInfoEXT(
-    VulkanStreamGuest* vkStream, VkStructureType rootType,
-    VkSwapchainPresentModesCreateInfoEXT* forUnmarshaling);
-
-void marshal_VkSwapchainPresentModeInfoEXT(VulkanStreamGuest* vkStream, VkStructureType rootType,
-                                           const VkSwapchainPresentModeInfoEXT* forMarshaling);
-
-void unmarshal_VkSwapchainPresentModeInfoEXT(VulkanStreamGuest* vkStream, VkStructureType rootType,
-                                             VkSwapchainPresentModeInfoEXT* forUnmarshaling);
-
-void marshal_VkSwapchainPresentScalingCreateInfoEXT(
-    VulkanStreamGuest* vkStream, VkStructureType rootType,
-    const VkSwapchainPresentScalingCreateInfoEXT* forMarshaling);
-
-void unmarshal_VkSwapchainPresentScalingCreateInfoEXT(
-    VulkanStreamGuest* vkStream, VkStructureType rootType,
-    VkSwapchainPresentScalingCreateInfoEXT* forUnmarshaling);
-
-void marshal_VkReleaseSwapchainImagesInfoEXT(VulkanStreamGuest* vkStream, VkStructureType rootType,
-                                             const VkReleaseSwapchainImagesInfoEXT* forMarshaling);
-
-void unmarshal_VkReleaseSwapchainImagesInfoEXT(VulkanStreamGuest* vkStream,
-                                               VkStructureType rootType,
-                                               VkReleaseSwapchainImagesInfoEXT* forUnmarshaling);
-
-#define OP_vkReleaseSwapchainImagesEXT 230545069
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 DEFINE_ALIAS_FUNCTION(marshal_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures,
                       marshal_VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT)

@@ -18583,57 +18583,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 break;
             }
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-            case OP_vkReleaseSwapchainImagesEXT: {
-                android::base::beginTrace("vkReleaseSwapchainImagesEXT decode");
-                VkDevice device;
-                const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo;
-                // Begin non wrapped dispatchable handle unboxing for device;
-                uint64_t cgen_var_0;
-                memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
-                *readStreamPtrPtr += 1 * 8;
-                *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
-                auto unboxed_device = unbox_VkDevice(device);
-                auto vk = dispatch_VkDevice(device);
-                // End manual dispatchable handle unboxing for device;
-                vkReadStream->alloc((void**)&pReleaseInfo,
-                                    sizeof(const VkReleaseSwapchainImagesInfoEXT));
-                reservedunmarshal_VkReleaseSwapchainImagesInfoEXT(
-                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                    (VkReleaseSwapchainImagesInfoEXT*)(pReleaseInfo), readStreamPtrPtr);
-                if (pReleaseInfo) {
-                    transform_tohost_VkReleaseSwapchainImagesInfoEXT(
-                        m_state, (VkReleaseSwapchainImagesInfoEXT*)(pReleaseInfo));
-                }
-                if (m_logCalls) {
-                    fprintf(stderr, "stream %p: call vkReleaseSwapchainImagesEXT 0x%llx 0x%llx \n",
-                            ioStream, (unsigned long long)device, (unsigned long long)pReleaseInfo);
-                }
-                VkResult vkReleaseSwapchainImagesEXT_VkResult_return = (VkResult)0;
-                vkReleaseSwapchainImagesEXT_VkResult_return =
-                    vk->vkReleaseSwapchainImagesEXT(unboxed_device, pReleaseInfo);
-                if ((vkReleaseSwapchainImagesEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkReleaseSwapchainImagesEXT_VkResult_return, opcode,
-                                             context);
-                vkStream->unsetHandleMapping();
-                vkStream->write(&vkReleaseSwapchainImagesEXT_VkResult_return, sizeof(VkResult));
-                vkStream->commitWrite();
-                vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
-                                         (uintptr_t)snapshotTraceBegin);
-                size_t snapshotTraceBytes = vkReadStream->endTrace();
-                if (m_state->snapshotsEnabled()) {
-                    m_state->snapshot()->vkReleaseSwapchainImagesEXT(
-                        snapshotTraceBegin, snapshotTraceBytes, &m_pool,
-                        vkReleaseSwapchainImagesEXT_VkResult_return, device, pReleaseInfo);
-                }
-                vkReadStream->clearPool();
-                if (queueSubmitWithCommandsEnabled)
-                    seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
-                android::base::endTrace();
-                break;
-            }
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment

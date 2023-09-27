@@ -1801,33 +1801,6 @@ DEFINE_ALIAS_FUNCTION(deepcopy_VkSubresourceLayout2KHR, deepcopy_VkSubresourceLa
 DEFINE_ALIAS_FUNCTION(deepcopy_VkImageSubresource2KHR, deepcopy_VkImageSubresource2EXT)
 
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-void deepcopy_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    Allocator* alloc, VkStructureType rootType,
-    const VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* from,
-    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* to);
-
-void deepcopy_VkSwapchainPresentFenceInfoEXT(Allocator* alloc, VkStructureType rootType,
-                                             const VkSwapchainPresentFenceInfoEXT* from,
-                                             VkSwapchainPresentFenceInfoEXT* to);
-
-void deepcopy_VkSwapchainPresentModesCreateInfoEXT(Allocator* alloc, VkStructureType rootType,
-                                                   const VkSwapchainPresentModesCreateInfoEXT* from,
-                                                   VkSwapchainPresentModesCreateInfoEXT* to);
-
-void deepcopy_VkSwapchainPresentModeInfoEXT(Allocator* alloc, VkStructureType rootType,
-                                            const VkSwapchainPresentModeInfoEXT* from,
-                                            VkSwapchainPresentModeInfoEXT* to);
-
-void deepcopy_VkSwapchainPresentScalingCreateInfoEXT(
-    Allocator* alloc, VkStructureType rootType, const VkSwapchainPresentScalingCreateInfoEXT* from,
-    VkSwapchainPresentScalingCreateInfoEXT* to);
-
-void deepcopy_VkReleaseSwapchainImagesInfoEXT(Allocator* alloc, VkStructureType rootType,
-                                              const VkReleaseSwapchainImagesInfoEXT* from,
-                                              VkReleaseSwapchainImagesInfoEXT* to);
-
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 DEFINE_ALIAS_FUNCTION(deepcopy_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures,
                       deepcopy_VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT)

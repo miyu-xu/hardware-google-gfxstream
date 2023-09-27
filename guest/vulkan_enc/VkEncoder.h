@@ -999,11 +999,6 @@ class VkEncoder {
                                          const VkImageSubresource2KHR* pSubresource,
                                          VkSubresourceLayout2KHR* pLayout, uint32_t doLock);
 #endif
-#ifdef VK_EXT_swapchain_maintenance1
-    VkResult vkReleaseSwapchainImagesEXT(VkDevice device,
-                                         const VkReleaseSwapchainImagesInfoEXT* pReleaseInfo,
-                                         uint32_t doLock);
-#endif
 #ifdef VK_EXT_shader_demote_to_helper_invocation
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
