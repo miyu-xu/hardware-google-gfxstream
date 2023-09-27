@@ -80,6 +80,7 @@ struct gfxstream_vk_instance {
 struct gfxstream_vk_physical_device {
    struct vk_physical_device vk;
    struct gfxstream_vk_instance *instance;
+   vk_physical_device_dispatch_table dispatch_table;
    VkPhysicalDevice internal_object;
 };
 
