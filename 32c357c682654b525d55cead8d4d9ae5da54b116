@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "46cc865b_4150d2da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2036360
+      },
+      "writtenOn": "2023-09-27T17:16:44Z",
+      "side": 1,
+      "message": "I was really hoping this would work, unfortunately it didn\u0027t.\n\nWithout the:\n```\nvoid link_EGL_GLES2(void) {\n    eglGetDisplay(EGL_DEFAULT_DISPLAY);\n    glViewport(0, 0, 0, 0);\n}\n```\nafter linking, ldd shows that libEGL and libGLESv2 aren\u0027t included:\n```\n# ldd /stage/usr/lib/libgfxstream_backend.so\n/stage/usr/lib/libgfxstream_backend.so:\n        libgfxstream_backend.so.0 \u003d\u003e /stage/usr/lib/libgfxstream_backend.so.0.1.2 (0x1cdb50e000)\n        libscreen.so.1 \u003d\u003e /stage/usr/lib/libscreen.so.1 (0x1cdc19a000)\n        libc++.so.1 \u003d\u003e /ifs/lib64/libc++.so.1 (0x1cdc1c4000)\n        libm.so.3 \u003d\u003e /ifs/lib64/libm.so.3 (0x1cdc2ab000)\n        libcatalog.so.1 \u003d\u003e /lib/libcatalog.so.1 (0x1cdc2f9000)\n```\nand hit the runtime Unresolved symbols error.",
+      "parentUuid": "028af34e_ad3c9d71",
+      "revId": "32c357c682654b525d55cead8d4d9ae5da54b116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c343bc09_100be832",
