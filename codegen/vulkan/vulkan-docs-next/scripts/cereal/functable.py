@@ -114,9 +114,11 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkEnumeratePhysicalDevices",
     "vkCreateDevice",
     "vkDestroyDevice",
-    # Manual vk_*_init() call w/ special params
+    # Manual alloc/free + vk_*_init/free() call w/ special params
     "vkGetDeviceQueue",
     "vkGetDeviceQueue2",
+    "vkCreateCommandPool",
+    "vkDestroyCommandPool",
     # Special cases to handle array create/destroy
     "vkAllocateCommandBuffers",
     "vkFreeCommandBuffers",
@@ -135,7 +137,7 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkUpdateDescriptorSets",
     "vkQueueCommitDescriptorSetUpdatesGOOGLE",
 
-    # TODO: Add handwritten implementations ...
+    # TODO: Finish handwritten implementations ...
     "vkQueueBindSparse",
     "vkQueueBindSparseAsyncGOOGLE",
 ]
@@ -153,6 +155,7 @@ HANDLES_MESA_VK = {
     "VkPhysicalDevice",
     "VkDevice",
     "VkQueue",
+    "VkCommandPool",
     "VkCommandBuffer",
     # Auto-generated creation/destroy
     "VkDeviceMemory",

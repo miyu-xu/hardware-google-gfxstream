@@ -38,6 +38,7 @@
 
 #include "vk_alloc.h"
 #include "vk_buffer.h"
+#include "vk_command_pool.h"
 #include "vk_command_buffer.h"
 #include "vk_device.h"
 #include "vk_device_memory.h"
@@ -126,7 +127,7 @@ struct gfxstream_vk_buffer {
 };
 
 struct gfxstream_vk_command_pool {
-   struct vk_object_base base;
+   struct vk_command_pool vk;
    VkCommandPool internal_object;
 };
 
@@ -214,7 +215,7 @@ VK_DEFINE_HANDLE_CASTS(gfxstream_vk_physical_device, vk.base, VkPhysicalDevice,
                        VK_OBJECT_TYPE_PHYSICAL_DEVICE)
 VK_DEFINE_HANDLE_CASTS(gfxstream_vk_queue, vk.base, VkQueue, VK_OBJECT_TYPE_QUEUE)
 
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_command_pool, base, VkCommandPool,
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_command_pool, vk.base, VkCommandPool,
                                VK_OBJECT_TYPE_COMMAND_POOL)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_buffer, vk.base, VkBuffer,
                                VK_OBJECT_TYPE_BUFFER)

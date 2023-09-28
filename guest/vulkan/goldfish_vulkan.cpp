@@ -715,6 +715,47 @@ void gfxstream_vk_GetDeviceQueue2(VkDevice device, const VkDeviceQueueInfo2* pQu
     }
 }
 
+VkResult gfxstream_vk_CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
+                                        const VkAllocationCallbacks* pAllocator,
+                                        VkCommandPool* pCommandPool) {
+    AEMU_SCOPED_TRACE("vkCreateCommandPool");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VkResult result = (VkResult)0;
+    struct gfxstream_vk_command_pool* gfxstream_pCommandPool = (gfxstream_vk_command_pool*)vk_zalloc2(
+        &gfxstream_device->vk.alloc,
+        pAllocator,
+        sizeof(gfxstream_vk_command_pool),
+        8,
+        VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    result = gfxstream_pCommandPool ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == result) {
+        result = vk_command_pool_init(&gfxstream_device->vk, &gfxstream_pCommandPool->vk, pCreateInfo, pAllocator);
+    }
+    if (VK_SUCCESS == result) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        result = vkEnc->vkCreateCommandPool(
+            gfxstream_device->internal_object, pCreateInfo, pAllocator,
+            &gfxstream_pCommandPool->internal_object, true /* do lock */);
+    }
+    *pCommandPool = gfxstream_vk_command_pool_to_handle(gfxstream_pCommandPool);
+    return result;
+}
+
+void gfxstream_vk_DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
+                                     const VkAllocationCallbacks* pAllocator) {
+    AEMU_SCOPED_TRACE("vkDestroyCommandPool");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VK_FROM_HANDLE(gfxstream_vk_command_pool, gfxstream_commandPool, commandPool);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        vkEnc->vkDestroyCommandPool(gfxstream_device->internal_object,
+                                    gfxstream_commandPool->internal_object, pAllocator,
+                                    true /* do lock */);
+    }
+    vk_command_pool_finish(&gfxstream_commandPool->vk);
+    vk_free(&gfxstream_commandPool->vk.alloc, gfxstream_commandPool);
+}
+
 VkResult gfxstream_vk_AllocateCommandBuffers(VkDevice device,
                                              const VkCommandBufferAllocateInfo* pAllocateInfo,
                                              VkCommandBuffer* pCommandBuffers) {
@@ -727,13 +768,20 @@ VkResult gfxstream_vk_AllocateCommandBuffers(VkDevice device,
             &gfxstream_device->vk.alloc,
             sizeof(struct gfxstream_vk_command_buffer),
             8,
-            VK_SYSTEM_ALLOCATION_SCOPE_DEVICE);
+            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
         result = gfxstream_commandBuffers[i] ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
         if (VK_SUCCESS != result) {
             break;
         }
     }
-
+    for(uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
+        VK_FROM_HANDLE(gfxstream_vk_command_pool, gfxstream_commandPool, pAllocateInfo->commandPool);
+        // TODO: Provide vk_command_buffers_ops ?
+        result = vk_command_buffer_init(&gfxstream_commandPool->vk, &gfxstream_commandBuffers[i]->vk, NULL, pAllocateInfo->level);
+        if (VK_SUCCESS != result) {
+            break;
+        }
+    }
     if (VK_SUCCESS == result) {
         // Create gfxstream-internal commandBuffer array
         std::vector<VkCommandBuffer> internal_objects(pAllocateInfo->commandBufferCount);
@@ -776,6 +824,7 @@ void gfxstream_vk_FreeCommandBuffers(VkDevice device, VkCommandPool commandPool,
     }
     for (uint32_t i = 0; i < commandBufferCount; i++) {
         VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, pCommandBuffers[i]);
+        vk_command_buffer_finish(&gfxstream_commandBuffer->vk);
         vk_free(&gfxstream_device->vk.alloc, gfxstream_commandBuffer);
     }
 }
