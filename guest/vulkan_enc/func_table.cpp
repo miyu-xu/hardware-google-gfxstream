@@ -238,11 +238,9 @@ VkResult gfxstream_vk_AllocateMemory(VkDevice device, const VkMemoryAllocateInfo
     AEMU_SCOPED_TRACE("vkAllocateMemory");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkAllocateMemory_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_device_memory* gfxstream_pMemory =
         (struct gfxstream_vk_device_memory*)vk_device_memory_create(
-            (vk_device*)gfxstream_device, pAllocateInfo, pMesaAllocator,
+            (vk_device*)gfxstream_device, pAllocateInfo, pAllocator,
             sizeof(struct gfxstream_vk_device_memory));
     vkAllocateMemory_VkResult_return = gfxstream_pMemory ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkAllocateMemory_VkResult_return) {
@@ -266,9 +264,7 @@ void gfxstream_vk_FreeMemory(VkDevice device, VkDeviceMemory memory,
         resources->on_vkFreeMemory(vkEnc, gfxstream_device->internal_object,
                                    gfxstream_memory->internal_object, pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_device_memory_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_memory->vk);
+    vk_device_memory_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_memory->vk);
 }
 VkResult gfxstream_vk_MapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset,
                                 VkDeviceSize size, VkMemoryMapFlags flags, void** ppData) {
@@ -437,10 +433,8 @@ VkResult gfxstream_vk_CreateFence(VkDevice device, const VkFenceCreateInfo* pCre
     AEMU_SCOPED_TRACE("vkCreateFence");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateFence_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    struct gfxstream_vk_fence* gfxstream_pFence = (struct gfxstream_vk_fence*)vk_zalloc(
-        pMesaAllocator, sizeof(struct gfxstream_vk_fence), 8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    struct gfxstream_vk_fence* gfxstream_pFence = (gfxstream_vk_fence*)vk_object_zalloc(
+        &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_fence), VK_OBJECT_TYPE_FENCE);
     vkCreateFence_VkResult_return = gfxstream_pFence ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateFence_VkResult_return) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -462,9 +456,7 @@ void gfxstream_vk_DestroyFence(VkDevice device, VkFence fence,
         vkEnc->vkDestroyFence(gfxstream_device->internal_object, gfxstream_fence->internal_object,
                               pAllocator, true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_fence);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_fence);
 }
 VkResult gfxstream_vk_ResetFences(VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
     AEMU_SCOPED_TRACE("vkResetFences");
@@ -522,11 +514,9 @@ VkResult gfxstream_vk_CreateSemaphore(VkDevice device, const VkSemaphoreCreateIn
     AEMU_SCOPED_TRACE("vkCreateSemaphore");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateSemaphore_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    struct gfxstream_vk_semaphore* gfxstream_pSemaphore = (struct gfxstream_vk_semaphore*)vk_zalloc(
-        pMesaAllocator, sizeof(struct gfxstream_vk_semaphore), 8,
-        VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    struct gfxstream_vk_semaphore* gfxstream_pSemaphore = (gfxstream_vk_semaphore*)vk_object_zalloc(
+        &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_semaphore),
+        VK_OBJECT_TYPE_SEMAPHORE);
     vkCreateSemaphore_VkResult_return =
         gfxstream_pSemaphore ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateSemaphore_VkResult_return) {
@@ -550,19 +540,15 @@ void gfxstream_vk_DestroySemaphore(VkDevice device, VkSemaphore semaphore,
         resources->on_vkDestroySemaphore(vkEnc, gfxstream_device->internal_object,
                                          gfxstream_semaphore->internal_object, pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_semaphore);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_semaphore);
 }
 VkResult gfxstream_vk_CreateEvent(VkDevice device, const VkEventCreateInfo* pCreateInfo,
                                   const VkAllocationCallbacks* pAllocator, VkEvent* pEvent) {
     AEMU_SCOPED_TRACE("vkCreateEvent");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateEvent_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    struct gfxstream_vk_event* gfxstream_pEvent = (struct gfxstream_vk_event*)vk_zalloc(
-        pMesaAllocator, sizeof(struct gfxstream_vk_event), 8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    struct gfxstream_vk_event* gfxstream_pEvent = (gfxstream_vk_event*)vk_object_zalloc(
+        &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_event), VK_OBJECT_TYPE_EVENT);
     vkCreateEvent_VkResult_return = gfxstream_pEvent ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateEvent_VkResult_return) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -583,9 +569,7 @@ void gfxstream_vk_DestroyEvent(VkDevice device, VkEvent event,
         vkEnc->vkDestroyEvent(gfxstream_device->internal_object, gfxstream_event->internal_object,
                               pAllocator, true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_event);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_event);
 }
 VkResult gfxstream_vk_GetEventStatus(VkDevice device, VkEvent event) {
     AEMU_SCOPED_TRACE("vkGetEventStatus");
@@ -632,11 +616,9 @@ VkResult gfxstream_vk_CreateQueryPool(VkDevice device, const VkQueryPoolCreateIn
     AEMU_SCOPED_TRACE("vkCreateQueryPool");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateQueryPool_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_query_pool* gfxstream_pQueryPool =
         (struct gfxstream_vk_query_pool*)vk_query_pool_create(
-            (vk_device*)gfxstream_device, pCreateInfo, pMesaAllocator,
+            (vk_device*)gfxstream_device, pCreateInfo, pAllocator,
             sizeof(struct gfxstream_vk_query_pool));
     vkCreateQueryPool_VkResult_return =
         gfxstream_pQueryPool ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -660,9 +642,7 @@ void gfxstream_vk_DestroyQueryPool(VkDevice device, VkQueryPool queryPool,
                                   gfxstream_queryPool->internal_object, pAllocator,
                                   true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_query_pool_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_queryPool->vk);
+    vk_query_pool_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_queryPool->vk);
 }
 VkResult gfxstream_vk_GetQueryPoolResults(VkDevice device, VkQueryPool queryPool,
                                           uint32_t firstQuery, uint32_t queryCount, size_t dataSize,
@@ -685,11 +665,8 @@ VkResult gfxstream_vk_CreateBuffer(VkDevice device, const VkBufferCreateInfo* pC
     AEMU_SCOPED_TRACE("vkCreateBuffer");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateBuffer_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_buffer* gfxstream_pBuffer = (struct gfxstream_vk_buffer*)vk_buffer_create(
-        (vk_device*)gfxstream_device, pCreateInfo, pMesaAllocator,
-        sizeof(struct gfxstream_vk_buffer));
+        (vk_device*)gfxstream_device, pCreateInfo, pAllocator, sizeof(struct gfxstream_vk_buffer));
     vkCreateBuffer_VkResult_return = gfxstream_pBuffer ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateBuffer_VkResult_return) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -712,9 +689,7 @@ void gfxstream_vk_DestroyBuffer(VkDevice device, VkBuffer buffer,
         resources->on_vkDestroyBuffer(vkEnc, gfxstream_device->internal_object,
                                       gfxstream_buffer->internal_object, pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_buffer_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_buffer->vk);
+    vk_buffer_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_buffer->vk);
 }
 VkResult gfxstream_vk_CreateBufferView(VkDevice device, const VkBufferViewCreateInfo* pCreateInfo,
                                        const VkAllocationCallbacks* pAllocator,
@@ -722,11 +697,9 @@ VkResult gfxstream_vk_CreateBufferView(VkDevice device, const VkBufferViewCreate
     AEMU_SCOPED_TRACE("vkCreateBufferView");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateBufferView_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_buffer_view* gfxstream_pView =
         (struct gfxstream_vk_buffer_view*)vk_buffer_view_create(
-            (vk_device*)gfxstream_device, pCreateInfo, pMesaAllocator,
+            (vk_device*)gfxstream_device, pCreateInfo, pAllocator,
             sizeof(struct gfxstream_vk_buffer_view));
     vkCreateBufferView_VkResult_return = gfxstream_pView ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateBufferView_VkResult_return) {
@@ -756,20 +729,15 @@ void gfxstream_vk_DestroyBufferView(VkDevice device, VkBufferView bufferView,
                                    gfxstream_bufferView->internal_object, pAllocator,
                                    true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_buffer_view_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_bufferView->vk);
+    vk_buffer_view_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_bufferView->vk);
 }
 VkResult gfxstream_vk_CreateImage(VkDevice device, const VkImageCreateInfo* pCreateInfo,
                                   const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
     AEMU_SCOPED_TRACE("vkCreateImage");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateImage_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_image* gfxstream_pImage = (struct gfxstream_vk_image*)vk_image_create(
-        (vk_device*)gfxstream_device, pCreateInfo, pMesaAllocator,
-        sizeof(struct gfxstream_vk_image));
+        (vk_device*)gfxstream_device, pCreateInfo, pAllocator, sizeof(struct gfxstream_vk_image));
     vkCreateImage_VkResult_return = gfxstream_pImage ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateImage_VkResult_return) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -792,9 +760,7 @@ void gfxstream_vk_DestroyImage(VkDevice device, VkImage image,
         resources->on_vkDestroyImage(vkEnc, gfxstream_device->internal_object,
                                      gfxstream_image->internal_object, pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_image_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_image->vk);
+    vk_image_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_image->vk);
 }
 void gfxstream_vk_GetImageSubresourceLayout(VkDevice device, VkImage image,
                                             const VkImageSubresource* pSubresource,
@@ -820,9 +786,7 @@ void gfxstream_vk_DestroyImageView(VkDevice device, VkImageView imageView,
                                   gfxstream_imageView->internal_object, pAllocator,
                                   true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_image_view_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_imageView->vk);
+    vk_image_view_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_imageView->vk);
 }
 VkResult gfxstream_vk_CreateShaderModule(VkDevice device,
                                          const VkShaderModuleCreateInfo* pCreateInfo,
@@ -831,12 +795,10 @@ VkResult gfxstream_vk_CreateShaderModule(VkDevice device,
     AEMU_SCOPED_TRACE("vkCreateShaderModule");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateShaderModule_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_shader_module* gfxstream_pShaderModule =
-        (struct gfxstream_vk_shader_module*)vk_zalloc(pMesaAllocator,
-                                                      sizeof(struct gfxstream_vk_shader_module), 8,
-                                                      VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_shader_module*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                      sizeof(gfxstream_vk_shader_module),
+                                                      VK_OBJECT_TYPE_SHADER_MODULE);
     vkCreateShaderModule_VkResult_return =
         gfxstream_pShaderModule ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateShaderModule_VkResult_return) {
@@ -859,9 +821,7 @@ void gfxstream_vk_DestroyShaderModule(VkDevice device, VkShaderModule shaderModu
                                      gfxstream_shaderModule->internal_object, pAllocator,
                                      true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_shaderModule);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_shaderModule);
 }
 VkResult gfxstream_vk_CreatePipelineCache(VkDevice device,
                                           const VkPipelineCacheCreateInfo* pCreateInfo,
@@ -870,12 +830,10 @@ VkResult gfxstream_vk_CreatePipelineCache(VkDevice device,
     AEMU_SCOPED_TRACE("vkCreatePipelineCache");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreatePipelineCache_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_pipeline_cache* gfxstream_pPipelineCache =
-        (struct gfxstream_vk_pipeline_cache*)vk_zalloc(pMesaAllocator,
-                                                       sizeof(struct gfxstream_vk_pipeline_cache),
-                                                       8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_pipeline_cache*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                       sizeof(gfxstream_vk_pipeline_cache),
+                                                       VK_OBJECT_TYPE_PIPELINE_CACHE);
     vkCreatePipelineCache_VkResult_return =
         gfxstream_pPipelineCache ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreatePipelineCache_VkResult_return) {
@@ -898,9 +856,7 @@ void gfxstream_vk_DestroyPipelineCache(VkDevice device, VkPipelineCache pipeline
                                       gfxstream_pipelineCache->internal_object, pAllocator,
                                       true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_pipelineCache);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_pipelineCache);
 }
 VkResult gfxstream_vk_GetPipelineCacheData(VkDevice device, VkPipelineCache pipelineCache,
                                            size_t* pDataSize, void* pData) {
@@ -947,9 +903,7 @@ void gfxstream_vk_DestroyPipeline(VkDevice device, VkPipeline pipeline,
                                  gfxstream_pipeline->internal_object, pAllocator,
                                  true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_pipeline);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_pipeline);
 }
 VkResult gfxstream_vk_CreatePipelineLayout(VkDevice device,
                                            const VkPipelineLayoutCreateInfo* pCreateInfo,
@@ -958,12 +912,10 @@ VkResult gfxstream_vk_CreatePipelineLayout(VkDevice device,
     AEMU_SCOPED_TRACE("vkCreatePipelineLayout");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreatePipelineLayout_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_pipeline_layout* gfxstream_pPipelineLayout =
-        (struct gfxstream_vk_pipeline_layout*)vk_zalloc(pMesaAllocator,
-                                                        sizeof(struct gfxstream_vk_pipeline_layout),
-                                                        8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_pipeline_layout*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                        sizeof(gfxstream_vk_pipeline_layout),
+                                                        VK_OBJECT_TYPE_PIPELINE_LAYOUT);
     vkCreatePipelineLayout_VkResult_return =
         gfxstream_pPipelineLayout ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreatePipelineLayout_VkResult_return) {
@@ -999,20 +951,16 @@ void gfxstream_vk_DestroyPipelineLayout(VkDevice device, VkPipelineLayout pipeli
                                        gfxstream_pipelineLayout->internal_object, pAllocator,
                                        true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_pipelineLayout);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_pipelineLayout);
 }
 VkResult gfxstream_vk_CreateSampler(VkDevice device, const VkSamplerCreateInfo* pCreateInfo,
                                     const VkAllocationCallbacks* pAllocator, VkSampler* pSampler) {
     AEMU_SCOPED_TRACE("vkCreateSampler");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateSampler_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_sampler* gfxstream_pSampler =
         (struct gfxstream_vk_sampler*)vk_sampler_create((vk_device*)gfxstream_device, pCreateInfo,
-                                                        pMesaAllocator,
+                                                        pAllocator,
                                                         sizeof(struct gfxstream_vk_sampler));
     vkCreateSampler_VkResult_return = gfxstream_pSampler ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateSampler_VkResult_return) {
@@ -1035,9 +983,7 @@ void gfxstream_vk_DestroySampler(VkDevice device, VkSampler sampler,
         vkEnc->vkDestroySampler(gfxstream_device->internal_object,
                                 gfxstream_sampler->internal_object, pAllocator, true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_sampler_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_sampler->vk);
+    vk_sampler_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_sampler->vk);
 }
 VkResult gfxstream_vk_CreateDescriptorSetLayout(VkDevice device,
                                                 const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
@@ -1046,12 +992,10 @@ VkResult gfxstream_vk_CreateDescriptorSetLayout(VkDevice device,
     AEMU_SCOPED_TRACE("vkCreateDescriptorSetLayout");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateDescriptorSetLayout_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_descriptor_set_layout* gfxstream_pSetLayout =
-        (struct gfxstream_vk_descriptor_set_layout*)vk_zalloc(
-            pMesaAllocator, sizeof(struct gfxstream_vk_descriptor_set_layout), 8,
-            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_descriptor_set_layout*)vk_object_zalloc(
+            &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_descriptor_set_layout),
+            VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT);
     vkCreateDescriptorSetLayout_VkResult_return =
         gfxstream_pSetLayout ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateDescriptorSetLayout_VkResult_return) {
@@ -1078,9 +1022,7 @@ void gfxstream_vk_DestroyDescriptorSetLayout(VkDevice device,
                                                    gfxstream_descriptorSetLayout->internal_object,
                                                    pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_descriptorSetLayout);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorSetLayout);
 }
 VkResult gfxstream_vk_CreateDescriptorPool(VkDevice device,
                                            const VkDescriptorPoolCreateInfo* pCreateInfo,
@@ -1089,12 +1031,10 @@ VkResult gfxstream_vk_CreateDescriptorPool(VkDevice device,
     AEMU_SCOPED_TRACE("vkCreateDescriptorPool");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateDescriptorPool_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_descriptor_pool* gfxstream_pDescriptorPool =
-        (struct gfxstream_vk_descriptor_pool*)vk_zalloc(pMesaAllocator,
-                                                        sizeof(struct gfxstream_vk_descriptor_pool),
-                                                        8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_descriptor_pool*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                        sizeof(gfxstream_vk_descriptor_pool),
+                                                        VK_OBJECT_TYPE_DESCRIPTOR_POOL);
     vkCreateDescriptorPool_VkResult_return =
         gfxstream_pDescriptorPool ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateDescriptorPool_VkResult_return) {
@@ -1119,9 +1059,7 @@ void gfxstream_vk_DestroyDescriptorPool(VkDevice device, VkDescriptorPool descri
                                               gfxstream_descriptorPool->internal_object,
                                               pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_descriptorPool);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorPool);
 }
 VkResult gfxstream_vk_ResetDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool,
                                           VkDescriptorPoolResetFlags flags) {
@@ -1144,12 +1082,10 @@ VkResult gfxstream_vk_CreateFramebuffer(VkDevice device, const VkFramebufferCrea
     AEMU_SCOPED_TRACE("vkCreateFramebuffer");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateFramebuffer_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_framebuffer* gfxstream_pFramebuffer =
-        (struct gfxstream_vk_framebuffer*)vk_zalloc(pMesaAllocator,
-                                                    sizeof(struct gfxstream_vk_framebuffer), 8,
-                                                    VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_framebuffer*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                    sizeof(gfxstream_vk_framebuffer),
+                                                    VK_OBJECT_TYPE_FRAMEBUFFER);
     vkCreateFramebuffer_VkResult_return =
         gfxstream_pFramebuffer ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateFramebuffer_VkResult_return) {
@@ -1189,9 +1125,7 @@ void gfxstream_vk_DestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
                                     gfxstream_framebuffer->internal_object, pAllocator,
                                     true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_framebuffer);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_framebuffer);
 }
 VkResult gfxstream_vk_CreateRenderPass(VkDevice device, const VkRenderPassCreateInfo* pCreateInfo,
                                        const VkAllocationCallbacks* pAllocator,
@@ -1199,12 +1133,10 @@ VkResult gfxstream_vk_CreateRenderPass(VkDevice device, const VkRenderPassCreate
     AEMU_SCOPED_TRACE("vkCreateRenderPass");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateRenderPass_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_render_pass* gfxstream_pRenderPass =
-        (struct gfxstream_vk_render_pass*)vk_zalloc(pMesaAllocator,
-                                                    sizeof(struct gfxstream_vk_render_pass), 8,
-                                                    VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_render_pass*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                    sizeof(gfxstream_vk_render_pass),
+                                                    VK_OBJECT_TYPE_RENDER_PASS);
     vkCreateRenderPass_VkResult_return =
         gfxstream_pRenderPass ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateRenderPass_VkResult_return) {
@@ -1227,9 +1159,7 @@ void gfxstream_vk_DestroyRenderPass(VkDevice device, VkRenderPass renderPass,
                                    gfxstream_renderPass->internal_object, pAllocator,
                                    true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_renderPass);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_renderPass);
 }
 void gfxstream_vk_GetRenderAreaGranularity(VkDevice device, VkRenderPass renderPass,
                                            VkExtent2D* pGranularity) {
@@ -1249,12 +1179,10 @@ VkResult gfxstream_vk_CreateCommandPool(VkDevice device, const VkCommandPoolCrea
     AEMU_SCOPED_TRACE("vkCreateCommandPool");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateCommandPool_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_command_pool* gfxstream_pCommandPool =
-        (struct gfxstream_vk_command_pool*)vk_zalloc(pMesaAllocator,
-                                                     sizeof(struct gfxstream_vk_command_pool), 8,
-                                                     VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_command_pool*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                     sizeof(gfxstream_vk_command_pool),
+                                                     VK_OBJECT_TYPE_COMMAND_POOL);
     vkCreateCommandPool_VkResult_return =
         gfxstream_pCommandPool ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateCommandPool_VkResult_return) {
@@ -1277,9 +1205,7 @@ void gfxstream_vk_DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
                                     gfxstream_commandPool->internal_object, pAllocator,
                                     true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_commandPool);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_commandPool);
 }
 VkResult gfxstream_vk_ResetCommandPool(VkDevice device, VkCommandPool commandPool,
                                        VkCommandPoolResetFlags flags) {
@@ -2190,12 +2116,10 @@ VkResult gfxstream_vk_CreateSamplerYcbcrConversion(
     AEMU_SCOPED_TRACE("vkCreateSamplerYcbcrConversion");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateSamplerYcbcrConversion_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_sampler_ycbcr_conversion* gfxstream_pYcbcrConversion =
-        (struct gfxstream_vk_sampler_ycbcr_conversion*)vk_zalloc(
-            pMesaAllocator, sizeof(struct gfxstream_vk_sampler_ycbcr_conversion), 8,
-            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_sampler_ycbcr_conversion*)vk_object_zalloc(
+            &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_sampler_ycbcr_conversion),
+            VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION);
     vkCreateSamplerYcbcrConversion_VkResult_return =
         gfxstream_pYcbcrConversion ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateSamplerYcbcrConversion_VkResult_return) {
@@ -2223,9 +2147,7 @@ void gfxstream_vk_DestroySamplerYcbcrConversion(VkDevice device,
                                                       gfxstream_ycbcrConversion->internal_object,
                                                       pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_ycbcrConversion);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_ycbcrConversion);
 }
 VkResult gfxstream_vk_CreateDescriptorUpdateTemplate(
     VkDevice device, const VkDescriptorUpdateTemplateCreateInfo* pCreateInfo,
@@ -2234,12 +2156,10 @@ VkResult gfxstream_vk_CreateDescriptorUpdateTemplate(
     AEMU_SCOPED_TRACE("vkCreateDescriptorUpdateTemplate");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateDescriptorUpdateTemplate_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_descriptor_update_template* gfxstream_pDescriptorUpdateTemplate =
-        (struct gfxstream_vk_descriptor_update_template*)vk_zalloc(
-            pMesaAllocator, sizeof(struct gfxstream_vk_descriptor_update_template), 8,
-            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_descriptor_update_template*)vk_object_zalloc(
+            &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_descriptor_update_template),
+            VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE);
     vkCreateDescriptorUpdateTemplate_VkResult_return =
         gfxstream_pDescriptorUpdateTemplate ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateDescriptorUpdateTemplate_VkResult_return) {
@@ -2278,9 +2198,7 @@ void gfxstream_vk_DestroyDescriptorUpdateTemplate(
             gfxstream_device->internal_object, gfxstream_descriptorUpdateTemplate->internal_object,
             pAllocator, true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_descriptorUpdateTemplate);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorUpdateTemplate);
 }
 void gfxstream_vk_UpdateDescriptorSetWithTemplate(
     VkDevice device, VkDescriptorSet descriptorSet,
@@ -2388,12 +2306,10 @@ VkResult gfxstream_vk_CreateRenderPass2(VkDevice device, const VkRenderPassCreat
     AEMU_SCOPED_TRACE("vkCreateRenderPass2");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateRenderPass2_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_render_pass* gfxstream_pRenderPass =
-        (struct gfxstream_vk_render_pass*)vk_zalloc(pMesaAllocator,
-                                                    sizeof(struct gfxstream_vk_render_pass), 8,
-                                                    VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_render_pass*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                    sizeof(gfxstream_vk_render_pass),
+                                                    VK_OBJECT_TYPE_RENDER_PASS);
     vkCreateRenderPass2_VkResult_return =
         gfxstream_pRenderPass ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateRenderPass2_VkResult_return) {
@@ -3299,12 +3215,10 @@ VkResult gfxstream_vk_CreateDescriptorUpdateTemplateKHR(
     AEMU_SCOPED_TRACE("vkCreateDescriptorUpdateTemplateKHR");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateDescriptorUpdateTemplateKHR_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_descriptor_update_template* gfxstream_pDescriptorUpdateTemplate =
-        (struct gfxstream_vk_descriptor_update_template*)vk_zalloc(
-            pMesaAllocator, sizeof(struct gfxstream_vk_descriptor_update_template), 8,
-            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_descriptor_update_template*)vk_object_zalloc(
+            &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_descriptor_update_template),
+            VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE);
     vkCreateDescriptorUpdateTemplateKHR_VkResult_return =
         gfxstream_pDescriptorUpdateTemplate ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateDescriptorUpdateTemplateKHR_VkResult_return) {
@@ -3344,9 +3258,7 @@ void gfxstream_vk_DestroyDescriptorUpdateTemplateKHR(
             gfxstream_device->internal_object, gfxstream_descriptorUpdateTemplate->internal_object,
             pAllocator, true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_descriptorUpdateTemplate);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorUpdateTemplate);
 }
 void gfxstream_vk_UpdateDescriptorSetWithTemplateKHR(
     VkDevice device, VkDescriptorSet descriptorSet,
@@ -3374,12 +3286,10 @@ VkResult gfxstream_vk_CreateRenderPass2KHR(VkDevice device,
     AEMU_SCOPED_TRACE("vkCreateRenderPass2KHR");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateRenderPass2KHR_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_render_pass* gfxstream_pRenderPass =
-        (struct gfxstream_vk_render_pass*)vk_zalloc(pMesaAllocator,
-                                                    sizeof(struct gfxstream_vk_render_pass), 8,
-                                                    VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_render_pass*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
+                                                    sizeof(gfxstream_vk_render_pass),
+                                                    VK_OBJECT_TYPE_RENDER_PASS);
     vkCreateRenderPass2KHR_VkResult_return =
         gfxstream_pRenderPass ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateRenderPass2KHR_VkResult_return) {
@@ -3573,12 +3483,10 @@ VkResult gfxstream_vk_CreateSamplerYcbcrConversionKHR(
     AEMU_SCOPED_TRACE("vkCreateSamplerYcbcrConversionKHR");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult vkCreateSamplerYcbcrConversionKHR_VkResult_return = (VkResult)0;
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
     struct gfxstream_vk_sampler_ycbcr_conversion* gfxstream_pYcbcrConversion =
-        (struct gfxstream_vk_sampler_ycbcr_conversion*)vk_zalloc(
-            pMesaAllocator, sizeof(struct gfxstream_vk_sampler_ycbcr_conversion), 8,
-            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+        (gfxstream_vk_sampler_ycbcr_conversion*)vk_object_zalloc(
+            &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_sampler_ycbcr_conversion),
+            VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION);
     vkCreateSamplerYcbcrConversionKHR_VkResult_return =
         gfxstream_pYcbcrConversion ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == vkCreateSamplerYcbcrConversionKHR_VkResult_return) {
@@ -3606,9 +3514,7 @@ void gfxstream_vk_DestroySamplerYcbcrConversionKHR(VkDevice device,
                                                          gfxstream_ycbcrConversion->internal_object,
                                                          pAllocator);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_free(pMesaAllocator, (void*)gfxstream_ycbcrConversion);
+    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_ycbcrConversion);
 }
 #endif
 #ifdef VK_KHR_bind_memory2
@@ -4896,9 +4802,7 @@ VkResult gfxstream_vk_FreeMemorySyncGOOGLE(VkDevice device, VkDeviceMemory memor
             gfxstream_device->internal_object, gfxstream_memory->internal_object, pAllocator,
             true /* do lock */);
     }
-    const VkAllocationCallbacks* pMesaAllocator =
-        pAllocator ? pAllocator : &gfxstream_device->vk.alloc;
-    vk_device_memory_destroy(&gfxstream_device->vk, pMesaAllocator, &gfxstream_memory->vk);
+    vk_device_memory_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_memory->vk);
     return vkFreeMemorySyncGOOGLE_VkResult_return;
 }
 void gfxstream_vk_QueueHostSyncGOOGLE(VkQueue queue, uint32_t needHostSync,
