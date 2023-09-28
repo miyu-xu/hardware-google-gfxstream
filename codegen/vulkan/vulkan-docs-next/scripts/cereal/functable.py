@@ -393,7 +393,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             cgen.beginFor("uint32_t j = 0", "j < %s" % countParam, "++j")
             gfxstreamObjectName = paramNameToObjectName(nestedParam.paramName)
             cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i].%s[j])" % (typeNameToObjectType(nestedParam.typeName), gfxstreamObjectName, internalArrayName, nestedParam.paramName))
-            cgen.stmt("%s[i][j] = %s->internal_object" % (internalNestedArrayName(nestedParam.paramName), gfxstreamObjectName))
+            cgen.stmt("if (%s) %s[i][j] = %s->internal_object" % (gfxstreamObjectName, internalNestedArrayName(nestedParam.paramName), gfxstreamObjectName))
             cgen.endFor()
             cgen.stmt("%s[i].%s = %s[i].data()" % (internalArrayName, nestedParam.paramName, internalNestedArrayName(nestedParam.paramName)))
 
@@ -422,11 +422,13 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                             genInternalNestedArray(cgen, param, internalArray, member)
                         else:
                             cgen.line("/* %s::%s */" % (param.typeName, member.paramName))
-                            cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i].%s)" % (typeNameToObjectType(member.typeName), paramNameToObjectName(member.paramName), internalArray, member.paramName))
-                            cgen.stmt("%s[i].%s = %s->internal_object" % (internalArray, member.paramName, paramNameToObjectName(member.paramName)))
+                            gfxstreamObject = paramNameToObjectName(member.paramName)
+                            cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i].%s)" % (typeNameToObjectType(member.typeName), gfxstreamObject, internalArray, member.paramName))
+                            cgen.stmt("if (%s) %s[i].%s = %s->internal_object" % (gfxstreamObject, internalArray, member.paramName, gfxstreamObject))
             else:
-                cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i])" % (typeNameToObjectType(param.typeName), paramNameToObjectName(param.paramName), param.paramName))
-                cgen.stmt("%s[i] = %s->internal_object" % (internalArray, paramNameToObjectName(param.paramName)))
+                gfxstreamObject = paramNameToObjectName(param.paramName)
+                cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i])" % (typeNameToObjectType(param.typeName), gfxstreamObject, param.paramName))
+                cgen.stmt("if (%s) %s[i] = %s->internal_object" % (gfxstreamObject, internalArray, gfxstreamObject))
             cgen.endFor()
             return "%s.data()" % internalArray
 
@@ -463,9 +465,9 @@ class VulkanFuncTable(VulkanWrapperGenerator):
 
         def genEncoderOrResourceTrackerCall(cgen, api, declareResources=True):
             if is_cmdbuf_dispatch(api):
-                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(commandBuffer)")
+                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(%s->internal_object)" % paramNameToObjectName(api.parameters[0].paramName))
             elif is_queue_dispatch(api):
-                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(queue)")
+                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(%s->internal_object)" % paramNameToObjectName(api.parameters[0].paramName))
             else:
                 cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder()")
             callLhs = None
