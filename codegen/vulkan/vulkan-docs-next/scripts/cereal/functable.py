@@ -112,6 +112,7 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkEnumerateInstanceExtensionProperties",
     "vkGetDeviceProcAddr",
     "vkEnumeratePhysicalDevices",
+    "vkEnumeratePhysicalDeviceGroups",
     "vkCreateDevice",
     "vkDestroyDevice",
     # Manual alloc/free + vk_*_init/free() call w/ special params
@@ -124,8 +125,6 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkFreeCommandBuffers",
     "vkAllocateDescriptorSets",
     "vkFreeDescriptorSets",
-    # Compound type output
-    "vkEnumeratePhysicalDeviceGroups",
     # Handle types in nested compoundTypes
     "vkCreateGraphicsPipelines",
     "vkCreateComputePipelines",
@@ -135,6 +134,15 @@ HANDWRITTEN_ENTRY_POINTS = [
     # TODO: Finish handwritten implementations ...
     "vkQueueBindSparse",
     "vkQueueBindSparseAsyncGOOGLE",
+    # TODO: Add handwritten implementations ...
+    "vkCmdSetEvent2",
+    "vkCmdWaitEvents2",
+    "vkCmdPipelineBarrier2",
+    "vkQueueSubmit2",
+    "vkCmdBeginRendering",
+    "vkCreateDescriptorSetLayout",
+    "vkGetDescriptorSetLayoutSupport",
+    "vkGetDescriptorSetLayoutSupportKHR",
 ]
 
 # TODO: handles with no equivalent gfxstream objects (yet).
@@ -218,6 +226,8 @@ def isArrayParam(param):
             and param.isConst
             and "len" in param.attribs)
 
+INTERNAL_OBJECT_NAME = "internal_object"
+
 class VulkanFuncTable(VulkanWrapperGenerator):
     def __init__(self, module, typeInfo):
         VulkanWrapperGenerator.__init__(self, module, typeInfo)
@@ -251,6 +261,15 @@ class VulkanFuncTable(VulkanWrapperGenerator):
         api = typeInfo.apis[name]
         self.entries.append(api)
         self.entryFeatures.append(self.feature)
+        self.loopVars = ["i", "j", "k", "l", "m", "n"]
+        self.loopVarIndex = 0
+
+        def getNextLoopVar():
+            if self.loopVarIndex >= len(self.loopVars):
+                raise
+            loopVar = self.loopVars[self.loopVarIndex]
+            self.loopVarIndex += 1
+            return loopVar
 
         def isCompoundType(typeName):
             return typeInfo.isCompoundType(typeName)
@@ -262,13 +281,13 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             if isCompoundType(typeName):
                 struct = typeInfo.structs[typeName]
                 for member in struct.members:
-                    if handleTranslationRequired(member.typeName):
+                    if translationRequired(member.typeName):
                         return True
                 return False
             else:
                 return handleTranslationRequired(typeName)
 
-        def genDestroyGfxstreamObjects(cgen, api):
+        def genDestroyGfxstreamObjects():
             destroyParam = getDestroyParam(api)
             if not destroyParam:
                 return
@@ -300,7 +319,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     [mesaObjectPrimary, allocatorParam, mesaObjectDestroy]
                 )
 
-        def genMesaObjectAlloc(cgen, api, allocCallLhs):
+        def genMesaObjectAlloc(allocCallLhs):
             deviceParam = api.parameters[0]
             if "VkDevice" != deviceParam.typeName:
                 print("ERROR: Unhandled non-VkDevice parameters[0]: %s (for API: %s)" %(deviceParam.typeName, api.name))
@@ -318,7 +337,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 ["&%s->vk" % paramNameToObjectName(deviceParam.paramName), allocatorParam, ("sizeof(%s)" % objectType), typeNameToVkObjectType(createParam.typeName)]
             )
 
-        def genMesaObjectCreate(cgen, api, createCallLhs):
+        def genMesaObjectCreate(createCallLhs):
             def dropParam(params, drop):
                 for p in params:
                     if p == drop:
@@ -350,16 +369,16 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             )
 
         # Alloc/create gfxstream_vk_* object
-        def genCreateGfxstreamObjects(cgen, api):
+        def genCreateGfxstreamObjects():
             createParam = getCreateParam(api)
             if not createParam:
                 return False
             objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
             callLhs = "%s *%s" % (objectType, paramNameToObjectName(createParam.paramName))
             if hasMesaVkObject(createParam.typeName):
-                genMesaObjectCreate(cgen, api, callLhs)
+                genMesaObjectCreate(callLhs)
             else:
-                genMesaObjectAlloc(cgen, api, callLhs)
+                genMesaObjectAlloc(callLhs)
 
             retVar = api.getRetVarExpr()
             if retVar:
@@ -367,10 +386,19 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 # ex: vkCreateBuffer_VkResult_return = gfxstream_buffer ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
                 cgen.stmt("%s = %s ? %s : %s" % 
                           (retVar, paramNameToObjectName(createParam.paramName), SUCCESS_VAL[retTypeName][0], "VK_ERROR_OUT_OF_HOST_MEMORY"))
-            # An object was created
             return True
 
-        def genGetGfxstreamHandles(cgen, api):
+        def genVkFromHandle(param, fromName):
+            objectName = paramNameToObjectName(param.paramName)
+            cgen.stmt("VK_FROM_HANDLE(%s, %s, %s)" %
+                      (typeNameToObjectType(param.typeName), objectName, fromName))
+            return objectName
+
+        def genReplaceWithInternal(param, replaceName):
+            gfxstreamObject = genVkFromHandle(param, replaceName)
+            cgen.stmt("if (%s) %s = %s->%s" % (gfxstreamObject, replaceName, gfxstreamObject, INTERNAL_OBJECT_NAME))
+
+        def genGetGfxstreamHandles():
             createParam = getCreateParam(api)
             for param in api.parameters:
                 if not handleTranslationRequired(param.typeName):
@@ -381,93 +409,114 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     if param.pointerIndirectionLevels > 0:
                         print("ERROR: Unhandled pointerIndirectionLevels > 1 for API %s (param %s)" % (api.name, param.paramName))
                         raise
-                    cgen.stmt("VK_FROM_HANDLE(%s, %s, %s)" % (typeNameToObjectType(param.typeName), paramNameToObjectName(param.paramName), param.paramName))
+                    genVkFromHandle(param, param.paramName)
 
-        def internalNestedArrayName(paramName):
-            return "internal_nested_%s" % paramName
+        def internalNestedParamName(param):
+            parentName = "nested"
+            if param.parent:
+                parentName = param.parent.typeName
+            return "internal_%s_%s" % (parentName, param.paramName)
 
-        def genInternalNestedArray(cgen, param, internalArrayName, nestedParam):
-            cgen.line("/* %s::%s */" % (param.typeName, nestedParam.paramName))
-            countParam = "%s[i].%s" % (internalArrayName, nestedParam.attribs["len"])
-            cgen.stmt("%s[i].reserve(%s)" % (internalNestedArrayName(nestedParam.paramName), countParam))
-            cgen.beginFor("uint32_t j = 0", "j < %s" % countParam, "++j")
-            gfxstreamObjectName = paramNameToObjectName(nestedParam.paramName)
-            cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i].%s[j])" % (typeNameToObjectType(nestedParam.typeName), gfxstreamObjectName, internalArrayName, nestedParam.paramName))
-            cgen.stmt("if (%s) %s[i][j] = %s->internal_object" % (gfxstreamObjectName, internalNestedArrayName(nestedParam.paramName), gfxstreamObjectName))
-            cgen.endFor()
-            cgen.stmt("%s[i].%s = %s[i].data()" % (internalArrayName, nestedParam.paramName, internalNestedArrayName(nestedParam.paramName)))
-
-        def genInternalArrayDeclarations(cgen, param, countParamName):
-            internalArray = "internal_%s" % param.paramName
-            cgen.stmt("std::vector<%s> %s(%s)" % (param.typeName, internalArray, countParamName))
+        def genInternalArrayDeclarations(param, countParamName, nestLevel=0):
+            internalArray = None
+            if 0 == nestLevel:
+                internalArray = "internal_%s" % param.paramName
+                cgen.stmt("std::vector<%s> %s(%s)" % (param.typeName, internalArray, countParamName))
+            elif 1 == nestLevel or 2 == nestLevel:
+                internalArray = internalNestedParamName(param)
+                if isArrayParam(param):
+                    cgen.stmt("std::vector<std::vector<%s>> %s(%s)" % (param.typeName, internalArray, countParamName))
+                else:
+                    cgen.stmt("std::vector<%s> %s(%s)" % (param.typeName, internalArray, countParamName))
+            else:
+                print("ERROR: nestLevel > 1 not handled")
+                raise
             if isCompoundType(param.typeName):
                 for member in typeInfo.structs[param.typeName].members:
                     if translationRequired(member.typeName):
-                        if isCompoundType(member.typeName):
-                            print("ERROR: Unhandled handleType in nested compoundType: %s, in compoundType: %s (for API: %s)" % (member.typeName, param.typeName, api.name))
-                            raise
-                        elif isArrayParam(member):
-                            cgen.stmt("std::vector<std::vector<%s>> %s(%s)" % (member.typeName, internalNestedArrayName(member.paramName), countParamName))
+                        if handleTranslationRequired(member.typeName) and not isArrayParam(member):
+                            # No declarations for non-array handleType
+                            continue
+                        genInternalArrayDeclarations(member, countParamName, nestLevel + 1)
             return internalArray
 
-        def genInternalArray(cgen, param, countParamName):
-            internalArray = genInternalArrayDeclarations(cgen, param, countParamName)
-            # Main loop to translate internal array
-            cgen.beginFor("uint32_t i = 0", "i < %s" % countParamName, "++i")
+        def genInternalCompoundType(param, outName, inName, currLoopVar):
+            nextLoopVar = None
+            cgen.stmt("%s = %s" % (outName, inName))
+            for member in typeInfo.structs[param.typeName].members:
+                if not translationRequired(member.typeName):
+                    continue
+                cgen.line("/* %s::%s */" % (param.typeName, member.paramName))
+                nestedOutName = ("%s[%s]" % (internalNestedParamName(member), currLoopVar))
+                if isArrayParam(member):
+                    countParamName = "%s.%s" % (outName, member.attribs["len"])
+                    inArrayName = "%s.%s" % (outName, member.paramName)
+                    cgen.stmt("%s.reserve(%s)" % (nestedOutName, countParamName))
+                    if not nextLoopVar:
+                        nextLoopVar = getNextLoopVar()
+                    internalArray = genInternalArray(member, countParamName, nestedOutName, inArrayName, nextLoopVar)
+                    cgen.stmt("%s = %s" %(inArrayName, internalArray))
+                elif isCompoundType(member.typeName):
+                    memberFullName = "%s.%s" % (outName, member.paramName)
+                    if 1 == member.pointerIndirectionLevels:
+                        cgen.beginIf("%s" % memberFullName)
+                        inParamName = "%s[0]" % memberFullName
+                        genInternalCompoundType(member, nestedOutName, inParamName, currLoopVar)
+                        cgen.stmt("%s.%s = &%s" % (outName, member.paramName,  nestedOutName))
+                    else:
+                        cgen.beginBlock()
+                        inParamName = "%s" % memberFullName
+                        genInternalCompoundType(member, nestedOutName, inParamName, currLoopVar)
+                        cgen.stmt("%s.%s = %s" % (outName, member.paramName,  nestedOutName))
+                    cgen.endBlock()
+                else:
+                    genReplaceWithInternal(member, "%s.%s" % (outName, member.paramName))
+
+        def genInternalArray(param, countParamName, outArrayName, inArrayName, loopVar):
+            cgen.beginFor("uint32_t %s = 0" % loopVar, "%s < %s" % (loopVar, countParamName), "++%s" % loopVar)
             if isCompoundType(param.typeName):
-                cgen.stmt("%s[i] = %s[i]" % (internalArray, param.paramName))
-                for member in typeInfo.structs[param.typeName].members:
-                    if translationRequired(member.typeName):
-                        if isArrayParam(member):
-                            genInternalNestedArray(cgen, param, internalArray, member)
-                        else:
-                            cgen.line("/* %s::%s */" % (param.typeName, member.paramName))
-                            gfxstreamObject = paramNameToObjectName(member.paramName)
-                            cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i].%s)" % (typeNameToObjectType(member.typeName), gfxstreamObject, internalArray, member.paramName))
-                            cgen.stmt("if (%s) %s[i].%s = %s->internal_object" % (gfxstreamObject, internalArray, member.paramName, gfxstreamObject))
+                genInternalCompoundType(param, ("%s[%s]" % (outArrayName, loopVar)), "%s[%s]" % (inArrayName, loopVar), loopVar)
             else:
-                gfxstreamObject = paramNameToObjectName(param.paramName)
-                cgen.stmt("VK_FROM_HANDLE(%s, %s, %s[i])" % (typeNameToObjectType(param.typeName), gfxstreamObject, param.paramName))
-                cgen.stmt("if (%s) %s[i] = %s->internal_object" % (gfxstreamObject, internalArray, gfxstreamObject))
+                gfxstreamObject = genVkFromHandle(param, "%s[%s]" % (inArrayName, loopVar))
+                cgen.stmt("if (%s) %s[%s] = %s->%s" % (gfxstreamObject, outArrayName, loopVar, gfxstreamObject, INTERNAL_OBJECT_NAME))
             cgen.endFor()
-            return "%s.data()" % internalArray
+            return "%s.data()" % outArrayName
 
         # Translate params into params needed for gfxstream-internal
         #  encoder/resource-tracker calls
-        def getEncoderOrResourceTrackerParams(api):
+        def getEncoderOrResourceTrackerParams():
             createParam = getCreateParam(api)
             outParams = copy.deepcopy(api.parameters)
+            nextLoopVar = getNextLoopVar()
             for param in outParams:
                 if not translationRequired(param.typeName):
                     continue
-                elif isCompoundType(param.typeName):
+                elif isArrayParam(param) or isCompoundType(param.typeName):
                     if param.possiblyOutput():
-                        print("ERROR: Unhandled CompoundType output for API %s (param %s)" % (api.name, param.paramName))
+                        print("ERROR: Unhandled CompoundType / Array output for API %s (param %s)" % (api.name, param.paramName))
                         raise
                     if 1 != param.pointerIndirectionLevels or not param.isConst:
-                        print("ERROR: Compound type input is not 'const <type>*' (API: %s, paramName: %s)" % (api.name, param.paramName))
+                        print("ERROR: Compound type / array input is not 'const <type>*' (API: %s, paramName: %s)" % (api.name, param.paramName))
                         raise
                     countParamName = "1"
                     if "len" in param.attribs:
                         countParamName = param.attribs["len"]
-                    param.paramName = genInternalArray(cgen, param, countParamName)
-                elif isArrayParam(param):
-                    countParamName = param.attribs["len"]
-                    param.paramName = genInternalArray(cgen, param, countParamName)
+                    internalArrayName = genInternalArrayDeclarations(param, countParamName)
+                    param.paramName = genInternalArray(param, countParamName, internalArrayName, param.paramName, nextLoopVar)
                 elif 0 == param.pointerIndirectionLevels:
-                    param.paramName = ("%s" % paramNameToObjectName(param.paramName)) + "->internal_object"
+                    param.paramName = ("%s" % paramNameToObjectName(param.paramName)) + ("->%s" % INTERNAL_OBJECT_NAME)
                 elif createParam and param.paramName == createParam.paramName:
-                    param.paramName = ("&%s" % paramNameToObjectName(param.paramName)) + "->internal_object"
+                    param.paramName = ("&%s" % paramNameToObjectName(param.paramName)) + ("->%s" % INTERNAL_OBJECT_NAME)
                 else:
                     print("ERROR: Unknown handling for param: %s (API: %s)" % (param, api.name))
                     raise
             return outParams
 
-        def genEncoderOrResourceTrackerCall(cgen, api, declareResources=True):
+        def genEncoderOrResourceTrackerCall(declareResources=True):
             if is_cmdbuf_dispatch(api):
-                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(%s->internal_object)" % paramNameToObjectName(api.parameters[0].paramName))
+                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(%s->%s)" % (paramNameToObjectName(api.parameters[0].paramName), INTERNAL_OBJECT_NAME))
             elif is_queue_dispatch(api):
-                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(%s->internal_object)" % paramNameToObjectName(api.parameters[0].paramName))
+                cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getQueueEncoder(%s->%s)" % (paramNameToObjectName(api.parameters[0].paramName), INTERNAL_OBJECT_NAME))
             else:
                 cgen.stmt("auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder()")
             callLhs = None
@@ -476,7 +525,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 callLhs = api.getRetVarExpr()
 
             # Get parameter list modded for gfxstream-internal call
-            parameters = getEncoderOrResourceTrackerParams(api)
+            parameters = getEncoderOrResourceTrackerParams()
             if name in RESOURCE_TRACKER_ENTRIES:
                 if declareResources:
                     cgen.stmt("auto resources = gfxstream::vk::ResourceTracker::get()")
@@ -491,7 +540,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             if name in POSTPROCESSES:
                 cgen.line(POSTPROCESSES[name])
 
-        def genReturnExpression(cgen, api):
+        def genReturnExpression():
             retTypeName = api.getRetTypeExpr()
             # Set the createParam output, if applicable
             createParam = getCreateParam(api)
@@ -509,34 +558,34 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             if retTypeName != "void":
                 cgen.stmt("return %s" % api.getRetVarExpr())
 
-        def genGfxstreamEntry(cgen, api, declareResources=True):
+        def genGfxstreamEntry(declareResources=True):
             cgen.stmt("AEMU_SCOPED_TRACE(\"%s\")" % api.name)
             # Translate handles
-            genGetGfxstreamHandles(cgen, api)
+            genGetGfxstreamHandles()
             # declare returnVar
             retTypeName = api.getRetTypeExpr()
             retVar = api.getRetVarExpr()
             if retVar:
                 cgen.stmt("%s %s = (%s)0" % (retTypeName, retVar, retTypeName))
             # Translation/creation of objects
-            createdObject = genCreateGfxstreamObjects(cgen, api)
+            createdObject = genCreateGfxstreamObjects()
             # Make encoder/resource-tracker call
             if retVar and createdObject:
                 cgen.beginIf("%s == %s" % (SUCCESS_VAL[retTypeName][0], retVar))
             else:
                 cgen.beginBlock()            
-            genEncoderOrResourceTrackerCall(cgen, api)
+            genEncoderOrResourceTrackerCall()
             cgen.endBlock()
             # Destroy gfxstream objects
-            genDestroyGfxstreamObjects(cgen, api)
+            genDestroyGfxstreamObjects()
             # Set output / return variables
-            genReturnExpression(cgen, api)
+            genReturnExpression()
 
         api_entry = api.withModifiedName("gfxstream_vk_" + api.name[2:])
         if api.name not in HANDWRITTEN_ENTRY_POINTS:
             cgen.line(self.cgen.makeFuncProto(api_entry))
             cgen.beginBlock()
-            genGfxstreamEntry(cgen, api)
+            genGfxstreamEntry()
             cgen.endBlock()
             self.module.appendImpl(cgen.swapCode())
 
