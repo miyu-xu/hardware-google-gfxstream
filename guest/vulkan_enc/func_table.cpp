@@ -1173,40 +1173,6 @@ void gfxstream_vk_GetRenderAreaGranularity(VkDevice device, VkRenderPass renderP
                                           true /* do lock */);
     }
 }
-VkResult gfxstream_vk_CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
-                                        const VkAllocationCallbacks* pAllocator,
-                                        VkCommandPool* pCommandPool) {
-    AEMU_SCOPED_TRACE("vkCreateCommandPool");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VkResult vkCreateCommandPool_VkResult_return = (VkResult)0;
-    struct gfxstream_vk_command_pool* gfxstream_pCommandPool =
-        (gfxstream_vk_command_pool*)vk_object_zalloc(&gfxstream_device->vk, pAllocator,
-                                                     sizeof(gfxstream_vk_command_pool),
-                                                     VK_OBJECT_TYPE_COMMAND_POOL);
-    vkCreateCommandPool_VkResult_return =
-        gfxstream_pCommandPool ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == vkCreateCommandPool_VkResult_return) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkCreateCommandPool_VkResult_return = vkEnc->vkCreateCommandPool(
-            gfxstream_device->internal_object, pCreateInfo, pAllocator,
-            &gfxstream_pCommandPool->internal_object, true /* do lock */);
-    }
-    *pCommandPool = gfxstream_vk_command_pool_to_handle(gfxstream_pCommandPool);
-    return vkCreateCommandPool_VkResult_return;
-}
-void gfxstream_vk_DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
-                                     const VkAllocationCallbacks* pAllocator) {
-    AEMU_SCOPED_TRACE("vkDestroyCommandPool");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VK_FROM_HANDLE(gfxstream_vk_command_pool, gfxstream_commandPool, commandPool);
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyCommandPool(gfxstream_device->internal_object,
-                                    gfxstream_commandPool->internal_object, pAllocator,
-                                    true /* do lock */);
-    }
-    vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_commandPool);
-}
 VkResult gfxstream_vk_ResetCommandPool(VkDevice device, VkCommandPool commandPool,
                                        VkCommandPoolResetFlags flags) {
     AEMU_SCOPED_TRACE("vkResetCommandPool");
