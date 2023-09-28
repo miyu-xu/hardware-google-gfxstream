@@ -775,6 +775,33 @@ void gfxstream_vk_GetImageSubresourceLayout(VkDevice device, VkImage image,
                                            true /* do lock */);
     }
 }
+VkResult gfxstream_vk_CreateImageView(VkDevice device, const VkImageViewCreateInfo* pCreateInfo,
+                                      const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
+    AEMU_SCOPED_TRACE("vkCreateImageView");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VkResult vkCreateImageView_VkResult_return = (VkResult)0;
+    struct gfxstream_vk_image_view* gfxstream_pView =
+        (struct gfxstream_vk_image_view*)vk_image_view_create(
+            (vk_device*)gfxstream_device, false /* driver_internal */, pCreateInfo, pAllocator,
+            sizeof(struct gfxstream_vk_image_view));
+    vkCreateImageView_VkResult_return = gfxstream_pView ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == vkCreateImageView_VkResult_return) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkImageViewCreateInfo> internal_pCreateInfo(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCreateInfo[i] = pCreateInfo[i];
+            /* VkImageViewCreateInfo::image */
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, internal_pCreateInfo[i].image);
+            internal_pCreateInfo[i].image = gfxstream_image->internal_object;
+        }
+        auto resources = gfxstream::vk::ResourceTracker::get();
+        vkCreateImageView_VkResult_return = resources->on_vkCreateImageView(
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, internal_pCreateInfo.data(),
+            pAllocator, &gfxstream_pView->internal_object);
+    }
+    *pView = gfxstream_vk_image_view_to_handle(gfxstream_pView);
+    return vkCreateImageView_VkResult_return;
+}
 void gfxstream_vk_DestroyImageView(VkDevice device, VkImageView imageView,
                                    const VkAllocationCallbacks* pAllocator) {
     AEMU_SCOPED_TRACE("vkDestroyImageView");
@@ -4740,6 +4767,48 @@ void gfxstream_vk_CommandBufferHostSyncGOOGLE(VkCommandBuffer commandBuffer, uin
         vkEnc->vkCommandBufferHostSyncGOOGLE(gfxstream_commandBuffer->internal_object, needHostSync,
                                              sequenceNumber, true /* do lock */);
     }
+}
+VkResult gfxstream_vk_CreateImageWithRequirementsGOOGLE(VkDevice device,
+                                                        const VkImageCreateInfo* pCreateInfo,
+                                                        const VkAllocationCallbacks* pAllocator,
+                                                        VkImage* pImage,
+                                                        VkMemoryRequirements* pMemoryRequirements) {
+    AEMU_SCOPED_TRACE("vkCreateImageWithRequirementsGOOGLE");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VkResult vkCreateImageWithRequirementsGOOGLE_VkResult_return = (VkResult)0;
+    struct gfxstream_vk_image* gfxstream_pImage = (struct gfxstream_vk_image*)vk_image_create(
+        (vk_device*)gfxstream_device, pCreateInfo, pAllocator, sizeof(struct gfxstream_vk_image));
+    vkCreateImageWithRequirementsGOOGLE_VkResult_return =
+        gfxstream_pImage ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == vkCreateImageWithRequirementsGOOGLE_VkResult_return) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        vkCreateImageWithRequirementsGOOGLE_VkResult_return =
+            vkEnc->vkCreateImageWithRequirementsGOOGLE(
+                gfxstream_device->internal_object, pCreateInfo, pAllocator,
+                &gfxstream_pImage->internal_object, pMemoryRequirements, true /* do lock */);
+    }
+    *pImage = gfxstream_vk_image_to_handle(gfxstream_pImage);
+    return vkCreateImageWithRequirementsGOOGLE_VkResult_return;
+}
+VkResult gfxstream_vk_CreateBufferWithRequirementsGOOGLE(
+    VkDevice device, const VkBufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator,
+    VkBuffer* pBuffer, VkMemoryRequirements* pMemoryRequirements) {
+    AEMU_SCOPED_TRACE("vkCreateBufferWithRequirementsGOOGLE");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VkResult vkCreateBufferWithRequirementsGOOGLE_VkResult_return = (VkResult)0;
+    struct gfxstream_vk_buffer* gfxstream_pBuffer = (struct gfxstream_vk_buffer*)vk_buffer_create(
+        (vk_device*)gfxstream_device, pCreateInfo, pAllocator, sizeof(struct gfxstream_vk_buffer));
+    vkCreateBufferWithRequirementsGOOGLE_VkResult_return =
+        gfxstream_pBuffer ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == vkCreateBufferWithRequirementsGOOGLE_VkResult_return) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        vkCreateBufferWithRequirementsGOOGLE_VkResult_return =
+            vkEnc->vkCreateBufferWithRequirementsGOOGLE(
+                gfxstream_device->internal_object, pCreateInfo, pAllocator,
+                &gfxstream_pBuffer->internal_object, pMemoryRequirements, true /* do lock */);
+    }
+    *pBuffer = gfxstream_vk_buffer_to_handle(gfxstream_pBuffer);
+    return vkCreateBufferWithRequirementsGOOGLE_VkResult_return;
 }
 VkResult gfxstream_vk_GetMemoryHostAddressInfoGOOGLE(VkDevice device, VkDeviceMemory memory,
                                                      uint64_t* pAddress, uint64_t* pSize,
