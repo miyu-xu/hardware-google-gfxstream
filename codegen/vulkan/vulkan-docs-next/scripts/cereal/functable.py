@@ -105,17 +105,16 @@ POSTPROCESSES = {
 }
 
 HANDWRITTEN_ENTRY_POINTS = [
-    # Instance-level special-handling
+    # Instance/device/physical-device special-handling, dispatch tables, etc..
     "vkCreateInstance",
     "vkDestroyInstance",
     "vkGetInstanceProcAddr",
     "vkEnumerateInstanceExtensionProperties",
-    # Device-level special handling
     "vkGetDeviceProcAddr",
     "vkEnumeratePhysicalDevices",
-    # Need manual object alloc+init (i.e. vk_zalloc() + vk_device_init())
     "vkCreateDevice",
     "vkDestroyDevice",
+    # Manual vk_*_init() call w/ special params
     "vkGetDeviceQueue",
     "vkGetDeviceQueue2",
     # Special cases to handle array create/destroy
@@ -192,15 +191,17 @@ def typeNameToBaseName(typeName):
 def paramNameToObjectName(paramName):
     return "gfxstream_%s" % paramName
 
+def typeNameToVkObjectType(typeName):
+    return "VK_OBJECT_TYPE_%s" % typeNameToBaseName(typeName).upper()
+
 def typeNameToObjectType(typeName):
     return "gfxstream_vk_%s" % typeNameToBaseName(typeName)
 
 def mesaObjectHasCreate(typeName):
     return typeName in HANDLES_MESA_CREATE
 
-ALLOCATOR_TYPE_NAME = "VkAllocationCallbacks"
-MESA_ALLOCATOR_PARAM_NAME = "pMesaAllocator"
 def isAllocatorParam(param):
+    ALLOCATOR_TYPE_NAME = "VkAllocationCallbacks"
     return (param.pointerIndirectionLevels == 1
             and param.isConst
             and param.typeName == ALLOCATOR_TYPE_NAME)
@@ -260,35 +261,26 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             else:
                 return handleTranslationRequired(typeName)
 
-        def genMesaAllocatorParam(cgen, api):
-            primaryObjectName = paramNameToObjectName(api.parameters[0].paramName)
-            defaultAllocator = "&%s->vk.alloc" % primaryObjectName
-            inAllocator = None
-            for param in api.parameters:
-                if isAllocatorParam(param):
-                    inAllocator = param.paramName
-                    break
-            if inAllocator:
-                cgen.stmt("const %s *%s = %s ? %s : %s" %
-                          (ALLOCATOR_TYPE_NAME, MESA_ALLOCATOR_PARAM_NAME, inAllocator, inAllocator, defaultAllocator))
-                outAllocator = MESA_ALLOCATOR_PARAM_NAME
-            else:
-                outAllocator = defaultAllocator
-            return outAllocator
-
         def genDestroyGfxstreamObjects(cgen, api):
             destroyParam = getDestroyParam(api)
             if not destroyParam:
                 return
             objectName = paramNameToObjectName(destroyParam.paramName)
-            mesaAllocator = genMesaAllocatorParam(cgen, api)
+            allocatorParam = "NULL"
+            for p in api.parameters:
+                if isAllocatorParam(p):
+                    allocatorParam = p.paramName
             if not mesaObjectHasCreate(destroyParam.typeName):
-                # call vk_free() directly
+                deviceParam = api.parameters[0]
+                if "VkDevice" != deviceParam.typeName:
+                    print("ERROR: Unhandled non-VkDevice parameters[0]: %s (for API: %s)" %(deviceParam.typeName, api.name))
+                    raise
+                # call vk_object_free() directly
                 mesaObjectDestroy = "(void *)%s" % objectName
                 cgen.funcCall(
                     None,
-                    "vk_free",
-                    [mesaAllocator, mesaObjectDestroy]
+                    "vk_object_free",
+                    ["&%s->vk" % paramNameToObjectName(deviceParam.paramName), allocatorParam, mesaObjectDestroy]
                 )
             else:
                 baseName = typeNameToBaseName(destroyParam.typeName)
@@ -305,8 +297,43 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 cgen.funcCall(
                     None,
                     "vk_%s_destroy" % (baseName),
-                    [mesaObjectPrimary, mesaAllocator, mesaObjectDestroy]
+                    [mesaObjectPrimary, allocatorParam, mesaObjectDestroy]
                 )
+
+        def genMesaObjectAlloc(cgen, api, allocCallLhs):
+            deviceParam = api.parameters[0]
+            if "VkDevice" != deviceParam.typeName:
+                print("ERROR: Unhandled non-VkDevice parameters[0]: %s (for API: %s)" %(deviceParam.typeName, api.name))
+                raise
+            allocatorParam = "NULL"
+            for p in api.parameters:
+                if isAllocatorParam(p):
+                    allocatorParam = p.paramName
+            createParam = getCreateParam(api)
+            objectType = typeNameToObjectType(createParam.typeName)
+            # Call vk_object_zalloc directly
+            cgen.funcCall(
+                allocCallLhs,
+                "(%s *)vk_object_zalloc" % objectType,
+                ["&%s->vk" % paramNameToObjectName(deviceParam.paramName), allocatorParam, ("sizeof(%s)" % objectType), typeNameToVkObjectType(createParam.typeName)]
+            )
+
+        def genMesaObjectCreate(cgen, api, createCallLhs):
+            createParam = getCreateParam(api)
+            objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
+            modParams = copy.deepcopy(api.parameters)
+            # Mod params for the vk_%s_create() call i..e vk_buffer_create()
+            for p in modParams:
+                if p.paramName == createParam.paramName:
+                    modParams.remove(p)
+                elif p.typeName in HANDLE_TYPES:
+                    # Cast handle to the mesa type
+                    p.paramName = ("(%s*)%s" % (typeNameToMesaType(p.typeName), paramNameToObjectName(p.paramName)))
+            cgen.funcCall(
+                createCallLhs,
+                "(%s *)vk_%s_create" % (objectType, typeNameToBaseName(createParam.typeName)),
+                [p.paramName for p in modParams] + ["sizeof(%s)" % objectType]
+            )
 
         # Alloc/create gfxstream_vk_* object
         def genCreateGfxstreamObjects(cgen, api):
@@ -314,36 +341,12 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             if not createParam:
                 return False
             objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
-            mesaAllocator = genMesaAllocatorParam(cgen, api)
             callLhs = "%s *%s" % (objectType, paramNameToObjectName(createParam.paramName))
-            if not mesaObjectHasCreate(createParam.typeName):
-                # Call vk_zalloc directly
-                cgen.funcCall(
-                    callLhs,
-                    "(%s *)vk_zalloc" % objectType,
-                    # TODO: Always 8-byte align and SCOPE_OBJECT ?
-                    [mesaAllocator, ("sizeof(%s)" % objectType), "8", "VK_SYSTEM_ALLOCATION_SCOPE_OBJECT"]
-                )
+            if mesaObjectHasCreate(createParam.typeName):
+                genMesaObjectCreate(cgen, api, callLhs)
             else:
-                def getMesaCreateParams(api):
-                    createParam = getCreateParam(api)
-                    outParams = copy.deepcopy(api.parameters)
-                    for p in outParams:
-                        if isAllocatorParam(p):
-                            p.paramName = MESA_ALLOCATOR_PARAM_NAME
-                        elif p.paramName == createParam.paramName:
-                            outParams.remove(p)
-                        elif p.typeName in HANDLE_TYPES:
-                            # Cast handle to the mesa type
-                            p.paramName = ("(%s*)%s" % (typeNameToMesaType(p.typeName), paramNameToObjectName(p.paramName)))
-                    return outParams
-                # Mod params for the vk_%s_create() call i..e vk_buffer_create()
-                modParams = getMesaCreateParams(api)
-                cgen.funcCall(
-                    callLhs,
-                    "(%s *)vk_%s_create" % (objectType, typeNameToBaseName(createParam.typeName)),
-                    [p.paramName for p in modParams] + ["sizeof(%s)" % objectType]
-                )
+                genMesaObjectAlloc(cgen, api, callLhs)
+
             retVar = api.getRetVarExpr()
             if retVar:
                 retTypeName = api.getRetTypeExpr()
