@@ -124,11 +124,6 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkFreeCommandBuffers",
     "vkAllocateDescriptorSets",
     "vkFreeDescriptorSets",
-    # Mesa objects have a create (i.e. vk_buffer_create)
-    # but params dont't line up in create() call
-    "vkCreateImageView",
-    "vkCreateImageWithRequirementsGOOGLE",
-    "vkCreateBufferWithRequirementsGOOGLE",
     # Compound type output
     "vkEnumeratePhysicalDeviceGroups",
     # Handle types in nested compoundTypes
@@ -149,22 +144,24 @@ HANDLES_DONT_TRANSLATE = {
 }
 
 # Handles whose gfxstream object have non-base-object vk_ structs
+# Optionally includes array of pairs of extraParams: {index, extraParam}
+# -1 means drop parameter of paramName specified by extraParam
 HANDLES_MESA_VK = {
     # Handwritten handlers (added here for completeness)
-    "VkInstance",
-    "VkPhysicalDevice",
-    "VkDevice",
-    "VkQueue",
-    "VkCommandPool",
-    "VkCommandBuffer",
+    "VkInstance" : None,
+    "VkPhysicalDevice" : None,
+    "VkDevice" : None,
+    "VkQueue" : None,
+    "VkCommandPool" : None,
+    "VkCommandBuffer" : None,
     # Auto-generated creation/destroy
-    "VkDeviceMemory",
-    "VkQueryPool",
-    "VkBuffer",
-    "VkBufferView",
-    "VkImage",
-    "VkImageView",
-    "VkSampler",
+    "VkDeviceMemory" : None,
+    "VkQueryPool" : None,
+    "VkBuffer" : [[-1, "pMemoryRequirements"]],
+    "VkBufferView" : None,
+    "VkImage" : [[-1, "pMemoryRequirements"]],
+    "VkImageView": [[1, "false /* driver_internal */"]],
+    "VkSampler" : None,
 }
 
 def is_cmdbuf_dispatch(api):
@@ -322,6 +319,11 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             )
 
         def genMesaObjectCreate(cgen, api, createCallLhs):
+            def dropParam(params, drop):
+                for p in params:
+                    if p == drop:
+                        params.remove(p)
+                return params
             createParam = getCreateParam(api)
             objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
             modParams = copy.deepcopy(api.parameters)
@@ -332,10 +334,19 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 elif p.typeName in HANDLE_TYPES:
                     # Cast handle to the mesa type
                     p.paramName = ("(%s*)%s" % (typeNameToMesaType(p.typeName), paramNameToObjectName(p.paramName)))
+            mesaCreateParams = [p.paramName for p in modParams] + ["sizeof(%s)" % objectType]
+            # Some special handling
+            extraParams = HANDLES_MESA_VK[createParam.typeName]
+            if extraParams:
+                for pair in extraParams:
+                    if -1 == pair[0]:
+                        mesaCreateParams = dropParam(mesaCreateParams, pair[1])
+                    else:
+                        mesaCreateParams.insert(pair[0], pair[1])
             cgen.funcCall(
                 createCallLhs,
                 "(%s *)vk_%s_create" % (objectType, typeNameToBaseName(createParam.typeName)),
-                [p.paramName for p in modParams] + ["sizeof(%s)" % objectType]
+                mesaCreateParams
             )
 
         # Alloc/create gfxstream_vk_* object
