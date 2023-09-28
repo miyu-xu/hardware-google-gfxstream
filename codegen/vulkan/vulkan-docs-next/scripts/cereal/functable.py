@@ -146,8 +146,15 @@ HANDLES_DONT_TRANSLATE = {
     "VkSurfaceKHR",
 }
 
-# Handles that have an equivalent mesa create call (i.e. vk_image_create())
-HANDLES_MESA_CREATE = {
+# Handles whose gfxstream object have non-base-object vk_ structs
+HANDLES_MESA_VK = {
+    # Handwritten handlers (added here for completeness)
+    "VkInstance",
+    "VkPhysicalDevice",
+    "VkDevice",
+    "VkQueue",
+    "VkCommandBuffer",
+    # Auto-generated creation/destroy
     "VkDeviceMemory",
     "VkQueryPool",
     "VkBuffer",
@@ -197,8 +204,8 @@ def typeNameToVkObjectType(typeName):
 def typeNameToObjectType(typeName):
     return "gfxstream_vk_%s" % typeNameToBaseName(typeName)
 
-def mesaObjectHasCreate(typeName):
-    return typeName in HANDLES_MESA_CREATE
+def hasMesaVkObject(typeName):
+    return typeName in HANDLES_MESA_VK
 
 def isAllocatorParam(param):
     ALLOCATOR_TYPE_NAME = "VkAllocationCallbacks"
@@ -270,7 +277,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             for p in api.parameters:
                 if isAllocatorParam(p):
                     allocatorParam = p.paramName
-            if not mesaObjectHasCreate(destroyParam.typeName):
+            if not hasMesaVkObject(destroyParam.typeName):
                 deviceParam = api.parameters[0]
                 if "VkDevice" != deviceParam.typeName:
                     print("ERROR: Unhandled non-VkDevice parameters[0]: %s (for API: %s)" %(deviceParam.typeName, api.name))
@@ -284,13 +291,6 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 )
             else:
                 baseName = typeNameToBaseName(destroyParam.typeName)
-                # TODO: hasFinish?
-                # finishCallParam = ("&%s" % typeNameToObjectName(typeName))
-                # cgen.funcCall(
-                #     None,
-                #     "vk_%s_finish" % (baseName),
-                #     [finishCallParam]
-                # )
                 # objectName for destroy always at the back
                 mesaObjectPrimary = "&%s->vk" % paramNameToObjectName(api.parameters[0].paramName)
                 mesaObjectDestroy = "&%s->vk" % objectName
@@ -342,7 +342,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 return False
             objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
             callLhs = "%s *%s" % (objectType, paramNameToObjectName(createParam.paramName))
-            if mesaObjectHasCreate(createParam.typeName):
+            if hasMesaVkObject(createParam.typeName):
                 genMesaObjectCreate(cgen, api, callLhs)
             else:
                 genMesaObjectAlloc(cgen, api, callLhs)
