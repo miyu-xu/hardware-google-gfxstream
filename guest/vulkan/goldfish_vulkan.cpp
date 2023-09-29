@@ -651,6 +651,11 @@ void gfxstream_vk_DestroyDevice(VkDevice device, const VkAllocationCallbacks* pA
     auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
     vkEnc->vkDestroyDevice(gfxstream_device->internal_object, pAllocator, true /* do lock */);
 
+    /* Must destroy device queues manually */
+    vk_foreach_queue_safe(queue, &gfxstream_device->vk) {
+        vk_queue_finish(queue);
+        vk_free(&gfxstream_device->vk.alloc, queue);
+    }
     vk_device_finish(&gfxstream_device->vk);
     vk_free(&gfxstream_device->vk.alloc, gfxstream_device);
 }
@@ -715,6 +720,10 @@ void gfxstream_vk_GetDeviceQueue2(VkDevice device, const VkDeviceQueueInfo2* pQu
     }
 }
 
+/*
+ * CommandPool/CommandBuffer management
+ */
+
 VkResult gfxstream_vk_CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
                                         const VkAllocationCallbacks* pAllocator,
                                         VkCommandPool* pCommandPool) {
@@ -756,6 +765,44 @@ void gfxstream_vk_DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
     vk_free(&gfxstream_commandPool->vk.alloc, gfxstream_commandPool);
 }
 
+static VkResult vk_command_buffer_createOp(struct vk_command_pool *, struct vk_command_buffer **);
+static void vk_command_buffer_resetOp(struct vk_command_buffer *, VkCommandBufferResetFlags);
+static void vk_command_buffer_destroyOp(struct vk_command_buffer *);
+
+static vk_command_buffer_ops gfxstream_vk_commandBufferOps = {
+    .create = vk_command_buffer_createOp,
+    .reset = vk_command_buffer_resetOp,
+    .destroy = vk_command_buffer_destroyOp
+};
+
+VkResult vk_command_buffer_createOp(struct vk_command_pool *commandPool, struct vk_command_buffer **pCommandBuffer) {
+    VkResult result = VK_SUCCESS;
+    struct gfxstream_vk_command_buffer *gfxstream_commandBuffer = (struct gfxstream_vk_command_buffer*)vk_zalloc(
+            &commandPool->alloc,
+            sizeof(struct gfxstream_vk_command_buffer),
+            8,
+            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (gfxstream_commandBuffer) {
+        result = vk_command_buffer_init(commandPool, &gfxstream_commandBuffer->vk, &gfxstream_vk_commandBufferOps, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+        if (VK_SUCCESS == result) {
+            *pCommandBuffer = &gfxstream_commandBuffer->vk;
+        }
+    } else {
+        result = VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+    return result;
+}
+
+void vk_command_buffer_resetOp(struct vk_command_buffer *commandBuffer, VkCommandBufferResetFlags flags) {
+    (void)flags;
+    vk_command_buffer_reset(commandBuffer);
+}
+
+void vk_command_buffer_destroyOp(struct vk_command_buffer *commandBuffer) {
+    vk_command_buffer_finish(commandBuffer);
+    vk_free(&commandBuffer->pool->alloc, commandBuffer);
+}
+
 VkResult gfxstream_vk_AllocateCommandBuffers(VkDevice device,
                                              const VkCommandBufferAllocateInfo* pAllocateInfo,
                                              VkCommandBuffer* pCommandBuffers) {
@@ -765,20 +812,10 @@ VkResult gfxstream_vk_AllocateCommandBuffers(VkDevice device,
     VkResult result = (VkResult)0;
     std::vector<gfxstream_vk_command_buffer*> gfxstream_commandBuffers(pAllocateInfo->commandBufferCount);
     for(uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
-        gfxstream_commandBuffers[i] = (struct gfxstream_vk_command_buffer*)vk_zalloc(
-            &gfxstream_device->vk.alloc,
-            sizeof(struct gfxstream_vk_command_buffer),
-            8,
-            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-        result = gfxstream_commandBuffers[i] ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+        result = vk_command_buffer_createOp(&gfxstream_commandPool->vk,  (vk_command_buffer**)&gfxstream_commandBuffers[i]);
         if (VK_SUCCESS != result) {
-            break;
-        }
-    }
-    for(uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
-        // TODO: Provide vk_command_buffers_ops ?
-        result = vk_command_buffer_init(&gfxstream_commandPool->vk, &gfxstream_commandBuffers[i]->vk, NULL, pAllocateInfo->level);
-        if (VK_SUCCESS != result) {
+            gfxstream_commandBuffers[i]->vk.level = pAllocateInfo->level;
+        } else {
             break;
         }
     }
@@ -826,8 +863,7 @@ void gfxstream_vk_FreeCommandBuffers(VkDevice device, VkCommandPool commandPool,
     }
     for (uint32_t i = 0; i < commandBufferCount; i++) {
         VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, pCommandBuffers[i]);
-        vk_command_buffer_finish(&gfxstream_commandBuffer->vk);
-        vk_free(&gfxstream_device->vk.alloc, gfxstream_commandBuffer);
+        vk_command_buffer_destroyOp(&gfxstream_commandBuffer->vk);
     }
 }
 
