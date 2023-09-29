@@ -532,12 +532,13 @@ VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pP
             VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
         result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
 
+        struct vk_physical_device_dispatch_table dispatch_table;
+        memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
+        vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
         if (VK_SUCCESS == result) {
             for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
-                memset(&gfxstream_physicalDevices[i].dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
-                vk_physical_device_dispatch_table_from_entrypoints(&gfxstream_physicalDevices[i].dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
                 // Initialize the mesa object
-                result = vk_physical_device_init(&gfxstream_physicalDevices[i].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &gfxstream_physicalDevices[i].dispatch_table);
+                result = vk_physical_device_init(&gfxstream_physicalDevices[i].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &dispatch_table);
                 if (VK_SUCCESS != result) {
                     break;
                 }
@@ -577,11 +578,12 @@ VkResult gfxstream_vk_EnumeratePhysicalDeviceGroups(
                 VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
             result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
             if (VK_SUCCESS == result) {
+                struct vk_physical_device_dispatch_table dispatch_table;
+                memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
+                vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
                 for (uint32_t device = 0; device < pPhysicalDeviceGroupProperties[group].physicalDeviceCount; device++) {
-                    memset(&gfxstream_physicalDevices[device].dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
-                    vk_physical_device_dispatch_table_from_entrypoints(&gfxstream_physicalDevices[device].dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
                     // Initialize the mesa object
-                    result = vk_physical_device_init(&gfxstream_physicalDevices[device].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &gfxstream_physicalDevices[device].dispatch_table);
+                    result = vk_physical_device_init(&gfxstream_physicalDevices[device].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &dispatch_table);
                     if (VK_SUCCESS != result) {
                         break;
                     }
@@ -621,14 +623,17 @@ VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
             &gfxstream_device->internal_object, true /* do lock */);
     }
     if (VK_SUCCESS == result) {
-        memset(&gfxstream_device->cmd_dispatch, 0, sizeof(struct vk_device_dispatch_table));
-        vk_device_dispatch_table_from_entrypoints(&gfxstream_device->cmd_dispatch, &gfxstream_vk_device_entrypoints, false);
+        struct vk_device_dispatch_table dispatch_table;
+        memset(&dispatch_table, 0, sizeof(struct vk_device_dispatch_table));
+        vk_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_device_entrypoints, false);
 
-        result = vk_device_init(&gfxstream_device->vk, &gfxstream_physicalDevice->vk, &gfxstream_device->cmd_dispatch, pCreateInfo, pMesaAllocator);
+        result = vk_device_init(&gfxstream_device->vk, &gfxstream_physicalDevice->vk, &dispatch_table, pCreateInfo, pMesaAllocator);
     }
     if (VK_SUCCESS == result) {
         // TODO: wsi_device_init(&gfxstream_device->wsi_device, ...)
         gfxstream_device->physical_device = gfxstream_physicalDevice;
+        // TODO: Initialize cmd_dispatch for emulated secondary command buffer support?
+        gfxstream_device->vk.command_dispatch_table = &gfxstream_device->cmd_dispatch;
         *pDevice = gfxstream_vk_device_to_handle(gfxstream_device);
     }
     else {
