@@ -442,6 +442,154 @@ void gfxstream_vk_GetPhysicalDeviceSparseImageFormatProperties(
             pPropertyCount, pProperties, true /* do lock */);
     }
 }
+VkResult gfxstream_vk_QueueBindSparse(VkQueue queue, uint32_t bindInfoCount,
+                                      const VkBindSparseInfo* pBindInfo, VkFence fence) {
+    AEMU_SCOPED_TRACE("vkQueueBindSparse");
+    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
+    VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
+    VkResult vkQueueBindSparse_VkResult_return = (VkResult)0;
+    {
+        auto vkEnc =
+            gfxstream::vk::ResourceTracker::getQueueEncoder(gfxstream_queue->internal_object);
+        std::vector<VkBindSparseInfo> internal_pBindInfo(bindInfoCount);
+        std::vector<std::vector<VkSemaphore>> internal_VkBindSparseInfo_pWaitSemaphores(
+            bindInfoCount);
+        std::vector<std::vector<VkSparseBufferMemoryBindInfo>>
+            internal_VkBindSparseInfo_pBufferBinds(bindInfoCount);
+        std::vector<std::vector<VkSparseMemoryBind>> internal_VkSparseBufferMemoryBindInfo_pBinds(
+            bindInfoCount);
+        std::vector<std::vector<VkSparseImageOpaqueMemoryBindInfo>>
+            internal_VkBindSparseInfo_pImageOpaqueBinds(bindInfoCount);
+        std::vector<std::vector<VkSparseMemoryBind>>
+            internal_VkSparseImageOpaqueMemoryBindInfo_pBinds(bindInfoCount);
+        std::vector<std::vector<VkSparseImageMemoryBindInfo>> internal_VkBindSparseInfo_pImageBinds(
+            bindInfoCount);
+        std::vector<std::vector<VkSparseImageMemoryBind>>
+            internal_VkSparseImageMemoryBindInfo_pBinds(bindInfoCount);
+        std::vector<std::vector<VkSemaphore>> internal_VkBindSparseInfo_pSignalSemaphores(
+            bindInfoCount);
+        for (uint32_t i = 0; i < bindInfoCount; ++i) {
+            internal_pBindInfo[i] = pBindInfo[i];
+            /* VkBindSparseInfo::pWaitSemaphores */
+            internal_VkBindSparseInfo_pWaitSemaphores[i].reserve(
+                internal_pBindInfo[i].waitSemaphoreCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].waitSemaphoreCount; ++j) {
+                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores,
+                               internal_pBindInfo[i].pWaitSemaphores[j]);
+                if (gfxstream_pWaitSemaphores)
+                    internal_VkBindSparseInfo_pWaitSemaphores[i][j] =
+                        gfxstream_pWaitSemaphores->internal_object;
+            }
+            internal_pBindInfo[i].pWaitSemaphores =
+                internal_VkBindSparseInfo_pWaitSemaphores[i].data();
+            /* VkBindSparseInfo::pBufferBinds */
+            internal_VkBindSparseInfo_pBufferBinds[i].reserve(
+                internal_pBindInfo[i].bufferBindCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].bufferBindCount; ++j) {
+                internal_VkBindSparseInfo_pBufferBinds[i][j] =
+                    internal_pBindInfo[i].pBufferBinds[j];
+                /* VkSparseBufferMemoryBindInfo::buffer */
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                               internal_VkBindSparseInfo_pBufferBinds[i][j].buffer);
+                if (gfxstream_buffer)
+                    internal_VkBindSparseInfo_pBufferBinds[i][j].buffer =
+                        gfxstream_buffer->internal_object;
+                /* VkSparseBufferMemoryBindInfo::pBinds */
+                internal_VkSparseBufferMemoryBindInfo_pBinds[j].reserve(
+                    internal_VkBindSparseInfo_pBufferBinds[i][j].bindCount);
+                for (uint32_t k = 0; k < internal_VkBindSparseInfo_pBufferBinds[i][j].bindCount;
+                     ++k) {
+                    internal_VkSparseBufferMemoryBindInfo_pBinds[j][k] =
+                        internal_VkBindSparseInfo_pBufferBinds[i][j].pBinds[k];
+                    /* VkSparseMemoryBind::memory */
+                    VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                                   internal_VkSparseBufferMemoryBindInfo_pBinds[j][k].memory);
+                    if (gfxstream_memory)
+                        internal_VkSparseBufferMemoryBindInfo_pBinds[j][k].memory =
+                            gfxstream_memory->internal_object;
+                }
+                internal_VkBindSparseInfo_pBufferBinds[i][j].pBinds =
+                    internal_VkSparseBufferMemoryBindInfo_pBinds[j].data();
+            }
+            internal_pBindInfo[i].pBufferBinds = internal_VkBindSparseInfo_pBufferBinds[i].data();
+            /* VkBindSparseInfo::pImageOpaqueBinds */
+            internal_VkBindSparseInfo_pImageOpaqueBinds[i].reserve(
+                internal_pBindInfo[i].imageOpaqueBindCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].imageOpaqueBindCount; ++j) {
+                internal_VkBindSparseInfo_pImageOpaqueBinds[i][j] =
+                    internal_pBindInfo[i].pImageOpaqueBinds[j];
+                /* VkSparseImageOpaqueMemoryBindInfo::image */
+                VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                               internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].image);
+                if (gfxstream_image)
+                    internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].image =
+                        gfxstream_image->internal_object;
+                /* VkSparseImageOpaqueMemoryBindInfo::pBinds */
+                internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j].reserve(
+                    internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].bindCount);
+                for (uint32_t l = 0;
+                     l < internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].bindCount; ++l) {
+                    internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j][l] =
+                        internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].pBinds[l];
+                    /* VkSparseMemoryBind::memory */
+                    VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                                   internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j][l].memory);
+                    if (gfxstream_memory)
+                        internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j][l].memory =
+                            gfxstream_memory->internal_object;
+                }
+                internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].pBinds =
+                    internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j].data();
+            }
+            internal_pBindInfo[i].pImageOpaqueBinds =
+                internal_VkBindSparseInfo_pImageOpaqueBinds[i].data();
+            /* VkBindSparseInfo::pImageBinds */
+            internal_VkBindSparseInfo_pImageBinds[i].reserve(internal_pBindInfo[i].imageBindCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].imageBindCount; ++j) {
+                internal_VkBindSparseInfo_pImageBinds[i][j] = internal_pBindInfo[i].pImageBinds[j];
+                /* VkSparseImageMemoryBindInfo::image */
+                VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                               internal_VkBindSparseInfo_pImageBinds[i][j].image);
+                if (gfxstream_image)
+                    internal_VkBindSparseInfo_pImageBinds[i][j].image =
+                        gfxstream_image->internal_object;
+                /* VkSparseImageMemoryBindInfo::pBinds */
+                internal_VkSparseImageMemoryBindInfo_pBinds[j].reserve(
+                    internal_VkBindSparseInfo_pImageBinds[i][j].bindCount);
+                for (uint32_t m = 0; m < internal_VkBindSparseInfo_pImageBinds[i][j].bindCount;
+                     ++m) {
+                    internal_VkSparseImageMemoryBindInfo_pBinds[j][m] =
+                        internal_VkBindSparseInfo_pImageBinds[i][j].pBinds[m];
+                    /* VkSparseImageMemoryBind::memory */
+                    VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                                   internal_VkSparseImageMemoryBindInfo_pBinds[j][m].memory);
+                    if (gfxstream_memory)
+                        internal_VkSparseImageMemoryBindInfo_pBinds[j][m].memory =
+                            gfxstream_memory->internal_object;
+                }
+                internal_VkBindSparseInfo_pImageBinds[i][j].pBinds =
+                    internal_VkSparseImageMemoryBindInfo_pBinds[j].data();
+            }
+            internal_pBindInfo[i].pImageBinds = internal_VkBindSparseInfo_pImageBinds[i].data();
+            /* VkBindSparseInfo::pSignalSemaphores */
+            internal_VkBindSparseInfo_pSignalSemaphores[i].reserve(
+                internal_pBindInfo[i].signalSemaphoreCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].signalSemaphoreCount; ++j) {
+                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pSignalSemaphores,
+                               internal_pBindInfo[i].pSignalSemaphores[j]);
+                if (gfxstream_pSignalSemaphores)
+                    internal_VkBindSparseInfo_pSignalSemaphores[i][j] =
+                        gfxstream_pSignalSemaphores->internal_object;
+            }
+            internal_pBindInfo[i].pSignalSemaphores =
+                internal_VkBindSparseInfo_pSignalSemaphores[i].data();
+        }
+        vkQueueBindSparse_VkResult_return = vkEnc->vkQueueBindSparse(
+            gfxstream_queue->internal_object, bindInfoCount, internal_pBindInfo.data(),
+            gfxstream_fence->internal_object, true /* do lock */);
+    }
+    return vkQueueBindSparse_VkResult_return;
+}
 VkResult gfxstream_vk_CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                                   const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
     AEMU_SCOPED_TRACE("vkCreateFence");
@@ -935,6 +1083,118 @@ VkResult gfxstream_vk_MergePipelineCaches(VkDevice device, VkPipelineCache dstCa
     }
     return vkMergePipelineCaches_VkResult_return;
 }
+VkResult gfxstream_vk_CreateGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache,
+                                              uint32_t createInfoCount,
+                                              const VkGraphicsPipelineCreateInfo* pCreateInfos,
+                                              const VkAllocationCallbacks* pAllocator,
+                                              VkPipeline* pPipelines) {
+    AEMU_SCOPED_TRACE("vkCreateGraphicsPipelines");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_pipelineCache, pipelineCache);
+    VkResult vkCreateGraphicsPipelines_VkResult_return = (VkResult)0;
+    struct gfxstream_vk_pipeline* gfxstream_pPipelines = (gfxstream_vk_pipeline*)vk_object_zalloc(
+        &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_pipeline), VK_OBJECT_TYPE_PIPELINE);
+    vkCreateGraphicsPipelines_VkResult_return =
+        gfxstream_pPipelines ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == vkCreateGraphicsPipelines_VkResult_return) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkGraphicsPipelineCreateInfo> internal_pCreateInfos(createInfoCount);
+        std::vector<std::vector<VkPipelineShaderStageCreateInfo>>
+            internal_VkGraphicsPipelineCreateInfo_pStages(createInfoCount);
+        for (uint32_t i = 0; i < createInfoCount; ++i) {
+            internal_pCreateInfos[i] = pCreateInfos[i];
+            /* VkGraphicsPipelineCreateInfo::pStages */
+            internal_VkGraphicsPipelineCreateInfo_pStages[i].reserve(
+                internal_pCreateInfos[i].stageCount);
+            for (uint32_t j = 0; j < internal_pCreateInfos[i].stageCount; ++j) {
+                internal_VkGraphicsPipelineCreateInfo_pStages[i][j] =
+                    internal_pCreateInfos[i].pStages[j];
+                /* VkPipelineShaderStageCreateInfo::module */
+                VK_FROM_HANDLE(gfxstream_vk_shader_module, gfxstream_module,
+                               internal_VkGraphicsPipelineCreateInfo_pStages[i][j].module);
+                if (gfxstream_module)
+                    internal_VkGraphicsPipelineCreateInfo_pStages[i][j].module =
+                        gfxstream_module->internal_object;
+            }
+            internal_pCreateInfos[i].pStages =
+                internal_VkGraphicsPipelineCreateInfo_pStages[i].data();
+            /* VkGraphicsPipelineCreateInfo::layout */
+            VK_FROM_HANDLE(gfxstream_vk_pipeline_layout, gfxstream_layout,
+                           internal_pCreateInfos[i].layout);
+            if (gfxstream_layout)
+                internal_pCreateInfos[i].layout = gfxstream_layout->internal_object;
+            /* VkGraphicsPipelineCreateInfo::renderPass */
+            VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
+                           internal_pCreateInfos[i].renderPass);
+            if (gfxstream_renderPass)
+                internal_pCreateInfos[i].renderPass = gfxstream_renderPass->internal_object;
+            /* VkGraphicsPipelineCreateInfo::basePipelineHandle */
+            VK_FROM_HANDLE(gfxstream_vk_pipeline, gfxstream_basePipelineHandle,
+                           internal_pCreateInfos[i].basePipelineHandle);
+            if (gfxstream_basePipelineHandle)
+                internal_pCreateInfos[i].basePipelineHandle =
+                    gfxstream_basePipelineHandle->internal_object;
+        }
+        auto resources = gfxstream::vk::ResourceTracker::get();
+        vkCreateGraphicsPipelines_VkResult_return = resources->on_vkCreateGraphicsPipelines(
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
+            gfxstream_pipelineCache->internal_object, createInfoCount, internal_pCreateInfos.data(),
+            pAllocator, &gfxstream_pPipelines->internal_object);
+    }
+    *pPipelines = gfxstream_vk_pipeline_to_handle(gfxstream_pPipelines);
+    return vkCreateGraphicsPipelines_VkResult_return;
+}
+VkResult gfxstream_vk_CreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache,
+                                             uint32_t createInfoCount,
+                                             const VkComputePipelineCreateInfo* pCreateInfos,
+                                             const VkAllocationCallbacks* pAllocator,
+                                             VkPipeline* pPipelines) {
+    AEMU_SCOPED_TRACE("vkCreateComputePipelines");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_pipelineCache, pipelineCache);
+    VkResult vkCreateComputePipelines_VkResult_return = (VkResult)0;
+    struct gfxstream_vk_pipeline* gfxstream_pPipelines = (gfxstream_vk_pipeline*)vk_object_zalloc(
+        &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_pipeline), VK_OBJECT_TYPE_PIPELINE);
+    vkCreateComputePipelines_VkResult_return =
+        gfxstream_pPipelines ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == vkCreateComputePipelines_VkResult_return) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkComputePipelineCreateInfo> internal_pCreateInfos(createInfoCount);
+        std::vector<VkPipelineShaderStageCreateInfo> internal_VkComputePipelineCreateInfo_stage(
+            createInfoCount);
+        for (uint32_t i = 0; i < createInfoCount; ++i) {
+            internal_pCreateInfos[i] = pCreateInfos[i];
+            /* VkComputePipelineCreateInfo::stage */
+            {
+                internal_VkComputePipelineCreateInfo_stage[i] = internal_pCreateInfos[i].stage;
+                /* VkPipelineShaderStageCreateInfo::module */
+                VK_FROM_HANDLE(gfxstream_vk_shader_module, gfxstream_module,
+                               internal_VkComputePipelineCreateInfo_stage[i].module);
+                if (gfxstream_module)
+                    internal_VkComputePipelineCreateInfo_stage[i].module =
+                        gfxstream_module->internal_object;
+                internal_pCreateInfos[i].stage = internal_VkComputePipelineCreateInfo_stage[i];
+            }
+            /* VkComputePipelineCreateInfo::layout */
+            VK_FROM_HANDLE(gfxstream_vk_pipeline_layout, gfxstream_layout,
+                           internal_pCreateInfos[i].layout);
+            if (gfxstream_layout)
+                internal_pCreateInfos[i].layout = gfxstream_layout->internal_object;
+            /* VkComputePipelineCreateInfo::basePipelineHandle */
+            VK_FROM_HANDLE(gfxstream_vk_pipeline, gfxstream_basePipelineHandle,
+                           internal_pCreateInfos[i].basePipelineHandle);
+            if (gfxstream_basePipelineHandle)
+                internal_pCreateInfos[i].basePipelineHandle =
+                    gfxstream_basePipelineHandle->internal_object;
+        }
+        vkCreateComputePipelines_VkResult_return = vkEnc->vkCreateComputePipelines(
+            gfxstream_device->internal_object, gfxstream_pipelineCache->internal_object,
+            createInfoCount, internal_pCreateInfos.data(), pAllocator,
+            &gfxstream_pPipelines->internal_object, true /* do lock */);
+    }
+    *pPipelines = gfxstream_vk_pipeline_to_handle(gfxstream_pPipelines);
+    return vkCreateComputePipelines_VkResult_return;
+}
 void gfxstream_vk_DestroyPipeline(VkDevice device, VkPipeline pipeline,
                                   const VkAllocationCallbacks* pAllocator) {
     AEMU_SCOPED_TRACE("vkDestroyPipeline");
@@ -1033,6 +1293,61 @@ void gfxstream_vk_DestroySampler(VkDevice device, VkSampler sampler,
     }
     vk_sampler_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_sampler->vk);
 }
+VkResult gfxstream_vk_CreateDescriptorSetLayout(VkDevice device,
+                                                const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
+                                                const VkAllocationCallbacks* pAllocator,
+                                                VkDescriptorSetLayout* pSetLayout) {
+    AEMU_SCOPED_TRACE("vkCreateDescriptorSetLayout");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VkResult vkCreateDescriptorSetLayout_VkResult_return = (VkResult)0;
+    struct gfxstream_vk_descriptor_set_layout* gfxstream_pSetLayout =
+        (gfxstream_vk_descriptor_set_layout*)vk_object_zalloc(
+            &gfxstream_device->vk, pAllocator, sizeof(gfxstream_vk_descriptor_set_layout),
+            VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT);
+    vkCreateDescriptorSetLayout_VkResult_return =
+        gfxstream_pSetLayout ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == vkCreateDescriptorSetLayout_VkResult_return) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDescriptorSetLayoutCreateInfo> internal_pCreateInfo(1);
+        std::vector<std::vector<VkDescriptorSetLayoutBinding>>
+            internal_VkDescriptorSetLayoutCreateInfo_pBindings(1);
+        std::vector<std::vector<VkSampler>>
+            internal_VkDescriptorSetLayoutBinding_pImmutableSamplers(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCreateInfo[i] = pCreateInfo[i];
+            /* VkDescriptorSetLayoutCreateInfo::pBindings */
+            internal_VkDescriptorSetLayoutCreateInfo_pBindings[i].reserve(
+                internal_pCreateInfo[i].bindingCount);
+            for (uint32_t j = 0; j < internal_pCreateInfo[i].bindingCount; ++j) {
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j] =
+                    internal_pCreateInfo[i].pBindings[j];
+                /* VkDescriptorSetLayoutBinding::pImmutableSamplers */
+                internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j].reserve(
+                    internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].descriptorCount);
+                for (uint32_t k = 0;
+                     k < internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].descriptorCount;
+                     ++k) {
+                    VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_pImmutableSamplers,
+                                   internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j]
+                                       .pImmutableSamplers[k]);
+                    if (gfxstream_pImmutableSamplers)
+                        internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j][k] =
+                            gfxstream_pImmutableSamplers->internal_object;
+                }
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].pImmutableSamplers =
+                    internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j].data();
+            }
+            internal_pCreateInfo[i].pBindings =
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i].data();
+        }
+        auto resources = gfxstream::vk::ResourceTracker::get();
+        vkCreateDescriptorSetLayout_VkResult_return = resources->on_vkCreateDescriptorSetLayout(
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, internal_pCreateInfo.data(),
+            pAllocator, &gfxstream_pSetLayout->internal_object);
+    }
+    *pSetLayout = gfxstream_vk_descriptor_set_layout_to_handle(gfxstream_pSetLayout);
+    return vkCreateDescriptorSetLayout_VkResult_return;
+}
 void gfxstream_vk_DestroyDescriptorSetLayout(VkDevice device,
                                              VkDescriptorSetLayout descriptorSetLayout,
                                              const VkAllocationCallbacks* pAllocator) {
@@ -1100,6 +1415,98 @@ VkResult gfxstream_vk_ResetDescriptorPool(VkDevice device, VkDescriptorPool desc
             gfxstream_descriptorPool->internal_object, flags);
     }
     return vkResetDescriptorPool_VkResult_return;
+}
+void gfxstream_vk_UpdateDescriptorSets(VkDevice device, uint32_t descriptorWriteCount,
+                                       const VkWriteDescriptorSet* pDescriptorWrites,
+                                       uint32_t descriptorCopyCount,
+                                       const VkCopyDescriptorSet* pDescriptorCopies) {
+    AEMU_SCOPED_TRACE("vkUpdateDescriptorSets");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkWriteDescriptorSet> internal_pDescriptorWrites(descriptorWriteCount);
+        std::vector<std::vector<VkDescriptorImageInfo>> internal_VkWriteDescriptorSet_pImageInfo(
+            descriptorWriteCount);
+        std::vector<std::vector<VkDescriptorBufferInfo>> internal_VkWriteDescriptorSet_pBufferInfo(
+            descriptorWriteCount);
+        std::vector<std::vector<VkBufferView>> internal_VkWriteDescriptorSet_pTexelBufferView(
+            descriptorWriteCount);
+        for (uint32_t i = 0; i < descriptorWriteCount; ++i) {
+            internal_pDescriptorWrites[i] = pDescriptorWrites[i];
+            /* VkWriteDescriptorSet::dstSet */
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_dstSet,
+                           internal_pDescriptorWrites[i].dstSet);
+            if (gfxstream_dstSet)
+                internal_pDescriptorWrites[i].dstSet = gfxstream_dstSet->internal_object;
+            /* VkWriteDescriptorSet::pImageInfo */
+            internal_VkWriteDescriptorSet_pImageInfo[i].reserve(
+                internal_pDescriptorWrites[i].descriptorCount);
+            for (uint32_t j = 0; j < internal_pDescriptorWrites[i].descriptorCount; ++j) {
+                internal_VkWriteDescriptorSet_pImageInfo[i][j] =
+                    internal_pDescriptorWrites[i].pImageInfo[j];
+                /* VkDescriptorImageInfo::sampler */
+                VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_sampler,
+                               internal_VkWriteDescriptorSet_pImageInfo[i][j].sampler);
+                if (gfxstream_sampler)
+                    internal_VkWriteDescriptorSet_pImageInfo[i][j].sampler =
+                        gfxstream_sampler->internal_object;
+                /* VkDescriptorImageInfo::imageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
+                               internal_VkWriteDescriptorSet_pImageInfo[i][j].imageView);
+                if (gfxstream_imageView)
+                    internal_VkWriteDescriptorSet_pImageInfo[i][j].imageView =
+                        gfxstream_imageView->internal_object;
+            }
+            internal_pDescriptorWrites[i].pImageInfo =
+                internal_VkWriteDescriptorSet_pImageInfo[i].data();
+            /* VkWriteDescriptorSet::pBufferInfo */
+            internal_VkWriteDescriptorSet_pBufferInfo[i].reserve(
+                internal_pDescriptorWrites[i].descriptorCount);
+            for (uint32_t j = 0; j < internal_pDescriptorWrites[i].descriptorCount; ++j) {
+                internal_VkWriteDescriptorSet_pBufferInfo[i][j] =
+                    internal_pDescriptorWrites[i].pBufferInfo[j];
+                /* VkDescriptorBufferInfo::buffer */
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                               internal_VkWriteDescriptorSet_pBufferInfo[i][j].buffer);
+                if (gfxstream_buffer)
+                    internal_VkWriteDescriptorSet_pBufferInfo[i][j].buffer =
+                        gfxstream_buffer->internal_object;
+            }
+            internal_pDescriptorWrites[i].pBufferInfo =
+                internal_VkWriteDescriptorSet_pBufferInfo[i].data();
+            /* VkWriteDescriptorSet::pTexelBufferView */
+            internal_VkWriteDescriptorSet_pTexelBufferView[i].reserve(
+                internal_pDescriptorWrites[i].descriptorCount);
+            for (uint32_t j = 0; j < internal_pDescriptorWrites[i].descriptorCount; ++j) {
+                VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pTexelBufferView,
+                               internal_pDescriptorWrites[i].pTexelBufferView[j]);
+                if (gfxstream_pTexelBufferView)
+                    internal_VkWriteDescriptorSet_pTexelBufferView[i][j] =
+                        gfxstream_pTexelBufferView->internal_object;
+            }
+            internal_pDescriptorWrites[i].pTexelBufferView =
+                internal_VkWriteDescriptorSet_pTexelBufferView[i].data();
+        }
+        std::vector<VkCopyDescriptorSet> internal_pDescriptorCopies(descriptorCopyCount);
+        for (uint32_t i = 0; i < descriptorCopyCount; ++i) {
+            internal_pDescriptorCopies[i] = pDescriptorCopies[i];
+            /* VkCopyDescriptorSet::srcSet */
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_srcSet,
+                           internal_pDescriptorCopies[i].srcSet);
+            if (gfxstream_srcSet)
+                internal_pDescriptorCopies[i].srcSet = gfxstream_srcSet->internal_object;
+            /* VkCopyDescriptorSet::dstSet */
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_dstSet,
+                           internal_pDescriptorCopies[i].dstSet);
+            if (gfxstream_dstSet)
+                internal_pDescriptorCopies[i].dstSet = gfxstream_dstSet->internal_object;
+        }
+        auto resources = gfxstream::vk::ResourceTracker::get();
+        resources->on_vkUpdateDescriptorSets(vkEnc, gfxstream_device->internal_object,
+                                             descriptorWriteCount,
+                                             internal_pDescriptorWrites.data(), descriptorCopyCount,
+                                             internal_pDescriptorCopies.data());
+    }
 }
 VkResult gfxstream_vk_CreateFramebuffer(VkDevice device, const VkFramebufferCreateInfo* pCreateInfo,
                                         const VkAllocationCallbacks* pAllocator,
@@ -2336,6 +2743,50 @@ void gfxstream_vk_GetPhysicalDeviceExternalSemaphoreProperties(
             pExternalSemaphoreProperties, true /* do lock */);
     }
 }
+void gfxstream_vk_GetDescriptorSetLayoutSupport(VkDevice device,
+                                                const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
+                                                VkDescriptorSetLayoutSupport* pSupport) {
+    AEMU_SCOPED_TRACE("vkGetDescriptorSetLayoutSupport");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDescriptorSetLayoutCreateInfo> internal_pCreateInfo(1);
+        std::vector<std::vector<VkDescriptorSetLayoutBinding>>
+            internal_VkDescriptorSetLayoutCreateInfo_pBindings(1);
+        std::vector<std::vector<VkSampler>>
+            internal_VkDescriptorSetLayoutBinding_pImmutableSamplers(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCreateInfo[i] = pCreateInfo[i];
+            /* VkDescriptorSetLayoutCreateInfo::pBindings */
+            internal_VkDescriptorSetLayoutCreateInfo_pBindings[i].reserve(
+                internal_pCreateInfo[i].bindingCount);
+            for (uint32_t j = 0; j < internal_pCreateInfo[i].bindingCount; ++j) {
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j] =
+                    internal_pCreateInfo[i].pBindings[j];
+                /* VkDescriptorSetLayoutBinding::pImmutableSamplers */
+                internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j].reserve(
+                    internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].descriptorCount);
+                for (uint32_t k = 0;
+                     k < internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].descriptorCount;
+                     ++k) {
+                    VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_pImmutableSamplers,
+                                   internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j]
+                                       .pImmutableSamplers[k]);
+                    if (gfxstream_pImmutableSamplers)
+                        internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j][k] =
+                            gfxstream_pImmutableSamplers->internal_object;
+                }
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].pImmutableSamplers =
+                    internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j].data();
+            }
+            internal_pCreateInfo[i].pBindings =
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i].data();
+        }
+        vkEnc->vkGetDescriptorSetLayoutSupport(gfxstream_device->internal_object,
+                                               internal_pCreateInfo.data(), pSupport,
+                                               true /* do lock */);
+    }
+}
 #endif
 #ifdef VK_VERSION_1_2
 void gfxstream_vk_CmdDrawIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer,
@@ -2642,6 +3093,57 @@ void gfxstream_vk_GetPrivateData(VkDevice device, VkObjectType objectType, uint6
                                 privateDataSlot, pData, true /* do lock */);
     }
 }
+void gfxstream_vk_CmdSetEvent2(VkCommandBuffer commandBuffer, VkEvent event,
+                               const VkDependencyInfo* pDependencyInfo) {
+    AEMU_SCOPED_TRACE("vkCmdSetEvent2");
+    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
+    VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_event, event);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
+            gfxstream_commandBuffer->internal_object);
+        std::vector<VkDependencyInfo> internal_pDependencyInfo(1);
+        std::vector<std::vector<VkBufferMemoryBarrier2>>
+            internal_VkDependencyInfo_pBufferMemoryBarriers(1);
+        std::vector<std::vector<VkImageMemoryBarrier2>>
+            internal_VkDependencyInfo_pImageMemoryBarriers(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pDependencyInfo[i] = pDependencyInfo[i];
+            /* VkDependencyInfo::pBufferMemoryBarriers */
+            internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
+                internal_pDependencyInfo[i].bufferMemoryBarrierCount);
+            for (uint32_t j = 0; j < internal_pDependencyInfo[i].bufferMemoryBarrierCount; ++j) {
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
+                    internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
+                /* VkBufferMemoryBarrier2::buffer */
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
+                if (gfxstream_buffer)
+                    internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
+                        gfxstream_buffer->internal_object;
+            }
+            internal_pDependencyInfo[i].pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            /* VkDependencyInfo::pImageMemoryBarriers */
+            internal_VkDependencyInfo_pImageMemoryBarriers[i].reserve(
+                internal_pDependencyInfo[i].imageMemoryBarrierCount);
+            for (uint32_t j = 0; j < internal_pDependencyInfo[i].imageMemoryBarrierCount; ++j) {
+                internal_VkDependencyInfo_pImageMemoryBarriers[i][j] =
+                    internal_pDependencyInfo[i].pImageMemoryBarriers[j];
+                /* VkImageMemoryBarrier2::image */
+                VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                               internal_VkDependencyInfo_pImageMemoryBarriers[i][j].image);
+                if (gfxstream_image)
+                    internal_VkDependencyInfo_pImageMemoryBarriers[i][j].image =
+                        gfxstream_image->internal_object;
+            }
+            internal_pDependencyInfo[i].pImageMemoryBarriers =
+                internal_VkDependencyInfo_pImageMemoryBarriers[i].data();
+        }
+        vkEnc->vkCmdSetEvent2(gfxstream_commandBuffer->internal_object,
+                              gfxstream_event->internal_object, internal_pDependencyInfo.data(),
+                              true /* do lock */);
+    }
+}
 void gfxstream_vk_CmdResetEvent2(VkCommandBuffer commandBuffer, VkEvent event,
                                  VkPipelineStageFlags2 stageMask) {
     AEMU_SCOPED_TRACE("vkCmdResetEvent2");
@@ -2652,6 +3154,110 @@ void gfxstream_vk_CmdResetEvent2(VkCommandBuffer commandBuffer, VkEvent event,
             gfxstream_commandBuffer->internal_object);
         vkEnc->vkCmdResetEvent2(gfxstream_commandBuffer->internal_object,
                                 gfxstream_event->internal_object, stageMask, true /* do lock */);
+    }
+}
+void gfxstream_vk_CmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount,
+                                 const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
+    AEMU_SCOPED_TRACE("vkCmdWaitEvents2");
+    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
+            gfxstream_commandBuffer->internal_object);
+        std::vector<VkEvent> internal_pEvents(eventCount);
+        for (uint32_t i = 0; i < eventCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_pEvents, pEvents[i]);
+            if (gfxstream_pEvents) internal_pEvents[i] = gfxstream_pEvents->internal_object;
+        }
+        std::vector<VkDependencyInfo> internal_pDependencyInfos(eventCount);
+        std::vector<std::vector<VkBufferMemoryBarrier2>>
+            internal_VkDependencyInfo_pBufferMemoryBarriers(eventCount);
+        std::vector<std::vector<VkImageMemoryBarrier2>>
+            internal_VkDependencyInfo_pImageMemoryBarriers(eventCount);
+        for (uint32_t i = 0; i < eventCount; ++i) {
+            internal_pDependencyInfos[i] = pDependencyInfos[i];
+            /* VkDependencyInfo::pBufferMemoryBarriers */
+            internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
+                internal_pDependencyInfos[i].bufferMemoryBarrierCount);
+            for (uint32_t j = 0; j < internal_pDependencyInfos[i].bufferMemoryBarrierCount; ++j) {
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
+                    internal_pDependencyInfos[i].pBufferMemoryBarriers[j];
+                /* VkBufferMemoryBarrier2::buffer */
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
+                if (gfxstream_buffer)
+                    internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
+                        gfxstream_buffer->internal_object;
+            }
+            internal_pDependencyInfos[i].pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            /* VkDependencyInfo::pImageMemoryBarriers */
+            internal_VkDependencyInfo_pImageMemoryBarriers[i].reserve(
+                internal_pDependencyInfos[i].imageMemoryBarrierCount);
+            for (uint32_t j = 0; j < internal_pDependencyInfos[i].imageMemoryBarrierCount; ++j) {
+                internal_VkDependencyInfo_pImageMemoryBarriers[i][j] =
+                    internal_pDependencyInfos[i].pImageMemoryBarriers[j];
+                /* VkImageMemoryBarrier2::image */
+                VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                               internal_VkDependencyInfo_pImageMemoryBarriers[i][j].image);
+                if (gfxstream_image)
+                    internal_VkDependencyInfo_pImageMemoryBarriers[i][j].image =
+                        gfxstream_image->internal_object;
+            }
+            internal_pDependencyInfos[i].pImageMemoryBarriers =
+                internal_VkDependencyInfo_pImageMemoryBarriers[i].data();
+        }
+        vkEnc->vkCmdWaitEvents2(gfxstream_commandBuffer->internal_object, eventCount,
+                                internal_pEvents.data(), internal_pDependencyInfos.data(),
+                                true /* do lock */);
+    }
+}
+void gfxstream_vk_CmdPipelineBarrier2(VkCommandBuffer commandBuffer,
+                                      const VkDependencyInfo* pDependencyInfo) {
+    AEMU_SCOPED_TRACE("vkCmdPipelineBarrier2");
+    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
+            gfxstream_commandBuffer->internal_object);
+        std::vector<VkDependencyInfo> internal_pDependencyInfo(1);
+        std::vector<std::vector<VkBufferMemoryBarrier2>>
+            internal_VkDependencyInfo_pBufferMemoryBarriers(1);
+        std::vector<std::vector<VkImageMemoryBarrier2>>
+            internal_VkDependencyInfo_pImageMemoryBarriers(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pDependencyInfo[i] = pDependencyInfo[i];
+            /* VkDependencyInfo::pBufferMemoryBarriers */
+            internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
+                internal_pDependencyInfo[i].bufferMemoryBarrierCount);
+            for (uint32_t j = 0; j < internal_pDependencyInfo[i].bufferMemoryBarrierCount; ++j) {
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
+                    internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
+                /* VkBufferMemoryBarrier2::buffer */
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
+                if (gfxstream_buffer)
+                    internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
+                        gfxstream_buffer->internal_object;
+            }
+            internal_pDependencyInfo[i].pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            /* VkDependencyInfo::pImageMemoryBarriers */
+            internal_VkDependencyInfo_pImageMemoryBarriers[i].reserve(
+                internal_pDependencyInfo[i].imageMemoryBarrierCount);
+            for (uint32_t j = 0; j < internal_pDependencyInfo[i].imageMemoryBarrierCount; ++j) {
+                internal_VkDependencyInfo_pImageMemoryBarriers[i][j] =
+                    internal_pDependencyInfo[i].pImageMemoryBarriers[j];
+                /* VkImageMemoryBarrier2::image */
+                VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                               internal_VkDependencyInfo_pImageMemoryBarriers[i][j].image);
+                if (gfxstream_image)
+                    internal_VkDependencyInfo_pImageMemoryBarriers[i][j].image =
+                        gfxstream_image->internal_object;
+            }
+            internal_pDependencyInfo[i].pImageMemoryBarriers =
+                internal_VkDependencyInfo_pImageMemoryBarriers[i].data();
+        }
+        vkEnc->vkCmdPipelineBarrier2(gfxstream_commandBuffer->internal_object,
+                                     internal_pDependencyInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdWriteTimestamp2(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage,
@@ -2666,6 +3272,77 @@ void gfxstream_vk_CmdWriteTimestamp2(VkCommandBuffer commandBuffer, VkPipelineSt
                                     gfxstream_queryPool->internal_object, query,
                                     true /* do lock */);
     }
+}
+VkResult gfxstream_vk_QueueSubmit2(VkQueue queue, uint32_t submitCount,
+                                   const VkSubmitInfo2* pSubmits, VkFence fence) {
+    AEMU_SCOPED_TRACE("vkQueueSubmit2");
+    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
+    VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
+    VkResult vkQueueSubmit2_VkResult_return = (VkResult)0;
+    {
+        auto vkEnc =
+            gfxstream::vk::ResourceTracker::getQueueEncoder(gfxstream_queue->internal_object);
+        std::vector<VkSubmitInfo2> internal_pSubmits(submitCount);
+        std::vector<std::vector<VkSemaphoreSubmitInfo>> internal_VkSubmitInfo2_pWaitSemaphoreInfos(
+            submitCount);
+        std::vector<std::vector<VkCommandBufferSubmitInfo>>
+            internal_VkSubmitInfo2_pCommandBufferInfos(submitCount);
+        std::vector<std::vector<VkSemaphoreSubmitInfo>>
+            internal_VkSubmitInfo2_pSignalSemaphoreInfos(submitCount);
+        for (uint32_t i = 0; i < submitCount; ++i) {
+            internal_pSubmits[i] = pSubmits[i];
+            /* VkSubmitInfo2::pWaitSemaphoreInfos */
+            internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].reserve(
+                internal_pSubmits[i].waitSemaphoreInfoCount);
+            for (uint32_t j = 0; j < internal_pSubmits[i].waitSemaphoreInfoCount; ++j) {
+                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j] =
+                    internal_pSubmits[i].pWaitSemaphoreInfos[j];
+                /* VkSemaphoreSubmitInfo::semaphore */
+                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
+                               internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore);
+                if (gfxstream_semaphore)
+                    internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore =
+                        gfxstream_semaphore->internal_object;
+            }
+            internal_pSubmits[i].pWaitSemaphoreInfos =
+                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].data();
+            /* VkSubmitInfo2::pCommandBufferInfos */
+            internal_VkSubmitInfo2_pCommandBufferInfos[i].reserve(
+                internal_pSubmits[i].commandBufferInfoCount);
+            for (uint32_t j = 0; j < internal_pSubmits[i].commandBufferInfoCount; ++j) {
+                internal_VkSubmitInfo2_pCommandBufferInfos[i][j] =
+                    internal_pSubmits[i].pCommandBufferInfos[j];
+                /* VkCommandBufferSubmitInfo::commandBuffer */
+                VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer,
+                               internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer);
+                if (gfxstream_commandBuffer)
+                    internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer =
+                        gfxstream_commandBuffer->internal_object;
+            }
+            internal_pSubmits[i].pCommandBufferInfos =
+                internal_VkSubmitInfo2_pCommandBufferInfos[i].data();
+            /* VkSubmitInfo2::pSignalSemaphoreInfos */
+            internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].reserve(
+                internal_pSubmits[i].signalSemaphoreInfoCount);
+            for (uint32_t j = 0; j < internal_pSubmits[i].signalSemaphoreInfoCount; ++j) {
+                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j] =
+                    internal_pSubmits[i].pSignalSemaphoreInfos[j];
+                /* VkSemaphoreSubmitInfo::semaphore */
+                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
+                               internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore);
+                if (gfxstream_semaphore)
+                    internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore =
+                        gfxstream_semaphore->internal_object;
+            }
+            internal_pSubmits[i].pSignalSemaphoreInfos =
+                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].data();
+        }
+        auto resources = gfxstream::vk::ResourceTracker::get();
+        vkQueueSubmit2_VkResult_return = resources->on_vkQueueSubmit2(
+            vkEnc, VK_SUCCESS, gfxstream_queue->internal_object, submitCount,
+            internal_pSubmits.data(), gfxstream_fence->internal_object);
+    }
+    return vkQueueSubmit2_VkResult_return;
 }
 void gfxstream_vk_CmdCopyBuffer2(VkCommandBuffer commandBuffer,
                                  const VkCopyBufferInfo2* pCopyBufferInfo) {
@@ -2815,6 +3492,84 @@ void gfxstream_vk_CmdResolveImage2(VkCommandBuffer commandBuffer,
         }
         vkEnc->vkCmdResolveImage2(gfxstream_commandBuffer->internal_object,
                                   internal_pResolveImageInfo.data(), true /* do lock */);
+    }
+}
+void gfxstream_vk_CmdBeginRendering(VkCommandBuffer commandBuffer,
+                                    const VkRenderingInfo* pRenderingInfo) {
+    AEMU_SCOPED_TRACE("vkCmdBeginRendering");
+    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
+            gfxstream_commandBuffer->internal_object);
+        std::vector<VkRenderingInfo> internal_pRenderingInfo(1);
+        std::vector<std::vector<VkRenderingAttachmentInfo>>
+            internal_VkRenderingInfo_pColorAttachments(1);
+        std::vector<VkRenderingAttachmentInfo> internal_VkRenderingInfo_pDepthAttachment(1);
+        std::vector<VkRenderingAttachmentInfo> internal_VkRenderingInfo_pStencilAttachment(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pRenderingInfo[i] = pRenderingInfo[i];
+            /* VkRenderingInfo::pColorAttachments */
+            internal_VkRenderingInfo_pColorAttachments[i].reserve(
+                internal_pRenderingInfo[i].colorAttachmentCount);
+            for (uint32_t j = 0; j < internal_pRenderingInfo[i].colorAttachmentCount; ++j) {
+                internal_VkRenderingInfo_pColorAttachments[i][j] =
+                    internal_pRenderingInfo[i].pColorAttachments[j];
+                /* VkRenderingAttachmentInfo::imageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
+                               internal_VkRenderingInfo_pColorAttachments[i][j].imageView);
+                if (gfxstream_imageView)
+                    internal_VkRenderingInfo_pColorAttachments[i][j].imageView =
+                        gfxstream_imageView->internal_object;
+                /* VkRenderingAttachmentInfo::resolveImageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_resolveImageView,
+                               internal_VkRenderingInfo_pColorAttachments[i][j].resolveImageView);
+                if (gfxstream_resolveImageView)
+                    internal_VkRenderingInfo_pColorAttachments[i][j].resolveImageView =
+                        gfxstream_resolveImageView->internal_object;
+            }
+            internal_pRenderingInfo[i].pColorAttachments =
+                internal_VkRenderingInfo_pColorAttachments[i].data();
+            /* VkRenderingInfo::pDepthAttachment */
+            if (internal_pRenderingInfo[i].pDepthAttachment) {
+                internal_VkRenderingInfo_pDepthAttachment[i] =
+                    internal_pRenderingInfo[i].pDepthAttachment[0];
+                /* VkRenderingAttachmentInfo::imageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
+                               internal_VkRenderingInfo_pDepthAttachment[i].imageView);
+                if (gfxstream_imageView)
+                    internal_VkRenderingInfo_pDepthAttachment[i].imageView =
+                        gfxstream_imageView->internal_object;
+                /* VkRenderingAttachmentInfo::resolveImageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_resolveImageView,
+                               internal_VkRenderingInfo_pDepthAttachment[i].resolveImageView);
+                if (gfxstream_resolveImageView)
+                    internal_VkRenderingInfo_pDepthAttachment[i].resolveImageView =
+                        gfxstream_resolveImageView->internal_object;
+                internal_pRenderingInfo[i].pDepthAttachment =
+                    &internal_VkRenderingInfo_pDepthAttachment[i];
+            }
+            /* VkRenderingInfo::pStencilAttachment */
+            if (internal_pRenderingInfo[i].pStencilAttachment) {
+                internal_VkRenderingInfo_pStencilAttachment[i] =
+                    internal_pRenderingInfo[i].pStencilAttachment[0];
+                /* VkRenderingAttachmentInfo::imageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
+                               internal_VkRenderingInfo_pStencilAttachment[i].imageView);
+                if (gfxstream_imageView)
+                    internal_VkRenderingInfo_pStencilAttachment[i].imageView =
+                        gfxstream_imageView->internal_object;
+                /* VkRenderingAttachmentInfo::resolveImageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_resolveImageView,
+                               internal_VkRenderingInfo_pStencilAttachment[i].resolveImageView);
+                if (gfxstream_resolveImageView)
+                    internal_VkRenderingInfo_pStencilAttachment[i].resolveImageView =
+                        gfxstream_resolveImageView->internal_object;
+                internal_pRenderingInfo[i].pStencilAttachment =
+                    &internal_VkRenderingInfo_pStencilAttachment[i];
+            }
+        }
+        vkEnc->vkCmdBeginRendering(gfxstream_commandBuffer->internal_object,
+                                   internal_pRenderingInfo.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CmdEndRendering(VkCommandBuffer commandBuffer) {
@@ -3704,6 +4459,50 @@ VkResult gfxstream_vk_BindImageMemory2KHR(VkDevice device, uint32_t bindInfoCoun
 }
 #endif
 #ifdef VK_KHR_maintenance3
+void gfxstream_vk_GetDescriptorSetLayoutSupportKHR(
+    VkDevice device, const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
+    VkDescriptorSetLayoutSupport* pSupport) {
+    AEMU_SCOPED_TRACE("vkGetDescriptorSetLayoutSupportKHR");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        std::vector<VkDescriptorSetLayoutCreateInfo> internal_pCreateInfo(1);
+        std::vector<std::vector<VkDescriptorSetLayoutBinding>>
+            internal_VkDescriptorSetLayoutCreateInfo_pBindings(1);
+        std::vector<std::vector<VkSampler>>
+            internal_VkDescriptorSetLayoutBinding_pImmutableSamplers(1);
+        for (uint32_t i = 0; i < 1; ++i) {
+            internal_pCreateInfo[i] = pCreateInfo[i];
+            /* VkDescriptorSetLayoutCreateInfo::pBindings */
+            internal_VkDescriptorSetLayoutCreateInfo_pBindings[i].reserve(
+                internal_pCreateInfo[i].bindingCount);
+            for (uint32_t j = 0; j < internal_pCreateInfo[i].bindingCount; ++j) {
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j] =
+                    internal_pCreateInfo[i].pBindings[j];
+                /* VkDescriptorSetLayoutBinding::pImmutableSamplers */
+                internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j].reserve(
+                    internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].descriptorCount);
+                for (uint32_t k = 0;
+                     k < internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].descriptorCount;
+                     ++k) {
+                    VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_pImmutableSamplers,
+                                   internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j]
+                                       .pImmutableSamplers[k]);
+                    if (gfxstream_pImmutableSamplers)
+                        internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j][k] =
+                            gfxstream_pImmutableSamplers->internal_object;
+                }
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i][j].pImmutableSamplers =
+                    internal_VkDescriptorSetLayoutBinding_pImmutableSamplers[j].data();
+            }
+            internal_pCreateInfo[i].pBindings =
+                internal_VkDescriptorSetLayoutCreateInfo_pBindings[i].data();
+        }
+        vkEnc->vkGetDescriptorSetLayoutSupportKHR(gfxstream_device->internal_object,
+                                                  internal_pCreateInfo.data(), pSupport,
+                                                  true /* do lock */);
+    }
+}
 #endif
 #ifdef VK_KHR_shader_subgroup_extended_types
 #endif
@@ -5310,6 +6109,152 @@ void gfxstream_vk_QueueWaitIdleAsyncGOOGLE(VkQueue queue) {
         vkEnc->vkQueueWaitIdleAsyncGOOGLE(gfxstream_queue->internal_object, true /* do lock */);
     }
 }
+void gfxstream_vk_QueueBindSparseAsyncGOOGLE(VkQueue queue, uint32_t bindInfoCount,
+                                             const VkBindSparseInfo* pBindInfo, VkFence fence) {
+    AEMU_SCOPED_TRACE("vkQueueBindSparseAsyncGOOGLE");
+    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
+    VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
+    {
+        auto vkEnc =
+            gfxstream::vk::ResourceTracker::getQueueEncoder(gfxstream_queue->internal_object);
+        std::vector<VkBindSparseInfo> internal_pBindInfo(bindInfoCount);
+        std::vector<std::vector<VkSemaphore>> internal_VkBindSparseInfo_pWaitSemaphores(
+            bindInfoCount);
+        std::vector<std::vector<VkSparseBufferMemoryBindInfo>>
+            internal_VkBindSparseInfo_pBufferBinds(bindInfoCount);
+        std::vector<std::vector<VkSparseMemoryBind>> internal_VkSparseBufferMemoryBindInfo_pBinds(
+            bindInfoCount);
+        std::vector<std::vector<VkSparseImageOpaqueMemoryBindInfo>>
+            internal_VkBindSparseInfo_pImageOpaqueBinds(bindInfoCount);
+        std::vector<std::vector<VkSparseMemoryBind>>
+            internal_VkSparseImageOpaqueMemoryBindInfo_pBinds(bindInfoCount);
+        std::vector<std::vector<VkSparseImageMemoryBindInfo>> internal_VkBindSparseInfo_pImageBinds(
+            bindInfoCount);
+        std::vector<std::vector<VkSparseImageMemoryBind>>
+            internal_VkSparseImageMemoryBindInfo_pBinds(bindInfoCount);
+        std::vector<std::vector<VkSemaphore>> internal_VkBindSparseInfo_pSignalSemaphores(
+            bindInfoCount);
+        for (uint32_t i = 0; i < bindInfoCount; ++i) {
+            internal_pBindInfo[i] = pBindInfo[i];
+            /* VkBindSparseInfo::pWaitSemaphores */
+            internal_VkBindSparseInfo_pWaitSemaphores[i].reserve(
+                internal_pBindInfo[i].waitSemaphoreCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].waitSemaphoreCount; ++j) {
+                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores,
+                               internal_pBindInfo[i].pWaitSemaphores[j]);
+                if (gfxstream_pWaitSemaphores)
+                    internal_VkBindSparseInfo_pWaitSemaphores[i][j] =
+                        gfxstream_pWaitSemaphores->internal_object;
+            }
+            internal_pBindInfo[i].pWaitSemaphores =
+                internal_VkBindSparseInfo_pWaitSemaphores[i].data();
+            /* VkBindSparseInfo::pBufferBinds */
+            internal_VkBindSparseInfo_pBufferBinds[i].reserve(
+                internal_pBindInfo[i].bufferBindCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].bufferBindCount; ++j) {
+                internal_VkBindSparseInfo_pBufferBinds[i][j] =
+                    internal_pBindInfo[i].pBufferBinds[j];
+                /* VkSparseBufferMemoryBindInfo::buffer */
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                               internal_VkBindSparseInfo_pBufferBinds[i][j].buffer);
+                if (gfxstream_buffer)
+                    internal_VkBindSparseInfo_pBufferBinds[i][j].buffer =
+                        gfxstream_buffer->internal_object;
+                /* VkSparseBufferMemoryBindInfo::pBinds */
+                internal_VkSparseBufferMemoryBindInfo_pBinds[j].reserve(
+                    internal_VkBindSparseInfo_pBufferBinds[i][j].bindCount);
+                for (uint32_t k = 0; k < internal_VkBindSparseInfo_pBufferBinds[i][j].bindCount;
+                     ++k) {
+                    internal_VkSparseBufferMemoryBindInfo_pBinds[j][k] =
+                        internal_VkBindSparseInfo_pBufferBinds[i][j].pBinds[k];
+                    /* VkSparseMemoryBind::memory */
+                    VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                                   internal_VkSparseBufferMemoryBindInfo_pBinds[j][k].memory);
+                    if (gfxstream_memory)
+                        internal_VkSparseBufferMemoryBindInfo_pBinds[j][k].memory =
+                            gfxstream_memory->internal_object;
+                }
+                internal_VkBindSparseInfo_pBufferBinds[i][j].pBinds =
+                    internal_VkSparseBufferMemoryBindInfo_pBinds[j].data();
+            }
+            internal_pBindInfo[i].pBufferBinds = internal_VkBindSparseInfo_pBufferBinds[i].data();
+            /* VkBindSparseInfo::pImageOpaqueBinds */
+            internal_VkBindSparseInfo_pImageOpaqueBinds[i].reserve(
+                internal_pBindInfo[i].imageOpaqueBindCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].imageOpaqueBindCount; ++j) {
+                internal_VkBindSparseInfo_pImageOpaqueBinds[i][j] =
+                    internal_pBindInfo[i].pImageOpaqueBinds[j];
+                /* VkSparseImageOpaqueMemoryBindInfo::image */
+                VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                               internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].image);
+                if (gfxstream_image)
+                    internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].image =
+                        gfxstream_image->internal_object;
+                /* VkSparseImageOpaqueMemoryBindInfo::pBinds */
+                internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j].reserve(
+                    internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].bindCount);
+                for (uint32_t l = 0;
+                     l < internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].bindCount; ++l) {
+                    internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j][l] =
+                        internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].pBinds[l];
+                    /* VkSparseMemoryBind::memory */
+                    VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                                   internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j][l].memory);
+                    if (gfxstream_memory)
+                        internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j][l].memory =
+                            gfxstream_memory->internal_object;
+                }
+                internal_VkBindSparseInfo_pImageOpaqueBinds[i][j].pBinds =
+                    internal_VkSparseImageOpaqueMemoryBindInfo_pBinds[j].data();
+            }
+            internal_pBindInfo[i].pImageOpaqueBinds =
+                internal_VkBindSparseInfo_pImageOpaqueBinds[i].data();
+            /* VkBindSparseInfo::pImageBinds */
+            internal_VkBindSparseInfo_pImageBinds[i].reserve(internal_pBindInfo[i].imageBindCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].imageBindCount; ++j) {
+                internal_VkBindSparseInfo_pImageBinds[i][j] = internal_pBindInfo[i].pImageBinds[j];
+                /* VkSparseImageMemoryBindInfo::image */
+                VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image,
+                               internal_VkBindSparseInfo_pImageBinds[i][j].image);
+                if (gfxstream_image)
+                    internal_VkBindSparseInfo_pImageBinds[i][j].image =
+                        gfxstream_image->internal_object;
+                /* VkSparseImageMemoryBindInfo::pBinds */
+                internal_VkSparseImageMemoryBindInfo_pBinds[j].reserve(
+                    internal_VkBindSparseInfo_pImageBinds[i][j].bindCount);
+                for (uint32_t m = 0; m < internal_VkBindSparseInfo_pImageBinds[i][j].bindCount;
+                     ++m) {
+                    internal_VkSparseImageMemoryBindInfo_pBinds[j][m] =
+                        internal_VkBindSparseInfo_pImageBinds[i][j].pBinds[m];
+                    /* VkSparseImageMemoryBind::memory */
+                    VK_FROM_HANDLE(gfxstream_vk_device_memory, gfxstream_memory,
+                                   internal_VkSparseImageMemoryBindInfo_pBinds[j][m].memory);
+                    if (gfxstream_memory)
+                        internal_VkSparseImageMemoryBindInfo_pBinds[j][m].memory =
+                            gfxstream_memory->internal_object;
+                }
+                internal_VkBindSparseInfo_pImageBinds[i][j].pBinds =
+                    internal_VkSparseImageMemoryBindInfo_pBinds[j].data();
+            }
+            internal_pBindInfo[i].pImageBinds = internal_VkBindSparseInfo_pImageBinds[i].data();
+            /* VkBindSparseInfo::pSignalSemaphores */
+            internal_VkBindSparseInfo_pSignalSemaphores[i].reserve(
+                internal_pBindInfo[i].signalSemaphoreCount);
+            for (uint32_t j = 0; j < internal_pBindInfo[i].signalSemaphoreCount; ++j) {
+                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pSignalSemaphores,
+                               internal_pBindInfo[i].pSignalSemaphores[j]);
+                if (gfxstream_pSignalSemaphores)
+                    internal_VkBindSparseInfo_pSignalSemaphores[i][j] =
+                        gfxstream_pSignalSemaphores->internal_object;
+            }
+            internal_pBindInfo[i].pSignalSemaphores =
+                internal_VkBindSparseInfo_pSignalSemaphores[i].data();
+        }
+        vkEnc->vkQueueBindSparseAsyncGOOGLE(gfxstream_queue->internal_object, bindInfoCount,
+                                            internal_pBindInfo.data(),
+                                            gfxstream_fence->internal_object, true /* do lock */);
+    }
+}
 void gfxstream_vk_GetLinearImageLayoutGOOGLE(VkDevice device, VkFormat format,
                                              VkDeviceSize* pOffset,
                                              VkDeviceSize* pRowPitchAlignment) {
@@ -5343,6 +6288,104 @@ void gfxstream_vk_QueueFlushCommandsGOOGLE(VkQueue queue, VkCommandBuffer comman
         vkEnc->vkQueueFlushCommandsGOOGLE(gfxstream_queue->internal_object,
                                           gfxstream_commandBuffer->internal_object, dataSize, pData,
                                           true /* do lock */);
+    }
+}
+void gfxstream_vk_QueueCommitDescriptorSetUpdatesGOOGLE(
+    VkQueue queue, uint32_t descriptorPoolCount, const VkDescriptorPool* pDescriptorPools,
+    uint32_t descriptorSetCount, const VkDescriptorSetLayout* pSetLayouts,
+    const uint64_t* pDescriptorSetPoolIds, const uint32_t* pDescriptorSetWhichPool,
+    const uint32_t* pDescriptorSetPendingAllocation,
+    const uint32_t* pDescriptorWriteStartingIndices, uint32_t pendingDescriptorWriteCount,
+    const VkWriteDescriptorSet* pPendingDescriptorWrites) {
+    AEMU_SCOPED_TRACE("vkQueueCommitDescriptorSetUpdatesGOOGLE");
+    VK_FROM_HANDLE(gfxstream_vk_queue, gfxstream_queue, queue);
+    {
+        auto vkEnc =
+            gfxstream::vk::ResourceTracker::getQueueEncoder(gfxstream_queue->internal_object);
+        std::vector<VkDescriptorPool> internal_pDescriptorPools(descriptorPoolCount);
+        for (uint32_t i = 0; i < descriptorPoolCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_pool, gfxstream_pDescriptorPools,
+                           pDescriptorPools[i]);
+            if (gfxstream_pDescriptorPools)
+                internal_pDescriptorPools[i] = gfxstream_pDescriptorPools->internal_object;
+        }
+        std::vector<VkDescriptorSetLayout> internal_pSetLayouts(descriptorSetCount);
+        for (uint32_t i = 0; i < descriptorSetCount; ++i) {
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set_layout, gfxstream_pSetLayouts,
+                           pSetLayouts[i]);
+            if (gfxstream_pSetLayouts)
+                internal_pSetLayouts[i] = gfxstream_pSetLayouts->internal_object;
+        }
+        std::vector<VkWriteDescriptorSet> internal_pPendingDescriptorWrites(
+            pendingDescriptorWriteCount);
+        std::vector<std::vector<VkDescriptorImageInfo>> internal_VkWriteDescriptorSet_pImageInfo(
+            pendingDescriptorWriteCount);
+        std::vector<std::vector<VkDescriptorBufferInfo>> internal_VkWriteDescriptorSet_pBufferInfo(
+            pendingDescriptorWriteCount);
+        std::vector<std::vector<VkBufferView>> internal_VkWriteDescriptorSet_pTexelBufferView(
+            pendingDescriptorWriteCount);
+        for (uint32_t i = 0; i < pendingDescriptorWriteCount; ++i) {
+            internal_pPendingDescriptorWrites[i] = pPendingDescriptorWrites[i];
+            /* VkWriteDescriptorSet::dstSet */
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_set, gfxstream_dstSet,
+                           internal_pPendingDescriptorWrites[i].dstSet);
+            if (gfxstream_dstSet)
+                internal_pPendingDescriptorWrites[i].dstSet = gfxstream_dstSet->internal_object;
+            /* VkWriteDescriptorSet::pImageInfo */
+            internal_VkWriteDescriptorSet_pImageInfo[i].reserve(
+                internal_pPendingDescriptorWrites[i].descriptorCount);
+            for (uint32_t j = 0; j < internal_pPendingDescriptorWrites[i].descriptorCount; ++j) {
+                internal_VkWriteDescriptorSet_pImageInfo[i][j] =
+                    internal_pPendingDescriptorWrites[i].pImageInfo[j];
+                /* VkDescriptorImageInfo::sampler */
+                VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_sampler,
+                               internal_VkWriteDescriptorSet_pImageInfo[i][j].sampler);
+                if (gfxstream_sampler)
+                    internal_VkWriteDescriptorSet_pImageInfo[i][j].sampler =
+                        gfxstream_sampler->internal_object;
+                /* VkDescriptorImageInfo::imageView */
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
+                               internal_VkWriteDescriptorSet_pImageInfo[i][j].imageView);
+                if (gfxstream_imageView)
+                    internal_VkWriteDescriptorSet_pImageInfo[i][j].imageView =
+                        gfxstream_imageView->internal_object;
+            }
+            internal_pPendingDescriptorWrites[i].pImageInfo =
+                internal_VkWriteDescriptorSet_pImageInfo[i].data();
+            /* VkWriteDescriptorSet::pBufferInfo */
+            internal_VkWriteDescriptorSet_pBufferInfo[i].reserve(
+                internal_pPendingDescriptorWrites[i].descriptorCount);
+            for (uint32_t j = 0; j < internal_pPendingDescriptorWrites[i].descriptorCount; ++j) {
+                internal_VkWriteDescriptorSet_pBufferInfo[i][j] =
+                    internal_pPendingDescriptorWrites[i].pBufferInfo[j];
+                /* VkDescriptorBufferInfo::buffer */
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
+                               internal_VkWriteDescriptorSet_pBufferInfo[i][j].buffer);
+                if (gfxstream_buffer)
+                    internal_VkWriteDescriptorSet_pBufferInfo[i][j].buffer =
+                        gfxstream_buffer->internal_object;
+            }
+            internal_pPendingDescriptorWrites[i].pBufferInfo =
+                internal_VkWriteDescriptorSet_pBufferInfo[i].data();
+            /* VkWriteDescriptorSet::pTexelBufferView */
+            internal_VkWriteDescriptorSet_pTexelBufferView[i].reserve(
+                internal_pPendingDescriptorWrites[i].descriptorCount);
+            for (uint32_t j = 0; j < internal_pPendingDescriptorWrites[i].descriptorCount; ++j) {
+                VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pTexelBufferView,
+                               internal_pPendingDescriptorWrites[i].pTexelBufferView[j]);
+                if (gfxstream_pTexelBufferView)
+                    internal_VkWriteDescriptorSet_pTexelBufferView[i][j] =
+                        gfxstream_pTexelBufferView->internal_object;
+            }
+            internal_pPendingDescriptorWrites[i].pTexelBufferView =
+                internal_VkWriteDescriptorSet_pTexelBufferView[i].data();
+        }
+        vkEnc->vkQueueCommitDescriptorSetUpdatesGOOGLE(
+            gfxstream_queue->internal_object, descriptorPoolCount, internal_pDescriptorPools.data(),
+            descriptorSetCount, internal_pSetLayouts.data(), pDescriptorSetPoolIds,
+            pDescriptorSetWhichPool, pDescriptorSetPendingAllocation,
+            pDescriptorWriteStartingIndices, pendingDescriptorWriteCount,
+            internal_pPendingDescriptorWrites.data(), true /* do lock */);
     }
 }
 void gfxstream_vk_CollectDescriptorPoolIdsGOOGLE(VkDevice device, VkDescriptorPool descriptorPool,
