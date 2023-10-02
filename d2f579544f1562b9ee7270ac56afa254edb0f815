@@ -16,6 +16,23 @@
       "message": "Hi, can you please take a look?",
       "revId": "d2f579544f1562b9ee7270ac56afa254edb0f815",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "642f2730_e6021a4c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-10-02T16:20:43Z",
+      "side": 1,
+      "message": "You should be you using the Meson build?\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#rutabaga-c-api",
+      "revId": "d2f579544f1562b9ee7270ac56afa254edb0f815",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
