@@ -125,24 +125,6 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkFreeCommandBuffers",
     "vkAllocateDescriptorSets",
     "vkFreeDescriptorSets",
-    # Handle types in nested compoundTypes
-    "vkCreateGraphicsPipelines",
-    "vkCreateComputePipelines",
-    "vkUpdateDescriptorSets",
-    "vkQueueCommitDescriptorSetUpdatesGOOGLE",
-
-    # TODO: Finish handwritten implementations ...
-    "vkQueueBindSparse",
-    "vkQueueBindSparseAsyncGOOGLE",
-    # TODO: Add handwritten implementations ...
-    "vkCmdSetEvent2",
-    "vkCmdWaitEvents2",
-    "vkCmdPipelineBarrier2",
-    "vkQueueSubmit2",
-    "vkCmdBeginRendering",
-    "vkCreateDescriptorSetLayout",
-    "vkGetDescriptorSetLayoutSupport",
-    "vkGetDescriptorSetLayoutSupportKHR",
 ]
 
 # TODO: handles with no equivalent gfxstream objects (yet).
@@ -412,10 +394,10 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     genVkFromHandle(param, param.paramName)
 
         def internalNestedParamName(param):
-            parentName = "nested"
+            parentName = ""
             if param.parent:
-                parentName = param.parent.typeName
-            return "internal_%s_%s" % (parentName, param.paramName)
+                parentName = "_%s" % param.parent.typeName
+            return "internal%s_%s" % (parentName, param.paramName)
 
         def genInternalArrayDeclarations(param, countParamName, nestLevel=0):
             internalArray = None
