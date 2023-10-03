@@ -72,6 +72,7 @@ cc_defaults {
     ],
     srcs: [
         "goldfish_vulkan.cpp",
+        "gfxstream_vk_device.cpp",
     ],
     target: {
         android: {
