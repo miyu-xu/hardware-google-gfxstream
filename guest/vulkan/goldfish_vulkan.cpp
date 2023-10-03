@@ -361,14 +361,30 @@ public:
     }
 };
 
-static const struct vk_instance_extension_table gfxstream_vk_instance_extensions = {
-   .KHR_external_fence_capabilities = true,
-   .KHR_external_memory_capabilities = true,
-   .KHR_external_semaphore_capabilities = true,
-   .KHR_get_physical_device_properties2 = true,
-   .EXT_debug_report = true,
-   .EXT_debug_utils = true,
-};
+static void get_instance_extensions(struct vk_instance_extension_table *instanceExts) {
+    VkResult result = (VkResult)0;
+    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+    auto resources = gfxstream::vk::ResourceTracker::get();
+    uint32_t numInstanceExts = 0;
+    result = resources->on_vkEnumerateInstanceExtensionProperties(
+                vkEnc, VK_SUCCESS, NULL, &numInstanceExts, NULL);
+    if (VK_SUCCESS == result) {
+        std::vector<VkExtensionProperties> extProps(numInstanceExts);
+        result = resources->on_vkEnumerateInstanceExtensionProperties(
+                    vkEnc, VK_SUCCESS, NULL, &numInstanceExts, extProps.data());
+        if (VK_SUCCESS == result) {
+            for (uint32_t i = 0; i < numInstanceExts; i++) {
+                for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
+                    if ((extProps[i].specVersion == vk_instance_extensions[j].specVersion)
+                            && (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE))) {
+                        instanceExts->extensions[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 
 VkResult
 gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
@@ -394,12 +410,16 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
     VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
     result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &instance->internal_object, true /* do lock */);
 
-    memset(&instance->dispatch_table, 0, sizeof(struct vk_instance_dispatch_table));
+    struct vk_instance_dispatch_table dispatch_table;
+    memset(&dispatch_table, 0, sizeof(struct vk_instance_dispatch_table));
     vk_instance_dispatch_table_from_entrypoints(
-        &instance->dispatch_table, &gfxstream_vk_instance_entrypoints, false);
+        &dispatch_table, &gfxstream_vk_instance_entrypoints, false);
 
-    result = vk_instance_init(&instance->vk, &gfxstream_vk_instance_extensions,
-                                &instance->dispatch_table, pCreateInfo, pAllocator);
+    struct vk_instance_extension_table supported_extensions;
+    get_instance_extensions(&supported_extensions);
+
+    result = vk_instance_init(&instance->vk, &supported_extensions,
+                                &dispatch_table, pCreateInfo, pAllocator);
 
     if (result != VK_SUCCESS) {
         vk_free(pAllocator, instance);

@@ -21,6 +21,31 @@
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
 
+static void get_device_extensions(VkPhysicalDevice physDevInternal, struct vk_device_extension_table *deviceExts) {
+    VkResult result = (VkResult)0;
+    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+    auto resources = gfxstream::vk::ResourceTracker::get();
+    uint32_t numDeviceExts = 0;
+    result = resources->on_vkEnumerateDeviceExtensionProperties(
+                vkEnc, VK_SUCCESS, physDevInternal, NULL, &numDeviceExts, NULL);
+    if (VK_SUCCESS == result) {
+        std::vector<VkExtensionProperties> extProps(numDeviceExts);
+        result = resources->on_vkEnumerateDeviceExtensionProperties(
+                    vkEnc, VK_SUCCESS, physDevInternal, NULL, &numDeviceExts, extProps.data());
+        if (VK_SUCCESS == result) {
+            for (uint32_t i = 0; i < numDeviceExts; i++) {
+                for (uint32_t j = 0; j < VK_DEVICE_EXTENSION_COUNT; j++) {
+                    if ((extProps[i].specVersion == vk_device_extensions[j].specVersion)
+                            && (0 == strncmp(extProps[i].extensionName, vk_device_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE))) {
+                        deviceExts->extensions[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
 VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
                                                VkPhysicalDevice* pPhysicalDevices) {
     AEMU_SCOPED_TRACE("vkEnumeratePhysicalDevices");
@@ -51,16 +76,18 @@ VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pP
         vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
         if (VK_SUCCESS == result) {
             for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
+                // Set the gfxstream-internal object
+                gfxstream_physicalDevices[i].internal_object = internal_objects_pointer[i];
+                struct vk_device_extension_table supported_extensions = {0};
+                get_device_extensions(gfxstream_physicalDevices[i].internal_object, &supported_extensions);
                 // Initialize the mesa object
-                result = vk_physical_device_init(&gfxstream_physicalDevices[i].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &dispatch_table);
+                result = vk_physical_device_init(&gfxstream_physicalDevices[i].vk, &gfxstream_instance->vk, &supported_extensions, NULL, NULL, &dispatch_table);
                 if (VK_SUCCESS != result) {
                     break;
                 }
                 // Set instance reference
                 gfxstream_physicalDevices[i].instance = gfxstream_instance;
                 // TODO: Add list of physicalDevice enumeration allocations to the instance object
-                // Set the gfxstream-internal object
-                gfxstream_physicalDevices[i].internal_object = internal_objects_pointer[i];
                 pPhysicalDevices[i] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[i]);
             }
             if (VK_SUCCESS != result) {
@@ -70,6 +97,7 @@ VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pP
     }
     return result;
 }
+
 VkResult gfxstream_vk_EnumeratePhysicalDeviceGroups(
     VkInstance instance, uint32_t* pPhysicalDeviceGroupCount,
     VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties) {
@@ -95,16 +123,18 @@ VkResult gfxstream_vk_EnumeratePhysicalDeviceGroups(
                 memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
                 vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
                 for (uint32_t device = 0; device < pPhysicalDeviceGroupProperties[group].physicalDeviceCount; device++) {
+                    // Set the gfxstream-internal object
+                    gfxstream_physicalDevices[device].internal_object = pPhysicalDeviceGroupProperties[group].physicalDevices[device];
+                    struct vk_device_extension_table supported_extensions = {0};
+                    get_device_extensions(gfxstream_physicalDevices[device].internal_object, &supported_extensions);
                     // Initialize the mesa object
-                    result = vk_physical_device_init(&gfxstream_physicalDevices[device].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &dispatch_table);
+                    result = vk_physical_device_init(&gfxstream_physicalDevices[device].vk, &gfxstream_instance->vk, &supported_extensions, NULL, NULL, &dispatch_table);
                     if (VK_SUCCESS != result) {
                         break;
                     }
                     // Set instance reference
                     gfxstream_physicalDevices[device].instance = gfxstream_instance;
                     // TODO: Add list of physicalDevice enumeration allocations to the instance object
-                    // Set the gfxstream-internal object
-                    gfxstream_physicalDevices[device].internal_object = pPhysicalDeviceGroupProperties[group].physicalDevices[device];
                     // Set the output handle
                     pPhysicalDeviceGroupProperties[group].physicalDevices[device] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[device]);
                 }
