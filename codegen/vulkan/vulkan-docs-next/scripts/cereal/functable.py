@@ -376,10 +376,6 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                       (typeNameToObjectType(param.typeName), objectName, fromName))
             return objectName
 
-        def genReplaceWithInternal(param, replaceName):
-            gfxstreamObject = genVkFromHandle(param, replaceName)
-            cgen.stmt("if (%s) %s = %s->%s" % (gfxstreamObject, replaceName, gfxstreamObject, INTERNAL_OBJECT_NAME))
-
         def genGetGfxstreamHandles():
             createParam = getCreateParam(api)
             for param in api.parameters:
@@ -407,11 +403,11 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             elif 1 == nestLevel or 2 == nestLevel:
                 internalArray = internalNestedParamName(param)
                 if isArrayParam(param):
-                    cgen.stmt("std::vector<std::vector<%s>> %s(%s)" % (param.typeName, internalArray, countParamName))
+                    cgen.stmt("std::vector<std::vector<%s>> %s" % (param.typeName, internalArray))
                 else:
-                    cgen.stmt("std::vector<%s> %s(%s)" % (param.typeName, internalArray, countParamName))
+                    cgen.stmt("std::vector<%s> %s" % (param.typeName, internalArray))
             else:
-                print("ERROR: nestLevel > 1 not handled")
+                print("ERROR: nestLevel > 2 not verified.")
                 raise
             if isCompoundType(param.typeName):
                 for member in typeInfo.structs[param.typeName].members:
@@ -433,7 +429,9 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 if isArrayParam(member):
                     countParamName = "%s.%s" % (outName, member.attribs["len"])
                     inArrayName = "%s.%s" % (outName, member.paramName)
+                    cgen.stmt("%s.push_back(std::vector<%s>())" % (internalNestedParamName(member), member.typeName))
                     cgen.stmt("%s.reserve(%s)" % (nestedOutName, countParamName))
+                    cgen.stmt("memset(&%s[0], 0, sizeof(%s) * %s)" % (nestedOutName, member.typeName, countParamName))
                     if not nextLoopVar:
                         nextLoopVar = getNextLoopVar()
                     internalArray = genInternalArray(member, countParamName, nestedOutName, inArrayName, nextLoopVar)
@@ -441,26 +439,36 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 elif isCompoundType(member.typeName):
                     memberFullName = "%s.%s" % (outName, member.paramName)
                     if 1 == member.pointerIndirectionLevels:
-                        cgen.beginIf("%s" % memberFullName)
+                        cgen.beginIf(memberFullName)
                         inParamName = "%s[0]" % memberFullName
                         genInternalCompoundType(member, nestedOutName, inParamName, currLoopVar)
                         cgen.stmt("%s.%s = &%s" % (outName, member.paramName,  nestedOutName))
                     else:
                         cgen.beginBlock()
-                        inParamName = "%s" % memberFullName
-                        genInternalCompoundType(member, nestedOutName, inParamName, currLoopVar)
+                        genInternalCompoundType(member, nestedOutName, memberFullName, currLoopVar)
                         cgen.stmt("%s.%s = %s" % (outName, member.paramName,  nestedOutName))
                     cgen.endBlock()
                 else:
-                    genReplaceWithInternal(member, "%s.%s" % (outName, member.paramName))
+                    # Replace member with internal object
+                    replaceName = "%s.%s" % (outName, member.paramName)
+                    if member.isOptional:
+                        cgen.beginIf(replaceName)
+                    gfxstreamObject = genVkFromHandle(member, replaceName)
+                    cgen.stmt("%s = %s->%s" % (replaceName, gfxstreamObject, INTERNAL_OBJECT_NAME))
+                    if member.isOptional:
+                        cgen.endIf()
 
         def genInternalArray(param, countParamName, outArrayName, inArrayName, loopVar):
             cgen.beginFor("uint32_t %s = 0" % loopVar, "%s < %s" % (loopVar, countParamName), "++%s" % loopVar)
+            if param.isOptional:
+                cgen.beginIf(inArrayName)
             if isCompoundType(param.typeName):
                 genInternalCompoundType(param, ("%s[%s]" % (outArrayName, loopVar)), "%s[%s]" % (inArrayName, loopVar), loopVar)
             else:
                 gfxstreamObject = genVkFromHandle(param, "%s[%s]" % (inArrayName, loopVar))
-                cgen.stmt("if (%s) %s[%s] = %s->%s" % (gfxstreamObject, outArrayName, loopVar, gfxstreamObject, INTERNAL_OBJECT_NAME))
+                cgen.stmt("%s[%s] = %s->%s" % (outArrayName, loopVar, gfxstreamObject, INTERNAL_OBJECT_NAME))
+            if param.isOptional:
+                cgen.endIf()
             cgen.endFor()
             return "%s.data()" % outArrayName
 
@@ -486,7 +494,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     internalArrayName = genInternalArrayDeclarations(param, countParamName)
                     param.paramName = genInternalArray(param, countParamName, internalArrayName, param.paramName, nextLoopVar)
                 elif 0 == param.pointerIndirectionLevels:
-                    param.paramName = ("%s" % paramNameToObjectName(param.paramName)) + ("->%s" % INTERNAL_OBJECT_NAME)
+                    param.paramName = ("%s->%s" % (paramNameToObjectName(param.paramName), INTERNAL_OBJECT_NAME))
                 elif createParam and param.paramName == createParam.paramName:
                     param.paramName = ("&%s" % paramNameToObjectName(param.paramName)) + ("->%s" % INTERNAL_OBJECT_NAME)
                 else:
