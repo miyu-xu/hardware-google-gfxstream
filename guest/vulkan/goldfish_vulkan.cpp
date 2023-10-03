@@ -589,7 +589,7 @@ VkResult gfxstream_vk_AllocateCommandBuffers(VkDevice device,
     std::vector<gfxstream_vk_command_buffer*> gfxstream_commandBuffers(pAllocateInfo->commandBufferCount);
     for(uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
         result = vk_command_buffer_createOp(&gfxstream_commandPool->vk,  (vk_command_buffer**)&gfxstream_commandBuffers[i]);
-        if (VK_SUCCESS != result) {
+        if (VK_SUCCESS == result) {
             gfxstream_commandBuffers[i]->vk.level = pAllocateInfo->level;
         } else {
             break;
