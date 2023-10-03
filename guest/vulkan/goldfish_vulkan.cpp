@@ -377,37 +377,37 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
 {
     AEMU_SCOPED_TRACE("vkCreateInstance");
 
-   struct gfxstream_vk_instance *instance;
-   VkResult result;
+    struct gfxstream_vk_instance *instance;
+    VkResult result;
 
-   pAllocator = pAllocator ?: vk_default_allocator();
-   instance = (struct gfxstream_vk_instance*)vk_zalloc(pAllocator, sizeof(*instance), 8,
-                        VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-   if (!instance)
-      return vk_error(NULL, VK_ERROR_OUT_OF_HOST_MEMORY);
+    pAllocator = pAllocator ?: vk_default_allocator();
+    instance = (struct gfxstream_vk_instance*)vk_zalloc(pAllocator, sizeof(*instance), 8,
+                            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (!instance)
+        return vk_error(NULL, VK_ERROR_OUT_OF_HOST_MEMORY);
 
     VkResult res = SetupInstance();
     if (res != VK_SUCCESS) {
         return res;
     }
 
-   VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
-   result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &instance->internal_object, true /* do lock */);
+    VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
+    result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &instance->internal_object, true /* do lock */);
 
-   memset(&instance->dispatch_table, 0, sizeof(struct vk_instance_dispatch_table));
-   vk_instance_dispatch_table_from_entrypoints(
-      &instance->dispatch_table, &gfxstream_vk_instance_entrypoints, false);
+    memset(&instance->dispatch_table, 0, sizeof(struct vk_instance_dispatch_table));
+    vk_instance_dispatch_table_from_entrypoints(
+        &instance->dispatch_table, &gfxstream_vk_instance_entrypoints, false);
 
-   result = vk_instance_init(&instance->vk, &gfxstream_vk_instance_extensions,
-                             &instance->dispatch_table, pCreateInfo, pAllocator);
+    result = vk_instance_init(&instance->vk, &gfxstream_vk_instance_extensions,
+                                &instance->dispatch_table, pCreateInfo, pAllocator);
 
-   if (result != VK_SUCCESS) {
-      vk_free(pAllocator, instance);
-      return vk_error(NULL, result);
-   }
+    if (result != VK_SUCCESS) {
+        vk_free(pAllocator, instance);
+        return vk_error(NULL, result);
+    }
 
-   *pInstance = gfxstream_vk_instance_to_handle(instance);
-   return VK_SUCCESS;
+    *pInstance = gfxstream_vk_instance_to_handle(instance);
+    return VK_SUCCESS;
 }
 
 void
@@ -418,7 +418,7 @@ gfxstream_vk_DestroyInstance(VkInstance _instance,
     VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
 
     if (!instance)
-       return;
+        return;
 
     VK_HOST_CONNECTION()
     vkEnc->vkDestroyInstance(instance->internal_object, pAllocator, true /* do lock */);
@@ -444,16 +444,8 @@ gfxstream_vk_EnumerateInstanceExtensionProperties(const char* pLayerName,
     auto resources = gfxstream::vk::ResourceTracker::get();
     vkEnumerateInstanceExtensionProperties_VkResult_return =
         resources->on_vkEnumerateInstanceExtensionProperties(vkEnc, VK_SUCCESS, pLayerName,
-                                                             pPropertyCount, pProperties);
+                                                                pPropertyCount, pProperties);
     return vkEnumerateInstanceExtensionProperties_VkResult_return;
-}
-
-PFN_vkVoidFunction
-gfxstream_vk_GetInstanceProcAddr(VkInstance _instance, const char *pName)
-{
-   VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
-   return vk_instance_get_proc_addr(&instance->vk, &gfxstream_vk_instance_entrypoints,
-                                    pName);
 }
 
 /* The loader wants us to expose a second GetInstanceProcAddr function
@@ -467,22 +459,7 @@ PUBLIC
 VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
 vk_icdGetInstanceProcAddr(VkInstance instance, const char *pName)
 {
-   return gfxstream_vk_GetInstanceProcAddr(instance, pName);
-}
-
-/* With version 4+ of the loader interface the ICD should expose
- * vk_icdGetPhysicalDeviceProcAddr()
- */
-PUBLIC
-VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
-vk_icdGetPhysicalDeviceProcAddr(VkInstance _instance, const char *pName);
-
-PFN_vkVoidFunction
-vk_icdGetPhysicalDeviceProcAddr(VkInstance _instance, const char *pName)
-{
-   VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
-
-   return vk_instance_get_physical_device_proc_addr(&instance->vk, pName);
+    return gfxstream_vk_GetInstanceProcAddr(instance, pName);
 }
 
 /* vk_icd.h does not declare this function, so we declare it here to
@@ -494,231 +471,10 @@ vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t *pSupportedVersion);
 PUBLIC VKAPI_ATTR VkResult VKAPI_CALL
 vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t *pSupportedVersion)
 {
-   *pSupportedVersion = std::min(*pSupportedVersion, 3u);
-   return VK_SUCCESS;
+    *pSupportedVersion = std::min(*pSupportedVersion, 3u);
+    return VK_SUCCESS;
 }
 
-PFN_vkVoidFunction
-gfxstream_vk_GetDeviceProcAddr(VkDevice _device, const char *pName)
-{
-    AEMU_SCOPED_TRACE("vkGetDeviceProcAddr");
-    VK_FROM_HANDLE(gfxstream_vk_device, device, _device);
-    return vk_device_get_proc_addr(&device->vk, pName);
-}
-
-VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
-                                               VkPhysicalDevice* pPhysicalDevices) {
-    AEMU_SCOPED_TRACE("vkEnumeratePhysicalDevices");
-    VK_FROM_HANDLE(gfxstream_vk_instance, gfxstream_instance, instance);
-    VkResult result = (VkResult)0;
-    std::vector<VkPhysicalDevice> internal_list;
-    VkPhysicalDevice* internal_objects_pointer = NULL;
-    if (pPhysicalDevices) {
-        internal_list.reserve(*pPhysicalDeviceCount);
-        internal_objects_pointer = internal_list.data();
-    }
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    auto resources = gfxstream::vk::ResourceTracker::get();
-    result = resources->on_vkEnumeratePhysicalDevices(
-        vkEnc, VK_SUCCESS, gfxstream_instance->internal_object, pPhysicalDeviceCount,
-        internal_objects_pointer);
-
-    if (VK_SUCCESS == result && pPhysicalDevices) {
-        struct gfxstream_vk_physical_device* gfxstream_physicalDevices = (struct gfxstream_vk_physical_device*)vk_zalloc(
-            &gfxstream_instance->vk.alloc,
-            ((*pPhysicalDeviceCount) * sizeof(struct gfxstream_vk_physical_device)),
-            8,
-            VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
-        result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-
-        struct vk_physical_device_dispatch_table dispatch_table;
-        memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
-        vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
-        if (VK_SUCCESS == result) {
-            for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
-                // Initialize the mesa object
-                result = vk_physical_device_init(&gfxstream_physicalDevices[i].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &dispatch_table);
-                if (VK_SUCCESS != result) {
-                    break;
-                }
-                // Set instance reference
-                gfxstream_physicalDevices[i].instance = gfxstream_instance;
-                // TODO: Add list of physicalDevice enumeration allocations to the instance object
-                // Set the gfxstream-internal object
-                gfxstream_physicalDevices[i].internal_object = internal_objects_pointer[i];
-                pPhysicalDevices[i] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[i]);
-            }
-            if (VK_SUCCESS != result) {
-                vk_free(&gfxstream_instance->vk.alloc, gfxstream_physicalDevices);
-            }
-        }
-    }
-    return result;
-}
-
-VkResult gfxstream_vk_EnumeratePhysicalDeviceGroups(
-    VkInstance instance, uint32_t* pPhysicalDeviceGroupCount,
-    VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties) {
-    AEMU_SCOPED_TRACE("vkEnumeratePhysicalDeviceGroups");
-    VK_FROM_HANDLE(gfxstream_vk_instance, gfxstream_instance, instance);
-    VkResult result = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        result = vkEnc->vkEnumeratePhysicalDeviceGroups(
-            gfxstream_instance->internal_object, pPhysicalDeviceGroupCount,
-            pPhysicalDeviceGroupProperties, true /* do lock */);
-    }
-    if (pPhysicalDeviceGroupProperties) {
-        for (uint32_t group = 0; group < *pPhysicalDeviceGroupCount; group++) {
-            struct gfxstream_vk_physical_device* gfxstream_physicalDevices = (struct gfxstream_vk_physical_device*)vk_zalloc(
-                &gfxstream_instance->vk.alloc,
-                ((pPhysicalDeviceGroupProperties[group].physicalDeviceCount) * sizeof(struct gfxstream_vk_physical_device)),
-                8,
-                VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
-            result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-            if (VK_SUCCESS == result) {
-                struct vk_physical_device_dispatch_table dispatch_table;
-                memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
-                vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
-                for (uint32_t device = 0; device < pPhysicalDeviceGroupProperties[group].physicalDeviceCount; device++) {
-                    // Initialize the mesa object
-                    result = vk_physical_device_init(&gfxstream_physicalDevices[device].vk, &gfxstream_instance->vk, NULL, NULL, NULL, &dispatch_table);
-                    if (VK_SUCCESS != result) {
-                        break;
-                    }
-                    // Set instance reference
-                    gfxstream_physicalDevices[device].instance = gfxstream_instance;
-                    // TODO: Add list of physicalDevice enumeration allocations to the instance object
-                    // Set the gfxstream-internal object
-                    gfxstream_physicalDevices[device].internal_object = pPhysicalDeviceGroupProperties[group].physicalDevices[device];
-                    // Set the output handle
-                    pPhysicalDeviceGroupProperties[group].physicalDevices[device] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[device]);
-                }
-            }
-            if (VK_SUCCESS != result) {
-                break;
-            }
-        }
-        // TODO: Clean-up for failed allocations/physical_device_init
-    }
-
-    return result;
-}
-VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
-                                   const VkDeviceCreateInfo* pCreateInfo,
-                                   const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
-    AEMU_SCOPED_TRACE("vkCreateDevice");
-    VK_FROM_HANDLE(gfxstream_vk_physical_device, gfxstream_physicalDevice, physicalDevice);
-    VkResult result = (VkResult)0;
-
-    const VkAllocationCallbacks* pMesaAllocator = pAllocator ?: &gfxstream_physicalDevice->instance->vk.alloc;
-    struct gfxstream_vk_device* gfxstream_device = (struct gfxstream_vk_device*)vk_zalloc(
-        pMesaAllocator, sizeof(struct gfxstream_vk_device), 8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-    result = gfxstream_device ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == result) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        result = vkEnc->vkCreateDevice(
-            gfxstream_physicalDevice->internal_object, pCreateInfo, pAllocator,
-            &gfxstream_device->internal_object, true /* do lock */);
-    }
-    if (VK_SUCCESS == result) {
-        struct vk_device_dispatch_table dispatch_table;
-        memset(&dispatch_table, 0, sizeof(struct vk_device_dispatch_table));
-        vk_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_device_entrypoints, false);
-
-        result = vk_device_init(&gfxstream_device->vk, &gfxstream_physicalDevice->vk, &dispatch_table, pCreateInfo, pMesaAllocator);
-    }
-    if (VK_SUCCESS == result) {
-        // TODO: wsi_device_init(&gfxstream_device->wsi_device, ...)
-        gfxstream_device->physical_device = gfxstream_physicalDevice;
-        // TODO: Initialize cmd_dispatch for emulated secondary command buffer support?
-        gfxstream_device->vk.command_dispatch_table = &gfxstream_device->cmd_dispatch;
-        *pDevice = gfxstream_vk_device_to_handle(gfxstream_device);
-    }
-    else {
-        vk_free(pMesaAllocator, gfxstream_device);
-    }
-
-    return result;
-}
-
-void gfxstream_vk_DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
-    AEMU_SCOPED_TRACE("vkDestroyDevice");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    if (!device)
-        return;
-
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    vkEnc->vkDestroyDevice(gfxstream_device->internal_object, pAllocator, true /* do lock */);
-
-    /* Must destroy device queues manually */
-    vk_foreach_queue_safe(queue, &gfxstream_device->vk) {
-        vk_queue_finish(queue);
-        vk_free(&gfxstream_device->vk.alloc, queue);
-    }
-    vk_device_finish(&gfxstream_device->vk);
-    vk_free(&gfxstream_device->vk.alloc, gfxstream_device);
-}
-
-void gfxstream_vk_GetDeviceQueue(VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex,
-                                 VkQueue* pQueue) {
-    AEMU_SCOPED_TRACE("vkGetDeviceQueue");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    struct gfxstream_vk_queue* gfxstream_queue = (struct gfxstream_vk_queue*)vk_zalloc(
-        &gfxstream_device->vk.alloc, sizeof(struct gfxstream_vk_queue), 8, VK_SYSTEM_ALLOCATION_SCOPE_DEVICE);
-    VkResult result = gfxstream_queue ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == result) {
-        VkDeviceQueueCreateInfo createInfo = {
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .pNext = NULL,
-            .flags = 0,
-            .queueFamilyIndex = queueFamilyIndex,
-            .queueCount = 1,
-            .pQueuePriorities = NULL,
-        };
-        result = vk_queue_init(&gfxstream_queue->vk, &gfxstream_device->vk, &createInfo, queueIndex);
-    }
-    if (VK_SUCCESS == result) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkGetDeviceQueue(gfxstream_device->internal_object, queueFamilyIndex, queueIndex,
-                                &gfxstream_queue->internal_object, true /* do lock */);
-
-        gfxstream_queue->device = gfxstream_device;
-        *pQueue = gfxstream_vk_queue_to_handle(gfxstream_queue);
-    } else {
-        *pQueue = VK_NULL_HANDLE;
-    }
-}
-
-void gfxstream_vk_GetDeviceQueue2(VkDevice device, const VkDeviceQueueInfo2* pQueueInfo,
-                                  VkQueue* pQueue) {
-    AEMU_SCOPED_TRACE("vkGetDeviceQueue2");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    struct gfxstream_vk_queue* gfxstream_queue = (struct gfxstream_vk_queue*)vk_zalloc(
-        &gfxstream_device->vk.alloc, sizeof(struct gfxstream_vk_queue), 8, VK_SYSTEM_ALLOCATION_SCOPE_DEVICE);
-    VkResult result = gfxstream_queue ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == result) {
-        VkDeviceQueueCreateInfo createInfo = {
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .pNext = NULL,
-            .flags = pQueueInfo->flags,
-            .queueFamilyIndex = pQueueInfo->queueFamilyIndex,
-            .queueCount = 1,
-            .pQueuePriorities = NULL,
-        };
-        result = vk_queue_init(&gfxstream_queue->vk, &gfxstream_device->vk, &createInfo, pQueueInfo->queueIndex);
-    }
-    if (VK_SUCCESS == result) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkGetDeviceQueue2(gfxstream_device->internal_object, pQueueInfo,
-                                 &gfxstream_queue->internal_object, true /* do lock */);
-
-        gfxstream_queue->device = gfxstream_device;
-        *pQueue = gfxstream_vk_queue_to_handle(gfxstream_queue);
-    } else {
-        *pQueue = VK_NULL_HANDLE;
-    }
-}
 
 /*
  * CommandPool/CommandBuffer management
