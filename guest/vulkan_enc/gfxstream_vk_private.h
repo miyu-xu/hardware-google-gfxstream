@@ -66,7 +66,6 @@
 struct gfxstream_vk_instance {
    struct vk_instance vk;
    uint32_t api_version;
-   struct vk_instance_dispatch_table dispatch_table;
    VkInstance internal_object;
 };
 
