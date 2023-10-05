@@ -499,9 +499,12 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     internalArrayName = genInternalArrayDeclarations(param, countParamName)
                     param.paramName = genInternalArray(param, countParamName, internalArrayName, param.paramName, nextLoopVar)
                 elif 0 == param.pointerIndirectionLevels:
-                    param.paramName = ("%s->%s" % (paramNameToObjectName(param.paramName), INTERNAL_OBJECT_NAME))
+                    if param.isOptional:
+                        param.paramName = ("%s ? %s->%s : VK_NULL_HANDLE" % (paramNameToObjectName(param.paramName), paramNameToObjectName(param.paramName), INTERNAL_OBJECT_NAME))
+                    else:
+                        param.paramName = ("%s->%s" % (paramNameToObjectName(param.paramName), INTERNAL_OBJECT_NAME))
                 elif createParam and param.paramName == createParam.paramName:
-                    param.paramName = ("&%s" % paramNameToObjectName(param.paramName)) + ("->%s" % INTERNAL_OBJECT_NAME)
+                    param.paramName = ("&%s->%s" % (paramNameToObjectName(param.paramName), INTERNAL_OBJECT_NAME))
                 else:
                     print("ERROR: Unknown handling for param: %s (API: %s)" % (param, api.name))
                     raise

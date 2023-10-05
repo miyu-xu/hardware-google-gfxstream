@@ -221,7 +221,8 @@ VkResult gfxstream_vk_QueueSubmit(VkQueue queue, uint32_t submitCount, const VkS
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkQueueSubmit_VkResult_return = resources->on_vkQueueSubmit(
             vkEnc, VK_SUCCESS, gfxstream_queue->internal_object, submitCount,
-            internal_pSubmits.data(), gfxstream_fence->internal_object);
+            internal_pSubmits.data(),
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE);
     }
     return vkQueueSubmit_VkResult_return;
 }
@@ -257,8 +258,9 @@ void gfxstream_vk_FreeMemory(VkDevice device, VkDeviceMemory memory,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkFreeMemory(vkEnc, gfxstream_device->internal_object,
-                                   gfxstream_memory->internal_object, pAllocator);
+        resources->on_vkFreeMemory(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_memory ? gfxstream_memory->internal_object : VK_NULL_HANDLE, pAllocator);
     }
     vk_device_memory_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_memory->vk);
 }
@@ -597,7 +599,8 @@ VkResult gfxstream_vk_QueueBindSparse(VkQueue queue, uint32_t bindInfoCount,
         }
         vkQueueBindSparse_VkResult_return = vkEnc->vkQueueBindSparse(
             gfxstream_queue->internal_object, bindInfoCount, internal_pBindInfo.data(),
-            gfxstream_fence->internal_object, true /* do lock */);
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE,
+            true /* do lock */);
     }
     return vkQueueBindSparse_VkResult_return;
 }
@@ -626,7 +629,8 @@ void gfxstream_vk_DestroyFence(VkDevice device, VkFence fence,
     VK_FROM_HANDLE(gfxstream_vk_fence, gfxstream_fence, fence);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyFence(gfxstream_device->internal_object, gfxstream_fence->internal_object,
+        vkEnc->vkDestroyFence(gfxstream_device->internal_object,
+                              gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE,
                               pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_fence);
@@ -710,8 +714,10 @@ void gfxstream_vk_DestroySemaphore(VkDevice device, VkSemaphore semaphore,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkDestroySemaphore(vkEnc, gfxstream_device->internal_object,
-                                         gfxstream_semaphore->internal_object, pAllocator);
+        resources->on_vkDestroySemaphore(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_semaphore ? gfxstream_semaphore->internal_object : VK_NULL_HANDLE,
+            pAllocator);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_semaphore);
 }
@@ -739,7 +745,8 @@ void gfxstream_vk_DestroyEvent(VkDevice device, VkEvent event,
     VK_FROM_HANDLE(gfxstream_vk_event, gfxstream_event, event);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyEvent(gfxstream_device->internal_object, gfxstream_event->internal_object,
+        vkEnc->vkDestroyEvent(gfxstream_device->internal_object,
+                              gfxstream_event ? gfxstream_event->internal_object : VK_NULL_HANDLE,
                               pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_event);
@@ -811,9 +818,10 @@ void gfxstream_vk_DestroyQueryPool(VkDevice device, VkQueryPool queryPool,
     VK_FROM_HANDLE(gfxstream_vk_query_pool, gfxstream_queryPool, queryPool);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyQueryPool(gfxstream_device->internal_object,
-                                  gfxstream_queryPool->internal_object, pAllocator,
-                                  true /* do lock */);
+        vkEnc->vkDestroyQueryPool(
+            gfxstream_device->internal_object,
+            gfxstream_queryPool ? gfxstream_queryPool->internal_object : VK_NULL_HANDLE, pAllocator,
+            true /* do lock */);
     }
     vk_query_pool_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_queryPool->vk);
 }
@@ -859,8 +867,9 @@ void gfxstream_vk_DestroyBuffer(VkDevice device, VkBuffer buffer,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkDestroyBuffer(vkEnc, gfxstream_device->internal_object,
-                                      gfxstream_buffer->internal_object, pAllocator);
+        resources->on_vkDestroyBuffer(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_buffer ? gfxstream_buffer->internal_object : VK_NULL_HANDLE, pAllocator);
     }
     vk_buffer_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_buffer->vk);
 }
@@ -898,9 +907,10 @@ void gfxstream_vk_DestroyBufferView(VkDevice device, VkBufferView bufferView,
     VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_bufferView, bufferView);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyBufferView(gfxstream_device->internal_object,
-                                   gfxstream_bufferView->internal_object, pAllocator,
-                                   true /* do lock */);
+        vkEnc->vkDestroyBufferView(
+            gfxstream_device->internal_object,
+            gfxstream_bufferView ? gfxstream_bufferView->internal_object : VK_NULL_HANDLE,
+            pAllocator, true /* do lock */);
     }
     vk_buffer_view_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_bufferView->vk);
 }
@@ -930,8 +940,9 @@ void gfxstream_vk_DestroyImage(VkDevice device, VkImage image,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkDestroyImage(vkEnc, gfxstream_device->internal_object,
-                                     gfxstream_image->internal_object, pAllocator);
+        resources->on_vkDestroyImage(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_image ? gfxstream_image->internal_object : VK_NULL_HANDLE, pAllocator);
     }
     vk_image_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_image->vk);
 }
@@ -982,9 +993,10 @@ void gfxstream_vk_DestroyImageView(VkDevice device, VkImageView imageView,
     VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView, imageView);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyImageView(gfxstream_device->internal_object,
-                                  gfxstream_imageView->internal_object, pAllocator,
-                                  true /* do lock */);
+        vkEnc->vkDestroyImageView(
+            gfxstream_device->internal_object,
+            gfxstream_imageView ? gfxstream_imageView->internal_object : VK_NULL_HANDLE, pAllocator,
+            true /* do lock */);
     }
     vk_image_view_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_imageView->vk);
 }
@@ -1017,9 +1029,10 @@ void gfxstream_vk_DestroyShaderModule(VkDevice device, VkShaderModule shaderModu
     VK_FROM_HANDLE(gfxstream_vk_shader_module, gfxstream_shaderModule, shaderModule);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyShaderModule(gfxstream_device->internal_object,
-                                     gfxstream_shaderModule->internal_object, pAllocator,
-                                     true /* do lock */);
+        vkEnc->vkDestroyShaderModule(
+            gfxstream_device->internal_object,
+            gfxstream_shaderModule ? gfxstream_shaderModule->internal_object : VK_NULL_HANDLE,
+            pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_shaderModule);
 }
@@ -1052,9 +1065,10 @@ void gfxstream_vk_DestroyPipelineCache(VkDevice device, VkPipelineCache pipeline
     VK_FROM_HANDLE(gfxstream_vk_pipeline_cache, gfxstream_pipelineCache, pipelineCache);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyPipelineCache(gfxstream_device->internal_object,
-                                      gfxstream_pipelineCache->internal_object, pAllocator,
-                                      true /* do lock */);
+        vkEnc->vkDestroyPipelineCache(
+            gfxstream_device->internal_object,
+            gfxstream_pipelineCache ? gfxstream_pipelineCache->internal_object : VK_NULL_HANDLE,
+            pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_pipelineCache);
 }
@@ -1157,8 +1171,9 @@ VkResult gfxstream_vk_CreateGraphicsPipelines(VkDevice device, VkPipelineCache p
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkCreateGraphicsPipelines_VkResult_return = resources->on_vkCreateGraphicsPipelines(
             vkEnc, VK_SUCCESS, gfxstream_device->internal_object,
-            gfxstream_pipelineCache->internal_object, createInfoCount, internal_pCreateInfos.data(),
-            pAllocator, &gfxstream_pPipelines->internal_object);
+            gfxstream_pipelineCache ? gfxstream_pipelineCache->internal_object : VK_NULL_HANDLE,
+            createInfoCount, internal_pCreateInfos.data(), pAllocator,
+            &gfxstream_pPipelines->internal_object);
     }
     *pPipelines = gfxstream_vk_pipeline_to_handle(gfxstream_pPipelines);
     return vkCreateGraphicsPipelines_VkResult_return;
@@ -1207,7 +1222,8 @@ VkResult gfxstream_vk_CreateComputePipelines(VkDevice device, VkPipelineCache pi
             }
         }
         vkCreateComputePipelines_VkResult_return = vkEnc->vkCreateComputePipelines(
-            gfxstream_device->internal_object, gfxstream_pipelineCache->internal_object,
+            gfxstream_device->internal_object,
+            gfxstream_pipelineCache ? gfxstream_pipelineCache->internal_object : VK_NULL_HANDLE,
             createInfoCount, internal_pCreateInfos.data(), pAllocator,
             &gfxstream_pPipelines->internal_object, true /* do lock */);
     }
@@ -1221,9 +1237,10 @@ void gfxstream_vk_DestroyPipeline(VkDevice device, VkPipeline pipeline,
     VK_FROM_HANDLE(gfxstream_vk_pipeline, gfxstream_pipeline, pipeline);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyPipeline(gfxstream_device->internal_object,
-                                 gfxstream_pipeline->internal_object, pAllocator,
-                                 true /* do lock */);
+        vkEnc->vkDestroyPipeline(
+            gfxstream_device->internal_object,
+            gfxstream_pipeline ? gfxstream_pipeline->internal_object : VK_NULL_HANDLE, pAllocator,
+            true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_pipeline);
 }
@@ -1279,9 +1296,10 @@ void gfxstream_vk_DestroyPipelineLayout(VkDevice device, VkPipelineLayout pipeli
     VK_FROM_HANDLE(gfxstream_vk_pipeline_layout, gfxstream_pipelineLayout, pipelineLayout);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyPipelineLayout(gfxstream_device->internal_object,
-                                       gfxstream_pipelineLayout->internal_object, pAllocator,
-                                       true /* do lock */);
+        vkEnc->vkDestroyPipelineLayout(
+            gfxstream_device->internal_object,
+            gfxstream_pipelineLayout ? gfxstream_pipelineLayout->internal_object : VK_NULL_HANDLE,
+            pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_pipelineLayout);
 }
@@ -1312,8 +1330,10 @@ void gfxstream_vk_DestroySampler(VkDevice device, VkSampler sampler,
     VK_FROM_HANDLE(gfxstream_vk_sampler, gfxstream_sampler, sampler);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroySampler(gfxstream_device->internal_object,
-                                gfxstream_sampler->internal_object, pAllocator, true /* do lock */);
+        vkEnc->vkDestroySampler(
+            gfxstream_device->internal_object,
+            gfxstream_sampler ? gfxstream_sampler->internal_object : VK_NULL_HANDLE, pAllocator,
+            true /* do lock */);
     }
     vk_sampler_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_sampler->vk);
 }
@@ -1394,9 +1414,11 @@ void gfxstream_vk_DestroyDescriptorSetLayout(VkDevice device,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkDestroyDescriptorSetLayout(vkEnc, gfxstream_device->internal_object,
-                                                   gfxstream_descriptorSetLayout->internal_object,
-                                                   pAllocator);
+        resources->on_vkDestroyDescriptorSetLayout(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_descriptorSetLayout ? gfxstream_descriptorSetLayout->internal_object
+                                          : VK_NULL_HANDLE,
+            pAllocator);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorSetLayout);
 }
@@ -1431,9 +1453,10 @@ void gfxstream_vk_DestroyDescriptorPool(VkDevice device, VkDescriptorPool descri
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkDestroyDescriptorPool(vkEnc, gfxstream_device->internal_object,
-                                              gfxstream_descriptorPool->internal_object,
-                                              pAllocator);
+        resources->on_vkDestroyDescriptorPool(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_descriptorPool ? gfxstream_descriptorPool->internal_object : VK_NULL_HANDLE,
+            pAllocator);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorPool);
 }
@@ -1612,9 +1635,10 @@ void gfxstream_vk_DestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
     VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer, framebuffer);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyFramebuffer(gfxstream_device->internal_object,
-                                    gfxstream_framebuffer->internal_object, pAllocator,
-                                    true /* do lock */);
+        vkEnc->vkDestroyFramebuffer(
+            gfxstream_device->internal_object,
+            gfxstream_framebuffer ? gfxstream_framebuffer->internal_object : VK_NULL_HANDLE,
+            pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_framebuffer);
 }
@@ -1646,9 +1670,10 @@ void gfxstream_vk_DestroyRenderPass(VkDevice device, VkRenderPass renderPass,
     VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass, renderPass);
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnc->vkDestroyRenderPass(gfxstream_device->internal_object,
-                                   gfxstream_renderPass->internal_object, pAllocator,
-                                   true /* do lock */);
+        vkEnc->vkDestroyRenderPass(
+            gfxstream_device->internal_object,
+            gfxstream_renderPass ? gfxstream_renderPass->internal_object : VK_NULL_HANDLE,
+            pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_renderPass);
 }
@@ -2661,9 +2686,10 @@ void gfxstream_vk_DestroySamplerYcbcrConversion(VkDevice device,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkDestroySamplerYcbcrConversion(vkEnc, gfxstream_device->internal_object,
-                                                      gfxstream_ycbcrConversion->internal_object,
-                                                      pAllocator);
+        resources->on_vkDestroySamplerYcbcrConversion(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_ycbcrConversion ? gfxstream_ycbcrConversion->internal_object : VK_NULL_HANDLE,
+            pAllocator);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_ycbcrConversion);
 }
@@ -2717,7 +2743,9 @@ void gfxstream_vk_DestroyDescriptorUpdateTemplate(
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         vkEnc->vkDestroyDescriptorUpdateTemplate(
-            gfxstream_device->internal_object, gfxstream_descriptorUpdateTemplate->internal_object,
+            gfxstream_device->internal_object,
+            gfxstream_descriptorUpdateTemplate ? gfxstream_descriptorUpdateTemplate->internal_object
+                                               : VK_NULL_HANDLE,
             pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorUpdateTemplate);
@@ -3417,7 +3445,8 @@ VkResult gfxstream_vk_QueueSubmit2(VkQueue queue, uint32_t submitCount,
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkQueueSubmit2_VkResult_return = resources->on_vkQueueSubmit2(
             vkEnc, VK_SUCCESS, gfxstream_queue->internal_object, submitCount,
-            internal_pSubmits.data(), gfxstream_fence->internal_object);
+            internal_pSubmits.data(),
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE);
     }
     return vkQueueSubmit2_VkResult_return;
 }
@@ -4229,7 +4258,9 @@ void gfxstream_vk_DestroyDescriptorUpdateTemplateKHR(
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         vkEnc->vkDestroyDescriptorUpdateTemplateKHR(
-            gfxstream_device->internal_object, gfxstream_descriptorUpdateTemplate->internal_object,
+            gfxstream_device->internal_object,
+            gfxstream_descriptorUpdateTemplate ? gfxstream_descriptorUpdateTemplate->internal_object
+                                               : VK_NULL_HANDLE,
             pAllocator, true /* do lock */);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_descriptorUpdateTemplate);
@@ -4462,9 +4493,10 @@ void gfxstream_vk_DestroySamplerYcbcrConversionKHR(VkDevice device,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
-        resources->on_vkDestroySamplerYcbcrConversionKHR(vkEnc, gfxstream_device->internal_object,
-                                                         gfxstream_ycbcrConversion->internal_object,
-                                                         pAllocator);
+        resources->on_vkDestroySamplerYcbcrConversionKHR(
+            vkEnc, gfxstream_device->internal_object,
+            gfxstream_ycbcrConversion ? gfxstream_ycbcrConversion->internal_object : VK_NULL_HANDLE,
+            pAllocator);
     }
     vk_object_free(&gfxstream_device->vk, pAllocator, (void*)gfxstream_ycbcrConversion);
 }
@@ -5004,7 +5036,8 @@ VkResult gfxstream_vk_QueueSubmit2KHR(VkQueue queue, uint32_t submitCount,
         }
         vkQueueSubmit2KHR_VkResult_return = vkEnc->vkQueueSubmit2KHR(
             gfxstream_queue->internal_object, submitCount, internal_pSubmits.data(),
-            gfxstream_fence->internal_object, true /* do lock */);
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE,
+            true /* do lock */);
     }
     return vkQueueSubmit2KHR_VkResult_return;
 }
@@ -6134,7 +6167,8 @@ VkResult gfxstream_vk_FreeMemorySyncGOOGLE(VkDevice device, VkDeviceMemory memor
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         vkFreeMemorySyncGOOGLE_VkResult_return = vkEnc->vkFreeMemorySyncGOOGLE(
-            gfxstream_device->internal_object, gfxstream_memory->internal_object, pAllocator,
+            gfxstream_device->internal_object,
+            gfxstream_memory ? gfxstream_memory->internal_object : VK_NULL_HANDLE, pAllocator,
             true /* do lock */);
     }
     vk_device_memory_destroy(&gfxstream_device->vk, pAllocator, &gfxstream_memory->vk);
@@ -6206,9 +6240,10 @@ void gfxstream_vk_QueueSubmitAsyncGOOGLE(VkQueue queue, uint32_t submitCount,
             internal_pSubmits[i].pSignalSemaphores =
                 internal_VkSubmitInfo_pSignalSemaphores[i].data();
         }
-        vkEnc->vkQueueSubmitAsyncGOOGLE(gfxstream_queue->internal_object, submitCount,
-                                        internal_pSubmits.data(), gfxstream_fence->internal_object,
-                                        true /* do lock */);
+        vkEnc->vkQueueSubmitAsyncGOOGLE(
+            gfxstream_queue->internal_object, submitCount, internal_pSubmits.data(),
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE,
+            true /* do lock */);
     }
 }
 void gfxstream_vk_QueueWaitIdleAsyncGOOGLE(VkQueue queue) {
@@ -6390,9 +6425,10 @@ void gfxstream_vk_QueueBindSparseAsyncGOOGLE(VkQueue queue, uint32_t bindInfoCou
             internal_pBindInfo[i].pSignalSemaphores =
                 internal_VkBindSparseInfo_pSignalSemaphores[i].data();
         }
-        vkEnc->vkQueueBindSparseAsyncGOOGLE(gfxstream_queue->internal_object, bindInfoCount,
-                                            internal_pBindInfo.data(),
-                                            gfxstream_fence->internal_object, true /* do lock */);
+        vkEnc->vkQueueBindSparseAsyncGOOGLE(
+            gfxstream_queue->internal_object, bindInfoCount, internal_pBindInfo.data(),
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE,
+            true /* do lock */);
     }
 }
 void gfxstream_vk_GetLinearImageLayoutGOOGLE(VkDevice device, VkFormat format,
@@ -6742,9 +6778,10 @@ void gfxstream_vk_QueueSubmitAsync2GOOGLE(VkQueue queue, uint32_t submitCount,
             internal_pSubmits[i].pSignalSemaphoreInfos =
                 internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].data();
         }
-        vkEnc->vkQueueSubmitAsync2GOOGLE(gfxstream_queue->internal_object, submitCount,
-                                         internal_pSubmits.data(), gfxstream_fence->internal_object,
-                                         true /* do lock */);
+        vkEnc->vkQueueSubmitAsync2GOOGLE(
+            gfxstream_queue->internal_object, submitCount, internal_pSubmits.data(),
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE,
+            true /* do lock */);
     }
 }
 #endif
