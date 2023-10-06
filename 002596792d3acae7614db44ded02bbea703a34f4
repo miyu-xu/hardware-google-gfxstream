@@ -16,6 +16,24 @@
       "message": "I think you also need:\nVkBufferDeviceAddressCreateInfoEXT",
       "revId": "002596792d3acae7614db44ded02bbea703a34f4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed4fd2f3_f80b0670",
+        "filename": "host/vulkan/cereal/common/vk_struct_id.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-10-06T19:38:24Z",
+      "side": 1,
+      "message": "Good catch, done.",
+      "parentUuid": "25edff30_bfe66cfd",
+      "revId": "002596792d3acae7614db44ded02bbea703a34f4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
