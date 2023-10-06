@@ -414,6 +414,8 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
     memset(&dispatch_table, 0, sizeof(struct vk_instance_dispatch_table));
     vk_instance_dispatch_table_from_entrypoints(
         &dispatch_table, &gfxstream_vk_instance_entrypoints, false);
+   vk_instance_dispatch_table_from_entrypoints(
+      &dispatch_table, &wsi_instance_entrypoints, false);
 
     struct vk_instance_extension_table supported_extensions;
     get_instance_extensions(&supported_extensions);

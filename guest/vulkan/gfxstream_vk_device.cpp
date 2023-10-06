@@ -48,6 +48,27 @@ static void get_device_extensions(VkPhysicalDevice physDevInternal, struct vk_de
     }
 }
 
+static VkResult gfxstream_vk_physical_device_init(struct gfxstream_vk_physical_device *physical_device, struct gfxstream_vk_instance *instance, VkPhysicalDevice internal_object) {
+    struct vk_device_extension_table supported_extensions = {0};
+    get_device_extensions(internal_object, &supported_extensions);
+
+    struct vk_physical_device_dispatch_table dispatch_table;
+    memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
+    vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
+    vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &wsi_physical_device_entrypoints, false);
+
+    // Initialize the mesa object
+    VkResult result = vk_physical_device_init(&physical_device->vk, &instance->vk, &supported_extensions, NULL, NULL, &dispatch_table);
+
+    if (VK_SUCCESS == result) {
+        // Set the gfxstream-internal object
+        physical_device->internal_object = internal_object;
+        physical_device->instance = instance;
+    }
+
+    return result;
+}
+
 VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
                                                VkPhysicalDevice* pPhysicalDevices) {
     AEMU_SCOPED_TRACE("vkEnumeratePhysicalDevices");
@@ -73,22 +94,12 @@ VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pP
             VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
         result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
 
-        struct vk_physical_device_dispatch_table dispatch_table;
-        memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
-        vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
         if (VK_SUCCESS == result) {
             for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
-                // Set the gfxstream-internal object
-                gfxstream_physicalDevices[i].internal_object = internal_objects_pointer[i];
-                struct vk_device_extension_table supported_extensions = {0};
-                get_device_extensions(gfxstream_physicalDevices[i].internal_object, &supported_extensions);
-                // Initialize the mesa object
-                result = vk_physical_device_init(&gfxstream_physicalDevices[i].vk, &gfxstream_instance->vk, &supported_extensions, NULL, NULL, &dispatch_table);
+                result = gfxstream_vk_physical_device_init(&gfxstream_physicalDevices[i], gfxstream_instance, internal_objects_pointer[i]);
                 if (VK_SUCCESS != result) {
                     break;
                 }
-                // Set instance reference
-                gfxstream_physicalDevices[i].instance = gfxstream_instance;
                 // TODO: Add list of physicalDevice enumeration allocations to the instance object
                 pPhysicalDevices[i] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[i]);
             }
@@ -121,21 +132,11 @@ VkResult gfxstream_vk_EnumeratePhysicalDeviceGroups(
                 VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
             result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
             if (VK_SUCCESS == result) {
-                struct vk_physical_device_dispatch_table dispatch_table;
-                memset(&dispatch_table, 0, sizeof(struct vk_physical_device_dispatch_table));
-                vk_physical_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_physical_device_entrypoints, false);
                 for (uint32_t device = 0; device < pPhysicalDeviceGroupProperties[group].physicalDeviceCount; device++) {
-                    // Set the gfxstream-internal object
-                    gfxstream_physicalDevices[device].internal_object = pPhysicalDeviceGroupProperties[group].physicalDevices[device];
-                    struct vk_device_extension_table supported_extensions = {0};
-                    get_device_extensions(gfxstream_physicalDevices[device].internal_object, &supported_extensions);
-                    // Initialize the mesa object
-                    result = vk_physical_device_init(&gfxstream_physicalDevices[device].vk, &gfxstream_instance->vk, &supported_extensions, NULL, NULL, &dispatch_table);
+                    result = gfxstream_vk_physical_device_init(&gfxstream_physicalDevices[device], gfxstream_instance, pPhysicalDeviceGroupProperties[group].physicalDevices[device]);
                     if (VK_SUCCESS != result) {
                         break;
                     }
-                    // Set instance reference
-                    gfxstream_physicalDevices[device].instance = gfxstream_instance;
                     // TODO: Add list of physicalDevice enumeration allocations to the instance object
                     // Set the output handle
                     pPhysicalDeviceGroupProperties[group].physicalDevices[device] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[device]);
@@ -172,11 +173,11 @@ VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
         struct vk_device_dispatch_table dispatch_table;
         memset(&dispatch_table, 0, sizeof(struct vk_device_dispatch_table));
         vk_device_dispatch_table_from_entrypoints(&dispatch_table, &gfxstream_vk_device_entrypoints, false);
+        vk_device_dispatch_table_from_entrypoints(&dispatch_table, &wsi_device_entrypoints, false);
 
         result = vk_device_init(&gfxstream_device->vk, &gfxstream_physicalDevice->vk, &dispatch_table, pCreateInfo, pMesaAllocator);
     }
     if (VK_SUCCESS == result) {
-        // TODO: wsi_device_init(&gfxstream_device->wsi_device, ...)
         gfxstream_device->physical_device = gfxstream_physicalDevice;
         // TODO: Initialize cmd_dispatch for emulated secondary command buffer support?
         gfxstream_device->vk.command_dispatch_table = &gfxstream_device->cmd_dispatch;
