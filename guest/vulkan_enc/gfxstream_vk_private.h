@@ -71,6 +71,8 @@ struct gfxstream_vk_instance {
 
 struct gfxstream_vk_physical_device {
    struct vk_physical_device vk;
+
+   struct wsi_device wsi_device;
    struct gfxstream_vk_instance *instance;
    VkPhysicalDevice internal_object;
 };
@@ -78,7 +80,6 @@ struct gfxstream_vk_physical_device {
 struct gfxstream_vk_device {
    struct vk_device vk;
 
-   struct wsi_device wsi_device;
    struct vk_device_dispatch_table cmd_dispatch;
    struct gfxstream_vk_physical_device *physical_device;
    VkDevice internal_object;
