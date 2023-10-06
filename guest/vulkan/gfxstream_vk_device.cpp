@@ -17,11 +17,49 @@
 
 #include "vk_alloc.h"
 #include "vk_device.h"
+#include "vk_instance.h"
 
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
 
 #include "../vulkan_enc/vk_util.h"
+
+#include "HostConnection.h"
+
+VkResult SetupInstance(void);
+
+#define VK_HOST_CONNECTION(ret)                                                    \
+    HostConnection* hostCon = HostConnection::getOrCreate(kCapsetGfxStreamVulkan); \
+    gfxstream::vk::VkEncoder* vkEnc = hostCon->vkEncoder();                        \
+    if (!vkEnc) {                                                                  \
+        ALOGE("vulkan: Failed to get Vulkan encoder\n");                           \
+        return ret;                                                                \
+    }
+
+static void get_instance_extensions(struct vk_instance_extension_table *instanceExts) {
+    VkResult result = (VkResult)0;
+    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+    auto resources = gfxstream::vk::ResourceTracker::get();
+    uint32_t numInstanceExts = 0;
+    result = resources->on_vkEnumerateInstanceExtensionProperties(
+                vkEnc, VK_SUCCESS, NULL, &numInstanceExts, NULL);
+    if (VK_SUCCESS == result) {
+        std::vector<VkExtensionProperties> extProps(numInstanceExts);
+        result = resources->on_vkEnumerateInstanceExtensionProperties(
+                    vkEnc, VK_SUCCESS, NULL, &numInstanceExts, extProps.data());
+        if (VK_SUCCESS == result) {
+            for (uint32_t i = 0; i < numInstanceExts; i++) {
+                for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
+                    if ((extProps[i].specVersion == vk_instance_extensions[j].specVersion)
+                            && (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE))) {
+                        instanceExts->extensions[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 
 static void get_device_extensions(VkPhysicalDevice physDevInternal, struct vk_device_extension_table *deviceExts) {
     VkResult result = (VkResult)0;
@@ -68,6 +106,91 @@ static VkResult gfxstream_vk_physical_device_init(struct gfxstream_vk_physical_d
 
     return result;
 }
+
+VkResult
+gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
+                            const VkAllocationCallbacks *pAllocator,
+                            VkInstance *pInstance)
+{
+    AEMU_SCOPED_TRACE("vkCreateInstance");
+
+    struct gfxstream_vk_instance *instance;
+    VkResult result;
+
+    pAllocator = pAllocator ?: vk_default_allocator();
+    instance = (struct gfxstream_vk_instance*)vk_zalloc(pAllocator, sizeof(*instance), 8,
+                            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (!instance)
+        return vk_error(NULL, VK_ERROR_OUT_OF_HOST_MEMORY);
+
+    VkResult res = SetupInstance();
+    if (res != VK_SUCCESS) {
+        return res;
+    }
+
+    VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
+    result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &instance->internal_object, true /* do lock */);
+
+    struct vk_instance_dispatch_table dispatch_table;
+    memset(&dispatch_table, 0, sizeof(struct vk_instance_dispatch_table));
+    vk_instance_dispatch_table_from_entrypoints(
+        &dispatch_table, &gfxstream_vk_instance_entrypoints, false);
+   vk_instance_dispatch_table_from_entrypoints(
+      &dispatch_table, &wsi_instance_entrypoints, false);
+
+    struct vk_instance_extension_table supported_extensions;
+    get_instance_extensions(&supported_extensions);
+
+    result = vk_instance_init(&instance->vk, &supported_extensions,
+                                &dispatch_table, pCreateInfo, pAllocator);
+
+    if (result != VK_SUCCESS) {
+        vk_free(pAllocator, instance);
+        return vk_error(NULL, result);
+    }
+
+    *pInstance = gfxstream_vk_instance_to_handle(instance);
+    return VK_SUCCESS;
+}
+
+void
+gfxstream_vk_DestroyInstance(VkInstance _instance,
+                             const VkAllocationCallbacks *pAllocator)
+{
+    AEMU_SCOPED_TRACE("vkDestroyInstance");
+    VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
+
+    if (!instance)
+        return;
+
+    VK_HOST_CONNECTION()
+    vkEnc->vkDestroyInstance(instance->internal_object, pAllocator, true /* do lock */);
+
+    vk_instance_finish(&instance->vk);
+    vk_free(&instance->vk.alloc, instance);
+}
+
+VkResult
+gfxstream_vk_EnumerateInstanceExtensionProperties(const char* pLayerName,
+                                                           uint32_t* pPropertyCount,
+                                                           VkExtensionProperties* pProperties) {
+    AEMU_SCOPED_TRACE("vkvkEnumerateInstanceExtensionProperties");
+
+    VkResult res = SetupInstance();
+    if (res != VK_SUCCESS) {
+        return res;
+    }
+
+    VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST)
+
+    VkResult vkEnumerateInstanceExtensionProperties_VkResult_return = (VkResult)0;
+    auto resources = gfxstream::vk::ResourceTracker::get();
+    vkEnumerateInstanceExtensionProperties_VkResult_return =
+        resources->on_vkEnumerateInstanceExtensionProperties(vkEnc, VK_SUCCESS, pLayerName,
+                                                                pPropertyCount, pProperties);
+    return vkEnumerateInstanceExtensionProperties_VkResult_return;
+}
+
 
 VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
                                                VkPhysicalDevice* pPhysicalDevices) {
@@ -266,6 +389,33 @@ void gfxstream_vk_GetDeviceQueue2(VkDevice device, const VkDeviceQueueInfo2* pQu
     } else {
         *pQueue = VK_NULL_HANDLE;
     }
+}
+
+/* The loader wants us to expose a second GetInstanceProcAddr function
+ * to work around certain LD_PRELOAD issues seen in apps.
+ */
+PUBLIC
+VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
+vk_icdGetInstanceProcAddr(VkInstance instance, const char *pName);
+
+PUBLIC
+VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
+vk_icdGetInstanceProcAddr(VkInstance instance, const char *pName)
+{
+    return gfxstream_vk_GetInstanceProcAddr(instance, pName);
+}
+
+/* vk_icd.h does not declare this function, so we declare it here to
+ * suppress Wmissing-prototypes.
+ */
+PUBLIC VKAPI_ATTR VkResult VKAPI_CALL
+vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t *pSupportedVersion);
+
+PUBLIC VKAPI_ATTR VkResult VKAPI_CALL
+vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t *pSupportedVersion)
+{
+    *pSupportedVersion = std::min(*pSupportedVersion, 3u);
+    return VK_SUCCESS;
 }
 
 /* With version 4+ of the loader interface the ICD should expose

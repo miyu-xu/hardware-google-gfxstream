@@ -73,12 +73,16 @@ cc_defaults {
     srcs: [
         "goldfish_vulkan.cpp",
         "gfxstream_vk_device.cpp",
+        "gfxstream_vk_cmd.cpp",
     ],
     target: {
         android: {
             relative_install_path: "hw",
             header_libs: [
                 "hwvulkan_headers",
+            ],
+            shared_libs: [
+                "libnativewindow",
             ],
         },
     },
