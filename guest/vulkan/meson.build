@@ -6,7 +6,8 @@ vk_icd_gen = files('vk_icd_gen.py')
 
 files_lib_vulkan_gfxstream = files(
   'goldfish_vulkan.cpp',
-  'gfxstream_vk_device.cpp'
+  'gfxstream_vk_device.cpp',
+  'gfxstream_vk_cmd.cpp',
 )
 
 lib_vulkan_gfxstream = shared_library(
