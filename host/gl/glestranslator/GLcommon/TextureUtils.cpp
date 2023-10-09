@@ -370,6 +370,7 @@ class ScopedFetchUnpackData {
                         &mUnpackBuffer);
                 ctx->dispatcher().glBindBuffer(GL_PIXEL_UNPACK_BUFFER,
                         0);
+    fprintf(stderr, "%s %d: 0x%p offset 0x%lx size 0x%x\n", __func__, __LINE__, mData, offset, dataSize);
             }
         }
         ~ScopedFetchUnpackData() {

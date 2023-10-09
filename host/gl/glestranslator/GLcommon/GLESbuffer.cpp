@@ -89,6 +89,7 @@ void GLESbuffer::onSave(android::base::Stream* stream,
         dispatcher.glBindBuffer(GL_ARRAY_BUFFER, globalName);
         void * data = dispatcher.glMapBufferRange(GL_ARRAY_BUFFER, 0,
                     m_size, GL_MAP_READ_BIT);
+    fprintf(stderr, "%s %d: 0x%p size 0x%x\n", __func__, __LINE__, data, (int)m_size);
         assert(data);
         // BUG: 68051848
         // It is supposed to be fixed, but for safety we keep the fallback path

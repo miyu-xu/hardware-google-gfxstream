@@ -336,6 +336,7 @@ int GoldfishAddressSpaceBlock::memoryMap(void *addr,
 
 void GoldfishAddressSpaceBlock::memoryUnmap(void *ptr, size_t size)
 {
+    fprintf(stderr, "%s %d at 0x%p 0x%x\n", __func__, __LINE__, ptr, size);
     ::munmap(ptr, size);
 }
 
@@ -512,6 +513,7 @@ void* goldfish_address_space_map(
 
 void goldfish_address_space_unmap(void* ptr, uint64_t size) {
     void* pagePtr = (void*)(((uintptr_t)ptr) & ~(kPageSize - 1));
+    fprintf(stderr, "%s %d at 0x%p 0x%lx\n", __func__, __LINE__, pagePtr, size);
     ::munmap(pagePtr, size);
 }
 

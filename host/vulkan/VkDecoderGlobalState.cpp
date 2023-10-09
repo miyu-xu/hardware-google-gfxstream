@@ -3386,6 +3386,7 @@ class VkDecoderGlobalState::Impl {
             memoryInfo.needUnmap = true;
             VkResult mapResult =
                 vk->vkMapMemory(device, *pMemory, 0, memoryInfo.size, 0, &memoryInfo.ptr);
+            fprintf(stderr, "%s %d 0x%p size %lx\n",__func__, __LINE__,  memoryInfo.ptr, memoryInfo.size);
             if (mapResult != VK_SUCCESS) {
                 freeMemoryLocked(vk, device, *pMemory, pAllocator);
                 *pMemory = VK_NULL_HANDLE;
@@ -3396,6 +3397,7 @@ class VkDecoderGlobalState::Impl {
             memoryInfo.needUnmap = false;
             memoryInfo.ptr = mappedPtr;
 
+            fprintf(stderr, "%s %d 0x%p size %lx\n", __func__, __LINE__, memoryInfo.ptr, memoryInfo.size);
             if (createBlobInfoPtr) {
                 memoryInfo.blobId = createBlobInfoPtr->blobId;
             }
@@ -3677,7 +3679,7 @@ class VkDecoderGlobalState::Impl {
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
 
-        if (mLogging) {
+        if (1) {
             fprintf(stderr, "%s: deviceMemory: 0x%llx pAddress: 0x%llx\n", __func__,
                     (unsigned long long)memory, (unsigned long long)(*pAddress));
         }
@@ -3774,6 +3776,7 @@ class VkDecoderGlobalState::Impl {
             auto vk = dispatch_VkDevice(boxed_device);
 
             VkResult mapResult = vk->vkMapMemory(device, memory, 0, info->size, 0, &info->ptr);
+            fprintf(stderr, "%s %d 0x%p size %lx\n",__func__, __LINE__,  info->ptr, info->size);
             if (mapResult != VK_SUCCESS) {
                 return VK_ERROR_OUT_OF_HOST_MEMORY;
             }

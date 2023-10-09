@@ -98,8 +98,11 @@ void* goldfish_dma_map(struct goldfish_dma_context* cxt) {
     return mapped;
 }
 
+
+
 int goldfish_dma_unmap(struct goldfish_dma_context* cxt) {
     ALOGV("%s: cxt=%p mapped=0x%" PRIu64, __FUNCTION__, cxt, cxt->mapped_addr);
+    fprintf(stderr, "%s %d at 0x%p 0x%x\n", __func__, __LINE__, reinterpret_cast<void *>(cxt->mapped_addr), cxt->size);
     munmap(reinterpret_cast<void *>(cxt->mapped_addr), cxt->size);
     cxt->mapped_addr = 0;
     cxt->size = 0;

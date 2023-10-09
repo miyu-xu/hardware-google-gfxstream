@@ -22,6 +22,7 @@ VirtGpuBlobMapping::VirtGpuBlobMapping(VirtGpuBlobPtr blob, uint8_t* ptr, uint64
     : mBlob(blob), mPtr(ptr), mSize(size) {}
 
 VirtGpuBlobMapping::~VirtGpuBlobMapping(void) {
+        fprintf(stderr, "%s %d at 0x%p 0x%x\n", __func__, __LINE__, mPtr, mSize);
     munmap(mPtr, mSize);
 }
 

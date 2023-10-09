@@ -31,6 +31,11 @@ void ThreadInfo::updateInfo(ContextPtr eglCtx,
     objManager  = manager;
 }
 
+ThreadInfo::~ThreadInfo() {
+    fprintf(stderr, "%s %d ctx %p share %p\n",
+            __func__, __LINE__, eglContext.get(), shareGroup.get());
+}
+
 static thread_local ThreadInfo s_threadInfo;
 
 ThreadInfo *getThreadInfo() { return &s_threadInfo; }

@@ -29,6 +29,7 @@ GL_APICALL void * GL_APIENTRY glMapBufferRange(GLenum target, GLintptr offset, G
     GET_CTX_V2_RET(0);
     RET_AND_SET_ERROR_IF(!GLESv2Validate::bufferTarget(ctx, target),GL_INVALID_ENUM,0);
     void * glMapBufferRangeRET = ctx->dispatcher().glMapBufferRange(target, offset, length, access);
+    fprintf(stderr, "%s %d: 0x%p offset 0x%lx size 0x%lx\n", __func__, __LINE__, glMapBufferRangeRET, offset, length);
     return glMapBufferRangeRET;
 }
 

@@ -68,6 +68,7 @@ VirtioGpuPipeStream::VirtioGpuPipeStream(size_t bufSize, int stream_handle) :
 VirtioGpuPipeStream::~VirtioGpuPipeStream()
 {
     if (m_virtio_mapped) {
+        fprintf(stderr, "%s %d at 0x%p 0x%x\n", __func__, __LINE__, m_virtio_mapped, kTransferBufferSize);
         munmap(m_virtio_mapped, kTransferBufferSize);
     }
 

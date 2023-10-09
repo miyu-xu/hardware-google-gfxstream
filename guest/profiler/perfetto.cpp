@@ -2406,6 +2406,7 @@ PagedMemory::~PagedMemory() {
   PERFETTO_CHECK(res != 0);
 #else   // PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
   const size_t outer_size = RoundUpToSysPageSize(size_) + GuardSize() * 2;
+        fprintf(stderr, "%s %d at 0x%p 0x%x\n", __func__, __LINE__, start, outer_size);
   int res = munmap(start, outer_size);
   PERFETTO_CHECK(res == 0);
 #endif  // PERFETTO_BUILDFLAG(PERFETTO_OS_WIN)
@@ -66003,6 +66004,7 @@ PosixSharedMemory::PosixSharedMemory(void* start,
     : start_(start), size_(size), fd_(std::move(fd)) {}
 
 PosixSharedMemory::~PosixSharedMemory() {
+        fprintf(stderr, "%s %d at 0x%p 0x%x\n", __func__, __LINE__, start(), size());
   munmap(start(), size());
 }
 
