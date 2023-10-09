@@ -34,6 +34,24 @@
       "parentUuid": "edca6132_d59c9c8a",
       "revId": "d0d3300dff9d4998592b43e1b3733d0c8059a99e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51a7aac7_bf72ae97",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-10-09T22:15:53Z",
+      "side": 1,
+      "message": "Good point. I was using VulkanSDK from last week:\n\nshaderc v2023.6 v2023.6\nspirv-tools v2023.4 v2022.4-296-ge553b884\nglslang 11.1.0-763-g76b52ebf\n\nAll unrelated shaders are reverted.",
+      "parentUuid": "112805fd_cf7b8e1d",
+      "revId": "d0d3300dff9d4998592b43e1b3733d0c8059a99e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
