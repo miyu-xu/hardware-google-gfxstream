@@ -19,7 +19,8 @@
 #include "AstcCpuDecompressor.h"
 #include "astcenc.h"
 
-namespace goldfish_vk {
+namespace gfxstream {
+namespace vk {
 namespace {
 
 constexpr uint32_t kNumThreads = 2;
@@ -273,4 +274,5 @@ AstcCpuDecompressor& AstcCpuDecompressor::get() {
     return instance;
 }
 
-}  // namespace goldfish_vk
+}  // namespace vk
+}  // namespace gfxstream
