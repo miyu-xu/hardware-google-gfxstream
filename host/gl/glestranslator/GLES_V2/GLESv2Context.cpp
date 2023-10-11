@@ -767,6 +767,7 @@ void InitExtensionString(GLSupport& glSupport, std::string& ext) {
         "GL_OES_element_index_uint "
         "GL_OES_texture_float GL_OES_texture_float_linear "
         "GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture "
+        "GL_KHR_texture_compression_astc_ldr "
         "GL_OES_depth_texture ";
     if (glSupport.GL_ARB_HALF_FLOAT_PIXEL || glSupport.GL_NV_HALF_FLOAT)
         ext += "GL_OES_texture_half_float GL_OES_texture_half_float_linear ";
