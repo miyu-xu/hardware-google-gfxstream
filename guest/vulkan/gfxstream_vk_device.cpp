@@ -50,8 +50,7 @@ static void get_instance_extensions(struct vk_instance_extension_table *instance
         if (VK_SUCCESS == result) {
             for (uint32_t i = 0; i < numInstanceExts; i++) {
                 for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
-                    if ((extProps[i].specVersion == vk_instance_extensions[j].specVersion)
-                            && (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE))) {
+                    if (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE)) {
                         instanceExts->extensions[j] = true;
                         break;
                     }
@@ -75,8 +74,7 @@ static void get_device_extensions(VkPhysicalDevice physDevInternal, struct vk_de
         if (VK_SUCCESS == result) {
             for (uint32_t i = 0; i < numDeviceExts; i++) {
                 for (uint32_t j = 0; j < VK_DEVICE_EXTENSION_COUNT; j++) {
-                    if ((extProps[i].specVersion == vk_device_extensions[j].specVersion)
-                            && (0 == strncmp(extProps[i].extensionName, vk_device_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE))) {
+                    if (0 == strncmp(extProps[i].extensionName, vk_device_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE)) {
                         deviceExts->extensions[j] = true;
                         break;
                     }
