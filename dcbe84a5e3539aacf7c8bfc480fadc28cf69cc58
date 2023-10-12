@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfe98607_bf306453",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1097044
+      },
+      "writtenOn": "2023-10-12T18:38:20Z",
+      "side": 1,
+      "message": "IIUC this was fixed forward, so we should. be able to remove this CL?",
+      "revId": "dcbe84a5e3539aacf7c8bfc480fadc28cf69cc58",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
