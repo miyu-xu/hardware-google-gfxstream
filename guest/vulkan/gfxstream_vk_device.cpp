@@ -100,9 +100,26 @@ static VkResult gfxstream_vk_physical_device_init(struct gfxstream_vk_physical_d
         // Set the gfxstream-internal object
         physical_device->internal_object = internal_object;
         physical_device->instance = instance;
+
+        result = gfxstream_vk_wsi_init(physical_device);
     }
 
     return result;
+}
+
+static void
+gfxstream_vk_physical_device_finish(struct gfxstream_vk_physical_device *physical_device)
+{
+   gfxstream_vk_wsi_finish(physical_device);
+
+   vk_physical_device_finish(&physical_device->vk);
+}
+
+static void
+gfxstream_vk_destroy_physical_device(struct vk_physical_device *physical_device)
+{
+   gfxstream_vk_physical_device_finish((struct gfxstream_vk_physical_device *)physical_device);
+   vk_free(&physical_device->instance->alloc, physical_device);
 }
 
 VkResult
@@ -146,6 +163,10 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
         vk_free(pAllocator, instance);
         return vk_error(NULL, result);
     }
+
+    // TODO: Use Mesa common physical device management (enumerate, destroy)
+    // instance->vk.physical_devices.enumerate = gfxstream_vk_enumerate_devices;
+    instance->vk.physical_devices.destroy = gfxstream_vk_destroy_physical_device;
 
     *pInstance = gfxstream_vk_instance_to_handle(instance);
     return VK_SUCCESS;
