@@ -36,30 +36,6 @@ VkResult SetupInstance(void);
         return ret;                                                                \
     }
 
-static void get_instance_extensions(struct vk_instance_extension_table *instanceExts) {
-    VkResult result = (VkResult)0;
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    auto resources = gfxstream::vk::ResourceTracker::get();
-    uint32_t numInstanceExts = 0;
-    result = resources->on_vkEnumerateInstanceExtensionProperties(
-                vkEnc, VK_SUCCESS, NULL, &numInstanceExts, NULL);
-    if (VK_SUCCESS == result) {
-        std::vector<VkExtensionProperties> extProps(numInstanceExts);
-        result = resources->on_vkEnumerateInstanceExtensionProperties(
-                    vkEnc, VK_SUCCESS, NULL, &numInstanceExts, extProps.data());
-        if (VK_SUCCESS == result) {
-            for (uint32_t i = 0; i < numInstanceExts; i++) {
-                for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
-                    if (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE)) {
-                        instanceExts->extensions[j] = true;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-}
-
 static void get_device_extensions(VkPhysicalDevice physDevInternal, struct vk_device_extension_table *deviceExts) {
     VkResult result = (VkResult)0;
     auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -122,6 +98,69 @@ gfxstream_vk_destroy_physical_device(struct vk_physical_device *physical_device)
    vk_free(&physical_device->instance->alloc, physical_device);
 }
 
+static VkResult
+gfxstream_vk_enumerate_devices(struct vk_instance *vk_instance) {
+    VkResult result = VK_SUCCESS;
+    gfxstream_vk_instance *gfxstream_instance = (gfxstream_vk_instance*)vk_instance;
+    uint32_t deviceCount = 0;
+    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+    auto resources = gfxstream::vk::ResourceTracker::get();
+    result = resources->on_vkEnumeratePhysicalDevices(
+        vkEnc, VK_SUCCESS, gfxstream_instance->internal_object, &deviceCount, NULL);
+    if (VK_SUCCESS != result)
+        return result;
+    std::vector<VkPhysicalDevice> internal_list(deviceCount);
+    result = resources->on_vkEnumeratePhysicalDevices(
+        vkEnc, VK_SUCCESS, gfxstream_instance->internal_object, &deviceCount, internal_list.data());
+
+    if (VK_SUCCESS == result) {
+        for (uint32_t i = 0; i < deviceCount; i++) {
+            struct gfxstream_vk_physical_device* gfxstream_physicalDevice = (struct gfxstream_vk_physical_device*)vk_zalloc(
+                &gfxstream_instance->vk.alloc,
+                sizeof(struct gfxstream_vk_physical_device),
+                8,
+                VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
+            if (!gfxstream_physicalDevice) {
+                result = VK_ERROR_OUT_OF_HOST_MEMORY;
+                break;
+            }
+            result = gfxstream_vk_physical_device_init(gfxstream_physicalDevice, gfxstream_instance, internal_list[i]);
+            if (VK_SUCCESS == result) {
+                list_addtail(&gfxstream_physicalDevice->vk.link, &gfxstream_instance->vk.physical_devices.list);
+            } else {
+                vk_free(&gfxstream_instance->vk.alloc, gfxstream_physicalDevice);
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
+static void get_instance_extensions(struct vk_instance_extension_table *instanceExts) {
+    VkResult result = (VkResult)0;
+    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+    auto resources = gfxstream::vk::ResourceTracker::get();
+    uint32_t numInstanceExts = 0;
+    result = resources->on_vkEnumerateInstanceExtensionProperties(
+                vkEnc, VK_SUCCESS, NULL, &numInstanceExts, NULL);
+    if (VK_SUCCESS == result) {
+        std::vector<VkExtensionProperties> extProps(numInstanceExts);
+        result = resources->on_vkEnumerateInstanceExtensionProperties(
+                    vkEnc, VK_SUCCESS, NULL, &numInstanceExts, extProps.data());
+        if (VK_SUCCESS == result) {
+            for (uint32_t i = 0; i < numInstanceExts; i++) {
+                for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
+                    if (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE)) {
+                        instanceExts->extensions[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
 VkResult
 gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
                             const VkAllocationCallbacks *pAllocator,
@@ -164,9 +203,9 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
         return vk_error(NULL, result);
     }
 
-    // TODO: Use Mesa common physical device management (enumerate, destroy)
-    // instance->vk.physical_devices.enumerate = gfxstream_vk_enumerate_devices;
+    instance->vk.physical_devices.enumerate = gfxstream_vk_enumerate_devices;
     instance->vk.physical_devices.destroy = gfxstream_vk_destroy_physical_device;
+    // TODO: instance->vk.physical_devices.try_create_for_drm (?)
 
     *pInstance = gfxstream_vk_instance_to_handle(instance);
     return VK_SUCCESS;
@@ -208,90 +247,6 @@ gfxstream_vk_EnumerateInstanceExtensionProperties(const char* pLayerName,
         resources->on_vkEnumerateInstanceExtensionProperties(vkEnc, VK_SUCCESS, pLayerName,
                                                                 pPropertyCount, pProperties);
     return vkEnumerateInstanceExtensionProperties_VkResult_return;
-}
-
-
-VkResult gfxstream_vk_EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
-                                               VkPhysicalDevice* pPhysicalDevices) {
-    AEMU_SCOPED_TRACE("vkEnumeratePhysicalDevices");
-    VK_FROM_HANDLE(gfxstream_vk_instance, gfxstream_instance, instance);
-    VkResult result = (VkResult)0;
-    std::vector<VkPhysicalDevice> internal_list;
-    VkPhysicalDevice* internal_objects_pointer = NULL;
-    if (pPhysicalDevices) {
-        internal_list.reserve(*pPhysicalDeviceCount);
-        internal_objects_pointer = internal_list.data();
-    }
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    auto resources = gfxstream::vk::ResourceTracker::get();
-    result = resources->on_vkEnumeratePhysicalDevices(
-        vkEnc, VK_SUCCESS, gfxstream_instance->internal_object, pPhysicalDeviceCount,
-        internal_objects_pointer);
-
-    if (VK_SUCCESS == result && pPhysicalDevices) {
-        struct gfxstream_vk_physical_device* gfxstream_physicalDevices = (struct gfxstream_vk_physical_device*)vk_zalloc(
-            &gfxstream_instance->vk.alloc,
-            ((*pPhysicalDeviceCount) * sizeof(struct gfxstream_vk_physical_device)),
-            8,
-            VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
-        result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-
-        if (VK_SUCCESS == result) {
-            for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
-                result = gfxstream_vk_physical_device_init(&gfxstream_physicalDevices[i], gfxstream_instance, internal_objects_pointer[i]);
-                if (VK_SUCCESS != result) {
-                    break;
-                }
-                // TODO: Add list of physicalDevice enumeration allocations to the instance object
-                pPhysicalDevices[i] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[i]);
-            }
-            if (VK_SUCCESS != result) {
-                vk_free(&gfxstream_instance->vk.alloc, gfxstream_physicalDevices);
-            }
-        }
-    }
-    return result;
-}
-
-VkResult gfxstream_vk_EnumeratePhysicalDeviceGroups(
-    VkInstance instance, uint32_t* pPhysicalDeviceGroupCount,
-    VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties) {
-    AEMU_SCOPED_TRACE("vkEnumeratePhysicalDeviceGroups");
-    VK_FROM_HANDLE(gfxstream_vk_instance, gfxstream_instance, instance);
-    VkResult result = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        result = vkEnc->vkEnumeratePhysicalDeviceGroups(
-            gfxstream_instance->internal_object, pPhysicalDeviceGroupCount,
-            pPhysicalDeviceGroupProperties, true /* do lock */);
-    }
-    if (pPhysicalDeviceGroupProperties) {
-        for (uint32_t group = 0; group < *pPhysicalDeviceGroupCount; group++) {
-            struct gfxstream_vk_physical_device* gfxstream_physicalDevices = (struct gfxstream_vk_physical_device*)vk_zalloc(
-                &gfxstream_instance->vk.alloc,
-                ((pPhysicalDeviceGroupProperties[group].physicalDeviceCount) * sizeof(struct gfxstream_vk_physical_device)),
-                8,
-                VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
-            result = gfxstream_physicalDevices ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-            if (VK_SUCCESS == result) {
-                for (uint32_t device = 0; device < pPhysicalDeviceGroupProperties[group].physicalDeviceCount; device++) {
-                    result = gfxstream_vk_physical_device_init(&gfxstream_physicalDevices[device], gfxstream_instance, pPhysicalDeviceGroupProperties[group].physicalDevices[device]);
-                    if (VK_SUCCESS != result) {
-                        break;
-                    }
-                    // TODO: Add list of physicalDevice enumeration allocations to the instance object
-                    // Set the output handle
-                    pPhysicalDeviceGroupProperties[group].physicalDevices[device] = gfxstream_vk_physical_device_to_handle(&gfxstream_physicalDevices[device]);
-                }
-            }
-            if (VK_SUCCESS != result) {
-                break;
-            }
-        }
-        // TODO: Clean-up for failed allocations/physical_device_init
-    }
-
-    return result;
 }
 
 VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
