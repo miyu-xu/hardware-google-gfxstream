@@ -259,15 +259,11 @@ VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_sampler_ycbcr_conversion, base, VkSa
                                VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_update_template, base, VkDescriptorUpdateTemplate,
                                VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE)
-//VkResult gfxstream_vk_wsi_init(struct gfxstream_vk_physical_device *physical_device);
 
-//void gfxstream_vk_wsi_finish(struct gfxstream_vk_physical_device *physical_device);
+VkResult
+gfxstream_vk_wsi_init(struct gfxstream_vk_physical_device *physical_device);
 
-//bool gfxstream_vk_instance_extension_supported(const char *name);
-
-//uint32_t gfxstream_vk_physical_device_api_version(struct gfxstream_vk_physical_device *dev);
-
-//bool gfxstream_vk_physical_device_extension_supported(struct gfxstream_vk_physical_device *dev,
-//                                                      const char *name);
+void
+gfxstream_vk_wsi_finish(struct gfxstream_vk_physical_device *physical_device);
 
 #endif /* GFXSTREAM_VK_PRIVATE_H */

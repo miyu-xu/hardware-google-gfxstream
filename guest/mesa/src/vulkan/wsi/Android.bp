@@ -57,6 +57,7 @@ cc_library_static {
         "libmesa_vulkan_runtime_gfxstream",
         "libgfxstream_vk_entrypoints",
         "libmesa_util_gfxstream",
+        "libdrm",
     ],
     shared_libs: [
         "libcutils",
@@ -75,6 +76,8 @@ cc_library_static {
     ],
     srcs: [
         "wsi_common.c",
+        "wsi_common_drm.c",
+        "wsi_common_headless.c",
     ],
     export_include_dirs: [
         ".",
