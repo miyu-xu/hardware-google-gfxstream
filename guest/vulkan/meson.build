@@ -8,6 +8,7 @@ files_lib_vulkan_gfxstream = files(
   'goldfish_vulkan.cpp',
   'gfxstream_vk_device.cpp',
   'gfxstream_vk_cmd.cpp',
+  'gfxstream_vk_wsi.cpp'
 )
 
 lib_vulkan_gfxstream = shared_library(
