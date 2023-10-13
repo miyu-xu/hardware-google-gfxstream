@@ -19,12 +19,24 @@ package {
     default_applicable_licenses: ["hardware_google_gfxstream_license"],
 }
 
+filegroup {
+    name: "libmesa_drirc",
+    srcs: ["00-mesa-defaults.conf"],
+}
+
 python_binary_host {
     name: "format_srgb_gen",
     main: "format_srgb.py",
-    srcs: [
-          "format_srgb.py",
-    ],
+    srcs: ["format_srgb.py"],
+}
+
+python_binary_host {
+    name: "driconf_static_gen",
+    main: "driconf_static.py",
+    srcs: ["driconf_static.py"],
+    libs: [
+        "mako", 
+    ]
 }
 
 genrule {
@@ -33,6 +45,16 @@ genrule {
    tools: ["format_srgb_gen"],
    cmd: "python3 $(location format_srgb_gen) " +
         "&> $(location format_srgb.c)"
+}
+
+genrule {
+   name: "driconf_static_header",
+   srcs: [":libmesa_drirc"],
+   out: ["driconf_static.h"],
+   tools: ["driconf_static_gen"],
+   cmd: "python3 $(location driconf_static_gen) " +
+        "$(location :libmesa_drirc) " +
+        "$(location driconf_static.h)"
 }
 
 cc_library_headers {
@@ -50,6 +72,9 @@ cc_library_static {
     vendor: true,
     defaults: [
         "mesa_common_defaults_gfxstream",
+    ],
+    generated_headers: [
+         "driconf_static_header",
     ],
     static_libs: [
         "libmesa_util_c11_gfxstream",
@@ -121,6 +146,7 @@ cc_library_static {
         "vma.c",
         "mesa_cache_db.c",
         "mesa_cache_db_multipart.c",
+        "xmlconfig.c",
     ],
     target: {
         host: {
