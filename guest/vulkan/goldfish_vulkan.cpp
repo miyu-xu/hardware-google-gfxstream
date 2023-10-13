@@ -663,11 +663,26 @@ VkResult gfxstream_vk_AllocateDescriptorSets(VkDevice device,
     }
     if (VK_SUCCESS == result) {
         // Create gfxstream-internal descriptorSet array
+        VkDescriptorSetAllocateInfo internal_allocateInfo = *pAllocateInfo;
+        std::vector<VkDescriptorSetLayout> internal_VkDescriptorSetAllocateInfo_pSetLayouts(internal_allocateInfo.descriptorSetCount);
+        {
+            internal_allocateInfo = *pAllocateInfo;
+            /* VkDescriptorSetAllocateInfo::descriptorPool */
+            VK_FROM_HANDLE(gfxstream_vk_descriptor_pool, gfxstream_descriptorPool, internal_allocateInfo.descriptorPool);
+            internal_allocateInfo.descriptorPool = gfxstream_descriptorPool->internal_object;
+            /* VkDescriptorSetAllocateInfo::pSetLayouts */
+            memset(internal_VkDescriptorSetAllocateInfo_pSetLayouts.data(), 0, sizeof(VkDescriptorSetLayout) * internal_allocateInfo.descriptorSetCount);
+            for (uint32_t j = 0; j < internal_allocateInfo.descriptorSetCount; ++j) {
+                VK_FROM_HANDLE(gfxstream_vk_descriptor_set_layout, gfxstream_pSetLayouts, internal_allocateInfo.pSetLayouts[j]);
+                internal_VkDescriptorSetAllocateInfo_pSetLayouts[j] = gfxstream_pSetLayouts->internal_object;
+            }
+            internal_allocateInfo.pSetLayouts = internal_VkDescriptorSetAllocateInfo_pSetLayouts.data();
+        }
         std::vector<VkDescriptorSet> internal_objects(pAllocateInfo->descriptorSetCount);
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         auto resources = gfxstream::vk::ResourceTracker::get();
         result = resources->on_vkAllocateDescriptorSets(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pAllocateInfo,
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, &internal_allocateInfo,
             internal_objects.data());
         if (VK_SUCCESS == result) {
             for (uint32_t i = 0; i < (uint32_t)internal_objects.size(); i++) {
