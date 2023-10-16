@@ -553,6 +553,10 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
         VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
     };
 
+    std::vector<const char*> surfaceInstanceExtNames = {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+    };
+
     uint32_t extCount = 0;
     gvk->vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
     std::vector<VkExtensionProperties>& exts = sVkEmulation->instanceExtensions;
@@ -563,7 +567,13 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
         extensionsSupported(exts, externalMemoryInstanceExtNames);
     bool externalSemaphoreCapabilitiesSupported =
         extensionsSupported(exts, externalSemaphoreInstanceExtNames);
+<<<<<<< HEAD   (307dbc remove linker dependency on GL and X11)
 #ifdef VK_MVK_moltenvk
+=======
+    bool surfaceSupported =
+        extensionsSupported(exts, surfaceInstanceExtNames);
+#if defined(__APPLE__) && defined(VK_MVK_moltenvk)
+>>>>>>> CHANGE (afa9c8 Add extensions required by Android native buffer)
     bool moltenVKSupported =
         (vk->vkGetMTLTextureMVK != nullptr) && (vk->vkSetMTLTextureMVK != nullptr);
 #endif
@@ -691,7 +701,12 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     sVkEmulation->instanceSupportsExternalMemoryCapabilities = externalMemoryCapabilitiesSupported;
     sVkEmulation->instanceSupportsExternalSemaphoreCapabilities =
         externalSemaphoreCapabilitiesSupported;
+<<<<<<< HEAD   (307dbc remove linker dependency on GL and X11)
 #ifdef VK_MVK_moltenvk
+=======
+    sVkEmulation->instanceSupportsSurface = surfaceSupported;
+#if defined(__APPLE__) && defined(VK_MVK_moltenvk)
+>>>>>>> CHANGE (afa9c8 Add extensions required by Android native buffer)
     sVkEmulation->instanceSupportsMoltenVK = moltenVKSupported;
 #endif
 
