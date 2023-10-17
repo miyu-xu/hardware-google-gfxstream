@@ -440,10 +440,394 @@ public:
     void unregister_VkInstance(VkInstance instance) {
         AutoLock<RecursiveLock> lock(mLock);
 
+<<<<<<< HEAD   (307dbc remove linker dependency on GL and X11)
         auto it = info_VkInstance.find(instance);
         if (it == info_VkInstance.end()) return;
         auto info = it->second;
         info_VkInstance.erase(instance);
+=======
+        for (uint32_t i = 0; i < memoryCount; ++i) {
+            VkDeviceMemory mem = memory[i];
+
+            auto it = info_VkDeviceMemory.find(mem);
+            if (it == info_VkDeviceMemory.end()) return;
+
+            const auto& info = it->second;
+
+            if (!info.coherentMemory) continue;
+
+            memory[i] = info.coherentMemory->getDeviceMemory();
+
+            if (offset) {
+                offset[i] = info.coherentMemoryOffset + offset[i];
+            }
+
+            if (size && size[i] == VK_WHOLE_SIZE) {
+                size[i] = info.allocationSize;
+            }
+
+            // TODO
+            (void)memory;
+            (void)offset;
+            (void)size;
+        }
+    }
+}
+
+uint32_t ResourceTracker::getColorBufferMemoryIndex(void* context, VkDevice device) {
+    // Create test image to get the memory requirements
+    VkEncoder* enc = (VkEncoder*)context;
+    VkImageCreateInfo createInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+        .imageType = VK_IMAGE_TYPE_2D,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .extent = {64, 64, 1},
+        .mipLevels = 1,
+        .arrayLayers = 1,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .tiling = VK_IMAGE_TILING_OPTIMAL,
+        .usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+                 VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    };
+    VkImage image = VK_NULL_HANDLE;
+    VkResult res = enc->vkCreateImage(device, &createInfo, nullptr, &image, true /* do lock */);
+
+    if (res != VK_SUCCESS) {
+        return 0;
+    }
+
+    VkMemoryRequirements memReqs;
+    enc->vkGetImageMemoryRequirements(device, image, &memReqs, true /* do lock */);
+    enc->vkDestroyImage(device, image, nullptr, true /* do lock */);
+
+    const VkPhysicalDeviceMemoryProperties& memProps =
+        getPhysicalDeviceMemoryProperties(context, device, VK_NULL_HANDLE);
+
+    // Currently, host looks for the last index that has with memory
+    // property type VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+    VkMemoryPropertyFlags memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    for (int i = VK_MAX_MEMORY_TYPES - 1; i >= 0; --i) {
+        if ((memReqs.memoryTypeBits & (1u << i)) &&
+            (memProps.memoryTypes[i].propertyFlags & memoryProperty)) {
+            return i;
+        }
+    }
+
+    return 0;
+}
+
+VkResult ResourceTracker::on_vkEnumerateInstanceExtensionProperties(
+    void* context, VkResult, const char*, uint32_t* pPropertyCount,
+    VkExtensionProperties* pProperties) {
+    std::vector<const char*> allowedExtensionNames = {
+        "VK_KHR_get_physical_device_properties2",
+        "VK_KHR_sampler_ycbcr_conversion",
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
+        "VK_KHR_external_semaphore_capabilities",
+        "VK_KHR_external_memory_capabilities",
+        "VK_KHR_external_fence_capabilities",
+#endif
+    };
+
+    VkEncoder* enc = (VkEncoder*)context;
+
+    // Only advertise a select set of extensions.
+    if (mHostInstanceExtensions.empty()) {
+        uint32_t hostPropCount = 0;
+        enc->vkEnumerateInstanceExtensionProperties(nullptr, &hostPropCount, nullptr,
+                                                    true /* do lock */);
+        mHostInstanceExtensions.resize(hostPropCount);
+
+        VkResult hostRes = enc->vkEnumerateInstanceExtensionProperties(
+            nullptr, &hostPropCount, mHostInstanceExtensions.data(), true /* do lock */);
+
+        if (hostRes != VK_SUCCESS) {
+            return hostRes;
+        }
+    }
+
+    std::vector<VkExtensionProperties> filteredExts;
+
+    for (size_t i = 0; i < allowedExtensionNames.size(); ++i) {
+        auto extIndex = getHostInstanceExtensionIndex(allowedExtensionNames[i]);
+        if (extIndex != -1) {
+            filteredExts.push_back(mHostInstanceExtensions[extIndex]);
+        }
+    }
+
+    VkExtensionProperties anbExtProps[] = {
+#ifdef VK_USE_PLATFORM_FUCHSIA
+        {"VK_KHR_external_memory_capabilities", 1},
+        {"VK_KHR_external_semaphore_capabilities", 1},
+#endif
+    };
+
+    for (auto& anbExtProp : anbExtProps) {
+        filteredExts.push_back(anbExtProp);
+    }
+
+    // Spec:
+    //
+    // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkEnumerateInstanceExtensionProperties.html
+    //
+    // If pProperties is NULL, then the number of extensions properties
+    // available is returned in pPropertyCount. Otherwise, pPropertyCount
+    // must point to a variable set by the user to the number of elements
+    // in the pProperties array, and on return the variable is overwritten
+    // with the number of structures actually written to pProperties. If
+    // pPropertyCount is less than the number of extension properties
+    // available, at most pPropertyCount structures will be written. If
+    // pPropertyCount is smaller than the number of extensions available,
+    // VK_INCOMPLETE will be returned instead of VK_SUCCESS, to indicate
+    // that not all the available properties were returned.
+    //
+    // pPropertyCount must be a valid pointer to a uint32_t value
+    if (!pPropertyCount) return VK_ERROR_INITIALIZATION_FAILED;
+
+    if (!pProperties) {
+        *pPropertyCount = (uint32_t)filteredExts.size();
+        return VK_SUCCESS;
+    } else {
+        auto actualExtensionCount = (uint32_t)filteredExts.size();
+        if (*pPropertyCount > actualExtensionCount) {
+            *pPropertyCount = actualExtensionCount;
+        }
+
+        for (uint32_t i = 0; i < *pPropertyCount; ++i) {
+            pProperties[i] = filteredExts[i];
+        }
+
+        if (actualExtensionCount > *pPropertyCount) {
+            return VK_INCOMPLETE;
+        }
+
+        return VK_SUCCESS;
+    }
+}
+
+VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
+    void* context, VkResult, VkPhysicalDevice physdev, const char*, uint32_t* pPropertyCount,
+    VkExtensionProperties* pProperties) {
+    std::vector<const char*> allowedExtensionNames = {
+        "VK_KHR_vulkan_memory_model",
+        "VK_KHR_buffer_device_address",
+        "VK_KHR_maintenance1",
+        "VK_KHR_maintenance2",
+        "VK_KHR_maintenance3",
+        "VK_KHR_bind_memory2",
+        "VK_KHR_dedicated_allocation",
+        "VK_KHR_get_memory_requirements2",
+        "VK_KHR_sampler_ycbcr_conversion",
+        "VK_KHR_shader_float16_int8",
+    // Timeline semaphores buggy in newer NVIDIA drivers
+    // (vkWaitSemaphoresKHR causes further vkCommandBuffer dispatches to deadlock)
+#ifndef VK_USE_PLATFORM_ANDROID_KHR
+        "VK_KHR_timeline_semaphore",
+#endif
+        "VK_AMD_gpu_shader_half_float",
+        "VK_NV_shader_subgroup_partitioned",
+        "VK_KHR_shader_subgroup_extended_types",
+        "VK_EXT_subgroup_size_control",
+        "VK_EXT_provoking_vertex",
+        "VK_EXT_line_rasterization",
+        "VK_KHR_shader_terminate_invocation",
+        "VK_EXT_transform_feedback",
+        "VK_EXT_primitive_topology_list_restart",
+        "VK_EXT_index_type_uint8",
+        "VK_EXT_load_store_op_none",
+        "VK_EXT_swapchain_colorspace",
+        "VK_EXT_image_robustness",
+        "VK_EXT_custom_border_color",
+        "VK_EXT_shader_stencil_export",
+        "VK_KHR_image_format_list",
+        "VK_KHR_incremental_present",
+        "VK_KHR_pipeline_executable_properties",
+        "VK_EXT_queue_family_foreign",
+        "VK_KHR_descriptor_update_template",
+        "VK_KHR_storage_buffer_storage_class",
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
+        "VK_KHR_external_semaphore",
+        "VK_KHR_external_semaphore_fd",
+        // "VK_KHR_external_semaphore_win32", not exposed because it's translated to fd
+        "VK_KHR_external_memory",
+        "VK_KHR_external_fence",
+        "VK_KHR_external_fence_fd",
+        "VK_EXT_device_memory_report",
+#endif
+#if !defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(__linux__)
+        "VK_KHR_create_renderpass2",
+        "VK_KHR_imageless_framebuffer",
+#endif
+        // Vulkan 1.3
+        "VK_KHR_synchronization2",
+        "VK_EXT_private_data",
+    };
+
+    VkEncoder* enc = (VkEncoder*)context;
+
+    if (mHostDeviceExtensions.empty()) {
+        uint32_t hostPropCount = 0;
+        enc->vkEnumerateDeviceExtensionProperties(physdev, nullptr, &hostPropCount, nullptr,
+                                                  true /* do lock */);
+        mHostDeviceExtensions.resize(hostPropCount);
+
+        VkResult hostRes = enc->vkEnumerateDeviceExtensionProperties(
+            physdev, nullptr, &hostPropCount, mHostDeviceExtensions.data(), true /* do lock */);
+
+        if (hostRes != VK_SUCCESS) {
+            return hostRes;
+        }
+    }
+
+    bool hostHasWin32ExternalSemaphore =
+        getHostDeviceExtensionIndex("VK_KHR_external_semaphore_win32") != -1;
+
+    bool hostHasPosixExternalSemaphore =
+        getHostDeviceExtensionIndex("VK_KHR_external_semaphore_fd") != -1;
+
+    bool hostSupportsExternalSemaphore =
+        hostHasWin32ExternalSemaphore || hostHasPosixExternalSemaphore;
+
+    std::vector<VkExtensionProperties> filteredExts;
+
+    for (size_t i = 0; i < allowedExtensionNames.size(); ++i) {
+        auto extIndex = getHostDeviceExtensionIndex(allowedExtensionNames[i]);
+        if (extIndex != -1) {
+            filteredExts.push_back(mHostDeviceExtensions[extIndex]);
+        }
+    }
+
+    VkExtensionProperties anbExtProps[] = {
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
+        {"VK_ANDROID_native_buffer", 7},
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
+        {"VK_KHR_external_memory", 1},
+        {"VK_KHR_external_semaphore", 1},
+        {"VK_FUCHSIA_external_semaphore", 1},
+#endif
+    };
+
+    for (auto& anbExtProp : anbExtProps) {
+        filteredExts.push_back(anbExtProp);
+    }
+
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
+    bool hostSupportsExternalFenceFd =
+        getHostDeviceExtensionIndex("VK_KHR_external_fence_fd") != -1;
+    if (!hostSupportsExternalFenceFd) {
+        filteredExts.push_back(VkExtensionProperties{"VK_KHR_external_fence_fd", 1});
+    }
+#endif
+
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
+    if (hostSupportsExternalSemaphore && !hostHasPosixExternalSemaphore) {
+        filteredExts.push_back(VkExtensionProperties{"VK_KHR_external_semaphore_fd", 1});
+    }
+#endif
+
+    bool win32ExtMemAvailable = getHostDeviceExtensionIndex("VK_KHR_external_memory_win32") != -1;
+    bool posixExtMemAvailable = getHostDeviceExtensionIndex("VK_KHR_external_memory_fd") != -1;
+    bool moltenVkExtAvailable = getHostDeviceExtensionIndex("VK_MVK_moltenvk") != -1;
+
+    bool hostHasExternalMemorySupport =
+        win32ExtMemAvailable || posixExtMemAvailable || moltenVkExtAvailable;
+
+    if (hostHasExternalMemorySupport) {
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
+        filteredExts.push_back(
+            VkExtensionProperties{"VK_ANDROID_external_memory_android_hardware_buffer", 7});
+        filteredExts.push_back(VkExtensionProperties{"VK_EXT_queue_family_foreign", 1});
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
+        filteredExts.push_back(VkExtensionProperties{"VK_FUCHSIA_external_memory", 1});
+        filteredExts.push_back(VkExtensionProperties{"VK_FUCHSIA_buffer_collection", 1});
+#endif
+#if !defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(__linux__)
+        filteredExts.push_back(VkExtensionProperties{"VK_KHR_external_memory_fd", 1});
+        filteredExts.push_back(VkExtensionProperties{"VK_EXT_external_memory_dma_buf", 1});
+#endif
+    }
+
+    // Spec:
+    //
+    // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkEnumerateDeviceExtensionProperties.html
+    //
+    // pPropertyCount is a pointer to an integer related to the number of
+    // extension properties available or queried, and is treated in the
+    // same fashion as the
+    // vkEnumerateInstanceExtensionProperties::pPropertyCount parameter.
+    //
+    // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkEnumerateInstanceExtensionProperties.html
+    //
+    // If pProperties is NULL, then the number of extensions properties
+    // available is returned in pPropertyCount. Otherwise, pPropertyCount
+    // must point to a variable set by the user to the number of elements
+    // in the pProperties array, and on return the variable is overwritten
+    // with the number of structures actually written to pProperties. If
+    // pPropertyCount is less than the number of extension properties
+    // available, at most pPropertyCount structures will be written. If
+    // pPropertyCount is smaller than the number of extensions available,
+    // VK_INCOMPLETE will be returned instead of VK_SUCCESS, to indicate
+    // that not all the available properties were returned.
+    //
+    // pPropertyCount must be a valid pointer to a uint32_t value
+
+    if (!pPropertyCount) return VK_ERROR_INITIALIZATION_FAILED;
+
+    if (!pProperties) {
+        *pPropertyCount = (uint32_t)filteredExts.size();
+        return VK_SUCCESS;
+    } else {
+        auto actualExtensionCount = (uint32_t)filteredExts.size();
+        if (*pPropertyCount > actualExtensionCount) {
+            *pPropertyCount = actualExtensionCount;
+        }
+
+        for (uint32_t i = 0; i < *pPropertyCount; ++i) {
+            pProperties[i] = filteredExts[i];
+        }
+
+        if (actualExtensionCount > *pPropertyCount) {
+            return VK_INCOMPLETE;
+        }
+
+        return VK_SUCCESS;
+    }
+}
+
+VkResult ResourceTracker::on_vkEnumeratePhysicalDevices(void* context, VkResult,
+                                                        VkInstance instance,
+                                                        uint32_t* pPhysicalDeviceCount,
+                                                        VkPhysicalDevice* pPhysicalDevices) {
+    VkEncoder* enc = (VkEncoder*)context;
+
+    if (!instance) return VK_ERROR_INITIALIZATION_FAILED;
+
+    if (!pPhysicalDeviceCount) return VK_ERROR_INITIALIZATION_FAILED;
+
+    AutoLock<RecursiveLock> lock(mLock);
+
+    // When this function is called, we actually need to do two things:
+    // - Get full information about physical devices from the host,
+    // even if the guest did not ask for it
+    // - Serve the guest query according to the spec:
+    //
+    // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkEnumeratePhysicalDevices.html
+
+    auto it = info_VkInstance.find(instance);
+
+    if (it == info_VkInstance.end()) return VK_ERROR_INITIALIZATION_FAILED;
+
+    auto& info = it->second;
+
+    // Get the full host information here if it doesn't exist already.
+    if (info.physicalDevices.empty()) {
+        uint32_t hostPhysicalDeviceCount = 0;
+
+>>>>>>> CHANGE (4e6f4d Fix dEQP-VK.wsi.android.maintenance1)
         lock.unlock();
     }
 
