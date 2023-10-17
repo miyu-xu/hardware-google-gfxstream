@@ -541,6 +541,25 @@ void gfxstream_vk_DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
     vk_free(&gfxstream_commandPool->vk.alloc, gfxstream_commandPool);
 }
 
+VkResult gfxstream_vk_ResetCommandPool(VkDevice device, VkCommandPool commandPool,
+                                       VkCommandPoolResetFlags flags) {
+    AEMU_SCOPED_TRACE("vkResetCommandPool");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VK_FROM_HANDLE(gfxstream_vk_command_pool, gfxstream_commandPool, commandPool);
+    VkResult vkResetCommandPool_VkResult_return = (VkResult)0;
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        vkResetCommandPool_VkResult_return = vkEnc->vkResetCommandPool(
+            gfxstream_device->internal_object, gfxstream_commandPool->internal_object, flags,
+            true /* do lock */);
+        if (vkResetCommandPool_VkResult_return == VK_SUCCESS) {
+            gfxstream::vk::ResourceTracker::get()->resetCommandPoolStagingInfo(
+                gfxstream_commandPool->internal_object);
+        }
+    }
+    return vkResetCommandPool_VkResult_return;
+}
+
 static VkResult vk_command_buffer_createOp(struct vk_command_pool *, struct vk_command_buffer **);
 static void vk_command_buffer_resetOp(struct vk_command_buffer *, VkCommandBufferResetFlags);
 static void vk_command_buffer_destroyOp(struct vk_command_buffer *);

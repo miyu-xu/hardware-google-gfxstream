@@ -95,15 +95,6 @@ SUCCESS_VAL = {
     "VkResult" : ["VK_SUCCESS"],
 }
 
-POSTPROCESSES = {
-    "vkResetCommandPool" : """if (vkResetCommandPool_VkResult_return == VK_SUCCESS) {
-        gfxstream::vk::ResourceTracker::get()->resetCommandPoolStagingInfo(commandPool);
-    }""",
-    "vkAllocateCommandBuffers" : """if (vkAllocateCommandBuffers_VkResult_return == VK_SUCCESS) {
-        gfxstream::vk::ResourceTracker::get()->addToCommandPool(pAllocateInfo->commandPool, pAllocateInfo->commandBufferCount, pCommandBuffers);
-    }""",
-}
-
 HANDWRITTEN_ENTRY_POINTS = [
     # Instance/device/physical-device special-handling, dispatch tables, etc..
     "vkCreateInstance",
@@ -122,7 +113,9 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkDestroyCommandPool",
     # Special cases to handle array create/destroy
     "vkAllocateCommandBuffers",
+    "vkResetCommandPool",
     "vkFreeCommandBuffers",
+    "vkResetCommandPool",
     "vkAllocateDescriptorSets",
     "vkFreeDescriptorSets",
     # Special cases to handle struct translations in the pNext chain
@@ -534,9 +527,6 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             else:
                 cgen.funcCall(
                     callLhs, "vkEnc->" + api.name, [p.paramName for p in parameters] + ["true /* do lock */"])
-
-            if name in POSTPROCESSES:
-                cgen.line(POSTPROCESSES[name])
 
         def genReturnExpression():
             retTypeName = api.getRetTypeExpr()

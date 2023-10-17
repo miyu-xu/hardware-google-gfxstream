@@ -1689,23 +1689,6 @@ void gfxstream_vk_GetRenderAreaGranularity(VkDevice device, VkRenderPass renderP
                                           true /* do lock */);
     }
 }
-VkResult gfxstream_vk_ResetCommandPool(VkDevice device, VkCommandPool commandPool,
-                                       VkCommandPoolResetFlags flags) {
-    AEMU_SCOPED_TRACE("vkResetCommandPool");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VK_FROM_HANDLE(gfxstream_vk_command_pool, gfxstream_commandPool, commandPool);
-    VkResult vkResetCommandPool_VkResult_return = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkResetCommandPool_VkResult_return = vkEnc->vkResetCommandPool(
-            gfxstream_device->internal_object, gfxstream_commandPool->internal_object, flags,
-            true /* do lock */);
-        if (vkResetCommandPool_VkResult_return == VK_SUCCESS) {
-            gfxstream::vk::ResourceTracker::get()->resetCommandPoolStagingInfo(commandPool);
-        }
-    }
-    return vkResetCommandPool_VkResult_return;
-}
 VkResult gfxstream_vk_BeginCommandBuffer(VkCommandBuffer commandBuffer,
                                          const VkCommandBufferBeginInfo* pBeginInfo) {
     AEMU_SCOPED_TRACE("vkBeginCommandBuffer");
