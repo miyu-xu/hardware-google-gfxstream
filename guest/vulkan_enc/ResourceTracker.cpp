@@ -1769,7 +1769,7 @@ VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
         "VK_KHR_external_fence_fd",
         "VK_EXT_device_memory_report",
 #endif
-#if !defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(__linux__)
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
         "VK_KHR_create_renderpass2",
         "VK_KHR_imageless_framebuffer",
 #endif
