@@ -34,6 +34,24 @@
       "parentUuid": "6ed4c7dc_d96ba45d",
       "revId": "55eb8f1a70aafb0a2707984417cc4be10304422b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac1f6b85_eaabc92f",
+        "filename": "guest/platform/linux/LinuxVirtGpuDevice.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2023-10-17T16:46:22Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "5d825b19_109b3063",
+      "revId": "55eb8f1a70aafb0a2707984417cc4be10304422b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
