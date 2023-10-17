@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0dc7b596_3fb4a1d8",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 521,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-10-17T22:43:15Z",
+      "side": 1,
+      "message": "If `lastUsedQueueFamilyIndex` is set, does that mean the previous user failed to full set up queue state? Or is `lastUsedQueueFamilyIndex` just not being initialized so it ends up with some garbage value? Can you share more on what the flow is?",
+      "range": {
+        "startLine": 520,
+        "startChar": 8,
+        "endLine": 521,
+        "endChar": 62
+      },
+      "revId": "1ca8abe5843cb493305813873a847ce94c444bb0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
