@@ -249,27 +249,6 @@ VkResult gfxstream_vk_DeviceWaitIdle(VkDevice device) {
     }
     return vkDeviceWaitIdle_VkResult_return;
 }
-VkResult gfxstream_vk_AllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
-                                     const VkAllocationCallbacks* pAllocator,
-                                     VkDeviceMemory* pMemory) {
-    AEMU_SCOPED_TRACE("vkAllocateMemory");
-    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    VkResult vkAllocateMemory_VkResult_return = (VkResult)0;
-    struct gfxstream_vk_device_memory* gfxstream_pMemory =
-        (struct gfxstream_vk_device_memory*)vk_device_memory_create(
-            (vk_device*)gfxstream_device, pAllocateInfo, pAllocator,
-            sizeof(struct gfxstream_vk_device_memory));
-    vkAllocateMemory_VkResult_return = gfxstream_pMemory ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
-    if (VK_SUCCESS == vkAllocateMemory_VkResult_return) {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        auto resources = gfxstream::vk::ResourceTracker::get();
-        vkAllocateMemory_VkResult_return = resources->on_vkAllocateMemory(
-            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pAllocateInfo, pAllocator,
-            &gfxstream_pMemory->internal_object);
-    }
-    *pMemory = gfxstream_vk_device_memory_to_handle(gfxstream_pMemory);
-    return vkAllocateMemory_VkResult_return;
-}
 void gfxstream_vk_FreeMemory(VkDevice device, VkDeviceMemory memory,
                              const VkAllocationCallbacks* pAllocator) {
     AEMU_SCOPED_TRACE("vkFreeMemory");
@@ -2362,30 +2341,6 @@ void gfxstream_vk_CmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayo
                                   pValues, true /* do lock */);
     }
 }
-void gfxstream_vk_CmdBeginRenderPass(VkCommandBuffer commandBuffer,
-                                     const VkRenderPassBeginInfo* pRenderPassBegin,
-                                     VkSubpassContents contents) {
-    AEMU_SCOPED_TRACE("vkCmdBeginRenderPass");
-    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
-            gfxstream_commandBuffer->internal_object);
-        std::vector<VkRenderPassBeginInfo> internal_pRenderPassBegin(1);
-        for (uint32_t i = 0; i < 1; ++i) {
-            internal_pRenderPassBegin[i] = pRenderPassBegin[i];
-            /* VkRenderPassBeginInfo::renderPass */
-            VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
-                           internal_pRenderPassBegin[i].renderPass);
-            internal_pRenderPassBegin[i].renderPass = gfxstream_renderPass->internal_object;
-            /* VkRenderPassBeginInfo::framebuffer */
-            VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer,
-                           internal_pRenderPassBegin[i].framebuffer);
-            internal_pRenderPassBegin[i].framebuffer = gfxstream_framebuffer->internal_object;
-        }
-        vkEnc->vkCmdBeginRenderPass(gfxstream_commandBuffer->internal_object,
-                                    internal_pRenderPassBegin.data(), contents, true /* do lock */);
-    }
-}
 void gfxstream_vk_CmdNextSubpass(VkCommandBuffer commandBuffer, VkSubpassContents contents) {
     AEMU_SCOPED_TRACE("vkCmdNextSubpass");
     VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
@@ -4319,31 +4274,6 @@ VkResult gfxstream_vk_CreateRenderPass2KHR(VkDevice device,
     }
     *pRenderPass = gfxstream_vk_render_pass_to_handle(gfxstream_pRenderPass);
     return vkCreateRenderPass2KHR_VkResult_return;
-}
-void gfxstream_vk_CmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
-                                         const VkRenderPassBeginInfo* pRenderPassBegin,
-                                         const VkSubpassBeginInfo* pSubpassBeginInfo) {
-    AEMU_SCOPED_TRACE("vkCmdBeginRenderPass2KHR");
-    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
-            gfxstream_commandBuffer->internal_object);
-        std::vector<VkRenderPassBeginInfo> internal_pRenderPassBegin(1);
-        for (uint32_t i = 0; i < 1; ++i) {
-            internal_pRenderPassBegin[i] = pRenderPassBegin[i];
-            /* VkRenderPassBeginInfo::renderPass */
-            VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
-                           internal_pRenderPassBegin[i].renderPass);
-            internal_pRenderPassBegin[i].renderPass = gfxstream_renderPass->internal_object;
-            /* VkRenderPassBeginInfo::framebuffer */
-            VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer,
-                           internal_pRenderPassBegin[i].framebuffer);
-            internal_pRenderPassBegin[i].framebuffer = gfxstream_framebuffer->internal_object;
-        }
-        vkEnc->vkCmdBeginRenderPass2KHR(gfxstream_commandBuffer->internal_object,
-                                        internal_pRenderPassBegin.data(), pSubpassBeginInfo,
-                                        true /* do lock */);
-    }
 }
 void gfxstream_vk_CmdNextSubpass2KHR(VkCommandBuffer commandBuffer,
                                      const VkSubpassBeginInfo* pSubpassBeginInfo,
