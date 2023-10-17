@@ -125,6 +125,11 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkFreeCommandBuffers",
     "vkAllocateDescriptorSets",
     "vkFreeDescriptorSets",
+    # Special cases to handle struct translations in the pNext chain
+    # TODO: Make a codegen module (use deepcopy as reference) to make this more robust
+    "vkCmdBeginRenderPass2KHR",
+    "vkCmdBeginRenderPass",
+    "vkAllocateMemory",
 ]
 
 # TODO: handles with no equivalent gfxstream objects (yet).
