@@ -21,6 +21,8 @@
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
 
+#include "../vulkan_enc/vk_util.h"
+
 static void get_device_extensions(VkPhysicalDevice physDevInternal, struct vk_device_extension_table *deviceExts) {
     VkResult result = (VkResult)0;
     auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -294,4 +296,118 @@ gfxstream_vk_GetDeviceProcAddr(VkDevice _device, const char *pName)
     AEMU_SCOPED_TRACE("vkGetDeviceProcAddr");
     VK_FROM_HANDLE(gfxstream_vk_device, device, _device);
     return vk_device_get_proc_addr(&device->vk, pName);
+}
+
+VkResult gfxstream_vk_AllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
+                                     const VkAllocationCallbacks* pAllocator,
+                                     VkDeviceMemory* pMemory) {
+    AEMU_SCOPED_TRACE("vkAllocateMemory");
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    VkResult vkAllocateMemory_VkResult_return = (VkResult)0;
+    struct gfxstream_vk_device_memory* gfxstream_pMemory =
+        (struct gfxstream_vk_device_memory*)vk_device_memory_create(
+            (vk_device*)gfxstream_device, pAllocateInfo, pAllocator,
+            sizeof(struct gfxstream_vk_device_memory));
+    /* VkMemoryDedicatedAllocateInfo */
+    VkMemoryDedicatedAllocateInfo* dedicatedAllocInfoPtr =
+        (VkMemoryDedicatedAllocateInfo*)gfxstream::vk::vk_find_struct<VkMemoryDedicatedAllocateInfo>(pAllocateInfo);
+    if (dedicatedAllocInfoPtr) {
+        if (dedicatedAllocInfoPtr->buffer) {
+            VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, dedicatedAllocInfoPtr->buffer);
+            dedicatedAllocInfoPtr->buffer = gfxstream_buffer->internal_object;
+        }
+        if (dedicatedAllocInfoPtr->image) {
+            VK_FROM_HANDLE(gfxstream_vk_image, gfxstream_image, dedicatedAllocInfoPtr->image);
+            dedicatedAllocInfoPtr->image = gfxstream_image->internal_object;
+        }
+    }
+    vkAllocateMemory_VkResult_return = gfxstream_pMemory ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (VK_SUCCESS == vkAllocateMemory_VkResult_return) {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        auto resources = gfxstream::vk::ResourceTracker::get();
+        vkAllocateMemory_VkResult_return = resources->on_vkAllocateMemory(
+            vkEnc, VK_SUCCESS, gfxstream_device->internal_object, pAllocateInfo, pAllocator,
+            &gfxstream_pMemory->internal_object);
+    }
+    *pMemory = gfxstream_vk_device_memory_to_handle(gfxstream_pMemory);
+    return vkAllocateMemory_VkResult_return;
+}
+
+void gfxstream_vk_CmdBeginRenderPass(VkCommandBuffer commandBuffer,
+                                     const VkRenderPassBeginInfo* pRenderPassBegin,
+                                     VkSubpassContents contents) {
+    AEMU_SCOPED_TRACE("vkCmdBeginRenderPass");
+    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
+            gfxstream_commandBuffer->internal_object);
+        VkRenderPassBeginInfo internal_pRenderPassBegin = gfxstream::vk::vk_make_orphan_copy(*pRenderPassBegin);
+        gfxstream::vk::vk_struct_chain_iterator structChainIter = gfxstream::vk::vk_make_chain_iterator(&internal_pRenderPassBegin);
+        /* VkRenderPassBeginInfo::renderPass */
+        VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
+                        internal_pRenderPassBegin.renderPass);
+        internal_pRenderPassBegin.renderPass = gfxstream_renderPass->internal_object;
+        /* VkRenderPassBeginInfo::framebuffer */
+        VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer,
+                        internal_pRenderPassBegin.framebuffer);
+        internal_pRenderPassBegin.framebuffer = gfxstream_framebuffer->internal_object;
+        /* pNext = VkRenderPassAttachmentBeginInfo */
+        std::vector<VkImageView> internal_pAttachments;
+        VkRenderPassAttachmentBeginInfo internal_renderPassAttachmentBeginInfo;
+        VkRenderPassAttachmentBeginInfo *pRenderPassAttachmentBeginInfo =
+            (VkRenderPassAttachmentBeginInfo*)gfxstream::vk::vk_find_struct<VkRenderPassAttachmentBeginInfo>(pRenderPassBegin);
+        if (pRenderPassAttachmentBeginInfo) {
+            internal_renderPassAttachmentBeginInfo = *pRenderPassAttachmentBeginInfo;
+            /* VkRenderPassAttachmentBeginInfo::pAttachments */
+            internal_pAttachments.reserve(internal_renderPassAttachmentBeginInfo.attachmentCount);
+            for (uint32_t i = 0; i < internal_renderPassAttachmentBeginInfo.attachmentCount; i++) {
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_image_view, internal_renderPassAttachmentBeginInfo.pAttachments[i]);
+                internal_pAttachments[i] = gfxstream_image_view->internal_object;
+            }
+            internal_renderPassAttachmentBeginInfo.pAttachments = internal_pAttachments.data();
+            vk_append_struct(&structChainIter, &internal_renderPassAttachmentBeginInfo);
+        }
+        vkEnc->vkCmdBeginRenderPass(gfxstream_commandBuffer->internal_object,
+                                    &internal_pRenderPassBegin, contents, true /* do lock */);
+    }
+}
+
+void gfxstream_vk_CmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
+                                         const VkRenderPassBeginInfo* pRenderPassBegin,
+                                         const VkSubpassBeginInfo* pSubpassBeginInfo) {
+    AEMU_SCOPED_TRACE("vkCmdBeginRenderPass2KHR");
+    VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, commandBuffer);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
+            gfxstream_commandBuffer->internal_object);
+        VkRenderPassBeginInfo internal_pRenderPassBegin = gfxstream::vk::vk_make_orphan_copy(*pRenderPassBegin);
+        gfxstream::vk::vk_struct_chain_iterator structChainIter = gfxstream::vk::vk_make_chain_iterator(&internal_pRenderPassBegin);
+        /* VkRenderPassBeginInfo::renderPass */
+        VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
+                        internal_pRenderPassBegin.renderPass);
+        internal_pRenderPassBegin.renderPass = gfxstream_renderPass->internal_object;
+        /* VkRenderPassBeginInfo::framebuffer */
+        VK_FROM_HANDLE(gfxstream_vk_framebuffer, gfxstream_framebuffer,
+                        internal_pRenderPassBegin.framebuffer);
+        internal_pRenderPassBegin.framebuffer = gfxstream_framebuffer->internal_object;
+        /* pNext = VkRenderPassAttachmentBeginInfo */
+        std::vector<VkImageView> internal_pAttachments;
+        VkRenderPassAttachmentBeginInfo internal_renderPassAttachmentBeginInfo;
+        VkRenderPassAttachmentBeginInfo *pRenderPassAttachmentBeginInfo =
+            (VkRenderPassAttachmentBeginInfo*)gfxstream::vk::vk_find_struct<VkRenderPassAttachmentBeginInfo>(pRenderPassBegin);
+        if (pRenderPassAttachmentBeginInfo) {
+            internal_renderPassAttachmentBeginInfo = *pRenderPassAttachmentBeginInfo;
+            /* VkRenderPassAttachmentBeginInfo::pAttachments */
+            internal_pAttachments.reserve(internal_renderPassAttachmentBeginInfo.attachmentCount);
+            for (uint32_t i = 0; i < internal_renderPassAttachmentBeginInfo.attachmentCount; i++) {
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_image_view, internal_renderPassAttachmentBeginInfo.pAttachments[i]);
+                internal_pAttachments[i] = gfxstream_image_view->internal_object;
+            }
+            internal_renderPassAttachmentBeginInfo.pAttachments = internal_pAttachments.data();
+            vk_append_struct(&structChainIter, &internal_renderPassAttachmentBeginInfo);
+        }
+        vkEnc->vkCmdBeginRenderPass2KHR(gfxstream_commandBuffer->internal_object,
+                                        &internal_pRenderPassBegin, pSubpassBeginInfo,
+                                        true /* do lock */);
+    }
 }
