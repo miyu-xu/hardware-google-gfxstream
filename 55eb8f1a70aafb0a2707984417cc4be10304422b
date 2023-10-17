@@ -16,6 +16,24 @@
       "message": "Any reason why we can\u0027t use the existing abstraction `getProcessName`[1]?\n\n[1]: https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/guest/android-emu/aemu/base/Process.cpp;l\u003d26?q\u003dgetprogname\u0026ss\u003dandroid%2Fplatform%2Fsuperproject%2Fmain:hardware%2Fgoogle%2Fgfxstream%2F",
       "revId": "55eb8f1a70aafb0a2707984417cc4be10304422b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d825b19_109b3063",
+        "filename": "guest/platform/linux/LinuxVirtGpuDevice.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-10-17T16:17:27Z",
+      "side": 1,
+      "message": "\"guest/android-emu/aemu/base/Process.cpp\" is not super-maintained, and it needs to be eliminated eventually.  Therefore, avoid dependencies on that whereever possible.  For Linux guests, long-process names are much more rare than Android, so default virtio method should work too.",
+      "parentUuid": "6ed4c7dc_d96ba45d",
+      "revId": "55eb8f1a70aafb0a2707984417cc4be10304422b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
