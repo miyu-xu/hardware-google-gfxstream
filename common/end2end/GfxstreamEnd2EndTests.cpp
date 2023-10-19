@@ -29,7 +29,6 @@
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
 #include "ProcessPipe.h"
-#include "virgl_hw.h"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
@@ -53,6 +52,18 @@ std::optional<uint32_t> GlFormatToDrmFormat(uint32_t glFormat) {
             return DRM_FORMAT_BGR565;
         case GL_RGBA:
             return DRM_FORMAT_ABGR8888;
+    }
+    return std::nullopt;
+}
+
+std::optional<uint32_t> DrmToVirglFormat(uint32_t drmFormat) {
+    switch (drmFormat) {
+        case DRM_FORMAT_ABGR8888:
+            return VIRGL_FORMAT_B8G8R8A8_UNORM;
+        case DRM_FORMAT_BGR888:
+            return VIRGL_FORMAT_R8G8B8_UNORM;
+        case DRM_FORMAT_BGR565:
+            return VIRGL_FORMAT_B5G6R5_UNORM;
     }
     return std::nullopt;
 }
@@ -146,7 +157,12 @@ std::unique_ptr<TestingAHardwareBuffer> TestingVirtGpuGralloc::allocate(
         return nullptr;
     }
 
-    auto resource = device->createPipeTexture2D(width, height, format);
+    auto virglFormat = DrmToVirglFormat(format);
+    if (!virglFormat) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Unhandled DRM format:" << format;
+    }
+
+    auto resource = device->createVirglBlob(width, height, *virglFormat);
     if (!resource) {
         ALOGE("Failed to allocate: failed to create virtio resource.");
         return nullptr;

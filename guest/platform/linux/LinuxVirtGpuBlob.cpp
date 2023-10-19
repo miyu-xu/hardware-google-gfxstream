@@ -31,7 +31,8 @@ LinuxVirtGpuBlob::LinuxVirtGpuBlob(int64_t deviceHandle, uint32_t blobHandle, ui
     : mDeviceHandle(deviceHandle),
       mBlobHandle(blobHandle),
       mResourceHandle(resourceHandle),
-      mSize(size) {}
+      mSize(size)
+      {}
 
 LinuxVirtGpuBlob::~LinuxVirtGpuBlob(void) {
     struct drm_gem_close gem_close {
@@ -79,7 +80,8 @@ VirtGpuBlobMappingPtr LinuxVirtGpuBlob::createMapping(void) {
 int LinuxVirtGpuBlob::exportBlob(struct VirtGpuExternalHandle& handle) {
     int ret, fd;
 
-    ret = drmPrimeHandleToFD(mDeviceHandle, mBlobHandle, DRM_CLOEXEC | DRM_RDWR, &fd);
+    uint32_t flags = DRM_CLOEXEC;
+    ret = drmPrimeHandleToFD(mDeviceHandle, mBlobHandle, flags, &fd);
     if (ret) {
         ALOGE("drmPrimeHandleToFD failed with %s", strerror(errno));
         return ret;

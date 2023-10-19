@@ -62,10 +62,6 @@ getAndroidHardwareBufferUsageFromVkUsage(const VkImageCreateFlags vk_create,
    return ahw_usage;
 }
 
-void updateMemoryTypeBits(uint32_t* memoryTypeBits, uint32_t colorBufferMemoryIndex) {
-   *memoryTypeBits = 1u << colorBufferMemoryIndex;
-}
-
 VkResult getAndroidHardwareBufferPropertiesANDROID(
     gfxstream::Gralloc* grallocHelper, const AHardwareBuffer* buffer,
     VkAndroidHardwareBufferPropertiesANDROID* pProperties) {

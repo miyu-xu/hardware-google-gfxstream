@@ -722,8 +722,7 @@ void transformExternalResourceMemoryDedicatedRequirementsForGuest(
     dedicatedReqs->requiresDedicatedAllocation = VK_TRUE;
 }
 
-void ResourceTracker::setMemoryRequirementsForSysmemBackedImage(VkImage image,
-    VkMemoryRequirements* pMemoryRequirements) {
+void ResourceTracker::transformImageMemoryRequirementsForGuestLocked(VkImage image, VkMemoryRequirements* reqs) {
 #ifdef VK_USE_PLATFORM_FUCHSIA
     auto it = info_VkImage.find(image);
     if (it == info_VkImage.end()) return;
@@ -731,18 +730,21 @@ void ResourceTracker::setMemoryRequirementsForSysmemBackedImage(VkImage image,
     if (info.isSysmemBackedMemory) {
         auto width = info.createInfo.extent.width;
         auto height = info.createInfo.extent.height;
-        pMemoryRequirements->size = width * height * 4;
+        reqs->size = width * height * 4;
+    }
+#elif defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+    auto it = info_VkImage.find(image);
+    if (it == info_VkImage.end()) return;
+    auto& info = it->second;
+    if (info.isWsiImage) {
+        static const uint32_t kColorBufferBpp = 4;
+        reqs->size = kColorBufferBpp * info.createInfo.extent.width * info.createInfo.extent.height;
     }
 #else
     // Bypass "unused parameter" checks.
     (void)image;
-    (void)pMemoryRequirements;
+    (void)reqs;
 #endif
-}
-
-void ResourceTracker::transformImageMemoryRequirementsForGuestLocked(VkImage image,
-    VkMemoryRequirements* reqs) {
-    setMemoryRequirementsForSysmemBackedImage(image, reqs);
 }
 
 CoherentMemoryPtr ResourceTracker::freeCoherentMemoryLocked(VkDeviceMemory memory, VkDeviceMemory_Info& info) {
@@ -1342,7 +1344,7 @@ void ResourceTracker::setDeviceInfo(VkDevice device, VkPhysicalDevice physdev,
 void ResourceTracker::setDeviceMemoryInfo(VkDevice device, VkDeviceMemory memory,
                                           VkDeviceSize allocationSize, uint8_t* ptr,
                                           uint32_t memoryTypeIndex, AHardwareBuffer* ahw,
-                                          bool imported, zx_handle_t vmoHandle) {
+                                          bool imported, zx_handle_t vmoHandle, VirtGpuBlobPtr blobPtr) {
     AutoLock<RecursiveLock> lock(mLock);
     auto& info = info_VkDeviceMemory[memory];
 
@@ -1355,6 +1357,7 @@ void ResourceTracker::setDeviceMemoryInfo(VkDevice device, VkDeviceMemory memory
 #endif
     info.imported = imported;
     info.vmoHandle = vmoHandle;
+    info.blobPtr = blobPtr;
 }
 
 void ResourceTracker::setImageInfo(VkImage image, VkDevice device,
@@ -2130,6 +2133,12 @@ void ResourceTracker::on_vkDestroyDevice_pre(void* context, VkDevice device,
     }
 }
 
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
+void updateMemoryTypeBits(uint32_t* memoryTypeBits, uint32_t memoryIndex) {
+   *memoryTypeBits = 1u << memoryIndex;
+}
+#endif
+
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 
 VkResult ResourceTracker::on_vkGetAndroidHardwareBufferPropertiesANDROID(
@@ -2831,6 +2840,33 @@ VkResult ResourceTracker::on_vkGetBufferCollectionPropertiesFUCHSIA(
 }
 #endif
 
+static uint32_t getVirglFormat(VkFormat vkFormat) {
+    uint32_t virglFormat = 0;
+
+    switch (vkFormat) {
+        case VK_FORMAT_R8G8B8A8_SINT:
+        case VK_FORMAT_R8G8B8A8_UNORM:
+        case VK_FORMAT_R8G8B8A8_SRGB:
+        case VK_FORMAT_R8G8B8A8_SNORM:
+        case VK_FORMAT_R8G8B8A8_SSCALED:
+        case VK_FORMAT_R8G8B8A8_USCALED:
+            virglFormat = VIRGL_FORMAT_R8G8B8A8_UNORM;
+            break;
+        case VK_FORMAT_B8G8R8A8_SINT:
+        case VK_FORMAT_B8G8R8A8_UNORM:
+        case VK_FORMAT_B8G8R8A8_SRGB:
+        case VK_FORMAT_B8G8R8A8_SNORM:
+        case VK_FORMAT_B8G8R8A8_SSCALED:
+        case VK_FORMAT_B8G8R8A8_USCALED:
+            virglFormat = VIRGL_FORMAT_B8G8R8A8_UNORM;
+            break;
+        default:
+            break;
+    }
+
+    return virglFormat;
+}
+
 CoherentMemoryPtr ResourceTracker::createCoherentMemory(
     VkDevice device, VkDeviceMemory mem, const VkMemoryAllocateInfo& hostAllocationInfo,
     VkEncoder* enc, VkResult& res) {
@@ -3209,6 +3245,14 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     const void* importAhbInfoPtr = nullptr;
 #endif
 
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+    const VkImportMemoryFdInfoKHR* importFdInfoPtr =
+        vk_find_struct<VkImportMemoryFdInfoKHR>(pAllocateInfo);
+#else
+    const VkImportMemoryFdInfoKHR* importFdInfoPtr = nullptr;
+#endif
+
+
 #ifdef VK_USE_PLATFORM_FUCHSIA
     const VkImportMemoryBufferCollectionFUCHSIA* importBufferCollectionInfoPtr =
         vk_find_struct<VkImportMemoryBufferCollectionFUCHSIA>(pAllocateInfo);
@@ -3256,9 +3300,11 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     // State needed for import/export.
     bool exportAhb = false;
     bool exportVmo = false;
+    bool exportDmabuf = false;
     bool importAhb = false;
     bool importBufferCollection = false;
     bool importVmo = false;
+    bool importDmabuf = false;
     (void)exportVmo;
 
     // Even if we export allocate, the underlying operation
@@ -3279,6 +3325,8 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
         exportVmo = exportAllocateInfoPtr->handleTypes &
                     VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
 #endif  // VK_USE_PLATFORM_FUCHSIA
+        exportDmabuf = exportAllocateInfoPtr->handleTypes &
+                    (VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT | VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT);
     } else if (importAhbInfoPtr) {
         importAhb = true;
     } else if (importBufferCollectionInfoPtr) {
@@ -3286,7 +3334,12 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     } else if (importVmoInfoPtr) {
         importVmo = true;
     }
-    bool isImport = importAhb || importBufferCollection || importVmo;
+
+    if (importFdInfoPtr) {
+        importDmabuf = (importFdInfoPtr->handleType &
+            (VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT | VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT));
+    }
+    bool isImport = importAhb || importBufferCollection || importVmo || importDmabuf;
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     if (exportAhb) {
@@ -3659,7 +3712,72 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     }
 #endif
 
-    if (ahw || !requestedMemoryIsHostVisible) {
+    VirtGpuBlobPtr colorBufferBlob = nullptr;
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+    if (exportDmabuf) {
+        // // TODO: any special action for VK_STRUCTURE_TYPE_WSI_MEMORY_ALLOCATE_INFO_MESA? Can mark special state if needed.
+        // // const wsi_memory_allocate_info* wsiAllocateInfoPtr = vk_find_struct<wsi_memory_allocate_info>(pAllocateInfo);
+        bool hasDedicatedImage = dedicatedAllocInfoPtr && (dedicatedAllocInfoPtr->image != VK_NULL_HANDLE);
+        if (!hasDedicatedImage) {
+            ALOGE("%s: Requested image memory for export, but no dedicated image associated.\n");
+            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        }
+
+        const VkImageCreateInfo* pImageCreateInfo = nullptr;
+        {
+            AutoLock<RecursiveLock> lock(mLock);
+
+            auto it = info_VkImage.find(dedicatedAllocInfoPtr->image);
+            if (it == info_VkImage.end()) return VK_ERROR_INITIALIZATION_FAILED;
+            const auto& imageInfo = it->second;
+
+            pImageCreateInfo = &imageInfo.createInfo;
+        }
+        if (!pImageCreateInfo) {
+            ALOGE("%s: No VkImageCreateInfo for dedicated image.\n");
+            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        }
+
+        uint32_t virglFormat = gfxstream::vk::getVirglFormat(pImageCreateInfo->format);
+        if (virglFormat < 0) {
+            ALOGE("%s: Unsupported VK format: 0x%x", __func__, pImageCreateInfo->format);
+            // Note: Should never happen because imageCreateInfo was
+            // transformed accordingly in CreateImage()
+            abort();
+            return VK_ERROR_FORMAT_NOT_SUPPORTED;
+        }
+        auto instance = VirtGpuDevice::getInstance();
+        colorBufferBlob = instance->createVirglBlob(pImageCreateInfo->extent.width, pImageCreateInfo->extent.height, virglFormat);
+        if (!colorBufferBlob) {
+            ALOGE("%s: Failed to create colorBuffer resource\n", __func__);
+            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        }
+        if (0 != colorBufferBlob->wait()) {
+            ALOGE("%s: Failed to wait for colorBuffer resource.\n", __func__);
+            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        }
+    }
+
+    if (importDmabuf) {
+        VirtGpuExternalHandle importHandle = {};
+        importHandle.osHandle = importFdInfoPtr->fd;
+        importHandle.type = kMemHandleDmabuf;
+
+        auto instance = VirtGpuDevice::getInstance();
+        colorBufferBlob = instance->importBlob(importHandle);
+        if (!colorBufferBlob) {
+            ALOGE("%s: Failed to import colorBuffer resource\n", __func__);
+            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        }
+    }
+
+    if (colorBufferBlob) {
+        importCbInfo.colorBuffer = colorBufferBlob->getResourceHandle();
+        vk_append_struct(&structChainIter, &importCbInfo);
+    }
+#endif
+
+    if (ahw || colorBufferBlob || !requestedMemoryIsHostVisible) {
         input_result =
             enc->vkAllocateMemory(device, &finalAllocInfo, pAllocator, pMemory, true /* do lock */);
 
@@ -3667,7 +3785,7 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
 
         VkDeviceSize allocationSize = finalAllocInfo.allocationSize;
         setDeviceMemoryInfo(device, *pMemory, 0, nullptr, finalAllocInfo.memoryTypeIndex, ahw,
-                            isImport, vmo_handle);
+                            isImport, vmo_handle, colorBufferBlob);
 
         _RETURN_SCUCCESS_WITH_DEVICE_MEMORY_REPORT;
     }
@@ -3702,7 +3820,7 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
 
         setDeviceMemoryInfo(device, *pMemory, finalAllocInfo.allocationSize,
                             reinterpret_cast<uint8_t*>(addr), finalAllocInfo.memoryTypeIndex,
-                            /*ahw=*/nullptr, isImport, vmo_handle);
+                            /*ahw=*/nullptr, isImport, vmo_handle, /*blobPtr=*/nullptr);
         return VK_SUCCESS;
     }
 #endif
@@ -3845,11 +3963,11 @@ void ResourceTracker::transformImageMemoryRequirements2ForGuest(VkImage image,
     auto& info = it->second;
 
     if (!info.external || !info.externalCreateInfo.handleTypes) {
-        setMemoryRequirementsForSysmemBackedImage(image, &reqs2->memoryRequirements);
+        transformImageMemoryRequirementsForGuestLocked(image, &reqs2->memoryRequirements);
         return;
     }
 
-    setMemoryRequirementsForSysmemBackedImage(image, &reqs2->memoryRequirements);
+    transformImageMemoryRequirementsForGuestLocked(image, &reqs2->memoryRequirements);
 
     VkMemoryDedicatedRequirements* dedicatedReqs =
         vk_find_struct<VkMemoryDedicatedRequirements>(reqs2);
@@ -3897,10 +4015,27 @@ VkResult ResourceTracker::on_vkCreateImage(void* context, VkResult, VkDevice dev
 
     const VkExternalMemoryImageCreateInfo* extImgCiPtr =
         vk_find_struct<VkExternalMemoryImageCreateInfo>(pCreateInfo);
+
     if (extImgCiPtr) {
         localExtImgCi = vk_make_orphan_copy(*extImgCiPtr);
         vk_append_struct(&structChainIter, &localExtImgCi);
     }
+
+    bool isWsiImage = false;
+
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+    if (extImgCiPtr && (extImgCiPtr->handleTypes & VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT)) {
+        // Assumes that handleType with DMA_BUF_BIT indicates creation of a
+        // image for WSI use; no other external dma_buf usage is supported
+        isWsiImage = true;
+        // Must be linear. Otherwise querying stride and other properties
+        // can be implementation-dependent.
+        localCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
+        if (gfxstream::vk::getVirglFormat(localCreateInfo.format) < 0) {
+            localCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+        }
+    }
+#endif
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
     VkNativeBufferANDROID localAnb;
@@ -4073,13 +4208,15 @@ VkResult ResourceTracker::on_vkCreateImage(void* context, VkResult, VkDevice dev
     }
 #endif
 
+    info.isWsiImage = isWsiImage;
+
 // Delete `protocolVersion` check goldfish drivers are gone.
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
     if (mCaps.vulkanCapset.colorBufferMemoryIndex == 0xFFFFFFFF) {
         mCaps.vulkanCapset.colorBufferMemoryIndex = getColorBufferMemoryIndex(context, device);
     }
-    if (extImgCiPtr && (extImgCiPtr->handleTypes &
-                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID)) {
+    if (isWsiImage || (extImgCiPtr && (extImgCiPtr->handleTypes &
+                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID))) {
         updateMemoryTypeBits(&memReqs.memoryTypeBits, mCaps.vulkanCapset.colorBufferMemoryIndex);
     }
 #endif
@@ -5338,6 +5475,52 @@ VkResult ResourceTracker::on_vkImportSemaphoreFdKHR(
     (void)input_result;
     (void)device;
     (void)pImportSemaphoreFdInfo;
+    return VK_ERROR_INCOMPATIBLE_DRIVER;
+#endif
+}
+
+VkResult ResourceTracker::on_vkGetMemoryFdKHR( void* context, VkResult,
+    VkDevice device, const VkMemoryGetFdInfoKHR *pGetFdInfo, int *pFd)
+{
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+    if (!pGetFdInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+    if (!pGetFdInfo->memory) return VK_ERROR_OUT_OF_HOST_MEMORY;
+
+    if (!(pGetFdInfo->handleType & (VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT | VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT))) {
+        ALOGE("%s: Export operation not defined for handleType: 0x%x\n", __func__, pGetFdInfo->handleType);
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+    // Sanity-check device
+    AutoLock<RecursiveLock> lock(mLock);
+    auto deviceIt = info_VkDevice.find(device);
+    if (deviceIt == info_VkDevice.end()) {
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+
+    auto deviceMemIt = info_VkDeviceMemory.find(pGetFdInfo->memory);
+    if (deviceMemIt == info_VkDeviceMemory.end()) {
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+    auto& info = deviceMemIt->second;
+
+    if (!info.blobPtr) {
+        ALOGE("%s: VkDeviceMemory does not have a resource available for export.\n", __func__);
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+
+    VirtGpuExternalHandle handle{};
+    int ret = info.blobPtr->exportBlob(handle);
+    if (ret != 0 || handle.osHandle < 0) {
+        ALOGE("%s: Failed to export host resource to FD.\n", __func__);
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+    *pFd = handle.osHandle;
+    return VK_SUCCESS;
+#else
+    (void)context;
+    (void)device;
+    (void)pGetFdInfo;
+    (void)pFd;
     return VK_ERROR_INCOMPATIBLE_DRIVER;
 #endif
 }
