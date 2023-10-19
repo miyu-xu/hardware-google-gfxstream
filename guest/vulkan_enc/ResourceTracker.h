@@ -273,6 +273,9 @@ class ResourceTracker {
                                               const VkBindImageMemoryInfo* inputBindInfos,
                                               VkBindImageMemoryInfo* outputBindInfos);
 
+    VkResult on_vkGetMemoryFdKHR(void* context, VkResult input_result, VkDevice device,
+                                 const VkMemoryGetFdInfoKHR *pGetFdInfo, int *pFd);
+
 #ifdef VK_USE_PLATFORM_FUCHSIA
     VkResult on_vkGetMemoryZirconHandleFUCHSIA(void* context, VkResult input_result,
                                                VkDevice device,
@@ -614,7 +617,7 @@ class ResourceTracker {
 
     void setDeviceMemoryInfo(VkDevice device, VkDeviceMemory memory, VkDeviceSize allocationSize,
                              uint8_t* ptr, uint32_t memoryTypeIndex, AHardwareBuffer* ahw,
-                             bool imported, zx_handle_t vmoHandle);
+                             bool imported, zx_handle_t vmoHandle, VirtGpuBlobPtr blobPtr);
 
     void setImageInfo(VkImage image, VkDevice device, const VkImageCreateInfo* pCreateInfo);
 
@@ -680,11 +683,6 @@ class ResourceTracker {
         VkBindImageMemorySwapchainInfoKHR* outputBimsi);
 #endif
 
-    void setMemoryRequirementsForSysmemBackedImage(VkImage image,
-                                               VkMemoryRequirements* pMemoryRequirements);
-
-    void transformImageMemoryRequirementsForGuestLocked(VkImage image, VkMemoryRequirements* reqs);
-
 #if defined(VK_USE_PLATFORM_FUCHSIA)
     VkResult getBufferCollectionImageCreateInfoIndexLocked(
         VkBufferCollectionFUCHSIA collection, fuchsia_sysmem::wire::BufferCollectionInfo2& info,
@@ -747,6 +745,7 @@ class ResourceTracker {
         GoldfishAddressSpaceBlockPtr goldfishBlock = nullptr;
     #endif  // defined(__ANDROID__)
         CoherentMemoryPtr coherentMemory = nullptr;
+        VirtGpuBlobPtr blobPtr = nullptr;
     };
 
     struct VkCommandBuffer_Info {
@@ -776,6 +775,7 @@ class ResourceTracker {
     #ifdef VK_USE_PLATFORM_FUCHSIA
         bool isSysmemBackedMemory = false;
     #endif
+        bool isWsiImage = false;
     };
 
     struct VkBuffer_Info {
@@ -868,6 +868,7 @@ class ResourceTracker {
                                 uint64_t objectHandle,
                                 uint32_t heapIndex = 0);
 
+    void transformImageMemoryRequirementsForGuestLocked(VkImage image, VkMemoryRequirements* reqs);
     CoherentMemoryPtr freeCoherentMemoryLocked(VkDeviceMemory memory, VkDeviceMemory_Info& info);
 
     mutable RecursiveLock mLock;

@@ -109,12 +109,10 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
 
     std::optional<uint32_t> CreateBlob(uint32_t contextId,
                                        const struct VirtGpuCreateBlob& params);
-    std::optional<uint32_t> CreatePipeBlob(uint32_t contextId,
-                                           uint32_t size);
-    std::optional<uint32_t> CreatePipeTexture2D(uint32_t contextId,
-                                                uint32_t width,
-                                                uint32_t height,
-                                                uint32_t format);
+    std::optional<uint32_t> CreateVirglBlob(uint32_t contextId,
+                                            uint32_t width,
+                                            uint32_t height,
+                                            uint32_t virglFormat);
 
     void DestroyResource(uint32_t contextId,
                          uint32_t resourceId);
@@ -514,53 +512,47 @@ std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateBlob(
     return resourceId;
 }
 
-std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreatePipeBlob(
-        uint32_t contextId,
-        uint32_t size) {
-    const uint32_t resourceId = mNextVirtioGpuResourceId++;
-
-    EmulatedResource* resource = CreateResource(resourceId, EmulatedResourceType::kPipe);
-    resource->guestBytes = std::make_unique<uint8_t[]>(size);
-
-    VirtioGpuTaskCreateResource task{
-        .contextId = contextId,
-        .resourceId = resourceId,
-        .resourceBytes = resource->guestBytes.get(),
-        .params = {
-            .handle = resourceId,
-            .target = /*PIPE_BUFFER=*/0,
-            .format = /*VIRGL_FORMAT_R8_UNORM=*/64,
-            .bind = /*VIRGL_BIND_CUSTOM=*/(1 << 17),
-            .width = size,
-            .height = 1,
-            .depth = 1,
-            .array_size = 0,
-            .last_level = 0,
-            .nr_samples = 0,
-            .flags = 0,
-        },
-    };
-    auto taskCompletedWaitable = EnqueueVirtioGpuTask(contextId, std::move(task));
-    resource->pendingWaitables.push_back(std::move(taskCompletedWaitable));
-
-    VirtioGpuTaskContextAttachResource attachTask{
-        .contextId = contextId,
-        .resourceId = resourceId,
-    };
-    EnqueueVirtioGpuTask(contextId, std::move(attachTask));
-
-    return resourceId;
-}
-
-std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreatePipeTexture2D(
+std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateVirglBlob(
         uint32_t contextId,
         uint32_t width,
         uint32_t height,
-        uint32_t format) {
+        uint32_t virglFormat) {
     const uint32_t resourceId = mNextVirtioGpuResourceId++;
 
     EmulatedResource* resource = CreateResource(resourceId, EmulatedResourceType::kPipe);
-    resource->guestBytes = std::make_unique<uint8_t[]>(width * height * 4);
+
+    uint32_t target = 0;
+    uint32_t bind = 0;
+    uint32_t bpp = 0;
+
+    switch (virglFormat) {
+	case VIRGL_FORMAT_R8G8B8A8_UNORM:
+	case VIRGL_FORMAT_B8G8R8A8_UNORM:
+	    target = PIPE_TEXTURE_2D;
+	    bind = VIRGL_BIND_RENDER_TARGET;
+	    bpp = 4;
+        break;
+    case VIRGL_FORMAT_B5G6R5_UNORM:
+	    target = PIPE_TEXTURE_2D;
+	    bind = VIRGL_BIND_RENDER_TARGET;
+	    bpp = 2;
+        break;
+    case VIRGL_FORMAT_R8G8B8_UNORM:
+	    target = PIPE_TEXTURE_2D;
+	    bind = VIRGL_BIND_RENDER_TARGET;
+	    bpp = 3;
+        break;
+    case VIRGL_FORMAT_R8_UNORM:
+	    target = PIPE_BUFFER;
+	    bind = VIRGL_BIND_CUSTOM;
+	    bpp = 1;
+        break;
+    default:
+	    ALOGE("Unknown virgl format %u", virglFormat);
+	    return {};
+    }
+
+    resource->guestBytes = std::make_unique<uint8_t[]>(width * height * bpp);
 
     VirtioGpuTaskCreateResource task{
         .contextId = contextId,
@@ -568,9 +560,9 @@ std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreatePipeText
         .resourceBytes = resource->guestBytes.get(),
         .params = {
             .handle = resourceId,
-            .target = /*PIPE_TEXTURE_2D=*/2,
-            .format = format,
-            .bind = 0,
+            .target = target,
+            .format = virglFormat,
+            .bind = bind,
             .width = width,
             .height = height,
             .depth = 1,
@@ -1072,17 +1064,12 @@ std::optional<uint32_t> EmulatedVirtioGpu::CreateBlob(uint32_t contextId,
     return mImpl->CreateBlob(contextId, params);
 }
 
-std::optional<uint32_t> EmulatedVirtioGpu::CreatePipeBlob(uint32_t contextId,
-                                                          uint32_t size) {
-    return mImpl->CreatePipeBlob(contextId, size);
-}
-
-std::optional<uint32_t> EmulatedVirtioGpu::CreatePipeTexture2D(
+std::optional<uint32_t> EmulatedVirtioGpu::CreateVirglBlob(
         uint32_t contextId,
         uint32_t width,
         uint32_t height,
-        uint32_t format) {
-    return mImpl->CreatePipeTexture2D(contextId, width, height, format);
+        uint32_t virglFormat) {
+    return mImpl->CreateVirglBlob(contextId, width, height, virglFormat);
 }
 
 void EmulatedVirtioGpu::DestroyResource(uint32_t contextId, uint32_t resourceId) {
