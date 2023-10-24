@@ -612,6 +612,7 @@ void RenderWindow::setScreenMask(int width, int height, const unsigned char* rgb
     if (FrameBuffer* fb = FrameBuffer::getFB()) {
         if (fb->hasEmulationGl()) {
             fb->getTextureDraw()->setScreenMask(width, height, rgbaData);
+            fprintf(stderr, "renderwindow %s %d\n", __func__, __LINE__);
         } else {
             ERR("RenderWindow::setScreenMask() not supported without GL emulation.");
         }

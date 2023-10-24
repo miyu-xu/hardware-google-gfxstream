@@ -490,11 +490,16 @@ void TextureDraw::setScreenMask(int width, int height, const unsigned char* rgba
     android::base::AutoLock lock(mMaskLock);
     if (width <= 0 || height <= 0 || rgbaData == nullptr) {
         mMaskIsValid = false;
+          fprintf(stderr, "noop texturedraw %s %d\n", __func__, __LINE__);
+
         return;
     }
 
-    mShouldReallocateTexture =
-            (width > mMaskTextureWidth) || (height > mMaskTextureHeight);
+         fprintf(stderr, "texturedraw %s %d w %d h %d\n", __func__, __LINE__,
+                 width, height);
+
+
+    mShouldReallocateTexture = true;
     auto nextMaskTextureWidth = std::max(width, mMaskTextureWidth);
     auto nextMaskTextureHeight = std::max(height, mMaskTextureHeight);
     mMaskPixels.resize(nextMaskTextureWidth * nextMaskTextureHeight * 4);
