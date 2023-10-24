@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61213fc4_a1c9a0a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-10-24T17:47:51Z",
+      "side": 1,
+      "message": "This is cherry-picked from udc-dev",
+      "revId": "d25d7a1ed9f32ab9785c3b4e2145166fef87394c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
