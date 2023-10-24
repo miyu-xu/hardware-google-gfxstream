@@ -168,37 +168,6 @@ std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
                 });
             }
         }
-    } else if (emugl::get_emugl_window_operations().isFolded()) {
-        const float dpr = mFb->getDpr();
-
-        post.frameWidth = m_viewportWidth / dpr;
-        post.frameHeight = m_viewportHeight / dpr;
-
-        int displayOffsetX;
-        int displayOffsetY;
-        int displayW;
-        int displayH;
-        emugl::get_emugl_window_operations().getFoldedArea(&displayOffsetX, &displayOffsetY,
-                                                           &displayW, &displayH);
-
-        postLayerOptions.displayFrame = {
-            .left = 0,
-            .top = 0,
-            .right = mFb->windowWidth(),
-            .bottom = mFb->windowHeight(),
-        };
-        postLayerOptions.crop = {
-            .left = static_cast<float>(displayOffsetX),
-            .top = static_cast<float>(displayOffsetY + displayH),
-            .right = static_cast<float>(displayOffsetX + displayW),
-            .bottom = static_cast<float>(displayOffsetY),
-        };
-        postLayerOptions.transform = getTransformFromRotation(mFb->getZrot());
-
-        post.layers.push_back(DisplayGl::PostLayer{
-            .colorBuffer = cb,
-            .layerOptions = postLayerOptions,
-        });
     } else {
         post.layers.push_back(postWithOverlay(cb));
     }
