@@ -195,10 +195,7 @@ std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
         };
         postLayerOptions.transform = getTransformFromRotation(mFb->getZrot());
 
-        post.layers.push_back(DisplayGl::PostLayer{
-            .colorBuffer = cb,
-            .layerOptions = postLayerOptions,
-        });
+        post.layers.push_back(postWithOverlay(cb));
     } else {
         post.layers.push_back(postWithOverlay(cb));
     }
