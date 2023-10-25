@@ -109,15 +109,13 @@ HANDWRITTEN_ENTRY_POINTS = [
     # Manual alloc/free + vk_*_init/free() call w/ special params
     "vkGetDeviceQueue",
     "vkGetDeviceQueue2",
+    # Command pool/buffer handling
     "vkCreateCommandPool",
     "vkDestroyCommandPool",
-    # Special cases to handle array create/destroy
     "vkAllocateCommandBuffers",
     "vkResetCommandPool",
     "vkFreeCommandBuffers",
     "vkResetCommandPool",
-    "vkAllocateDescriptorSets",
-    "vkFreeDescriptorSets",
     # Special cases to handle struct translations in the pNext chain
     # TODO: Make a codegen module (use deepcopy as reference) to make this more robust
     "vkCmdBeginRenderPass2KHR",
@@ -129,6 +127,12 @@ HANDWRITTEN_ENTRY_POINTS = [
 #  Might need some special handling.
 HANDLES_DONT_TRANSLATE = {
     "VkSurfaceKHR",
+    ## The following objects have no need for mesa counterparts
+    # Allows removal of handwritten create/destroy (for array).
+    "VkDescriptorSet",
+    # Bug in translation
+    "VkSampler",
+    "VkSamplerYcbcrConversion",
 }
 
 # Handles whose gfxstream object have non-base-object vk_ structs
@@ -271,6 +275,8 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             destroyParam = getDestroyParam(api)
             if not destroyParam:
                 return
+            if not translationRequired(destroyParam.typeName):
+                return
             objectName = paramNameToObjectName(destroyParam.paramName)
             allocatorParam = "NULL"
             for p in api.parameters:
@@ -330,7 +336,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             for p in modParams:
                 if p.paramName == createParam.paramName:
                     modParams.remove(p)
-                elif p.typeName in HANDLE_TYPES:
+                elif handleTranslationRequired(p.typeName):
                     # Cast handle to the mesa type
                     p.paramName = ("(%s*)%s" % (typeNameToMesaType(p.typeName), paramNameToObjectName(p.paramName)))
             mesaCreateParams = [p.paramName for p in modParams] + ["sizeof(%s)" % objectType]
@@ -352,6 +358,8 @@ class VulkanFuncTable(VulkanWrapperGenerator):
         def genCreateGfxstreamObjects():
             createParam = getCreateParam(api)
             if not createParam:
+                return False
+            if not handleTranslationRequired(createParam.typeName):
                 return False
             objectType = "struct %s" % typeNameToObjectType(createParam.typeName)
             callLhs = "%s *%s" % (objectType, paramNameToObjectName(createParam.paramName))
@@ -532,7 +540,7 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             retTypeName = api.getRetTypeExpr()
             # Set the createParam output, if applicable
             createParam = getCreateParam(api)
-            if createParam:
+            if createParam and handleTranslationRequired(createParam.typeName):
                 if 1 != createParam.pointerIndirectionLevels:
                     print("ERROR: Unhandled pointerIndirectionLevels != 1 in return for API %s (createParam %s)" % api.name, createParam.paramName)
                     raise
