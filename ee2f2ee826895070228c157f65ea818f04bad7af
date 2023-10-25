@@ -16,6 +16,24 @@
       "message": "Does it still work when the foldable has no skin?",
       "revId": "ee2f2ee826895070228c157f65ea818f04bad7af",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4eb2668_1ed3a50f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2023-10-25T21:52:16Z",
+      "side": 1,
+      "message": "yes; I also make it only applicable to pixel fold; the legacy fold should still work;",
+      "parentUuid": "35b89028_305fc5d6",
+      "revId": "ee2f2ee826895070228c157f65ea818f04bad7af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
