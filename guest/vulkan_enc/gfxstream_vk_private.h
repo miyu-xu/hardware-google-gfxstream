@@ -49,7 +49,6 @@
 #include "vk_physical_device.h"
 #include "vk_queue.h"
 #include "vk_buffer_view.h"
-#include "vk_sampler.h"
 #include "vk_query_pool.h"
 #include "vk_descriptor_update_template.h"
 
@@ -99,11 +98,6 @@ struct gfxstream_vk_pipeline_cache {
 struct gfxstream_vk_device_memory {
    struct vk_device_memory vk;
    VkDeviceMemory internal_object;
-};
-
-struct gfxstream_vk_descriptor_set {
-   struct vk_object_base base;
-   VkDescriptorSet internal_object;
 };
 
 struct gfxstream_vk_descriptor_set_layout {
@@ -156,11 +150,6 @@ struct gfxstream_vk_image_view {
    VkImageView internal_object;
 };
 
-struct gfxstream_vk_sampler {
-   struct vk_sampler vk;
-   VkSampler internal_object;
-};
-
 struct gfxstream_vk_buffer_view {
    struct vk_buffer_view vk;
    VkBufferView internal_object;
@@ -196,11 +185,6 @@ struct gfxstream_vk_shader_module {
    VkShaderModule internal_object;
 };
 
-struct gfxstream_vk_sampler_ycbcr_conversion {
-   struct vk_object_base base;
-   VkSamplerYcbcrConversion internal_object;
-};
-
 struct gfxstream_vk_descriptor_update_template {
    struct vk_object_base base;
    VkDescriptorUpdateTemplate internal_object;
@@ -223,8 +207,6 @@ VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_buffer_view, vk.base, VkBufferView,
                                VK_OBJECT_TYPE_BUFFER_VIEW)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_pool, base, VkDescriptorPool,
                                VK_OBJECT_TYPE_DESCRIPTOR_POOL)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_set, base, VkDescriptorSet,
-                               VK_OBJECT_TYPE_DESCRIPTOR_SET)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_set_layout, base,
                                VkDescriptorSetLayout,
                                VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT)
@@ -245,8 +227,6 @@ VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_pipeline_layout, base, VkPipelineLay
                                VK_OBJECT_TYPE_PIPELINE_LAYOUT)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_render_pass, base, VkRenderPass,
                                VK_OBJECT_TYPE_RENDER_PASS)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_sampler, vk.base, VkSampler,
-                               VK_OBJECT_TYPE_SAMPLER)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_fence, base, VkFence,
                                VK_OBJECT_TYPE_FENCE)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_semaphore, base, VkSemaphore,
@@ -255,8 +235,6 @@ VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_query_pool, vk.base, VkQueryPool,
                                VK_OBJECT_TYPE_QUERY_POOL)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_shader_module, base, VkShaderModule,
                                VK_OBJECT_TYPE_SHADER_MODULE)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_sampler_ycbcr_conversion, base, VkSamplerYcbcrConversion,
-                               VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_descriptor_update_template, base, VkDescriptorUpdateTemplate,
                                VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE)
 
