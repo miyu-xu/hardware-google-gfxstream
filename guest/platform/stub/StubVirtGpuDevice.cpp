@@ -49,6 +49,10 @@ VirtGpuBlobPtr createColorBuffer(int, int, uint32_t) {
     return nullptr;
 }
 
+VirtGpuBlobPtr createColorBuffer(int) {
+    return nullptr;
+}
+
 StubVirtGpuDevice::~StubVirtGpuDevice() {
     // Unimplemented stub
 }
