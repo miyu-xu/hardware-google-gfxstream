@@ -145,6 +145,7 @@ cc_defaults {
         "VkEncoder.cpp",
         "VulkanHandleMapping.cpp",
         "VulkanStreamGuest.cpp",
+        "gfxstream_vk_private.cpp",
     ],
     export_include_dirs: [
         ".",
