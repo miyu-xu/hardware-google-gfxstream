@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 #include "vk_alloc.h"
 #include "vk_buffer.h"
@@ -51,6 +52,8 @@
 #include "vk_buffer_view.h"
 #include "vk_query_pool.h"
 #include "vk_descriptor_update_template.h"
+#include "vk_fence.h"
+#include "vk_semaphore.h"
 
 #include "vulkan/wsi/wsi_common.h"
 
@@ -60,7 +63,6 @@
 #include <vulkan/vulkan.h>
 
 #include "gfxstream_vk_entrypoints.h"
-
 
 struct gfxstream_vk_instance {
    struct vk_instance vk;
@@ -72,6 +74,7 @@ struct gfxstream_vk_physical_device {
    struct vk_physical_device vk;
 
    struct wsi_device wsi_device;
+   const struct vk_sync_type *sync_types[2];
    struct gfxstream_vk_instance *instance;
    VkPhysicalDevice internal_object;
 };
@@ -166,12 +169,12 @@ struct gfxstream_vk_render_pass {
 };
 
 struct gfxstream_vk_fence {
-   struct vk_object_base base;
+   struct vk_fence vk;
    VkFence internal_object;
 };
 
 struct gfxstream_vk_semaphore {
-   struct vk_object_base base;
+   struct vk_semaphore vk;
    VkSemaphore internal_object;
 };
 
@@ -227,9 +230,9 @@ VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_pipeline_layout, base, VkPipelineLay
                                VK_OBJECT_TYPE_PIPELINE_LAYOUT)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_render_pass, base, VkRenderPass,
                                VK_OBJECT_TYPE_RENDER_PASS)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_fence, base, VkFence,
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_fence, vk.base, VkFence,
                                VK_OBJECT_TYPE_FENCE)
-VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_semaphore, base, VkSemaphore,
+VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_semaphore, vk.base, VkSemaphore,
                                VK_OBJECT_TYPE_SEMAPHORE)
 VK_DEFINE_NONDISP_HANDLE_CASTS(gfxstream_vk_query_pool, vk.base, VkQueryPool,
                                VK_OBJECT_TYPE_QUERY_POOL)
@@ -243,5 +246,12 @@ gfxstream_vk_wsi_init(struct gfxstream_vk_physical_device *physical_device);
 
 void
 gfxstream_vk_wsi_finish(struct gfxstream_vk_physical_device *physical_device);
+
+std::vector<VkSemaphore>
+transformVkSemaphoreList(const VkSemaphore* pSemaphores, uint32_t semaphoreCount);
+
+std::vector<VkSemaphoreSubmitInfo>
+transformVkSemaphoreSubmitInfoList(const VkSemaphoreSubmitInfo* pSemaphoreSubmitInfos, uint32_t semaphoreSubmitInfoCount);
+
 
 #endif /* GFXSTREAM_VK_PRIVATE_H */
