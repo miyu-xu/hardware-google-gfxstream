@@ -67,9 +67,15 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
     if (emulationVk && emulationVk->live) {
         const bool vulkanOnly = colorBuffer->mColorBufferGl == nullptr;
 
+        // If vulkanOnly, likely need to have host-visible memory to swap display directly
+        uint32_t memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+        if (vulkanOnly) {
+            memoryProperty |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+        }
+
         colorBuffer->mColorBufferVk =
             vk::ColorBufferVk::create(handle, width, height, format, frameworkFormat, vulkanOnly,
-                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                                      memoryProperty);
         if (!colorBuffer->mColorBufferVk) {
             if (emulationGl) {
                 // Historically, ColorBufferVk setup was deferred until the first actual Vulkan
