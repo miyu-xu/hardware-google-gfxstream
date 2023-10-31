@@ -18,6 +18,7 @@
 #include "vk_alloc.h"
 #include "vk_device.h"
 #include "vk_instance.h"
+#include "vk_sync_dummy.h"
 
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
@@ -76,6 +77,10 @@ static VkResult gfxstream_vk_physical_device_init(struct gfxstream_vk_physical_d
         // Set the gfxstream-internal object
         physical_device->internal_object = internal_object;
         physical_device->instance = instance;
+        // Note: Must use dummy_sync for correct sync object path in WSI operations
+        physical_device->sync_types[0] = &vk_sync_dummy_type;
+        physical_device->sync_types[1] = NULL;
+        physical_device->vk.supported_sync_types = physical_device->sync_types;
 
         result = gfxstream_vk_wsi_init(physical_device);
     }

@@ -179,17 +179,11 @@ VkResult gfxstream_vk_QueueSubmit(VkQueue queue, uint32_t submitCount, const VkS
             internal_pSubmits[i] = pSubmits[i];
             /* VkSubmitInfo::pWaitSemaphores */
             internal_VkSubmitInfo_pWaitSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkSubmitInfo_pWaitSemaphores[i].reserve(
-                internal_pSubmits[i].waitSemaphoreCount);
-            memset(&internal_VkSubmitInfo_pWaitSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pSubmits[i].waitSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].waitSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores,
-                               internal_pSubmits[i].pWaitSemaphores[j]);
-                internal_VkSubmitInfo_pWaitSemaphores[i][j] =
-                    gfxstream_pWaitSemaphores->internal_object;
-            }
+            internal_VkSubmitInfo_pWaitSemaphores[i] = transformVkSemaphoreList(
+                internal_pSubmits[i].pWaitSemaphores, internal_pSubmits[i].waitSemaphoreCount);
             internal_pSubmits[i].pWaitSemaphores = internal_VkSubmitInfo_pWaitSemaphores[i].data();
+            internal_pSubmits[i].waitSemaphoreCount =
+                internal_VkSubmitInfo_pWaitSemaphores[i].size();
             /* VkSubmitInfo::pCommandBuffers */
             internal_VkSubmitInfo_pCommandBuffers.push_back(std::vector<VkCommandBuffer>());
             internal_VkSubmitInfo_pCommandBuffers[i].reserve(
@@ -205,18 +199,12 @@ VkResult gfxstream_vk_QueueSubmit(VkQueue queue, uint32_t submitCount, const VkS
             internal_pSubmits[i].pCommandBuffers = internal_VkSubmitInfo_pCommandBuffers[i].data();
             /* VkSubmitInfo::pSignalSemaphores */
             internal_VkSubmitInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkSubmitInfo_pSignalSemaphores[i].reserve(
-                internal_pSubmits[i].signalSemaphoreCount);
-            memset(&internal_VkSubmitInfo_pSignalSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pSubmits[i].signalSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].signalSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pSignalSemaphores,
-                               internal_pSubmits[i].pSignalSemaphores[j]);
-                internal_VkSubmitInfo_pSignalSemaphores[i][j] =
-                    gfxstream_pSignalSemaphores->internal_object;
-            }
+            internal_VkSubmitInfo_pSignalSemaphores[i] = transformVkSemaphoreList(
+                internal_pSubmits[i].pSignalSemaphores, internal_pSubmits[i].signalSemaphoreCount);
             internal_pSubmits[i].pSignalSemaphores =
                 internal_VkSubmitInfo_pSignalSemaphores[i].data();
+            internal_pSubmits[i].signalSemaphoreCount =
+                internal_VkSubmitInfo_pSignalSemaphores[i].size();
         }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkQueueSubmit_VkResult_return = resources->on_vkQueueSubmit(
@@ -452,18 +440,12 @@ VkResult gfxstream_vk_QueueBindSparse(VkQueue queue, uint32_t bindInfoCount,
             internal_pBindInfo[i] = pBindInfo[i];
             /* VkBindSparseInfo::pWaitSemaphores */
             internal_VkBindSparseInfo_pWaitSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkBindSparseInfo_pWaitSemaphores[i].reserve(
-                internal_pBindInfo[i].waitSemaphoreCount);
-            memset(&internal_VkBindSparseInfo_pWaitSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pBindInfo[i].waitSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pBindInfo[i].waitSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores,
-                               internal_pBindInfo[i].pWaitSemaphores[j]);
-                internal_VkBindSparseInfo_pWaitSemaphores[i][j] =
-                    gfxstream_pWaitSemaphores->internal_object;
-            }
+            internal_VkBindSparseInfo_pWaitSemaphores[i] = transformVkSemaphoreList(
+                internal_pBindInfo[i].pWaitSemaphores, internal_pBindInfo[i].waitSemaphoreCount);
             internal_pBindInfo[i].pWaitSemaphores =
                 internal_VkBindSparseInfo_pWaitSemaphores[i].data();
+            internal_pBindInfo[i].waitSemaphoreCount =
+                internal_VkBindSparseInfo_pWaitSemaphores[i].size();
             /* VkBindSparseInfo::pBufferBinds */
             internal_VkBindSparseInfo_pBufferBinds.push_back(
                 std::vector<VkSparseBufferMemoryBindInfo>());
@@ -584,18 +566,13 @@ VkResult gfxstream_vk_QueueBindSparse(VkQueue queue, uint32_t bindInfoCount,
             internal_pBindInfo[i].pImageBinds = internal_VkBindSparseInfo_pImageBinds[i].data();
             /* VkBindSparseInfo::pSignalSemaphores */
             internal_VkBindSparseInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkBindSparseInfo_pSignalSemaphores[i].reserve(
-                internal_pBindInfo[i].signalSemaphoreCount);
-            memset(&internal_VkBindSparseInfo_pSignalSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pBindInfo[i].signalSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pBindInfo[i].signalSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pSignalSemaphores,
-                               internal_pBindInfo[i].pSignalSemaphores[j]);
-                internal_VkBindSparseInfo_pSignalSemaphores[i][j] =
-                    gfxstream_pSignalSemaphores->internal_object;
-            }
+            internal_VkBindSparseInfo_pSignalSemaphores[i] =
+                transformVkSemaphoreList(internal_pBindInfo[i].pSignalSemaphores,
+                                         internal_pBindInfo[i].signalSemaphoreCount);
             internal_pBindInfo[i].pSignalSemaphores =
                 internal_VkBindSparseInfo_pSignalSemaphores[i].data();
+            internal_pBindInfo[i].signalSemaphoreCount =
+                internal_VkBindSparseInfo_pSignalSemaphores[i].size();
         }
         vkQueueBindSparse_VkResult_return = vkEnc->vkQueueBindSparse(
             gfxstream_queue->internal_object, bindInfoCount, internal_pBindInfo.data(),
@@ -2898,17 +2875,11 @@ VkResult gfxstream_vk_WaitSemaphores(VkDevice device, const VkSemaphoreWaitInfo*
             internal_pWaitInfo[i] = pWaitInfo[i];
             /* VkSemaphoreWaitInfo::pSemaphores */
             internal_VkSemaphoreWaitInfo_pSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkSemaphoreWaitInfo_pSemaphores[i].reserve(
-                internal_pWaitInfo[i].semaphoreCount);
-            memset(&internal_VkSemaphoreWaitInfo_pSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pWaitInfo[i].semaphoreCount);
-            for (uint32_t j = 0; j < internal_pWaitInfo[i].semaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pSemaphores,
-                               internal_pWaitInfo[i].pSemaphores[j]);
-                internal_VkSemaphoreWaitInfo_pSemaphores[i][j] =
-                    gfxstream_pSemaphores->internal_object;
-            }
+            internal_VkSemaphoreWaitInfo_pSemaphores[i] = transformVkSemaphoreList(
+                internal_pWaitInfo[i].pSemaphores, internal_pWaitInfo[i].semaphoreCount);
             internal_pWaitInfo[i].pSemaphores = internal_VkSemaphoreWaitInfo_pSemaphores[i].data();
+            internal_pWaitInfo[i].semaphoreCount =
+                internal_VkSemaphoreWaitInfo_pSemaphores[i].size();
         }
         vkWaitSemaphores_VkResult_return =
             vkEnc->vkWaitSemaphores(gfxstream_device->internal_object, internal_pWaitInfo.data(),
@@ -3283,21 +3254,13 @@ VkResult gfxstream_vk_QueueSubmit2(VkQueue queue, uint32_t submitCount,
             /* VkSubmitInfo2::pWaitSemaphoreInfos */
             internal_VkSubmitInfo2_pWaitSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
-            internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].reserve(
-                internal_pSubmits[i].waitSemaphoreInfoCount);
-            memset(&internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][0], 0,
-                   sizeof(VkSemaphoreSubmitInfo) * internal_pSubmits[i].waitSemaphoreInfoCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].waitSemaphoreInfoCount; ++j) {
-                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j] =
-                    internal_pSubmits[i].pWaitSemaphoreInfos[j];
-                /* VkSemaphoreSubmitInfo::semaphore */
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
-                               internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore);
-                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore =
-                    gfxstream_semaphore->internal_object;
-            }
+            internal_VkSubmitInfo2_pWaitSemaphoreInfos[i] =
+                transformVkSemaphoreSubmitInfoList(internal_pSubmits[i].pWaitSemaphoreInfos,
+                                                   internal_pSubmits[i].waitSemaphoreInfoCount);
             internal_pSubmits[i].pWaitSemaphoreInfos =
                 internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].data();
+            internal_pSubmits[i].waitSemaphoreInfoCount =
+                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].size();
             /* VkSubmitInfo2::pCommandBufferInfos */
             internal_VkSubmitInfo2_pCommandBufferInfos.push_back(
                 std::vector<VkCommandBufferSubmitInfo>());
@@ -3319,21 +3282,13 @@ VkResult gfxstream_vk_QueueSubmit2(VkQueue queue, uint32_t submitCount,
             /* VkSubmitInfo2::pSignalSemaphoreInfos */
             internal_VkSubmitInfo2_pSignalSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
-            internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].reserve(
-                internal_pSubmits[i].signalSemaphoreInfoCount);
-            memset(&internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][0], 0,
-                   sizeof(VkSemaphoreSubmitInfo) * internal_pSubmits[i].signalSemaphoreInfoCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].signalSemaphoreInfoCount; ++j) {
-                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j] =
-                    internal_pSubmits[i].pSignalSemaphoreInfos[j];
-                /* VkSemaphoreSubmitInfo::semaphore */
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
-                               internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore);
-                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore =
-                    gfxstream_semaphore->internal_object;
-            }
+            internal_VkSubmitInfo2_pSignalSemaphoreInfos[i] =
+                transformVkSemaphoreSubmitInfoList(internal_pSubmits[i].pSignalSemaphoreInfos,
+                                                   internal_pSubmits[i].signalSemaphoreInfoCount);
             internal_pSubmits[i].pSignalSemaphoreInfos =
                 internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].data();
+            internal_pSubmits[i].signalSemaphoreInfoCount =
+                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].size();
         }
         auto resources = gfxstream::vk::ResourceTracker::get();
         vkQueueSubmit2_VkResult_return = resources->on_vkQueueSubmit2(
@@ -4817,21 +4772,13 @@ VkResult gfxstream_vk_QueueSubmit2KHR(VkQueue queue, uint32_t submitCount,
             /* VkSubmitInfo2::pWaitSemaphoreInfos */
             internal_VkSubmitInfo2_pWaitSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
-            internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].reserve(
-                internal_pSubmits[i].waitSemaphoreInfoCount);
-            memset(&internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][0], 0,
-                   sizeof(VkSemaphoreSubmitInfo) * internal_pSubmits[i].waitSemaphoreInfoCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].waitSemaphoreInfoCount; ++j) {
-                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j] =
-                    internal_pSubmits[i].pWaitSemaphoreInfos[j];
-                /* VkSemaphoreSubmitInfo::semaphore */
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
-                               internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore);
-                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore =
-                    gfxstream_semaphore->internal_object;
-            }
+            internal_VkSubmitInfo2_pWaitSemaphoreInfos[i] =
+                transformVkSemaphoreSubmitInfoList(internal_pSubmits[i].pWaitSemaphoreInfos,
+                                                   internal_pSubmits[i].waitSemaphoreInfoCount);
             internal_pSubmits[i].pWaitSemaphoreInfos =
                 internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].data();
+            internal_pSubmits[i].waitSemaphoreInfoCount =
+                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].size();
             /* VkSubmitInfo2::pCommandBufferInfos */
             internal_VkSubmitInfo2_pCommandBufferInfos.push_back(
                 std::vector<VkCommandBufferSubmitInfo>());
@@ -4853,21 +4800,13 @@ VkResult gfxstream_vk_QueueSubmit2KHR(VkQueue queue, uint32_t submitCount,
             /* VkSubmitInfo2::pSignalSemaphoreInfos */
             internal_VkSubmitInfo2_pSignalSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
-            internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].reserve(
-                internal_pSubmits[i].signalSemaphoreInfoCount);
-            memset(&internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][0], 0,
-                   sizeof(VkSemaphoreSubmitInfo) * internal_pSubmits[i].signalSemaphoreInfoCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].signalSemaphoreInfoCount; ++j) {
-                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j] =
-                    internal_pSubmits[i].pSignalSemaphoreInfos[j];
-                /* VkSemaphoreSubmitInfo::semaphore */
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
-                               internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore);
-                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore =
-                    gfxstream_semaphore->internal_object;
-            }
+            internal_VkSubmitInfo2_pSignalSemaphoreInfos[i] =
+                transformVkSemaphoreSubmitInfoList(internal_pSubmits[i].pSignalSemaphoreInfos,
+                                                   internal_pSubmits[i].signalSemaphoreInfoCount);
             internal_pSubmits[i].pSignalSemaphoreInfos =
                 internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].data();
+            internal_pSubmits[i].signalSemaphoreInfoCount =
+                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].size();
         }
         vkQueueSubmit2KHR_VkResult_return = vkEnc->vkQueueSubmit2KHR(
             gfxstream_queue->internal_object, submitCount, internal_pSubmits.data(),
@@ -6029,17 +5968,11 @@ void gfxstream_vk_QueueSubmitAsyncGOOGLE(VkQueue queue, uint32_t submitCount,
             internal_pSubmits[i] = pSubmits[i];
             /* VkSubmitInfo::pWaitSemaphores */
             internal_VkSubmitInfo_pWaitSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkSubmitInfo_pWaitSemaphores[i].reserve(
-                internal_pSubmits[i].waitSemaphoreCount);
-            memset(&internal_VkSubmitInfo_pWaitSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pSubmits[i].waitSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].waitSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores,
-                               internal_pSubmits[i].pWaitSemaphores[j]);
-                internal_VkSubmitInfo_pWaitSemaphores[i][j] =
-                    gfxstream_pWaitSemaphores->internal_object;
-            }
+            internal_VkSubmitInfo_pWaitSemaphores[i] = transformVkSemaphoreList(
+                internal_pSubmits[i].pWaitSemaphores, internal_pSubmits[i].waitSemaphoreCount);
             internal_pSubmits[i].pWaitSemaphores = internal_VkSubmitInfo_pWaitSemaphores[i].data();
+            internal_pSubmits[i].waitSemaphoreCount =
+                internal_VkSubmitInfo_pWaitSemaphores[i].size();
             /* VkSubmitInfo::pCommandBuffers */
             internal_VkSubmitInfo_pCommandBuffers.push_back(std::vector<VkCommandBuffer>());
             internal_VkSubmitInfo_pCommandBuffers[i].reserve(
@@ -6055,18 +5988,12 @@ void gfxstream_vk_QueueSubmitAsyncGOOGLE(VkQueue queue, uint32_t submitCount,
             internal_pSubmits[i].pCommandBuffers = internal_VkSubmitInfo_pCommandBuffers[i].data();
             /* VkSubmitInfo::pSignalSemaphores */
             internal_VkSubmitInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkSubmitInfo_pSignalSemaphores[i].reserve(
-                internal_pSubmits[i].signalSemaphoreCount);
-            memset(&internal_VkSubmitInfo_pSignalSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pSubmits[i].signalSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].signalSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pSignalSemaphores,
-                               internal_pSubmits[i].pSignalSemaphores[j]);
-                internal_VkSubmitInfo_pSignalSemaphores[i][j] =
-                    gfxstream_pSignalSemaphores->internal_object;
-            }
+            internal_VkSubmitInfo_pSignalSemaphores[i] = transformVkSemaphoreList(
+                internal_pSubmits[i].pSignalSemaphores, internal_pSubmits[i].signalSemaphoreCount);
             internal_pSubmits[i].pSignalSemaphores =
                 internal_VkSubmitInfo_pSignalSemaphores[i].data();
+            internal_pSubmits[i].signalSemaphoreCount =
+                internal_VkSubmitInfo_pSignalSemaphores[i].size();
         }
         vkEnc->vkQueueSubmitAsyncGOOGLE(
             gfxstream_queue->internal_object, submitCount, internal_pSubmits.data(),
@@ -6108,18 +6035,12 @@ void gfxstream_vk_QueueBindSparseAsyncGOOGLE(VkQueue queue, uint32_t bindInfoCou
             internal_pBindInfo[i] = pBindInfo[i];
             /* VkBindSparseInfo::pWaitSemaphores */
             internal_VkBindSparseInfo_pWaitSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkBindSparseInfo_pWaitSemaphores[i].reserve(
-                internal_pBindInfo[i].waitSemaphoreCount);
-            memset(&internal_VkBindSparseInfo_pWaitSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pBindInfo[i].waitSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pBindInfo[i].waitSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pWaitSemaphores,
-                               internal_pBindInfo[i].pWaitSemaphores[j]);
-                internal_VkBindSparseInfo_pWaitSemaphores[i][j] =
-                    gfxstream_pWaitSemaphores->internal_object;
-            }
+            internal_VkBindSparseInfo_pWaitSemaphores[i] = transformVkSemaphoreList(
+                internal_pBindInfo[i].pWaitSemaphores, internal_pBindInfo[i].waitSemaphoreCount);
             internal_pBindInfo[i].pWaitSemaphores =
                 internal_VkBindSparseInfo_pWaitSemaphores[i].data();
+            internal_pBindInfo[i].waitSemaphoreCount =
+                internal_VkBindSparseInfo_pWaitSemaphores[i].size();
             /* VkBindSparseInfo::pBufferBinds */
             internal_VkBindSparseInfo_pBufferBinds.push_back(
                 std::vector<VkSparseBufferMemoryBindInfo>());
@@ -6240,18 +6161,13 @@ void gfxstream_vk_QueueBindSparseAsyncGOOGLE(VkQueue queue, uint32_t bindInfoCou
             internal_pBindInfo[i].pImageBinds = internal_VkBindSparseInfo_pImageBinds[i].data();
             /* VkBindSparseInfo::pSignalSemaphores */
             internal_VkBindSparseInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
-            internal_VkBindSparseInfo_pSignalSemaphores[i].reserve(
-                internal_pBindInfo[i].signalSemaphoreCount);
-            memset(&internal_VkBindSparseInfo_pSignalSemaphores[i][0], 0,
-                   sizeof(VkSemaphore) * internal_pBindInfo[i].signalSemaphoreCount);
-            for (uint32_t j = 0; j < internal_pBindInfo[i].signalSemaphoreCount; ++j) {
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_pSignalSemaphores,
-                               internal_pBindInfo[i].pSignalSemaphores[j]);
-                internal_VkBindSparseInfo_pSignalSemaphores[i][j] =
-                    gfxstream_pSignalSemaphores->internal_object;
-            }
+            internal_VkBindSparseInfo_pSignalSemaphores[i] =
+                transformVkSemaphoreList(internal_pBindInfo[i].pSignalSemaphores,
+                                         internal_pBindInfo[i].signalSemaphoreCount);
             internal_pBindInfo[i].pSignalSemaphores =
                 internal_VkBindSparseInfo_pSignalSemaphores[i].data();
+            internal_pBindInfo[i].signalSemaphoreCount =
+                internal_VkBindSparseInfo_pSignalSemaphores[i].size();
         }
         vkEnc->vkQueueBindSparseAsyncGOOGLE(
             gfxstream_queue->internal_object, bindInfoCount, internal_pBindInfo.data(),
@@ -6534,21 +6450,13 @@ void gfxstream_vk_QueueSubmitAsync2GOOGLE(VkQueue queue, uint32_t submitCount,
             /* VkSubmitInfo2::pWaitSemaphoreInfos */
             internal_VkSubmitInfo2_pWaitSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
-            internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].reserve(
-                internal_pSubmits[i].waitSemaphoreInfoCount);
-            memset(&internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][0], 0,
-                   sizeof(VkSemaphoreSubmitInfo) * internal_pSubmits[i].waitSemaphoreInfoCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].waitSemaphoreInfoCount; ++j) {
-                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j] =
-                    internal_pSubmits[i].pWaitSemaphoreInfos[j];
-                /* VkSemaphoreSubmitInfo::semaphore */
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
-                               internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore);
-                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i][j].semaphore =
-                    gfxstream_semaphore->internal_object;
-            }
+            internal_VkSubmitInfo2_pWaitSemaphoreInfos[i] =
+                transformVkSemaphoreSubmitInfoList(internal_pSubmits[i].pWaitSemaphoreInfos,
+                                                   internal_pSubmits[i].waitSemaphoreInfoCount);
             internal_pSubmits[i].pWaitSemaphoreInfos =
                 internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].data();
+            internal_pSubmits[i].waitSemaphoreInfoCount =
+                internal_VkSubmitInfo2_pWaitSemaphoreInfos[i].size();
             /* VkSubmitInfo2::pCommandBufferInfos */
             internal_VkSubmitInfo2_pCommandBufferInfos.push_back(
                 std::vector<VkCommandBufferSubmitInfo>());
@@ -6570,21 +6478,13 @@ void gfxstream_vk_QueueSubmitAsync2GOOGLE(VkQueue queue, uint32_t submitCount,
             /* VkSubmitInfo2::pSignalSemaphoreInfos */
             internal_VkSubmitInfo2_pSignalSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
-            internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].reserve(
-                internal_pSubmits[i].signalSemaphoreInfoCount);
-            memset(&internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][0], 0,
-                   sizeof(VkSemaphoreSubmitInfo) * internal_pSubmits[i].signalSemaphoreInfoCount);
-            for (uint32_t j = 0; j < internal_pSubmits[i].signalSemaphoreInfoCount; ++j) {
-                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j] =
-                    internal_pSubmits[i].pSignalSemaphoreInfos[j];
-                /* VkSemaphoreSubmitInfo::semaphore */
-                VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore,
-                               internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore);
-                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i][j].semaphore =
-                    gfxstream_semaphore->internal_object;
-            }
+            internal_VkSubmitInfo2_pSignalSemaphoreInfos[i] =
+                transformVkSemaphoreSubmitInfoList(internal_pSubmits[i].pSignalSemaphoreInfos,
+                                                   internal_pSubmits[i].signalSemaphoreInfoCount);
             internal_pSubmits[i].pSignalSemaphoreInfos =
                 internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].data();
+            internal_pSubmits[i].signalSemaphoreInfoCount =
+                internal_VkSubmitInfo2_pSignalSemaphoreInfos[i].size();
         }
         vkEnc->vkQueueSubmitAsync2GOOGLE(
             gfxstream_queue->internal_object, submitCount, internal_pSubmits.data(),
