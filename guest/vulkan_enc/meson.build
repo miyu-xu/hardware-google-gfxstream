@@ -30,6 +30,7 @@ files_lib_vulkan_enc = files(
   'goldfish_vk_marshaling_guest.cpp',
   'goldfish_vk_reserved_marshaling_guest.cpp',
   'goldfish_vk_transform_guest.cpp',
+  'gfxstream_vk_private.cpp',
 )
 
 lib_vulkan_enc = static_library(
