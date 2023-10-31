@@ -46,6 +46,9 @@ VkResult gfxstream_vk_CreateCommandPool(VkDevice device, const VkCommandPoolCrea
 void gfxstream_vk_DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
                                      const VkAllocationCallbacks* pAllocator) {
     AEMU_SCOPED_TRACE("vkDestroyCommandPool");
+    if (VK_NULL_HANDLE == commandPool) {
+        return;
+    }
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VK_FROM_HANDLE(gfxstream_vk_command_pool, gfxstream_commandPool, commandPool);
     {
