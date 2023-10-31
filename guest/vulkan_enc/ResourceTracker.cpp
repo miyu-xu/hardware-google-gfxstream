@@ -3721,46 +3721,62 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     VirtGpuBlobPtr colorBufferBlob = nullptr;
 #if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
     if (exportDmabuf) {
+        VirtGpuDevice* instance = VirtGpuDevice::getInstance();
         // // TODO: any special action for VK_STRUCTURE_TYPE_WSI_MEMORY_ALLOCATE_INFO_MESA? Can mark special state if needed.
         // // const wsi_memory_allocate_info* wsiAllocateInfoPtr = vk_find_struct<wsi_memory_allocate_info>(pAllocateInfo);
         bool hasDedicatedImage = dedicatedAllocInfoPtr && (dedicatedAllocInfoPtr->image != VK_NULL_HANDLE);
-        if (!hasDedicatedImage) {
-            ALOGE("%s: Requested image memory for export, but no dedicated image associated.\n");
+        bool hasDedicatedBuffer = dedicatedAllocInfoPtr && (dedicatedAllocInfoPtr->buffer != VK_NULL_HANDLE);
+        if (!hasDedicatedImage && !hasDedicatedBuffer) {
+            ALOGE("%s: dma-buf exportable memory requires dedicated Image or Buffer information.\n");
             return VK_ERROR_OUT_OF_DEVICE_MEMORY;
         }
 
-        const VkImageCreateInfo* pImageCreateInfo = nullptr;
-        {
-            AutoLock<RecursiveLock> lock(mLock);
+        if (hasDedicatedImage) {
+            VkImageCreateInfo imageCreateInfo;
+            {
+                AutoLock<RecursiveLock> lock(mLock);
 
-            auto it = info_VkImage.find(dedicatedAllocInfoPtr->image);
-            if (it == info_VkImage.end()) return VK_ERROR_INITIALIZATION_FAILED;
-            const auto& imageInfo = it->second;
+                auto it = info_VkImage.find(dedicatedAllocInfoPtr->image);
+                if (it == info_VkImage.end()) return VK_ERROR_INITIALIZATION_FAILED;
+                const auto& imageInfo = it->second;
 
-            pImageCreateInfo = &imageInfo.createInfo;
-        }
-        if (!pImageCreateInfo) {
-            ALOGE("%s: No VkImageCreateInfo for dedicated image.\n");
-            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+                imageCreateInfo = imageInfo.createInfo;
+            }
+            uint32_t virglFormat = gfxstream::vk::getVirglFormat(imageCreateInfo.format);
+            if (virglFormat < 0) {
+                ALOGE("%s: Unsupported VK format for colorBuffer, vkFormat: 0x%x", __func__, imageCreateInfo.format);
+                return VK_ERROR_FORMAT_NOT_SUPPORTED;
+            }
+            colorBufferBlob = instance->createVirglBlob(imageCreateInfo.extent.width, imageCreateInfo.extent.height, virglFormat);
+            if (!colorBufferBlob) {
+                ALOGE("%s: Failed to create colorBuffer resource for Image memory\n", __func__);
+                return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+            }
+            if (0 != colorBufferBlob->wait()) {
+                ALOGE("%s: Failed to wait for colorBuffer resource for Image memory\n", __func__);
+                return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+            }
         }
 
-        uint32_t virglFormat = gfxstream::vk::getVirglFormat(pImageCreateInfo->format);
-        if (virglFormat < 0) {
-            ALOGE("%s: Unsupported VK format: 0x%x", __func__, pImageCreateInfo->format);
-            // Note: Should never happen because imageCreateInfo was
-            // transformed accordingly in CreateImage()
-            abort();
-            return VK_ERROR_FORMAT_NOT_SUPPORTED;
-        }
-        auto instance = VirtGpuDevice::getInstance();
-        colorBufferBlob = instance->createVirglBlob(pImageCreateInfo->extent.width, pImageCreateInfo->extent.height, virglFormat);
-        if (!colorBufferBlob) {
-            ALOGE("%s: Failed to create colorBuffer resource\n", __func__);
-            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
-        }
-        if (0 != colorBufferBlob->wait()) {
-            ALOGE("%s: Failed to wait for colorBuffer resource.\n", __func__);
-            return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        if (hasDedicatedBuffer) {
+            VkBufferCreateInfo bufferCreateInfo;
+            {
+                AutoLock<RecursiveLock> lock(mLock);
+
+                auto it = info_VkBuffer.find(dedicatedAllocInfoPtr->buffer);
+                if (it == info_VkBuffer.end()) return VK_ERROR_INITIALIZATION_FAILED;
+                const auto& bufferInfo = it->second;
+                bufferCreateInfo = bufferInfo.createInfo;
+            }
+            colorBufferBlob = instance->createVirglBlob(bufferCreateInfo.size / 4, 1, VIRGL_FORMAT_R8G8B8A8_UNORM);
+            if (!colorBufferBlob) {
+                ALOGE("%s: Failed to create colorBuffer resource for Buffer memory\n", __func__);
+                return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+            }
+            if (0 != colorBufferBlob->wait()) {
+                ALOGE("%s: Failed to wait for colorBuffer resource for Buffer memory\n", __func__);
+                return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+            }
         }
     }
 
@@ -5188,12 +5204,13 @@ VkResult ResourceTracker::on_vkCreateBuffer(void* context, VkResult, VkDevice de
 
     if (res != VK_SUCCESS) return res;
 
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
     if (mCaps.vulkanCapset.colorBufferMemoryIndex == 0xFFFFFFFF) {
         mCaps.vulkanCapset.colorBufferMemoryIndex = getColorBufferMemoryIndex(context, device);
     }
-    if (extBufCiPtr && (extBufCiPtr->handleTypes &
-                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID)) {
+    if (extBufCiPtr && ((extBufCiPtr->handleTypes &
+                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID) ||
+                        (extBufCiPtr->handleTypes & VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT))) {
         updateMemoryTypeBits(&memReqs.memoryTypeBits, mCaps.vulkanCapset.colorBufferMemoryIndex);
     }
 #endif
