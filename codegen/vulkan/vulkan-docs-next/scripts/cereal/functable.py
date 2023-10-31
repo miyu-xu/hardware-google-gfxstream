@@ -156,6 +156,13 @@ HANDLES_MESA_VK = {
     "VkSampler" : None,
 }
 
+# Types that have a corresponding method for transforming
+# an input list to its internal counterpart
+TYPES_TRANSFORM_LIST_METHOD = {
+    "VkSemaphore",
+    "VkSemaphoreSubmitInfo",
+}
+
 def is_cmdbuf_dispatch(api):
     return "VkCommandBuffer" == api.parameters[0].typeName
 
@@ -195,6 +202,9 @@ def typeNameToVkObjectType(typeName):
 
 def typeNameToObjectType(typeName):
     return "gfxstream_vk_%s" % typeNameToBaseName(typeName)
+
+def transformListFuncName(typeName):
+    return "transform%sList" % (typeName)
 
 def hasMesaVkObject(typeName):
     return typeName in HANDLES_MESA_VK
@@ -436,12 +446,19 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     countParamName = "%s.%s" % (outName, member.attribs["len"])
                     inArrayName = "%s.%s" % (outName, member.paramName)
                     cgen.stmt("%s.push_back(std::vector<%s>())" % (internalNestedParamName(member), member.typeName))
-                    cgen.stmt("%s.reserve(%s)" % (nestedOutName, countParamName))
-                    cgen.stmt("memset(&%s[0], 0, sizeof(%s) * %s)" % (nestedOutName, member.typeName, countParamName))
-                    if not nextLoopVar:
-                        nextLoopVar = getNextLoopVar()
-                    internalArray = genInternalArray(member, countParamName, nestedOutName, inArrayName, nextLoopVar)
-                    cgen.stmt("%s = %s" %(inArrayName, internalArray))
+                    if member.typeName in TYPES_TRANSFORM_LIST_METHOD:
+                        # Use the corresponding transformList call
+                        cgen.funcCall(nestedOutName, transformListFuncName(member.typeName), [inArrayName, countParamName])
+                        cgen.stmt("%s = %s.data()" % (inArrayName, nestedOutName))
+                        cgen.stmt("%s = %s.size()" % (countParamName, nestedOutName))
+                    else:
+                        # Standard translation
+                        cgen.stmt("%s.reserve(%s)" % (nestedOutName, countParamName))
+                        cgen.stmt("memset(&%s[0], 0, sizeof(%s) * %s)" % (nestedOutName, member.typeName, countParamName))
+                        if not nextLoopVar:
+                            nextLoopVar = getNextLoopVar()
+                        internalArray = genInternalArray(member, countParamName, nestedOutName, inArrayName, nextLoopVar)
+                        cgen.stmt("%s = %s" %(inArrayName, internalArray))
                 elif isCompoundType(member.typeName):
                     memberFullName = "%s.%s" % (outName, member.paramName)
                     if 1 == member.pointerIndirectionLevels:
@@ -556,13 +573,22 @@ class VulkanFuncTable(VulkanWrapperGenerator):
 
         def genGfxstreamEntry(declareResources=True):
             cgen.stmt("AEMU_SCOPED_TRACE(\"%s\")" % api.name)
-            # Translate handles
-            genGetGfxstreamHandles()
             # declare returnVar
             retTypeName = api.getRetTypeExpr()
             retVar = api.getRetVarExpr()
             if retVar:
                 cgen.stmt("%s %s = (%s)0" % (retTypeName, retVar, retTypeName))
+            # Check non-null destroy param for free/destroy calls
+            destroyParam = getDestroyParam(api)
+            if destroyParam:
+                cgen.beginIf("VK_NULL_HANDLE == %s" % destroyParam.paramName)
+                if api.getRetTypeExpr() != "void":
+                    cgen.stmt("return %s" % api.getRetVarExpr())
+                else:
+                    cgen.stmt("return")
+                cgen.endIf()
+            # Translate handles
+            genGetGfxstreamHandles()
             # Translation/creation of objects
             createdObject = genCreateGfxstreamObjects()
             # Make encoder/resource-tracker call
