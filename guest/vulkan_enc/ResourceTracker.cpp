@@ -24,6 +24,8 @@
 #include "VkEncoder.h"
 #include "aemu/base/AlignedBuf.h"
 #include "goldfish_address_space.h"
+
+#include "gfxstream_vk_private.h"
 #include "goldfish_vk_private_defs.h"
 #include "util.h"
 #include "virtgpu_gfxstream_protocol.h"
@@ -6027,6 +6029,13 @@ void ResourceTracker::on_vkUpdateDescriptorSetWithTemplate(
 
                 memcpy(((uint8_t*)imageInfos) + currImageInfoOffset, user,
                        sizeof(VkDescriptorImageInfo));
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+                // Convert mesa to internal for objects in the user buffer
+                VkDescriptorImageInfo *internalImageInfo =
+                    (VkDescriptorImageInfo*)(((uint8_t*)imageInfos) + currImageInfoOffset);
+                VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_image_view, internalImageInfo->imageView);
+                internalImageInfo->imageView = gfxstream_image_view->internal_object;
+#endif
                 currImageInfoOffset += sizeof(VkDescriptorImageInfo);
             }
 
@@ -6046,6 +6055,13 @@ void ResourceTracker::on_vkUpdateDescriptorSetWithTemplate(
 
                 memcpy(((uint8_t*)bufferInfos) + currBufferInfoOffset, user,
                        sizeof(VkDescriptorBufferInfo));
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+                // Convert mesa to internal for objects in the user buffer
+                VkDescriptorBufferInfo *internalBufferInfo =
+                    (VkDescriptorBufferInfo*)(((uint8_t*)bufferInfos) + currBufferInfoOffset);
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, internalBufferInfo->buffer);
+                internalBufferInfo->buffer = gfxstream_buffer->internal_object;
+#endif
                 currBufferInfoOffset += sizeof(VkDescriptorBufferInfo);
             }
 
@@ -6064,6 +6080,14 @@ void ResourceTracker::on_vkUpdateDescriptorSetWithTemplate(
                 const VkBufferView* user = (const VkBufferView*)(userBuffer + offset + j * stride);
 
                 memcpy(((uint8_t*)bufferViews) + currBufferViewOffset, user, sizeof(VkBufferView));
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+                // Convert mesa to internal for objects in the user buffer
+                VkBufferView* internalBufferView =
+                    (VkBufferView*)(((uint8_t*)bufferViews) + currBufferViewOffset);
+                VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_buffer_view, *internalBufferView);
+                *internalBufferView = gfxstream_buffer_view->internal_object;
+#endif
+
                 currBufferViewOffset += sizeof(VkBufferView);
             }
 
