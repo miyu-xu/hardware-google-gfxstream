@@ -221,10 +221,10 @@ gfxstream_vk_DestroyInstance(VkInstance _instance,
                              const VkAllocationCallbacks *pAllocator)
 {
     AEMU_SCOPED_TRACE("vkDestroyInstance");
-    VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
-
-    if (!instance)
+    if (VK_NULL_HANDLE == _instance)
         return;
+
+    VK_FROM_HANDLE(gfxstream_vk_instance, instance, _instance);
 
     VK_HOST_CONNECTION()
     vkEnc->vkDestroyInstance(instance->internal_object, pAllocator, true /* do lock */);
@@ -295,7 +295,7 @@ VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
 void gfxstream_vk_DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
     AEMU_SCOPED_TRACE("vkDestroyDevice");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
-    if (!device)
+    if (VK_NULL_HANDLE == device)
         return;
 
     auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
