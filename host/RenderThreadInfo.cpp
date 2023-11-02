@@ -65,10 +65,12 @@ void RenderThreadInfo::initGl() {
 }
 
 void RenderThreadInfo::onSave(Stream* stream) {
+    stream->putBe64(m_puid);
     m_glInfo->onSave(stream);
 }
 
 bool RenderThreadInfo::onLoad(Stream* stream) {
+    m_puid = stream->getBe64();
     return m_glInfo->onLoad(stream);
 }
 
