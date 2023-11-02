@@ -59,6 +59,22 @@
 #include <sys/time.h>
 #endif
 
+#include <execinfo.h>
+#include <stdio.h>
+
+#define DDD(fmt, ...) \
+    fprintf(stderr, "%s %d: " fmt " \n", __func__, __LINE__, ##__VA_ARGS__);
+
+static void printCallStack() {
+    void* callstack[128];
+    int i, frames = backtrace(callstack, 128);
+    char** strs = backtrace_symbols(callstack, frames);
+    for (i = 0; i < frames; ++i) {
+        DDD("%s\n", strs[i]);
+    }
+    free(strs);
+}
+
 #define GLES2_NAMESPACED(f) translator::gles2::f
 
 namespace translator {
@@ -3305,9 +3321,10 @@ GL_APICALL void  GL_APIENTRY glRenderbufferStorage(GLenum target, GLenum interna
 GL_APICALL void GL_APIENTRY glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 
 GL_APICALL void  GL_APIENTRY glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels){
-    GET_CTX_V2();
+    GET_CTX_V3();
     SET_ERROR_IF(!(GLESv2Validate::pixelOp(format,type)),GL_INVALID_OPERATION);
     SET_ERROR_IF(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE, GL_INVALID_FRAMEBUFFER_OPERATION);
+    printCallStack();
     if (ctx->isDefaultFBOBound(GL_READ_FRAMEBUFFER) &&
         ctx->getDefaultFBOMultisamples()) {
 

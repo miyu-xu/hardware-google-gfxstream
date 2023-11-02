@@ -26,6 +26,24 @@
 #include "host-common/logging.h"
 #include "host-common/misc.h"
 
+#include <execinfo.h>
+#include <stdio.h>
+
+#define DDD(fmt, ...) \
+    fprintf(stderr, "%s %d: " fmt " \n", __func__, __LINE__, ##__VA_ARGS__);
+
+static void printCallStack() {
+    void* callstack[128];
+    int i, frames = backtrace(callstack, 128);
+    char** strs = backtrace_symbols(callstack, frames);
+    for (i = 0; i < frames; ++i) {
+        DDD("%s\n", strs[i]);
+    }
+    free(strs);
+}
+
+
+
 namespace gfxstream {
 namespace gl {
 
@@ -218,6 +236,8 @@ ReadbackWorkerGl::FlushResult ReadbackWorkerGl::flushPipeline(uint32_t displayId
 void ReadbackWorkerGl::getPixels(uint32_t displayId, void* buf, uint32_t bytes) {
     android::base::AutoLock lock(mLock);
 
+    fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
+    printCallStack();
     auto it = mTrackedDisplays.find(displayId);
     if (it == mTrackedDisplays.end()) {
         ERR("Failed to find TrackedDisplay for display:%d", displayId);

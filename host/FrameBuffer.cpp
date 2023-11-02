@@ -62,6 +62,23 @@
 #include "vulkan/VkCommonOperations.h"
 #include "vulkan/VkDecoderGlobalState.h"
 
+#include <execinfo.h>
+#include <stdio.h>
+
+#define DDD(fmt, ...) \
+    fprintf(stderr, "%s %d: " fmt " \n", __func__, __LINE__, ##__VA_ARGS__);
+
+static void printCallStack() {
+    void* callstack[128];
+    int i, frames = backtrace(callstack, 128);
+    char** strs = backtrace_symbols(callstack, frames);
+    for (i = 0; i < frames; ++i) {
+        DDD("%s\n", strs[i]);
+    }
+    free(strs);
+}
+
+
 namespace gfxstream {
 
 using android::base::AutoLock;
@@ -811,6 +828,11 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
         return false;
     }
 
+    if (hideWindow) {
+        DDD("hide window in frambuffer\n");
+    } else {
+        DDD("show window in frambuffer\n");
+    }
     // Do a quick check before even taking the lock - maybe we don't need to
     // do anything here.
 
@@ -1014,8 +1036,7 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
 
                 if (m_lastPostedColorBuffer) {
                     GL_LOG("setupSubwindow: draw last posted cb");
-                    postImpl(m_lastPostedColorBuffer,
-                        [](std::shared_future<void> waitForGpu) {}, false);
+                    // postImpl(m_lastPostedColorBuffer, [](std::shared_future<void> waitForGpu) {}, false);
                 } else {
                     Post postCmd;
                     postCmd.cmd = PostCmd::Clear;
@@ -2511,6 +2532,7 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer,
             }
         }
 
+        if (1) {
         if (asyncReadbackSupported()) {
             ensureReadbackWorker();
             const auto status = m_readbackWorker->doNextReadback(iter.first,
@@ -2524,6 +2546,7 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer,
         } else {
             cb->glOpReadback(iter.second.img, iter.second.readBgra);
             doPostCallback(iter.second.img, iter.first);
+        }
         }
     }
 DEC_REFCOUNT_AND_EXIT:
@@ -2556,6 +2579,8 @@ void FrameBuffer::getPixels(void* pixels, uint32_t bytes, uint32_t displayId) {
         ERR("Display %d not configured for recording yet", displayId);
         return;
     }
+    DDD("frambueffer.cpp");
+    printCallStack();
     std::future<void> completeFuture = m_readbackThread.enqueue(
         {ReadbackCmd::GetPixels, displayId, pixels, bytes});
     completeFuture.wait();
@@ -2774,6 +2799,8 @@ int FrameBuffer::getScreenshot(unsigned int nChannels, unsigned int* width, unsi
     scrCmd.screenshot.pixels = pixels;
     scrCmd.screenshot.rect = rect;
 
+    DDD("framebuffer.cpp");
+    printCallStack();
     std::future<void> completeFuture = sendPostWorkerCmd(std::move(scrCmd));
 
     mutex.unlock();
