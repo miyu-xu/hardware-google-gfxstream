@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-#include "VirtGpu.h"
+#ifndef VIRTGPU_FUCHSIA_H
+#define VIRTGPU_FUCHSIA_H
 
-VirtGpuBlobMapping::VirtGpuBlobMapping(VirtGpuBlobPtr blob, uint8_t* ptr, uint64_t size)
-    : mBlob(blob), mPtr(ptr), mSize(size) {}
+#include <fidl/fuchsia.gpu.virtio/cpp/wire.h>
 
-VirtGpuBlobMapping::~VirtGpuBlobMapping(void) {
-    // Unimplemented for now
-   (void) mPtr;
-   (void) mSize;
-   (void) mBlob;
-}
+class VirtGpuFuchsiaImpl {
+public:
+    fidl::WireSyncClient<fuchsia_gpu_virtio::VirtioGpu> virtio_gpu_;
+    uint32_t context_id = 0;
+};
 
-uint8_t* VirtGpuBlobMapping::asRawPtr(void) {
-    return mPtr;
-}
+#endif // VIRTGPU_FUCHSIA_H

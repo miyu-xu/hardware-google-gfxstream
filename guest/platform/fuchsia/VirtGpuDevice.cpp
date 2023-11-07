@@ -15,12 +15,13 @@
  */
 
 #include "VirtGpu.h"
+#include "VirtGpuFuchsia.h"
+
 #include "virtgpu_drm.h"
 #include "virtgpu_gfxstream_protocol.h"
 
 #include "services/service_connector.h"
 
-#include <fidl/fuchsia.gpu.virtio/cpp/wire.h>
 #include <cutils/log.h>
 
 #include <fcntl.h>
@@ -55,18 +56,8 @@ VirtGpuDevice::VirtGpuDevice(enum VirtGpuCapset capset) {
         PARAM(VIRTGPU_PARAM_SUPPORTED_CAPSET_IDs), PARAM(VIRTGPU_PARAM_CREATE_GUEST_HANDLE),
     };
 
-    int ret;
-    struct drm_virtgpu_get_caps get_caps = {0};
-    struct drm_virtgpu_context_init init = {0};
-    struct drm_virtgpu_context_set_param ctx_set_params[2] = {{0}};
-
     memset(&mCaps, 0, sizeof(struct VirtGpuCaps));
 
-    // mDeviceHandle = static_cast<int64_t>(drmOpenRender(128));
-    // if (mDeviceHandle < 0) {
-    //     ALOGE("Failed to open rendernode: %s", strerror(errno));
-    //     return;
-    // }
     std::vector<std::string> devices = FuchsiaGetVirtioGpuDevices();
     switch (devices.size()) {
     case 0:
@@ -84,44 +75,44 @@ VirtGpuDevice::VirtGpuDevice(enum VirtGpuCapset capset) {
         ALOGE("Failed to open devices %s", devices[0].c_str());
         return;
     }
+
     fidl::WireSyncClient virtio_gpu(std::move(gpu_client_end));
 
     for (uint32_t i = 0; i < kParamMax; i++) {
-        struct drm_virtgpu_getparam get_param = {0};
-        get_param.param = params[i].param;
-        get_param.value = (uint64_t)(uintptr_t)&params[i].value;
-
-        // ret = drmIoctl(mDeviceHandle, DRM_IOCTL_VIRTGPU_GETPARAM, &get_param);
-        // if (ret) {
-        //     ALOGE("virtgpu backend not enabling %s", params[i].name);
-        //     continue;
-        // }
-        ALOGE("*** Calling FooBar");
-        auto wire_result = virtio_gpu->FooBar();
-        if (!wire_result.ok()) {
-            ALOGE("*** FooBar error: %d", wire_result.status());
+        uint64_t query_id = params[i].param;
+        ALOGI("*** Calling Query %lu", query_id);
+        auto wire_result = virtio_gpu->Query(fuchsia_gpu_virtio::wire::QueryId(params[i].param));
+        if (wire_result.ok() && wire_result->value()->is_simple_result()) {
+            uint64_t result = wire_result->value()->simple_result();
+            mCaps.params[i] = result;
+            ALOGI("*** Got result %lu", result);
+        } else {
+            ALOGE("Query failed: status %d, expected simple result");
         }
-
-        mCaps.params[i] = params[i].value;
     }
 
-    get_caps.cap_set_id = static_cast<uint32_t>(capset);
-    if (capset == kCapsetGfxStream) {
-        get_caps.size = sizeof(struct gfxstreamCapset);
-        get_caps.addr = (unsigned long long)&mCaps.gfxstreamCapset;
+    {
+        auto query_id = static_cast<uint64_t>(fuchsia_gpu_virtio::wire::QueryId::kQueryIdCapset);
+        query_id |= static_cast<uint64_t>(kCapsetGfxStreamVulkan) << 32;
+        constexpr uint16_t kVersion = 0;
+        query_id |= static_cast<uint64_t>(kVersion) << 16;
+
+        auto wire_result = virtio_gpu->Query(fuchsia_gpu_virtio::wire::QueryId(query_id));
+        if (wire_result.ok() && wire_result->value()->is_buffer_result()) {
+            zx::vmo capset_info = std::move(wire_result->value()->buffer_result());
+            capset_info.read(&mCaps.gfxstreamCapset, /*offset=*/0, sizeof(struct gfxstreamCapset));
+            ALOGI("*** Got capset result");
+        } else {
+            ALOGE("Query(%lu) failed: status %d, expected buffer result", query_id, wire_result.status());
+        }
     }
 
-    // ret = drmIoctl(mDeviceHandle, DRM_IOCTL_VIRTGPU_GET_CAPS, &get_caps);
-    // if (ret) {
-    //     // Don't fail get capabilities just yet, AEMU doesn't use this API
-    //     // yet (b/272121235);
-    //     ALOGE("DRM_IOCTL_VIRTGPU_GET_CAPS failed with %s", strerror(errno));
-    // }
+    // We always need an ASG blob in some cases, so always define blobAlignment
+    if (!mCaps.gfxstreamCapset.blobAlignment) {
+        mCaps.gfxstreamCapset.blobAlignment = 4096;
+    }
 
-    // // We always need an ASG blob in some cases, so always define blobAlignment
-    // if (!mCaps.gfxstreamCapset.blobAlignment) {
-    //     mCaps.gfxstreamCapset.blobAlignment = 4096;
-    // }
+    // On Fuchsia, virtio-gpu assumes this configuration.
 
     // ctx_set_params[0].param = VIRTGPU_CONTEXT_PARAM_NUM_RINGS;
     // ctx_set_params[0].value = 2;
@@ -139,15 +130,21 @@ VirtGpuDevice::VirtGpuDevice(enum VirtGpuCapset capset) {
     //     ALOGE("DRM_IOCTL_VIRTGPU_CONTEXT_INIT failed with %s, continuing without context...",
     //            strerror(errno));
     // }
+    uint64_t context_id = 1;
+    auto wire_result = virtio_gpu->CreateContext(context_id);
+    if (!wire_result.ok()) {
+        ALOGE("CreateContext failed: %d", wire_result.status());
+    }
+
+    fuchsia_ = std::make_shared<VirtGpuFuchsiaImpl>();
+    fuchsia_->virtio_gpu_ = std::move(virtio_gpu);
+    fuchsia_->context_id = context_id;
 }
 
 struct VirtGpuCaps VirtGpuDevice::getCaps(void) { return mCaps; }
 
-int64_t VirtGpuDevice::getDeviceHandle(void) {
-    return mDeviceHandle;
-}
-
 VirtGpuBlobPtr VirtGpuDevice::createPipeBlob(uint32_t size) {
+    ALOGE("*** createPipeBlob stub\n");
     // drm_virtgpu_resource_create create = {
     //         .target = PIPE_BUFFER,
     //         .format = VIRGL_FORMAT_R8_UNORM,
@@ -172,26 +169,36 @@ VirtGpuBlobPtr VirtGpuDevice::createPipeBlob(uint32_t size) {
 }
 
 VirtGpuBlobPtr VirtGpuDevice::createBlob(const struct VirtGpuCreateBlob& blobCreate) {
-    // int ret;
-    // struct drm_virtgpu_resource_create_blob create = {0};
+    ALOGE("*** createBlob size %lu\n", blobCreate.size);
+    if (!blobCreate.size) {
+        abort();
+    }
+    assert(fuchsia_);
 
-    // create.size = blobCreate.size;
-    // create.blob_mem = blobCreate.blobMem;
-    // create.blob_flags = blobCreate.flags;
-    // create.blob_id = blobCreate.blobId;
+    fidl::Arena allocator;
+    auto builder = fuchsia_gpu_virtio::wire::VirtioGpuCreateBlobRequest::Builder(allocator);
+    builder.size(blobCreate.size).blob_mem(blobCreate.blobMem).id(blobCreate.blobId).flags(blobCreate.flags);
 
-    // ret = drmIoctl(mDeviceHandle, DRM_IOCTL_VIRTGPU_RESOURCE_CREATE_BLOB, &create);
-    // if (ret < 0) {
-    //     ALOGE("DRM_VIRTGPU_RESOURCE_CREATE_BLOB failed with %s", strerror(errno));
-    //     return nullptr;
-    // }
+    auto wire_result = fuchsia_->virtio_gpu_->CreateBlob(builder.Build());
+    if (!wire_result.ok()) {
+        ALOGE("CreateBlob failed");
+        return nullptr;
+    }
 
-    // return std::make_shared<VirtGpuBlob>(mDeviceHandle, create.bo_handle, create.res_handle,
-    //                                      blobCreate.size);
-    return nullptr;
+    auto response = std::move(wire_result.value());
+    if (!response.is_ok()) {
+        ALOGE("CreateBlob failed");
+        return nullptr;
+    }
+
+    ALOGI("*** createBlob got bo_handle %u resource_handle %u", response->bo_handle, response->resource_handle);
+
+    return std::make_shared<VirtGpuBlob>(this, response->bo_handle, response->resource_handle,
+                                         blobCreate.size);
 }
 
 VirtGpuBlobPtr VirtGpuDevice::importBlob(const struct VirtGpuExternalHandle& handle) {
+    ALOGE("*** importBlob stub\n");
     // struct drm_virtgpu_resource_info info = {0};
     // uint32_t blobHandle;
     // int ret;
@@ -216,6 +223,14 @@ VirtGpuBlobPtr VirtGpuDevice::importBlob(const struct VirtGpuExternalHandle& han
 }
 
 int VirtGpuDevice::execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob) {
+    ALOGI("*** execBuffer size %u ring_idx %u flags 0x%x handle %u", 
+        execbuffer.command_size, execbuffer.ring_idx, execbuffer.flags, execbuffer.handle);
+
+    uint64_t flags = execbuffer.flags & VirtGpuExecBufferFlags::kRingIdx ? execbuffer.ring_idx : 0;
+
+    auto command_data = fidl::VectorView<uint8_t>::FromExternal(static_cast<uint8_t*>(execbuffer.command), execbuffer.command_size);
+    fuchsia_->virtio_gpu_->ExecuteImmediateCommands(fuchsia_->context_id, flags, std::move(command_data));
+
     // int ret;
     // struct drm_virtgpu_execbuffer exec = {0};
     // uint32_t blobHandle;

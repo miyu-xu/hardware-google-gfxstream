@@ -7620,6 +7620,7 @@ void ResourceTracker::setSeqnoPtr(uint32_t* seqnoptr) {
 
 // static
 ALWAYS_INLINE uint32_t ResourceTracker::nextSeqno() {
+    //ALOGE("*** %s:%d sSeqnoPtr %p", __FILE__, __LINE__, sSeqnoPtr);
     uint32_t res = __atomic_add_fetch(sSeqnoPtr, 1, __ATOMIC_SEQ_CST);
     return res;
 }

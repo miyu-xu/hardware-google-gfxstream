@@ -201,6 +201,7 @@ AddressSpaceStream* createVirtioGpuAddressSpaceStream(HealthMonitor<>* healthMon
     // Context creation command
     contextCreate.hdr.opCode = GFXSTREAM_CONTEXT_CREATE;
     contextCreate.resourceId = blob->getResourceHandle();
+    fprintf(stderr, "*** doing GFXSTREAM_CONTEXT_CREATE with resourceId %u\n", contextCreate.resourceId);fflush(stderr);
 
     exec.command = static_cast<void*>(&contextCreate);
     exec.command_size = sizeof(contextCreate);

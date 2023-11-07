@@ -111,12 +111,17 @@ struct VirtGpuCaps {
 
 class VirtGpuBlobMapping;
 class VirtGpuBlob;
+class VirtGpuDevice;
+#ifdef __Fuchsia__
+class VirtGpuFuchsiaImpl;
+#endif
+
 using VirtGpuBlobPtr = std::shared_ptr<VirtGpuBlob>;
 using VirtGpuBlobMappingPtr = std::shared_ptr<VirtGpuBlobMapping>;
 
 class VirtGpuBlob : public std::enable_shared_from_this<VirtGpuBlob> {
   public:
-    VirtGpuBlob(int64_t deviceHandle, uint32_t blobHandle, uint32_t resourceHandle, uint64_t size);
+    VirtGpuBlob(VirtGpuDevice* device, uint32_t blobHandle, uint32_t resourceHandle, uint64_t size);
     ~VirtGpuBlob();
 
     uint32_t getResourceHandle(void);
@@ -127,9 +132,13 @@ class VirtGpuBlob : public std::enable_shared_from_this<VirtGpuBlob> {
     int exportBlob(struct VirtGpuExternalHandle& handle);
 
   private:
+#ifdef __Fuchsia__
+    std::shared_ptr<VirtGpuFuchsiaImpl> mFuchsiaImpl;
+#else
     // Not owned.  Really should use a ScopedFD for this, but doesn't matter since we have a
     // singleton deviceimplemenentation anyways.
     int64_t mDeviceHandle;
+#endif
 
     uint32_t mBlobHandle;
     uint32_t mResourceHandle;
@@ -156,7 +165,11 @@ class VirtGpuDevice {
 
     static void setInstance(std::unique_ptr<VirtGpuDevice> device);
     static VirtGpuDevice& getInstance();
+#ifdef __Fuchsia__
+    std::shared_ptr<VirtGpuFuchsiaImpl> getFuchsiaImpl() { return fuchsia_; }
+#else
     int64_t getDeviceHandle(void);
+#endif
 
     struct VirtGpuCaps getCaps(void);
 
@@ -171,7 +184,11 @@ class VirtGpuDevice {
     void operator=(VirtGpuDevice const&);
 
     static VirtGpuDevice mInstance;
+#ifdef __Fuchsia__
+    std::shared_ptr<VirtGpuFuchsiaImpl> fuchsia_;
+#else
     int64_t mDeviceHandle;
+#endif
 
     struct VirtGpuCaps mCaps;
 };

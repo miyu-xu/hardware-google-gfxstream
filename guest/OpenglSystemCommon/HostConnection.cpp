@@ -461,6 +461,8 @@ HostConnection::~HostConnection()
 
 // static
 std::unique_ptr<HostConnection> HostConnection::connect(uint32_t capset_id) {
+    fprintf(stderr, "*** %s:%d HostConnection::connect\n", __FILE__, __LINE__);fflush(stderr);
+
     // VirtGpuDevice is accessed by all connection types.
     VirtGpuDevice::setInstance(std::make_unique<VirtGpuDevice>(kCapsetGfxStreamVulkan));
 
@@ -559,7 +561,9 @@ std::unique_ptr<HostConnection> HostConnection::connect(uint32_t capset_id) {
         }
         case HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE: {
             VirtGpuDevice& instance = VirtGpuDevice::getInstance();
+#ifndef __Fuchsia__
             auto deviceHandle = instance.getDeviceHandle();
+#endif
             auto stream = createVirtioGpuAddressSpaceStream(getGlobalHealthMonitor());
             if (!stream) {
                 ALOGE("Failed to create virtgpu AddressSpaceStream\n");
@@ -568,17 +572,21 @@ std::unique_ptr<HostConnection> HostConnection::connect(uint32_t capset_id) {
             con->m_connectionType = HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE;
             con->m_grallocType = getGrallocTypeFromProperty();
             con->m_stream = stream;
+#ifndef __Fuchsia__
             con->m_rendernodeFd = deviceHandle;
+#endif
             switch (con->m_grallocType) {
                 case GRALLOC_TYPE_RANCHU:
                     con->m_grallocHelper = &m_goldfishGralloc;
                     break;
+#ifndef __Fuchsia__
                 case GRALLOC_TYPE_MINIGBM: {
                     MinigbmGralloc* m = new MinigbmGralloc;
                     m->setFd(deviceHandle);
                     con->m_grallocHelper = m;
                     break;
                 }
+#endif
                 default:
                     ALOGE("Fatal: Unknown gralloc type 0x%x\n", con->m_grallocType);
                     abort();
@@ -732,6 +740,7 @@ ExtendedRCEncoderContext *HostConnection::rcEncoder()
         queryVersion(rcEnc);
         if (m_processPipe) {
             auto fd = (m_connectionType == HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE) ? m_rendernodeFd : -1;
+            ALOGE("*** %s:%d calling processPipeInit", __FILE__, __LINE__);
             m_processPipe->processPipeInit(fd, m_connectionType, rcEnc);
         }
     }
