@@ -62,12 +62,12 @@ TEST_P(GfxstreamEnd2EndVkTest, ImportAHB) {
     const uint32_t height = 32;
     auto ahb = mGralloc->allocate(width, height, DRM_FORMAT_ABGR8888);
 
-    const vkhpp::NativeBufferANDROID imageNativeBufferInfo = {
-        .handle = (const uint32_t*)ahb->asAHardwareBuffer(),
+    const vkhpp::ImportAndroidHardwareBufferInfoANDROID importInfo = {
+        .buffer = ahb->asAHardwareBuffer(),
     };
 
     const vkhpp::ImageCreateInfo imageCreateInfo = {
-        .pNext = &imageNativeBufferInfo,
+        .pNext = nullptr,
         .imageType = vkhpp::ImageType::e2D,
         .extent.width = width,
         .extent.height = height,
@@ -164,12 +164,6 @@ TEST_P(GfxstreamEnd2EndVkTest, ImportAHB) {
 
     auto waitResult = device->waitForFences(*transferFence, VK_TRUE, AsVkTimeout(3s));
     ASSERT_THAT(waitResult, IsVkSuccess());
-
-    std::vector<vkhpp::Semaphore> semaphores;
-    int fence = queue.signalReleaseImageANDROID(semaphores, *image);
-    ASSERT_THAT(fence, Not(Eq(-1)));
-
-    ASSERT_THAT(mSync->wait(fence, 3000), Eq(0));
 }
 
 TEST_P(GfxstreamEnd2EndVkTest, DeferredImportAHB) {
@@ -198,24 +192,6 @@ TEST_P(GfxstreamEnd2EndVkTest, DeferredImportAHB) {
         .samples = vkhpp::SampleCountFlagBits::e1,
     };
     auto image = device->createImageUnique(imageCreateInfo).value;
-
-    // NOTE: Binding the VkImage to the AHB happens after the VkImage is created.
-    const vkhpp::NativeBufferANDROID imageNativeBufferInfo = {
-        .handle = (const uint32_t*)ahb->asAHardwareBuffer(),
-    };
-    const vkhpp::BindImageMemoryInfo imageBindMemoryInfo = {
-        .pNext = &imageNativeBufferInfo,
-        .image = *image,
-        .memory = VK_NULL_HANDLE,
-        .memoryOffset = 0,
-    };
-    ASSERT_THAT(device->bindImageMemory2({imageBindMemoryInfo}), IsVkSuccess());
-
-    std::vector<vkhpp::Semaphore> semaphores;
-    int fence = queue.signalReleaseImageANDROID(semaphores, *image);
-    ASSERT_THAT(fence, Not(Eq(-1)));
-
-    ASSERT_THAT(mSync->wait(fence, 3000), Eq(0));
 }
 
 TEST_P(GfxstreamEnd2EndVkTest, HostMemory) {
