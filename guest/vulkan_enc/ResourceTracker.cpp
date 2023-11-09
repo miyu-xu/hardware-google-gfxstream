@@ -1680,10 +1680,6 @@ VkResult ResourceTracker::on_vkEnumerateInstanceExtensionProperties(
         {"VK_KHR_external_memory_capabilities", 1},
         {"VK_KHR_external_semaphore_capabilities", 1},
 #endif
-#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
-        {"VK_KHR_surface", 1},
-        {"VK_KHR_wayland_surface", 1},
-#endif
     };
 
     for (auto& anbExtProp : anbExtProps) {
