@@ -236,6 +236,12 @@ struct stream_renderer_vulkan_info {
 VG_EXPORT int stream_renderer_vulkan_info(uint32_t res_handle,
                                           struct stream_renderer_vulkan_info* vulkan_info);
 
+VG_EXPORT int stream_renderer_snapshot_presave_pause();
+VG_EXPORT int stream_renderer_snapshot_save(void* stream, void* textureSaver);
+VG_EXPORT int stream_renderer_snapshot_postsave_resume();
+VG_EXPORT int stream_renderer_snapshot_postsave_resume_for_testing();
+VG_EXPORT int stream_renderer_snapshot_load(void* stream, void* textureSaver);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
