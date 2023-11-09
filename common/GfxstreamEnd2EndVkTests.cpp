@@ -442,10 +442,12 @@ INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkTest,
                             TestParams{
                                 .with_gl = false,
                                 .with_vk = true,
+                                .with_snapshot = false,
                             },
                             TestParams{
                                 .with_gl = true,
                                 .with_vk = true,
+                                .with_snapshot = false,
                             },
                         }),
                         &GetTestName);
