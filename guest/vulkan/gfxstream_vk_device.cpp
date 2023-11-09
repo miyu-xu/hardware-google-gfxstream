@@ -37,6 +37,37 @@ VkResult SetupInstance(void);
         return ret;                                                                \
     }
 
+static bool instance_extension_table_initialized = false;
+static struct vk_instance_extension_table gfxstream_vk_instance_extensions_supported = {0};
+
+// Provided by Mesa components only; never encoded/decoded through gfxstream
+static const char* const kMesaOnlyInstanceExtension[] = {
+    VK_KHR_SURFACE_EXTENSION_NAME,
+#if defined(LINUX_GUEST_BUILD)
+    VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+#endif
+};
+
+static bool isMesaOnlyInstanceExtension(const char* name) {
+    for (auto mesaExt : kMesaOnlyInstanceExtension) {
+        if (!strncmp(mesaExt, name, VK_MAX_EXTENSION_NAME_SIZE)) return true;
+    }
+    return false;
+}
+
+// Filtered extension names for encoding
+static std::vector<const char*> filteredInstanceExtensionNames(uint32_t count,
+                                                        const char* const* extNames) {
+    std::vector<const char*> retList;
+    for (uint32_t i = 0; i < count; ++i) {
+        auto extName = extNames[i];
+        if (!isMesaOnlyInstanceExtension(extName)) {
+            retList.push_back(extName);
+        }
+    }
+    return retList;
+}
+
 static void get_device_extensions(VkPhysicalDevice physDevInternal, struct vk_device_extension_table *deviceExts) {
     VkResult result = (VkResult)0;
     auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
@@ -142,28 +173,42 @@ gfxstream_vk_enumerate_devices(struct vk_instance *vk_instance) {
     return result;
 }
 
-static void get_instance_extensions(struct vk_instance_extension_table *instanceExts) {
-    VkResult result = (VkResult)0;
-    auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-    auto resources = gfxstream::vk::ResourceTracker::get();
-    uint32_t numInstanceExts = 0;
-    result = resources->on_vkEnumerateInstanceExtensionProperties(
-                vkEnc, VK_SUCCESS, NULL, &numInstanceExts, NULL);
-    if (VK_SUCCESS == result) {
-        std::vector<VkExtensionProperties> extProps(numInstanceExts);
-        result = resources->on_vkEnumerateInstanceExtensionProperties(
-                    vkEnc, VK_SUCCESS, NULL, &numInstanceExts, extProps.data());
+static struct vk_instance_extension_table *get_instance_extensions() {
+    struct vk_instance_extension_table * const retTablePtr = &gfxstream_vk_instance_extensions_supported;
+    if (!instance_extension_table_initialized) {
+        VkResult result = SetupInstance();
         if (VK_SUCCESS == result) {
-            for (uint32_t i = 0; i < numInstanceExts; i++) {
-                for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
-                    if (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE)) {
-                        instanceExts->extensions[j] = true;
-                        break;
+            VK_HOST_CONNECTION(retTablePtr)
+            auto resources = gfxstream::vk::ResourceTracker::get();
+            uint32_t numInstanceExts = 0;
+            result = resources->on_vkEnumerateInstanceExtensionProperties(
+                        vkEnc, VK_SUCCESS, NULL, &numInstanceExts, NULL);
+            if (VK_SUCCESS == result) {
+                std::vector<VkExtensionProperties> extProps(numInstanceExts);
+                result = resources->on_vkEnumerateInstanceExtensionProperties(
+                            vkEnc, VK_SUCCESS, NULL, &numInstanceExts, extProps.data());
+                if (VK_SUCCESS == result) {
+                    // instance extensions from gfxstream
+                    for (uint32_t i = 0; i < numInstanceExts; i++) {
+                        for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
+                            if (0 == strncmp(extProps[i].extensionName, vk_instance_extensions[j].extensionName, VK_MAX_EXTENSION_NAME_SIZE)) {
+                                gfxstream_vk_instance_extensions_supported.extensions[j] = true;
+                                break;
+                            }
+                        }
                     }
+                    // instance extensions from Mesa
+                    for (uint32_t j = 0; j < VK_INSTANCE_EXTENSION_COUNT; j++) {
+                        if (isMesaOnlyInstanceExtension(vk_instance_extensions[j].extensionName)) {
+                            gfxstream_vk_instance_extensions_supported.extensions[j] = true;
+                        }
+                    }
+                    instance_extension_table_initialized = true;
                 }
             }
         }
     }
+    return retTablePtr;
 }
 
 VkResult
@@ -174,21 +219,39 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
     AEMU_SCOPED_TRACE("vkCreateInstance");
 
     struct gfxstream_vk_instance *instance;
-    VkResult result;
 
     pAllocator = pAllocator ?: vk_default_allocator();
     instance = (struct gfxstream_vk_instance*)vk_zalloc(pAllocator, sizeof(*instance), 8,
                             VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
-    if (!instance)
+    if (NULL == instance) {
         return vk_error(NULL, VK_ERROR_OUT_OF_HOST_MEMORY);
-
-    VkResult res = SetupInstance();
-    if (res != VK_SUCCESS) {
-        return res;
     }
 
-    VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
-    result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &instance->internal_object, true /* do lock */);
+    VkResult result = VK_SUCCESS;
+    /* Encoder call */
+    {
+        result = SetupInstance();
+        if (VK_SUCCESS != result) {
+            return vk_error(NULL, result);
+        }
+        uint32_t initialEnabledExtensionCount = pCreateInfo->enabledExtensionCount;
+        const char* const* initialPpEnabledExtensionNames = pCreateInfo->ppEnabledExtensionNames;
+        std::vector<const char*> filteredExts = filteredInstanceExtensionNames(
+            pCreateInfo->enabledExtensionCount, pCreateInfo->ppEnabledExtensionNames);
+        // Temporarily modify createInfo for the encoder call
+        VkInstanceCreateInfo* mutableCreateInfo = (VkInstanceCreateInfo *)pCreateInfo;
+        mutableCreateInfo->enabledExtensionCount = static_cast<uint32_t>(filteredExts.size());
+        mutableCreateInfo->ppEnabledExtensionNames = filteredExts.data();
+
+        VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST);
+        result = vkEnc->vkCreateInstance(pCreateInfo, nullptr, &instance->internal_object, true /* do lock */);
+        if (VK_SUCCESS != result) {
+            return vk_error(NULL, result);
+        }
+        // Revert the createInfo the user-set data
+        mutableCreateInfo->enabledExtensionCount = initialEnabledExtensionCount;
+        mutableCreateInfo->ppEnabledExtensionNames = initialPpEnabledExtensionNames;
+    }
 
     struct vk_instance_dispatch_table dispatch_table;
     memset(&dispatch_table, 0, sizeof(struct vk_instance_dispatch_table));
@@ -197,10 +260,7 @@ gfxstream_vk_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
    vk_instance_dispatch_table_from_entrypoints(
       &dispatch_table, &wsi_instance_entrypoints, false);
 
-    struct vk_instance_extension_table supported_extensions;
-    get_instance_extensions(&supported_extensions);
-
-    result = vk_instance_init(&instance->vk, &supported_extensions,
+    result = vk_instance_init(&instance->vk, get_instance_extensions(),
                                 &dispatch_table, pCreateInfo, pAllocator);
 
     if (result != VK_SUCCESS) {
@@ -238,20 +298,10 @@ gfxstream_vk_EnumerateInstanceExtensionProperties(const char* pLayerName,
                                                            uint32_t* pPropertyCount,
                                                            VkExtensionProperties* pProperties) {
     AEMU_SCOPED_TRACE("vkvkEnumerateInstanceExtensionProperties");
+    (void)pLayerName;
 
-    VkResult res = SetupInstance();
-    if (res != VK_SUCCESS) {
-        return res;
-    }
-
-    VK_HOST_CONNECTION(VK_ERROR_DEVICE_LOST)
-
-    VkResult vkEnumerateInstanceExtensionProperties_VkResult_return = (VkResult)0;
-    auto resources = gfxstream::vk::ResourceTracker::get();
-    vkEnumerateInstanceExtensionProperties_VkResult_return =
-        resources->on_vkEnumerateInstanceExtensionProperties(vkEnc, VK_SUCCESS, pLayerName,
-                                                                pPropertyCount, pProperties);
-    return vkEnumerateInstanceExtensionProperties_VkResult_return;
+    return vk_enumerate_instance_extension_properties(
+        get_instance_extensions(), pPropertyCount, pProperties);
 }
 
 VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
