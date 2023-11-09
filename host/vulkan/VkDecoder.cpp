@@ -198,6 +198,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             })
                             .build();
                     while ((seqno - seqnoPtr->load(std::memory_order_seq_cst) != 1)) {
+                        //printf("seqno in stream %d loaded %d\n", seqno, seqnoPtr->load(std::memory_order_seq_cst));
 #if (defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64)))
                         _mm_pause();
 #elif (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))

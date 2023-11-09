@@ -26,6 +26,7 @@
 #include "RenderThread.h"
 
 #include <memory>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -102,7 +103,7 @@ public:
     struct AndroidVirtioGpuOps* getVirtioGpuOps() final;
 
     void pauseAllPreSave() final;
-    void resumeAll() final;
+    void resumeAll(bool waitForSave = true) final;
 
     void save(android::base::Stream* stream,
               const android::snapshot::ITextureSaverPtr& textureSaver) final;
@@ -149,6 +150,9 @@ private:
     std::unique_ptr<RenderThread> mLoaderRenderThread;
 
     std::vector<RenderThread*> mAdditionalPostLoadRenderThreads;
+
+    android::base::Lock mAddressSpaceRenderThreadLock;
+    std::unordered_set<RenderThread*> mAddressSpaceRenderThreads;
 };
 
 }  // namespace gfxstream

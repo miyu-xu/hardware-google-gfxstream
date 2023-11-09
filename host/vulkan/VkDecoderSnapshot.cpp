@@ -57,6 +57,7 @@ class VkDecoderSnapshot::Impl {
                           android::base::BumpPool* pool, VkResult input_result,
                           const VkInstanceCreateInfo* pCreateInfo,
                           const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
+        printf("VkDecoderSnapshot::vkCreateInstance\n");
         // TODO: Implement
         android::base::AutoLock lock(mLock);
         // pInstance create

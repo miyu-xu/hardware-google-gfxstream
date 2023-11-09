@@ -1975,6 +1975,35 @@ VG_EXPORT int stream_renderer_vulkan_info(uint32_t res_handle,
     return sRenderer()->vulkanInfo(res_handle, vulkan_info);
 }
 
+VG_EXPORT int stream_renderer_snapshot_presave_pause() {
+    android_getOpenglesRenderer()->pauseAllPreSave();
+    return 0;
+}
+
+VG_EXPORT int stream_renderer_snapshot_postsave_resume() {
+    android_getOpenglesRenderer()->resumeAll();
+    return 0;
+}
+
+// In end2en tests, we don't really do snapshot save for render threads.
+// We will need to resume all render threads without waiting for snapshot.
+VG_EXPORT int stream_renderer_snapshot_postsave_resume_for_testing() {
+    android_getOpenglesRenderer()->resumeAll(false);
+    return 0;
+}
+
+VG_EXPORT int stream_renderer_snapshot_save(void* stream, void* textureSaver) {
+    android_getOpenglesRenderer()->save(static_cast<android::base::Stream *>(stream),
+        *static_cast<const android::snapshot::ITextureSaverPtr*>(textureSaver));
+    return 0;
+}
+
+VG_EXPORT int stream_renderer_snapshot_load(void* stream, void* textureLoader) {
+    android_getOpenglesRenderer()->load(static_cast<android::base::Stream *>(stream),
+        *static_cast<const android::snapshot::ITextureLoaderPtr*>(textureLoader));
+    return 0;
+}
+
 static const GoldfishPipeServiceOps goldfish_pipe_service_ops = {
     // guest_open()
     [](GoldfishHwPipe* hwPipe) -> GoldfishHostPipe* {
@@ -2154,7 +2183,6 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     feature_set_enabled_override(kFeature_NativeTextureDecompression, false);
     feature_set_enabled_override(kFeature_GLDirectMem, false);
     feature_set_enabled_override(kFeature_Vulkan, enableVk);
-    feature_set_enabled_override(kFeature_VulkanSnapshots, false);
     feature_set_enabled_override(kFeature_VulkanNullOptionalStrings, true);
     feature_set_enabled_override(kFeature_VulkanShaderFloat16Int8, true);
     feature_set_enabled_override(kFeature_HostComposition, true);

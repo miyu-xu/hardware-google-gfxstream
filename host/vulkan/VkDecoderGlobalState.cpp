@@ -314,6 +314,7 @@ class VkDecoderGlobalState::Impl {
           m_emu(getGlobalVkEmulation()),
           mRenderDocWithMultipleVkInstances(m_emu->guestRenderDoc.get()) {
         mSnapshotsEnabled = feature_is_enabled(kFeature_VulkanSnapshots);
+        printf("VkDecoderGlobalState::mSnapshotsEnabled %d\n", mSnapshotsEnabled);
         mVkCleanupEnabled =
             android::base::getEnvironmentVariable("ANDROID_EMU_VK_NO_CLEANUP") != "1";
         mLogging = android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1";
@@ -327,7 +328,9 @@ class VkDecoderGlobalState::Impl {
         mGuestUsesAngle = feature_is_enabled(kFeature_GuestUsesAngle);
     }
 
-    ~Impl() = default;
+    ~Impl() {
+        printf("~VkDecoderGlobalState::Impl\n");
+    };
 
     // Resets all internal tracking info.
     // Assumes that the heavyweight cleanup operations
@@ -534,9 +537,11 @@ class VkDecoderGlobalState::Impl {
         std::string_view engineName = appInfo.pEngineName ? appInfo.pEngineName : "";
         info.isAngle = (engineName == "ANGLE");
 
+        printf("on_vkCreateInstance %p\n", *pInstance);
         mInstanceInfo[*pInstance] = info;
 
         *pInstance = (VkInstance)info.boxed;
+        printf("on_vkCreateInstance boxed %p\n", *pInstance);
 
         auto fb = FrameBuffer::getFB();
         if (!fb) return res;
@@ -551,6 +556,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void vkDestroyInstanceImpl(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
+        printf("vkDestroyInstanceImpl %p\n", instance);
         // Do delayed removes out of the lock, but get the list of devices to destroy inside the
         // lock.
         {
@@ -597,6 +603,7 @@ class VkDecoderGlobalState::Impl {
     void on_vkDestroyInstance(android::base::BumpPool* pool, VkInstance boxed_instance,
                               const VkAllocationCallbacks* pAllocator) {
         auto instance = unbox_VkInstance(boxed_instance);
+        printf("on_vkDestroyInstance %p boxed %p\n", instance, boxed_instance);
 
         vkDestroyInstanceImpl(instance, pAllocator);
 
@@ -6750,7 +6757,9 @@ class VkDecoderGlobalState::Impl {
 
 VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl()) {}
 
-VkDecoderGlobalState::~VkDecoderGlobalState() = default;
+VkDecoderGlobalState::~VkDecoderGlobalState() {
+    printf("~VkDecoderGlobalState\n");
+}
 
 static VkDecoderGlobalState* sGlobalDecoderState = nullptr;
 

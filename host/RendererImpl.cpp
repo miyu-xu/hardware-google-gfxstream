@@ -248,6 +248,8 @@ RenderChannelPtr RendererImpl::createRenderChannel(
             mLoaderRenderThread.reset();
         }
 
+        printf("creating render thread %p\n", channel->renderThread());
+
         GL_LOG("Started new RenderThread (total %" PRIu64 ") @%p",
                static_cast<uint64_t>(mChannels.size()), channel->renderThread());
     }
@@ -272,11 +274,17 @@ void* RendererImpl::addressSpaceGraphicsConsumerCreate(
     auto thread = new RenderThread(context, loadStream, callbacks, contextId,
                                    capsetId, std::move(nameOpt));
     thread->start();
+    android::base::AutoLock lock(mAddressSpaceRenderThreadLock);
+    mAddressSpaceRenderThreads.emplace(thread);
     return (void*)thread;
 }
 
 void RendererImpl::addressSpaceGraphicsConsumerDestroy(void* consumer) {
     RenderThread* thread = (RenderThread*)consumer;
+    {
+        android::base::AutoLock lock(mAddressSpaceRenderThreadLock);
+        mAddressSpaceRenderThreads.erase(thread);
+    }
     thread->wait();
     delete thread;
 }
@@ -293,7 +301,7 @@ void RendererImpl::addressSpaceGraphicsConsumerSave(void* consumer, android::bas
 
 void RendererImpl::addressSpaceGraphicsConsumerPostSave(void* consumer) {
     RenderThread* thread = (RenderThread*)consumer;
-    thread->resume();
+    thread->resume(true);
 }
 
 void RendererImpl::addressSpaceGraphicsConsumerRegisterPostLoadRenderThread(void* consumer) {
@@ -302,29 +310,38 @@ void RendererImpl::addressSpaceGraphicsConsumerRegisterPostLoadRenderThread(void
 }
 
 void RendererImpl::pauseAllPreSave() {
-    android::base::AutoLock lock(mChannelsLock);
-    if (mStopped) {
-        return;
-    }
-    for (const auto& c : mChannels) {
-        c->renderThread()->pausePreSnapshot();
-    }
-    lock.unlock();
-    waitForProcessCleanup();
-}
-
-void RendererImpl::resumeAll() {
     {
         android::base::AutoLock lock(mChannelsLock);
         if (mStopped) {
             return;
         }
         for (const auto& c : mChannels) {
-            c->renderThread()->resume();
+            c->renderThread()->pausePreSnapshot();
         }
+    }
+    {
+        android::base::AutoLock lock(mAddressSpaceRenderThreadLock);
+        for (const auto& thread : mAddressSpaceRenderThreads) {
+            thread->pausePreSnapshot();
+        }
+    }
+    waitForProcessCleanup();
+}
 
+void RendererImpl::resumeAll(bool waitForSave) {
+    {
+        android::base::AutoLock lock(mChannelsLock);
+        if (mStopped) {
+            return;
+        }
+        for (const auto& c : mChannels) {
+            c->renderThread()->resume(waitForSave);
+        }
+        for (const auto& thread : mAddressSpaceRenderThreads) {
+            thread->resume(waitForSave);
+        }
         for (const auto t: mAdditionalPostLoadRenderThreads) {
-            t->resume();
+            t->resume(waitForSave);
         }
         mAdditionalPostLoadRenderThreads.clear();
     }

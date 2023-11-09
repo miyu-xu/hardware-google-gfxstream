@@ -77,12 +77,27 @@ static constexpr int kMinThreadsToRunUnlimited = 5;
 // A thread run limiter that limits render threads to run one slice at a time.
 static android::base::Lock sThreadRunLimiter;
 
+#include <execinfo.h>
+#include <stdio.h>
+
+static void printCallStack() {
+    void* callstack[128];
+    int i, frames = backtrace(callstack, 128);
+    char** strs = backtrace_symbols(callstack, frames);
+    for (i = 0; i < frames; ++i) {
+        fprintf(stderr, "%s\n", strs[i]);
+    }
+    free(strs);
+}
+
+
 RenderThread::RenderThread(RenderChannelImpl* channel,
                            android::base::Stream* loadStream)
     : android::base::Thread(android::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024),
       mChannel(channel),
       mRunInLimitedMode(android::base::getCpuCoreCount() < kMinThreadsToRunUnlimited)
 {
+    printCallStack();
     if (loadStream) {
         const bool success = loadStream->getByte();
         if (success) {
@@ -106,6 +121,7 @@ RenderThread::RenderThread(
       mRingStream(
           new RingStream(context, callbacks, kStreamBufferSize)),
       mContextId(contextId), mCapsetId(capsetId) {
+    printCallStack();
     if (loadStream) {
         const bool success = loadStream->getByte();
         if (success) {
@@ -123,30 +139,43 @@ RenderThread::RenderThread(
 // the end of RenderThread::main().
 RenderThread::~RenderThread() = default;
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 void RenderThread::pausePreSnapshot() {
+    _PR_LINE
     AutoLock lock(mLock);
     assert(mState == SnapshotState::Empty);
     mStream.emplace();
     mState = SnapshotState::StartSaving;
+    _PR_LINE
     if (mRingStream) {
         mRingStream->pausePreSnapshot();
         // mCondVar.broadcastAndUnlock(&lock);
     }
     if (mChannel) {
         mChannel->pausePreSnapshot();
+        _PR_LINE
         mCondVar.broadcastAndUnlock(&lock);
+        _PR_LINE
     }
 }
 
-void RenderThread::resume() {
+void RenderThread::resume(bool waitForSave) {
+    _PR_LINE
     AutoLock lock(mLock);
     // This function can be called for a thread from pre-snapshot loading
     // state; it doesn't need to do anything.
+    _PR_LINE
     if (mState == SnapshotState::Empty) {
+        _PR_LINE
         return;
     }
+    _PR_LINE
     if (mRingStream) mRingStream->resume();
-    waitForSnapshotCompletion(&lock);
+    if (waitForSave) {
+        waitForSnapshotCompletion(&lock);
+    }
+    mNeedReloadProcessResources = true;
     mStream.clear();
     mState = SnapshotState::Empty;
     if (mChannel) mChannel->resume();
@@ -391,6 +420,11 @@ intptr_t RenderThread::main() {
                 tInfo.postLoadRefreshCurrentContextSurfacePtrs();
                 needRestoreFromSnapshot = false;
             }
+            if (mNeedReloadProcessResources) {
+                printf("resetting processResources\n");
+                processResources = nullptr;
+                mNeedReloadProcessResources = false;
+            }
         }
 
         DD("render thread read %i bytes, op %i, packet size %i",
@@ -462,6 +496,7 @@ intptr_t RenderThread::main() {
             if (!processResources && tInfo.m_puid) {
                 processResources = FrameBuffer::getFB()->getProcessResources(tInfo.m_puid);
             }
+            printf("m_puid %lu loaded %d\n", tInfo.m_puid, processResources->getSequenceNumberPtr()->load(std::memory_order_seq_cst));
 
             progress = false;
             size_t last;

@@ -2977,9 +2977,20 @@ void FrameBuffer::onSave(Stream* stream,
     saveProcOwnedCollection(stream, m_procOwnedColorBuffers);
     saveProcOwnedCollection(stream, m_procOwnedEmulatedEglImages);
     saveProcOwnedCollection(stream, m_procOwnedEmulatedEglContexts);
+    printf("saving snapshot kFeature_VulkanSnapshots %d\n", feature_is_enabled(kFeature_VulkanSnapshots));
+    // TODO(b/309858017): remove if when ready to bump snapshot version
+    if (feature_is_enabled(kFeature_VulkanSnapshots)) {
+        printf("saving m_procOwnedResources %lu\n", m_procOwnedResources.size());
+        stream->putBe64(m_procOwnedResources.size());
+        for (const auto& element: m_procOwnedResources) {
+            stream->putBe64(element.first);
+            stream->putBe32(element.second->getSequenceNumberPtr()->load());
+        }
+    }
 
     // Save Vulkan state
     if (feature_is_enabled(kFeature_VulkanSnapshots) && vk::VkDecoderGlobalState::get()) {
+        printf("saving vulkan\n");
         vk::VkDecoderGlobalState::get()->save(stream);
     }
 
@@ -3081,7 +3092,7 @@ bool FrameBuffer::onLoad(Stream* stream,
             lock.unlock();
 
             for (auto cb : cleanupCallbacks) {
-                cb();
+                //cb();
             }
 
             lock.lock();
@@ -3192,6 +3203,18 @@ bool FrameBuffer::onLoad(Stream* stream,
     loadProcOwnedCollection(stream, &m_procOwnedColorBuffers);
     loadProcOwnedCollection(stream, &m_procOwnedEmulatedEglImages);
     loadProcOwnedCollection(stream, &m_procOwnedEmulatedEglContexts);
+    // TODO(b/309858017): remove if when ready to bump snapshot version
+    if (feature_is_enabled(kFeature_VulkanSnapshots)) {
+        size_t resourceCount = stream->getBe64();
+        for (size_t i = 0; i < resourceCount; i++) {
+            uint64_t puid = stream->getBe64();
+            uint32_t sequenceNumber = stream->getBe32();
+            printf("loading puid %lu sequenceNumber %u\n", puid, sequenceNumber);
+            std::unique_ptr<ProcessResources> processResources = ProcessResources::create();
+            processResources->getSequenceNumberPtr()->store(sequenceNumber);
+            m_procOwnedResources.emplace(puid, std::move(processResources));
+        }
+    }
 
     if (m_emulationGl) {
         if (s_egl.eglPostLoadAllImages) {
@@ -3222,6 +3245,7 @@ bool FrameBuffer::onLoad(Stream* stream,
     // Restore Vulkan state
     if (feature_is_enabled(kFeature_VulkanSnapshots) && vk::VkDecoderGlobalState::get()) {
         lock.unlock();
+        printf("loading vulkan\n");
         GfxApiLogger gfxLogger;
         vk::VkDecoderGlobalState::get()->load(stream, gfxLogger, m_healthMonitor.get());
         lock.lock();
@@ -3303,6 +3327,7 @@ const ProcessResources* FrameBuffer::getProcessResources(uint64_t puid) {
         ERR("Failed to find process owned resources for puid %" PRIu64 ".", puid);
         return nullptr;
     }
+    printf("getting ProcessResources for %lu\n", puid);
     return i->second.get();
 }
 
