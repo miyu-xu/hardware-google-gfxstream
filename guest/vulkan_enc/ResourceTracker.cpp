@@ -2013,7 +2013,19 @@ VkResult ResourceTracker::on_vkEnumeratePhysicalDevices(void* context, VkResult,
 }
 
 void ResourceTracker::on_vkGetPhysicalDeviceProperties(void*, VkPhysicalDevice,
-                                                       VkPhysicalDeviceProperties*) {}
+                                                       VkPhysicalDeviceProperties* pProperties) {
+#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
+    if (pProperties) {
+        if (VK_PHYSICAL_DEVICE_TYPE_CPU == pProperties->deviceType) {
+            /* For Linux guest: Even if host driver reports DEVICE_TYPE_CPU,
+            * override this to VIRTUAL_GPU, otherwise Linux DRM interfaces
+            * will take unexpected code paths to deal with "software" driver
+            */
+            pProperties->deviceType = VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU;
+        }
+    }
+#endif
+}
 
 void ResourceTracker::on_vkGetPhysicalDeviceFeatures2(void*, VkPhysicalDevice,
                                                       VkPhysicalDeviceFeatures2* pFeatures) {
@@ -2032,7 +2044,7 @@ void ResourceTracker::on_vkGetPhysicalDeviceFeatures2KHR(void* context,
     on_vkGetPhysicalDeviceFeatures2(context, physicalDevice, pFeatures);
 }
 
-void ResourceTracker::on_vkGetPhysicalDeviceProperties2(void*, VkPhysicalDevice,
+void ResourceTracker::on_vkGetPhysicalDeviceProperties2(void* context, VkPhysicalDevice physicalDevice,
                                                         VkPhysicalDeviceProperties2* pProperties) {
     if (pProperties) {
         VkPhysicalDeviceDeviceMemoryReportFeaturesEXT* memoryReportFeaturesEXT =
@@ -2040,6 +2052,7 @@ void ResourceTracker::on_vkGetPhysicalDeviceProperties2(void*, VkPhysicalDevice,
         if (memoryReportFeaturesEXT) {
             memoryReportFeaturesEXT->deviceMemoryReport = VK_TRUE;
         }
+        on_vkGetPhysicalDeviceProperties(context, physicalDevice, &pProperties->properties);
     }
 }
 
