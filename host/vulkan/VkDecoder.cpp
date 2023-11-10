@@ -474,6 +474,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 break;
             }
             case OP_vkGetPhysicalDeviceFormatProperties: {
+                printf("decoding OP_vkGetPhysicalDeviceFormatProperties\n");
                 android::base::beginTrace("vkGetPhysicalDeviceFormatProperties decode");
                 VkPhysicalDevice physicalDevice;
                 VkFormat format;
@@ -4010,6 +4011,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 break;
             }
             case OP_vkDestroyImageView: {
+                printf("decoding OP_vkDestroyImageView\n");
                 android::base::beginTrace("vkDestroyImageView decode");
                 VkDevice device;
                 VkImageView imageView;
@@ -6113,6 +6115,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 break;
             }
             case OP_vkAllocateCommandBuffers: {
+                printf("decoding OP_vkAllocateCommandBuffers\n");
                 android::base::beginTrace("vkAllocateCommandBuffers decode");
                 VkDevice device;
                 const VkCommandBufferAllocateInfo* pAllocateInfo;
