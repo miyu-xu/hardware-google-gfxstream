@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "998837f9_ff455a61",
+        "filename": "common/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-10T20:38:38Z",
+      "side": 0,
+      "message": "We should not be removing testing of importing with `vkNativeBufferANDROID` because this is what Android\u0027s `libvulkan` does for its swapchain implementation.",
+      "range": {
+        "startLine": 65,
+        "startChar": 4,
+        "endLine": 65,
+        "endChar": 62
+      },
+      "revId": "2ed582a2600d4d79d807aebee801e0ca19aa6ea4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ed739bf_f627f19b",
+        "filename": "common/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-10T20:38:38Z",
+      "side": 0,
+      "message": "If we\u0027re going to lose all the Android functions from switching to the default VKHPP, could you please either create a little wrapper or just directly here `vkGet*ProcAddr()`s the `vkQueueSignalReleaseImageANDROID()` / `vkAcquireNextImageANDROID()` functions and keep the functionality?",
+      "range": {
+        "startLine": 169,
+        "startChar": 4,
+        "endLine": 170,
+        "endChar": 36
+      },
+      "revId": "2ed582a2600d4d79d807aebee801e0ca19aa6ea4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acef898c_6c49fa68",
+        "filename": "common/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-10T20:38:38Z",
+      "side": 0,
+      "message": "We should not be removing this of this late binding with `vkNativeBufferANDROID` as this is something that specifically broke Gfxstream for a while on the internal branches.",
+      "range": {
+        "startLine": 203,
+        "startChar": 4,
+        "endLine": 203,
+        "endChar": 58
+      },
+      "revId": "2ed582a2600d4d79d807aebee801e0ca19aa6ea4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
