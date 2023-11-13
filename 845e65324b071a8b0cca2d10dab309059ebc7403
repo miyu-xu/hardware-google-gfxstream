@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0442ba8a_70a22a29",
+        "filename": "common/snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-13T21:49:06Z",
+      "side": 1,
+      "message": "Could you add `with_vk_snapshots` to [here](https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/common/GfxstreamEnd2EndTests.h;drc\u003d4e10d32a17e1834e8a91bc0c6382180de942baf3;l\u003d476), add a corresponding ` STREAM_RENDERER_FLAGS_VULKAN_SNAPSHOTS` to [`RendererFlags`](https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/host/include/gfxstream/virtio-gpu-gfxstream-renderer.h;drc\u003d6e944a6a6909f6debd7990c79cc7f18715f26b08;l\u003d244), and enable the snapshot via the [flags interface](https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/common/GfxstreamEnd2EndTests.cpp;drc\u003d6e944a6a6909f6debd7990c79cc7f18715f26b08;l\u003d1107)? (Sorry, I realize the `kFeature_VulkanSnapshots` is pre-existing but I think this is a good opportunity to actually hook it up to the main gfxstream interface)\n\nThis would also help users in the future and work towards what gurchetansingh@ was requesting in the last meeting.",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 2
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ecf823b_2fe8e69e",
+        "filename": "common/snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-13T21:49:06Z",
+      "side": 1,
+      "message": "Could you create a `VkImage`, load it with some data, do the snapshot, load the snapshot, and then check that the image contents are still the same? IIUC, right now this won\u0027t actually save any textures?",
+      "range": {
+        "startLine": 43,
+        "startChar": 4,
+        "endLine": 43,
+        "endChar": 39
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ffb6149_adda9fec",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-13T21:49:06Z",
+      "side": 1,
+      "message": "Given that `TextureSaver` is kind of a AEMU specific function, could we put these into `hardware/google/gfxstream/host/include/gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h`?\n\nI guess my current (potentially naive) expectation is eventually `gfxstream/virtio-gpu-gfxstream-renderer.h` would have a more generic:\n\n```\nint stream_renderer_save_snapshot(uint32_t* size,  uint8_t* data);\nint stream_renderer_load_snapshot(uint32_t size, const uint8_t* data);\n```\n\nwhich works more like the `vkEnumerate*()` functions where you first query the size, then allocate, then actually snapshot. So Qemu/Crosvm would have something like:\n\n```\nuint32_t gfxstream_snapshot_space_needed \u003d 0;\nif (stream_renderer_save_snapshot(\u0026gfxstream_snapshot_space_needed, nullptr)) {\n  // handle error\n}\n\nuint8_t* gfxstream_snapshot_space \u003d \u003cstream-\u003eallocate(gfxstream_snapshot_space_needed) / stream-\u003ereserve(gfxstream_snapshot_space_needed)\u003e ;\n\nif (stream_renderer_save_snapshot(\u0026gfxstream_snapshot_space_needed, gfxstream_snapshot_space)) {\n  // handle error\n}\n\n```",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 243,
+        "endChar": 78
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
