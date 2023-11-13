@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "73edabde_7449da7e",
+        "filename": "common/snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-11-13T22:48:55Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "0442ba8a_70a22a29",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 2
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5ecf823b_2fe8e69e",
         "filename": "common/snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
         "patchSetId": 4
@@ -37,6 +61,30 @@
       "writtenOn": "2023-11-13T21:49:06Z",
       "side": 1,
       "message": "Could you create a `VkImage`, load it with some data, do the snapshot, load the snapshot, and then check that the image contents are still the same? IIUC, right now this won\u0027t actually save any textures?",
+      "range": {
+        "startLine": 43,
+        "startChar": 4,
+        "endLine": 43,
+        "endChar": 39
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "19aeabf4_974b113c",
+        "filename": "common/snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-11-13T22:48:55Z",
+      "side": 1,
+      "message": "Sure, I will do it in a new CL (and possibly with a new test class). The plan is to start with something minimum (create/delete instances/devices), and make sure it doesn\u0027t crash or freeze.",
+      "parentUuid": "5ecf823b_2fe8e69e",
       "range": {
         "startLine": 43,
         "startChar": 4,
@@ -60,6 +108,30 @@
       "writtenOn": "2023-11-13T21:49:06Z",
       "side": 1,
       "message": "Given that `TextureSaver` is kind of a AEMU specific function, could we put these into `hardware/google/gfxstream/host/include/gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h`?\n\nI guess my current (potentially naive) expectation is eventually `gfxstream/virtio-gpu-gfxstream-renderer.h` would have a more generic:\n\n```\nint stream_renderer_save_snapshot(uint32_t* size,  uint8_t* data);\nint stream_renderer_load_snapshot(uint32_t size, const uint8_t* data);\n```\n\nwhich works more like the `vkEnumerate*()` functions where you first query the size, then allocate, then actually snapshot. So Qemu/Crosvm would have something like:\n\n```\nuint32_t gfxstream_snapshot_space_needed \u003d 0;\nif (stream_renderer_save_snapshot(\u0026gfxstream_snapshot_space_needed, nullptr)) {\n  // handle error\n}\n\nuint8_t* gfxstream_snapshot_space \u003d \u003cstream-\u003eallocate(gfxstream_snapshot_space_needed) / stream-\u003ereserve(gfxstream_snapshot_space_needed)\u003e ;\n\nif (stream_renderer_save_snapshot(\u0026gfxstream_snapshot_space_needed, gfxstream_snapshot_space)) {\n  // handle error\n}\n\n```",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 243,
+        "endChar": 78
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88c48385_8ad8078c",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-11-13T22:48:55Z",
+      "side": 1,
+      "message": "Sure, I will move them to `gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h`.\n\nI would suggest to design a different snapshot API given that we could potentially save 1GB+ of data and we are planning to rewrite it in protobuf. But that would be outside of the scope of this commit. Given that there are no other users at the moment, let\u0027s postpone the `stream_renderer_save_snapshot` design and focus on the goldfish version first.",
+      "parentUuid": "4ffb6149_adda9fec",
       "range": {
         "startLine": 239,
         "startChar": 0,
