@@ -33,6 +33,24 @@
       "message": "Do you have a one pager or design doc? For its background, motivation, goal, design etc",
       "revId": "7629fce74d96f00128a54f60c1457491e4611e7f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "92408185_5c9daf53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-13T18:00:07Z",
+      "side": 1,
+      "message": "Using standard Vulkan headers is necessary for goto.google.com/gfxstream-guest-linux, will happen in a subsequent patch series.",
+      "parentUuid": "9aacd9e9_43aa838a",
+      "revId": "7629fce74d96f00128a54f60c1457491e4611e7f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

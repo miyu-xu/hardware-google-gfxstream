@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4f8968c_16027350",
+        "filename": "common/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-13T18:00:07Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "998837f9_ff455a61",
+      "range": {
+        "startLine": 65,
+        "startChar": 4,
+        "endLine": 65,
+        "endChar": 62
+      },
+      "revId": "2ed582a2600d4d79d807aebee801e0ca19aa6ea4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2ed739bf_f627f19b",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e19393ac_09a66e26",
+        "filename": "common/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-13T18:00:07Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "2ed739bf_f627f19b",
+      "range": {
+        "startLine": 169,
+        "startChar": 4,
+        "endLine": 170,
+        "endChar": 36
+      },
+      "revId": "2ed582a2600d4d79d807aebee801e0ca19aa6ea4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "acef898c_6c49fa68",
@@ -60,6 +108,30 @@
       "writtenOn": "2023-11-10T20:38:38Z",
       "side": 0,
       "message": "We should not be removing this of this late binding with `vkNativeBufferANDROID` as this is something that specifically broke Gfxstream for a while on the internal branches.",
+      "range": {
+        "startLine": 203,
+        "startChar": 4,
+        "endLine": 203,
+        "endChar": 58
+      },
+      "revId": "2ed582a2600d4d79d807aebee801e0ca19aa6ea4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c18d4551_98d0bd2b",
+        "filename": "common/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-13T18:00:07Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "acef898c_6c49fa68",
       "range": {
         "startLine": 203,
         "startChar": 4,
