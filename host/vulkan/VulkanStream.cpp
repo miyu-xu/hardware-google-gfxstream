@@ -205,6 +205,7 @@ ssize_t VulkanMemReadingStream::read(void* buffer, size_t size) {
 ssize_t VulkanMemReadingStream::write(const void* buffer, size_t size) {
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
         << "VulkanMemReadingStream does not support writing";
+    return 0;
 }
 
 uint8_t* VulkanMemReadingStream::beginTrace() {
