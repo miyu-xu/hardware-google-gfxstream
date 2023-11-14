@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dc55e47_98dccb76",
+        "filename": "common/snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-11-14T00:14:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "73edabde_7449da7e",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 2
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5ecf823b_2fe8e69e",
@@ -132,6 +156,30 @@
       "side": 1,
       "message": "Sure, I will move them to `gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h`.\n\nI would suggest to design a different snapshot API given that we could potentially save 1GB+ of data and we are planning to rewrite it in protobuf. But that would be outside of the scope of this commit. Given that there are no other users at the moment, let\u0027s postpone the `stream_renderer_save_snapshot` design and focus on the goldfish version first.",
       "parentUuid": "4ffb6149_adda9fec",
+      "range": {
+        "startLine": 239,
+        "startChar": 0,
+        "endLine": 243,
+        "endChar": 78
+      },
+      "revId": "845e65324b071a8b0cca2d10dab309059ebc7403",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d6ad90e_4632a525",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-11-14T00:14:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88c48385_8ad8078c",
       "range": {
         "startLine": 239,
         "startChar": 0,
