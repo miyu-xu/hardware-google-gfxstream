@@ -125,6 +125,7 @@ int android_setOpenglesEmulation(void* renderLib, void* eglDispatch, void* glesv
 int android_initOpenglesEmulation() {
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
         << "Not meant to call android_initOpenglesEmulation in the new build.";
+    return -1;
 }
 
 int
