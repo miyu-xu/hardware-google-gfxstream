@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4f9481f_816dbe44",
+        "filename": "common/GfxstreamEnd2EndTests.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 479,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-14T01:05:05Z",
+      "side": 1,
+      "message": "nit: `with_vk_snapshot` since the underlying feature is `VulkanSnapshots`",
+      "range": {
+        "startLine": 479,
+        "startChar": 9,
+        "endLine": 479,
+        "endChar": 22
+      },
+      "revId": "5427ed29aef9bad4f43582e4924b870d15b3beca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c8a3593_b1f1b273",
+        "filename": "common/GfxstreamEnd2EndTests.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 479,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-14T01:05:05Z",
+      "side": 1,
+      "message": "optional: can default to `false` so you don\u0027t have to change all the existing tests",
+      "range": {
+        "startLine": 479,
+        "startChar": 9,
+        "endLine": 479,
+        "endChar": 22
+      },
+      "revId": "5427ed29aef9bad4f43582e4924b870d15b3beca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
