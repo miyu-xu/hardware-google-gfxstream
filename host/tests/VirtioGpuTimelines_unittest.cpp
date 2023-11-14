@@ -36,6 +36,7 @@ TEST(VirtioGpuTimelinesTest, TasksShouldHaveDifferentIds) {
     ASSERT_NE(taskId1, taskId2);
 }
 
+#ifndef AEMU_BUILD
 TEST(VirtioGpuTimelinesTest, CantPollWithAsyncCallbackEnabled) {
     EXPECT_DEATH(
         {
@@ -45,6 +46,7 @@ TEST(VirtioGpuTimelinesTest, CantPollWithAsyncCallbackEnabled) {
         },
         ".*");
 }
+#endif
 
 TEST(VirtioGpuTimelinesTest, MultipleTasksAndFencesWithSyncCallback) {
     std::unique_ptr<VirtioGpuTimelines> virtioGpuTimelines = VirtioGpuTimelines::create(false);

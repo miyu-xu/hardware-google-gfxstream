@@ -39,6 +39,7 @@ const BorrowedImageInfoVk* getInfoOrAbort(const std::unique_ptr<BorrowedImageInf
 
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
         << "CompositorVk did not find BorrowedImageInfoVk";
+    return nullptr;
 }
 
 struct Vertex {
