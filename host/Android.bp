@@ -130,7 +130,6 @@ cc_test_library {
         "gfxstream_snapshot",
         "gfxstream_oswindow_test_support",
         "libgmock",
-        "liblz4",
     ],
     export_include_dirs: ["tests"],
 }
@@ -223,7 +222,6 @@ cc_test_host {
         "gfxstream_snapshot",
         "gfxstream_vulkan_server",
         "libgmock",
-        "liblz4",
     ],
     test_options: {
         // Disabled by default as requires Vulkan.

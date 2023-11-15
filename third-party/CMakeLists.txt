@@ -20,35 +20,6 @@ endif ()
 add_subdirectory(renderdoc)
 add_subdirectory(stb)
 
-if(ENABLE_VKCEREAL_TESTS)
-    set(AEMU_BASE_USE_LZ4 ON CACHE BOOL "" FORCE)
-endif()
-
-if(NOT TARGET lz4_static AND AEMU_BASE_USE_LZ4)
-    set(BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
-    if(DEPENDENCY_RESOLUTION STREQUAL "AOSP")
-        set(LZ4_PATH ${PROJECT_SOURCE_DIR}/../../../external/lz4/build/cmake)
-        if(EXISTS ${LZ4_PATH})
-            add_subdirectory(${LZ4_PATH} lz4)
-        endif()
-    elseif(DEPENDENCY_RESOLUTION STREQUAL "SYSTEM")
-        find_package(PkgConfig REQUIRED)
-        pkg_search_module(lz4 REQUIRED IMPORTED_TARGET GLOBAL liblz4)
-        add_library(lz4_static ALIAS PkgConfig::lz4)
-    elseif(DEPENDENCY_RESOLUTION STREQUAL "DOWNLOAD")
-        FetchContent_Declare(
-            lz4
-            GIT_REPOSITORY https://android.googlesource.com/platform/external/lz4
-            GIT_REMOTE_NAME aosp
-            GIT_TAG aosp/master
-            GIT_REMOTE_UPDATE_STRATEGY CHECKOUT
-            GIT_PROGRESS TRUE
-            SOURCE_SUBDIR build/cmake
-        )
-        FetchContent_MakeAvailable(lz4)
-    endif()
-endif()
-
 if(NOT TARGET gtest_main AND ENABLE_VKCEREAL_TESTS)
     # For Windows: Prevent overriding the parent project's compiler/linker settings
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
