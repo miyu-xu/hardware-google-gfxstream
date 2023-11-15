@@ -151,9 +151,7 @@ HealthMonitor<>* getGlobalHealthMonitor() {
 }
 
 static HostConnectionType getConnectionTypeFromProperty(enum VirtGpuCapset capset) {
-#ifdef __Fuchsia__
-    return HOST_CONNECTION_ADDRESS_SPACE;
-#elif defined(__ANDROID__) || defined(HOST_BUILD)
+#if defined(__ANDROID__) || defined(HOST_BUILD)
     char transportValue[PROPERTY_VALUE_MAX] = "";
 
     do {
