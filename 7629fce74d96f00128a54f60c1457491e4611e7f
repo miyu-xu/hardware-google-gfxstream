@@ -51,6 +51,24 @@
       "parentUuid": "9aacd9e9_43aa838a",
       "revId": "7629fce74d96f00128a54f60c1457491e4611e7f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67478b2f_38e324b7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-11-15T19:25:30Z",
+      "side": 1,
+      "message": "In that case would you add it into a subsession (maybe implementation details or something) in goto.google.com/gfxstream-guest-linux? So that we could properly document major design decisions. Just copy-pasting most of the commit message would be good enough.",
+      "parentUuid": "92408185_5c9daf53",
+      "revId": "7629fce74d96f00128a54f60c1457491e4611e7f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
