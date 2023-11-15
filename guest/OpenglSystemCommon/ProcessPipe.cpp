@@ -24,13 +24,9 @@
 #include "HostConnection.h"
 #include "renderControl_enc.h"
 
-#ifndef __Fuchsia__
-
 #include "VirtioGpuPipeStream.h"
 static VirtioGpuPipeStream* sVirtioGpuPipeStream = 0;
 static int sStreamHandle = -1;
-
-#endif // !__Fuchsia__
 
 static QEMU_PIPE_HANDLE sProcPipe = 0;
 // sProcUID is a unique ID per process assigned by the host.
@@ -49,6 +45,14 @@ static void initSeqno(void) {
     sSeqnoPtr = new uint32_t;
     *sSeqnoPtr = 0;
 }
+
+namespace {
+
+static std::mutex sNeedInitMutex;
+static bool sNeedInit = true;
+static bool sProcessPipeEnabled = true;
+
+}  // namespace
 
 #ifndef __Fuchsia__
 
@@ -78,13 +82,7 @@ static void sQemuPipeInit() {
     }
 }
 
-namespace {
-
-static std::mutex sNeedInitMutex;
-static bool sNeedInit = true;
-static bool sProcessPipeEnabled = true;
-
-}  // namespace
+#endif // !__Fuchsia__
 
 static void processPipeDoInit(uint32_t noRenderControlEnc) {
     initSeqno();
@@ -96,6 +94,11 @@ static void processPipeDoInit(uint32_t noRenderControlEnc) {
     // No need to setup auxiliary pipe stream in this case
     if (noRenderControlEnc) return;
 
+#if defined(__Fuchsia__)
+    // Note: sProcUID is not initialized.
+    ALOGE("Fuchsia: requires noRenderControlEnc");
+    abort();
+#else
     switch (sConnType) {
         // TODO: Move those over too
         case HOST_CONNECTION_QEMU_PIPE:
@@ -109,8 +112,8 @@ static void processPipeDoInit(uint32_t noRenderControlEnc) {
             break;
         }
     }
+#endif
 }
-#endif // !__Fuchsia__
 
 bool processPipeInit(int streamHandle, HostConnectionType connType, uint32_t noRenderControlEnc) {
     sConnType = connType;
