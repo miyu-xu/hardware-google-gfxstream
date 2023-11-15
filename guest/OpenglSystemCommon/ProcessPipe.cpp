@@ -24,13 +24,9 @@
 #include "HostConnection.h"
 #include "renderControl_enc.h"
 
-#ifndef __Fuchsia__
-
 #include "VirtioGpuPipeStream.h"
 static VirtioGpuPipeStream* sVirtioGpuPipeStream = 0;
 static int sStreamHandle = -1;
-
-#endif // !__Fuchsia__
 
 static QEMU_PIPE_HANDLE sProcPipe = 0;
 // sProcUID is a unique ID per process assigned by the host.
@@ -49,6 +45,14 @@ static void initSeqno(void) {
     sSeqnoPtr = new uint32_t;
     *sSeqnoPtr = 0;
 }
+
+namespace {
+
+static std::mutex sNeedInitMutex;
+static bool sNeedInit = true;
+static bool sProcessPipeEnabled = true;
+
+}  // namespace
 
 #ifndef __Fuchsia__
 
@@ -78,13 +82,7 @@ static void sQemuPipeInit() {
     }
 }
 
-namespace {
-
-static std::mutex sNeedInitMutex;
-static bool sNeedInit = true;
-static bool sProcessPipeEnabled = true;
-
-}  // namespace
+#endif // !__Fuchsia__
 
 static void processPipeDoInit(uint32_t noRenderControlEnc) {
     initSeqno();
@@ -100,7 +98,11 @@ static void processPipeDoInit(uint32_t noRenderControlEnc) {
         // TODO: Move those over too
         case HOST_CONNECTION_QEMU_PIPE:
         case HOST_CONNECTION_ADDRESS_SPACE:
+#ifdef __Fuchsia__
+            ALOGE("Fuchsia requires virtio-gpu connection type");
+#else
             sQemuPipeInit();
+#endif
             break;
         case HOST_CONNECTION_VIRTIO_GPU_PIPE:
         case HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE: {
@@ -110,7 +112,6 @@ static void processPipeDoInit(uint32_t noRenderControlEnc) {
         }
     }
 }
-#endif // !__Fuchsia__
 
 bool processPipeInit(int streamHandle, HostConnectionType connType, uint32_t noRenderControlEnc) {
     sConnType = connType;

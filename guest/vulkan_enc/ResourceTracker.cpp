@@ -654,7 +654,7 @@ static VkFormat sysmemPixelFormatTypeToVk(fuchsia_sysmem::wire::PixelFormatType 
 // TODO(fxbug.dev/90856): This is currently only used for allocating
 // memory for dedicated external images. It should be migrated to use
 // SetBufferCollectionImageConstraintsFUCHSIA.
-VkResult setBufferCollectionConstraintsFUCHSIA(
+VkResult ResourceTracker::setBufferCollectionConstraintsFUCHSIA(
     VkEncoder* enc, VkDevice device,
     fidl::WireSyncClient<fuchsia_sysmem::BufferCollection>* collection,
     const VkImageCreateInfo* pImageInfo) {
@@ -796,7 +796,7 @@ VkResult addImageBufferCollectionConstraintsFUCHSIA(
         createInfoDup.pNext = nullptr;
         enc->vkGetLinearImageLayout2GOOGLE(device, &createInfoDup, &offset, &rowPitchAlignment,
                                            true /* do lock */);
-        D("vkGetLinearImageLayout2GOOGLE: format %d offset %lu "
+        ALOGD("vkGetLinearImageLayout2GOOGLE: format %d offset %lu "
           "rowPitchAlignment = %lu",
           (int)createInfo->format, offset, rowPitchAlignment);
     }
@@ -828,17 +828,6 @@ VkResult addImageBufferCollectionConstraintsFUCHSIA(
         imageConstraints;
     return VK_SUCCESS;
 }
-
-struct SetBufferCollectionImageConstraintsResult {
-    VkResult result;
-    fuchsia_sysmem::wire::BufferCollectionConstraints constraints;
-    std::vector<uint32_t> createInfoIndex;
-};
-
-struct SetBufferCollectionBufferConstraintsResult {
-    VkResult result;
-    fuchsia_sysmem::wire::BufferCollectionConstraints constraints;
-};
 
 SetBufferCollectionBufferConstraintsResult setBufferCollectionBufferConstraintsImpl(
     fidl::WireSyncClient<fuchsia_sysmem::BufferCollection>* pCollection,
@@ -6294,7 +6283,7 @@ VkResult ResourceTracker::on_vkGetPhysicalDeviceImageFormatProperties2_common(
             return VK_ERROR_FORMAT_NOT_SUPPORTED;
         }
     }
-    supportedHandleType |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VM_BIT_FUCHSIA;
+    supportedHandleType |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
 #endif
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
@@ -6379,7 +6368,7 @@ void ResourceTracker::on_vkGetPhysicalDeviceExternalBufferProperties_common(
 
     uint32_t supportedHandleType = 0;
 #ifdef VK_USE_PLATFORM_FUCHSIA
-    supportedHandleType |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VM_BIT_FUCHSIA;
+    supportedHandleType |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
 #endif
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
     supportedHandleType |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT |
