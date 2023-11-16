@@ -75,6 +75,7 @@ SUPPORTED_FEATURES = [
     "VK_KHR_create_renderpass2",
     "VK_KHR_imageless_framebuffer",
     "VK_KHR_descriptor_update_template",
+    "VK_EXT_depth_clip_enable",
     # see aosp/2736079 + b/268351352
     "VK_KHR_maintenance5",
     "VK_EXT_host_image_copy",
