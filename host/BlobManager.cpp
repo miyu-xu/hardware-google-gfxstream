@@ -28,6 +28,7 @@ static BlobManager* sMapping() {
 BlobManager* BlobManager::get() { return sMapping(); }
 
 void BlobManager::addMapping(uint32_t ctxId, uint64_t blobId, void* addr, uint32_t caching) {
+    printf("%s: ctxId %u blobId %lu addr %p caching %d\n", __func__, ctxId, blobId, addr, caching);
     struct HostMemInfo info = {
         .addr = addr,
         .caching = caching,
@@ -39,6 +40,7 @@ void BlobManager::addMapping(uint32_t ctxId, uint64_t blobId, void* addr, uint32
 }
 
 std::optional<HostMemInfo> BlobManager::removeMapping(uint32_t ctxId, uint64_t blobId) {
+    printf("%s: ctxId %u blobId %lu\n", __func__, ctxId, blobId);
     auto key = std::make_pair(ctxId, blobId);
     std::lock_guard<std::mutex> lock(mLock);
     auto found = mHostMemInfos.find(key);
@@ -54,6 +56,7 @@ std::optional<HostMemInfo> BlobManager::removeMapping(uint32_t ctxId, uint64_t b
 void BlobManager::addDescriptorInfo(uint32_t ctxId, uint64_t blobId, ManagedDescriptor descriptor,
                                     uint32_t handleType, uint32_t caching,
                                     std::optional<VulkanInfo> vulkanInfoOpt) {
+    printf("%s: ctxId %u blobId %lu\n", __func__, ctxId, blobId);
     struct ManagedDescriptorInfo info = {
         .descriptor = std::move(descriptor),
         .handleType = handleType,
@@ -68,6 +71,7 @@ void BlobManager::addDescriptorInfo(uint32_t ctxId, uint64_t blobId, ManagedDesc
 
 std::optional<ManagedDescriptorInfo> BlobManager::removeDescriptorInfo(uint32_t ctxId,
                                                                        uint64_t blobId) {
+    printf("%s: ctxId %u blobId %lu\n", __func__, ctxId, blobId);
     auto key = std::make_pair(ctxId, blobId);
     std::lock_guard<std::mutex> lock(mLock);
     auto found = mDescriptorInfos.find(key);

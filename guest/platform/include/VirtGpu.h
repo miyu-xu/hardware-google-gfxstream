@@ -131,6 +131,7 @@ class VirtGpuBlob {
 
     virtual int transferFromHost(uint32_t offset, uint32_t size) = 0;
     virtual int transferToHost(uint32_t offset, uint32_t size) = 0;
+    virtual bool valid() { return true; }
 };
 
 class VirtGpuBlobMapping {
@@ -138,6 +139,10 @@ class VirtGpuBlobMapping {
     virtual ~VirtGpuBlobMapping(void) {}
 
     virtual uint8_t* asRawPtr(void) = 0;
+
+    // Testing APIs
+    virtual bool valid() { return true; }
+    virtual VirtGpuBlobPtr getBlob() { return nullptr; }
 };
 
 class VirtGpuDevice {

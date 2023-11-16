@@ -17,6 +17,8 @@
  #include "VirtGpu.h"
  #include <cutils/log.h>
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace {
 
 static VirtGpuDevice* sDevice = nullptr;
@@ -40,6 +42,7 @@ VirtGpuDevice* VirtGpuDevice::getInstance(enum VirtGpuCapset capset) {
 }
 
 void VirtGpuDevice::resetInstance() {
+    _PR_LINE
     if (sDevice) {
         delete sDevice;
         sDevice = nullptr;

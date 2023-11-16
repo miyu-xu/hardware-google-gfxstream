@@ -46,6 +46,8 @@
 
 #include <unordered_map>
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 
 using android::base::AutoLock;
@@ -265,6 +267,7 @@ intptr_t RenderThread::main() {
     ChecksumCalculatorThreadInfo tChecksumInfo;
     ChecksumCalculator& checksumCalc = tChecksumInfo.get();
     bool needRestoreFromSnapshot = false;
+    _PR_LINE
 
     //
     // initialize decoders
@@ -594,6 +597,7 @@ intptr_t RenderThread::main() {
     setFinished();
 
     GL_LOG("Exited a RenderThread @%p", this);
+    _PR_LINE
     return 0;
 }
 

@@ -32,6 +32,8 @@
 
 #include "gfxstream/virtio-gpu-gfxstream-renderer.h"
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 namespace {
 
@@ -282,9 +284,10 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
 };
 
 EmulatedVirtioGpu::EmulatedVirtioGpuImpl::EmulatedVirtioGpuImpl()
-    : mWorkerThread([this]() { RunVirtioGpuTaskProcessingLoop(); }) {}
+    : mWorkerThread([this]() { RunVirtioGpuTaskProcessingLoop(); }){_PR_LINE}
 
-EmulatedVirtioGpu::EmulatedVirtioGpuImpl::~EmulatedVirtioGpuImpl() {
+      EmulatedVirtioGpu::EmulatedVirtioGpuImpl::~EmulatedVirtioGpuImpl() {
+    _PR_LINE
     mShuttingDown = true;
     mWorkerThread.join();
 
@@ -354,6 +357,7 @@ VirtGpuCaps EmulatedVirtioGpu::EmulatedVirtioGpuImpl::GetCaps(VirtGpuCapset caps
 }
 
 std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateContext() {
+    _PR_LINE
     const uint32_t contextId = mNextContextId++;
 
     VirtioGpuTaskCreateContext task = {
@@ -366,6 +370,7 @@ std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateContext(
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DestroyContext(uint32_t contextId) {
+    _PR_LINE
     VirtioGpuTaskDestroyContext task = {
         .contextId = contextId,
     };
@@ -373,6 +378,7 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DestroyContext(uint32_t contextId
 }
 
 uint8_t* EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Map(uint32_t resourceId) {
+    _PR_LINE
     EmulatedResource* resource = GetResource(resourceId);
     if (resource == nullptr) {
         ALOGE("Failed to Map() resource %" PRIu32 ": not found.", resourceId);
@@ -394,10 +400,12 @@ uint8_t* EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Map(uint32_t resourceId) {
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Unmap(uint32_t resourceId) {
+    _PR_LINE
     stream_renderer_resource_unmap(resourceId);
 }
 
 int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Wait(uint32_t resourceId) {
+    _PR_LINE
     EmulatedResource* resource = GetResource(resourceId);
     if (resource == nullptr) {
         ALOGE("Failed to Wait() on resource %" PRIu32 ": not found.", resourceId);
@@ -422,6 +430,7 @@ int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::TransferFromHost(
         uint32_t resourceId,
         uint32_t transferOffset,
         uint32_t transferSize) {
+    _PR_LINE
     EmulatedResource* resource = GetResource(resourceId);
     if (resource == nullptr) {
         ALOGE("Failed to TransferFromHost() on resource %" PRIu32 ": not found.", resourceId);
@@ -449,6 +458,7 @@ int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::TransferToHost(
         uint32_t resourceId,
         uint32_t transferOffset,
         uint32_t transferSize) {
+    _PR_LINE
     EmulatedResource* resource = GetResource(resourceId);
     if (resource == nullptr) {
         ALOGE("Failed to TransferFromHost() on resource %" PRIu32 ": not found.", resourceId);
@@ -474,6 +484,7 @@ int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::TransferToHost(
 std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateBlob(
         uint32_t contextId,
         const struct VirtGpuCreateBlob& blobCreate) {
+    _PR_LINE
     const uint32_t resourceId = mNextVirtioGpuResourceId++;
 
     ALOGV("Enquing task to create blob resource-id:%d size:%" PRIu64, resourceId, blobCreate.size);
@@ -517,6 +528,7 @@ std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateBlob(
 std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreatePipeBlob(
         uint32_t contextId,
         uint32_t size) {
+    _PR_LINE
     const uint32_t resourceId = mNextVirtioGpuResourceId++;
 
     EmulatedResource* resource = CreateResource(resourceId, EmulatedResourceType::kPipe);
@@ -557,6 +569,7 @@ std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreatePipeText
         uint32_t width,
         uint32_t height,
         uint32_t format) {
+    _PR_LINE
     const uint32_t resourceId = mNextVirtioGpuResourceId++;
 
     EmulatedResource* resource = CreateResource(resourceId, EmulatedResourceType::kPipe);
@@ -594,6 +607,7 @@ std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreatePipeText
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DestroyResource(uint32_t contextId,
                                                                uint32_t resourceId) {
+    _PR_LINE
     DeleteResource(resourceId);
 
     VirtioGpuTaskUnrefResource unrefTask{
@@ -612,6 +626,7 @@ int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::ExecBuffer(
         uint32_t contextId,
         struct VirtGpuExecBuffer& execbuffer,
         std::optional<uint32_t> blobResourceId) {
+    _PR_LINE
     std::optional<uint32_t> fence;
 
     if (execbuffer.flags & kFenceOut) {
@@ -650,6 +665,7 @@ int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::ExecBuffer(
 int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::WaitOnEmulatedFence(
         int fenceAsFileDescriptor,
         int timeoutMilliseconds) {
+    _PR_LINE
     uint32_t fenceId = static_cast<uint32_t>(fenceAsFileDescriptor);
     ALOGV("Waiting on fence:%d", (int)fenceId);
 
@@ -679,6 +695,7 @@ int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::WaitOnEmulatedFence(
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::SignalEmulatedFence(uint32_t fenceId) {
+    _PR_LINE
     ALOGV("Signaling fence:%d", (int)fenceId);
 
     std::lock_guard<std::mutex> lock(mVirtioGpuFencesMutex);
@@ -693,6 +710,7 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::SignalEmulatedFence(uint32_t fenc
 }
 
 uint32_t EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateEmulatedFence() {
+    _PR_LINE
     const uint32_t fenceId = mNextVirtioGpuFenceId++;
 
     ALOGV("Creating fence:%d", (int)fenceId);

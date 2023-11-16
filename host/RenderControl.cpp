@@ -534,8 +534,11 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
     }
 
     if (directMemEnabled && name == GL_EXTENSIONS) {
+        printf("adding direct mem\n");
         glStr += kDirectMemStr;
         glStr += " ";
+    } else {
+        printf("not adding direct mem\n");
     }
 
     if (hostCompositionEnabled && name == GL_EXTENSIONS) {
