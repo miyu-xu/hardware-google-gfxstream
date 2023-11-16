@@ -55,6 +55,16 @@ CoherentMemory::~CoherentMemory() {
                                                                      false);
 }
 
+void CoherentMemory::updateMapping(VirtGpuBlobMappingPtr mapping) {
+    mBlobMapping = mapping;
+    if (mapping) {
+        mAllocator =
+            std::make_unique<gfxstream::guest::SubAllocator>(mapping->asRawPtr(), mSize, 4096);
+    } else {
+        mAllocator.release();
+    }
+}
+
 VkDeviceMemory CoherentMemory::getDeviceMemory() const { return mMemory; }
 
 bool CoherentMemory::subAllocate(uint64_t size, uint8_t** ptr, uint64_t& offset) {
@@ -70,6 +80,10 @@ bool CoherentMemory::release(uint8_t* ptr) {
     mAllocator->free(ptr);
     return true;
 }
+
+bool CoherentMemory::valid() { return mBlobMapping && mBlobMapping->valid(); }
+
+VirtGpuBlobMappingPtr CoherentMemory::getMapping() { return mBlobMapping; }
 
 }  // namespace vk
 }  // namespace gfxstream
