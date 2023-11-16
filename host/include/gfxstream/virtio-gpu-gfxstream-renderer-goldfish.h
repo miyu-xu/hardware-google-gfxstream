@@ -28,7 +28,7 @@ VG_EXPORT void stream_renderer_set_service_ops(const GoldfishPipeServiceOps* ops
 VG_EXPORT int stream_renderer_snapshot_presave_pause();
 VG_EXPORT int stream_renderer_snapshot_save(void* stream, void* textureSaver);
 VG_EXPORT int stream_renderer_snapshot_postsave_resume();
-VG_EXPORT int stream_renderer_snapshot_postsave_resume_for_testing();
+VG_EXPORT int stream_renderer_snapshot_postload_resume_for_testing();
 VG_EXPORT int stream_renderer_snapshot_load(void* stream, void* textureSaver);
 
 #ifdef __cplusplus
