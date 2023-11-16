@@ -3780,44 +3780,80 @@ VkResult ResourceTracker::on_vkMapMemory(void* context, VkResult host_result, Vk
 
     auto& info = it->second;
 
-    if (info.blobId && !info.coherentMemory && !mCaps.params[kParamCreateGuestHandle]) {
-        VkEncoder* enc = (VkEncoder*)context;
-        VirtGpuBlobMappingPtr mapping;
-        VirtGpuDevice* instance = VirtGpuDevice::getInstance();
+    printf("info.blobId %lu info.coherentMemory %p mCaps.params[kParamCreateGuestHandle] %lu\n",
+           info.blobId, info.coherentMemory.get(), mCaps.params[kParamCreateGuestHandle]);
+    if (info.blobId && !mCaps.params[kParamCreateGuestHandle]) {
+        if (info.coherentMemory && !info.coherentMemory->valid()) {
+            // For testing only.
+            // Coherent memory invalidated after snapshot load, need to be recreated.
+            // Note: not safe to use outside of test environment.
+            // Release the previous blob
+            info.coherentMemory->updateMapping(nullptr);
 
-        uint64_t offset;
-        uint8_t* ptr;
+            VkEncoder* enc = (VkEncoder*)context;
+            VirtGpuBlobMappingPtr mapping;
+            VirtGpuDevice* instance = VirtGpuDevice::getInstance();
 
-        VkResult vkResult = enc->vkGetBlobGOOGLE(device, memory, false);
-        if (vkResult != VK_SUCCESS) return vkResult;
+            uint64_t offset;
+            uint8_t* ptr;
 
-        struct VirtGpuCreateBlob createBlob = {};
-        createBlob.blobMem = kBlobMemHost3d;
-        createBlob.flags = kBlobFlagMappable;
-        createBlob.blobId = info.blobId;
-        createBlob.size = info.coherentMemorySize;
+            VkResult vkResult = enc->vkGetBlobGOOGLE(device, memory, false);
+            if (vkResult != VK_SUCCESS) return vkResult;
 
-        auto blob = instance->createBlob(createBlob);
-        if (!blob) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+            struct VirtGpuCreateBlob createBlob = {};
+            createBlob.blobMem = kBlobMemHost3d;
+            createBlob.flags = kBlobFlagMappable;
+            createBlob.blobId = info.blobId;
+            createBlob.size = info.coherentMemorySize;
 
-        mapping = blob->createMapping();
-        if (!mapping) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+            auto blob = instance->createBlob(createBlob);
+            if (!blob) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
 
-        auto coherentMemory =
-            std::make_shared<CoherentMemory>(mapping, createBlob.size, device, memory);
+            mapping = blob->createMapping();
+            if (!mapping) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+            info.coherentMemory->updateMapping(mapping);
+            info.coherentMemory->subAllocate(info.allocationSize, &ptr, offset);
 
-        coherentMemory->subAllocate(info.allocationSize, &ptr, offset);
+            info.coherentMemoryOffset = offset;
+            info.ptr = ptr;
+        } else if (!info.coherentMemory) {
+            VkEncoder* enc = (VkEncoder*)context;
+            VirtGpuBlobMappingPtr mapping;
+            VirtGpuDevice* instance = VirtGpuDevice::getInstance();
 
-        info.coherentMemoryOffset = offset;
-        info.coherentMemory = coherentMemory;
-        info.ptr = ptr;
+            uint64_t offset;
+            uint8_t* ptr;
+
+            VkResult vkResult = enc->vkGetBlobGOOGLE(device, memory, false);
+            if (vkResult != VK_SUCCESS) return vkResult;
+
+            struct VirtGpuCreateBlob createBlob = {};
+            createBlob.blobMem = kBlobMemHost3d;
+            createBlob.flags = kBlobFlagMappable;
+            createBlob.blobId = info.blobId;
+            createBlob.size = info.coherentMemorySize;
+
+            auto blob = instance->createBlob(createBlob);
+            if (!blob) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+
+            mapping = blob->createMapping();
+            if (!mapping) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+
+            auto coherentMemory =
+                std::make_shared<CoherentMemory>(mapping, createBlob.size, device, memory);
+
+            coherentMemory->subAllocate(info.allocationSize, &ptr, offset);
+
+            info.coherentMemoryOffset = offset;
+            info.coherentMemory = coherentMemory;
+            info.ptr = ptr;
+        }
     }
 
     if (!info.ptr) {
         ALOGE("%s: ptr null\n", __func__);
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
-
     if (size != VK_WHOLE_SIZE && (info.ptr + offset + size > info.ptr + info.allocationSize)) {
         ALOGE(
             "%s: size is too big. alloc size 0x%llx while we wanted offset 0x%llx size 0x%llx "
@@ -3826,7 +3862,6 @@ VkResult ResourceTracker::on_vkMapMemory(void* context, VkResult host_result, Vk
             (unsigned long long)size, (unsigned long long)offset);
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
-
     *ppData = info.ptr + offset;
 
     return host_result;
