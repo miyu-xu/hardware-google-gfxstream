@@ -16,6 +16,159 @@
       "message": "ping on the patchstack",
       "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1f15199_ba3d97a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "It looks like we either have a number of unnecessary null pointer checks, or a number of places where we could potentially crash from a null dereference.",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f49b5366_3cf4630e",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 15990,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "Here we are unconditionally dereferencing `forMarshaling`...",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1545b6f7_abed6146",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 15994,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "...and here and several more lines...",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "905c80e0_0df4a7ee",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16002,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "...but here we have logic checking if `forMarshaling` is NULL.  If it is NULL, we\u0027ll have already crashed by now.",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd2731e5_684e2245",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16013,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "Similar treatment of `forUnmarshaling` in this function.",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae024643_caff1041",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16051,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "Similar treatment of `forMarshaling` in this function.",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a40b4422_67abdeeb",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16074,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "Similar treatment of `forUnmarshaling` in this function.",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c57212a_93672b74",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16112,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "Similar treatment of `forMarshaling` in this function.",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a0ebc21_d52f488c",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 16139,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2023-11-16T18:22:02Z",
+      "side": 1,
+      "message": "Similar treatment of `forUnmarshaling` in this function.",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
