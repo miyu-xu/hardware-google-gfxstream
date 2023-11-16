@@ -1279,6 +1279,14 @@ DEFINE_ALIAS_FUNCTION(handlemap_VkPhysicalDeviceTextureCompressionASTCHDRFeature
                       handlemap_VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT)
 
 #endif
+#ifdef VK_EXT_depth_clip_enable
+void handlemap_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VulkanHandleMapping* handlemap, VkPhysicalDeviceDepthClipEnableFeaturesEXT* toMap);
+
+void handlemap_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VulkanHandleMapping* handlemap, VkPipelineRasterizationDepthClipStateCreateInfoEXT* toMap);
+
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
