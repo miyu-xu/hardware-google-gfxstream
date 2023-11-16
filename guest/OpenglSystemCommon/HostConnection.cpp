@@ -473,6 +473,7 @@ ExtendedRCEncoderContext *HostConnection::rcEncoder()
         queryAndSetNoErrorState(rcEnc);
         queryAndSetHostCompositionImpl(rcEnc);
         queryAndSetDirectMemSupport(rcEnc);
+        printf("setting hasDirectMem\n");
         queryAndSetVulkanSupport(rcEnc);
         queryAndSetDeferredVulkanCommandsSupport(rcEnc);
         queryAndSetVulkanNullOptionalStringsSupport(rcEnc);

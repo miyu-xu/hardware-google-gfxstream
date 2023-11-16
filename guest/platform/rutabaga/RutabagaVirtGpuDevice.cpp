@@ -20,14 +20,17 @@
 
 #include "RutabagaLayer.h"
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 
 RutabagaVirtGpuDevice::RutabagaVirtGpuDevice(uint32_t contextId, VirtGpuCapset capset)
     : VirtGpuDevice(capset),
       mContextId(contextId),
-      mCapset(capset) {}
+      mCapset(capset){_PR_LINE}
 
-RutabagaVirtGpuDevice::~RutabagaVirtGpuDevice() {
+      RutabagaVirtGpuDevice::~RutabagaVirtGpuDevice() {
+    _PR_LINE
     EmulatedVirtioGpu::Get().DestroyContext(mContextId);
 }
 

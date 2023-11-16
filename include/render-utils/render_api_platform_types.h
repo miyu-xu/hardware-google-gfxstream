@@ -22,15 +22,16 @@
 #if defined(_WIN32) || defined(__VC32__) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__) /* Win32 and WinCE */
 #include <windows.h>
 
-typedef HWND    FBNativeWindowType;
-#elif defined(ANDROID)
-#include <android/native_window.h>
-typedef ANativeWindow*    FBNativeWindowType;
+typedef HWND FBNativeWindowType;
 #elif defined(__linux__)
 
 // Really a Window handle, but we don't want to include the X11 headers here.
 #include <stdint.h>
 typedef uint32_t FBNativeWindowType;
+
+#elif defined(ANDROID)
+#include <android/native_window.h>
+typedef ANativeWindow* FBNativeWindowType;
 
 #elif defined(__APPLE__)
 

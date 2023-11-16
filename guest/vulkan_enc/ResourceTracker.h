@@ -558,6 +558,9 @@ class ResourceTracker {
 
     LIST_TRIVIAL_TRANSFORMED_TYPES(DEFINE_TRANSFORMED_TYPE_PROTOTYPE)
 
+    // Test only APIs
+    void refreshAfterSnapshotLoadForTesting();
+
    private:
     VulkanHandleMapping* mCreateMapping = nullptr;
     VulkanHandleMapping* mDestroyMapping = nullptr;
