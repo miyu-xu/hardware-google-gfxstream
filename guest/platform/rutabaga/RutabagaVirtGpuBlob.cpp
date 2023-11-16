@@ -58,6 +58,8 @@ int RutabagaVirtGpuResource::exportBlob(VirtGpuExternalHandle&) {
 
 int RutabagaVirtGpuResource::wait() { return EmulatedVirtioGpu::Get().Wait(mResourceId); }
 
+bool RutabagaVirtGpuResource::valid() { return true; }
+
 int RutabagaVirtGpuResource::transferFromHost(uint32_t offset, uint32_t size) {
     if (mResourceType != ResourceType::kPipe) {
         ALOGE("Unexpected transferFromHost() called on non-pipe resource.");
