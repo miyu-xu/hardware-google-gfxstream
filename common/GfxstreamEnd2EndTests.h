@@ -535,6 +535,8 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     VkExpected<TypicalVkTestEnvironment> SetUpTypicalVkTestEnvironment(
         uint32_t apiVersion = VK_API_VERSION_1_2);
 
+    void SnapshotSaveAndLoad();
+
     std::shared_ptr<TestingVirtGpuDevice> mDevice;
     std::unique_ptr<TestingVirtGpuANativeWindowHelper> mAnwHelper;
     std::unique_ptr<TestingVirtGpuGralloc> mGralloc;
