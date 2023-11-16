@@ -535,6 +535,24 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     VkExpected<TypicalVkTestEnvironment> SetUpTypicalVkTestEnvironment(
         uint32_t apiVersion = VK_API_VERSION_1_2);
 
+    uint32_t GetMemoryType(const vkhpp::PhysicalDevice& physicalDevice,
+                           const vkhpp::MemoryRequirements& memoryRequirements,
+                           vkhpp::MemoryPropertyFlags memoryProperties) {
+      const auto props = physicalDevice.getMemoryProperties();
+      for (uint32_t i = 0; i < props.memoryTypeCount; i++) {
+        if (!(memoryRequirements.memoryTypeBits & (1 << i))) {
+          continue;
+        }
+        if ((props.memoryTypes[i].propertyFlags & memoryProperties) != memoryProperties) {
+          continue;
+        }
+        return i;
+      }
+      return -1;
+    }
+
+    void SnapshotSaveAndLoad();
+
     std::shared_ptr<TestingVirtGpuDevice> mDevice;
     std::unique_ptr<TestingVirtGpuANativeWindowHelper> mAnwHelper;
     std::unique_ptr<TestingVirtGpuGralloc> mGralloc;

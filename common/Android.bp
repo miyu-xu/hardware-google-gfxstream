@@ -13,6 +13,7 @@ cc_test_host {
         "GfxstreamEnd2EndGlTests.cpp",
         "GfxstreamEnd2EndVkTests.cpp",
         "snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
+        "snapshot/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
     ],
     header_libs: [
         "gfxstream_headers",
