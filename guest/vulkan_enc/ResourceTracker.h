@@ -714,9 +714,9 @@ class ResourceTracker {
         uint64_t coherentMemorySize = 0;
         uint64_t coherentMemoryOffset = 0;
 
-    #if defined(__ANDROID__)
+    #if defined(VK_USE_PLATFORM_ANDROID_KHR)
         GoldfishAddressSpaceBlockPtr goldfishBlock = nullptr;
-    #endif  // defined(__ANDROID__)
+    #endif  // defined(VK_USE_PLATFORM_ANDROID_KHR)
         CoherentMemoryPtr coherentMemory = nullptr;
     };
 
@@ -845,9 +845,9 @@ class ResourceTracker {
 
     std::optional<const VkPhysicalDeviceMemoryProperties> mCachedPhysicalDeviceMemoryProps;
     std::unique_ptr<EmulatorFeatureInfo> mFeatureInfo;
-#if defined(__ANDROID__)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
     std::unique_ptr<GoldfishAddressSpaceBlockProvider> mGoldfishAddressSpaceBlockProvider;
-#endif  // defined(__ANDROID__)
+#endif  // defined(VK_USE_PLATFORM_ANDROID_KHR)
 
     struct VirtGpuCaps mCaps;
     std::vector<VkExtensionProperties> mHostInstanceExtensions;

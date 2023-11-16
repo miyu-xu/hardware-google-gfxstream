@@ -1390,7 +1390,7 @@ class PipeVirglRenderer {
                 capset->noRenderControlEnc = 1;
                 capset->blobAlignment = mPageSize;
                 if (vk_emu && vk_emu->live) {
-                    capset->deferredMapping = 1;
+                    //capset->deferredMapping = 1;
                 }
                 break;
             }
@@ -2155,7 +2155,8 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     feature_set_enabled_override(kFeature_RefCountPipe, false);
     feature_set_enabled_override(kFeature_NoDelayCloseColorBuffer, true);
     feature_set_enabled_override(kFeature_NativeTextureDecompression, false);
-    feature_set_enabled_override(kFeature_GLDirectMem, false);
+    //feature_set_enabled_override(kFeature_GLDirectMem, false);
+    feature_set_enabled_override(kFeature_GLDirectMem, true);
     feature_set_enabled_override(kFeature_Vulkan, enableVk);
     feature_set_enabled_override(kFeature_VulkanSnapshots, enableVkSnapshot);
     feature_set_enabled_override(kFeature_VulkanNullOptionalStrings, true);

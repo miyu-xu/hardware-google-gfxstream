@@ -12,6 +12,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
 
 #include "ResourceTracker.h"
 
@@ -1411,6 +1412,7 @@ bool ResourceTracker::isValidMemoryRange(const VkMappedMemoryRange& range) const
 }
 
 void ResourceTracker::setupCaps(uint32_t& noRenderControlEnc) {
+    //_PR_LINE
     VirtGpuDevice* instance = VirtGpuDevice::getInstance(kCapsetGfxStreamVulkan);
     mCaps = instance->getCaps();
 
@@ -1418,6 +1420,7 @@ void ResourceTracker::setupCaps(uint32_t& noRenderControlEnc) {
     if (mCaps.vulkanCapset.protocolVersion == 0) {
         mCaps.vulkanCapset.colorBufferMemoryIndex = 0xFFFFFFFF;
     } else {
+        //_PR_LINE
         // Don't query the render control encoder for features, since for virtio-gpu the
         // capabilities provide versioning. Set features to be unconditionally true, since
         // using virtio-gpu encompasses all prior goldfish features.  mFeatureInfo should be
@@ -1436,27 +1439,40 @@ void ResourceTracker::setupCaps(uint32_t& noRenderControlEnc) {
         mFeatureInfo->hasVirtioGpuNativeSync = true;
         mFeatureInfo->hasVulkanBatchedDescriptorSetUpdate = true;
         mFeatureInfo->hasVulkanAsyncQsri = true;
+        mFeatureInfo->hasDirectMem = true;
 
         ResourceTracker::streamFeatureBits |= VULKAN_STREAM_FEATURE_NULL_OPTIONAL_STRINGS_BIT;
         ResourceTracker::streamFeatureBits |= VULKAN_STREAM_FEATURE_IGNORED_HANDLES_BIT;
         ResourceTracker::streamFeatureBits |= VULKAN_STREAM_FEATURE_SHADER_FLOAT16_INT8_BIT;
         ResourceTracker::streamFeatureBits |= VULKAN_STREAM_FEATURE_QUEUE_SUBMIT_WITH_COMMANDS_BIT;
+
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+        if (mFeatureInfo->hasDirectMem) {
+            mGoldfishAddressSpaceBlockProvider.reset(
+                new GoldfishAddressSpaceBlockProvider(GoldfishAddressSpaceSubdeviceType::NoSubdevice));
+        }
+#endif  // defined(VK_USE_PLATFORM_ANDROID_KHR)
     }
 
     noRenderControlEnc = mCaps.vulkanCapset.noRenderControlEnc;
 }
 
 void ResourceTracker::setupFeatures(const EmulatorFeatureInfo* features) {
+    _PR_LINE
     if (!features || mFeatureInfo) return;
+    _PR_LINE
     mFeatureInfo.reset(new EmulatorFeatureInfo);
     *mFeatureInfo = *features;
 
-#if defined(__ANDROID__)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
     if (mFeatureInfo->hasDirectMem) {
+        printf("setupFeatures has direct mem\n");
         mGoldfishAddressSpaceBlockProvider.reset(
             new GoldfishAddressSpaceBlockProvider(GoldfishAddressSpaceSubdeviceType::NoSubdevice));
+    } else {
+        printf("setupFeatures does not have direct mem\n");
     }
-#endif  // defined(__ANDROID__)
+#endif  // defined(VK_USE_PLATFORM_ANDROID_KHR)
 
 #ifdef VK_USE_PLATFORM_FUCHSIA
     if (mFeatureInfo->hasVulkan) {
@@ -2836,12 +2852,15 @@ CoherentMemoryPtr ResourceTracker::createCoherentMemory(
     VkDevice device, VkDeviceMemory mem, const VkMemoryAllocateInfo& hostAllocationInfo,
     VkEncoder* enc, VkResult& res) {
     CoherentMemoryPtr coherentMemory = nullptr;
-
-#if defined(__ANDROID__)
+    _PR_LINE
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    _PR_LINE
     if (mFeatureInfo->hasDirectMem) {
+        _PR_LINE
         uint64_t gpuAddr = 0;
         GoldfishAddressSpaceBlockPtr block = nullptr;
         res = enc->vkMapMemoryIntoAddressSpaceGOOGLE(device, mem, &gpuAddr, true);
+        printf("gpu addr %lu\n", gpuAddr);
         if (res != VK_SUCCESS) {
             ALOGE(
                 "Failed to create coherent memory: vkMapMemoryIntoAddressSpaceGOOGLE "
@@ -2860,12 +2879,16 @@ CoherentMemoryPtr ResourceTracker::createCoherentMemory(
             auto& info = it->second;
             block = info.goldfishBlock;
             info.goldfishBlock = nullptr;
+            printf("size %lu block %p gpuAddr %lu\n", hostAllocationInfo.allocationSize, block.get(), gpuAddr);
 
             coherentMemory = std::make_shared<CoherentMemory>(
                 block, gpuAddr, hostAllocationInfo.allocationSize, device, mem);
+            _PR_LINE
         }
     } else
-#endif  // defined(__ANDROID__)
+#else
+    _PR_LINE
+#endif  // defined(VK_USE_PLATFORM_ANDROID_KHR)
         if (mFeatureInfo->hasVirtioGpuNext) {
             struct VirtGpuCreateBlob createBlob = {0};
             uint64_t hvaSizeId[3];
@@ -2913,6 +2936,7 @@ CoherentMemoryPtr ResourceTracker::createCoherentMemory(
 VkResult ResourceTracker::allocateCoherentMemory(VkDevice device,
                                                  const VkMemoryAllocateInfo* pAllocateInfo,
                                                  VkEncoder* enc, VkDeviceMemory* pMemory) {
+    _PR_LINE
     uint64_t blobId = 0;
     uint64_t offset = 0;
     uint8_t* ptr = nullptr;
@@ -2970,6 +2994,7 @@ VkResult ResourceTracker::allocateCoherentMemory(VkDevice device,
     }
 
     if (mCaps.params[kParamCreateGuestHandle]) {
+        _PR_LINE
         struct VirtGpuCreateBlob createBlob = {0};
         struct VirtGpuExecBuffer exec = {};
         VirtGpuDevice* instance = VirtGpuDevice::getInstance();
@@ -3009,9 +3034,11 @@ VkResult ResourceTracker::allocateCoherentMemory(VkDevice device,
     }
 
     VkDeviceMemory mem = VK_NULL_HANDLE;
+    _PR_LINE
     VkResult host_res =
         enc->vkAllocateMemory(device, &hostAllocationInfo, nullptr, &mem, true /* do lock */);
     if (host_res != VK_SUCCESS) {
+        _PR_LINE
         ALOGE("Failed to allocate coherent memory: failed to allocate on the host: %d.", host_res);
         return host_res;
     }
@@ -3023,6 +3050,7 @@ VkResult ResourceTracker::allocateCoherentMemory(VkDevice device,
     }
 
     if (guestBlob) {
+        _PR_LINE
         auto mapping = guestBlob->createMapping();
         if (!mapping) {
             ALOGE("Failed to allocate coherent memory: failed to create blob mapping.");
@@ -3050,10 +3078,14 @@ VkResult ResourceTracker::allocateCoherentMemory(VkDevice device,
     }
 
     if (mCaps.vulkanCapset.deferredMapping || mCaps.params[kParamCreateGuestHandle]) {
+        _PR_LINE
+        printf("deferredMapping %d kParamCreateGuestHandle %lu\n",
+            mCaps.vulkanCapset.deferredMapping, mCaps.params[kParamCreateGuestHandle]);
         *pMemory = mem;
         return host_res;
     }
 
+    _PR_LINE
     auto coherentMemory = createCoherentMemory(device, mem, hostAllocationInfo, enc, host_res);
     if (coherentMemory) {
         AutoLock<RecursiveLock> lock(mLock);
@@ -3069,6 +3101,7 @@ VkResult ResourceTracker::allocateCoherentMemory(VkDevice device,
         AutoLock<RecursiveLock> lock(mLock);
         info_VkDeviceMemory.erase(mem);
     }
+    _PR_LINE
     return host_res;
 }
 
@@ -3094,6 +3127,7 @@ VkResult ResourceTracker::getCoherentMemory(const VkMemoryAllocateInfo* pAllocat
     uint8_t* ptr = nullptr;
     uint64_t offset = 0;
     {
+        _PR_LINE
         AutoLock<RecursiveLock> lock(mLock);
         for (const auto& [memory, info] : info_VkDeviceMemory) {
             if (info.memoryTypeIndex != pAllocateInfo->memoryTypeIndex) continue;
@@ -3109,6 +3143,7 @@ VkResult ResourceTracker::getCoherentMemory(const VkMemoryAllocateInfo* pAllocat
             break;
         }
         if (coherentMemory) {
+            _PR_LINE
             struct VkDeviceMemory_Info info;
             info.coherentMemoryOffset = offset;
             info.ptr = ptr;
@@ -3128,6 +3163,7 @@ VkResult ResourceTracker::getCoherentMemory(const VkMemoryAllocateInfo* pAllocat
     }
     return allocateCoherentMemory(device, pAllocateInfo, enc, pMemory);
 }
+
 
 VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_result, VkDevice device,
                                               const VkMemoryAllocateInfo* pAllocateInfo,
@@ -3158,6 +3194,8 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
                                pAllocateInfo->memoryTypeIndex);                            \
         return VK_SUCCESS;                                                                 \
     }
+    _PR_LINE
+    ALOGD("on_vkAllocateMemory alogd called");
 
     if (input_result != VK_SUCCESS) _RETURN_FAILURE_WITH_DEVICE_MEMORY_REPORT(input_result);
 
@@ -3244,6 +3282,8 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
 
     const bool requestedMemoryIsHostVisible =
         isHostVisible(&physicalDeviceMemoryProps, pAllocateInfo->memoryTypeIndex);
+    _PR_LINE
+    printf("is host visible %d\n", requestedMemoryIsHostVisible);
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR) || defined(__linux__)
     shouldPassThroughDedicatedAllocInfo &= !requestedMemoryIsHostVisible;
@@ -3290,7 +3330,9 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     bool isImport = importAhb || importBufferCollection || importVmo;
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    _PR_LINE
     if (exportAhb) {
+        _PR_LINE
         bool hasDedicatedImage =
             dedicatedAllocInfoPtr && (dedicatedAllocInfoPtr->image != VK_NULL_HANDLE);
         bool hasDedicatedBuffer =
@@ -3342,6 +3384,7 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     }
 
     if (importAhb) {
+        _PR_LINE
         ahw = importAhbInfoPtr->buffer;
         // We still need to acquire the AHardwareBuffer.
         importAndroidHardwareBuffer(
@@ -3350,6 +3393,7 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
     }
 
     if (ahw) {
+        _PR_LINE
         auto* gralloc =
             ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper();
 
@@ -3661,6 +3705,8 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
 #endif
 
     if (ahw || !requestedMemoryIsHostVisible) {
+        _PR_LINE
+        printf("ahw %p host visible %d\n", ahw, requestedMemoryIsHostVisible);
         input_result =
             enc->vkAllocateMemory(device, &finalAllocInfo, pAllocator, pMemory, true /* do lock */);
 
@@ -3707,6 +3753,7 @@ VkResult ResourceTracker::on_vkAllocateMemory(void* context, VkResult input_resu
         return VK_SUCCESS;
     }
 #endif
+    _PR_LINE
 
     // Host visible memory with direct mapping
     VkResult result = getCoherentMemory(&finalAllocInfo, enc, device, pMemory);
@@ -3765,12 +3812,14 @@ void ResourceTracker::on_vkFreeMemory(void* context, VkDevice device, VkDeviceMe
 VkResult ResourceTracker::on_vkMapMemory(void* context, VkResult host_result, VkDevice device,
                                          VkDeviceMemory memory, VkDeviceSize offset,
                                          VkDeviceSize size, VkMemoryMapFlags, void** ppData) {
+    _PR_LINE
     if (host_result != VK_SUCCESS) {
         ALOGE("%s: Host failed to map\n", __func__);
         return host_result;
     }
-
+    _PR_LINE
     AutoLock<RecursiveLock> lock(mLock);
+    _PR_LINE
 
     auto it = info_VkDeviceMemory.find(memory);
     if (it == info_VkDeviceMemory.end()) {
@@ -3781,6 +3830,7 @@ VkResult ResourceTracker::on_vkMapMemory(void* context, VkResult host_result, Vk
     auto& info = it->second;
 
     if (info.blobId && !info.coherentMemory && !mCaps.params[kParamCreateGuestHandle]) {
+        _PR_LINE
         VkEncoder* enc = (VkEncoder*)context;
         VirtGpuBlobMappingPtr mapping;
         VirtGpuDevice* instance = VirtGpuDevice::getInstance();
@@ -3814,11 +3864,13 @@ VkResult ResourceTracker::on_vkMapMemory(void* context, VkResult host_result, Vk
     }
 
     if (!info.ptr) {
+        _PR_LINE
         ALOGE("%s: ptr null\n", __func__);
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
     if (size != VK_WHOLE_SIZE && (info.ptr + offset + size > info.ptr + info.allocationSize)) {
+        _PR_LINE
         ALOGE(
             "%s: size is too big. alloc size 0x%llx while we wanted offset 0x%llx size 0x%llx "
             "total 0x%llx\n",
@@ -3828,6 +3880,7 @@ VkResult ResourceTracker::on_vkMapMemory(void* context, VkResult host_result, Vk
     }
 
     *ppData = info.ptr + offset;
+    _PR_LINE
 
     return host_result;
 }
@@ -5799,6 +5852,7 @@ void ResourceTracker::unwrap_VkBindImageMemory2_pBindInfos(
 VkResult ResourceTracker::on_vkMapMemoryIntoAddressSpaceGOOGLE_pre(void*, VkResult, VkDevice,
                                                                    VkDeviceMemory memory,
                                                                    uint64_t* pAddress) {
+    _PR_LINE
     AutoLock<RecursiveLock> lock(mLock);
 
     auto it = info_VkDeviceMemory.find(memory);
@@ -5806,10 +5860,11 @@ VkResult ResourceTracker::on_vkMapMemoryIntoAddressSpaceGOOGLE_pre(void*, VkResu
         return VK_ERROR_OUT_OF_HOST_MEMORY;
     }
 
-#if defined(__ANDROID__)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
     auto& memInfo = it->second;
 
     GoldfishAddressSpaceBlockPtr block = std::make_shared<GoldfishAddressSpaceBlock>();
+    printf("allocating coherent memory size %lu\n", memInfo.coherentMemorySize);
     block->allocate(mGoldfishAddressSpaceBlockProvider.get(), memInfo.coherentMemorySize);
 
     memInfo.goldfishBlock = block;
@@ -5825,6 +5880,7 @@ VkResult ResourceTracker::on_vkMapMemoryIntoAddressSpaceGOOGLE_pre(void*, VkResu
 VkResult ResourceTracker::on_vkMapMemoryIntoAddressSpaceGOOGLE(void*, VkResult input_result,
                                                                VkDevice, VkDeviceMemory memory,
                                                                uint64_t* pAddress) {
+    _PR_LINE
     (void)memory;
     (void)pAddress;
 

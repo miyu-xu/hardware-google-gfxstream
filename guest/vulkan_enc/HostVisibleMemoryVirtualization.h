@@ -44,10 +44,10 @@ class CoherentMemory {
     CoherentMemory(VirtGpuBlobMappingPtr blobMapping, uint64_t size, VkDevice device,
                    VkDeviceMemory memory);
 
-#if defined(__ANDROID__)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
     CoherentMemory(GoldfishAddressSpaceBlockPtr block, uint64_t gpuAddr, uint64_t size,
                    VkDevice device, VkDeviceMemory memory);
-#endif // defined(__ANDROID__)
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 
     ~CoherentMemory();
 
