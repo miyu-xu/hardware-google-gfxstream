@@ -22,13 +22,11 @@
 
 namespace gfxstream {
 
-RutabagaVirtGpuResource::RutabagaVirtGpuResource(
-        uint32_t resourceId,
-        ResourceType resourceType,
-        uint32_t contextId)
+RutabagaVirtGpuResource::RutabagaVirtGpuResource(uint32_t resourceId, ResourceType resourceType,
+                                                 uint32_t contextId)
     : mContextId(contextId),
       mResourceId(resourceId),
-      mResourceType(resourceType) {}
+      mResourceType(resourceType) { }
 
 RutabagaVirtGpuResource::~RutabagaVirtGpuResource() {
     EmulatedVirtioGpu::Get().DestroyResource(mContextId, mResourceId);
@@ -62,6 +60,8 @@ int RutabagaVirtGpuResource::exportBlob(VirtGpuExternalHandle&) {
     ALOGE("Unimplemented: %s", __FUNCTION__);
     return -1;
 }
+
+bool RutabagaVirtGpuResource::valid() { return true; }
 
 int RutabagaVirtGpuResource::wait() {
     return EmulatedVirtioGpu::Get().Wait(mResourceId);
