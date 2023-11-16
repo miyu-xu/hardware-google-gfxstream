@@ -33,9 +33,14 @@ class RutabagaVirtGpuBlobMapping : public VirtGpuBlobMapping {
 
     uint8_t* asRawPtr(void) override;
 
+    // Testing APIs
+    bool valid() override;
+    static void invalidateAllMappings();
+    VirtGpuBlobPtr getBlob() override;
   private:
     VirtGpuBlobPtr mBlob;
     uint8_t* mMapped = nullptr;
+    bool mValid = true;
 };
 
 class RutabagaVirtGpuResource : public std::enable_shared_from_this<RutabagaVirtGpuResource>, public VirtGpuBlob {
@@ -53,6 +58,7 @@ class RutabagaVirtGpuResource : public std::enable_shared_from_this<RutabagaVirt
     int transferFromHost(uint32_t offset, uint32_t size) override;
     int transferToHost(uint32_t offset, uint32_t size) override;
 
+    bool valid() override;
   private:
     friend class RutabagaVirtGpuDevice;
 

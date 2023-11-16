@@ -29,6 +29,8 @@
 #include "goldfish_address_space.h"
 #include <log/log.h>
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 
 // See virgl_hw.h and p_defines.h
 #define VIRGL_FORMAT_R8_UNORM 64
@@ -189,6 +191,7 @@ bool GoldfishAddressSpaceBlock::allocate(GoldfishAddressSpaceBlockProvider *prov
     destroy();
 
     if (!provider->is_opened()) {
+        _PR_LINE
         return false;
     }
 
@@ -198,6 +201,7 @@ bool GoldfishAddressSpaceBlock::allocate(GoldfishAddressSpaceBlockProvider *prov
 
     long res = ioctl_allocate(provider->m_handle, &request);
     if (res) {
+        _PR_LINE
         return false;
     } else {
         m_phys_addr = request.phys_addr;
@@ -205,6 +209,7 @@ bool GoldfishAddressSpaceBlock::allocate(GoldfishAddressSpaceBlockProvider *prov
         m_size = request.size;
         m_handle = provider->m_handle;
         m_is_shared_mapping = false;
+        _PR_LINE
 
         return true;
     }

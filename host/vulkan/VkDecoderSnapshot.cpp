@@ -2814,6 +2814,16 @@ class VkDecoderSnapshot::Impl {
                          android::base::BumpPool* pool, VkResult input_result, VkDevice device,
                          VkDeviceMemory memory) {
         // TODO: Implement
+        android::base::AutoLock lock(mLock);
+        // memory modify
+        auto apiHandle = mReconstruction.createApiInfo();
+        auto apiInfo = mReconstruction.getApiInfo(apiHandle);
+        mReconstruction.setApiTrace(apiInfo, OP_vkGetBlobGOOGLE, snapshotTraceBegin,
+                                    snapshotTraceBytes);
+        for (uint32_t i = 0; i < 1; ++i) {
+            VkDeviceMemory boxed = unboxed_to_boxed_non_dispatchable_VkDeviceMemory((&memory)[i]);
+            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
+        }
     }
     void vkUpdateDescriptorSetWithTemplateSized2GOOGLE(
         const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes, android::base::BumpPool* pool,

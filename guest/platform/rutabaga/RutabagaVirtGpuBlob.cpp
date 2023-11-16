@@ -20,6 +20,8 @@
 
 #include "RutabagaLayer.h"
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 
 RutabagaVirtGpuResource::RutabagaVirtGpuResource(
@@ -28,7 +30,9 @@ RutabagaVirtGpuResource::RutabagaVirtGpuResource(
         uint32_t contextId)
     : mContextId(contextId),
       mResourceId(resourceId),
-      mResourceType(resourceType) {}
+      mResourceType(resourceType) {
+    _PR_LINE
+}
 
 RutabagaVirtGpuResource::~RutabagaVirtGpuResource() {
     EmulatedVirtioGpu::Get().DestroyResource(mContextId, mResourceId);
@@ -61,6 +65,10 @@ int RutabagaVirtGpuResource::exportBlob(VirtGpuExternalHandle&) {
 
     ALOGE("Unimplemented: %s", __FUNCTION__);
     return -1;
+}
+
+bool RutabagaVirtGpuResource::valid() {
+    return true;
 }
 
 int RutabagaVirtGpuResource::wait() {

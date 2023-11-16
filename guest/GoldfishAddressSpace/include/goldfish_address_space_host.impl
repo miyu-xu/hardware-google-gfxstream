@@ -26,6 +26,8 @@
 #include <errno.h>
 #include "goldfish_address_space.h"
 
+#define _PR_LINE ALOGD("%s: %s %d", __func__, __FILE__, __LINE__);
+
 namespace {
 
 const int HOST_MEMORY_ALLOCATOR_COMMAND_ALLOCATE_ID = 1;
@@ -246,6 +248,7 @@ long GoldfishAddressSpaceHostMemoryAllocator::hostMalloc(GoldfishAddressSpaceBlo
     }
 
     AddressSpaceDevicePingInfo request;
+    _PR_LINE
     if (m_useSharedSlots) {
         ::memset(&request, 0, sizeof(request));
         request.size = block->size();
@@ -272,6 +275,7 @@ long GoldfishAddressSpaceHostMemoryAllocator::hostMalloc(GoldfishAddressSpaceBlo
         void *hostPtr = HostAddressSpaceDevice::get()->getHostAddr(block->physAddr());
         block->mmap(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(hostPtr)));
     }
+    _PR_LINE
 
     return 0;
 }

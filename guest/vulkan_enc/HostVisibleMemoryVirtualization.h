@@ -55,7 +55,9 @@ class CoherentMemory {
 
     bool subAllocate(uint64_t size, uint8_t** ptr, uint64_t& offset);
     bool release(uint8_t* ptr);
-
+    bool valid();
+    VirtGpuBlobMappingPtr getMapping();
+    void updateMapping(VirtGpuBlobMappingPtr mapping);
    private:
     CoherentMemory(CoherentMemory const&);
     void operator=(CoherentMemory const&);
