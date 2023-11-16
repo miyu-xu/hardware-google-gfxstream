@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f921c667_0edf155d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-11-16T19:00:58Z",
+      "side": 1,
+      "message": "We do have a large number of unnecessary null pointer checks. Cleaning up them in the code generator would be nice but nobody bothers to do it.",
+      "parentUuid": "d1f15199_ba3d97a2",
+      "revId": "2cf08adf4ca6d90a78ab4c10df662f3fa37d22c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f49b5366_3cf4630e",
