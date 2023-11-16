@@ -12,23 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include "GfxstreamEnd2EndTests.h"
+
+#include <dlfcn.h>
+#include <log/log.h>
 
 #include <filesystem>
 
-#include <dlfcn.h>
-
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-#include <log/log.h>
-
+#include "Gralloc.h"
+#include "ProcessPipe.h"
+#include "aemu/base/files/StdioStream.h"
 #include "aemu/base/system/System.h"
 #include "drm_fourcc.h"
-#include "Gralloc.h"
 #include "gfxstream/RutabagaLayerTestUtils.h"
+#include "gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
-#include "ProcessPipe.h"
+#include "snapshot/TextureLoader.h"
+#include "snapshot/TextureSaver.h"
+#include "snapshot/common.h"
 #include "virgl_hw.h"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
@@ -767,6 +772,43 @@ GfxstreamEnd2EndTest::SetUpTypicalVkTestEnvironment(uint32_t apiVersion) {
         .queue = std::move(queue),
         .queueFamilyIndex = graphicsQueueFamilyIndex,
     };
+}
+
+uint32_t GfxstreamEnd2EndTest::GetMemoryType(const vkhpp::PhysicalDevice& physicalDevice,
+                                             const vkhpp::MemoryRequirements& memoryRequirements,
+                                             vkhpp::MemoryPropertyFlags memoryProperties) {
+    const auto props = physicalDevice.getMemoryProperties();
+    for (uint32_t i = 0; i < props.memoryTypeCount; i++) {
+        if (!(memoryRequirements.memoryTypeBits & (1 << i))) {
+            continue;
+        }
+        if ((props.memoryTypes[i].propertyFlags & memoryProperties) != memoryProperties) {
+            continue;
+        }
+        return i;
+    }
+    return -1;
+}
+
+void GfxstreamEnd2EndTest::SnapshotSaveAndLoad() {
+    std::string snapshotFileName = testing::TempDir() + "snapshot.bin";
+    std::string textureFileName = testing::TempDir() + "texture.bin";
+    std::unique_ptr<android::base::StdioStream> stream(new android::base::StdioStream(
+        fopen(snapshotFileName.c_str(), "wb"), android::base::StdioStream::kOwner));
+    android::snapshot::ITextureSaverPtr textureSaver(
+        new android::snapshot::TextureSaver(android::base::StdioStream(
+            fopen(textureFileName.c_str(), "wb"), android::base::StdioStream::kOwner)));
+    stream_renderer_snapshot_presave_pause();
+    stream_renderer_snapshot_save(stream.get(), &textureSaver);
+    stream.reset();
+    textureSaver.reset();
+    stream.reset(new android::base::StdioStream(fopen(snapshotFileName.c_str(), "rb"),
+                                                android::base::StdioStream::kOwner));
+    android::snapshot::ITextureLoaderPtr textureLoader(
+        new android::snapshot::TextureLoader(android::base::StdioStream(
+            fopen(textureFileName.c_str(), "rb"), android::base::StdioStream::kOwner)));
+    stream_renderer_snapshot_load(stream.get(), &textureLoader);
+    stream_renderer_snapshot_postsave_resume_for_testing();
 }
 
 }  // namespace tests

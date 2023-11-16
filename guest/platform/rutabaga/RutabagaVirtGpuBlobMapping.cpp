@@ -14,20 +14,44 @@
  * limitations under the License.
  */
 
-#include "RutabagaVirtGpu.h"
+#include <unordered_set>
 
+#include "RutabagaVirtGpu.h"
 #include "RutabagaLayer.h"
 
 namespace gfxstream {
 
+namespace {
+    std::unordered_set<RutabagaVirtGpuBlobMapping*> sMappings;
+}
+
 RutabagaVirtGpuBlobMapping::RutabagaVirtGpuBlobMapping(VirtGpuBlobPtr blob, uint8_t* mapped)
     : mBlob(blob),
-      mMapped(mapped) {}
+      mMapped(mapped) {
+    sMappings.insert(this);
+}
 
 RutabagaVirtGpuBlobMapping::~RutabagaVirtGpuBlobMapping(void) {
+    sMappings.erase(this);
     EmulatedVirtioGpu::Get().Unmap(mBlob->getResourceHandle());
 }
 
+VirtGpuBlobPtr RutabagaVirtGpuBlobMapping::getBlob() {
+    return mBlob;
+}
+
 uint8_t* RutabagaVirtGpuBlobMapping::asRawPtr(void) { return mMapped; }
+
+bool RutabagaVirtGpuBlobMapping::valid() { return mValid; }
+
+void RutabagaVirtGpuBlobMapping::invalidateAllMappings() {
+    for (RutabagaVirtGpuBlobMapping* mapping : sMappings) {
+        mapping->mValid = false;
+    }
+}
+
+void InvalidateAllMappings() {
+    RutabagaVirtGpuBlobMapping::invalidateAllMappings();
+}
 
 }  // namespace gfxstream

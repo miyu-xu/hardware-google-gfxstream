@@ -1561,8 +1561,8 @@ class PipeVirglRenderer {
     int createBlob(uint32_t ctx_id, uint32_t res_handle,
                    const struct stream_renderer_create_blob* create_blob,
                    const struct stream_renderer_handle* handle) {
-        stream_renderer_info("ctx:%u res:%u blob-id:%u blob-size:%u",
-                             ctx_id, res_handle, create_blob->blob_id, create_blob->size);
+        printf("%s: ctx:%u res:%u blob-id:%lu blob-size:%lu\n",
+                             __func__, ctx_id, res_handle, create_blob->blob_id, create_blob->size);
 
         PipeResEntry e;
         struct stream_renderer_resource_create_args args = {0};
@@ -2155,7 +2155,8 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     feature_set_enabled_override(kFeature_RefCountPipe, false);
     feature_set_enabled_override(kFeature_NoDelayCloseColorBuffer, true);
     feature_set_enabled_override(kFeature_NativeTextureDecompression, false);
-    feature_set_enabled_override(kFeature_GLDirectMem, false);
+    feature_set_enabled_override(kFeature_GLDirectMem, true);
+    //feature_set_enabled_override(kFeature_GLDirectMem, true);
     feature_set_enabled_override(kFeature_Vulkan, enableVk);
     feature_set_enabled_override(kFeature_VulkanSnapshots, enableVkSnapshot);
     feature_set_enabled_override(kFeature_VulkanNullOptionalStrings, true);

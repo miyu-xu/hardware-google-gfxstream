@@ -70,6 +70,8 @@
 
 #include <climits>
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 namespace vk {
 
@@ -3682,6 +3684,7 @@ class VkDecoderGlobalState::Impl {
         // Some cases provide a mappedPtr, so we only map if we still don't have a pointer here.
         if (!mappedPtr && needToMap) {
             memoryInfo.needUnmap = true;
+            _PR_LINE
             VkResult mapResult =
                 vk->vkMapMemory(device, *pMemory, 0, memoryInfo.size, 0, &memoryInfo.ptr);
             if (mapResult != VK_SUCCESS) {
@@ -4070,8 +4073,9 @@ class VkDecoderGlobalState::Impl {
         } else if (!info->needUnmap) {
             auto device = unbox_VkDevice(boxed_device);
             auto vk = dispatch_VkDevice(boxed_device);
-
+            _PR_LINE
             VkResult mapResult = vk->vkMapMemory(device, memory, 0, info->size, 0, &info->ptr);
+            printf("vk mapped memory addr %p\n", info->ptr);
             if (mapResult != VK_SUCCESS) {
                 return VK_ERROR_OUT_OF_HOST_MEMORY;
             }
