@@ -3450,6 +3450,26 @@ void handlemap_VkPipelineRasterizationStateStreamCreateInfoEXT(
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+void handlemap_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VulkanHandleMapping* handlemap, VkPhysicalDeviceDepthClipEnableFeaturesEXT* toMap) {
+    (void)handlemap;
+    (void)toMap;
+    if (toMap->pNext) {
+        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
+    }
+}
+
+void handlemap_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VulkanHandleMapping* handlemap, VkPipelineRasterizationDepthClipStateCreateInfoEXT* toMap) {
+    (void)handlemap;
+    (void)toMap;
+    if (toMap->pNext) {
+        handlemap_extension_struct(handlemap, (void*)(toMap->pNext));
+    }
+}
+
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -4632,6 +4652,20 @@ void handlemap_extension_struct(VulkanHandleMapping* handlemap, void* structExte
         case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT: {
             handlemap_VkPipelineRasterizationStateStreamCreateInfoEXT(
                 handlemap, reinterpret_cast<VkPipelineRasterizationStateStreamCreateInfoEXT*>(
+                               structExtension_out));
+            break;
+        }
+#endif
+#ifdef VK_EXT_depth_clip_enable
+        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_ENABLE_FEATURES_EXT: {
+            handlemap_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+                handlemap,
+                reinterpret_cast<VkPhysicalDeviceDepthClipEnableFeaturesEXT*>(structExtension_out));
+            break;
+        }
+        case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT: {
+            handlemap_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+                handlemap, reinterpret_cast<VkPipelineRasterizationDepthClipStateCreateInfoEXT*>(
                                structExtension_out));
             break;
         }
