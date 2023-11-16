@@ -2734,6 +2734,22 @@ DEFINE_ALIAS_FUNCTION(transform_fromhost_VkPhysicalDeviceTextureCompressionASTCH
                       transform_fromhost_VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT)
 
 #endif
+#ifdef VK_EXT_depth_clip_enable
+void transform_tohost_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VkDecoderGlobalState* resourceTracker, VkPhysicalDeviceDepthClipEnableFeaturesEXT* toTransform);
+
+void transform_fromhost_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
+    VkDecoderGlobalState* resourceTracker, VkPhysicalDeviceDepthClipEnableFeaturesEXT* toTransform);
+
+void transform_tohost_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VkDecoderGlobalState* resourceTracker,
+    VkPipelineRasterizationDepthClipStateCreateInfoEXT* toTransform);
+
+void transform_fromhost_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
+    VkDecoderGlobalState* resourceTracker,
+    VkPipelineRasterizationDepthClipStateCreateInfoEXT* toTransform);
+
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign

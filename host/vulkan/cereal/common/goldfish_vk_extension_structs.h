@@ -153,6 +153,8 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
 #endif
 #ifdef VK_EXT_texture_compression_astc_hdr
 #endif
+#ifdef VK_EXT_depth_clip_enable
+#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
