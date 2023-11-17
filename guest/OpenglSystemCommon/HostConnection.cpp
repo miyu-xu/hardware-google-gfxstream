@@ -165,6 +165,11 @@ static HostConnectionType getConnectionTypeFromProperty(enum VirtGpuCapset capse
     } while (false);
 #elif defined(__Fuchsia__)
     // TODO?
+#else
+    const char* transport_char = getenv("GFXSTREAM_TRANSPORT");
+    if (transport_char != nullptr) {
+        transport = std::string(transport_char);
+    }
 #endif
 
     if (transport.empty()) {
