@@ -16,12 +16,17 @@
 
 #pragma once
 
+#include <fidl/fuchsia.gpu.virtio/cpp/wire.h>
+
 #include "VirtGpu.h"
+
+class FuchsiaVirtGpuDevice;
 
 class FuchsiaVirtGpuBlob : public std::enable_shared_from_this<FuchsiaVirtGpuBlob>,
                            public VirtGpuBlob {
    public:
-    FuchsiaVirtGpuBlob(int64_t deviceHandle, uint32_t blobHandle, uint32_t resourceHandle,
+    // |device| must outlive this.
+    FuchsiaVirtGpuBlob(FuchsiaVirtGpuDevice* device, uint32_t blobHandle, uint32_t resourceHandle,
                        uint64_t size);
     ~FuchsiaVirtGpuBlob();
 
@@ -34,6 +39,12 @@ class FuchsiaVirtGpuBlob : public std::enable_shared_from_this<FuchsiaVirtGpuBlo
     int transferToHost(uint32_t offset, uint32_t size) override;
 
     VirtGpuBlobMappingPtr createMapping(void) override;
+
+   private:
+    FuchsiaVirtGpuDevice* mDevice;
+    uint32_t mBlobHandle;
+    uint32_t mResourceHandle;
+    uint64_t mSize;
 };
 
 class FuchsiaVirtGpuBlobMapping : public VirtGpuBlobMapping {
@@ -42,6 +53,11 @@ class FuchsiaVirtGpuBlobMapping : public VirtGpuBlobMapping {
     ~FuchsiaVirtGpuBlobMapping(void);
 
     uint8_t* asRawPtr(void) override;
+
+   private:
+    VirtGpuBlobPtr mBlob;
+    uint8_t* mPtr;
+    uint64_t mSize;
 };
 
 class FuchsiaVirtGpuDevice : public VirtGpuDevice {
@@ -59,4 +75,11 @@ class FuchsiaVirtGpuDevice : public VirtGpuDevice {
     VirtGpuBlobPtr importBlob(const struct VirtGpuExternalHandle& handle) override;
 
     int execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob) override;
+
+    fidl::WireSyncClient<fuchsia_gpu_virtio::VirtioGpu>& client() { return mClient; }
+
+   private:
+    struct VirtGpuCaps mCaps;
+    fidl::WireSyncClient<fuchsia_gpu_virtio::VirtioGpu> mClient;
+    uint32_t mContextId = {};
 };
