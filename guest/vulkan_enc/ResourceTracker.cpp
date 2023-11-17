@@ -1826,9 +1826,6 @@ VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
         {"VK_KHR_external_semaphore", 1},
         {"VK_FUCHSIA_external_semaphore", 1},
 #endif
-#if defined(__linux__) && !defined(VK_USE_PLATFORM_ANDROID_KHR)
-        {"VK_KHR_swapchain", 1},
-#endif
     };
 
     for (auto& anbExtProp : anbExtProps) {
