@@ -20,8 +20,8 @@
 #include "vk_android_native_buffer_gfxstream.h"
 #include "vulkan_gfxstream.h"
 
-namespace gfxstream {
-namespace vk {
+// anonymous
+namespace {
 
 template <class T> struct vk_get_vk_struct_id;
 
@@ -90,5 +90,4 @@ REGISTER_VK_STRUCT_ID(VkRenderPassAttachmentBeginInfo, VK_STRUCTURE_TYPE_RENDER_
 
 #undef REGISTER_VK_STRUCT_ID
 
-}  // namespace vk
-}  // namespace gfxstream
+} // anonymous
