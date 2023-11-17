@@ -29,8 +29,7 @@
 #include <stdlib.h>
 #include "vk_struct_id.h"
 
-namespace gfxstream {
-namespace vk {
+namespace { // anonymous
 
 struct vk_struct_common {
     VkStructureType sType;
@@ -159,11 +158,17 @@ __vk_outarray_next(struct __vk_outarray *a, size_t elem_size)
    vk_outarray(__typeof__((data)[0])) name; \
    vk_outarray_init(&name, (data), (len))
 
+#define VK_OUTARRAY_MAKE_TYPED(type, name, data, len) \
+   vk_outarray(type) name; \
+   vk_outarray_init(&name, (data), (len))
+
 #define vk_outarray_status(a) \
    __vk_outarray_status(&(a)->base)
 
 #define vk_outarray_next(a) \
-   ((vk_outarray_typeof_elem(a) *) \
+   vk_outarray_next_typed(vk_outarray_typeof_elem(a), a)
+#define vk_outarray_next_typed(type, a) \
+   ((type *) \
       __vk_outarray_next(&(a)->base, vk_outarray_sizeof_elem(a)))
 
 /**
@@ -187,6 +192,10 @@ __vk_outarray_next(struct __vk_outarray *a, size_t elem_size)
  */
 #define vk_outarray_append(a, elem) \
    for (vk_outarray_typeof_elem(a) *elem = vk_outarray_next(a); \
+        elem != NULL; elem = NULL)
+
+#define vk_outarray_append_typed(type, a, elem) \
+   for (type *elem = vk_outarray_next_typed(type, a); \
         elem != NULL; elem = NULL)
 
 static inline void *
@@ -251,7 +260,6 @@ template <class T> void vk_append_struct(vk_struct_chain_iterator* i, T* vk_stru
     *i = vk_make_chain_iterator(vk_struct);
 }
 
-}  // namespace vk
-}  // namespace gfxstream
+} // anonymous
 
 #endif /* VK_UTIL_H */

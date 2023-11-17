@@ -440,7 +440,7 @@ VkResult gfxstream_vk_AllocateMemory(VkDevice device, const VkMemoryAllocateInfo
             sizeof(struct gfxstream_vk_device_memory));
     /* VkMemoryDedicatedAllocateInfo */
     VkMemoryDedicatedAllocateInfo* dedicatedAllocInfoPtr =
-        (VkMemoryDedicatedAllocateInfo*)gfxstream::vk::vk_find_struct<VkMemoryDedicatedAllocateInfo>(pAllocateInfo);
+        (VkMemoryDedicatedAllocateInfo*)vk_find_struct<VkMemoryDedicatedAllocateInfo>(pAllocateInfo);
     if (dedicatedAllocInfoPtr) {
         if (dedicatedAllocInfoPtr->buffer) {
             VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, dedicatedAllocInfoPtr->buffer);
@@ -471,8 +471,8 @@ void gfxstream_vk_CmdBeginRenderPass(VkCommandBuffer commandBuffer,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
             gfxstream_commandBuffer->internal_object);
-        VkRenderPassBeginInfo internal_pRenderPassBegin = gfxstream::vk::vk_make_orphan_copy(*pRenderPassBegin);
-        gfxstream::vk::vk_struct_chain_iterator structChainIter = gfxstream::vk::vk_make_chain_iterator(&internal_pRenderPassBegin);
+        VkRenderPassBeginInfo internal_pRenderPassBegin = vk_make_orphan_copy(*pRenderPassBegin);
+        vk_struct_chain_iterator structChainIter = vk_make_chain_iterator(&internal_pRenderPassBegin);
         /* VkRenderPassBeginInfo::renderPass */
         VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
                         internal_pRenderPassBegin.renderPass);
@@ -485,7 +485,7 @@ void gfxstream_vk_CmdBeginRenderPass(VkCommandBuffer commandBuffer,
         std::vector<VkImageView> internal_pAttachments;
         VkRenderPassAttachmentBeginInfo internal_renderPassAttachmentBeginInfo;
         VkRenderPassAttachmentBeginInfo *pRenderPassAttachmentBeginInfo =
-            (VkRenderPassAttachmentBeginInfo*)gfxstream::vk::vk_find_struct<VkRenderPassAttachmentBeginInfo>(pRenderPassBegin);
+            (VkRenderPassAttachmentBeginInfo*)vk_find_struct<VkRenderPassAttachmentBeginInfo>(pRenderPassBegin);
         if (pRenderPassAttachmentBeginInfo) {
             internal_renderPassAttachmentBeginInfo = *pRenderPassAttachmentBeginInfo;
             /* VkRenderPassAttachmentBeginInfo::pAttachments */
@@ -510,8 +510,8 @@ void gfxstream_vk_CmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
     {
         auto vkEnc = gfxstream::vk::ResourceTracker::getCommandBufferEncoder(
             gfxstream_commandBuffer->internal_object);
-        VkRenderPassBeginInfo internal_pRenderPassBegin = gfxstream::vk::vk_make_orphan_copy(*pRenderPassBegin);
-        gfxstream::vk::vk_struct_chain_iterator structChainIter = gfxstream::vk::vk_make_chain_iterator(&internal_pRenderPassBegin);
+        VkRenderPassBeginInfo internal_pRenderPassBegin = vk_make_orphan_copy(*pRenderPassBegin);
+        vk_struct_chain_iterator structChainIter = vk_make_chain_iterator(&internal_pRenderPassBegin);
         /* VkRenderPassBeginInfo::renderPass */
         VK_FROM_HANDLE(gfxstream_vk_render_pass, gfxstream_renderPass,
                         internal_pRenderPassBegin.renderPass);
@@ -524,7 +524,7 @@ void gfxstream_vk_CmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
         std::vector<VkImageView> internal_pAttachments;
         VkRenderPassAttachmentBeginInfo internal_renderPassAttachmentBeginInfo;
         VkRenderPassAttachmentBeginInfo *pRenderPassAttachmentBeginInfo =
-            (VkRenderPassAttachmentBeginInfo*)gfxstream::vk::vk_find_struct<VkRenderPassAttachmentBeginInfo>(pRenderPassBegin);
+            (VkRenderPassAttachmentBeginInfo*)vk_find_struct<VkRenderPassAttachmentBeginInfo>(pRenderPassBegin);
         if (pRenderPassAttachmentBeginInfo) {
             internal_renderPassAttachmentBeginInfo = *pRenderPassAttachmentBeginInfo;
             /* VkRenderPassAttachmentBeginInfo::pAttachments */
