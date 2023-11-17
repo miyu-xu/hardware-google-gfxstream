@@ -17,31 +17,56 @@
 #include "FuchsiaVirtGpu.h"
 
 #include <cutils/log.h>
+#include <lib/zx/vmar.h>
+#include <unistd.h>
 
-FuchsiaVirtGpuBlob::FuchsiaVirtGpuBlob(int64_t deviceHandle, uint32_t blobHandle, uint32_t resourceHandle,
-                         uint64_t size) {
+FuchsiaVirtGpuBlob::FuchsiaVirtGpuBlob(FuchsiaVirtGpuDevice* device, uint32_t blobHandle, uint32_t resourceHandle,
+                         uint64_t size) : mDevice(device),
+                         mBlobHandle(blobHandle),
+      mResourceHandle(resourceHandle),
+      mSize(size) {
 }
 
 FuchsiaVirtGpuBlob::~FuchsiaVirtGpuBlob(void) {
 }
 
 uint32_t FuchsiaVirtGpuBlob::getBlobHandle(void) {
-    ALOGE("%s: unimplemented", __func__);
-    return 0;
+    return mBlobHandle;
 }
 
 uint32_t FuchsiaVirtGpuBlob::getResourceHandle(void) {
-    ALOGE("%s: unimplemented", __func__);
-    return 0;
+    return mResourceHandle;
 }
 
 VirtGpuBlobMappingPtr FuchsiaVirtGpuBlob::createMapping(void) {
-    ALOGE("%s: unimplemented", __func__);
-    return nullptr;
+    zx::vmo vmo;
+    {
+        auto wire_result = mDevice->client()->GetBlobHandle(mBlobHandle);
+        if (!wire_result.ok()) {
+            ALOGE("%s: GetBlobHandle failed: %d", __FUNCTION__, wire_result.status());
+            return nullptr;
+        }
+        vmo = std::move(wire_result->value()->vmo);
+    }
+
+    zx::vmar vmar;
+    zx_vaddr_t virt_addr_;
+    if (zx_status_t status = zx::vmar::root_self()->map(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, /*vmar_offset=*/0,
+                                      vmo,
+                                      /*vmo_offset=*/0, mSize, &virt_addr_); status != ZX_OK) {
+        ALOGE("Map failed: %d", status);
+        return nullptr;
+    }
+
+    ALOGI("%s: mapped %lu bytes to 0x%lx", __FUNCTION__, mSize, virt_addr_);
+
+    return std::make_shared<FuchsiaVirtGpuBlobMapping>(shared_from_this(), reinterpret_cast<uint8_t*>(virt_addr_), mSize);
 }
 
 int FuchsiaVirtGpuBlob::wait() {
-    return -1;
+    ALOGI("*** %s not (well) implemented", __FUNCTION__);
+    sleep(1);
+    return 0;
 }
 
 int FuchsiaVirtGpuBlob::exportBlob(struct VirtGpuExternalHandle& handle) {
