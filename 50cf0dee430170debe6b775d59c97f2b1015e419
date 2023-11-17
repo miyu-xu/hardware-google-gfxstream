@@ -50,6 +50,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "50729cfb_5a4fdd30",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 21
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-17T17:59:01Z",
+      "side": 1,
+      "message": "Ack.",
+      "parentUuid": "a14d59ef_14b7dd2d",
+      "range": {
+        "startLine": 16,
+        "startChar": 6,
+        "endLine": 16,
+        "endChar": 27
+      },
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "38890d3f_5fbc1ed5",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 21
@@ -79,6 +103,24 @@
       "side": 1,
       "message": "I have not looked into meson much yet but that sounds reasonable.",
       "parentUuid": "38890d3f_5fbc1ed5",
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec0fcb98_686e6f78",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 21
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-17T17:59:01Z",
+      "side": 1,
+      "message": "Yeah, it\u0027s more a feature request than anything.  What I want to do is test the gfxstream Magma backend not just Vulkan decoder using this interface.  Plus Rust based decoders too eventually.\n\nFor meson, I guess one would specify to ``--with-test-backend``` to look for the `gfxstream_backend.pc` or `rutabaga_gfx_ffi.pc` files in the guest build.",
+      "parentUuid": "78723d05_dea5d5ee",
       "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
