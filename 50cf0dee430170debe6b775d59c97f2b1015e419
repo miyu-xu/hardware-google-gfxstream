@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "a14d59ef_14b7dd2d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 21
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-17T17:36:46Z",
+      "side": 1,
+      "message": "This part is still a WIP.\n\nRight now, the end2end tests work because we are specifying an explicit path to `libgfxstream_guest_vulkan_with_host.so`.\n\nWhen you run with a more generic app with `VK_ICD_FILENAMES\u003dgfxstream.icd.json`, \n1. the app uses the vulkan loader\n2. the vulkan loader finds the guest gfxstream vulkan icd\n2. the vulkan loader starts to load the function pointers\n3. guest gfxstream vulkan impl initializes and creates the host connection\n4. the host connection with this new rutabaga platform layer calls `stream_renderer_init()` to start up host gfxstream\n5. the host side of gfxstream starts to initialize the vulkan state and uses the vulkan loader\n6. the vulkan loader starts to find layers/icds again and deadlocks on the locks held by 2/3\n\nIIRC, awoloszyn@ mentioned they had a little bit of custom loading code. Either that or we can potentially build and use like a duplicate of the loader (`libvulkan2` or something) which has slightly different names/symbols to not conflict with the first level loader.",
+      "parentUuid": "67d99c6b_cd7fc1d1",
+      "range": {
+        "startLine": 16,
+        "startChar": 6,
+        "endLine": 16,
+        "endChar": 27
+      },
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "38890d3f_5fbc1ed5",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 21
@@ -37,6 +61,24 @@
       "writtenOn": "2023-11-17T01:50:50Z",
       "side": 1,
       "message": "Would it be possible to build this emulated test layer for the Linux non-Android build too, without the Android build system?\n\nThe flow I\u0027m thinking of is:\n\n- guest/meson.build looks for gfxstream_backend.pc (installed via https://crosvm.dev/book/appendix/rutabaga_gfx.html#build-gfxstream) to for libgfxstream_backend + headers.\n\n- everything else should be relatively unchanged?",
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78723d05_dea5d5ee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 21
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-17T17:36:46Z",
+      "side": 1,
+      "message": "I have not looked into meson much yet but that sounds reasonable.",
+      "parentUuid": "38890d3f_5fbc1ed5",
       "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -54,6 +96,30 @@
       "writtenOn": "2023-11-17T01:50:50Z",
       "side": 1,
       "message": "The linux guest build installs something called \"cereal_icd.x86_64.json\"\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/guest/vulkan/meson.build#23\n\nCan you modify that to be gfxstream too?",
+      "range": {
+        "startLine": 312,
+        "startChar": 61,
+        "endLine": 312,
+        "endChar": 70
+      },
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4e8904e_0355b31e",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 21
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-17T17:36:46Z",
+      "side": 1,
+      "message": "Done (untested).",
+      "parentUuid": "3428bedd_6d2571bb",
       "range": {
         "startLine": 312,
         "startChar": 61,
