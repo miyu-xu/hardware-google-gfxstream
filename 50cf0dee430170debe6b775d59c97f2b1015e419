@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67d99c6b_cd7fc1d1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 21
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-17T01:50:50Z",
+      "side": 1,
+      "message": "Can you describe how to run `deqp-vk` with this emulated test backend?\n\nIdeally, the flow would be `export VK_ICD_FILENAMES\u003dgfxstream.icd.json`\n\n`./deqp-vk`\n\nBut that may require a client server approach.  But if there\u0027s a single-process way, that\u0027s useful too.",
+      "range": {
+        "startLine": 16,
+        "startChar": 6,
+        "endLine": 16,
+        "endChar": 27
+      },
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38890d3f_5fbc1ed5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 21
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-17T01:50:50Z",
+      "side": 1,
+      "message": "Would it be possible to build this emulated test layer for the Linux non-Android build too, without the Android build system?\n\nThe flow I\u0027m thinking of is:\n\n- guest/meson.build looks for gfxstream_backend.pc (installed via https://crosvm.dev/book/appendix/rutabaga_gfx.html#build-gfxstream) to for libgfxstream_backend + headers.\n\n- everything else should be relatively unchanged?",
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3428bedd_6d2571bb",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 21
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-17T01:50:50Z",
+      "side": 1,
+      "message": "The linux guest build installs something called \"cereal_icd.x86_64.json\"\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/guest/vulkan/meson.build#23\n\nCan you modify that to be gfxstream too?",
+      "range": {
+        "startLine": 312,
+        "startChar": 61,
+        "endLine": 312,
+        "endChar": 70
+      },
+      "revId": "50cf0dee430170debe6b775d59c97f2b1015e419",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
