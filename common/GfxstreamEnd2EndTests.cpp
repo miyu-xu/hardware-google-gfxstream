@@ -437,6 +437,8 @@ std::unique_ptr<vkhpp::DynamicLoader> GfxstreamEnd2EndTest::SetupGuestVk() {
 void GfxstreamEnd2EndTest::SetUp() {
     const TestParams params = GetParam();
 
+    ASSERT_THAT(setenv("GFXSTREAM_TRANSPORT", "virtio-gpu-pipe", /*overwrite=*/1), Eq(0));
+
     ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_GL",
                        params.with_gl ? "Y" : "N", /*overwrite=*/1), Eq(0));
     ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK",
