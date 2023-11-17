@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8764d0fd_f3d706fe",
+        "filename": "guest/Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1135107
+      },
+      "writtenOn": "2023-11-17T00:09:51Z",
+      "side": 0,
+      "message": "Can you please either:\n- test it with \"gnu++20\" (but leave it default in this change)\n- or (preferably) just wait with merging this change until aosp/2760825 merges",
+      "range": {
+        "startLine": 24,
+        "startChar": 19,
+        "endLine": 24,
+        "endChar": 21
+      },
+      "revId": "eea882a8a186461bde2682fecee6c1c8995f846e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
