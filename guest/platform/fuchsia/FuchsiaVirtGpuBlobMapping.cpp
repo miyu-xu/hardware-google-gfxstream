@@ -16,12 +16,16 @@
 
 #include "FuchsiaVirtGpu.h"
 
-FuchsiaVirtGpuBlobMapping::FuchsiaVirtGpuBlobMapping(VirtGpuBlobPtr blob, uint8_t* ptr, uint64_t size) {
+#include <lib/zx/vmar.h>
+
+FuchsiaVirtGpuBlobMapping::FuchsiaVirtGpuBlobMapping(VirtGpuBlobPtr blob, uint8_t* ptr, uint64_t size)
+    : mBlob(blob), mPtr(ptr), mSize(size) {
 }
 
 FuchsiaVirtGpuBlobMapping::~FuchsiaVirtGpuBlobMapping(void) {
+    zx::vmar::root_self()->unmap(reinterpret_cast<uintptr_t>(mPtr), mSize);
 }
 
 uint8_t* FuchsiaVirtGpuBlobMapping::asRawPtr(void) {
-    return nullptr;
+    return mPtr;
 }
