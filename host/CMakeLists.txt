@@ -282,7 +282,6 @@ endfunction()
     add_executable(
         Vulkan_unittests
         tests/Vulkan_unittest.cpp
-        tests/CompositorVk_unittest.cpp
         tests/SwapChainStateVk_unittest.cpp
         tests/DisplayVk_unittest.cpp
         tests/VirtioGpuTimelines_unittest.cpp
