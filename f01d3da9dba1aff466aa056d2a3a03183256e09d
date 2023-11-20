@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "397bd936_0c4f6947",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-20T19:45:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd4ba155_00375d66",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 20
+      },
+      "revId": "f01d3da9dba1aff466aa056d2a3a03183256e09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "66ec2334_56b9bd7b",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "766ba20b_d12052e2",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-20T19:45:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "66ec2334_56b9bd7b",
+      "range": {
+        "startLine": 166,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 0
+      },
+      "revId": "f01d3da9dba1aff466aa056d2a3a03183256e09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a4042549_9f22056f",
@@ -60,6 +108,30 @@
       "writtenOn": "2023-11-20T18:22:01Z",
       "side": 1,
       "message": "I think all Fuchsia development is happening in terms of virtio-gpu now.  FEMU is frozen at the lkgb, and the guest side is goldfish anways, and isn\u0027t updated: so delete.",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 0
+      },
+      "revId": "f01d3da9dba1aff466aa056d2a3a03183256e09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bab89006_ff7a79cc",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-20T19:45:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4042549_9f22056f",
       "range": {
         "startLine": 173,
         "startChar": 0,
