@@ -22,6 +22,30 @@
       },
       "revId": "eea882a8a186461bde2682fecee6c1c8995f846e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9efe17f3_ccae727d",
+        "filename": "guest/Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-11-20T16:11:53Z",
+      "side": 0,
+      "message": "Tested with the `cpp_std: \"gnu++20\"`. Updated commit message to reflect.",
+      "parentUuid": "8764d0fd_f3d706fe",
+      "range": {
+        "startLine": 24,
+        "startChar": 19,
+        "endLine": 24,
+        "endChar": 21
+      },
+      "revId": "eea882a8a186461bde2682fecee6c1c8995f846e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
