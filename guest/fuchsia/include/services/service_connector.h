@@ -16,6 +16,8 @@
 #ifndef FUCHSIA_INCLUDE_SERVICES_SERVICE_CONNECTOR_H_
 #define FUCHSIA_INCLUDE_SERVICES_SERVICE_CONNECTOR_H_
 
+#include <vector>
+#include <string>
 #include <cstdint>
 #include <zircon/types.h>
 
@@ -25,5 +27,8 @@ typedef zx_handle_t (*PFN_ConnectToServiceAddr)(const char *pName);
 
 void SetConnectToServiceFunction(PFN_ConnectToServiceAddr func);
 PFN_ConnectToServiceAddr GetConnectToServiceFunction();
+
+std::vector<std::string> FuchsiaGetVirtioGpuDevices();
+bool FuchsiaIsDeviceAccessible();
 
 #endif // FUCHSIA_INCLUDE_SERVICES_SERVICE_CONNECTOR_H_
