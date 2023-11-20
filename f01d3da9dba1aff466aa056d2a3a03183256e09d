@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd4ba155_00375d66",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-20T18:22:01Z",
+      "side": 1,
+      "message": "Can we delete the while loop only check for `ro.boot.hardware.gltransport`?  Reason:\n\nEmulator seems to already define `ro.boot.hardware.gltransport`\n\nhttps://source.corp.google.com/h/android/platform/superproject/main/+/main:hardware/google/aemu/host-common/include/host-common/hw-config-defs.h;l\u003d291?q\u003dhw_gltransport\n\nSo while it\u0027s important to worry about older guests + newer host, newer guest + older host is a less tested config.  \n\nWe can also then assume the transport is non-empty\n\nSo I think you may do something like:\n\n```\n#if defined(__Fuchsia__) || defined(LINUX_GUEST_BUILD)\n   return HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE.\nelse\n   // Get prop\n   // Do comparison.\n#endif\n```",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 20
+      },
+      "revId": "f01d3da9dba1aff466aa056d2a3a03183256e09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66ec2334_56b9bd7b",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-20T18:22:01Z",
+      "side": 1,
+      "message": "delete",
+      "range": {
+        "startLine": 166,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 0
+      },
+      "revId": "f01d3da9dba1aff466aa056d2a3a03183256e09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4042549_9f22056f",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-20T18:22:01Z",
+      "side": 1,
+      "message": "I think all Fuchsia development is happening in terms of virtio-gpu now.  FEMU is frozen at the lkgb, and the guest side is goldfish anways, and isn\u0027t updated: so delete.",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 0
+      },
+      "revId": "f01d3da9dba1aff466aa056d2a3a03183256e09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
