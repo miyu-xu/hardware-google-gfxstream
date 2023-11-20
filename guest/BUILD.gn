@@ -61,7 +61,6 @@ source_set("goldfish_srcs") {
   configs += [ ":common_config" ]
 
   sources = [
-    "vulkan/goldfish_vulkan.cpp",
     "vulkan_enc/ResourceTracker.cpp",
     "vulkan_enc/ResourceTracker.h",
   ]
@@ -197,6 +196,7 @@ loadable_module("libvulkan_gfxstream") {
     "vulkan_enc/goldfish_vk_transform_guest.h",
     "vulkan_enc/vulkan_gfxstream.h",
     "vulkan_enc/vulkan_gfxstream_structure_type.h",
+    "vulkan/goldfish_vulkan.cpp",
   ]
 
   if (target_os == "fuchsia") {
@@ -229,6 +229,7 @@ loadable_module("libvulkan_gfxstream") {
 
     deps = [
       ":goldfish_srcs",
+      "//sdk/fidl/fuchsia.gpu.virtio:fuchsia.gpu.virtio_cpp",
       "//sdk/fidl/fuchsia.logger:fuchsia.logger_cpp",
       "//sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_cpp",
       "//src/zircon/lib/zircon",
