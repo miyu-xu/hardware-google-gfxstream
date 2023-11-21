@@ -5155,7 +5155,8 @@ VkResult gfxstream_vk_AcquireImageANDROID(VkDevice device, VkImage image, int na
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
         vkAcquireImageANDROID_VkResult_return = vkEnc->vkAcquireImageANDROID(
             gfxstream_device->internal_object, gfxstream_image->internal_object, nativeFenceFd,
-            gfxstream_semaphore->internal_object, gfxstream_fence->internal_object,
+            gfxstream_semaphore ? gfxstream_semaphore->internal_object : VK_NULL_HANDLE,
+            gfxstream_fence ? gfxstream_fence->internal_object : VK_NULL_HANDLE,
             true /* do lock */);
     }
     return vkAcquireImageANDROID_VkResult_return;
