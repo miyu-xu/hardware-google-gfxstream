@@ -412,6 +412,29 @@ VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
     VK_FROM_HANDLE(gfxstream_vk_physical_device, gfxstream_physicalDevice, physicalDevice);
     VkResult result = (VkResult)0;
 
+    /*
+     * Android's libvulkan implements VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT, but
+     * passes it to the underlying driver anyways.  See:
+     *
+     * https://android-review.googlesource.com/c/platform/hardware/google/gfxstream/+/2839438
+     *
+     * and associated bugs. Mesa VK runtime also checks this, so we have to filter out before
+     * reaches it. vk_find_struct<VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT>(..) doesn't
+     * work for some reason.
+     */
+    VkBaseInStructure* extensionCreateInfo =
+        (VkBaseInStructure*)(pCreateInfo->pNext);
+    while (extensionCreateInfo) {
+        if (extensionCreateInfo->sType ==
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT) {
+            auto swapchainMaintenance1Features =
+                reinterpret_cast<VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT*>(
+                    extensionCreateInfo);
+            swapchainMaintenance1Features->swapchainMaintenance1 = VK_FALSE;
+        }
+        extensionCreateInfo = (VkBaseInStructure*)(extensionCreateInfo->pNext);
+    }
+
     const VkAllocationCallbacks* pMesaAllocator = pAllocator ?: &gfxstream_physicalDevice->instance->vk.alloc;
     struct gfxstream_vk_device* gfxstream_device = (struct gfxstream_vk_device*)vk_zalloc(
         pMesaAllocator, sizeof(struct gfxstream_vk_device), 8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
