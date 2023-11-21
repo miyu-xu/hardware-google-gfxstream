@@ -12,6 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+#include <errno.h>
+#include <string.h>
+
+#include "HostConnection.h"
+#include "ProcessPipe.h"
+#include "ResourceTracker.h"
+#include "VkEncoder.h"
+
 #include "gfxstream_vk_private.h"
 #include "gfxstream_vk_entrypoints.h"
 
@@ -20,14 +29,53 @@
 #include "vk_instance.h"
 #include "vk_sync_dummy.h"
 
-#include "ResourceTracker.h"
-#include "VkEncoder.h"
-
 #include "../vulkan_enc/vk_util.h"
 
 #include "HostConnection.h"
 
-VkResult SetupInstance(void);
+static HostConnection* getConnection(void) {
+    auto hostCon = HostConnection::get();
+    return hostCon;
+}
+
+static gfxstream::vk::VkEncoder* getVkEncoder(HostConnection* con) { return con->vkEncoder(); }
+
+gfxstream::vk::ResourceTracker::ThreadingCallbacks threadingCallbacks = {
+    .hostConnectionGetFunc = getConnection,
+    .vkEncoderGetFunc = getVkEncoder,
+};
+
+VkResult SetupInstance(void) {
+    uint32_t noRenderControlEnc = 0;
+    HostConnection* hostCon = HostConnection::getOrCreate(kCapsetGfxStreamVulkan);
+    if (!hostCon) {
+        ALOGE("vulkan: Failed to get host connection\n");
+        return VK_ERROR_DEVICE_LOST;
+    }
+
+    gfxstream::vk::ResourceTracker::get()->setupCaps(noRenderControlEnc);
+    // Legacy goldfish path: could be deleted once goldfish not used guest-side.
+    if (!noRenderControlEnc) {
+        // Implicitly sets up sequence number
+        ExtendedRCEncoderContext* rcEnc = hostCon->rcEncoder();
+        if (!rcEnc) {
+            ALOGE("vulkan: Failed to get renderControl encoder context\n");
+            return VK_ERROR_DEVICE_LOST;
+        }
+
+        gfxstream::vk::ResourceTracker::get()->setupFeatures(rcEnc->featureInfo_const());
+    }
+
+    gfxstream::vk::ResourceTracker::get()->setThreadingCallbacks(threadingCallbacks);
+    gfxstream::vk::ResourceTracker::get()->setSeqnoPtr(getSeqnoPtrForProcess());
+    gfxstream::vk::VkEncoder* vkEnc = hostCon->vkEncoder();
+    if (!vkEnc) {
+        ALOGE("vulkan: Failed to get Vulkan encoder\n");
+        return VK_ERROR_DEVICE_LOST;
+    }
+
+    return VK_SUCCESS;
+}
 
 #define VK_HOST_CONNECTION(ret)                                                    \
     HostConnection* hostCon = HostConnection::getOrCreate(kCapsetGfxStreamVulkan); \

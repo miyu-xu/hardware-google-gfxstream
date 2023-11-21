@@ -35,6 +35,8 @@ cc_defaults {
     header_libs: [
         "gfxstream_vulkan_headers",
         "mesa_common_headers_gfxstream",
+        "libnativewindow_headers",
+        "vulkan_enc_headers",
     ],
     static_libs: [
         "libmesa_util_c11_gfxstream",
@@ -44,13 +46,23 @@ cc_defaults {
         "libgfxstream_vk_entrypoints",
         "libmesa_util_gfxstream",
         "libmesa_util_format_gfxstream",
+        "libplatform",
+        "libGoldfishAddressSpace",
+        "libgfxstream_guest_gralloc",
+        "libringbuffer",
+        "libqemupipe.ranchu",
+        "libarect",
     ],
     shared_libs: [
         "libandroidemu",
         "liblog",
         "libcutils",
+        "libGLESv1_enc",
+        "libGLESv2_enc",
         "lib_renderControl_enc",
         "libOpenglCodecCommon",
+        "libbase",
+        "libdrm",
     ],
     cflags: [
         "-DLOG_TAG=\"goldfish_vulkan\"",
@@ -71,10 +83,10 @@ cc_defaults {
         "hardware/google/gfxstream/guest/GoldfishAddressSpace/include",
     ],
     srcs: [
-        "goldfish_vulkan.cpp",
         "gfxstream_vk_device.cpp",
         "gfxstream_vk_cmd.cpp",
         "gfxstream_vk_wsi.cpp",
+        ":vulkan_enc_impl",
     ],
     target: {
         android: {
@@ -84,6 +96,10 @@ cc_defaults {
             ],
             shared_libs: [
                 "libnativewindow",
+                "libsync",
+            ],
+            srcs: [
+                "gfxstream_vk_android.cpp",
             ],
         },
     },
@@ -94,10 +110,10 @@ cc_library_shared {
     defaults: [
         "libgfxstream_guest_vulkan_defaults",
     ],
-    shared_libs: [
-        "libOpenglSystemCommon",
-        "libvulkan_enc",
-    ],
+    static_libs: [
+        "libplatform",
+        "libOpenglSystemCommon_static",
+    ]
 }
 
 cc_library_shared {
@@ -106,8 +122,11 @@ cc_library_shared {
         "libgfxstream_guest_vulkan_defaults",
     ],
     shared_libs: [
-        "libOpenglSystemCommonWithHost",
-        "libgfxstream_guest_vulkan_encoder_with_host",
+        "libgfxstream_backend",
+    ],
+    static_libs: [
+        "libplatform_rutabaga",
+        "libOpenglSystemCommonWithHost_static",
     ],
     target: {
         host: {

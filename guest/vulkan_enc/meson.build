@@ -32,19 +32,3 @@ files_lib_vulkan_enc = files(
   'goldfish_vk_transform_guest.cpp',
   'gfxstream_vk_private.cpp',
 )
-
-lib_vulkan_enc = static_library(
-   'vulkan_enc',
-   [files_lib_vulkan_enc, gfxstream_vk_entrypoints],
-   cpp_args: cpp_args,
-   include_directories: [inc_android_emu, inc_guest_iostream, inc_android_compat,
-                         inc_opengl_codec, inc_render_enc, inc_system,
-                         inc_goldfish_address_space, inc_platform,
-                         inc_vulkan_headers, inc_opengl_headers,
-                         inc_include_mesa, inc_src],
-   link_with: [lib_platform],
-   link_args: [vulkan_icd_link_args, ld_args_bsymbolic, ld_args_gc_sections],
-   link_depends: vulkan_icd_link_depends,
-   dependencies: [dependency('libdrm'), idep_vulkan_runtime_headers,
-                  idep_vulkan_util_headers],
-)
