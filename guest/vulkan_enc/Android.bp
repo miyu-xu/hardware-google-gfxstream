@@ -27,7 +27,7 @@ genrule {
    cmd: "python3 $(location vk_entrypoints_gen) --xml " +
         "$(location :libmesa_vulkan_xml) --proto --weak --out-h " +
         "$(location gfxstream_vk_entrypoints.h) --out-c " +
-	"$(genDir)/dummy.c --prefix gfxstream_vk --beta false",
+        "$(genDir)/dummy.c --prefix gfxstream_vk --beta false",
 }
 
 genrule {
@@ -38,8 +38,8 @@ genrule {
    cmd: "python3 $(location vk_entrypoints_gen) --xml " +
         "$(location :libmesa_vulkan_xml) --proto --weak --out-h " +
         "$(genDir)/gfxstream_vk_entrypoints.h --out-c " +
-	"$(location gfxstream_vk_entrypoints.c) --prefix gfxstream_vk " +
-	"--beta false",
+        "$(location gfxstream_vk_entrypoints.c) --prefix gfxstream_vk " +
+        "--beta false",
 }
 
 cc_library_static {
@@ -59,18 +59,49 @@ cc_library_static {
         "libcutils",
     ],
     generated_headers: [
-	"gfxstream_vk_entrypoints_header",
+        "gfxstream_vk_entrypoints_header",
     ],
     generated_sources: [
-	"gfxstream_vk_entrypoints_impl",
+        "gfxstream_vk_entrypoints_impl",
     ],
     ldflags: [
-	"-Wl,-Bsymbolic",
-	"-Wl,--gc-sections",
+        "-Wl,-Bsymbolic",
+        "-Wl,--gc-sections",
     ],
     export_generated_headers: [
-	"gfxstream_vk_entrypoints_header",
+        "gfxstream_vk_entrypoints_header",
     ],
+}
+
+cc_library_headers {
+    name: "vulkan_enc_headers",
+    export_include_dirs: ["."],
+    host_supported: true,
+    vendor_available: true,
+}
+
+filegroup {
+    name: "vulkan_enc_impl",
+    srcs: [
+        "AndroidHardwareBuffer.cpp",
+        "CommandBufferStagingStream.cpp",
+        "DescriptorSetVirtualization.cpp",
+        "func_table.cpp",
+        "goldfish_vk_counting_guest.cpp",
+        "goldfish_vk_deepcopy_guest.cpp",
+        "goldfish_vk_extension_structs_guest.cpp",
+        "goldfish_vk_marshaling_guest.cpp",
+        "goldfish_vk_reserved_marshaling_guest.cpp",
+        "goldfish_vk_transform_guest.cpp",
+        "HostVisibleMemoryVirtualization.cpp",
+        "Resources.cpp",
+        "ResourceTracker.cpp",
+        "Validation.cpp",
+        "VkEncoder.cpp",
+        "VulkanHandleMapping.cpp",
+        "VulkanStreamGuest.cpp",
+        "gfxstream_vk_private.cpp",
+    ]
 }
 
 cc_defaults {
@@ -128,31 +159,14 @@ cc_defaults {
         "-DHAVE_STRUCT_TIMESPEC",
     ],
     srcs: [
-        "AndroidHardwareBuffer.cpp",
-        "CommandBufferStagingStream.cpp",
-        "DescriptorSetVirtualization.cpp",
-        "func_table.cpp",
-        "goldfish_vk_counting_guest.cpp",
-        "goldfish_vk_deepcopy_guest.cpp",
-        "goldfish_vk_extension_structs_guest.cpp",
-        "goldfish_vk_marshaling_guest.cpp",
-        "goldfish_vk_reserved_marshaling_guest.cpp",
-        "goldfish_vk_transform_guest.cpp",
-        "HostVisibleMemoryVirtualization.cpp",
-        "Resources.cpp",
-        "ResourceTracker.cpp",
-        "Validation.cpp",
-        "VkEncoder.cpp",
-        "VulkanHandleMapping.cpp",
-        "VulkanStreamGuest.cpp",
-        "gfxstream_vk_private.cpp",
+        ":vulkan_enc_impl",
     ],
     export_include_dirs: [
         ".",
     ],
     ldflags: [
-	"-Wl,-Bsymbolic",
-	"-Wl,--gc-sections",
+        "-Wl,-Bsymbolic",
+        "-Wl,--gc-sections",
     ],
     target: {
         android: {
@@ -166,7 +180,7 @@ cc_defaults {
     }
 }
 
-cc_library_shared {
+cc_library_static {
     name: "libvulkan_enc",
     defaults: [
         "libgfxstream_guest_vulkan_encoder_defaults",
@@ -176,7 +190,7 @@ cc_library_shared {
     ],
 }
 
-cc_library_shared {
+cc_library_static {
     name: "libgfxstream_guest_vulkan_encoder_with_host",
     defaults: [
         "libgfxstream_guest_vulkan_encoder_defaults",
