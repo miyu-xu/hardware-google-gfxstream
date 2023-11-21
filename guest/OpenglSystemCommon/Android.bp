@@ -100,12 +100,12 @@ cc_defaults {
         "lib_renderControl_enc",
         "libandroidemu",
         "libbase",
+        "libdrm",
         "libcutils",
         "libGLESv1_enc",
         "libGLESv2_enc",
         "liblog",
         "libOpenglCodecCommon",
-        "libvulkan_enc",
     ],
     export_shared_lib_headers: [
         "lib_renderControl_enc",
@@ -163,6 +163,7 @@ cc_library_shared {
         "libOpenglSystemCommonDefaults",
     ],
     static_libs: [
+        "libvulkan_enc",
         "libplatform",
     ],
     export_static_lib_headers: [
@@ -174,6 +175,50 @@ cc_library_shared {
     name: "libOpenglSystemCommonWithHost",
     defaults: [
         "libOpenglSystemCommonDefaults",
+    ],
+    shared_libs: [
+        "libgfxstream_backend",
+    ],
+    static_libs: [
+        "libgfxstream_guest_vulkan_encoder_with_host",
+        "libplatform_rutabaga",
+    ],
+    export_static_lib_headers: [
+        "libplatform_rutabaga",
+    ],
+    target: {
+        host: {
+            compile_multilib: "64",
+        },
+        android: {
+            compile_multilib: "64",
+        },
+    },
+}
+
+cc_library_static {
+    name: "libOpenglSystemCommon_static",
+    defaults: [
+        "libOpenglSystemCommonDefaults",
+    ],
+    header_libs: [
+        "vulkan_enc_headers",
+    ],
+    static_libs: [
+        "libplatform",
+    ],
+    export_static_lib_headers: [
+        "libplatform",
+    ],
+}
+
+cc_library_static {
+    name: "libOpenglSystemCommonWithHost_static",
+    defaults: [
+        "libOpenglSystemCommonDefaults",
+    ],
+    header_libs: [
+        "vulkan_enc_headers",
     ],
     shared_libs: [
         "libgfxstream_backend",
