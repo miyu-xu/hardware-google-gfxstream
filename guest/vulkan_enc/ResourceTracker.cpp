@@ -5911,8 +5911,7 @@ void ResourceTracker::unwrap_VkBindImageMemorySwapchainInfoKHR(
     }
 
     if (!outputBimsi || !outputBimsi->swapchain) {
-        ALOGE("FATAL: Local VkBindImageMemorySwapchainInfoKHR not properly allocated!");
-        abort();
+        return;
     }
 
     // Android based swapchains are implemented by the Android framework's
