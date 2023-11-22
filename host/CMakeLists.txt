@@ -4,6 +4,7 @@ add_subdirectory(compressedTextureFormats)
 
 # GL
 add_subdirectory(gl)
+add_subdirectory(gl-host-common)
 
 # Vulkan
 add_subdirectory(vulkan)
