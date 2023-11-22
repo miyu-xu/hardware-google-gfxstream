@@ -46,7 +46,6 @@ cc_defaults {
         "libgfxstream_vk_entrypoints",
         "libmesa_util_gfxstream",
         "libmesa_util_format_gfxstream",
-        "libplatform",
         "libGoldfishAddressSpace",
         "libgfxstream_guest_gralloc",
         "libringbuffer",
