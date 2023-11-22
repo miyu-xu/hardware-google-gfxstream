@@ -47,7 +47,7 @@ cc_library_shared {
         "gfxstream_vulkan_cereal_host",
         "gfxstream_vulkan_server",
         "gfxstream_renderControl_dec",
-        "gfxstream_dispatch",
+        "gfxstream_gles_dispatch",
         "gfxstream_glm",
         "gfxstream_compressedTextures",
         "gfxstream_emulated_textures",
@@ -121,7 +121,11 @@ cc_test_library {
         "tests/ShaderUtils.cpp",
     ],
     header_libs: [
+        "gfxstream_gles_dispatch_headers",
         "gfxstream_opengl_headers",
+    ],
+    export_header_lib_headers: [
+        "gfxstream_gles_dispatch_headers",
     ],
     shared_libs: [
         "libbase",

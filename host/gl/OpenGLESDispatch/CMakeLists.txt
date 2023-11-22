@@ -1,15 +1,50 @@
-add_library(
-    OpenGLESDispatch
-    EGLDispatch.cpp
-    gles1_stubbed_in_translator_namespace.cpp
-    gles2_stubbed_in_translator_namespace.cpp
-    GLESv1Dispatch.cpp
-    GLESv2Dispatch.cpp
-    OpenGLDispatchLoader.cpp
-    StaticDispatch.cpp)
-if (NOT MSVC)
-    target_compile_options(OpenGLESDispatch PRIVATE -fvisibility=default)
+# EMU seems to rely on this in both Gfxstream and non-Gfxstream
+# builds. Avoid a double include/define.
+if (NOT TARGET gfxstream_gles_dispatch)
+    add_library(
+        gfxstream_gles_dispatch_headers
+        INTERFACE)
+    target_include_directories(
+        gfxstream_gles_dispatch_headers
+        INTERFACE
+        include)
+    android_license(
+        TARGET
+        gfxstream_gles_dispatch_headers
+        LICENSE
+        Apache-2.0)
+
+    add_library(
+        gfxstream_gles_dispatch
+        EGLDispatch.cpp
+        gles1_stubbed_in_translator_namespace.cpp
+        gles2_stubbed_in_translator_namespace.cpp
+        GLESv1Dispatch.cpp
+        GLESv2Dispatch.cpp
+        OpenGLDispatchLoader.cpp
+        StaticDispatch.cpp)
+    if (NOT MSVC)
+        target_compile_options(
+            gfxstream_gles_dispatch
+            PRIVATE
+            -fvisibility=default)
+        target_link_libraries(
+            gfxstream_gles_dispatch
+            PUBLIC
+            gfxstream_gles_dispatch_headers)
+    endif()
+    target_link_libraries(
+        gfxstream_gles_dispatch
+        PRIVATE
+        aemu-base.headers)
+    target_link_libraries(
+        gfxstream_gles_dispatch
+        PUBLIC
+        apigen-codec-common
+        gles1_dec
+        gles2_dec)
+    target_link_libraries(
+        gfxstream_gles_dispatch
+        PRIVATE
+        EGL_translator_static)
 endif()
-target_link_libraries(OpenGLESDispatch PRIVATE aemu-base.headers)
-target_link_libraries(OpenGLESDispatch PUBLIC gles1_dec gles2_dec apigen-codec-common)
-target_link_libraries(OpenGLESDispatch PRIVATE EGL_translator_static)

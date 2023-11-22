@@ -143,10 +143,10 @@ static Key X11CodeToKey(Display *display, unsigned int scancode)
 
 static void AddX11KeyStateToEvent(Event *event, unsigned int state)
 {
-    event->Key.Shift = state & ShiftMask;
-    event->Key.Control = state & ControlMask;
-    event->Key.Alt = state & Mod1Mask;
-    event->Key.System = state & Mod4Mask;
+    event->key.Shift = state & ShiftMask;
+    event->key.Control = state & ControlMask;
+    event->key.Alt = state & Mod1Mask;
+    event->key.System = state & Mod4Mask;
 }
 
 }
@@ -435,16 +435,16 @@ void X11Window::processEvent(const XEvent &xEvent)
             if (wheelY != 0)
             {
                 event.Type = Event::EVENT_MOUSE_WHEEL_MOVED;
-                event.MouseWheel.Delta = wheelY;
+                event.mouseWheel.Delta = wheelY;
                 pushEvent(event);
             }
 
             if (button != MOUSEBUTTON_UNKNOWN)
             {
                 event.Type = Event::EVENT_MOUSE_BUTTON_RELEASED;
-                event.MouseButton.Button = button;
-                event.MouseButton.X = xEvent.xbutton.x;
-                event.MouseButton.Y = xEvent.xbutton.y;
+                event.mouseButton.Button = button;
+                event.mouseButton.X = xEvent.xbutton.x;
+                event.mouseButton.Y = xEvent.xbutton.y;
                 pushEvent(event);
             }
         }
@@ -480,9 +480,9 @@ void X11Window::processEvent(const XEvent &xEvent)
             if (button != MOUSEBUTTON_UNKNOWN)
             {
                 event.Type = Event::EVENT_MOUSE_BUTTON_RELEASED;
-                event.MouseButton.Button = button;
-                event.MouseButton.X = xEvent.xbutton.x;
-                event.MouseButton.Y = xEvent.xbutton.y;
+                event.mouseButton.Button = button;
+                event.mouseButton.X = xEvent.xbutton.x;
+                event.mouseButton.Y = xEvent.xbutton.y;
                 pushEvent(event);
             }
         }
@@ -492,7 +492,7 @@ void X11Window::processEvent(const XEvent &xEvent)
         {
             Event event;
             event.Type = Event::EVENT_KEY_PRESSED;
-            event.Key.Code = X11CodeToKey(mDisplay, xEvent.xkey.keycode);
+            event.key.Code = X11CodeToKey(mDisplay, xEvent.xkey.keycode);
             AddX11KeyStateToEvent(&event, xEvent.xkey.state);
             pushEvent(event);
         }
@@ -502,7 +502,7 @@ void X11Window::processEvent(const XEvent &xEvent)
         {
             Event event;
             event.Type = Event::EVENT_KEY_RELEASED;
-            event.Key.Code = X11CodeToKey(mDisplay, xEvent.xkey.keycode);
+            event.key.Code = X11CodeToKey(mDisplay, xEvent.xkey.keycode);
             AddX11KeyStateToEvent(&event, xEvent.xkey.state);
             pushEvent(event);
         }
@@ -528,8 +528,8 @@ void X11Window::processEvent(const XEvent &xEvent)
         {
             Event event;
             event.Type = Event::EVENT_MOUSE_MOVED;
-            event.MouseMove.X = xEvent.xmotion.x;
-            event.MouseMove.Y = xEvent.xmotion.y;
+            event.mouseMove.X = xEvent.xmotion.x;
+            event.mouseMove.Y = xEvent.xmotion.y;
             pushEvent(event);
         }
         break;
@@ -540,8 +540,8 @@ void X11Window::processEvent(const XEvent &xEvent)
             {
                 Event event;
                 event.Type = Event::EVENT_RESIZED;
-                event.Size.Width = xEvent.xconfigure.width;
-                event.Size.Height = xEvent.xconfigure.height;
+                event.size.Width = xEvent.xconfigure.width;
+                event.size.Height = xEvent.xconfigure.height;
                 pushEvent(event);
             }
             if (xEvent.xconfigure.x != mX || xEvent.xconfigure.y != mY)
@@ -561,8 +561,8 @@ void X11Window::processEvent(const XEvent &xEvent)
                 {
                     Event event;
                     event.Type = Event::EVENT_MOVED;
-                    event.Move.X = x;
-                    event.Move.Y = y;
+                    event.move.X = x;
+                    event.move.Y = y;
                     pushEvent(event);
                 }
             }
