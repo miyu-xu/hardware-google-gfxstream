@@ -34,6 +34,7 @@ cc_library_static {
         "gfxstream_opengl_headers",
     ],
     static_libs: [
+        "gfxstream_gl_host_common",
         "gfxstream_gles1_dec",
         "gfxstream_gles2_dec",
         "gfxstream_glsnapshot",

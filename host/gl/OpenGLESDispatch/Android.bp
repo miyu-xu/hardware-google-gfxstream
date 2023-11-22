@@ -33,4 +33,7 @@ cc_library_static {
         "OpenGLDispatchLoader.cpp",
         "StaticDispatch.cpp",
     ],
+    export_include_dirs: [
+        "include",
+    ],
 }

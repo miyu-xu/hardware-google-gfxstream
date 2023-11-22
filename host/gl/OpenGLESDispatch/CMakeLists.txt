@@ -1,4 +1,16 @@
 add_library(
+    OpenGLESDispatch.headers
+    INTERFACE)
+target_include_directories(
+    OpenGLESDispatch.headers
+    INTERFACE
+    include)
+target_link_libraries(
+    OpenGLESDispatch.headers
+    INTERFACE
+    gfxstream_egl_headers)
+
+add_library(
     OpenGLESDispatch
     EGLDispatch.cpp
     gles1_stubbed_in_translator_namespace.cpp
@@ -11,5 +23,5 @@ if (NOT MSVC)
     target_compile_options(OpenGLESDispatch PRIVATE -fvisibility=default)
 endif()
 target_link_libraries(OpenGLESDispatch PRIVATE aemu-base.headers)
-target_link_libraries(OpenGLESDispatch PUBLIC gles1_dec gles2_dec apigen-codec-common)
+target_link_libraries(OpenGLESDispatch PUBLIC gles1_dec gles2_dec apigen-codec-common OpenGLESDispatch.headers)
 target_link_libraries(OpenGLESDispatch PRIVATE EGL_translator_static)
