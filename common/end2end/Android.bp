@@ -40,7 +40,6 @@ cc_test_host {
         "libgmock",
         "liblz4",
         "libplatform_rutabaga",
-        "libgfxstream_guest_vulkan_encoder_with_host",
     ],
     cflags: [
         // TODO: remove
