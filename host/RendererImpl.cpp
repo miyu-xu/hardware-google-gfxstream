@@ -224,8 +224,8 @@ void RendererImpl::waitForProcessCleanup() {
 }
 
 RenderChannelPtr RendererImpl::createRenderChannel(
-        android::base::Stream* loadStream) {
-    const auto channel = std::make_shared<RenderChannelImpl>(loadStream);
+        android::base::Stream* loadStream, uint32_t contextId) {
+    const auto channel = std::make_shared<RenderChannelImpl>(loadStream, contextId);
     {
         android::base::AutoLock lock(mChannelsLock);
 

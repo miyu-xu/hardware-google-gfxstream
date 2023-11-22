@@ -20,6 +20,7 @@
 #include <string.h>
 
 #include <atomic>
+#include <limits>
 #include <memory>
 
 #include "ChecksumCalculatorThreadInfo.h"
@@ -1231,6 +1232,15 @@ static int rcDestroySyncKHR(uint64_t handle) {
 }
 
 static void rcSetPuid(uint64_t puid) {
+    constexpr const uint64_t kInvalidPUID = std::numeric_limits<uint64_t>::max();
+    if (puid == kInvalidPUID) {
+        // The host process pipe implementation (GLProcessPipe) has been updated
+        // to not generate a unique pipe id when running with virtio gpu and
+        // instead send -1 to the guest. Ignore those requests as the PUID will
+        // instead be the virtio gpu context id.
+        return;
+    }
+
     RenderThreadInfo *tInfo = RenderThreadInfo::get();
     tInfo->m_puid = puid;
 }
