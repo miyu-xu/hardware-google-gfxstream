@@ -35,6 +35,7 @@ target_link_libraries(gfxstream-vulkan-server PUBLIC
         gfxstream_utils
         gfxstream_vulkan_headers
         PRIVATE
+        gfxstream_gles_dispatch_headers
         gfxstream_egl_headers)
 
 if (WIN32)

@@ -15,6 +15,7 @@ cc_library_static {
         "gfxstream_host_common",
     ],
     header_libs: [
+        "gfxstream_gles_dispatch_headers",
         "gfxstream_opengl_headers",
     ],
     srcs: [

@@ -74,11 +74,11 @@ target_link_libraries(
         gfxstream_backend_static
         PUBLIC
         GLES_CM_translator_static
-        OpenGLESDispatch
         renderControl_dec
         gfxstream-gl-server
         gfxstream-magma-server
         gfxstream-vulkan-server
+        gfxstream_gles_dispatch
         gfxstream_egl_headers
         gfxstream-snapshot
         apigen-codec-common
@@ -235,10 +235,12 @@ endfunction()
     target_link_libraries(
         OpenglRender_unittests
         PRIVATE
+        gfxstream_backend_static
+        gfxstream-gl-server
+        gfxstream-vulkan-server
         stream-server-testing-support
         aemu-host-common-testing-support
         aemu-base-testing-support
-        gfxstream_backend_static
         gtest_main)
     if (LINUX)
         target_compile_definitions(
@@ -271,10 +273,12 @@ endfunction()
     target_link_libraries(
         OpenglRender_snapshot_unittests
         PRIVATE
+        gfxstream_backend_static
+        gfxstream-gl-server
+        gfxstream-vulkan-server
         stream-server-testing-support
         aemu-host-common-testing-support
         aemu-base-testing-support
-        gfxstream_backend_static
         gtest_main)
     discover_tests(OpenglRender_snapshot_unittests)
 
