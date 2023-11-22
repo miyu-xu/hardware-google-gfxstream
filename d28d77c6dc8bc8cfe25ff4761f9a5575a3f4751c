@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "327496d3_e396e0c6",
+        "filename": "host/RenderControl.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1235,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-11-22T18:38:21Z",
+      "side": 1,
+      "message": "nit: `static constexpr` -- move with other static defines in this file",
+      "range": {
+        "startLine": 1235,
+        "startChar": 4,
+        "endLine": 1235,
+        "endChar": 13
+      },
+      "revId": "d28d77c6dc8bc8cfe25ff4761f9a5575a3f4751c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
