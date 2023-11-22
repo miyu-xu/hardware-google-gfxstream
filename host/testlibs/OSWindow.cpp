@@ -293,12 +293,12 @@ void OSWindow::pushEvent(Event event)
     switch (event.Type)
     {
       case Event::EVENT_MOVED:
-        mX = event.Move.X;
-        mY = event.Move.Y;
+        mX = event.move.X;
+        mY = event.move.Y;
         break;
       case Event::EVENT_RESIZED:
-        mWidth = event.Size.Width;
-        mHeight = event.Size.Height;
+        mWidth = event.size.Width;
+        mHeight = event.size.Height;
         break;
       default:
         break;
