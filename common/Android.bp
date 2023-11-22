@@ -15,6 +15,7 @@ cc_test_host {
         "snapshot/GfxstreamEnd2EndVkSnapshotBasicTests.cpp",
     ],
     header_libs: [
+        "gfxstream_gles_dispatch_headers",
         "gfxstream_headers",
     ],
     data_libs: [

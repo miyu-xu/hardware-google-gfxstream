@@ -33,6 +33,7 @@ target_link_libraries(
     aemu-host-common.headers
     gfxstream-snapshot.headers
     gfxstream-compressedTextures
+    gfxstream_gles_dispatch_headers
     gfxstream_egl_headers)
 if (NOT MSVC)
     target_compile_options(GLcommon PRIVATE -fvisibility=hidden)

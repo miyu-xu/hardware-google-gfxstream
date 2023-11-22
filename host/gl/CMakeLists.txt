@@ -34,11 +34,11 @@ target_link_libraries(
         aemu-base.headers
         gfxstream-gl-host-common.headers
         gfxstream_vulkan_headers
+        gfxstream_gles_dispatch
         gfxstream_egl_headers
         gles1_dec
         gles2_dec
-        GLSnapshot
-        OpenGLESDispatch)
+        GLSnapshot)
 
 if(BUILD_STANDALONE)
     target_link_libraries(
