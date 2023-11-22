@@ -17,7 +17,11 @@ cc_library_static {
         "-Wno-unused-function",
     ],
     header_libs: [
+        "gfxstream_gles_dispatch_headers",
         "gfxstream_opengl_headers",
+    ],
+    export_header_lib_headers: [
+        "gfxstream_gles_dispatch_headers",
     ],
     static_libs: [
         "gfxstream_base",

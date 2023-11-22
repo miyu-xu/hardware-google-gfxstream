@@ -46,6 +46,11 @@ if (BUILD_STANDALONE)
         opengl/OpenglEsPipe.cpp
         ${gl-host-common-opengles-platform-sources}
         )
-        target_link_libraries(gfxstream-gl-host-common PUBLIC gfxstream-gl-host-common.headers)
+        target_link_libraries(
+            gfxstream-gl-host-common
+            PUBLIC
+            gfxstream-gl-host-common.headers
+            PRIVATE
+            gfxstream_gles_dispatch_headers)
 endif()
 
