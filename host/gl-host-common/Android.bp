@@ -29,8 +29,8 @@ cc_library_static {
         "opengl/OpenglEsPipe.cpp",
         "opengl/NativeGpuInfo_linux.cpp",
     ],
-    local_include_dirs: [
-        "include/host-common",
+    export_include_dirs: [
+        "include",
     ],
 }
 
