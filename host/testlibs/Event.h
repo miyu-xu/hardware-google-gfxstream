@@ -75,12 +75,12 @@ class Event
 
     union
     {
-        MoveEvent               Move;               // Move event parameters
-        SizeEvent               Size;               // Size event parameters
-        KeyEvent                Key;                // Key event parameters
-        MouseMoveEvent          MouseMove;          // Mouse move event parameters
-        MouseButtonEvent        MouseButton;        // Mouse button event parameters
-        MouseWheelEvent         MouseWheel;         // Mouse wheel event parameters
+        MoveEvent               move;               // Move event parameters
+        SizeEvent               size;               // Size event parameters
+        KeyEvent                key;                // Key event parameters
+        MouseMoveEvent          mouseMove;          // Mouse move event parameters
+        MouseButtonEvent        mouseButton;        // Mouse button event parameters
+        MouseWheelEvent         mouseWheel;         // Mouse wheel event parameters
     };
 };
 

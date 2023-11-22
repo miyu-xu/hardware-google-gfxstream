@@ -1,5 +1,18 @@
 add_library(
-    OpenGLESDispatch
+    gfxstream_gles_dispatch_headers
+    INTERFACE)
+target_include_directories(
+    gfxstream_gles_dispatch_headers
+    INTERFACE
+    include)
+android_license(
+    TARGET
+    gfxstream_gles_dispatch_headers
+    LICENSE
+    Apache-2.0)
+
+add_library(
+    gfxstream_gles_dispatch
     EGLDispatch.cpp
     gles1_stubbed_in_translator_namespace.cpp
     gles2_stubbed_in_translator_namespace.cpp
@@ -8,8 +21,24 @@ add_library(
     OpenGLDispatchLoader.cpp
     StaticDispatch.cpp)
 if (NOT MSVC)
-    target_compile_options(OpenGLESDispatch PRIVATE -fvisibility=default)
+    target_compile_options(
+        gfxstream_gles_dispatch
+        PRIVATE
+        -fvisibility=default)
 endif()
-target_link_libraries(OpenGLESDispatch PRIVATE aemu-base.headers)
-target_link_libraries(OpenGLESDispatch PUBLIC gles1_dec gles2_dec apigen-codec-common)
-target_link_libraries(OpenGLESDispatch PRIVATE EGL_translator_static)
+target_link_libraries(
+    gfxstream_gles_dispatch
+    PUBLIC
+    gfxstream_gles_dispatch_headers
+    PRIVATE
+    aemu-base.headers)
+target_link_libraries(
+    gfxstream_gles_dispatch
+    PUBLIC
+    apigen-codec-common
+    gles1_dec
+    gles2_dec)
+target_link_libraries(
+    gfxstream_gles_dispatch
+    PRIVATE
+    EGL_translator_static)
