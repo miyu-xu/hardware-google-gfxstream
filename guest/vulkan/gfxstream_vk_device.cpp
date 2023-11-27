@@ -94,6 +94,7 @@ static const char* const kMesaOnlyInstanceExtension[] = {
 #if defined(LINUX_GUEST_BUILD)
     VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
 #endif
+    VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 };
 
 static const char* const kMesaOnlyDeviceExtensions[] = {
