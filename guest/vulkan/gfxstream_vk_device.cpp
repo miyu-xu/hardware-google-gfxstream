@@ -750,3 +750,21 @@ VkResult gfxstream_vk_GetMemoryFdKHR(VkDevice device, const VkMemoryGetFdInfoKHR
     }
     return vkGetMemoryFdKHR_VkResult_return;
 }
+
+VkResult gfxstream_vk_EnumerateInstanceLayerProperties(uint32_t* pPropertyCount,
+                                                       VkLayerProperties* pProperties) {
+    AEMU_SCOPED_TRACE("vkEnumerateInstanceLayerProperties");
+    auto result = SetupInstance();
+    if (VK_SUCCESS != result) {
+        return vk_error(NULL, result);
+    }
+
+    VkResult vkEnumerateInstanceLayerProperties_VkResult_return = (VkResult)0;
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        vkEnumerateInstanceLayerProperties_VkResult_return =
+            vkEnc->vkEnumerateInstanceLayerProperties(pPropertyCount, pProperties,
+                                                      true /* do lock */);
+    }
+    return vkEnumerateInstanceLayerProperties_VkResult_return;
+}
