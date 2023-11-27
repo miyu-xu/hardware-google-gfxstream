@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "gfxstream_vk_private.h"
-
 #include "ResourceTracker.h"
 #include "VkEncoder.h"
+#include "gfxstream_vk_private.h"
 
 VkResult gfxstream_vk_CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
                                         const VkAllocationCallbacks* pAllocator,
@@ -23,21 +22,20 @@ VkResult gfxstream_vk_CreateCommandPool(VkDevice device, const VkCommandPoolCrea
     AEMU_SCOPED_TRACE("vkCreateCommandPool");
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VkResult result = (VkResult)0;
-    struct gfxstream_vk_command_pool* gfxstream_pCommandPool = (gfxstream_vk_command_pool*)vk_zalloc2(
-        &gfxstream_device->vk.alloc,
-        pAllocator,
-        sizeof(gfxstream_vk_command_pool),
-        8,
-        VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    struct gfxstream_vk_command_pool* gfxstream_pCommandPool =
+        (gfxstream_vk_command_pool*)vk_zalloc2(&gfxstream_device->vk.alloc, pAllocator,
+                                               sizeof(gfxstream_vk_command_pool), 8,
+                                               VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
     result = gfxstream_pCommandPool ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;
     if (VK_SUCCESS == result) {
-        result = vk_command_pool_init(&gfxstream_device->vk, &gfxstream_pCommandPool->vk, pCreateInfo, pAllocator);
+        result = vk_command_pool_init(&gfxstream_device->vk, &gfxstream_pCommandPool->vk,
+                                      pCreateInfo, pAllocator);
     }
     if (VK_SUCCESS == result) {
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        result = vkEnc->vkCreateCommandPool(
-            gfxstream_device->internal_object, pCreateInfo, pAllocator,
-            &gfxstream_pCommandPool->internal_object, true /* do lock */);
+        result = vkEnc->vkCreateCommandPool(gfxstream_device->internal_object, pCreateInfo,
+                                            pAllocator, &gfxstream_pCommandPool->internal_object,
+                                            true /* do lock */);
     }
     *pCommandPool = gfxstream_vk_command_pool_to_handle(gfxstream_pCommandPool);
     return result;
@@ -80,25 +78,26 @@ VkResult gfxstream_vk_ResetCommandPool(VkDevice device, VkCommandPool commandPoo
     return vkResetCommandPool_VkResult_return;
 }
 
-static VkResult vk_command_buffer_createOp(struct vk_command_pool *, struct vk_command_buffer **);
-static void vk_command_buffer_resetOp(struct vk_command_buffer *, VkCommandBufferResetFlags);
-static void vk_command_buffer_destroyOp(struct vk_command_buffer *);
+static VkResult vk_command_buffer_createOp(struct vk_command_pool*, struct vk_command_buffer**);
+static void vk_command_buffer_resetOp(struct vk_command_buffer*, VkCommandBufferResetFlags);
+static void vk_command_buffer_destroyOp(struct vk_command_buffer*);
 
 static vk_command_buffer_ops gfxstream_vk_commandBufferOps = {
     .create = vk_command_buffer_createOp,
     .reset = vk_command_buffer_resetOp,
-    .destroy = vk_command_buffer_destroyOp
-};
+    .destroy = vk_command_buffer_destroyOp};
 
-VkResult vk_command_buffer_createOp(struct vk_command_pool *commandPool, struct vk_command_buffer **pCommandBuffer) {
+VkResult vk_command_buffer_createOp(struct vk_command_pool* commandPool,
+                                    struct vk_command_buffer** pCommandBuffer) {
     VkResult result = VK_SUCCESS;
-    struct gfxstream_vk_command_buffer *gfxstream_commandBuffer = (struct gfxstream_vk_command_buffer*)vk_zalloc(
-            &commandPool->alloc,
-            sizeof(struct gfxstream_vk_command_buffer),
-            8,
-            VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    struct gfxstream_vk_command_buffer* gfxstream_commandBuffer =
+        (struct gfxstream_vk_command_buffer*)vk_zalloc(&commandPool->alloc,
+                                                       sizeof(struct gfxstream_vk_command_buffer),
+                                                       8, VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
     if (gfxstream_commandBuffer) {
-        result = vk_command_buffer_init(commandPool, &gfxstream_commandBuffer->vk, &gfxstream_vk_commandBufferOps, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+        result =
+            vk_command_buffer_init(commandPool, &gfxstream_commandBuffer->vk,
+                                   &gfxstream_vk_commandBufferOps, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
         if (VK_SUCCESS == result) {
             *pCommandBuffer = &gfxstream_commandBuffer->vk;
         }
@@ -108,12 +107,13 @@ VkResult vk_command_buffer_createOp(struct vk_command_pool *commandPool, struct 
     return result;
 }
 
-void vk_command_buffer_resetOp(struct vk_command_buffer *commandBuffer, VkCommandBufferResetFlags flags) {
+void vk_command_buffer_resetOp(struct vk_command_buffer* commandBuffer,
+                               VkCommandBufferResetFlags flags) {
     (void)flags;
     vk_command_buffer_reset(commandBuffer);
 }
 
-void vk_command_buffer_destroyOp(struct vk_command_buffer *commandBuffer) {
+void vk_command_buffer_destroyOp(struct vk_command_buffer* commandBuffer) {
     vk_command_buffer_finish(commandBuffer);
     vk_free(&commandBuffer->pool->alloc, commandBuffer);
 }
@@ -125,9 +125,11 @@ VkResult gfxstream_vk_AllocateCommandBuffers(VkDevice device,
     VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
     VK_FROM_HANDLE(gfxstream_vk_command_pool, gfxstream_commandPool, pAllocateInfo->commandPool);
     VkResult result = (VkResult)0;
-    std::vector<gfxstream_vk_command_buffer*> gfxstream_commandBuffers(pAllocateInfo->commandBufferCount);
-    for(uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
-        result = vk_command_buffer_createOp(&gfxstream_commandPool->vk,  (vk_command_buffer**)&gfxstream_commandBuffers[i]);
+    std::vector<gfxstream_vk_command_buffer*> gfxstream_commandBuffers(
+        pAllocateInfo->commandBufferCount);
+    for (uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
+        result = vk_command_buffer_createOp(&gfxstream_commandPool->vk,
+                                            (vk_command_buffer**)&gfxstream_commandBuffers[i]);
         if (VK_SUCCESS == result) {
             gfxstream_commandBuffers[i]->vk.level = pAllocateInfo->level;
         } else {
@@ -147,11 +149,13 @@ VkResult gfxstream_vk_AllocateCommandBuffers(VkDevice device,
             internal_objects.data());
         if (result == VK_SUCCESS) {
             gfxstream::vk::ResourceTracker::get()->addToCommandPool(
-                gfxstream_commandPool->internal_object, pAllocateInfo->commandBufferCount, internal_objects.data());
+                gfxstream_commandPool->internal_object, pAllocateInfo->commandBufferCount,
+                internal_objects.data());
             for (uint32_t i = 0; i < (uint32_t)internal_objects.size(); i++) {
                 gfxstream_commandBuffers[i]->internal_object = internal_objects[i];
                 // TODO: Also vk_command_buffer_init() on every mesa command buffer?
-                pCommandBuffers[i] = gfxstream_vk_command_buffer_to_handle(gfxstream_commandBuffers[i]);
+                pCommandBuffers[i] =
+                    gfxstream_vk_command_buffer_to_handle(gfxstream_commandBuffers[i]);
             }
         }
     }
@@ -168,7 +172,8 @@ void gfxstream_vk_FreeCommandBuffers(VkDevice device, VkCommandPool commandPool,
         // Set up internal commandBuffer array for gfxstream-internal call
         std::vector<VkCommandBuffer> internal_objects(commandBufferCount);
         for (uint32_t i = 0; i < commandBufferCount; i++) {
-            VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer, pCommandBuffers[i]);
+            VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer,
+                           pCommandBuffers[i]);
             internal_objects[i] = gfxstream_commandBuffer->internal_object;
         }
         auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();

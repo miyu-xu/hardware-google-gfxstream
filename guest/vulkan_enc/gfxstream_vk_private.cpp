@@ -13,20 +13,21 @@
 // limitations under the License.
 
 #include "gfxstream_vk_private.h"
+
 #include "vk_sync_dummy.h"
 
-static bool isNoopSemaphore(gfxstream_vk_semaphore *semaphore) {
+static bool isNoopSemaphore(gfxstream_vk_semaphore* semaphore) {
     /* Under the assumption that Mesa VK runtime queue submission is used, WSI flow
      * sets this temporary state to a dummy sync type (when no explicity dma-buf
      * synchronization is available). For gfxstream case, ignore this semaphore
      * when this is the case. Synchronization will be done on the host.
-    */
-    return (semaphore &&
-            semaphore->vk.temporary &&
+     */
+    return (semaphore && semaphore->vk.temporary &&
             vk_sync_type_is_dummy(semaphore->vk.temporary->type));
 }
 
-std::vector<VkSemaphore> transformVkSemaphoreList(const VkSemaphore* pSemaphores, uint32_t semaphoreCount) {
+std::vector<VkSemaphore> transformVkSemaphoreList(const VkSemaphore* pSemaphores,
+                                                  uint32_t semaphoreCount) {
     std::vector<VkSemaphore> outSemaphores;
     for (uint32_t j = 0; j < semaphoreCount; ++j) {
         VK_FROM_HANDLE(gfxstream_vk_semaphore, gfxstream_semaphore, pSemaphores[j]);
@@ -37,7 +38,8 @@ std::vector<VkSemaphore> transformVkSemaphoreList(const VkSemaphore* pSemaphores
     return outSemaphores;
 }
 
-std::vector<VkSemaphoreSubmitInfo> transformVkSemaphoreSubmitInfoList(const VkSemaphoreSubmitInfo* pSemaphoreSubmitInfos, uint32_t semaphoreSubmitInfoCount) {
+std::vector<VkSemaphoreSubmitInfo> transformVkSemaphoreSubmitInfoList(
+    const VkSemaphoreSubmitInfo* pSemaphoreSubmitInfos, uint32_t semaphoreSubmitInfoCount) {
     std::vector<VkSemaphoreSubmitInfo> outSemaphoreSubmitInfo;
     for (uint32_t j = 0; j < semaphoreSubmitInfoCount; ++j) {
         VkSemaphoreSubmitInfo outInfo = pSemaphoreSubmitInfos[j];
@@ -49,4 +51,3 @@ std::vector<VkSemaphoreSubmitInfo> transformVkSemaphoreSubmitInfoList(const VkSe
     }
     return outSemaphoreSubmitInfo;
 }
-
