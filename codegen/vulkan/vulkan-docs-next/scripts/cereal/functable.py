@@ -100,6 +100,7 @@ HANDWRITTEN_ENTRY_POINTS = [
     "vkCreateInstance",
     "vkDestroyInstance",
     "vkGetInstanceProcAddr",
+    "vkEnumerateInstanceLayerProperties",
     "vkEnumerateInstanceExtensionProperties",
     "vkEnumerateDeviceExtensionProperties",
     "vkGetDeviceProcAddr",
