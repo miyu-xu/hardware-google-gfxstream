@@ -119,18 +119,6 @@ void gfxstream_vk_GetPhysicalDeviceMemoryProperties(
                                                    pMemoryProperties, true /* do lock */);
     }
 }
-VkResult gfxstream_vk_EnumerateInstanceLayerProperties(uint32_t* pPropertyCount,
-                                                       VkLayerProperties* pProperties) {
-    AEMU_SCOPED_TRACE("vkEnumerateInstanceLayerProperties");
-    VkResult vkEnumerateInstanceLayerProperties_VkResult_return = (VkResult)0;
-    {
-        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
-        vkEnumerateInstanceLayerProperties_VkResult_return =
-            vkEnc->vkEnumerateInstanceLayerProperties(pPropertyCount, pProperties,
-                                                      true /* do lock */);
-    }
-    return vkEnumerateInstanceLayerProperties_VkResult_return;
-}
 VkResult gfxstream_vk_EnumerateDeviceLayerProperties(VkPhysicalDevice physicalDevice,
                                                      uint32_t* pPropertyCount,
                                                      VkLayerProperties* pProperties) {
