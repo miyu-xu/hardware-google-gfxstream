@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
+#include <cutils/log.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <xf86drm.h>
+
 #include <cerrno>
 #include <cstring>
-
-#include <cutils/log.h>
 
 #include "LinuxVirtGpu.h"
 #include "virtgpu_drm.h"
 
-LinuxVirtGpuBlob::LinuxVirtGpuBlob(int64_t deviceHandle, uint32_t blobHandle, uint32_t resourceHandle,
-                         uint64_t size)
+LinuxVirtGpuBlob::LinuxVirtGpuBlob(int64_t deviceHandle, uint32_t blobHandle,
+                                   uint32_t resourceHandle, uint64_t size)
     : mDeviceHandle(deviceHandle),
       mBlobHandle(blobHandle),
       mResourceHandle(resourceHandle),
-      mSize(size)
-      {}
+      mSize(size) {}
 
 LinuxVirtGpuBlob::~LinuxVirtGpuBlob(void) {
     struct drm_gem_close gem_close {
@@ -46,13 +45,9 @@ LinuxVirtGpuBlob::~LinuxVirtGpuBlob(void) {
     }
 }
 
-uint32_t LinuxVirtGpuBlob::getBlobHandle(void) {
-    return mBlobHandle;
-}
+uint32_t LinuxVirtGpuBlob::getBlobHandle(void) { return mBlobHandle; }
 
-uint32_t LinuxVirtGpuBlob::getResourceHandle(void) {
-    return mResourceHandle;
-}
+uint32_t LinuxVirtGpuBlob::getResourceHandle(void) { return mResourceHandle; }
 
 VirtGpuBlobMappingPtr LinuxVirtGpuBlob::createMapping(void) {
     int ret;
@@ -67,7 +62,7 @@ VirtGpuBlobMappingPtr LinuxVirtGpuBlob::createMapping(void) {
     }
 
     uint8_t* ptr = static_cast<uint8_t*>(
-            mmap64(nullptr, mSize, PROT_WRITE | PROT_READ, MAP_SHARED, mDeviceHandle, map.offset));
+        mmap64(nullptr, mSize, PROT_WRITE | PROT_READ, MAP_SHARED, mDeviceHandle, map.offset));
 
     if (ptr == MAP_FAILED) {
         ALOGE("mmap64 failed with (%s)", strerror(errno));
