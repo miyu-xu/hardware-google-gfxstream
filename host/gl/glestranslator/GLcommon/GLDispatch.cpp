@@ -21,10 +21,7 @@
 #include "aemu/base/SharedLibrary.h"
 #include "host-common/logging.h"
 
-
-#ifdef __linux__
-#include <GL/glx.h>
-#elif defined(WIN32)
+#if defined(WIN32)
 #include <windows.h>
 #endif
 
