@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a336557_337768fc",
+        "filename": "host/compressedTextureFormats/etc.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1994565
+      },
+      "writtenOn": "2023-11-30T10:42:05Z",
+      "side": 0,
+      "message": "This breaks the meson build:\n\n../qemu-build/qemu/third_party/gfxstream/host/compressedTextureFormats/meson.build:4:0: ERROR: File etc.cpp does not exist.\n\nA full log can be found at /usr/local/google/home/plabatut/qemu-build.out/gfxstream/meson-logs/meson-log.txt",
+      "revId": "4beb79d463aad245263038cbfbf0ee6a7bfdadf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
