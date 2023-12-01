@@ -123,6 +123,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
     if (len < 8) return 0;
     bool queueSubmitWithCommandsEnabled =
         feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands);
+    bool queueSignalReleaseImageOldEncoding =
+        feature_is_enabled(kFeature_QueueSignalReleaseImageOldEncoding);
     unsigned char* ptr = (unsigned char*)buf;
     const unsigned char* const end = (const unsigned char*)buf + len;
     if (m_forSnapshotLoad) {
@@ -17735,6 +17737,10 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkQueue*)&queue = (VkQueue)(VkQueue)((VkQueue)(*&cgen_var_0));
                 memcpy((uint32_t*)&waitSemaphoreCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (queueSignalReleaseImageOldEncoding) {
+                    // API version <=32 encodes an extra pointer here
+                    *readStreamPtrPtr += 8;
+                }
                 vkReadStream->alloc((void**)&pWaitSemaphores,
                                     ((waitSemaphoreCount)) * sizeof(const VkSemaphore));
                 if (((waitSemaphoreCount))) {

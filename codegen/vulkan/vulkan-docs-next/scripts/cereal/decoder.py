@@ -298,6 +298,12 @@ def emit_decode_parameters(typeInfo: VulkanTypeInfo, api: VulkanAPI, cgen, globa
 
             emit_unmarshal(typeInfo, p, cgen, output = p.possiblyOutput(), destroy = destroy, noUnbox = noUnbox)
 
+            if api.name == "vkQueueSignalReleaseImageANDROID" and p.paramName == "waitSemaphoreCount":
+                cgen.beginIf("queueSignalReleaseImageOldEncoding")
+                cgen.line("// API version <=32 encodes an extra pointer here")
+                cgen.stmt("*readStreamPtrPtr += 8")
+                cgen.endIf()
+
     for p in paramsToRead:
         emit_transform(typeInfo, p, cgen, variant="tohost")
 
@@ -800,6 +806,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
         self.cgen.stmt("auto& metricsLogger = *context.metricsLogger")
         self.cgen.stmt("if (len < 8) return 0")
         self.cgen.stmt("bool queueSubmitWithCommandsEnabled = feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands)")
+        self.cgen.stmt("bool queueSignalReleaseImageOldEncoding = feature_is_enabled(kFeature_QueueSignalReleaseImageOldEncoding)")
         self.cgen.stmt("unsigned char *ptr = (unsigned char *)buf")
         self.cgen.stmt("const unsigned char* const end = (const unsigned char*)buf + len")
 
