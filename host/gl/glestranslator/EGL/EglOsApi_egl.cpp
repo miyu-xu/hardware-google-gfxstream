@@ -16,6 +16,8 @@
 
 #include "EglOsApi.h"
 
+#define _PR_LINE fprintf(stderr, "%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 #include "aemu/base/system/System.h"
 #include "aemu/base/SharedLibrary.h"
 #include "host-common/logging.h"
@@ -43,7 +45,22 @@
 #include <memory>
 #include <vector>
 
-#define DEBUG 0
+#include <execinfo.h>
+#include <stdio.h>
+
+void printCallStack() {
+    void* callstack[128];
+    int i, frames = backtrace(callstack, 128);
+    char** strs = backtrace_symbols(callstack, frames);
+    for (i = 0; i < frames; ++i) {
+        fprintf(stderr, "%s\n", strs[i]);
+    }
+    free(strs);
+}
+
+
+
+#define DEBUG 1
 #if DEBUG
 #define D(...) fprintf(stderr, __VA_ARGS__);
 #define CHECK_EGL_ERR                                                 \
@@ -149,6 +166,19 @@ public:
 
     EglOsEglDispatcher() {
         D("loading %s\n", kEGLLibName);
+
+        std::string ld_library_path = android::base::getEnvironmentVariable("LD_LIBRARY_PATH");
+        fprintf(stderr, "ld_library_path %s\n", ld_library_path.c_str());
+        std::string angle_default_platform = android::base::getEnvironmentVariable("ANGLE_DEFAULT_PLATFORM");
+        fprintf(stderr, "angle_default_platform %s\n", angle_default_platform.c_str());
+        std::string emu_icd = android::base::getEnvironmentVariable("ANDROID_EMU_VK_ICD");
+        fprintf(stderr, "emu_icd %s\n", emu_icd.c_str());
+        std::string icd = android::base::getEnvironmentVariable("VK_ICD_FILENAMES");
+        fprintf(stderr, "icd %s\n", icd.c_str());
+        std::string displayEnv = android::base::getEnvironmentVariable("DISPLAY");
+        fprintf(stderr, "displayEnv %s\n", displayEnv.c_str());
+        
+        printCallStack();
         char error[256];
         mLib = android::base::SharedLibrary::open(kEGLLibName, error, sizeof(error));
         if (!mLib) {
@@ -166,14 +196,17 @@ public:
 #endif
         }
 
+    this->eglGetProcAddress =                                              
+            reinterpret_cast<void*(GL_APIENTRY*) (const char* procname)>(     
+                    mLib->findSymbol("eglGetProcAddress"));                 
 #define LOAD_EGL_POINTER(return_type, function_name, signature)        \
-    this->function_name =                                              \
+        this->function_name =                                          \
+            reinterpret_cast<return_type(GL_APIENTRY*) signature>( \
+                    this->eglGetProcAddress(#function_name));      \
+    if (!this->function_name) {                                        \
+        this->function_name =                                              \
             reinterpret_cast<return_type(GL_APIENTRY*) signature>(     \
                     mLib->findSymbol(#function_name));                 \
-    if (!this->function_name) {                                        \
-        this->function_name =                                          \
-                reinterpret_cast<return_type(GL_APIENTRY*) signature>( \
-                        this->eglGetProcAddress(#function_name));      \
     } \
     if (!this->function_name) {                                        \
         D("%s: Could not find %s in underlying EGL library\n",         \
@@ -182,6 +215,7 @@ public:
     }
 
         LIST_EGL_FUNCTIONS(LOAD_EGL_POINTER);
+        
     }
     ~EglOsEglDispatcher() = default;
 
@@ -324,7 +358,7 @@ public:
     }
 
 private:
-    bool mVerbose = false;
+    bool mVerbose = true;
     EGLDisplay mDisplay = EGL_NO_DISPLAY;
     EglOsEglDispatcher mDispatcher;
     bool mHeadless = false;
@@ -338,7 +372,8 @@ private:
 };
 
 EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
-    mVerbose = android::base::getEnvironmentVariable("ANDROID_EMUGL_VERBOSE") == "1";
+    //mVerbose = android::base::getEnvironmentVariable("ANDROID_EMUGL_VERBOSE") == "1";
+    mVerbose = true;
 
     if (nullEgl) {
 #ifdef EGL_ANGLE_platform_angle
@@ -377,17 +412,40 @@ EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
         }
 #endif
     }
+    _PR_LINE
 
-    if (mDisplay == EGL_NO_DISPLAY)
+    if (mDisplay == EGL_NO_DISPLAY) {
         mDisplay = mDispatcher.eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        //const EGLAttrib attr[] = {
+        //    EGL_PLATFORM_ANGLE_TYPE_ANGLE,
+        //    EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE,
+        //    EGL_NONE
+        //};
 
-    mDispatcher.eglInitialize(mDisplay, nullptr, nullptr);
+        //mDisplay = mDispatcher.eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
+        //    (void*)EGL_DEFAULT_DISPLAY,
+        //    attr);
+        _PR_LINE
+        
+    }
+    
+    _PR_LINE
+    fprintf(stderr, "mDisplay %p\n", mDisplay);
+    CHECK_EGL_ERR
+
+    EGLBoolean res = mDispatcher.eglInitialize(mDisplay, nullptr, nullptr);
+    _PR_LINE
+    fprintf(stderr, "eglInitialize 0x%x\n", res);
+    CHECK_EGL_ERR
     mDispatcher.eglSwapInterval(mDisplay, 0);
     auto clientExts = mDispatcher.eglQueryString(mDisplay, EGL_EXTENSIONS);
     auto vendor = mDispatcher.eglQueryString(mDisplay, EGL_VENDOR);
+    CHECK_EGL_ERR
+    _PR_LINE
 
     if (mVerbose) {
         fprintf(stderr, "%s: client exts: [%s]\n", __func__, clientExts);
+        fprintf(stderr, "%s: vendor: %s\n", __func__, vendor);
     }
 
     if (clientExts) {
@@ -401,7 +459,8 @@ EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
     mDispatcher.eglBindAPI(EGL_OPENGL_ES_API);
     CHECK_EGL_ERR
 
-    mHeadless = android::base::getEnvironmentVariable("ANDROID_EMU_HEADLESS") == "1";
+    //mHeadless = android::base::getEnvironmentVariable("ANDROID_EMU_HEADLESS") == "1";
+    mHeadless = false;
 
 #ifdef ANDROID
     mGlxDisplay = nullptr;

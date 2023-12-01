@@ -17737,6 +17737,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pWaitSemaphores,
                                     ((waitSemaphoreCount)) * sizeof(const VkSemaphore));
+                *readStreamPtrPtr += 1 * 8;
                 if (((waitSemaphoreCount))) {
                     uint8_t* cgen_var_1_ptr = (uint8_t*)(*readStreamPtrPtr);
                     *readStreamPtrPtr += 8 * ((waitSemaphoreCount));

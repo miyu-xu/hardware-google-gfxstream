@@ -43,6 +43,8 @@
 
 #include <optional>
 
+#define _PR_LINE fprintf(stderr, "%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 #define D(...)
 #define DD(...)
 #define E(...)
@@ -135,6 +137,7 @@ android_startOpenglesRenderer(int width, int height, bool guestPhoneApi, int gue
                               int* glesMajorVersion_out,
                               int* glesMinorVersion_out)
 {
+    _PR_LINE
     if (!sRenderLib) {
         D("Can't start OpenGLES renderer without support libraries");
         return -1;

@@ -29,7 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0
+#define DEBUG 1
+
+#define _PR_LINE fprintf(stderr, "%s: %s %d\n", __func__, __FILE__, __LINE__);
 
 #if DEBUG
 #define D(...)  printf(__VA_ARGS__)
@@ -198,6 +200,7 @@ bool emuglConfig_init(EmuglConfig* config,
                       bool has_guest_renderer,
                       int uiPreferredBackend,
                       bool use_host_vulkan) {
+    _PR_LINE
     D("%s: blacklisted=%d has_guest_renderer=%d, mode: %s, option: %s\n",
       __FUNCTION__,
       blacklisted,
@@ -392,6 +395,7 @@ bool emuglConfig_init(EmuglConfig* config,
 }
 
 void emuglConfig_setupEnv(const EmuglConfig* config) {
+    _PR_LINE
     if (config->use_host_vulkan) {
         android::base::setEnvironmentVariable("ANDROID_EMU_VK_ICD", "");
     } else if (sCurrentRenderer == SELECTED_RENDERER_SWIFTSHADER_INDIRECT) {
