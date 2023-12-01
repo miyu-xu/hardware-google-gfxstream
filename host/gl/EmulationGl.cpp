@@ -32,6 +32,8 @@
 #include "host-common/logging.h"
 #include "host-common/opengl/misc.h"
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 namespace gfxstream {
 namespace gl {
 namespace {
@@ -87,11 +89,12 @@ static bool validateGles2Context(EGLDisplay display) {
     EGLint numConfigs = 0;
     EGLConfig config;
     if (!s_egl.eglChooseConfig(display, configAttribs, &config, 1, &numConfigs)) {
+        _PR_LINE
         ERR("Failed to find GLES 2.x config.");
         return false;
     }
     if (numConfigs != 1) {
-        ERR("Failed to find exactly 1 GLES 2.x config: found %d.", numConfigs);
+        printf("Failed to find exactly 1 GLES 2.x config: found %d.\n", numConfigs);
         return false;
     }
 
@@ -207,15 +210,15 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
                                                  bool allowWindowSurface, bool egl2egl) {
     // Loads the glestranslator function pointers.
     if (!LazyLoadedEGLDispatch::get()) {
-        ERR("Failed to load EGL dispatch.");
+        printf("Failed to load EGL dispatch.");
         return nullptr;
     }
     if (!LazyLoadedGLESv1Dispatch::get()) {
-        ERR("Failed to load GLESv1 dispatch.");
+        printf("Failed to load GLESv1 dispatch.");
         return nullptr;
     }
     if (!LazyLoadedGLESv2Dispatch::get()) {
-        ERR("Failed to load GLESv2 dispatch.");
+        printf("Failed to load GLESv2 dispatch.");
         return nullptr;
     }
 
@@ -230,15 +233,15 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
 
     emulationGl->mEglDisplay = s_egl.eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (emulationGl->mEglDisplay == EGL_NO_DISPLAY) {
-        ERR("Failed to get EGL display.");
+        printf("Failed to get EGL display.");
         return nullptr;
     }
 
-    GL_LOG("call eglInitialize");
+    printf("call eglInitialize");
     if (!s_egl.eglInitialize(emulationGl->mEglDisplay,
                              &emulationGl->mEglVersionMajor,
                              &emulationGl->mEglVersionMinor)) {
-        ERR("Failed to eglInitialize.");
+        printf("Failed to eglInitialize.");
         return nullptr;
     }
 
@@ -268,6 +271,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         GL_LOG("eglDebugMessageControlKHR not available");
     }
 #endif
+    _PR_LINE
 
     emulationGl->mEglVendor = s_egl.eglQueryString(emulationGl->mEglDisplay, EGL_VENDOR);
 
@@ -278,7 +282,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
                                       });
 
     if (!emulationGl->hasEglExtension("EGL_KHR_gl_texture_2D_image")) {
-        ERR("Failed to find required EGL_KHR_gl_texture_2D_image extension.");
+        printf("Failed to find required EGL_KHR_gl_texture_2D_image extension.");
         return nullptr;
     }
 
@@ -297,6 +301,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     emulationGl->mGlesVersionMinor = glesVersionMinor;
 
     if (!validateGles2Context(emulationGl->mEglDisplay)) {
+        _PR_LINE
         ERR("Failed to validate creating GLES 2.x context.");
         return nullptr;
     }
@@ -326,7 +331,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
                                                       EGL_NO_CONTEXT,
                                                       maxContextAttribs);
     if (emulationGl->mEglContext == EGL_NO_CONTEXT) {
-        ERR("Failed to create context, error 0x%x.", s_egl.eglGetError());
+        printf("Failed to create context, error 0x%x.", s_egl.eglGetError());
         return nullptr;
     }
 
@@ -343,7 +348,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
                                                                    /*width=*/1,
                                                                    /*height=*/1);
     if (!pbufferSurfaceGl) {
-        ERR("Failed to create pbuffer display surface.");
+        printf("Failed to create pbuffer display surface.");
         return nullptr;
     }
     auto* pbufferSurfaceGlPtr = pbufferSurfaceGl.get();

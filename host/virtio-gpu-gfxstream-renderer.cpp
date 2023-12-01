@@ -13,6 +13,8 @@
 // limitations under the License.
 #include <vulkan/vulkan.h>
 
+#define _PR_LINE fprintf(stderr, "%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 #include <cstdarg>
 #include <cstdio>
 #include <deque>
@@ -2211,9 +2213,12 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
 
     int maj;
     int min;
+
+    _PR_LINE
     android_startOpenglesRenderer(display_width, display_height, 1, 28, getGraphicsAgents()->vm,
                                   getGraphicsAgents()->emu, getGraphicsAgents()->multi_display,
                                   &maj, &min);
+    _PR_LINE
 
     char* vendor = nullptr;
     char* renderer = nullptr;

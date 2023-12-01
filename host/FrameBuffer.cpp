@@ -26,6 +26,8 @@
 #include <sys/resource.h>
 #endif
 
+#define _PR_LINE fprintf(stderr, "%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 #include "ContextHelper.h"
 #include "GLESVersionDetector.h"
 #include "Hwc2.h"
@@ -256,7 +258,7 @@ void MaybeIncreaseFileDescriptorSoftLimit() {
 
 bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2egl) {
     GL_LOG("FrameBuffer::initialize");
-
+    _PR_LINE
     if (s_theFrameBuffer != NULL) {
         return true;
     }
@@ -268,13 +270,15 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
     //
     // allocate space for the FrameBuffer object
     //
+    _PR_LINE
     std::unique_ptr<FrameBuffer> fb(new FrameBuffer(width, height, useSubWindow));
     if (!fb) {
+        _PR_LINE
         GL_LOG("Failed to create fb");
         ERR("Failed to create fb\n");
         return false;
     }
-
+    _PR_LINE
     std::unique_ptr<emugl::RenderDocWithMultipleVkInstances> renderDocMultipleVkInstances = nullptr;
     if (!android::base::getEnvironmentVariable("ANDROID_EMU_RENDERDOC").empty()) {
         SharedLibrary* renderdocLib = nullptr;
@@ -294,6 +298,17 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
             }
         }
     }
+    // Do not initialize GL emulation if the guest is using ANGLE.
+    if (!feature_is_enabled(kFeature_GuestUsesAngle)) {
+        fb->m_emulationGl = EmulationGl::create(width, height, useSubWindow, egl2egl);
+        if (!fb->m_emulationGl) {
+            _PR_LINE
+            ERR("Failed to initialize GL emulation.");
+            return false;
+        }
+    }
+
+    _PR_LINE
     // Initialize Vulkan emulation state
     //
     // Note: This must happen before any use of s_egl,
@@ -311,7 +326,9 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         }
         fb->m_emulationVk = vkEmu;
     }
+    _PR_LINE
     if (vkEmu) {
+        _PR_LINE
         fb->m_vulkanEnabled = true;
         if (feature_is_enabled(kFeature_VulkanNativeSwapchain)) {
             fb->m_vkInstance = vkEmu->instance;
@@ -325,23 +342,14 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
             fprintf(stderr, "%s: Doesn't support id properties, no vulkan device UUID\n", __func__);
         }
     }
-
-    // Do not initialize GL emulation if the guest is using ANGLE.
-    if (!feature_is_enabled(kFeature_GuestUsesAngle)) {
-        fb->m_emulationGl = EmulationGl::create(width, height, useSubWindow, egl2egl);
-        if (!fb->m_emulationGl) {
-            ERR("Failed to initialize GL emulation.");
-            return false;
-        }
-    }
-
+    _PR_LINE
     fb->m_guestUsesAngle =
         feature_is_enabled(
             kFeature_GuestUsesAngle);
-
+    _PR_LINE
     fb->m_useVulkanComposition = feature_is_enabled(kFeature_GuestUsesAngle) ||
                                  feature_is_enabled(kFeature_VulkanNativeSwapchain);
-
+    _PR_LINE
     std::unique_ptr<VkEmulationFeatures> vkEmulationFeatures =
         std::make_unique<VkEmulationFeatures>(VkEmulationFeatures{
             .glInteropSupported = false,  // Set later.
@@ -366,10 +374,12 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
     // Cache the GL strings so we don't have to think about threading or
     // current-context when asked for them.
     //
+    _PR_LINE
     bool useVulkanGraphicsDiagInfo =
         vkEmu && feature_is_enabled(kFeature_VulkanNativeSwapchain) && fb->m_guestUsesAngle;
 
     if (useVulkanGraphicsDiagInfo) {
+        _PR_LINE
         fb->m_graphicsAdapterVendor = vkEmu->deviceInfo.driverVendor;
         fb->m_graphicsAdapterName = vkEmu->deviceInfo.physdevProps.deviceName;
 
@@ -415,6 +425,7 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         fb->m_graphicsApiExtensions = "N/A";
         fb->m_graphicsDeviceExtensions = "N/A";
     }
+    _PR_LINE
 
     // Attempt to get the device UUID of the gles and match with Vulkan. If
     // they match, interop is possible. If they don't, then don't trust the
@@ -444,6 +455,7 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         vulkanInteropSupported = false;
         GL_LOG("vk icd swiftshader, disable interop");
     }
+    _PR_LINE
 
     fb->m_vulkanInteropSupported = vulkanInteropSupported;
     GL_LOG("interop? %d", fb->m_vulkanInteropSupported);
@@ -453,6 +465,7 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         // between GL and VK. See b/265186355.
         vkEmulationFeatures->useDedicatedAllocations = true;
     }
+    _PR_LINE
 
     GL_LOG("glvk interop final: %d", fb->m_vulkanInteropSupported);
     vkEmulationFeatures->glInteropSupported = fb->m_vulkanInteropSupported;
@@ -476,12 +489,15 @@ bool FrameBuffer::initialize(int width, int height, bool useSubWindow, bool egl2
         auto compositorGl = fb->m_emulationGl->getCompositor();
         fb->m_compositor = compositorGl;
     }
+    _PR_LINE
 
     if (fb->m_emulationGl) {
+        _PR_LINE
         auto displayGl = fb->m_emulationGl->getDisplay();
         fb->m_displayGl = displayGl;
         fb->m_displaySurfaceUsers.push_back(displayGl);
     }
+    _PR_LINE
 
     INFO("Graphics Adapter Vendor %s", fb->m_graphicsAdapterVendor.c_str());
     INFO("Graphics Adapter %s", fb->m_graphicsAdapterName.c_str());
