@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1da8f648_098c7b4f",
+        "filename": "mako/Android.bp",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1074628
+      },
+      "writtenOn": "2023-12-01T20:09:30Z",
+      "side": 1,
+      "message": "(Review while I\u0027m looking at the real 3p import)\n\nIncluding setup.py is unlikely to be necessary",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 12
+      },
+      "revId": "5d269b95c4647270da59f7c05a0154bcb666a7f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
