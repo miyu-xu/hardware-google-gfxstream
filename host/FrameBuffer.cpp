@@ -3487,6 +3487,15 @@ void* FrameBuffer::platformCreateSharedEglContext(void) {
 
     m_platformEglContexts[underlyingContext] = { context, surface };
 
+    EGLDisplay currDisplay = eglGetCurrentDisplay();
+    EGLSurface currRead = eglGetCurrentSurface(EGL_READ);
+    EGLSurface currDraw = eglGetCurrentSurface(EGL_DRAW);
+    EGLSurface currContext = eglGetCurrentContext();
+    // Make this context current to ensure thread-state is initialized
+    s_egl.eglMakeCurrent(getDisplay(), surface, surface, context);
+    // Revert back to original state
+    s_egl.eglMakeCurrent(currDisplay, currRead, currDraw, currContext);
+
     return underlyingContext;
 }
 
