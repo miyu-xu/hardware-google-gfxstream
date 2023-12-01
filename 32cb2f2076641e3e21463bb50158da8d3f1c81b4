@@ -22,6 +22,30 @@
       },
       "revId": "32cb2f2076641e3e21463bb50158da8d3f1c81b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "114bb06e_4fdc1688",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 17743,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-12-01T23:47:33Z",
+      "side": 1,
+      "message": "Good point, something looks wrong when I check the git history, I will need more time to look into this.",
+      "parentUuid": "fc27e914_72c962c8",
+      "range": {
+        "startLine": 17740,
+        "startChar": 16,
+        "endLine": 17743,
+        "endChar": 17
+      },
+      "revId": "32cb2f2076641e3e21463bb50158da8d3f1c81b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
