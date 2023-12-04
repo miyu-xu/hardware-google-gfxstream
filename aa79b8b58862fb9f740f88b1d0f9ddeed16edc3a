@@ -16,6 +16,23 @@
       "message": "(friendly post weekend bump)",
       "revId": "aa79b8b58862fb9f740f88b1d0f9ddeed16edc3a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cddb8036_e2c56b2f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-12-04T18:41:55Z",
+      "side": 1,
+      "message": "Manually kicked a Mac build, please wait until \"Heavy Presubmit\" is green before merging. Thanks!",
+      "revId": "aa79b8b58862fb9f740f88b1d0f9ddeed16edc3a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
