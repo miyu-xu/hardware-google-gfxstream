@@ -41,6 +41,7 @@
 #include <GLES2/gl2.h>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #define DEBUG 0
@@ -86,6 +87,10 @@ static const char* kGLES2LibName = "libGLESv2.dylib";
 
 #endif // __APPLE__
 
+#ifndef EGL_NO_CONFIG
+#define EGL_NO_CONFIG ((EGLConfig)0)
+#endif
+
 // List of EGL functions of interest to probe with GetProcAddress()
 #define LIST_EGL_FUNCTIONS(X)                                                  \
     X(void*, eglGetProcAddress,                                           \
@@ -115,6 +120,7 @@ static const char* kGLES2LibName = "libGLESv2.dylib";
     X(EGLint, eglGetError, (void))                                             \
     X(EGLBoolean, eglInitialize,                                               \
       (EGLDisplay display, EGLint * major, EGLint * minor))                    \
+    X(EGLBoolean, eglTerminate, (EGLDisplay display))                          \
     X(EGLBoolean, eglMakeCurrent,                                              \
       (EGLDisplay display, EGLSurface draw, EGLSurface read,                   \
        EGLContext context))                                                    \
@@ -338,7 +344,10 @@ private:
 };
 
 EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
+    mHeadless = android::base::getEnvironmentVariable("ANDROID_EMU_HEADLESS") == "1";
     mVerbose = android::base::getEnvironmentVariable("ANDROID_EMUGL_VERBOSE") == "1";
+
+    std::vector<EGLDisplay> possibleDisplays;
 
     if (nullEgl) {
 #ifdef EGL_ANGLE_platform_angle
@@ -348,12 +357,14 @@ EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
             EGL_NONE
         };
 
-        mDisplay = mDispatcher.eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
+        EGLDisplay platformDisplay = mDispatcher.eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
             (void*)EGL_DEFAULT_DISPLAY,
             attr);
 
-        if (mDisplay == EGL_NO_DISPLAY) {
+        if (platformDisplay == EGL_NO_DISPLAY) {
             fprintf(stderr, "%s: no display found that supports null backend\n", __func__);
+        } else {
+            possibleDisplays.push_back(platformDisplay);
         }
 #else
         fprintf(stderr, "EGL Null display not compiled, falling back to default display\n");
@@ -368,95 +379,143 @@ EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
             EGL_NONE
         };
 
-        mDisplay = mDispatcher.eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
+        EGLDisplay platformDisplay = mDispatcher.eglGetPlatformDisplay(EGL_PLATFORM_ANGLE_ANGLE,
             (void*)EGL_DEFAULT_DISPLAY,
             attr);
 
-        if (mDisplay == EGL_NO_DISPLAY) {
+        if (platformDisplay == EGL_NO_DISPLAY) {
             fprintf(stderr, "%s: no display found that supports the requested extensions\n", __func__);
+        } else {
+            possibleDisplays.push_back(platformDisplay);
         }
 #endif
     }
 
-    if (mDisplay == EGL_NO_DISPLAY)
-        mDisplay = mDispatcher.eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    const auto clientExts = mDispatcher.eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
 
-    mDispatcher.eglInitialize(mDisplay, nullptr, nullptr);
-    mDispatcher.eglSwapInterval(mDisplay, 0);
-    auto displayExts = mDispatcher.eglQueryString(mDisplay, EGL_EXTENSIONS);
-    auto vendor = mDispatcher.eglQueryString(mDisplay, EGL_VENDOR);
-
-    if (mVerbose) {
-        fprintf(stderr, "%s: client exts: [%s]\n", __func__, displayExts);
+    if (possibleDisplays.empty()) {
+        possibleDisplays.push_back(mDispatcher.eglGetDisplay(EGL_DEFAULT_DISPLAY));
     }
 
-    if (displayExts) {
-        mDisplayExts = displayExts;
+    if (clientExts != nullptr) {
+        const std::string clientExtsStr = clientExts;
+        if (clientExtsStr.find("EGL_MESA_platform_surfaceless") != std::string::npos) {
+            if (mDispatcher.eglGetPlatformDisplayEXT != nullptr) {
+                EGLDisplay surfacelessDisplay =
+                    mDispatcher.eglGetPlatformDisplayEXT(
+                        EGL_PLATFORM_SURFACELESS_MESA, EGL_DEFAULT_DISPLAY, NULL);
+                if (surfacelessDisplay != EGL_NO_DISPLAY) {
+                    possibleDisplays.push_back(surfacelessDisplay);
+                }
+            }
+        }
     }
-
-    if (vendor) {
-        mVendor = vendor;
-    }
-
-    mDispatcher.eglBindAPI(EGL_OPENGL_ES_API);
-    CHECK_EGL_ERR
-
-    mHeadless = android::base::getEnvironmentVariable("ANDROID_EMU_HEADLESS") == "1";
 
 #ifdef ANDROID
     mGlxDisplay = nullptr;
 #elif defined(__linux__)
-    if (mHeadless) mGlxDisplay = nullptr;
-    else mGlxDisplay = getX11Api()->XOpenDisplay(0);
+    if (mHeadless) {
+        mGlxDisplay = nullptr;
+    } else {
+        mGlxDisplay = getX11Api()->XOpenDisplay(0);
+    }
 #endif // __linux__
 
-    if (displayExts != nullptr && emugl::hasExtension(displayExts, "EGL_ANDROID_blob_cache")) {
-        mDispatcher.eglSetBlobCacheFuncsANDROID(mDisplay, SetBlob, GetBlob);
-    }
+    static const EGLint configAttribs[] = {
+        EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT | EGL_OPENGL_ES3_BIT,
+        EGL_NONE,
+    };
+    static const EGLint pbufAttribs[] = {
+        EGL_WIDTH, 1,
+        EGL_HEIGHT, 1,
+        EGL_NONE,
+    };
+    static const EGLint gles20Attribs[] = {
+        EGL_CONTEXT_MAJOR_VERSION_KHR, 2,
+        EGL_CONTEXT_MINOR_VERSION_KHR, 0,
+        EGL_NONE,
+    };
+    static const EGLint gles31Attribs[] = {
+        EGL_CONTEXT_MAJOR_VERSION_KHR, 3,
+        EGL_CONTEXT_MINOR_VERSION_KHR, 1,
+        EGL_NONE,
+    };
+    static const EGLint gles30Attribs[] = {
+        EGL_CONTEXT_MAJOR_VERSION_KHR, 3,
+        EGL_CONTEXT_MINOR_VERSION_KHR, 0,
+        EGL_NONE,
+    };
 
-    mGlesVersion = GlesVersion::ES2;
+    struct PossibleContextInfo {
+        const EGLint* attribs;
+        const GlesVersion version;
+    };
+    const std::vector<PossibleContextInfo> possibleContexts = {
+        PossibleContextInfo{
+            .attribs = gles31Attribs,
+            .version = GlesVersion::ES31,
+        },
+        PossibleContextInfo{
+            .attribs = gles30Attribs,
+            .version = GlesVersion::ES31,
+        },
+        PossibleContextInfo{
+            .attribs = gles20Attribs,
+            .version = GlesVersion::ES2,
+        },
+    };
 
-    static const EGLint gles3ConfigAttribs[] =
-        { EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-          EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT | EGL_OPENGL_ES3_BIT, EGL_NONE };
+    for (EGLDisplay possibleDisplay : possibleDisplays) {
+        mDispatcher.eglInitialize(possibleDisplay, nullptr, nullptr);
+        mDispatcher.eglSwapInterval(possibleDisplay, 0);
 
-    static const EGLint pbufAttribs[] =
-        { EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE };
+        const auto displayExts = mDispatcher.eglQueryString(possibleDisplay, EGL_EXTENSIONS);
+        const auto displayVendor = mDispatcher.eglQueryString(possibleDisplay, EGL_VENDOR);
 
-    static const EGLint gles31Attribs[] =
-       { EGL_CONTEXT_MAJOR_VERSION_KHR, 3,
-         EGL_CONTEXT_MINOR_VERSION_KHR, 1, EGL_NONE };
+        mDispatcher.eglBindAPI(EGL_OPENGL_ES_API);
+        CHECK_EGL_ERR
 
-    static const EGLint gles30Attribs[] =
-       { EGL_CONTEXT_MAJOR_VERSION_KHR, 3,
-         EGL_CONTEXT_MINOR_VERSION_KHR, 0, EGL_NONE };
+        std::optional<GlesVersion> foundContextVersion;
 
-    EGLConfig config;
+        EGLConfig config = EGL_NO_CONFIG;
 
-    int numConfigs;
-    if (mDispatcher.eglChooseConfig(
-            mDisplay, gles3ConfigAttribs, &config, 1, &numConfigs) &&
-        numConfigs != 0) {
-        EGLSurface surface = mDispatcher.eglCreatePbufferSurface(mDisplay,
-                config, pbufAttribs);
-        if (surface != EGL_NO_SURFACE) {
-            EGLContext ctx = mDispatcher.eglCreateContext(mDisplay,
-                    config, EGL_NO_CONTEXT, gles31Attribs);
-
-            if (ctx != EGL_NO_CONTEXT) {
-                mGlesVersion = GlesVersion::ES31;
-            } else {
-                ctx = mDispatcher.eglCreateContext(mDisplay, config,
-                        EGL_NO_CONTEXT, gles30Attribs);
-                if (ctx != EGL_NO_CONTEXT) {
-                    mGlesVersion = GlesVersion::ES30;
+        int numConfigs = 0;
+        if (mDispatcher.eglChooseConfig(possibleDisplay, configAttribs, &config, 1, &numConfigs) && numConfigs != 0) {
+            EGLSurface surface = mDispatcher.eglCreatePbufferSurface(possibleDisplay, config, pbufAttribs);
+            if (surface != EGL_NO_SURFACE) {
+                for (const PossibleContextInfo& possibleContext : possibleContexts) {
+                    EGLContext ctx = mDispatcher.eglCreateContext(possibleDisplay, config, EGL_NO_CONTEXT, possibleContext.attribs);
+                    if (ctx != EGL_NO_CONTEXT) {
+                        mDispatcher.eglDestroyContext(possibleDisplay, ctx);
+                        foundContextVersion = possibleContext.version;
+                        break;
+                    }
                 }
-            }
-            mDispatcher.eglDestroySurface(mDisplay, surface);
-            if (ctx != EGL_NO_CONTEXT) {
-                mDispatcher.eglDestroyContext(mDisplay, ctx);
+                mDispatcher.eglDestroySurface(mDisplay, surface);
             }
         }
+
+        if (foundContextVersion) {
+            mDisplay = possibleDisplay;
+            if (displayExts) {
+                mDisplayExts = displayExts;
+            }
+            if (displayVendor) {
+                mVendor = displayVendor;
+            }
+            mGlesVersion = *foundContextVersion;
+            if (mVerbose) {
+                fprintf(stderr, "%s: display exts: [%s]\n", __func__, displayExts);
+            }
+            break;
+        }
+
+        mDispatcher.eglTerminate(possibleDisplay);
+    }
+
+    if (mDisplayExts.find("EGL_ANDROID_blob_cache") != std::string::npos) {
+        mDispatcher.eglSetBlobCacheFuncsANDROID(mDisplay, SetBlob, GetBlob);
     }
 };
 
