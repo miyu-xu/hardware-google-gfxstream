@@ -328,7 +328,7 @@ private:
     EGLDisplay mDisplay = EGL_NO_DISPLAY;
     EglOsEglDispatcher mDispatcher;
     bool mHeadless = false;
-    std::string mClientExts;
+    std::string mDisplayExts;
     std::string mVendor;
     GlesVersion mGlesVersion;
 
@@ -383,15 +383,15 @@ EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
 
     mDispatcher.eglInitialize(mDisplay, nullptr, nullptr);
     mDispatcher.eglSwapInterval(mDisplay, 0);
-    auto clientExts = mDispatcher.eglQueryString(mDisplay, EGL_EXTENSIONS);
+    auto displayExts = mDispatcher.eglQueryString(mDisplay, EGL_EXTENSIONS);
     auto vendor = mDispatcher.eglQueryString(mDisplay, EGL_VENDOR);
 
     if (mVerbose) {
-        fprintf(stderr, "%s: client exts: [%s]\n", __func__, clientExts);
+        fprintf(stderr, "%s: client exts: [%s]\n", __func__, displayExts);
     }
 
-    if (clientExts) {
-        mClientExts = clientExts;
+    if (displayExts) {
+        mDisplayExts = displayExts;
     }
 
     if (vendor) {
@@ -410,7 +410,7 @@ EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
     else mGlxDisplay = getX11Api()->XOpenDisplay(0);
 #endif // __linux__
 
-    if (clientExts != nullptr && emugl::hasExtension(clientExts, "EGL_ANDROID_blob_cache")) {
+    if (displayExts != nullptr && emugl::hasExtension(displayExts, "EGL_ANDROID_blob_cache")) {
         mDispatcher.eglSetBlobCacheFuncsANDROID(mDisplay, SetBlob, GetBlob);
     }
 
@@ -474,7 +474,7 @@ EglOS::GlesVersion EglOsEglDisplay::getMaxGlesVersion() {
 }
 
 const char* EglOsEglDisplay::getExtensionString() {
-    return mClientExts.c_str();
+    return mDisplayExts.c_str();
 }
 
 const char* EglOsEglDisplay::getVendorString() {
