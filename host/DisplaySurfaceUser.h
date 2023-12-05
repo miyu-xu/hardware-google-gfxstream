@@ -24,15 +24,15 @@ class DisplaySurface;
 class DisplaySurfaceUser;
 
 class DisplaySurfaceUser {
-  public:
+   public:
     virtual ~DisplaySurfaceUser();
 
-  public:
+   public:
     void bindToSurface(DisplaySurface* surface);
 
     void unbindFromSurface();
 
-  protected:
+   protected:
     virtual void bindToSurfaceImpl(DisplaySurface* surface) = 0;
 
     virtual void surfaceUpdated(DisplaySurface* surface) = 0;

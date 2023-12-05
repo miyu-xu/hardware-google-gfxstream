@@ -60,8 +60,8 @@
 #include "gl/GLESVersionDetector.h"
 #include "gl/TextureDraw.h"
 #include "render-utils/Renderer.h"
-#include "render-utils/virtio_gpu_ops.h"
 #include "render-utils/render_api.h"
+#include "render-utils/virtio_gpu_ops.h"
 #include "snapshot/common.h"
 #include "utils/RenderDoc.h"
 #include "vulkan/vk_util.h"
@@ -92,9 +92,7 @@ class ProcessResources {
     DISALLOW_COPY_ASSIGN_AND_MOVE(ProcessResources);
 
     ~ProcessResources() = default;
-    std::atomic<uint32_t>* getSequenceNumberPtr() const {
-        return &mSequenceNumber;
-    }
+    std::atomic<uint32_t>* getSequenceNumberPtr() const { return &mSequenceNumber; }
 
    private:
     ProcessResources() : mSequenceNumber(0) {}
@@ -133,8 +131,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // own sub-windows. If false, this means the caller will use
     // setPostCallback() instead to retrieve the content.
     // Returns true on success, false otherwise.
-    static bool initialize(int width, int height, bool useSubWindow,
-                           bool egl2egl);
+    static bool initialize(int width, int height, bool useSubWindow, bool egl2egl);
 
     // Finalize the instance.
     static void finalize();
@@ -157,9 +154,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // Return true on success, false otherwise.
     //
     // NOTE: This can return false for software-only EGL engines like OSMesa.
-    bool setupSubWindow(FBNativeWindowType p_window, int wx, int wy, int ww,
-                        int wh, int fbw, int fbh, float dpr, float zRot,
-                        bool deleteExisting, bool hideWindow);
+    bool setupSubWindow(FBNativeWindowType p_window, int wx, int wy, int ww, int wh, int fbw,
+                        int fbh, float dpr, float zRot, bool deleteExisting, bool hideWindow);
 
     // Remove the sub-window created by setupSubWindow(), if any.
     // Return true on success, false otherwise.
@@ -192,8 +188,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // Retrieve the GL strings of the underlying EGL/GLES implementation.
     // On return, |*vendor|, |*renderer| and |*version| will point to strings
     // that are owned by the instance (and must not be freed by the caller).
-    void getGLStrings(const char** vendor, const char** renderer,
-                      const char** version) const {
+    void getGLStrings(const char** vendor, const char** renderer, const char** version) const {
         *vendor = m_graphicsAdapterVendor.c_str();
         *renderer = m_graphicsAdapterName.c_str();
         *version = m_graphicsApiVersion.c_str();
@@ -224,10 +219,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // Returns the set of ColorBuffers destroyed (for further cleanup)
     std::vector<HandleType> destroyEmulatedEglWindowSurfaceLocked(HandleType p_surface);
 
-    void createEmulatedEglFenceSync(EGLenum type,
-                                    int destroyWhenSignaled,
-                                    uint64_t* outSync = nullptr,
-                                    uint64_t* outSyncThread = nullptr);
+    void createEmulatedEglFenceSync(EGLenum type, int destroyWhenSignaled,
+                                    uint64_t* outSync = nullptr, uint64_t* outSyncThread = nullptr);
 
     // Create a new ColorBuffer instance from this display instance.
     // |p_width| and |p_height| are its dimensions in pixels.
@@ -238,8 +231,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // list of valid values. Note that ColorBuffer instances are reference-
     // counted. Use openColorBuffer / closeColorBuffer to operate on the
     // internal count.
-    HandleType createColorBuffer(int p_width, int p_height,
-                                 GLenum p_internalFormat,
+    HandleType createColorBuffer(int p_width, int p_height, GLenum p_internalFormat,
                                  FrameworkFormat p_frameworkFormat);
     // Variant of createColorBuffer except with a particular
     // handle already assigned. This is for use with
@@ -303,8 +295,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // of the context, the draw surface and the read surface, respectively.
     // Returns true on success, false on failure.
     // Note: if all handle values are 0, this is an unbind operation.
-    bool bindContext(HandleType p_context, HandleType p_drawSurface,
-                     HandleType p_readSurface);
+    bool bindContext(HandleType p_context, HandleType p_drawSurface, HandleType p_readSurface);
 
     // Return a render context pointer from its handle
     gl::EmulatedEglContextPtr getContext_locked(HandleType p_context);
@@ -317,8 +308,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // |p_surface| is the target EmulatedEglWindowSurface's handle value.
     // |p_colorbuffer| is the ColorBuffer handle value.
     // Returns true on success, false otherwise.
-    bool setEmulatedEglWindowSurfaceColorBuffer(HandleType p_surface,
-                                                HandleType p_colorbuffer);
+    bool setEmulatedEglWindowSurfaceColorBuffer(HandleType p_surface, HandleType p_colorbuffer);
 
     // Copy the content of a EmulatedEglWindowSurface's Pbuffer to its attached
     // ColorBuffer. See the documentation for
@@ -363,8 +353,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // |type| is the type of pixel data, e.g. GL_UNSIGNED_BYTE.
     // |pixels| is the address of a caller-provided buffer that will be filled
     // with the pixel data.
-    void readColorBuffer(HandleType p_colorbuffer, int x, int y, int width,
-                         int height, GLenum format, GLenum type, void* pixels);
+    void readColorBuffer(HandleType p_colorbuffer, int x, int y, int width, int height,
+                         GLenum format, GLenum type, void* pixels);
 
     // Read the content of a given YUV420_888 ColorBuffer into client memory.
     // |p_colorbuffer| is the ColorBuffer's handle value. Similar
@@ -374,16 +364,14 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // |pixels| is the address of a caller-provided buffer that will be filled
     // with the pixel data.
     // |pixles_size| is the size of buffer
-    void readColorBufferYUV(HandleType p_colorbuffer, int x, int y, int width,
-                            int height, void* pixels, uint32_t pixels_size);
+    void readColorBufferYUV(HandleType p_colorbuffer, int x, int y, int width, int height,
+                            void* pixels, uint32_t pixels_size);
 
     // create a Y texture and a UV texture with width and height, the created
     // texture ids are stored in textures respectively
-    void createYUVTextures(uint32_t type, uint32_t count, int width, int height,
-                           uint32_t* output);
+    void createYUVTextures(uint32_t type, uint32_t count, int width, int height, uint32_t* output);
     void destroyYUVTextures(uint32_t type, uint32_t count, uint32_t* textures);
-    void updateYUVTextures(uint32_t type, uint32_t* textures, void* privData,
-                           void* func);
+    void updateYUVTextures(uint32_t type, uint32_t* textures, void* privData, void* func);
     void swapTexturesAndUpdateColorBuffer(uint32_t colorbufferhandle, int x, int y, int width,
                                           int height, uint32_t format, uint32_t type,
                                           uint32_t texture_type, uint32_t* textures);
@@ -408,9 +396,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // |type| is the type of pixel data, e.g. GL_UNSIGNED_BYTE.
     // |pixels| is the address of a buffer containing the new pixel data.
     // Returns true on success, false otherwise.
-    bool updateColorBuffer(HandleType p_colorbuffer, int x, int y, int width,
-                           int height, GLenum format, GLenum type,
-                           void* pixels);
+    bool updateColorBuffer(HandleType p_colorbuffer, int x, int y, int width, int height,
+                           GLenum format, GLenum type, void* pixels);
     bool updateColorBufferFromFrameworkFormat(HandleType p_colorbuffer, int x, int y, int width,
                                               int height, FrameworkFormat fwkFormat, GLenum format,
                                               GLenum type, void* pixels, void* metadata = nullptr);
@@ -423,12 +410,10 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // fewer or more bytes cannot be specified.
     // If the framework format is YUV, it will read
     // back as raw YUV data.
-    bool readColorBufferContents(HandleType p_colorbuffer, size_t* numBytes,
-                                 void* pixels);
+    bool readColorBufferContents(HandleType p_colorbuffer, size_t* numBytes, void* pixels);
 
     bool getColorBufferInfo(HandleType p_colorbuffer, int* width, int* height,
-                            GLint* internalformat,
-                            FrameworkFormat* frameworkFormat = nullptr);
+                            GLint* internalformat, FrameworkFormat* frameworkFormat = nullptr);
     bool getBufferInfo(HandleType p_buffer, int* size);
 
     // Display the content of a given ColorBuffer into the framebuffer's
@@ -440,7 +425,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // The callback will always be called; however, the callback may not be called
     // until after this function has returned. If the callback is deferred, then it
     // will be dispatched to run on SyncThread.
-    void postWithCallback(HandleType p_colorbuffer, Post::CompletionCallback callback, bool needLockAndBind = true);
+    void postWithCallback(HandleType p_colorbuffer, Post::CompletionCallback callback,
+                          bool needLockAndBind = true);
     bool hasGuestPostedAFrame() { return m_guestPostedAFrame; }
     void resetGuestPostedAFrame() { m_guestPostedAFrame = false; }
 
@@ -502,8 +488,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     // Create an eglImage and return its handle.  Reference:
     // https://www.khronos.org/registry/egl/extensions/KHR/EGL_KHR_image_base.txt
-    HandleType createEmulatedEglImage(HandleType context, EGLenum target,
-                                      GLuint buffer);
+    HandleType createEmulatedEglImage(HandleType context, EGLenum target, GLuint buffer);
     // Call the implementation of eglDestroyImageKHR, return if succeeds or
     // not. Reference:
     // https://www.khronos.org/registry/egl/extensions/KHR/EGL_KHR_image_base.txt
@@ -517,8 +502,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // GL state.
     // It can be unsafe / leaky to change the structure of contexts
     // outside the facilities the FrameBuffer class provides.
-    void createTrivialContext(HandleType shared, HandleType* contextOut,
-                              HandleType* surfOut);
+    void createTrivialContext(HandleType shared, HandleType* contextOut, HandleType* surfOut);
     // createTrivialContext(), but with a m_pbufContext
     // as shared, and not adding itself to the context map at all.
     void createSharedTrivialContext(EGLContext* contextOut, EGLSurface* surfOut);
@@ -530,7 +514,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // When false is returned, the callback won't be called. The callback will
     // be called on the PostWorker thread without blocking the current thread.
     AsyncResult composeWithCallback(uint32_t bufferSize, void* buffer,
-                             Post::CompletionCallback callback);
+                                    Post::CompletionCallback callback);
 
     ~FrameBuffer();
 
@@ -588,22 +572,20 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     ColorBufferPtr findColorBuffer(HandleType p_colorbuffer);
     BufferPtr findBuffer(HandleType p_buffer);
 
-    void registerProcessCleanupCallback(void* key,
-                                        std::function<void()> callback);
+    void registerProcessCleanupCallback(void* key, std::function<void()> callback);
     void unregisterProcessCleanupCallback(void* key);
 
     const ProcessResources* getProcessResources(uint64_t puid);
 
-    int createDisplay(uint32_t *displayId);
+    int createDisplay(uint32_t* displayId);
     int createDisplay(uint32_t displayId);
     int destroyDisplay(uint32_t displayId);
     int setDisplayColorBuffer(uint32_t displayId, uint32_t colorBuffer);
     int getDisplayColorBuffer(uint32_t displayId, uint32_t* colorBuffer);
     int getColorBufferDisplay(uint32_t colorBuffer, uint32_t* displayId);
-    int getDisplayPose(uint32_t displayId, int32_t* x, int32_t* y, uint32_t* w,
-                       uint32_t* h);
-    int setDisplayPose(uint32_t displayId, int32_t x, int32_t y, uint32_t w,
-                       uint32_t h, uint32_t dpi = 0);
+    int getDisplayPose(uint32_t displayId, int32_t* x, int32_t* y, uint32_t* w, uint32_t* h);
+    int setDisplayPose(uint32_t displayId, int32_t x, int32_t y, uint32_t w, uint32_t h,
+                       uint32_t dpi = 0);
     void getCombinedDisplaySize(int* w, int* h);
     struct DisplayInfo {
         uint32_t cb;
@@ -612,10 +594,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
         uint32_t width;
         uint32_t height;
         uint32_t dpi;
-        DisplayInfo()
-            : cb(0), pos_x(0), pos_y(0), width(0), height(0), dpi(0){};
-        DisplayInfo(uint32_t cb, int32_t x, int32_t y, uint32_t w, uint32_t h,
-                    uint32_t d)
+        DisplayInfo() : cb(0), pos_x(0), pos_y(0), width(0), height(0), dpi(0){};
+        DisplayInfo(uint32_t cb, int32_t x, int32_t y, uint32_t w, uint32_t h, uint32_t d)
             : cb(cb), pos_x(x), pos_y(y), width(w), height(h), dpi(d) {}
     };
     // Inline with MultiDisplay::s_invalidIdMultiDisplay
@@ -627,7 +607,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     void waitForGpu(uint64_t eglsync);
     void waitForGpuVulkan(uint64_t deviceHandle, uint64_t fenceHandle);
     void asyncWaitForGpuWithCb(uint64_t eglsync, FenceCompletionCallback cb);
-    void asyncWaitForGpuVulkanWithCb(uint64_t deviceHandle, uint64_t fenceHandle, FenceCompletionCallback cb);
+    void asyncWaitForGpuVulkanWithCb(uint64_t deviceHandle, uint64_t fenceHandle,
+                                     FenceCompletionCallback cb);
     void asyncWaitForGpuVulkanQsriWithCb(uint64_t image, FenceCompletionCallback cb);
     void waitForGpuVulkanQsri(uint64_t image);
 
@@ -643,9 +624,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     HealthMonitor<>* getHealthMonitor() { return m_healthMonitor.get(); }
 
-    emugl::MetricsLogger& getMetricsLogger() {
-        return *m_logger;
-    }
+    emugl::MetricsLogger& getMetricsLogger() { return *m_logger; }
 
     void logVulkanOutOfMemory(VkResult result, const char* function, int line,
                               std::optional<uint64_t> allocationSize = std::nullopt);
@@ -661,7 +640,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     bool flushColorBufferFromGl(HandleType colorBufferHandle);
     bool flushColorBufferFromGlLocked(HandleType colorBufferHandle);
     bool flushColorBufferFromVk(HandleType colorBufferHandle);
-    bool flushColorBufferFromVkBytes(HandleType colorBufferHandle, const void* bytes, size_t bytesSize);
+    bool flushColorBufferFromVkBytes(HandleType colorBufferHandle, const void* bytes,
+                                     size_t bytesSize);
     bool invalidateColorBufferForGl(HandleType colorBufferHandle);
     bool invalidateColorBufferForVk(HandleType colorBufferHandle);
 
@@ -676,8 +656,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     bool removeSubWindow_locked();
     // Returns the set of ColorBuffers destroyed (for further cleanup)
-    std::vector<HandleType> cleanupProcGLObjects_locked(uint64_t puid,
-                                                        bool forced = false);
+    std::vector<HandleType> cleanupProcGLObjects_locked(uint64_t puid, bool forced = false);
 
     void markOpened(ColorBufferRef* cbRef);
     // Returns true if the color buffer was erased.
@@ -693,7 +672,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     void eraseDelayedCloseColorBufferLocked(HandleType cb, uint64_t ts);
 
     AsyncResult postImpl(HandleType p_colorbuffer, Post::CompletionCallback callback,
-                  bool needLockAndBind = true, bool repaint = false);
+                         bool needLockAndBind = true, bool repaint = false);
     bool postImplSync(HandleType p_colorbuffer, bool needLockAndBind = true, bool repaint = false);
     void setGuestPostedAFrame() {
         m_guestPostedAFrame = true;
@@ -711,7 +690,6 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     std::future<void> blockPostWorker(std::future<void> continueSignal);
 
    private:
-
     static FrameBuffer* s_theFrameBuffer;
     static HandleType s_nextHandle;
     int m_x = 0;
@@ -785,8 +763,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
         uint32_t width;
         uint32_t height;
     };
-    android::base::WorkerProcessingResult sendReadbackWorkerCmd(
-        const Readback& readback);
+    android::base::WorkerProcessingResult sendReadbackWorkerCmd(const Readback& readback);
     bool m_guestPostedAFrame = false;
 
     struct onPost {
@@ -855,8 +832,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // so we don't need refcounting on the host side.
     bool m_guestManagedColorBufferLifetime = false;
 
-    android::base::MessageChannel<HandleType, 1024>
-        mOutstandingColorBufferDestroys;
+    android::base::MessageChannel<HandleType, 1024> mOutstandingColorBufferDestroys;
 
     std::unique_ptr<gl::EmulationGl> m_emulationGl;
     gl::DisplayGl* m_displayGl = nullptr;
@@ -902,14 +878,13 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // Vsync thread.
     std::unique_ptr<VsyncThread> m_vsyncThread = {};
 
-    struct DisplayConfig{
+    struct DisplayConfig {
         int w;
         int h;
         int dpiX;
         int dpiY;
         DisplayConfig() {}
-        DisplayConfig(int w, int h, int x, int y)
-        : w(w), h(h), dpiX(x), dpiY(y) {}
+        DisplayConfig(int w, int h, int x, int y) : w(w), h(h), dpiX(x), dpiY(y) {}
     };
     std::map<int, DisplayConfig> mDisplayConfigs;
     int mDisplayActiveConfigId = -1;

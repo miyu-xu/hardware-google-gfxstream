@@ -15,11 +15,10 @@
 #ifndef ANDROID_EMUGL_LIBRENDER_RENDER_WINDOW_H
 #define ANDROID_EMUGL_LIBRENDER_RENDER_WINDOW_H
 
-#include "render-utils/render_api.h"
-
 #include "aemu/base/synchronization/MessageChannel.h"
 #include "aemu/base/threads/FunctorThread.h"
 #include "aemu/base/threads/Thread.h"
+#include "render-utils/render_api.h"
 
 namespace gfxstream {
 
@@ -49,7 +48,7 @@ struct RenderWindowMessage;
 //  6) Call repaint() to force a repaint().
 //
 class RenderWindow {
-public:
+   public:
     // Create new instance. |width| and |height| are the dimensions of the
     // emulated accelerated framebuffer. |use_thread| can be true to force
     // the use of a separate thread, which might be required on some platforms
@@ -61,8 +60,7 @@ public:
     //
     // Note that this call doesn't display anything, it just initializes
     // the library, use setupSubWindow() to display something.
-    RenderWindow(int width, int height, bool use_thread, bool use_sub_window,
-            bool egl2egl);
+    RenderWindow(int width, int height, bool use_thread, bool use_sub_window, bool egl2egl);
 
     // Destructor. This will automatically call removeSubWindow() is needed.
     ~RenderWindow();
@@ -74,9 +72,7 @@ public:
     // Return misc. GL strings to the caller. On success, return true and sets
     // |*vendor| to the GL vendor string, |*renderer| to the GL renderer one,
     // and |*version| to the GL version one. On failure, return false.
-    bool getHardwareStrings(const char** vendor,
-                            const char** renderer,
-                            const char** version);
+    bool getHardwareStrings(const char** vendor, const char** renderer, const char** version);
 
     // Specify a function that will be called everytime a new frame is
     // displayed. This is relatively slow but allows one to capture the
@@ -102,17 +98,8 @@ public:
     // pipeline to reflect the new values.
     //
     // One can call removeSubWindow() to remove the sub-window.
-    bool setupSubWindow(FBNativeWindowType window,
-                        int wx,
-                        int wy,
-                        int ww,
-                        int wh,
-                        int fbw,
-                        int fbh,
-                        float dpr,
-                        float rotation,
-                        bool deleteExisting,
-                        bool hideWindow);
+    bool setupSubWindow(FBNativeWindowType window, int wx, int wy, int ww, int wh, int fbw, int fbh,
+                        float dpr, float rotation, bool deleteExisting, bool hideWindow);
 
     // Remove the sub-window created by calling setupSubWindow().
     // Note that this doesn't discard the content of the emulated framebuffer,
@@ -150,7 +137,8 @@ public:
     void setVsyncHz(int vsyncHz);
     void setDisplayConfigs(int configId, int w, int h, int dpiX, int dpiY);
     void setDisplayActiveConfig(int configId);
-private:
+
+   private:
     bool processMessage(const RenderWindowMessage& msg);
     bool useThread() const { return mThread != nullptr; }
 
@@ -160,9 +148,7 @@ private:
     RenderWindowChannel* mChannel = nullptr;
 
     // A worker thread to run repost() commands asynchronously.
-    enum class RepostCommand : char {
-        Repost, Sync
-    };
+    enum class RepostCommand : char { Repost, Sync };
     android::base::MessageChannel<RepostCommand, 10> mRepostCommands;
     android::base::FunctorThread mRepostThread;
 

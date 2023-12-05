@@ -52,9 +52,9 @@
 #include "host-common/emugl_vm_operations.h"
 #include "host-common/feature_control.h"
 #include "host-common/vm_operations.h"
-#include "vulkan/VkFormatUtils.h"
 #include "utils/RenderDoc.h"
 #include "vk_util.h"
+#include "vulkan/VkFormatUtils.h"
 #include "vulkan/emulated_textures/AstcTexture.h"
 #include "vulkan/emulated_textures/CompressedImageInfo.h"
 #include "vulkan/emulated_textures/GpuDecompressionPipeline.h"
@@ -1636,14 +1636,14 @@ class VkDecoderGlobalState::Impl {
         destroyImageLocked(device, deviceDispatch, image, pAllocator);
     }
 
-    VkResult performBindImageMemoryDeferredAhb(android::base::BumpPool* pool,
-                                               VkDevice boxed_device,
+    VkResult performBindImageMemoryDeferredAhb(android::base::BumpPool* pool, VkDevice boxed_device,
                                                const VkBindImageMemoryInfo* bimi) {
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
 
         auto original_underlying_image = bimi->image;
-        auto original_boxed_image = unboxed_to_boxed_non_dispatchable_VkImage(original_underlying_image);
+        auto original_boxed_image =
+            unboxed_to_boxed_non_dispatchable_VkImage(original_underlying_image);
 
         VkImageCreateInfo ici = {};
         {
@@ -1665,7 +1665,8 @@ class VkDecoderGlobalState::Impl {
         }
 
         VkImage boxed_replacement_image = VK_NULL_HANDLE;
-        VkResult result = on_vkCreateImage(pool, boxed_device, &ici, nullptr, &boxed_replacement_image);
+        VkResult result =
+            on_vkCreateImage(pool, boxed_device, &ici, nullptr, &boxed_replacement_image);
         if (result != VK_SUCCESS) {
             ERR("Failed to create image for deferred AHB bind.");
             return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -2727,9 +2728,8 @@ class VkDecoderGlobalState::Impl {
         }
     }
 
-    void on_vkCmdCopyImage2(android::base::BumpPool* pool,
-                           VkCommandBuffer boxed_commandBuffer,
-                           const VkCopyImageInfo2* pCopyImageInfo) {
+    void on_vkCmdCopyImage2(android::base::BumpPool* pool, VkCommandBuffer boxed_commandBuffer,
+                            const VkCopyImageInfo2* pCopyImageInfo) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
 
@@ -2752,10 +2752,12 @@ class VkDecoderGlobalState::Impl {
         VkImage dstImageMip = pCopyImageInfo->dstImage;
         for (uint32_t r = 0; r < pCopyImageInfo->regionCount; r++) {
             if (needEmulatedSrc) {
-                srcImageMip = srcImg->cmpInfo.compressedMipmap(pCopyImageInfo->pRegions[r].srcSubresource.mipLevel);
+                srcImageMip = srcImg->cmpInfo.compressedMipmap(
+                    pCopyImageInfo->pRegions[r].srcSubresource.mipLevel);
             }
             if (needEmulatedDst) {
-                dstImageMip = dstImg->cmpInfo.compressedMipmap(pCopyImageInfo->pRegions[r].dstSubresource.mipLevel);
+                dstImageMip = dstImg->cmpInfo.compressedMipmap(
+                    pCopyImageInfo->pRegions[r].dstSubresource.mipLevel);
             }
 
             VkCopyImageInfo2 inf2 = *pCopyImageInfo;
@@ -2764,7 +2766,8 @@ class VkDecoderGlobalState::Impl {
             inf2.dstImage = dstImageMip;
 
             VkImageCopy2 region = CompressedImageInfo::getCompressedMipmapsImageCopy(
-                pCopyImageInfo->pRegions[r], srcImg->cmpInfo, dstImg->cmpInfo, needEmulatedSrc, needEmulatedDst);
+                pCopyImageInfo->pRegions[r], srcImg->cmpInfo, dstImg->cmpInfo, needEmulatedSrc,
+                needEmulatedDst);
             inf2.pRegions = &region;
 
             vk->vkCmdCopyImage2(commandBuffer, &inf2);
@@ -2772,8 +2775,8 @@ class VkDecoderGlobalState::Impl {
     }
 
     void on_vkCmdCopyImageToBuffer2(android::base::BumpPool* pool,
-                                   VkCommandBuffer boxed_commandBuffer,
-                                   const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
+                                    VkCommandBuffer boxed_commandBuffer,
+                                    const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
 
@@ -2790,7 +2793,8 @@ class VkDecoderGlobalState::Impl {
         }
         for (uint32_t r = 0; r < pCopyImageToBufferInfo->regionCount; r++) {
             uint32_t mipLevel = pCopyImageToBufferInfo->pRegions[r].imageSubresource.mipLevel;
-            VkBufferImageCopy2 region = cmpInfo.getBufferImageCopy(pCopyImageToBufferInfo->pRegions[r]);
+            VkBufferImageCopy2 region =
+                cmpInfo.getBufferImageCopy(pCopyImageToBufferInfo->pRegions[r]);
             VkCopyImageToBufferInfo2 inf = *pCopyImageToBufferInfo;
             inf.regionCount = 1;
             inf.pRegions = &region;
@@ -2800,9 +2804,8 @@ class VkDecoderGlobalState::Impl {
         }
     }
 
-    void on_vkCmdCopyImage2KHR(android::base::BumpPool* pool,
-                           VkCommandBuffer boxed_commandBuffer,
-                           const VkCopyImageInfo2KHR* pCopyImageInfo) {
+    void on_vkCmdCopyImage2KHR(android::base::BumpPool* pool, VkCommandBuffer boxed_commandBuffer,
+                               const VkCopyImageInfo2KHR* pCopyImageInfo) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
 
@@ -2825,10 +2828,12 @@ class VkDecoderGlobalState::Impl {
         VkImage dstImageMip = pCopyImageInfo->dstImage;
         for (uint32_t r = 0; r < pCopyImageInfo->regionCount; r++) {
             if (needEmulatedSrc) {
-                srcImageMip = srcImg->cmpInfo.compressedMipmap(pCopyImageInfo->pRegions[r].srcSubresource.mipLevel);
+                srcImageMip = srcImg->cmpInfo.compressedMipmap(
+                    pCopyImageInfo->pRegions[r].srcSubresource.mipLevel);
             }
             if (needEmulatedDst) {
-                dstImageMip = dstImg->cmpInfo.compressedMipmap(pCopyImageInfo->pRegions[r].dstSubresource.mipLevel);
+                dstImageMip = dstImg->cmpInfo.compressedMipmap(
+                    pCopyImageInfo->pRegions[r].dstSubresource.mipLevel);
             }
 
             VkCopyImageInfo2KHR inf2 = *pCopyImageInfo;
@@ -2837,7 +2842,8 @@ class VkDecoderGlobalState::Impl {
             inf2.dstImage = dstImageMip;
 
             VkImageCopy2KHR region = CompressedImageInfo::getCompressedMipmapsImageCopy(
-                pCopyImageInfo->pRegions[r], srcImg->cmpInfo, dstImg->cmpInfo, needEmulatedSrc, needEmulatedDst);
+                pCopyImageInfo->pRegions[r], srcImg->cmpInfo, dstImg->cmpInfo, needEmulatedSrc,
+                needEmulatedDst);
             inf2.pRegions = &region;
 
             vk->vkCmdCopyImage2KHR(commandBuffer, &inf2);
@@ -2845,8 +2851,8 @@ class VkDecoderGlobalState::Impl {
     }
 
     void on_vkCmdCopyImageToBuffer2KHR(android::base::BumpPool* pool,
-                                   VkCommandBuffer boxed_commandBuffer,
-                                   const VkCopyImageToBufferInfo2KHR* pCopyImageToBufferInfo) {
+                                       VkCommandBuffer boxed_commandBuffer,
+                                       const VkCopyImageToBufferInfo2KHR* pCopyImageToBufferInfo) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
 
@@ -2863,7 +2869,8 @@ class VkDecoderGlobalState::Impl {
         }
         for (uint32_t r = 0; r < pCopyImageToBufferInfo->regionCount; r++) {
             uint32_t mipLevel = pCopyImageToBufferInfo->pRegions[r].imageSubresource.mipLevel;
-            VkBufferImageCopy2KHR region = cmpInfo.getBufferImageCopy(pCopyImageToBufferInfo->pRegions[r]);
+            VkBufferImageCopy2KHR region =
+                cmpInfo.getBufferImageCopy(pCopyImageToBufferInfo->pRegions[r]);
             VkCopyImageToBufferInfo2KHR inf = *pCopyImageToBufferInfo;
             inf.regionCount = 1;
             inf.pRegions = &region;
@@ -3046,7 +3053,8 @@ class VkDecoderGlobalState::Impl {
             VkCopyBufferToImageInfo2 inf;
             uint32_t mipLevel = pCopyBufferToImageInfo->pRegions[r].imageSubresource.mipLevel;
             inf.dstImage = cmpInfo.compressedMipmap(mipLevel);
-            VkBufferImageCopy2 region = cmpInfo.getBufferImageCopy(pCopyBufferToImageInfo->pRegions[r]);
+            VkBufferImageCopy2 region =
+                cmpInfo.getBufferImageCopy(pCopyBufferToImageInfo->pRegions[r]);
             inf.regionCount = 1;
             inf.pRegions = &region;
 
@@ -3066,14 +3074,15 @@ class VkDecoderGlobalState::Impl {
             }
             uint8_t* astcData = (uint8_t*)(memoryInfo->ptr) + bufferInfo->memoryOffset;
 
-            cmpInfo.decompressOnCpu(commandBuffer, astcData, bufferInfo->size, pCopyBufferToImageInfo, context);
+            cmpInfo.decompressOnCpu(commandBuffer, astcData, bufferInfo->size,
+                                    pCopyBufferToImageInfo, context);
         }
     }
 
     void on_vkCmdCopyBufferToImage2KHR(android::base::BumpPool* pool,
-                                    VkCommandBuffer boxed_commandBuffer,
-                                    const VkCopyBufferToImageInfo2KHR* pCopyBufferToImageInfo,
-                                    const VkDecoderContext& context) {
+                                       VkCommandBuffer boxed_commandBuffer,
+                                       const VkCopyBufferToImageInfo2KHR* pCopyBufferToImageInfo,
+                                       const VkDecoderContext& context) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
 
@@ -3103,7 +3112,8 @@ class VkDecoderGlobalState::Impl {
             VkCopyBufferToImageInfo2KHR inf;
             uint32_t mipLevel = pCopyBufferToImageInfo->pRegions[r].imageSubresource.mipLevel;
             inf.dstImage = cmpInfo.compressedMipmap(mipLevel);
-            VkBufferImageCopy2KHR region = cmpInfo.getBufferImageCopy(pCopyBufferToImageInfo->pRegions[r]);
+            VkBufferImageCopy2KHR region =
+                cmpInfo.getBufferImageCopy(pCopyBufferToImageInfo->pRegions[r]);
             inf.regionCount = 1;
             inf.pRegions = &region;
 
@@ -3123,7 +3133,8 @@ class VkDecoderGlobalState::Impl {
             }
             uint8_t* astcData = (uint8_t*)(memoryInfo->ptr) + bufferInfo->memoryOffset;
 
-            cmpInfo.decompressOnCpu(commandBuffer, astcData, bufferInfo->size, pCopyBufferToImageInfo, context);
+            cmpInfo.decompressOnCpu(commandBuffer, astcData, bufferInfo->size,
+                                    pCopyBufferToImageInfo, context);
         }
     }
 
@@ -3366,16 +3377,16 @@ class VkDecoderGlobalState::Impl {
             // writing over memory we did not intend.
             // E.g. swiftshader just allocated with malloc, which can have
             // data stored between allocations.
-        #ifdef PAGE_SIZE
+#ifdef PAGE_SIZE
             localAllocInfo.allocationSize += static_cast<VkDeviceSize>(PAGE_SIZE);
             localAllocInfo.allocationSize &= ~static_cast<VkDeviceSize>(PAGE_SIZE - 1);
-        #elif defined(_WIN32)
+#elif defined(_WIN32)
             localAllocInfo.allocationSize += static_cast<VkDeviceSize>(4096);
             localAllocInfo.allocationSize &= ~static_cast<VkDeviceSize>(4095);
-        #else
+#else
             localAllocInfo.allocationSize += static_cast<VkDeviceSize>(getpagesize());
             localAllocInfo.allocationSize &= ~static_cast<VkDeviceSize>(getpagesize() - 1);
-        #endif
+#endif
         }
         // Note for AHardwareBuffers, the Vulkan spec states:
         //
@@ -5962,8 +5973,8 @@ class VkDecoderGlobalState::Impl {
             if (instanceInfo->apiVersion >= VK_MAKE_VERSION(1, 1, 0) &&
                 physdevInfo->props.apiVersion >= VK_MAKE_VERSION(1, 1, 0)) {
                 hasGetPhysicalDeviceFeatures2 = true;
-            } else if (hasInstanceExtension(instance,
-                                            VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
+            } else if (hasInstanceExtension(
+                           instance, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
                 hasGetPhysicalDeviceFeatures2KHR = true;
             } else {
                 return false;
@@ -6030,8 +6041,7 @@ class VkDecoderGlobalState::Impl {
         VkFormatProperties1or2* pFormatProperties) {
         if (isEmulatedCompressedTexture(format, physicalDevice, vk)) {
             getPhysicalDeviceFormatPropertiesFunc(
-                physicalDevice, CompressedImageInfo::getOutputFormat(format),
-                pFormatProperties);
+                physicalDevice, CompressedImageInfo::getOutputFormat(format), pFormatProperties);
             maskFormatPropertiesForEmulatedTextures(pFormatProperties);
             return;
         }
@@ -6457,7 +6467,8 @@ class VkDecoderGlobalState::Impl {
                     (cmpInfo.isAstc() && emulateTextureAstc));
         }
         bool needEmulatedDecompression(VkFormat format) {
-            return (gfxstream::vk::isEtc2(format) && emulateTextureEtc2) || (gfxstream::vk::isAstc(format) && emulateTextureAstc);
+            return (gfxstream::vk::isEtc2(format) && emulateTextureEtc2) ||
+                   (gfxstream::vk::isAstc(format) && emulateTextureAstc);
         }
     };
 
@@ -7257,41 +7268,39 @@ void VkDecoderGlobalState::on_vkCmdCopyImageToBuffer(android::base::BumpPool* po
                                      regionCount, pRegions);
 }
 
-void VkDecoderGlobalState::on_vkCmdCopyBufferToImage2(android::base::BumpPool* pool,
-                                VkCommandBuffer commandBuffer,
-                                const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo,
-                                const VkDecoderContext& context) {
+void VkDecoderGlobalState::on_vkCmdCopyBufferToImage2(
+    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
+    const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo, const VkDecoderContext& context) {
     mImpl->on_vkCmdCopyBufferToImage2(pool, commandBuffer, pCopyBufferToImageInfo, context);
 }
 
 void VkDecoderGlobalState::on_vkCmdCopyImage2(android::base::BumpPool* pool,
-    VkCommandBuffer commandBuffer,
-    const VkCopyImageInfo2* pCopyImageInfo) {
+                                              VkCommandBuffer commandBuffer,
+                                              const VkCopyImageInfo2* pCopyImageInfo) {
     mImpl->on_vkCmdCopyImage2(pool, commandBuffer, pCopyImageInfo);
 }
 
-void VkDecoderGlobalState::on_vkCmdCopyImageToBuffer2(android::base::BumpPool* pool,
-                                VkCommandBuffer commandBuffer,
-                                const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
+void VkDecoderGlobalState::on_vkCmdCopyImageToBuffer2(
+    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
+    const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
     mImpl->on_vkCmdCopyImageToBuffer2(pool, commandBuffer, pCopyImageToBufferInfo);
 }
 
-void VkDecoderGlobalState::on_vkCmdCopyBufferToImage2KHR(android::base::BumpPool* pool,
-                                VkCommandBuffer commandBuffer,
-                                const VkCopyBufferToImageInfo2KHR* pCopyBufferToImageInfo,
-                                const VkDecoderContext& context) {
+void VkDecoderGlobalState::on_vkCmdCopyBufferToImage2KHR(
+    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
+    const VkCopyBufferToImageInfo2KHR* pCopyBufferToImageInfo, const VkDecoderContext& context) {
     mImpl->on_vkCmdCopyBufferToImage2KHR(pool, commandBuffer, pCopyBufferToImageInfo, context);
 }
 
 void VkDecoderGlobalState::on_vkCmdCopyImage2KHR(android::base::BumpPool* pool,
-    VkCommandBuffer commandBuffer,
-    const VkCopyImageInfo2KHR* pCopyImageInfo) {
+                                                 VkCommandBuffer commandBuffer,
+                                                 const VkCopyImageInfo2KHR* pCopyImageInfo) {
     mImpl->on_vkCmdCopyImage2KHR(pool, commandBuffer, pCopyImageInfo);
 }
 
-void VkDecoderGlobalState::on_vkCmdCopyImageToBuffer2KHR(android::base::BumpPool* pool,
-                                VkCommandBuffer commandBuffer,
-                                const VkCopyImageToBufferInfo2KHR* pCopyImageToBufferInfo) {
+void VkDecoderGlobalState::on_vkCmdCopyImageToBuffer2KHR(
+    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
+    const VkCopyImageToBufferInfo2KHR* pCopyImageToBufferInfo) {
     mImpl->on_vkCmdCopyImageToBuffer2KHR(pool, commandBuffer, pCopyImageToBufferInfo);
 }
 

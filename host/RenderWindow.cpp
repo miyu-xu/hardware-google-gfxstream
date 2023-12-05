@@ -14,17 +14,17 @@
 
 #include "RenderWindow.h"
 
-#include "aemu/base/threads/Thread.h"
-#include "aemu/base/synchronization/MessageChannel.h"
-#include "host-common/logging.h"
-#include "FrameBuffer.h"
-#include "RendererImpl.h"
-
 #include <stdarg.h>
 #include <stdio.h>
+
+#include "FrameBuffer.h"
+#include "RendererImpl.h"
+#include "aemu/base/synchronization/MessageChannel.h"
+#include "aemu/base/threads/Thread.h"
+#include "host-common/logging.h"
 #ifndef _WIN32
-#include <signal.h>
 #include <pthread.h>
+#include <signal.h>
 #endif
 
 namespace gfxstream {
@@ -32,9 +32,9 @@ namespace gfxstream {
 #define DEBUG 0
 
 #if DEBUG
-#  define D(...) my_debug(__PRETTY_FUNCTION__, __LINE__, __VA_ARGS__)
+#define D(...) my_debug(__PRETTY_FUNCTION__, __LINE__, __VA_ARGS__)
 #else
-#  define D(...) ((void)0)
+#define D(...) ((void)0)
 #endif
 
 namespace {
@@ -143,12 +143,9 @@ struct RenderWindowMessage {
         bool result = false;
         switch (msg.cmd) {
             case CMD_INITIALIZE:
-                GL_LOG("RenderWindow: CMD_INITIALIZE w=%d h=%d",
-                       msg.init.width, msg.init.height);
-                result = FrameBuffer::initialize(msg.init.width,
-                                                 msg.init.height,
-                                                 msg.init.useSubWindow,
-                                                 msg.init.egl2egl);
+                GL_LOG("RenderWindow: CMD_INITIALIZE w=%d h=%d", msg.init.width, msg.init.height);
+                result = FrameBuffer::initialize(msg.init.width, msg.init.height,
+                                                 msg.init.useSubWindow, msg.init.egl2egl);
                 break;
 
             case CMD_FINALIZE:
@@ -175,26 +172,17 @@ struct RenderWindowMessage {
                 break;
 
             case CMD_SETUP_SUBWINDOW:
-                GL_LOG("CMD_SETUP_SUBWINDOW: parent=%p wx=%d wy=%d ww=%d wh=%d fbw=%d fbh=%d dpr=%f rotation=%f",
-                       (void*)(intptr_t)msg.subwindow.parent,
-                       msg.subwindow.wx,
-                       msg.subwindow.wy,
-                       msg.subwindow.ww,
-                       msg.subwindow.wh,
-                       msg.subwindow.fbw,
-                       msg.subwindow.fbh,
-                       msg.subwindow.dpr,
-                       msg.subwindow.rotation);
-                D("CMD_SETUP_SUBWINDOW: parent=%p wx=%d wy=%d ww=%d wh=%d fbw=%d fbh=%d dpr=%f rotation=%f\n",
-                    (void*)(intptr_t)msg.subwindow.parent,
-                    msg.subwindow.wx,
-                    msg.subwindow.wy,
-                    msg.subwindow.ww,
-                    msg.subwindow.wh,
-                    msg.subwindow.fbw,
-                    msg.subwindow.fbh,
-                    msg.subwindow.dpr,
-                    msg.subwindow.rotation);
+                GL_LOG(
+                    "CMD_SETUP_SUBWINDOW: parent=%p wx=%d wy=%d ww=%d wh=%d fbw=%d fbh=%d dpr=%f "
+                    "rotation=%f",
+                    (void*)(intptr_t)msg.subwindow.parent, msg.subwindow.wx, msg.subwindow.wy,
+                    msg.subwindow.ww, msg.subwindow.wh, msg.subwindow.fbw, msg.subwindow.fbh,
+                    msg.subwindow.dpr, msg.subwindow.rotation);
+                D("CMD_SETUP_SUBWINDOW: parent=%p wx=%d wy=%d ww=%d wh=%d fbw=%d fbh=%d dpr=%f "
+                  "rotation=%f\n",
+                  (void*)(intptr_t)msg.subwindow.parent, msg.subwindow.wx, msg.subwindow.wy,
+                  msg.subwindow.ww, msg.subwindow.wh, msg.subwindow.fbw, msg.subwindow.fbh,
+                  msg.subwindow.dpr, msg.subwindow.rotation);
                 fb = FrameBuffer::getFB();
                 if (fb) {
                     result = FrameBuffer::getFB()->setupSubWindow(
@@ -286,10 +274,8 @@ struct RenderWindowMessage {
                 D("CMD_SET_DISPLAY_CONFIGS");
                 fb = FrameBuffer::getFB();
                 if (fb) {
-                    fb->setDisplayConfigs(msg.displayConfigs.configId,
-                                          msg.displayConfigs.width,
-                                          msg.displayConfigs.height,
-                                          msg.displayConfigs.dpiX,
+                    fb->setDisplayConfigs(msg.displayConfigs.configId, msg.displayConfigs.width,
+                                          msg.displayConfigs.height, msg.displayConfigs.dpiX,
                                           msg.displayConfigs.dpiY);
                     result = true;
                 } else {
@@ -309,8 +295,7 @@ struct RenderWindowMessage {
                 }
                 break;
 
-            default:
-                ;
+            default:;
         }
         return result;
     }
@@ -339,7 +324,7 @@ struct RenderWindowMessage {
 //      canWriteCmd.signal()
 //
 class RenderWindowChannel {
-public:
+   public:
     RenderWindowChannel() : mIn(), mOut() {}
     ~RenderWindowChannel() {}
 
@@ -373,7 +358,7 @@ public:
         D("result sent\n");
     }
 
-private:
+   private:
     android::base::MessageChannel<RenderWindowMessage, 16U> mIn;
     android::base::MessageChannel<bool, 16U> mOut;
 };
@@ -387,7 +372,7 @@ namespace {
 // The thread ends with a CMD_FINALIZE.
 //
 class RenderWindowThread : public android::base::Thread {
-public:
+   public:
     RenderWindowThread(RenderWindowChannel* channel) : mChannel(channel) {}
 
     virtual intptr_t main() {
@@ -416,23 +401,19 @@ public:
         return 0;
     }
 
-private:
+   private:
     RenderWindowChannel* mChannel;
 };
 
 }  // namespace
 
-RenderWindow::RenderWindow(int width,
-                           int height,
-                           bool use_thread,
-                           bool use_sub_window,
+RenderWindow::RenderWindow(int width, int height, bool use_thread, bool use_sub_window,
                            bool egl2egl)
     : mRepostThread([this] {
           while (auto cmd = mRepostCommands.receive()) {
               if (*cmd == RepostCommand::Sync) {
                   continue;
-              } else if (*cmd == RepostCommand::Repost &&
-                         !mPaused) {
+              } else if (*cmd == RepostCommand::Repost && !mPaused) {
                   GL_LOG("Reposting thread dequeueing a CMD_REPAINT");
                   RenderWindowMessage msg = {CMD_REPAINT};
                   (void)msg.process();
@@ -462,7 +443,7 @@ RenderWindow::~RenderWindow() {
     D("Sending CMD_FINALIZE\n");
     RenderWindowMessage msg = {};
     msg.cmd = CMD_FINALIZE;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
 
     if (useThread()) {
         mThread->wait(NULL);
@@ -488,8 +469,7 @@ void RenderWindow::setPaused(bool paused) {
     mPaused = paused;
 }
 
-bool RenderWindow::getHardwareStrings(const char** vendor,
-                                      const char** renderer,
+bool RenderWindow::getHardwareStrings(const char** vendor, const char** renderer,
                                       const char** version) {
     D("Entering\n");
     // TODO(digit): Move this to render window thread.
@@ -499,8 +479,7 @@ bool RenderWindow::getHardwareStrings(const char** vendor,
         return false;
     }
     fb->getGLStrings(vendor, renderer, version);
-    D("Exiting vendor=[%s] renderer=[%s] version=[%s]\n",
-      *vendor, *renderer, *version);
+    D("Exiting vendor=[%s] renderer=[%s] version=[%s]\n", *vendor, *renderer, *version);
 
     return true;
 }
@@ -514,7 +493,7 @@ void RenderWindow::setPostCallback(Renderer::OnPostCallback onPost, void* onPost
     msg.set_post_callback.on_post_context = onPostContext;
     msg.set_post_callback.on_post_displayId = displayId;
     msg.set_post_callback.use_bgra_readback = useBgraReadback;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 
@@ -539,16 +518,8 @@ void RenderWindow::removeListener(Renderer::FrameBufferChangeEventListener* list
 Renderer::FlushReadPixelPipeline RenderWindow::getFlushReadPixelPipeline() {
     return FrameBuffer::getFB()->getFlushReadPixelPipeline();
 }
-bool RenderWindow::setupSubWindow(FBNativeWindowType window,
-                                  int wx,
-                                  int wy,
-                                  int ww,
-                                  int wh,
-                                  int fbw,
-                                  int fbh,
-                                  float dpr,
-                                  float zRot,
-                                  bool deleteExisting,
+bool RenderWindow::setupSubWindow(FBNativeWindowType window, int wx, int wy, int ww, int wh,
+                                  int fbw, int fbh, float dpr, float zRot, bool deleteExisting,
                                   bool hideWindow) {
     D("Entering mHasSubWindow=%s\n", mHasSubWindow ? "true" : "false");
 
@@ -594,7 +565,7 @@ void RenderWindow::setRotation(float zRot) {
     RenderWindowMessage msg = {};
     msg.cmd = CMD_SET_ROTATION;
     msg.rotation = zRot;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 
@@ -604,7 +575,7 @@ void RenderWindow::setTranslation(float px, float py) {
     msg.cmd = CMD_SET_TRANSLATION;
     msg.trans.px = px;
     msg.trans.py = py;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 
@@ -622,7 +593,7 @@ void RenderWindow::repaint() {
     D("Entering\n");
     RenderWindowMessage msg = {};
     msg.cmd = CMD_REPAINT;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 
@@ -639,7 +610,7 @@ void RenderWindow::resetGuestPostedAFrame() {
     D("Entering\n");
     RenderWindowMessage msg = {};
     msg.cmd = CMD_RESET_GUEST_POSTED_A_FRAME;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 
@@ -648,21 +619,20 @@ void RenderWindow::setVsyncHz(int vsyncHz) {
     RenderWindowMessage msg = {};
     msg.cmd = CMD_SET_VSYNC_HZ;
     msg.vsyncHz = vsyncHz;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 
-void RenderWindow::setDisplayConfigs(int configId, int w, int h,
-                                     int dpiX, int dpiY) {
+void RenderWindow::setDisplayConfigs(int configId, int w, int h, int dpiX, int dpiY) {
     D("Entering\n");
     RenderWindowMessage msg = {};
     msg.cmd = CMD_SET_DISPLAY_CONFIGS;
     msg.displayConfigs.configId = configId;
     msg.displayConfigs.width = w;
-    msg.displayConfigs.height= h;
-    msg.displayConfigs.dpiX= dpiX;
+    msg.displayConfigs.height = h;
+    msg.displayConfigs.dpiX = dpiX;
     msg.displayConfigs.dpiY = dpiY;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 
@@ -671,7 +641,7 @@ void RenderWindow::setDisplayActiveConfig(int configId) {
     RenderWindowMessage msg = {};
     msg.cmd = CMD_SET_DISPLAY_ACTIVE_CONFIG;
     msg.displayActiveConfig = configId;
-    (void) processMessage(msg);
+    (void)processMessage(msg);
     D("Exiting\n");
 }
 

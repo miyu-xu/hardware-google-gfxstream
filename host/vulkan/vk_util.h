@@ -258,7 +258,8 @@ void vk_append_struct(vk_struct_chain_iterator* i, T* vk_struct) {
 template <class T, class U, typename = std::enable_if_t<!std::is_const_v<T> && !std::is_const_v<U>>>
 void vk_insert_struct(T& pos, U& nextChain) {
     vk_struct_common* nextChainTail = reinterpret_cast<vk_struct_common*>(&nextChain);
-    for (; nextChainTail->pNext; nextChainTail = nextChainTail->pNext) {}
+    for (; nextChainTail->pNext; nextChainTail = nextChainTail->pNext) {
+    }
 
     nextChainTail->pNext = reinterpret_cast<vk_struct_common*>(const_cast<void*>(pos.pNext));
     pos.pNext = &nextChain;

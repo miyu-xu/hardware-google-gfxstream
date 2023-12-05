@@ -30,22 +30,18 @@ using ::testing::Test;
 using ::testing::UnorderedElementsAre;
 
 class VkDecoderGlobalStateExternalFenceTest : public Test {
-protected:
+   protected:
     class MockDispatch {
        public:
         MOCK_METHOD(VkResult, vkGetFenceStatus, (VkDevice device, VkFence fence), ());
-        MOCK_METHOD(VkResult,
-                    vkResetFences,
-                    (VkDevice device, uint32_t numFences, const VkFence* fence),
-                    ());
+        MOCK_METHOD(VkResult, vkResetFences,
+                    (VkDevice device, uint32_t numFences, const VkFence* fence), ());
     };
 
     VkDecoderGlobalStateExternalFenceTest()
         : mDevice(reinterpret_cast<VkDevice>(0x2222'0000)), mPool(&mMockDispatch, mDevice) {}
 
-    ~VkDecoderGlobalStateExternalFenceTest() {
-        mPool.popAll();
-    }
+    ~VkDecoderGlobalStateExternalFenceTest() { mPool.popAll(); }
 
     MockDispatch mMockDispatch;
     VkDevice mDevice;

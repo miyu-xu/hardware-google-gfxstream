@@ -56,9 +56,9 @@ struct RenderThreadInfoGl {
     // New emulator manages contexts in guest process level,
     // m_contextSet should be deprecated. It is only kept for
     // backward compatibility reason.
-    ThreadContextSet                m_contextSet;
+    ThreadContextSet m_contextSet;
     // all the window surfaces that are created by this render thread
-    WindowSurfaceSet                m_windowSet;
+    WindowSurfaceSet m_windowSet;
 
     // Current EGL context, draw surface and read surface.
     HandleType currContextHandleFromLoad;
@@ -70,8 +70,8 @@ struct RenderThreadInfoGl {
     EmulatedEglWindowSurfacePtr currReadSurf;
 
     // Decoder states.
-    GLESv1Decoder                   m_glDec;
-    GLESv2Decoder                   m_gl2Dec;
+    GLESv1Decoder m_glDec;
+    GLESv2Decoder m_gl2Dec;
 };
 
 }  // namespace gl

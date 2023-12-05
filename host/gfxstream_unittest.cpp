@@ -18,21 +18,21 @@
 
 #include "OSWindow.h"
 #include "aemu/base/system/System.h"
-#include "host-common/testing/MockGraphicsAgentFactory.h"
-#include "virgl_hw.h"
 #include "gfxstream/virtio-gpu-gfxstream-renderer-unstable.h"
 #include "gfxstream/virtio-gpu-gfxstream-renderer.h"
+#include "host-common/testing/MockGraphicsAgentFactory.h"
+#include "virgl_hw.h"
 
 using android::base::sleepMs;
 
 class GfxStreamBackendTest : public ::testing::Test {
-private:
- static void sWriteFence(void* cookie, struct stream_renderer_fence* fence) {
-     uint32_t current = *(uint32_t*)cookie;
-     if (current < fence->fence_id) *(uint64_t*)(cookie) = fence->fence_id;
- }
+   private:
+    static void sWriteFence(void* cookie, struct stream_renderer_fence* fence) {
+        uint32_t current = *(uint32_t*)cookie;
+        if (current < fence->fence_id) *(uint64_t*)(cookie) = fence->fence_id;
+    }
 
-protected:
+   protected:
     uint32_t cookie;
     static const bool useWindow;
     std::vector<stream_renderer_param> streamRendererParams;
@@ -89,7 +89,7 @@ protected:
 std::unique_ptr<OSWindow> GfxStreamBackendTest::window = nullptr;
 
 const bool GfxStreamBackendTest::useWindow =
-        android::base::getEnvironmentVariable("ANDROID_EMU_TEST_WITH_WINDOW") == "1";
+    android::base::getEnvironmentVariable("ANDROID_EMU_TEST_WITH_WINDOW") == "1";
 
 TEST_F(GfxStreamBackendTest, Init) {
     stream_renderer_init(streamRendererParams.data(), streamRendererParams.size());
@@ -101,14 +101,14 @@ TEST_F(GfxStreamBackendTest, InitOpenGLWindow) {
     }
 
     std::vector<stream_renderer_param> glParams = streamRendererParams;
-    for (auto& param: glParams) {
+    for (auto& param : glParams) {
         if (param.key == STREAM_RENDERER_PARAM_RENDERER_FLAGS) {
             param.value = rendererFlags;
         }
     }
     stream_renderer_init(glParams.data(), glParams.size());
-    gfxstream_backend_setup_window(window->getFramebufferNativeWindow(), 0, 0,
-                                       width, height, width, height);
+    gfxstream_backend_setup_window(window->getFramebufferNativeWindow(), 0, 0, width, height, width,
+                                   height);
 }
 
 TEST_F(GfxStreamBackendTest, SimpleFlush) {

@@ -99,19 +99,17 @@ void VirtioGpuTimelines::poll_locked(const Ring& ring) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "Ring(" << to_string(ring) << ") doesn't exist.";
     }
-    std::list<TimelineItem> &timelineQueue = iTimelineQueue->second;
+    std::list<TimelineItem>& timelineQueue = iTimelineQueue->second;
     auto i = timelineQueue.begin();
     for (; i != timelineQueue.end(); i++) {
         // This visitor will signal the fence and return whether the timeline
         // item is an incompleted task.
         struct {
-            bool operator()(std::unique_ptr<Fence> &fence) {
+            bool operator()(std::unique_ptr<Fence>& fence) {
                 fence->mCompletionCallback();
                 return false;
             }
-            bool operator()(std::shared_ptr<Task> &task) {
-                return !task->mHasCompleted;
-            }
+            bool operator()(std::shared_ptr<Task>& task) { return !task->mHasCompleted; }
         } visitor;
         if (std::visit(visitor, *i)) {
             break;

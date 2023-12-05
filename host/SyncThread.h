@@ -25,11 +25,11 @@
 #include <string>
 #include <type_traits>
 
-#include "aemu/base/synchronization/ConditionVariable.h"
 #include "aemu/base/HealthMonitor.h"
+#include "aemu/base/Optional.h"
+#include "aemu/base/synchronization/ConditionVariable.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/synchronization/MessageChannel.h"
-#include "aemu/base/Optional.h"
 #include "aemu/base/threads/Thread.h"
 #include "aemu/base/threads/ThreadPool.h"
 #include "gl/EmulatedEglFenceSync.h"
@@ -75,7 +75,7 @@ class SyncThread : public android::base::Thread {
     // for use with the virtio-gpu path; is meant to have a current context
     // while waiting.
     void triggerBlockedWaitNoTimeline(gl::EmulatedEglFenceSync* fenceSync);
-    
+
     // This increments the timeline after the QSRI completes.
     void triggerWaitVkQsri(VkImage vkImage, uint64_t timeline);
 

@@ -16,8 +16,8 @@
 #include "BorrowedImageVk.h"
 #include "Compositor.h"
 #include "Hwc2.h"
-#include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/LruCache.h"
+#include "aemu/base/synchronization/Lock.h"
 #include "vulkan/cereal/common/goldfish_vk_dispatch.h"
 #include "vulkan/vk_util.h"
 

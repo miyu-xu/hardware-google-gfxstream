@@ -23,12 +23,9 @@ namespace gfxstream {
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
 
-DisplaySurface::DisplaySurface(uint32_t width,
-                               uint32_t height,
+DisplaySurface::DisplaySurface(uint32_t width, uint32_t height,
                                std::unique_ptr<DisplaySurfaceImpl> impl)
-    : mWidth(width),
-      mHeight(height),
-      mImpl(std::move(impl)) {}
+    : mWidth(width), mHeight(height), mImpl(std::move(impl)) {}
 
 DisplaySurface::~DisplaySurface() {
     if (!mBoundUsers.empty()) {
@@ -55,17 +52,13 @@ void DisplaySurface::updateSize(uint32_t newWidth, uint32_t newHeight) {
             mHeight = newHeight;
         }
     }
-    for (auto & users : mBoundUsers) {
+    for (auto& users : mBoundUsers) {
         users->surfaceUpdated(this);
     }
 }
 
-void DisplaySurface::registerUser(DisplaySurfaceUser* user) {
-    mBoundUsers.insert(user);
-}
+void DisplaySurface::registerUser(DisplaySurfaceUser* user) { mBoundUsers.insert(user); }
 
-void DisplaySurface::unregisterUser(DisplaySurfaceUser* user) {
-    mBoundUsers.erase(user);
-}
+void DisplaySurface::unregisterUser(DisplaySurfaceUser* user) { mBoundUsers.erase(user); }
 
 }  // namespace gfxstream

@@ -1,32 +1,32 @@
 /*
-* Copyright (C) 2011 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "RenderThreadInfo.h"
-
-#include "aemu/base/synchronization/Lock.h"
-#include "host-common/feature_control.h"
 
 #include <unordered_map>
 #include <unordered_set>
 
+#include "aemu/base/synchronization/Lock.h"
+#include "host-common/feature_control.h"
+
 namespace gfxstream {
 
 using android::base::AutoLock;
-using android::base::Stream;
 using android::base::Lock;
+using android::base::Stream;
 
 static thread_local RenderThreadInfo* s_threadInfoPtr;
 
@@ -49,21 +49,17 @@ RenderThreadInfo::~RenderThreadInfo() {
     sRegistry.threadInfos.erase(this);
 }
 
-RenderThreadInfo* RenderThreadInfo::get() {
-    return s_threadInfoPtr;
-}
+RenderThreadInfo* RenderThreadInfo::get() { return s_threadInfoPtr; }
 
 // Loop over all active render thread infos. Takes the global render thread info lock.
 void RenderThreadInfo::forAllRenderThreadInfos(std::function<void(RenderThreadInfo*)> f) {
     AutoLock lock(sRegistry.lock);
-    for (auto info: sRegistry.threadInfos) {
+    for (auto info : sRegistry.threadInfos) {
         f(info);
     }
 }
 
-void RenderThreadInfo::initGl() {
-    m_glInfo.emplace();
-}
+void RenderThreadInfo::initGl() { m_glInfo.emplace(); }
 
 void RenderThreadInfo::onSave(Stream* stream) {
     // TODO(b/309858017): remove if when ready to bump snapshot version

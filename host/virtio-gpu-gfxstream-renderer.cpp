@@ -86,20 +86,20 @@ void stream_renderer_debug(uint32_t type, const char* format, ...) {
 }
 
 #if STREAM_RENDERER_LOG_LEVEL >= 1
-#define stream_renderer_error(format, ...)                                                         \
-    do {                                                                                           \
-        stream_renderer_debug(STREAM_RENDERER_DEBUG_ERROR, "[%s(%d)] %s " format,                  \
-                              __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__);             \
+#define stream_renderer_error(format, ...)                                                  \
+    do {                                                                                    \
+        stream_renderer_debug(STREAM_RENDERER_DEBUG_ERROR, "[%s(%d)] %s " format, __FILE__, \
+                              __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__);                \
     } while (0)
 #else
 #define stream_renderer_error(format, ...)
 #endif
 
 #if STREAM_RENDERER_LOG_LEVEL >= 3
-#define stream_renderer_info(format, ...)                                                         \
-    do {                                                                                          \
-        stream_renderer_debug(STREAM_RENDERER_DEBUG_INFO, "[%s(%d)] %s " format,                  \
-                              __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__);            \
+#define stream_renderer_info(format, ...)                                                  \
+    do {                                                                                   \
+        stream_renderer_debug(STREAM_RENDERER_DEBUG_INFO, "[%s(%d)] %s " format, __FILE__, \
+                              __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__);               \
     } while (0)
 #else
 #define stream_renderer_info(format, ...)
@@ -1541,8 +1541,7 @@ class PipeVirglRenderer {
             entry.ringBlob = ringBlob;
             entry.hva = ringBlob->get();
         } else {
-            void* addr =
-                android::aligned_buf_alloc(mPageSize, create_blob->size);
+            void* addr = android::aligned_buf_alloc(mPageSize, create_blob->size);
             if (addr == nullptr) {
                 stream_renderer_error("Failed to allocate ring blob");
                 return -ENOMEM;
@@ -1561,8 +1560,8 @@ class PipeVirglRenderer {
     int createBlob(uint32_t ctx_id, uint32_t res_handle,
                    const struct stream_renderer_create_blob* create_blob,
                    const struct stream_renderer_handle* handle) {
-        stream_renderer_info("ctx:%u res:%u blob-id:%u blob-size:%u",
-                             ctx_id, res_handle, create_blob->blob_id, create_blob->size);
+        stream_renderer_info("ctx:%u res:%u blob-id:%u blob-size:%u", ctx_id, res_handle,
+                             create_blob->blob_id, create_blob->size);
 
         PipeResEntry e;
         struct stream_renderer_resource_create_args args = {0};
@@ -2047,9 +2046,7 @@ static const GoldfishPipeServiceOps goldfish_pipe_service_ops = {
                                        numBuffers);
     },
     // wait_guest_recv()
-    [](GoldfishHostPipe* hostPipe) {
-        android_pipe_wait_guest_recv(hostPipe);
-    },
+    [](GoldfishHostPipe* hostPipe) { android_pipe_wait_guest_recv(hostPipe); },
     // guest_send()
     [](GoldfishHostPipe** hostPipe, const GoldfishPipeBuffer* buffers, int numBuffers) -> int {
         return android_pipe_guest_send(reinterpret_cast<void**>(hostPipe),
@@ -2057,9 +2054,7 @@ static const GoldfishPipeServiceOps goldfish_pipe_service_ops = {
                                        numBuffers);
     },
     // wait_guest_send()
-    [](GoldfishHostPipe* hostPipe) {
-        android_pipe_wait_guest_send(hostPipe);
-    },
+    [](GoldfishHostPipe* hostPipe) { android_pipe_wait_guest_send(hostPipe); },
     // guest_wake_on()
     [](GoldfishHostPipe* hostPipe, GoldfishPipeWakeFlags wakeFlags) {
         android_pipe_guest_wake_on(hostPipe, static_cast<int>(wakeFlags));

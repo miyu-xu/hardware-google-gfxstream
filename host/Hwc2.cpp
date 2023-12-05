@@ -16,8 +16,7 @@
 
 namespace gfxstream {
 
-std::unique_ptr<FlatComposeRequest> ToFlatComposeRequest(
-        const ComposeDevice* composeRequest) {
+std::unique_ptr<FlatComposeRequest> ToFlatComposeRequest(const ComposeDevice* composeRequest) {
     auto flatComposeRequest = std::make_unique<FlatComposeRequest>();
     flatComposeRequest->displayId = 0;
     flatComposeRequest->targetHandle = composeRequest->targetHandle;
@@ -27,8 +26,7 @@ std::unique_ptr<FlatComposeRequest> ToFlatComposeRequest(
     return flatComposeRequest;
 }
 
-std::unique_ptr<FlatComposeRequest> ToFlatComposeRequest(
-        const ComposeDevice_v2* composeRequest) {
+std::unique_ptr<FlatComposeRequest> ToFlatComposeRequest(const ComposeDevice_v2* composeRequest) {
     auto flatComposeRequest = std::make_unique<FlatComposeRequest>();
     flatComposeRequest->displayId = composeRequest->displayId;
     flatComposeRequest->targetHandle = composeRequest->targetHandle;

@@ -45,7 +45,7 @@ class SwapChainStateVk {
 
     SwapChainStateVk() = delete;
     SwapChainStateVk(const SwapChainStateVk&) = delete;
-    SwapChainStateVk& operator = (const SwapChainStateVk&) = delete;
+    SwapChainStateVk& operator=(const SwapChainStateVk&) = delete;
 
     static std::unique_ptr<SwapChainStateVk> createSwapChainVk(const VulkanDispatch&, VkDevice,
                                                                const VkSwapchainCreateInfoKHR&);

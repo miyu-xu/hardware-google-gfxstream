@@ -21,7 +21,7 @@
 namespace gfxstream {
 
 class Display : public DisplaySurfaceUser {
-  public:
+   public:
     struct PostResult {
         bool success = false;
         std::shared_future<void> postCompletedWaitable;

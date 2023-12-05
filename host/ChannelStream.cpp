@@ -15,13 +15,13 @@
 
 #include "render-utils/RenderChannel.h"
 
-#define EMUGL_DEBUG_LEVEL  0
-#include "host-common/debug.h"
-#include "host-common/dma_device.h"
-#include "host-common/GfxstreamFatalError.h"
-
+#define EMUGL_DEBUG_LEVEL 0
 #include <assert.h>
 #include <memory.h>
+
+#include "host-common/GfxstreamFatalError.h"
+#include "host-common/debug.h"
+#include "host-common/dma_device.h"
 
 namespace gfxstream {
 
@@ -48,7 +48,7 @@ int ChannelStream::commitBuffer(size_t size) {
         mChannel->writeToGuest(std::move(mWriteBuffer));
     } else {
         mChannel->writeToGuest(
-                RenderChannel::Buffer(mWriteBuffer.data(), mWriteBuffer.data() + size));
+            RenderChannel::Buffer(mWriteBuffer.data(), mWriteBuffer.data() + size));
     }
     return size;
 }
@@ -61,9 +61,7 @@ const unsigned char* ChannelStream::readRaw(void* buf, size_t* inout_len) {
     while (count < wanted) {
         if (mReadBufferLeft > 0) {
             size_t avail = std::min<size_t>(wanted - count, mReadBufferLeft);
-            memcpy(dst + count,
-                   mReadBuffer.data() + (mReadBuffer.size() - mReadBufferLeft),
-                   avail);
+            memcpy(dst + count, mReadBuffer.data() + (mReadBuffer.size() - mReadBufferLeft), avail);
             count += avail;
             mReadBufferLeft -= avail;
             continue;
@@ -95,9 +93,7 @@ void* ChannelStream::getDmaForReading(uint64_t guest_paddr) {
 
 void ChannelStream::unlockDma(uint64_t guest_paddr) { emugl::g_emugl_dma_unlock(guest_paddr); }
 
-void ChannelStream::forceStop() {
-    mChannel->stopFromHost();
-}
+void ChannelStream::forceStop() { mChannel->stopFromHost(); }
 
 int ChannelStream::writeFully(const void* buf, size_t len) {
     void* dstBuf = alloc(len);
@@ -106,17 +102,15 @@ int ChannelStream::writeFully(const void* buf, size_t len) {
     return 0;
 }
 
-const unsigned char *ChannelStream::readFully( void *buf, size_t len) {
-    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-        << "not intended for use with ChannelStream";
+const unsigned char* ChannelStream::readFully(void* buf, size_t len) {
+    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "not intended for use with ChannelStream";
 }
 
 void ChannelStream::onSave(android::base::Stream* stream) {
     // Write only the data that's left in read buffer, but in the same format
     // as saveBuffer() does.
     stream->putBe32(mReadBufferLeft);
-    stream->write(mReadBuffer.data() + mReadBuffer.size() - mReadBufferLeft,
-                  mReadBufferLeft);
+    stream->write(mReadBuffer.data() + mReadBuffer.size() - mReadBufferLeft, mReadBufferLeft);
     android::base::saveBuffer(stream, mWriteBuffer);
 }
 

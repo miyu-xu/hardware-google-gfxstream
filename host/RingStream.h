@@ -13,14 +13,13 @@
 // limitations under the License.
 #pragma once
 
-#include "render-utils/IOStream.h"
-#include "render-utils/RenderChannel.h"
+#include <functional>
+#include <vector>
 
 #include "aemu/base/ring_buffer.h"
 #include "host-common/address_space_graphics_types.h"
-
-#include <functional>
-#include <vector>
+#include "render-utils/IOStream.h"
+#include "render-utils/RenderChannel.h"
 
 namespace gfxstream {
 
@@ -29,37 +28,28 @@ namespace gfxstream {
 // a callback that does something when there are no available bytes to read in
 // the "to host" ring buffer.
 class RingStream final : public IOStream {
-public:
+   public:
     using OnUnavailableReadCallback = std::function<int()>;
-    using GetPtrAndSizeCallback =
-        std::function<void(uint64_t, char**, size_t*)>;
+    using GetPtrAndSizeCallback = std::function<void(uint64_t, char**, size_t*)>;
 
-    RingStream(
-        struct asg_context context,
-        android::emulation::asg::ConsumerCallbacks callbacks,
-        size_t bufsize);
+    RingStream(struct asg_context context, android::emulation::asg::ConsumerCallbacks callbacks,
+               size_t bufsize);
     ~RingStream();
 
     int getNeededFreeTailSize() const;
 
     int writeFully(const void* buf, size_t len) override;
-    const unsigned char *readFully( void *buf, size_t len) override;
+    const unsigned char* readFully(void* buf, size_t len) override;
 
     void printStats();
 
-    void pausePreSnapshot() {
-        mInSnapshotOperation = true;
-    }
+    void pausePreSnapshot() { mInSnapshotOperation = true; }
 
-    void resume() {
-        mInSnapshotOperation = false;
-    }
+    void resume() { mInSnapshotOperation = false; }
 
-    bool inSnapshotOperation() const {
-        return mInSnapshotOperation;
-    }
+    bool inSnapshotOperation() const { return mInSnapshotOperation; }
 
-protected:
+   protected:
     virtual void* allocBuffer(size_t minSize) override final;
     virtual int commitBuffer(size_t size) override final;
     virtual const unsigned char* readRaw(void* buf, size_t* inout_len) override final;
@@ -69,7 +59,8 @@ protected:
     void onSave(android::base::Stream* stream) override;
     unsigned char* onLoad(android::base::Stream* stream) override;
 
-    void type1Read(uint32_t available, char* begin, size_t* count, char** current, const char* ptrEnd);
+    void type1Read(uint32_t available, char* begin, size_t* count, char** current,
+                   const char* ptrEnd);
     void type2Read(uint32_t available, size_t* count, char** current, const char* ptrEnd);
     void type3Read(uint32_t available, size_t* count, char** current, const char* ptrEnd);
 

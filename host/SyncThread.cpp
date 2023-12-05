@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2016 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "SyncThread.h"
 
@@ -48,10 +48,11 @@ static uint64_t curr_ms() {
     return tv.tv_usec / 1000 + tv.tv_sec * 1000;
 }
 
-#define DPRINT(fmt, ...) do { \
-    if (!VERBOSE_CHECK(syncthreads)) VERBOSE_ENABLE(syncthreads); \
-    VERBOSE_TID_FUNCTION_DPRINT(syncthreads, "@ time=%llu: " fmt, curr_ms(), ##__VA_ARGS__); \
-} while(0)
+#define DPRINT(fmt, ...)                                                                         \
+    do {                                                                                         \
+        if (!VERBOSE_CHECK(syncthreads)) VERBOSE_ENABLE(syncthreads);                            \
+        VERBOSE_TID_FUNCTION_DPRINT(syncthreads, "@ time=%llu: " fmt, curr_ms(), ##__VA_ARGS__); \
+    } while (0)
 
 #else
 
@@ -59,17 +60,16 @@ static uint64_t curr_ms() {
 
 #endif
 
-#define SYNC_THREAD_CHECK(condition)                                        \
-    do {                                                                    \
-        if (!(condition)) {                                                 \
-            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) <<              \
-                #condition << " is false";                                  \
-        }                                                                   \
+#define SYNC_THREAD_CHECK(condition)                                                      \
+    do {                                                                                  \
+        if (!(condition)) {                                                               \
+            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << #condition << " is false"; \
+        }                                                                                 \
     } while (0)
 
 // The single global sync thread instance.
 class GlobalSyncThread {
-public:
+   public:
     GlobalSyncThread() = default;
 
     void initialize(bool hasGl, HealthMonitor<>* healthMonitor) {
@@ -87,7 +87,7 @@ public:
         mSyncThread = nullptr;
     }
 
-private:
+   private:
     std::unique_ptr<SyncThread> mSyncThread = nullptr;
     // lock for the access to this object
     android::base::Lock mLock;
@@ -117,12 +117,9 @@ SyncThread::SyncThread(bool hasGl, HealthMonitor<>* healthMonitor)
     }
 }
 
-SyncThread::~SyncThread() {
-    cleanup();
-}
+SyncThread::~SyncThread() { cleanup(); }
 
-void SyncThread::triggerWait(EmulatedEglFenceSync* fenceSync,
-                             uint64_t timeline) {
+void SyncThread::triggerWait(EmulatedEglFenceSync* fenceSync, uint64_t timeline) {
     std::stringstream ss;
     ss << "triggerWait fenceSyncInfo=0x" << std::hex << reinterpret_cast<uintptr_t>(fenceSync)
        << " timeline=0x" << std::hex << timeline;
@@ -162,7 +159,8 @@ void SyncThread::triggerBlockedWaitNoTimeline(EmulatedEglFenceSync* fenceSync) {
         ss.str());
 }
 
-void SyncThread::triggerWaitWithCompletionCallback(EmulatedEglFenceSync* fenceSync, FenceCompletionCallback cb) {
+void SyncThread::triggerWaitWithCompletionCallback(EmulatedEglFenceSync* fenceSync,
+                                                   FenceCompletionCallback cb) {
     std::stringstream ss;
     ss << "triggerWaitWithCompletionCallback fenceSyncInfo=0x" << std::hex
        << reinterpret_cast<uintptr_t>(fenceSync);
@@ -170,7 +168,6 @@ void SyncThread::triggerWaitWithCompletionCallback(EmulatedEglFenceSync* fenceSy
         [fenceSync, cb = std::move(cb), this](WorkerId) { doSyncWait(fenceSync, std::move(cb)); },
         ss.str());
 }
-
 
 void SyncThread::triggerWaitVkWithCompletionCallback(VkFence vkFence, FenceCompletionCallback cb) {
     std::stringstream ss;
@@ -180,7 +177,8 @@ void SyncThread::triggerWaitVkWithCompletionCallback(VkFence vkFence, FenceCompl
               ss.str());
 }
 
-void SyncThread::triggerWaitVkQsriWithCompletionCallback(VkImage vkImage, FenceCompletionCallback cb) {
+void SyncThread::triggerWaitVkQsriWithCompletionCallback(VkImage vkImage,
+                                                         FenceCompletionCallback cb) {
     std::stringstream ss;
     ss << "triggerWaitVkQsriWithCompletionCallback vkImage=0x"
        << reinterpret_cast<uintptr_t>(vkImage);
@@ -198,14 +196,14 @@ void SyncThread::triggerWaitVkQsriWithCompletionCallback(VkImage vkImage, FenceC
 }
 
 void SyncThread::triggerWaitVkQsri(VkImage vkImage, uint64_t timeline) {
-     std::stringstream ss;
-    ss << "triggerWaitVkQsri vkImage=0x" << std::hex << vkImage
-       << " timeline=0x" << std::hex << timeline;
+    std::stringstream ss;
+    ss << "triggerWaitVkQsri vkImage=0x" << std::hex << vkImage << " timeline=0x" << std::hex
+       << timeline;
     sendAsync(
         [vkImage, timeline](WorkerId) {
             auto decoder = vk::VkDecoderGlobalState::get();
-            auto res = decoder->registerQsriCallback(vkImage, [timeline](){
-                 emugl::emugl_sync_timeline_inc(timeline, kTimelineInterval);
+            auto res = decoder->registerQsriCallback(vkImage, [timeline]() {
+                emugl::emugl_sync_timeline_inc(timeline, kTimelineInterval);
             });
             // If registerQsriCallback does not schedule the callback, we still need to complete
             // the task, otherwise we may hit deadlocks on tasks on the same ring.
@@ -374,9 +372,10 @@ void SyncThread::doSyncWait(EmulatedEglFenceSync* fenceSync, std::function<void(
     DPRINT("wait on sync obj: %p", fenceSync);
     wait_result = fenceSync->wait(kDefaultTimeoutNsecs);
 
-    DPRINT("done waiting, with wait result=0x%x. "
-           "increment timeline (and signal fence)",
-           wait_result);
+    DPRINT(
+        "done waiting, with wait result=0x%x. "
+        "increment timeline (and signal fence)",
+        wait_result);
 
     if (wait_result != EGL_CONDITION_SATISFIED_KHR) {
         EGLint error = gl::s_egl.eglGetError();

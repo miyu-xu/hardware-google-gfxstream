@@ -13,11 +13,12 @@
 // limitations under the License.
 #pragma once
 
-#include "aemu/base/threads/FunctorThread.h"
-#include "aemu/base/synchronization/MessageChannel.h"
-
 #include <inttypes.h>
+
 #include <functional>
+
+#include "aemu/base/synchronization/MessageChannel.h"
+#include "aemu/base/threads/FunctorThread.h"
 
 namespace gfxstream {
 
@@ -30,7 +31,7 @@ namespace gfxstream {
 // properly schedule presents
 // 2.
 class VsyncThread {
-public:
+   public:
     using Count = uint64_t;
     using VsyncTask = std::function<void(Count)>;
     VsyncThread(uint64_t vsyncPeriod);
@@ -40,20 +41,15 @@ public:
     // period. Passes the number of vsyncs so far (Count).
     void schedule(VsyncTask task);
 
-    uint64_t getCount() const {
-        return mCount;
-    }
+    uint64_t getCount() const { return mCount; }
 
-    uint64_t getPeriod() const {
-        return mPeriodNs;
-    }
+    uint64_t getPeriod() const { return mPeriodNs; }
 
     // Sets the period dynamically. This is implemented as another scheduled task, so as to not
     // interfere with assumptions of previously scheduled tasks.
     void setPeriod(uint64_t newPeriod);
 
-private:
-
+   private:
     enum class CommandType {
         Default = 0,
         Exit = 1,

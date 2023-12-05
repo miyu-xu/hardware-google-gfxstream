@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2011 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "RenderControl.h"
 
@@ -86,7 +86,7 @@ using gl::RenderThreadInfoGl;
 // as GL calls from different threads in the guest
 // are allowed to arrive at the host in any ordering.
 class GrallocSync {
-public:
+   public:
     GrallocSync() {
         // Having in-order webcam frames is nice, but not at the cost
         // of potential deadlocks;
@@ -147,16 +147,17 @@ public:
         if (mEnabled && newLockState == 0) mGrallocColorBufferLock.unlockRead();
     }
     android::base::ReadWriteLock mGrallocColorBufferLock;
-private:
+
+   private:
     bool mEnabled;
     std::atomic<int> lockState;
     DISALLOW_COPY_ASSIGN_AND_MOVE(GrallocSync);
 };
 
 class GrallocSyncPostLock : public android::base::AutoWriteLock {
-public:
-    GrallocSyncPostLock(GrallocSync& grallocsync) :
-        android::base::AutoWriteLock(grallocsync.mGrallocColorBufferLock) { }
+   public:
+    GrallocSyncPostLock(GrallocSync& grallocsync)
+        : android::base::AutoWriteLock(grallocsync.mGrallocColorBufferLock) {}
 };
 
 static GrallocSync* sGrallocSync() {
@@ -198,7 +199,8 @@ static const char* kHostCompositionV2 = "ANDROID_EMU_host_composition_v2";
 static const char* kVulkanFeatureStr = "ANDROID_EMU_vulkan";
 static const char* kDeferredVulkanCommands = "ANDROID_EMU_deferred_vulkan_commands";
 static const char* kVulkanNullOptionalStrings = "ANDROID_EMU_vulkan_null_optional_strings";
-static const char* kVulkanCreateResourcesWithRequirements = "ANDROID_EMU_vulkan_create_resources_with_requirements";
+static const char* kVulkanCreateResourcesWithRequirements =
+    "ANDROID_EMU_vulkan_create_resources_with_requirements";
 
 // treat YUV420_888 as NV21
 static const char* kYUV420888toNV21 = "ANDROID_EMU_YUV420_888_to_NV21";
@@ -215,7 +217,8 @@ static const char* kVulkanIgnoredHandles = "ANDROID_EMU_vulkan_ignored_handles";
 static const char* kVirtioGpuNext = "ANDROID_EMU_virtio_gpu_next";
 
 // address space subdevices
-static const char* kHasSharedSlotsHostMemoryAllocator = "ANDROID_EMU_has_shared_slots_host_memory_allocator";
+static const char* kHasSharedSlotsHostMemoryAllocator =
+    "ANDROID_EMU_has_shared_slots_host_memory_allocator";
 
 // vulkan free memory sync
 static const char* kVulkanFreeMemorySync = "ANDROID_EMU_vulkan_free_memory_sync";
@@ -242,7 +245,8 @@ static const char* kAsyncFrameCommands = "ANDROID_EMU_async_frame_commands";
 static const char* kVulkanQueueSubmitWithCommands = "ANDROID_EMU_vulkan_queue_submit_with_commands";
 
 // Batched descriptor set update
-static const char* kVulkanBatchedDescriptorSetUpdate = "ANDROID_EMU_vulkan_batched_descriptor_set_update";
+static const char* kVulkanBatchedDescriptorSetUpdate =
+    "ANDROID_EMU_vulkan_batched_descriptor_set_update";
 
 // Synchronized glBufferData call
 static const char* kSyncBufferData = "ANDROID_EMU_sync_buffer_data";
@@ -254,29 +258,23 @@ static const char* kVulkanAsyncQsri = "ANDROID_EMU_vulkan_async_qsri";
 static const char* kReadColorBufferDma = "ANDROID_EMU_read_color_buffer_dma";
 
 // Multiple display configs
-static const char* kHWCMultiConfigs= "ANDROID_EMU_hwc_multi_configs";
+static const char* kHWCMultiConfigs = "ANDROID_EMU_hwc_multi_configs";
 
 static constexpr const uint64_t kInvalidPUID = std::numeric_limits<uint64_t>::max();
 
-static void rcTriggerWait(uint64_t glsync_ptr,
-                          uint64_t thread_ptr,
-                          uint64_t timeline);
+static void rcTriggerWait(uint64_t glsync_ptr, uint64_t thread_ptr, uint64_t timeline);
 
-void registerTriggerWait() {
-    emugl_sync_register_trigger_wait(rcTriggerWait);
-}
+void registerTriggerWait() { emugl_sync_register_trigger_wait(rcTriggerWait); }
 
-static GLint rcGetRendererVersion()
-{
+static GLint rcGetRendererVersion() {
     registerTriggerWait();
 
     sGrallocSync();
     return rendererVersion;
 }
 
-static EGLint rcGetEGLVersion(EGLint* major, EGLint* minor)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static EGLint rcGetEGLVersion(EGLint* major, EGLint* minor) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return EGL_FALSE;
     }
@@ -285,9 +283,8 @@ static EGLint rcGetEGLVersion(EGLint* major, EGLint* minor)
     return EGL_TRUE;
 }
 
-static EGLint rcQueryEGLString(EGLenum name, void* buffer, EGLint bufferSize)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static EGLint rcQueryEGLString(EGLenum name, void* buffer, EGLint bufferSize) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
@@ -309,26 +306,22 @@ static EGLint rcQueryEGLString(EGLenum name, void* buffer, EGLint bufferSize)
         return -len;
     }
 
-    strcpy((char *)buffer, eglStr.c_str());
+    strcpy((char*)buffer, eglStr.c_str());
     return len;
 }
 
 static bool shouldEnableAsyncSwap() {
     bool isPhone = true;
-    bool playStoreImage = feature_is_enabled(
-            kFeature_PlayStoreImage);
-    return feature_is_enabled(kFeature_GLAsyncSwap) &&
-           emugl_sync_device_exists() && (isPhone || playStoreImage) &&
-           sizeof(void*) == 8;
+    bool playStoreImage = feature_is_enabled(kFeature_PlayStoreImage);
+    return feature_is_enabled(kFeature_GLAsyncSwap) && emugl_sync_device_exists() &&
+           (isPhone || playStoreImage) && sizeof(void*) == 8;
 }
 
 static bool shouldEnableVirtioGpuNativeSync() {
     return feature_is_enabled(kFeature_VirtioGpuNativeSync);
 }
 
-static bool shouldEnableHostComposition() {
-    return feature_is_enabled(kFeature_HostComposition);
-}
+static bool shouldEnableHostComposition() { return feature_is_enabled(kFeature_HostComposition); }
 
 static bool shouldEnableVulkan() {
     // TODO: Restrict further to devices supporting external memory.
@@ -338,35 +331,27 @@ static bool shouldEnableVulkan() {
 
 static bool shouldEnableDeferredVulkanCommands() {
     auto supportInfo = vk::VkDecoderGlobalState::get()->getHostFeatureSupport();
-    return supportInfo.supportsVulkan &&
-           supportInfo.useDeferredCommands;
+    return supportInfo.supportsVulkan && supportInfo.useDeferredCommands;
 }
 
 static bool shouldEnableCreateResourcesWithRequirements() {
     auto supportInfo = vk::VkDecoderGlobalState::get()->getHostFeatureSupport();
-    return supportInfo.supportsVulkan &&
-           supportInfo.useCreateResourcesWithRequirements;
+    return supportInfo.supportsVulkan && supportInfo.useCreateResourcesWithRequirements;
 }
 
 static bool shouldEnableVulkanShaderFloat16Int8() {
-    return shouldEnableVulkan() &&
-        feature_is_enabled(kFeature_VulkanShaderFloat16Int8);
+    return shouldEnableVulkan() && feature_is_enabled(kFeature_VulkanShaderFloat16Int8);
 }
 
-static bool shouldEnableAsyncQueueSubmit() {
-    return shouldEnableVulkan();
-}
+static bool shouldEnableAsyncQueueSubmit() { return shouldEnableVulkan(); }
 
 static bool shouldEnableVulkanAsyncQsri() {
-    return shouldEnableVulkan() &&
-        (feature_is_enabled(kFeature_GLAsyncSwap) ||
-         (feature_is_enabled(kFeature_VirtioGpuNativeSync) &&
-          feature_is_enabled(kFeature_VirtioGpuFenceContexts)));
+    return shouldEnableVulkan() && (feature_is_enabled(kFeature_GLAsyncSwap) ||
+                                    (feature_is_enabled(kFeature_VirtioGpuNativeSync) &&
+                                     feature_is_enabled(kFeature_VirtioGpuFenceContexts)));
 }
 
-static bool shouldEnableVsyncGatedSyncFences() {
-    return shouldEnableAsyncSwap();
-}
+static bool shouldEnableVsyncGatedSyncFences() { return shouldEnableAsyncSwap(); }
 
 const char* maxVersionToFeatureString(GLESDispatchMaxVersion version) {
     switch (version) {
@@ -382,14 +367,12 @@ const char* maxVersionToFeatureString(GLESDispatchMaxVersion version) {
 }
 
 static bool shouldEnableQueueSubmitWithCommands() {
-    return shouldEnableVulkan() &&
-        feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands);
+    return shouldEnableVulkan() && feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands);
 }
 
 static bool shouldEnableBatchedDescriptorSetUpdate() {
-    return shouldEnableVulkan() &&
-        shouldEnableQueueSubmitWithCommands() &&
-        feature_is_enabled(kFeature_VulkanBatchedDescriptorSetUpdate);
+    return shouldEnableVulkan() && shouldEnableQueueSubmitWithCommands() &&
+           feature_is_enabled(kFeature_VulkanBatchedDescriptorSetUpdate);
 }
 
 // OpenGL ES 3.x support involves changing the GL_VERSION string, which is
@@ -402,9 +385,7 @@ static bool shouldEnableBatchedDescriptorSetUpdate() {
 // version string in the first place since the underlying backend (whether it
 // is Translator, SwiftShader, ANGLE, et al) may not advertise a GL_VERSION
 // string reflecting their maximum capabilities.
-std::string replaceESVersionString(const std::string& prev,
-                                   const std::string& newver) {
-
+std::string replaceESVersionString(const std::string& prev, const std::string& newver) {
     // There is no need to fiddle with the string
     // if we are in a ES 1.x context.
     // Such contexts are considered as a special case that must
@@ -416,11 +397,9 @@ std::string replaceESVersionString(const std::string& prev,
     size_t esStart = prev.find("ES ");
     size_t esEnd = prev.find(" ", esStart + 3);
 
-    if (esStart == std::string::npos ||
-        esEnd == std::string::npos) {
+    if (esStart == std::string::npos || esEnd == std::string::npos) {
         // Account for out-of-spec version strings.
-        fprintf(stderr, "%s: Error: invalid OpenGL ES version string %s\n",
-                __func__, prev.c_str());
+        fprintf(stderr, "%s: Error: invalid OpenGL ES version string %s\n", __func__, prev.c_str());
         return prev;
     }
 
@@ -436,8 +415,7 @@ std::string replaceESVersionString(const std::string& prev,
 void removeExtension(std::string& currExts, const std::string& toRemove) {
     size_t pos = currExts.find(toRemove);
 
-    if (pos != std::string::npos)
-        currExts.erase(pos, toRemove.length());
+    if (pos != std::string::npos) currExts.erase(pos, toRemove.length());
 }
 
 static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
@@ -449,11 +427,10 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
     std::string glStr;
 
     if (tInfo && tInfo->currContext.get()) {
-        const char *str = nullptr;
+        const char* str = nullptr;
         if (tInfo->currContext->clientVersion() > GLESApi_CM) {
             str = (const char*)gl::s_gles2.glGetString(name);
-        }
-        else {
+        } else {
             str = (const char*)gl::s_gles1.glGetString(name);
         }
         if (str) {
@@ -469,16 +446,12 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         glStr = gl::filterExtensionsBasedOnMaxVersion(maxVersion, glStr);
     }
 
-    bool isChecksumEnabled =
-        feature_is_enabled(kFeature_GLPipeChecksum);
+    bool isChecksumEnabled = feature_is_enabled(kFeature_GLPipeChecksum);
     bool asyncSwapEnabled = shouldEnableAsyncSwap();
     bool virtioGpuNativeSyncEnabled = shouldEnableVirtioGpuNativeSync();
-    bool dma1Enabled =
-        feature_is_enabled(kFeature_GLDMA);
-    bool dma2Enabled =
-        feature_is_enabled(kFeature_GLDMA2);
-    bool directMemEnabled =
-        feature_is_enabled(kFeature_GLDirectMem);
+    bool dma1Enabled = feature_is_enabled(kFeature_GLDMA);
+    bool dma2Enabled = feature_is_enabled(kFeature_GLDMA2);
+    bool directMemEnabled = feature_is_enabled(kFeature_GLDirectMem);
     bool hostCompositionEnabled = shouldEnableHostComposition();
     bool vulkanEnabled = shouldEnableVulkan();
     bool deferredVulkanCommandsEnabled =
@@ -487,19 +460,15 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         shouldEnableVulkan() && feature_is_enabled(kFeature_VulkanNullOptionalStrings);
     bool vulkanCreateResourceWithRequirementsEnabled =
         shouldEnableVulkan() && shouldEnableCreateResourcesWithRequirements();
-    bool YUV420888toNV21Enabled =
-        feature_is_enabled(kFeature_YUV420888toNV21);
-    bool YUVCacheEnabled =
-        feature_is_enabled(kFeature_YUVCache);
+    bool YUV420888toNV21Enabled = feature_is_enabled(kFeature_YUV420888toNV21);
+    bool YUVCacheEnabled = feature_is_enabled(kFeature_YUVCache);
     bool AsyncUnmapBufferEnabled = feature_is_enabled(kFeature_AsyncComposeSupport);
     bool vulkanIgnoredHandlesEnabled =
         shouldEnableVulkan() && feature_is_enabled(kFeature_VulkanIgnoredHandles);
-    bool virtioGpuNextEnabled =
-        feature_is_enabled(kFeature_VirtioGpuNext);
+    bool virtioGpuNextEnabled = feature_is_enabled(kFeature_VirtioGpuNext);
     bool hasSharedSlotsHostMemoryAllocatorEnabled =
         feature_is_enabled(kFeature_HasSharedSlotsHostMemoryAllocator);
-    bool vulkanFreeMemorySyncEnabled =
-        shouldEnableVulkan();
+    bool vulkanFreeMemorySyncEnabled = shouldEnableVulkan();
     bool vulkanShaderFloat16Int8Enabled = shouldEnableVulkanShaderFloat16Int8();
     bool vulkanAsyncQueueSubmitEnabled = shouldEnableAsyncQueueSubmit();
     bool vulkanQueueSubmitWithCommands = shouldEnableQueueSubmitWithCommands();
@@ -516,7 +485,7 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
 
     if (asyncSwapEnabled && name == GL_EXTENSIONS) {
         glStr += kAsyncSwapStrV2;
-        glStr += " "; // for compatibility with older system images
+        glStr += " ";  // for compatibility with older system images
         // Only enable EGL_KHR_wait_sync (and above) for host gpu.
         if (emugl::getRenderer() == SELECTED_RENDERER_HOST) {
             glStr += kAsyncSwapStrV3;
@@ -652,10 +621,10 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
     }
 
     if (name == GL_EXTENSIONS) {
-
         GLESDispatchMaxVersion guestExtVer = GLES_DISPATCH_MAX_VERSION_2;
         if (feature_is_enabled(kFeature_GLESDynamicVersion)) {
-            // If the image is in ES 3 mode, add GL_OES_EGL_image_external_essl3 for better Skia support.
+            // If the image is in ES 3 mode, add GL_OES_EGL_image_external_essl3 for better Skia
+            // support.
             glStr += "GL_OES_EGL_image_external_essl3 ";
             guestExtVer = maxVersion;
         }
@@ -665,8 +634,6 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         if (maxVersion > GLES_DISPATCH_MAX_VERSION_2) {
             glStr += "GL_OES_vertex_array_object ";
         }
-
-
 
         // ASTC LDR compressed texture support.
         const std::string& glExtensions =
@@ -701,21 +668,21 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
     if (name == GL_VERSION) {
         if (feature_is_enabled(kFeature_GLESDynamicVersion)) {
             switch (maxVersion) {
-            // Underlying GLES implmentation's max version string
-            // is allowed to be higher than the version of the request
-            // for the context---it can create a higher version context,
-            // and return simply the max possible version overall.
-            case GLES_DISPATCH_MAX_VERSION_2:
-                glStr = replaceESVersionString(glStr, "2.0");
-                break;
-            case GLES_DISPATCH_MAX_VERSION_3_0:
-                glStr = replaceESVersionString(glStr, "3.0");
-                break;
-            case GLES_DISPATCH_MAX_VERSION_3_1:
-                glStr = replaceESVersionString(glStr, "3.1");
-                break;
-            default:
-                break;
+                // Underlying GLES implmentation's max version string
+                // is allowed to be higher than the version of the request
+                // for the context---it can create a higher version context,
+                // and return simply the max possible version overall.
+                case GLES_DISPATCH_MAX_VERSION_2:
+                    glStr = replaceESVersionString(glStr, "2.0");
+                    break;
+                case GLES_DISPATCH_MAX_VERSION_3_0:
+                    glStr = replaceESVersionString(glStr, "3.0");
+                    break;
+                case GLES_DISPATCH_MAX_VERSION_3_1:
+                    glStr = replaceESVersionString(glStr, "3.1");
+                    break;
+                default:
+                    break;
             }
         } else {
             glStr = replaceESVersionString(glStr, "2.0");
@@ -728,12 +695,11 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         return -nextBufferSize;
     }
 
-    snprintf((char *)buffer, nextBufferSize, "%s", glStr.c_str());
+    snprintf((char*)buffer, nextBufferSize, "%s", glStr.c_str());
     return nextBufferSize;
 }
 
-static EGLint rcGetNumConfigs(uint32_t* p_numAttribs)
-{
+static EGLint rcGetNumConfigs(uint32_t* p_numAttribs) {
     int numConfigs = 0, numAttribs = 0;
 
     FrameBuffer::getFB()->getConfigs()->getPackInfo(&numConfigs, &numAttribs);
@@ -743,18 +709,14 @@ static EGLint rcGetNumConfigs(uint32_t* p_numAttribs)
     return numConfigs;
 }
 
-static EGLint rcGetConfigs(uint32_t bufSize, GLuint* buffer)
-{
+static EGLint rcGetConfigs(uint32_t bufSize, GLuint* buffer) {
     GLuint bufferSize = (GLuint)bufSize;
     return FrameBuffer::getFB()->getConfigs()->packConfigs(bufferSize, buffer);
 }
 
-static EGLint rcChooseConfig(EGLint *attribs,
-                             uint32_t attribs_size,
-                             uint32_t *configs,
-                             uint32_t configs_size)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static EGLint rcChooseConfig(EGLint* attribs, uint32_t attribs_size, uint32_t* configs,
+                             uint32_t configs_size) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
@@ -767,23 +729,19 @@ static EGLint rcChooseConfig(EGLint *attribs,
         }
     }
 
-    return fb->getConfigs()->chooseConfig(
-            attribs, (EGLint*)configs, (EGLint)configs_size);
+    return fb->getConfigs()->chooseConfig(attribs, (EGLint*)configs, (EGLint)configs_size);
 }
 
-static EGLint rcGetFBParam(EGLint param)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static EGLint rcGetFBParam(EGLint param) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
     return fb->getDisplayConfigsParam(0, param);
 }
 
-static uint32_t rcCreateContext(uint32_t config,
-                                uint32_t share, uint32_t glVersion)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static uint32_t rcCreateContext(uint32_t config, uint32_t share, uint32_t glVersion) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
@@ -792,9 +750,8 @@ static uint32_t rcCreateContext(uint32_t config,
     return ret;
 }
 
-static void rcDestroyContext(uint32_t context)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcDestroyContext(uint32_t context) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -802,10 +759,8 @@ static void rcDestroyContext(uint32_t context)
     fb->destroyEmulatedEglContext(context);
 }
 
-static uint32_t rcCreateWindowSurface(uint32_t config,
-                                      uint32_t width, uint32_t height)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static uint32_t rcCreateWindowSurface(uint32_t config, uint32_t width, uint32_t height) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
@@ -813,9 +768,8 @@ static uint32_t rcCreateWindowSurface(uint32_t config,
     return fb->createEmulatedEglWindowSurface(config, width, height);
 }
 
-static void rcDestroyWindowSurface(uint32_t windowSurface)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcDestroyWindowSurface(uint32_t windowSurface) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -823,61 +777,49 @@ static void rcDestroyWindowSurface(uint32_t windowSurface)
     fb->destroyEmulatedEglWindowSurface(windowSurface);
 }
 
-static uint32_t rcCreateColorBuffer(uint32_t width,
-                                    uint32_t height, GLenum internalFormat)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static uint32_t rcCreateColorBuffer(uint32_t width, uint32_t height, GLenum internalFormat) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
 
-    return fb->createColorBuffer(width, height, internalFormat,
-                                 FRAMEWORK_FORMAT_GL_COMPATIBLE);
+    return fb->createColorBuffer(width, height, internalFormat, FRAMEWORK_FORMAT_GL_COMPATIBLE);
 }
 
-static uint32_t rcCreateColorBufferDMA(uint32_t width,
-                                       uint32_t height, GLenum internalFormat,
-                                       int frameworkFormat)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static uint32_t rcCreateColorBufferDMA(uint32_t width, uint32_t height, GLenum internalFormat,
+                                       int frameworkFormat) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
 
-    return fb->createColorBuffer(width, height, internalFormat,
-                                 (FrameworkFormat)frameworkFormat);
+    return fb->createColorBuffer(width, height, internalFormat, (FrameworkFormat)frameworkFormat);
 }
 
-static int rcOpenColorBuffer2(uint32_t colorbuffer)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static int rcOpenColorBuffer2(uint32_t colorbuffer) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
-    return fb->openColorBuffer( colorbuffer );
+    return fb->openColorBuffer(colorbuffer);
 }
 
-static void rcOpenColorBuffer(uint32_t colorbuffer)
-{
-    (void) rcOpenColorBuffer2(colorbuffer);
-}
+static void rcOpenColorBuffer(uint32_t colorbuffer) { (void)rcOpenColorBuffer2(colorbuffer); }
 
-static void rcCloseColorBuffer(uint32_t colorbuffer)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcCloseColorBuffer(uint32_t colorbuffer) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
-    fb->closeColorBuffer( colorbuffer );
+    fb->closeColorBuffer(colorbuffer);
 }
 
-static int rcFlushWindowColorBuffer(uint32_t windowSurface)
-{
+static int rcFlushWindowColorBuffer(uint32_t windowSurface) {
     GRSYNC_DPRINT("waiting for gralloc cb lock");
     GrallocSyncPostLock lock(*sGrallocSync());
     GRSYNC_DPRINT("lock gralloc cb lock {");
 
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         GRSYNC_DPRINT("unlock gralloc cb lock");
         return -1;
@@ -921,25 +863,20 @@ static int rcFlushWindowColorBuffer(uint32_t windowSurface)
 // the guest will not wait until this function returns,
 // nor will it immediately send the command,
 // resulting in more asynchronous behavior.
-static void rcFlushWindowColorBufferAsync(uint32_t windowSurface)
-{
+static void rcFlushWindowColorBufferAsync(uint32_t windowSurface) {
     rcFlushWindowColorBuffer(windowSurface);
 }
 
-static void rcSetWindowColorBuffer(uint32_t windowSurface,
-                                   uint32_t colorBuffer)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcSetWindowColorBuffer(uint32_t windowSurface, uint32_t colorBuffer) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
     fb->setEmulatedEglWindowSurfaceColorBuffer(windowSurface, colorBuffer);
 }
 
-static EGLint rcMakeCurrent(uint32_t context,
-                            uint32_t drawSurf, uint32_t readSurf)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static EGLint rcMakeCurrent(uint32_t context, uint32_t drawSurf, uint32_t readSurf) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return EGL_FALSE;
     }
@@ -949,9 +886,8 @@ static EGLint rcMakeCurrent(uint32_t context,
     return (ret ? EGL_TRUE : EGL_FALSE);
 }
 
-static void rcFBPost(uint32_t colorBuffer)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcFBPost(uint32_t colorBuffer) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -959,14 +895,12 @@ static void rcFBPost(uint32_t colorBuffer)
     fb->post(colorBuffer);
 }
 
-static void rcFBSetSwapInterval(EGLint interval)
-{
-   // XXX: TBD - should be implemented
+static void rcFBSetSwapInterval(EGLint interval) {
+    // XXX: TBD - should be implemented
 }
 
-static void rcBindTexture(uint32_t colorBuffer)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcBindTexture(uint32_t colorBuffer) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -977,9 +911,8 @@ static void rcBindTexture(uint32_t colorBuffer)
     fb->bindColorBufferToTexture(colorBuffer);
 }
 
-static void rcBindRenderbuffer(uint32_t colorBuffer)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcBindRenderbuffer(uint32_t colorBuffer) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -990,9 +923,7 @@ static void rcBindRenderbuffer(uint32_t colorBuffer)
     fb->bindColorBufferToRenderbuffer(colorBuffer);
 }
 
-static EGLint rcColorBufferCacheFlush(uint32_t colorBuffer,
-                                      EGLint postCount, int forRead)
-{
+static EGLint rcColorBufferCacheFlush(uint32_t colorBuffer, EGLint postCount, int forRead) {
     // gralloc_lock() on the guest calls rcColorBufferCacheFlush
     GRSYNC_DPRINT("waiting for gralloc cb lock");
     sGrallocSync()->lockColorBufferPrepare();
@@ -1000,12 +931,9 @@ static EGLint rcColorBufferCacheFlush(uint32_t colorBuffer,
     return 0;
 }
 
-static void rcReadColorBuffer(uint32_t colorBuffer,
-                              GLint x, GLint y,
-                              GLint width, GLint height,
-                              GLenum format, GLenum type, void* pixels)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcReadColorBuffer(uint32_t colorBuffer, GLint x, GLint y, GLint width, GLint height,
+                              GLenum format, GLenum type, void* pixels) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -1013,12 +941,9 @@ static void rcReadColorBuffer(uint32_t colorBuffer,
     fb->readColorBuffer(colorBuffer, x, y, width, height, format, type, pixels);
 }
 
-static int rcUpdateColorBuffer(uint32_t colorBuffer,
-                               GLint x, GLint y,
-                               GLint width, GLint height,
-                               GLenum format, GLenum type, void* pixels)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static int rcUpdateColorBuffer(uint32_t colorBuffer, GLint x, GLint y, GLint width, GLint height,
+                               GLenum format, GLenum type, void* pixels) {
+    FrameBuffer* fb = FrameBuffer::getFB();
 
     if (!fb) {
         GRSYNC_DPRINT("unlock gralloc cb lock");
@@ -1034,13 +959,9 @@ static int rcUpdateColorBuffer(uint32_t colorBuffer,
     return 0;
 }
 
-static int rcUpdateColorBufferDMA(uint32_t colorBuffer,
-                                  GLint x, GLint y,
-                                  GLint width, GLint height,
-                                  GLenum format, GLenum type,
-                                  void* pixels, uint32_t pixels_size)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static int rcUpdateColorBufferDMA(uint32_t colorBuffer, GLint x, GLint y, GLint width, GLint height,
+                                  GLenum format, GLenum type, void* pixels, uint32_t pixels_size) {
+    FrameBuffer* fb = FrameBuffer::getFB();
 
     if (!fb) {
         GRSYNC_DPRINT("unlock gralloc cb lock");
@@ -1048,8 +969,7 @@ static int rcUpdateColorBufferDMA(uint32_t colorBuffer,
         return -1;
     }
 
-    fb->updateColorBuffer(colorBuffer, x, y, width, height,
-                          format, type, pixels);
+    fb->updateColorBuffer(colorBuffer, x, y, width, height, format, type, pixels);
 
     GRSYNC_DPRINT("unlock gralloc cb lock");
     sGrallocSync()->unlockColorBufferPrepare();
@@ -1057,9 +977,8 @@ static int rcUpdateColorBufferDMA(uint32_t colorBuffer,
     return 0;
 }
 
-static uint32_t rcCreateClientImage(uint32_t context, EGLenum target, GLuint buffer)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static uint32_t rcCreateClientImage(uint32_t context, EGLenum target, GLuint buffer) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
@@ -1067,9 +986,8 @@ static uint32_t rcCreateClientImage(uint32_t context, EGLenum target, GLuint buf
     return fb->createEmulatedEglImage(context, target, buffer);
 }
 
-static int rcDestroyClientImage(uint32_t image)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static int rcDestroyClientImage(uint32_t image) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return 0;
     }
@@ -1086,23 +1004,18 @@ static void rcSelectChecksumHelper(uint32_t protocol, uint32_t reserved) {
 // We will then need to use the host to find out
 // when to signal that native fence fd. We use
 // SyncThread for that.
-static void rcTriggerWait(uint64_t eglsync_ptr,
-                          uint64_t thread_ptr,
-                          uint64_t timeline) {
+static void rcTriggerWait(uint64_t eglsync_ptr, uint64_t thread_ptr, uint64_t timeline) {
     if (thread_ptr == 1) {
         // Is vulkan sync fd;
         // just signal right away for now
-        EGLSYNC_DPRINT("vkFence=0x%llx timeline=0x%llx", eglsync_ptr,
-                       thread_ptr, timeline);
-        SyncThread::get()->triggerWaitVk(reinterpret_cast<VkFence>(eglsync_ptr),
-                                         timeline);
+        EGLSYNC_DPRINT("vkFence=0x%llx timeline=0x%llx", eglsync_ptr, thread_ptr, timeline);
+        SyncThread::get()->triggerWaitVk(reinterpret_cast<VkFence>(eglsync_ptr), timeline);
     } else if (thread_ptr == 2) {
-        EGLSYNC_DPRINT("vkFence=0x%llx timeline=0x%llx", eglsync_ptr,
-                       thread_ptr, timeline);
+        EGLSYNC_DPRINT("vkFence=0x%llx timeline=0x%llx", eglsync_ptr, thread_ptr, timeline);
         SyncThread::get()->triggerWaitVkQsri(reinterpret_cast<VkImage>(eglsync_ptr), timeline);
     } else {
         EmulatedEglFenceSync* fenceSync = reinterpret_cast<EmulatedEglFenceSync*>(eglsync_ptr);
-        FrameBuffer *fb = FrameBuffer::getFB();
+        FrameBuffer* fb = FrameBuffer::getFB();
         if (fb && fenceSync && fenceSync->isCompositionFence()) {
             fb->scheduleVsyncTask([eglsync_ptr, fenceSync, timeline](uint64_t) {
                 EGLSYNC_DPRINT(
@@ -1113,9 +1026,9 @@ static void rcTriggerWait(uint64_t eglsync_ptr,
             });
         } else {
             EGLSYNC_DPRINT(
-                    "eglsync=0x%llx fenceSync=%p thread_ptr=0x%llx "
-                    "timeline=0x%llx",
-                    eglsync_ptr, fenceSync, thread_ptr, timeline);
+                "eglsync=0x%llx fenceSync=%p thread_ptr=0x%llx "
+                "timeline=0x%llx",
+                eglsync_ptr, fenceSync, thread_ptr, timeline);
             SyncThread::get()->triggerWait(fenceSync, timeline);
         }
     }
@@ -1125,12 +1038,8 @@ static void rcTriggerWait(uint64_t eglsync_ptr,
 // host's implementation of |eglCreateSyncKHR|. A SyncThread is also notified
 // for purposes of signaling any native fence fd's that get created in the
 // guest off the sync object created here.
-static void rcCreateSyncKHR(EGLenum type,
-                            EGLint* attribs,
-                            uint32_t num_attribs,
-                            int destroyWhenSignaled,
-                            uint64_t* outSync,
-                            uint64_t* outSyncThread) {
+static void rcCreateSyncKHR(EGLenum type, EGLint* attribs, uint32_t num_attribs,
+                            int destroyWhenSignaled, uint64_t* outSync, uint64_t* outSyncThread) {
     // Usually we expect rcTriggerWait to be registered
     // at the beginning in rcGetRendererVersion, called
     // on init for all contexts.
@@ -1139,9 +1048,7 @@ static void rcCreateSyncKHR(EGLenum type,
     // rcTriggerWait is registered.
     emugl_sync_register_trigger_wait(rcTriggerWait);
 
-    FrameBuffer::getFB()->createEmulatedEglFenceSync(type,
-                                                     destroyWhenSignaled,
-                                                     outSync,
+    FrameBuffer::getFB()->createEmulatedEglFenceSync(type, destroyWhenSignaled, outSync,
                                                      outSyncThread);
 
     RenderThreadInfo* tInfo = RenderThreadInfo::get();
@@ -1155,19 +1062,15 @@ static void rcCreateSyncKHR(EGLenum type,
 // on the guest through using the host's existing
 // |eglClientWaitSyncKHR| implementation, which is done
 // through the EmulatedEglFenceSync object.
-static EGLint rcClientWaitSyncKHR(uint64_t handle,
-                                  EGLint flags,
-                                  uint64_t timeout) {
+static EGLint rcClientWaitSyncKHR(uint64_t handle, EGLint flags, uint64_t timeout) {
     RenderThreadInfoGl* const tInfo = RenderThreadInfoGl::get();
     if (!tInfo) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-            << "Render thread GL not available.";
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Render thread GL not available.";
     }
 
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
 
-    EGLSYNC_DPRINT("handle=0x%lx flags=0x%x timeout=%" PRIu64,
-                handle, flags, timeout);
+    EGLSYNC_DPRINT("handle=0x%lx flags=0x%x timeout=%" PRIu64, handle, flags, timeout);
 
     EmulatedEglFenceSync* fenceSync = EmulatedEglFenceSync::getFromHandle(handle);
 
@@ -1181,45 +1084,39 @@ static EGLint rcClientWaitSyncKHR(uint64_t handle,
     // In this case, create a context on the host just for syncing.
     if (!tInfo->currContext) {
         uint32_t gralloc_sync_cxt, gralloc_sync_surf;
-        fb->createTrivialContext(0, // There is no context to share.
-                                 &gralloc_sync_cxt,
-                                 &gralloc_sync_surf);
-        fb->bindContext(gralloc_sync_cxt,
-                        gralloc_sync_surf,
-                        gralloc_sync_surf);
+        fb->createTrivialContext(0,  // There is no context to share.
+                                 &gralloc_sync_cxt, &gralloc_sync_surf);
+        fb->bindContext(gralloc_sync_cxt, gralloc_sync_surf, gralloc_sync_surf);
         // This context is then cleaned up when the render thread exits.
     }
 
     return fenceSync->wait(timeout);
 }
 
-static void rcWaitSyncKHR(uint64_t handle,
-                                  EGLint flags) {
+static void rcWaitSyncKHR(uint64_t handle, EGLint flags) {
     RenderThreadInfoGl* const tInfo = RenderThreadInfoGl::get();
     if (!tInfo) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-            << "Render thread GL not available.";
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Render thread GL not available.";
     }
 
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
 
     EGLSYNC_DPRINT("handle=0x%lx flags=0x%x", handle, flags);
 
     EmulatedEglFenceSync* fenceSync = EmulatedEglFenceSync::getFromHandle(handle);
 
-    if (!fenceSync) { return; }
+    if (!fenceSync) {
+        return;
+    }
 
     // Sometimes a gralloc-buffer-only thread is doing stuff with sync.
     // This happens all the time with YouTube videos in the browser.
     // In this case, create a context on the host just for syncing.
     if (!tInfo->currContext) {
         uint32_t gralloc_sync_cxt, gralloc_sync_surf;
-        fb->createTrivialContext(0, // There is no context to share.
-                                 &gralloc_sync_cxt,
-                                 &gralloc_sync_surf);
-        fb->bindContext(gralloc_sync_cxt,
-                        gralloc_sync_surf,
-                        gralloc_sync_surf);
+        fb->createTrivialContext(0,  // There is no context to share.
+                                 &gralloc_sync_cxt, &gralloc_sync_surf);
+        fb->bindContext(gralloc_sync_cxt, gralloc_sync_surf, gralloc_sync_surf);
         // This context is then cleaned up when the render thread exits.
     }
 
@@ -1242,15 +1139,15 @@ static void rcSetPuid(uint64_t puid) {
         return;
     }
 
-    RenderThreadInfo *tInfo = RenderThreadInfo::get();
+    RenderThreadInfo* tInfo = RenderThreadInfo::get();
     tInfo->m_puid = puid;
 }
 
 static int rcCompose(uint32_t bufferSize, void* buffer) {
-    RenderThreadInfo *tInfo = RenderThreadInfo::get();
+    RenderThreadInfo* tInfo = RenderThreadInfo::get();
     if (tInfo) tInfo->m_isCompositionThread = true;
 
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1258,10 +1155,10 @@ static int rcCompose(uint32_t bufferSize, void* buffer) {
 }
 
 static int rcComposeWithoutPost(uint32_t bufferSize, void* buffer) {
-    RenderThreadInfo *tInfo = RenderThreadInfo::get();
+    RenderThreadInfo* tInfo = RenderThreadInfo::get();
     if (tInfo) tInfo->m_isCompositionThread = true;
 
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1269,7 +1166,7 @@ static int rcComposeWithoutPost(uint32_t bufferSize, void* buffer) {
 }
 
 static int rcCreateDisplay(uint32_t* displayId) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1280,7 +1177,7 @@ static int rcCreateDisplay(uint32_t* displayId) {
 }
 
 static int rcCreateDisplayById(uint32_t displayId) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1289,7 +1186,7 @@ static int rcCreateDisplayById(uint32_t displayId) {
 }
 
 static int rcDestroyDisplay(uint32_t displayId) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1298,7 +1195,7 @@ static int rcDestroyDisplay(uint32_t displayId) {
 }
 
 static int rcSetDisplayColorBuffer(uint32_t displayId, uint32_t colorBuffer) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1307,7 +1204,7 @@ static int rcSetDisplayColorBuffer(uint32_t displayId, uint32_t colorBuffer) {
 }
 
 static int rcGetDisplayColorBuffer(uint32_t displayId, uint32_t* colorBuffer) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1316,7 +1213,7 @@ static int rcGetDisplayColorBuffer(uint32_t displayId, uint32_t* colorBuffer) {
 }
 
 static int rcGetColorBufferDisplay(uint32_t colorBuffer, uint32_t* displayId) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1324,12 +1221,8 @@ static int rcGetColorBufferDisplay(uint32_t colorBuffer, uint32_t* displayId) {
     return fb->getColorBufferDisplay(colorBuffer, displayId);
 }
 
-static int rcGetDisplayPose(uint32_t displayId,
-                            int32_t* x,
-                            int32_t* y,
-                            uint32_t* w,
-                            uint32_t* h) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+static int rcGetDisplayPose(uint32_t displayId, int32_t* x, int32_t* y, uint32_t* w, uint32_t* h) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1337,12 +1230,8 @@ static int rcGetDisplayPose(uint32_t displayId,
     return fb->getDisplayPose(displayId, x, y, w, h);
 }
 
-static int rcSetDisplayPose(uint32_t displayId,
-                            int32_t x,
-                            int32_t y,
-                            uint32_t w,
-                            uint32_t h) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+static int rcSetDisplayPose(uint32_t displayId, int32_t x, int32_t y, uint32_t w, uint32_t h) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1350,13 +1239,9 @@ static int rcSetDisplayPose(uint32_t displayId,
     return fb->setDisplayPose(displayId, x, y, w, h);
 }
 
-static int rcSetDisplayPoseDpi(uint32_t displayId,
-                               int32_t x,
-                               int32_t y,
-                               uint32_t w,
-                               uint32_t h,
+static int rcSetDisplayPoseDpi(uint32_t displayId, int32_t x, int32_t y, uint32_t w, uint32_t h,
                                uint32_t dpi) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1364,12 +1249,9 @@ static int rcSetDisplayPoseDpi(uint32_t displayId,
     return fb->setDisplayPose(displayId, x, y, w, h, dpi);
 }
 
-static void rcReadColorBufferYUV(uint32_t colorBuffer,
-                                GLint x, GLint y,
-                                GLint width, GLint height,
-                                void* pixels, uint32_t pixels_size)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcReadColorBufferYUV(uint32_t colorBuffer, GLint x, GLint y, GLint width, GLint height,
+                                 void* pixels, uint32_t pixels_size) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -1379,22 +1261,20 @@ static void rcReadColorBufferYUV(uint32_t colorBuffer,
 
 static int rcIsSyncSignaled(uint64_t handle) {
     EmulatedEglFenceSync* fenceSync = EmulatedEglFenceSync::getFromHandle(handle);
-    if (!fenceSync) return 1; // assume destroyed => signaled
+    if (!fenceSync) return 1;  // assume destroyed => signaled
     return fenceSync->isSignaled() ? 1 : 0;
 }
 
-static void rcCreateColorBufferWithHandle(
-    uint32_t width, uint32_t height, GLenum internalFormat, uint32_t handle)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static void rcCreateColorBufferWithHandle(uint32_t width, uint32_t height, GLenum internalFormat,
+                                          uint32_t handle) {
+    FrameBuffer* fb = FrameBuffer::getFB();
 
     if (!fb) {
         return;
     }
 
-    fb->createColorBufferWithHandle(
-        width, height, internalFormat,
-        FRAMEWORK_FORMAT_GL_COMPATIBLE, handle);
+    fb->createColorBufferWithHandle(width, height, internalFormat, FRAMEWORK_FORMAT_GL_COMPATIBLE,
+                                    handle);
 }
 
 static uint32_t rcCreateBuffer2(uint64_t size, uint32_t memoryProperty) {
@@ -1425,9 +1305,8 @@ static int rcSetColorBufferVulkanMode2(uint32_t colorBuffer, uint32_t mode,
     bool modeIsVulkanOnly = mode == VULKAN_MODE_VULKAN_ONLY;
 
     if (!vk::setColorBufferVulkanMode(colorBuffer, mode)) {
-        fprintf(stderr,
-                "%s: error: failed to set Vulkan mode for colorBuffer 0x%x\n",
-                __func__, colorBuffer);
+        fprintf(stderr, "%s: error: failed to set Vulkan mode for colorBuffer 0x%x\n", __func__,
+                colorBuffer);
         return -1;
     }
 
@@ -1435,33 +1314,29 @@ static int rcSetColorBufferVulkanMode2(uint32_t colorBuffer, uint32_t mode,
 }
 
 static int rcSetColorBufferVulkanMode(uint32_t colorBuffer, uint32_t mode) {
-    return rcSetColorBufferVulkanMode2(colorBuffer, mode,
-                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    return rcSetColorBufferVulkanMode2(colorBuffer, mode, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 }
 
 static int32_t rcMapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa) {
     int32_t result = vk::mapGpaToBufferHandle(bufferHandle, gpa);
     if (result < 0) {
-        fprintf(stderr,
-                "%s: error: failed to map gpa %" PRIx64 " to buffer handle 0x%x: %d\n",
+        fprintf(stderr, "%s: error: failed to map gpa %" PRIx64 " to buffer handle 0x%x: %d\n",
                 __func__, gpa, bufferHandle, result);
     }
     return result;
 }
 
-static int32_t rcMapGpaToBufferHandle2(uint32_t bufferHandle,
-                                       uint64_t gpa,
-                                       uint64_t size) {
+static int32_t rcMapGpaToBufferHandle2(uint32_t bufferHandle, uint64_t gpa, uint64_t size) {
     int32_t result = vk::mapGpaToBufferHandle(bufferHandle, gpa, size);
     if (result < 0) {
-        fprintf(stderr,
-                "%s: error: failed to map gpa %" PRIx64 " to buffer handle 0x%x: %d\n",
+        fprintf(stderr, "%s: error: failed to map gpa %" PRIx64 " to buffer handle 0x%x: %d\n",
                 __func__, gpa, bufferHandle, result);
     }
     return result;
 }
 
-static void rcFlushWindowColorBufferAsyncWithFrameNumber(uint32_t windowSurface, uint32_t frameNumber) {
+static void rcFlushWindowColorBufferAsyncWithFrameNumber(uint32_t windowSurface,
+                                                         uint32_t frameNumber) {
     android::base::traceCounter("gfxstreamFrameNumber", (int64_t)frameNumber);
     rcFlushWindowColorBufferAsync(windowSurface);
 }
@@ -1478,13 +1353,15 @@ static void rcSetTracingForPuid(uint64_t puid, uint32_t enable, uint64_t time) {
 static void rcMakeCurrentAsync(uint32_t context, uint32_t drawSurf, uint32_t readSurf) {
     AEMU_SCOPED_THRESHOLD_TRACE_CALL();
     FrameBuffer* fb = FrameBuffer::getFB();
-    if (!fb) { return; }
+    if (!fb) {
+        return;
+    }
 
     fb->bindContext(context, drawSurf, readSurf);
 }
 
 static void rcComposeAsync(uint32_t bufferSize, void* buffer) {
-    RenderThreadInfo *tInfo = RenderThreadInfo::get();
+    RenderThreadInfo* tInfo = RenderThreadInfo::get();
     if (tInfo) tInfo->m_isCompositionThread = true;
 
     FrameBuffer* fb = FrameBuffer::getFB();
@@ -1495,10 +1372,10 @@ static void rcComposeAsync(uint32_t bufferSize, void* buffer) {
 }
 
 static void rcComposeAsyncWithoutPost(uint32_t bufferSize, void* buffer) {
-    RenderThreadInfo *tInfo = RenderThreadInfo::get();
+    RenderThreadInfo* tInfo = RenderThreadInfo::get();
     if (tInfo) tInfo->m_isCompositionThread = true;
 
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return;
     }
@@ -1511,12 +1388,9 @@ static void rcDestroySyncKHRAsync(uint64_t handle) {
     fenceSync->decRef();
 }
 
-static int rcReadColorBufferDMA(uint32_t colorBuffer,
-                                GLint x, GLint y,
-                                GLint width, GLint height,
-                                GLenum format, GLenum type, void* pixels, uint32_t pixels_size)
-{
-    FrameBuffer *fb = FrameBuffer::getFB();
+static int rcReadColorBufferDMA(uint32_t colorBuffer, GLint x, GLint y, GLint width, GLint height,
+                                GLenum format, GLenum type, void* pixels, uint32_t pixels_size) {
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1526,7 +1400,7 @@ static int rcReadColorBufferDMA(uint32_t colorBuffer,
 }
 
 static int rcGetFBDisplayConfigsCount() {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1534,7 +1408,7 @@ static int rcGetFBDisplayConfigsCount() {
 }
 
 static int rcGetFBDisplayConfigsParam(int configId, GLint param) {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1542,7 +1416,7 @@ static int rcGetFBDisplayConfigsParam(int configId, GLint param) {
 }
 
 static int rcGetFBDisplayActiveConfig() {
-    FrameBuffer *fb = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (!fb) {
         return -1;
     }
@@ -1553,7 +1427,7 @@ static void rcSetProcessMetadata(char* key, RenderControlByte* valuePtr, uint32_
     RenderThreadInfo* tInfo = RenderThreadInfo::get();
     if (strcmp(key, "process_name") == 0) {
         // We know this is a c formatted string
-        tInfo->m_processName = std::string((char*) valuePtr);
+        tInfo->m_processName = std::string((char*)valuePtr);
     }
 }
 
@@ -1562,8 +1436,7 @@ static int rcGetHostExtensionsString(uint32_t bufferSize, void* buffer) {
     return rcGetGLString(GL_EXTENSIONS, buffer, bufferSize);
 }
 
-void initRenderControlContext(renderControl_decoder_context_t *dec)
-{
+void initRenderControlContext(renderControl_decoder_context_t* dec) {
     dec->rcGetRendererVersion = rcGetRendererVersion;
     dec->rcGetEGLVersion = rcGetEGLVersion;
     dec->rcQueryEGLString = rcQueryEGLString;
@@ -1619,7 +1492,8 @@ void initRenderControlContext(renderControl_decoder_context_t *dec)
     dec->rcSetColorBufferVulkanMode2 = rcSetColorBufferVulkanMode2;
     dec->rcMapGpaToBufferHandle = rcMapGpaToBufferHandle;
     dec->rcMapGpaToBufferHandle2 = rcMapGpaToBufferHandle2;
-    dec->rcFlushWindowColorBufferAsyncWithFrameNumber = rcFlushWindowColorBufferAsyncWithFrameNumber;
+    dec->rcFlushWindowColorBufferAsyncWithFrameNumber =
+        rcFlushWindowColorBufferAsyncWithFrameNumber;
     dec->rcSetTracingForPuid = rcSetTracingForPuid;
     dec->rcMakeCurrentAsync = rcMakeCurrentAsync;
     dec->rcComposeAsync = rcComposeAsync;

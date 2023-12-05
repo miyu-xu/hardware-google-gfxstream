@@ -17,26 +17,21 @@
 
 namespace gfxstream {
 
-VsyncThread::VsyncThread(uint64_t vsyncPeriodNs) :
-    mPeriodNs(vsyncPeriodNs),
-    mThread([this] { threadFunc(); }) {
+VsyncThread::VsyncThread(uint64_t vsyncPeriodNs)
+    : mPeriodNs(vsyncPeriodNs), mThread([this] { threadFunc(); }) {
     mThread.start();
 }
 
-VsyncThread::~VsyncThread() {
-    exit();
-}
+VsyncThread::~VsyncThread() { exit(); }
 
-void VsyncThread::schedule(VsyncTask task) {
-    mChannel.send({ CommandType::Default, task });
-}
+void VsyncThread::schedule(VsyncTask task) { mChannel.send({CommandType::Default, task}); }
 
 void VsyncThread::setPeriod(uint64_t newPeriod) {
-    mChannel.send({ CommandType::ChangePeriod, {}, newPeriod });
+    mChannel.send({CommandType::ChangePeriod, {}, newPeriod});
 }
 
 void VsyncThread::exit() {
-    mChannel.send({ CommandType::Exit });
+    mChannel.send({CommandType::Exit});
     mThread.wait();
 }
 
@@ -53,9 +48,7 @@ void VsyncThread::threadFunc() {
         if (lastTimeUs == ~0ULL) {
             phasedWaitTimeUs = currentUs + periodUs;
         } else {
-            phasedWaitTimeUs =
-                periodUs * ((currentUs - lastTimeUs) / periodUs + 1) +
-                lastTimeUs;
+            phasedWaitTimeUs = periodUs * ((currentUs - lastTimeUs) / periodUs + 1) + lastTimeUs;
         }
 
         android::base::sleepToUs(phasedWaitTimeUs);

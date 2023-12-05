@@ -56,28 +56,24 @@ static const bool kUseSubwindowThread = false;
 // exits. It runs the cleanup in a separate thread to never block the main
 // render thread for a low-priority task.
 class RendererImpl::ProcessCleanupThread {
-public:
+   public:
     ProcessCleanupThread()
         : mCleanupWorker([](Cmd cmd) {
-            using android::base::WorkerProcessingResult;
-            struct {
-                WorkerProcessingResult operator()(CleanProcessResources resources) {
-                    FrameBuffer::getFB()->cleanupProcGLObjects(resources.puid);
-                    // resources.resource are destroyed automatically when going out of the scope.
-                    return WorkerProcessingResult::Continue;
-                }
-                WorkerProcessingResult operator()(Exit) {
-                    return WorkerProcessingResult::Stop;
-                }
-            } visitor;
-            return std::visit(visitor, std::move(cmd));
+              using android::base::WorkerProcessingResult;
+              struct {
+                  WorkerProcessingResult operator()(CleanProcessResources resources) {
+                      FrameBuffer::getFB()->cleanupProcGLObjects(resources.puid);
+                      // resources.resource are destroyed automatically when going out of the scope.
+                      return WorkerProcessingResult::Continue;
+                  }
+                  WorkerProcessingResult operator()(Exit) { return WorkerProcessingResult::Stop; }
+              } visitor;
+              return std::visit(visitor, std::move(cmd));
           }) {
         mCleanupWorker.start();
     }
 
-    ~ProcessCleanupThread() {
-        mCleanupWorker.enqueue(Exit{});
-    }
+    ~ProcessCleanupThread() { mCleanupWorker.enqueue(Exit{}); }
 
     void cleanup(uint64_t processId, std::unique_ptr<ProcessResources> resource) {
         mCleanupWorker.enqueue(CleanProcessResources{
@@ -91,11 +87,9 @@ public:
         mCleanupWorker.join();
     }
 
-    void waitForCleanup() {
-        mCleanupWorker.waitQueuedItems();
-    }
+    void waitForCleanup() { mCleanupWorker.waitQueuedItems(); }
 
-private:
+   private:
     struct CleanProcessResources {
         uint64_t puid;
         std::unique_ptr<ProcessResources> resource;
@@ -107,9 +101,7 @@ private:
     android::base::WorkerThread<Cmd> mCleanupWorker;
 };
 
-RendererImpl::RendererImpl() {
-    mCleanupThread.reset(new ProcessCleanupThread());
-}
+RendererImpl::RendererImpl() { mCleanupThread.reset(new ProcessCleanupThread()); }
 
 RendererImpl::~RendererImpl() {
     stop(true);
@@ -130,8 +122,8 @@ bool RendererImpl::initialize(int width, int height, bool useSubWindow, bool egl
         return false;
     }
 
-    std::unique_ptr<RenderWindow> renderWindow(new RenderWindow(
-            width, height, kUseSubwindowThread, useSubWindow, egl2egl));
+    std::unique_ptr<RenderWindow> renderWindow(
+        new RenderWindow(width, height, kUseSubwindowThread, useSubWindow, egl2egl));
     if (!renderWindow) {
         ERR("Could not create rendering window class\n");
         GL_LOG("Could not create rendering window class");
@@ -169,8 +161,7 @@ void RendererImpl::stop(bool wait) {
     // of some pending processes: we'll destroy everything soon.
     mCleanupThread->stop();
 
-    mStoppedChannels.insert(mStoppedChannels.end(),
-                            std::make_move_iterator(channels.begin()),
+    mStoppedChannels.insert(mStoppedChannels.end(), std::make_move_iterator(channels.begin()),
                             std::make_move_iterator(channels.end()));
 
     if (!wait) {
@@ -223,10 +214,9 @@ void RendererImpl::waitForProcessCleanup() {
     mCleanupThread.reset(new ProcessCleanupThread());
 }
 
-RenderChannelPtr RendererImpl::createRenderChannel(
-        android::base::Stream* loadStream, uint32_t virtioGpuContextId) {
-    const auto channel =
-        std::make_shared<RenderChannelImpl>(loadStream, virtioGpuContextId);
+RenderChannelPtr RendererImpl::createRenderChannel(android::base::Stream* loadStream,
+                                                   uint32_t virtioGpuContextId) {
+    const auto channel = std::make_shared<RenderChannelImpl>(loadStream, virtioGpuContextId);
     {
         android::base::AutoLock lock(mChannelsLock);
 
@@ -235,12 +225,11 @@ RenderChannelPtr RendererImpl::createRenderChannel(
         }
 
         // Clean up the stopped channels.
-        mChannels.erase(
-                std::remove_if(mChannels.begin(), mChannels.end(),
-                               [](const std::shared_ptr<RenderChannelImpl>& c) {
-                                   return c->renderThread()->isFinished();
-                               }),
-                mChannels.end());
+        mChannels.erase(std::remove_if(mChannels.begin(), mChannels.end(),
+                                       [](const std::shared_ptr<RenderChannelImpl>& c) {
+                                           return c->renderThread()->isFinished();
+                                       }),
+                        mChannels.end());
         mChannels.emplace_back(channel);
 
         // Take the time to check if our loader thread is done as well.
@@ -265,13 +254,11 @@ void RendererImpl::removeListener(FrameBufferChangeEventListener* listener) {
 }
 
 void* RendererImpl::addressSpaceGraphicsConsumerCreate(
-    struct asg_context context,
-    android::base::Stream* loadStream,
-    android::emulation::asg::ConsumerCallbacks callbacks,
-    uint32_t contextId, uint32_t capsetId,
+    struct asg_context context, android::base::Stream* loadStream,
+    android::emulation::asg::ConsumerCallbacks callbacks, uint32_t contextId, uint32_t capsetId,
     std::optional<std::string> nameOpt) {
-    auto thread = new RenderThread(context, loadStream, callbacks, contextId,
-                                   capsetId, std::move(nameOpt));
+    auto thread =
+        new RenderThread(context, loadStream, callbacks, contextId, capsetId, std::move(nameOpt));
     thread->start();
     android::base::AutoLock lock(mAddressSpaceRenderThreadLock);
     mAddressSpaceRenderThreads.emplace(thread);
@@ -364,18 +351,13 @@ void RendererImpl::save(android::base::Stream* stream,
 
 bool RendererImpl::load(android::base::Stream* stream,
                         const android::snapshot::ITextureLoaderPtr& textureLoader) {
-
 #ifdef SNAPSHOT_PROFILE
-    android::base::System::Duration startTime =
-            android::base::System::get()->getUnixTimeUs();
+    android::base::System::Duration startTime = android::base::System::get()->getUnixTimeUs();
 #endif
     waitForProcessCleanup();
 #ifdef SNAPSHOT_PROFILE
     printf("Previous session cleanup time: %lld ms\n",
-           (long long)(android::base::System::get()
-                               ->getUnixTimeUs() -
-                       startTime) /
-                   1000);
+           (long long)(android::base::System::get()->getUnixTimeUs() - startTime) / 1000);
 #endif
 
     mStopped = stream->getByte();
@@ -404,21 +386,15 @@ int RendererImpl::getScreenshot(unsigned int nChannels, unsigned int* width, uns
                                 int desiredRotation = 0, Rect rect = {{0, 0}, {0, 0}}) {
     auto fb = FrameBuffer::getFB();
     if (fb) {
-        return fb->getScreenshot(nChannels, width, height, pixels, cPixels,
-                                 displayId, desiredWidth, desiredHeight,
-                                 desiredRotation, rect);
+        return fb->getScreenshot(nChannels, width, height, pixels, cPixels, displayId, desiredWidth,
+                                 desiredHeight, desiredRotation, rect);
     }
     *cPixels = 0;
     return -1;
 }
 
-void RendererImpl::setMultiDisplay(uint32_t id,
-                                   int32_t x,
-                                   int32_t y,
-                                   uint32_t w,
-                                   uint32_t h,
-                                   uint32_t dpi,
-                                   bool add) {
+void RendererImpl::setMultiDisplay(uint32_t id, int32_t x, int32_t y, uint32_t w, uint32_t h,
+                                   uint32_t dpi, bool add) {
     auto fb = FrameBuffer::getFB();
     if (fb) {
         if (add) {
@@ -453,10 +429,8 @@ RendererImpl::HardwareStrings RendererImpl::getHardwareStrings() {
     return res;
 }
 
-void RendererImpl::setPostCallback(RendererImpl::OnPostCallback onPost,
-                                   void* context,
-                                   bool useBgraReadback,
-                                   uint32_t displayId) {
+void RendererImpl::setPostCallback(RendererImpl::OnPostCallback onPost, void* context,
+                                   bool useBgraReadback, uint32_t displayId) {
     assert(mRenderWindow);
     mRenderWindow->setPostCallback(onPost, context, displayId, useBgraReadback);
 }
@@ -466,32 +440,22 @@ bool RendererImpl::asyncReadbackSupported() {
     return mRenderWindow->asyncReadbackSupported();
 }
 
-RendererImpl::ReadPixelsCallback
-RendererImpl::getReadPixelsCallback() {
+RendererImpl::ReadPixelsCallback RendererImpl::getReadPixelsCallback() {
     assert(mRenderWindow);
     return mRenderWindow->getReadPixelsCallback();
 }
 
-RendererImpl::FlushReadPixelPipeline
-RendererImpl::getFlushReadPixelPipeline() {
+RendererImpl::FlushReadPixelPipeline RendererImpl::getFlushReadPixelPipeline() {
     assert(mRenderWindow);
     return mRenderWindow->getFlushReadPixelPipeline();
 }
 
-bool RendererImpl::showOpenGLSubwindow(FBNativeWindowType window,
-                                       int wx,
-                                       int wy,
-                                       int ww,
-                                       int wh,
-                                       int fbw,
-                                       int fbh,
-                                       float dpr,
-                                       float zRot,
-                                       bool deleteExisting,
+bool RendererImpl::showOpenGLSubwindow(FBNativeWindowType window, int wx, int wy, int ww, int wh,
+                                       int fbw, int fbh, float dpr, float zRot, bool deleteExisting,
                                        bool hideWindow) {
     assert(mRenderWindow);
-    return mRenderWindow->setupSubWindow(window, wx, wy, ww, wh, fbw, fbh, dpr,
-                                         zRot, deleteExisting, hideWindow);
+    return mRenderWindow->setupSubWindow(window, wx, wy, ww, wh, fbw, fbh, dpr, zRot,
+                                         deleteExisting, hideWindow);
 }
 
 bool RendererImpl::destroyOpenGLSubwindow() {
@@ -656,9 +620,7 @@ static struct AndroidVirtioGpuOps sVirtioGpuOps = {
         },
 };
 
-struct AndroidVirtioGpuOps* RendererImpl::getVirtioGpuOps() {
-    return &sVirtioGpuOps;
-}
+struct AndroidVirtioGpuOps* RendererImpl::getVirtioGpuOps() { return &sVirtioGpuOps; }
 
 void RendererImpl::snapshotOperationCallback(int op, int stage) {
     using namespace android::snapshot;
@@ -666,17 +628,15 @@ void RendererImpl::snapshotOperationCallback(int op, int stage) {
         case SNAPSHOTTER_OPERATION_LOAD:
             if (stage == SNAPSHOTTER_STAGE_START) {
 #ifdef SNAPSHOT_PROFILE
-             android::base::System::Duration startTime =
-                     android::base::System::get()->getUnixTimeUs();
+                android::base::System::Duration startTime =
+                    android::base::System::get()->getUnixTimeUs();
 #endif
                 mRenderWindow->setPaused(true);
                 cleanupRenderThreads();
 #ifdef SNAPSHOT_PROFILE
-                printf("Previous session suspend time: %lld ms\n",
-                       (long long)(android::base::System::get()
-                                           ->getUnixTimeUs() -
-                                   startTime) /
-                               1000);
+                printf(
+                    "Previous session suspend time: %lld ms\n",
+                    (long long)(android::base::System::get()->getUnixTimeUs() - startTime) / 1000);
 #endif
             }
             if (stage == SNAPSHOTTER_STAGE_END) {
@@ -694,8 +654,7 @@ void RendererImpl::setVsyncHz(int vsyncHz) {
     }
 }
 
-void RendererImpl::setDisplayConfigs(int configId, int w, int h,
-                                     int dpiX, int dpiY) {
+void RendererImpl::setDisplayConfigs(int configId, int w, int h, int dpiX, int dpiY) {
     if (mRenderWindow) {
         mRenderWindow->setDisplayConfigs(configId, w, h, dpiX, dpiY);
     }
@@ -707,12 +666,8 @@ void RendererImpl::setDisplayActiveConfig(int configId) {
     }
 }
 
-const void* RendererImpl::getEglDispatch() {
-    return FrameBuffer::getFB()->getEglDispatch();
-}
+const void* RendererImpl::getEglDispatch() { return FrameBuffer::getFB()->getEglDispatch(); }
 
-const void* RendererImpl::getGles2Dispatch() {
-    return FrameBuffer::getFB()->getGles2Dispatch();
-}
+const void* RendererImpl::getGles2Dispatch() { return FrameBuffer::getFB()->getGles2Dispatch(); }
 
 }  // namespace gfxstream

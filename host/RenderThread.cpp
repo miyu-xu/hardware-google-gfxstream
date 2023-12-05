@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2011 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "RenderThread.h"
 
 #include "ChannelStream.h"
@@ -23,13 +23,13 @@
 #include "RenderThreadInfo.h"
 #include "RingStream.h"
 #include "VkDecoderContext.h"
-#include "apigen-codec-common/ChecksumCalculatorThreadInfo.h"
 #include "aemu/base/HealthMonitor.h"
-#include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/synchronization/MessageChannel.h"
 #include "aemu/base/Metrics.h"
 #include "aemu/base/files/StreamSerializing.h"
+#include "aemu/base/synchronization/Lock.h"
+#include "aemu/base/synchronization/MessageChannel.h"
 #include "aemu/base/system/System.h"
+#include "apigen-codec-common/ChecksumCalculatorThreadInfo.h"
 #include "host-common/feature_control.h"
 #include "host-common/logging.h"
 #include "vulkan/VkCommonOperations.h"
@@ -77,14 +77,12 @@ static constexpr int kMinThreadsToRunUnlimited = 5;
 // A thread run limiter that limits render threads to run one slice at a time.
 static android::base::Lock sThreadRunLimiter;
 
-RenderThread::RenderThread(RenderChannelImpl* channel,
-                           android::base::Stream* loadStream,
+RenderThread::RenderThread(RenderChannelImpl* channel, android::base::Stream* loadStream,
                            uint32_t virtioGpuContextId)
     : android::base::Thread(android::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024),
       mChannel(channel),
       mRunInLimitedMode(android::base::getCpuCoreCount() < kMinThreadsToRunUnlimited),
-      mContextId(virtioGpuContextId)
-{
+      mContextId(virtioGpuContextId) {
     if (loadStream) {
         const bool success = loadStream->getByte();
         if (success) {
@@ -97,17 +95,14 @@ RenderThread::RenderThread(RenderChannelImpl* channel,
     }
 }
 
-RenderThread::RenderThread(
-        struct asg_context context,
-        android::base::Stream* loadStream,
-        android::emulation::asg::ConsumerCallbacks callbacks,
-        uint32_t contextId, uint32_t capsetId,
-        std::optional<std::string> nameOpt)
+RenderThread::RenderThread(struct asg_context context, android::base::Stream* loadStream,
+                           android::emulation::asg::ConsumerCallbacks callbacks, uint32_t contextId,
+                           uint32_t capsetId, std::optional<std::string> nameOpt)
     : android::base::Thread(android::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024,
                             std::move(nameOpt)),
-      mRingStream(
-          new RingStream(context, callbacks, kStreamBufferSize)),
-      mContextId(contextId), mCapsetId(capsetId) {
+      mRingStream(new RingStream(context, callbacks, kStreamBufferSize)),
+      mContextId(contextId),
+      mCapsetId(capsetId) {
     if (loadStream) {
         const bool success = loadStream->getByte();
         if (success) {
@@ -163,8 +158,7 @@ void RenderThread::save(android::base::Stream* stream) {
     bool success;
     {
         AutoLock lock(mLock);
-        assert(mState == SnapshotState::StartSaving ||
-               mState == SnapshotState::InProgress ||
+        assert(mState == SnapshotState::StartSaving || mState == SnapshotState::InProgress ||
                mState == SnapshotState::Finished);
         waitForSnapshotCompletion(&lock);
         success = mState == SnapshotState::Finished;
@@ -180,8 +174,7 @@ void RenderThread::save(android::base::Stream* stream) {
 }
 
 void RenderThread::waitForSnapshotCompletion(AutoLock* lock) {
-    while (mState != SnapshotState::Finished &&
-           !mFinished.load(std::memory_order_relaxed)) {
+    while (mState != SnapshotState::Finished && !mFinished.load(std::memory_order_relaxed)) {
         mCondVar.wait(lock);
     }
 }
@@ -225,12 +218,9 @@ void RenderThread::saveImpl(AutoLock* lock, const SnapshotObjects& objects) {
     });
 }
 
-bool RenderThread::isPausedForSnapshotLocked() const {
-    return mState != SnapshotState::Empty;
-}
+bool RenderThread::isPausedForSnapshotLocked() const { return mState != SnapshotState::Empty; }
 
-bool RenderThread::doSnapshotOperation(const SnapshotObjects& objects,
-                                       SnapshotState state) {
+bool RenderThread::doSnapshotOperation(const SnapshotObjects& objects, SnapshotState state) {
     AutoLock lock(mLock);
     if (mState == state) {
         switch (state) {
@@ -284,8 +274,7 @@ intptr_t RenderThread::main() {
     }
 
     ChannelStream stream(mChannel, RenderChannel::Buffer::kSmallSize);
-    IOStream* ioStream =
-        mChannel ? (IOStream*)&stream : (IOStream*)mRingStream.get();
+    IOStream* ioStream = mChannel ? (IOStream*)&stream : (IOStream*)mRingStream.get();
 
     ReadBuffer readBuf(kStreamBufferSize);
     if (mRingStream) {
@@ -402,9 +391,8 @@ intptr_t RenderThread::main() {
             }
         }
 
-        DD("render thread read %i bytes, op %i, packet size %i",
-           readBuf.validData(), *(uint32_t*)readBuf.buf(),
-           *(uint32_t*)(readBuf.buf() + 4));
+        DD("render thread read %i bytes, op %i, packet size %i", readBuf.validData(),
+           *(uint32_t*)readBuf.buf(), *(uint32_t*)(readBuf.buf() + 4));
 
         //
         // log received bandwidth statistics
@@ -414,9 +402,9 @@ intptr_t RenderThread::main() {
             auto dt = android::base::getHighResTimeUs() / 1000 - stats_t0;
             if (dt > 1000) {
                 float dts = (float)dt / 1000.0f;
-                printf("Used Bandwidth %5.3f MB/s, time in progress %f ms total %f ms\n", ((float)stats_totalBytes / dts) / (1024.0f*1024.0f),
-                        stats_progressTimeUs / 1000.0f,
-                        (float)dt);
+                printf("Used Bandwidth %5.3f MB/s, time in progress %f ms total %f ms\n",
+                       ((float)stats_totalBytes / dts) / (1024.0f * 1024.0f),
+                       stats_progressTimeUs / 1000.0f, (float)dt);
                 readBuf.printStats();
                 stats_t0 = android::base::getHighResTimeUs() / 1000;
                 stats_progressTimeUs = 0;
@@ -448,8 +436,7 @@ intptr_t RenderThread::main() {
             auto* healthMonitor = FrameBuffer::getFB()->getHealthMonitor();
             if (healthMonitor) {
                 if (contextName) {
-                    renderThreadData->insert(
-                        {{"renderthread_guest_process", contextName}});
+                    renderThreadData->insert({{"renderthread_guest_process", contextName}});
                 }
                 if (readBuf.validData() >= 4) {
                     renderThreadData->insert(
@@ -519,14 +506,12 @@ intptr_t RenderThread::main() {
             // To fix, this driver workaround avoids calling
             // any sort of GLES call when we are creating/destroying EGL
             // contexts.
-            {
-                FrameBuffer::getFB()->lockContextStructureRead();
-            }
+            { FrameBuffer::getFB()->lockContextStructureRead(); }
 
             if (tInfo.m_glInfo) {
                 {
-                    last = tInfo.m_glInfo->m_glDec.decode(
-                            readBuf.buf(), readBuf.validData(), ioStream, &checksumCalc);
+                    last = tInfo.m_glInfo->m_glDec.decode(readBuf.buf(), readBuf.validData(),
+                                                          ioStream, &checksumCalc);
                     if (last > 0) {
                         progress = true;
                         readBuf.consume(last);
@@ -554,8 +539,8 @@ intptr_t RenderThread::main() {
             // renderControl decoder
             //
             {
-                last = tInfo.m_rcDec.decode(readBuf.buf(), readBuf.validData(),
-                                            ioStream, &checksumCalc);
+                last = tInfo.m_rcDec.decode(readBuf.buf(), readBuf.validData(), ioStream,
+                                            &checksumCalc);
                 if (last > 0) {
                     readBuf.consume(last);
                     progress = true;
@@ -567,8 +552,7 @@ intptr_t RenderThread::main() {
             // decoder
             //
 #if USE_MAGMA
-            if (tInfo.m_magmaInfo && tInfo.m_magmaInfo->mMagmaDec)
-            {
+            if (tInfo.m_magmaInfo && tInfo.m_magmaInfo->mMagmaDec) {
                 last = tInfo.m_magmaInfo->mMagmaDec->decode(readBuf.buf(), readBuf.validData(),
                                                             ioStream, &checksumCalc);
                 if (last > 0) {

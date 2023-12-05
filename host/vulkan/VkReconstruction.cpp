@@ -18,9 +18,9 @@
 #include <unordered_map>
 
 #include "FrameBuffer.h"
-#include "render-utils/IOStream.h"
 #include "VkDecoder.h"
 #include "aemu/base/containers/EntityManager.h"
+#include "render-utils/IOStream.h"
 
 namespace gfxstream {
 namespace vk {
@@ -264,8 +264,8 @@ void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& 
         .gfxApiLogger = &gfxLogger,
         .healthMonitor = healthMonitor,
     };
-    decoderForLoading.decode(mLoadedTrace.data(), mLoadedTrace.size(), &trivialStream, resources.get(),
-                             context);
+    decoderForLoading.decode(mLoadedTrace.data(), mLoadedTrace.size(), &trivialStream,
+                             resources.get(), context);
 
     DEBUG_RECON("finished decoding trace");
 }
