@@ -14,9 +14,9 @@
 
 #include "VulkanDispatch.h"
 
-#include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/files/PathUtils.h"
 #include "aemu/base/SharedLibrary.h"
+#include "aemu/base/files/PathUtils.h"
+#include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/system/System.h"
 #include "host-common/misc.h"
 
@@ -69,8 +69,8 @@ static void initIcdPaths(bool forTesting) {
             auto res = pj({android::base::getProgramDirectory(), "lib64", "vulkan"});
             // LOG(VERBOSE) << "In test environment or ICD set to swiftshader, using "
             // "Swiftshader ICD";
-            auto libPath = pj(
-                {android::base::getProgramDirectory(), "lib64", "vulkan", getTestIcdFilename()});
+            auto libPath =
+                pj({android::base::getProgramDirectory(), "lib64", "vulkan", getTestIcdFilename()});
             ;
             if (android::base::pathExists(libPath.c_str())) {
                 // LOG(VERBOSE) << "Swiftshader library exists";

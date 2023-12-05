@@ -32,8 +32,7 @@ struct Post {
         // The block task won't stop until continueSignal is ready.
         std::future<void> continueSignal;
     };
-    using CompletionCallback =
-        std::function<void(std::shared_future<void> waitForGpu)>;
+    using CompletionCallback = std::function<void(std::shared_future<void> waitForGpu)>;
     PostCmd cmd;
     int composeVersion;
     std::vector<char> composeBuffer;

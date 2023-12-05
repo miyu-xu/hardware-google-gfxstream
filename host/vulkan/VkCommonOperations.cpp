@@ -568,8 +568,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
         extensionsSupported(exts, externalMemoryInstanceExtNames);
     bool externalSemaphoreCapabilitiesSupported =
         extensionsSupported(exts, externalSemaphoreInstanceExtNames);
-    bool surfaceSupported =
-        extensionsSupported(exts, surfaceInstanceExtNames);
+    bool surfaceSupported = extensionsSupported(exts, surfaceInstanceExtNames);
 #if defined(__APPLE__) && defined(VK_MVK_moltenvk)
     bool moltenVKSupported =
         (vk->vkGetMTLTextureMVK != nullptr) && (vk->vkSetMTLTextureMVK != nullptr);
@@ -582,7 +581,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk) {
     std::unordered_set<const char*> enabledExtensions;
 
     const bool debugUtilsSupported = extensionsSupported(exts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
-    const bool debugUtilsRequested = false; // TODO: enable via a feature or env var?
+    const bool debugUtilsRequested = false;  // TODO: enable via a feature or env var?
     const bool debugUtilsAvailableAndRequested = debugUtilsSupported && debugUtilsRequested;
     if (debugUtilsAvailableAndRequested) {
         enabledExtensions.emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

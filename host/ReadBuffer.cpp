@@ -1,27 +1,27 @@
 /*
-* Copyright (C) 2011 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "ReadBuffer.h"
 
-#include "host-common/logging.h"
+#include <assert.h>
+#include <limits.h>
+#include <string.h>
 
 #include <algorithm>
 
-#include <assert.h>
-#include <string.h>
-#include <limits.h>
+#include "host-common/logging.h"
 
 namespace gfxstream {
 
@@ -32,22 +32,16 @@ ReadBuffer::ReadBuffer(size_t bufsize) {
     m_readPtr = m_buf;
 }
 
-ReadBuffer::~ReadBuffer() {
-    free(m_buf);
-}
+ReadBuffer::~ReadBuffer() { free(m_buf); }
 
-void ReadBuffer::setNeededFreeTailSize(size_t size) {
-    m_neededFreeTailSize = size;
-}
+void ReadBuffer::setNeededFreeTailSize(size_t size) { m_neededFreeTailSize = size; }
 
 int ReadBuffer::getData(IOStream* stream, size_t minSize) {
     assert(stream);
     assert(minSize > m_validData);
 
     const size_t minSizeToRead = minSize - m_validData;
-    const size_t neededFreeTailThisTime =
-        std::max(minSizeToRead,
-                 m_neededFreeTailSize);
+    const size_t neededFreeTailThisTime = std::max(minSizeToRead, m_neededFreeTailSize);
 
     size_t maxSizeToRead;
     const size_t freeTailSize = m_buf + m_size - (m_readPtr + m_validData);
@@ -63,8 +57,8 @@ int ReadBuffer::getData(IOStream* stream, size_t minSize) {
             // Note: make sure we can fit at least two of the requested packets
             //  into the new buffer to minimize the reallocations and
             //  memmove()-ing stuff around.
-          size_t new_size = std::max(2 * minSizeToRead + m_validData, 2 * m_size);
-          if (new_size < m_size) {  // overflow check
+            size_t new_size = std::max(2 * minSizeToRead + m_validData, 2 * m_size);
+            if (new_size < m_size) {  // overflow check
                 new_size = INT_MAX;
             }
 
@@ -88,8 +82,7 @@ int ReadBuffer::getData(IOStream* stream, size_t minSize) {
     // get fresh data into the buffer;
     int readTotal = 0;
     do {
-        const size_t readNow = stream->read(m_readPtr + m_validData,
-                                            maxSizeToRead - readTotal);
+        const size_t readNow = stream->read(m_readPtr + m_validData, maxSizeToRead - readTotal);
 
         if (!readNow) {
             if (readTotal > 0) {
@@ -131,8 +124,7 @@ void ReadBuffer::onLoad(android::base::Stream* stream) {
 }
 
 void ReadBuffer::printStats() {
-    printf("ReadBuffer::%s: tail move time %f ms\n", __func__,
-            (float)m_tailMoveTimeUs / 1000.0f);
+    printf("ReadBuffer::%s: tail move time %f ms\n", __func__, (float)m_tailMoveTimeUs / 1000.0f);
     m_tailMoveTimeUs = 0;
 }
 }  // namespace gfxstream

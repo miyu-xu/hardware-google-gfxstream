@@ -15,33 +15,27 @@
 
 #include "aemu/base/system/System.h"
 
-#define EMUGL_DEBUG_LEVEL  0
-
-#include "host-common/crash_reporter.h"
-#include "host-common/debug.h"
-#include "host-common/dma_device.h"
-#include "host-common/GfxstreamFatalError.h"
+#define EMUGL_DEBUG_LEVEL 0
 
 #include <assert.h>
 #include <memory.h>
+
+#include "host-common/GfxstreamFatalError.h"
+#include "host-common/crash_reporter.h"
+#include "host-common/debug.h"
+#include "host-common/dma_device.h"
 
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
 
 namespace gfxstream {
 
-RingStream::RingStream(
-    struct asg_context context,
-    android::emulation::asg::ConsumerCallbacks callbacks,
-    size_t bufsize) :
-    IOStream(bufsize),
-    mContext(context),
-    mCallbacks(callbacks) { }
+RingStream::RingStream(struct asg_context context,
+                       android::emulation::asg::ConsumerCallbacks callbacks, size_t bufsize)
+    : IOStream(bufsize), mContext(context), mCallbacks(callbacks) {}
 RingStream::~RingStream() = default;
 
-int RingStream::getNeededFreeTailSize() const {
-    return mContext.ring_config->flush_interval;
-}
+int RingStream::getNeededFreeTailSize() const { return mContext.ring_config->flush_interval; }
 
 void* RingStream::allocBuffer(size_t minSize) {
     if (mWriteBuffer.size() < minSize) {
@@ -59,9 +53,8 @@ int RingStream::commitBuffer(size_t size) {
     const size_t kBackoffIters = 10000000ULL;
     while (sent < size) {
         ++iters;
-        auto avail = ring_buffer_available_write(
-            mContext.from_host_large_xfer.ring,
-            &mContext.from_host_large_xfer.view);
+        auto avail = ring_buffer_available_write(mContext.from_host_large_xfer.ring,
+                                                 &mContext.from_host_large_xfer.view);
 
         // Check if the guest process crashed.
         if (!avail) {
@@ -80,17 +73,14 @@ int RingStream::commitBuffer(size_t size) {
         auto remaining = size - sent;
         auto todo = remaining < avail ? remaining : avail;
 
-        ring_buffer_view_write(
-            mContext.from_host_large_xfer.ring,
-            &mContext.from_host_large_xfer.view,
-            data + sent, todo, 1);
+        ring_buffer_view_write(mContext.from_host_large_xfer.ring,
+                               &mContext.from_host_large_xfer.view, data + sent, todo, 1);
 
         sent += todo;
     }
 
     if (backedOffIters > 0) {
-        fprintf(stderr, "%s: warning: backed off %zu times due to guest slowness.\n",
-                __func__,
+        fprintf(stderr, "%s: warning: backed off %zu times due to guest slowness.\n", __func__,
                 backedOffIters);
     }
     return sent;
@@ -111,12 +101,9 @@ const unsigned char* RingStream::readRaw(void* buf, size_t* inout_len) {
     *(mContext.host_state) = ASG_HOST_STATE_CAN_CONSUME;
 
     while (count < wanted) {
-
         if (mReadBufferLeft) {
             size_t avail = std::min<size_t>(wanted - count, mReadBufferLeft);
-            memcpy(dst + count,
-                    mReadBuffer.data() + (mReadBuffer.size() - mReadBufferLeft),
-                    avail);
+            memcpy(dst + count, mReadBuffer.data() + (mReadBuffer.size() - mReadBufferLeft), avail);
             count += avail;
             mReadBufferLeft -= avail;
             continue;
@@ -141,20 +128,16 @@ const unsigned char* RingStream::readRaw(void* buf, size_t* inout_len) {
             return nullptr;
         }
 
-        ringAvailable =
-            ring_buffer_available_read(mContext.to_host, 0);
-        ringLargeXferAvailable =
-            ring_buffer_available_read(
-                mContext.to_host_large_xfer.ring,
-                &mContext.to_host_large_xfer.view);
+        ringAvailable = ring_buffer_available_read(mContext.to_host, 0);
+        ringLargeXferAvailable = ring_buffer_available_read(mContext.to_host_large_xfer.ring,
+                                                            &mContext.to_host_large_xfer.view);
 
         auto current = dst + count;
         auto ptrEnd = dst + wanted;
 
         if (ringAvailable) {
             inLargeXfer = false;
-            uint32_t transferMode =
-                mContext.ring_config->transfer_mode;
+            uint32_t transferMode = mContext.ring_config->transfer_mode;
             switch (transferMode) {
                 case 1:
                     type1Read(ringAvailable, dst, &count, &current, ptrEnd);
@@ -173,18 +156,19 @@ const unsigned char* RingStream::readRaw(void* buf, size_t* inout_len) {
                     break;
             }
         } else if (ringLargeXferAvailable) {
-            type3Read(ringLargeXferAvailable,
-                      &count, &current, ptrEnd);
+            type3Read(ringLargeXferAvailable, &count, &current, ptrEnd);
             inLargeXfer = true;
             if (0 == __atomic_load_n(&mContext.ring_config->transfer_size, __ATOMIC_ACQUIRE)) {
                 inLargeXfer = false;
             }
         } else {
-            if (inLargeXfer && 0 != __atomic_load_n(&mContext.ring_config->transfer_size, __ATOMIC_ACQUIRE)) {
+            if (inLargeXfer &&
+                0 != __atomic_load_n(&mContext.ring_config->transfer_size, __ATOMIC_ACQUIRE)) {
                 continue;
             }
 
-            if (inLargeXfer && 0 == __atomic_load_n(&mContext.ring_config->transfer_size, __ATOMIC_ACQUIRE)) {
+            if (inLargeXfer &&
+                0 == __atomic_load_n(&mContext.ring_config->transfer_size, __ATOMIC_ACQUIRE)) {
                 inLargeXfer = false;
             }
 
@@ -232,11 +216,8 @@ const unsigned char* RingStream::readRaw(void* buf, size_t* inout_len) {
     return (const unsigned char*)buf;
 }
 
-void RingStream::type1Read(
-    uint32_t available,
-    char* begin,
-    size_t* count, char** current, const char* ptrEnd) {
-
+void RingStream::type1Read(uint32_t available, char* begin, size_t* count, char** current,
+                           const char* ptrEnd) {
     uint32_t xferTotal = available / sizeof(struct asg_type1_xfer);
 
     if (mType1Xfers.size() < xferTotal) {
@@ -245,8 +226,8 @@ void RingStream::type1Read(
 
     auto xfersPtr = mType1Xfers.data();
 
-    ring_buffer_copy_contents(
-        mContext.to_host, 0, xferTotal * sizeof(struct asg_type1_xfer), (uint8_t*)xfersPtr);
+    ring_buffer_copy_contents(mContext.to_host, 0, xferTotal * sizeof(struct asg_type1_xfer),
+                              (uint8_t*)xfersPtr);
 
     for (uint32_t i = 0; i < xferTotal; ++i) {
         if (*current + xfersPtr[i].size > ptrEnd) {
@@ -256,17 +237,17 @@ void RingStream::type1Read(
                 mReadBuffer.resize_noinit(xfersPtr[i].size);
                 memcpy(mReadBuffer.data(), src, xfersPtr[i].size);
                 mReadBufferLeft = xfersPtr[i].size;
-                ring_buffer_advance_read(
-                        mContext.to_host, sizeof(struct asg_type1_xfer), 1);
-                __atomic_fetch_add(&mContext.ring_config->host_consumed_pos, xfersPtr[i].size, __ATOMIC_RELEASE);
+                ring_buffer_advance_read(mContext.to_host, sizeof(struct asg_type1_xfer), 1);
+                __atomic_fetch_add(&mContext.ring_config->host_consumed_pos, xfersPtr[i].size,
+                                   __ATOMIC_RELEASE);
             }
             return;
         }
         const char* src = mContext.buffer + xfersPtr[i].offset;
         memcpy(*current, src, xfersPtr[i].size);
-        ring_buffer_advance_read(
-                mContext.to_host, sizeof(struct asg_type1_xfer), 1);
-        __atomic_fetch_add(&mContext.ring_config->host_consumed_pos, xfersPtr[i].size, __ATOMIC_RELEASE);
+        ring_buffer_advance_read(mContext.to_host, sizeof(struct asg_type1_xfer), 1);
+        __atomic_fetch_add(&mContext.ring_config->host_consumed_pos, xfersPtr[i].size,
+                           __ATOMIC_RELEASE);
         *current += xfersPtr[i].size;
         *count += xfersPtr[i].size;
 
@@ -276,10 +257,7 @@ void RingStream::type1Read(
     }
 }
 
-void RingStream::type2Read(
-    uint32_t available,
-    size_t* count, char** current,const char* ptrEnd) {
-
+void RingStream::type2Read(uint32_t available, size_t* count, char** current, const char* ptrEnd) {
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "nyi. abort";
 
     uint32_t xferTotal = available / sizeof(struct asg_type2_xfer);
@@ -290,30 +268,23 @@ void RingStream::type2Read(
 
     auto xfersPtr = mType2Xfers.data();
 
-    ring_buffer_copy_contents(
-        mContext.to_host, 0, available, (uint8_t*)xfersPtr);
+    ring_buffer_copy_contents(mContext.to_host, 0, available, (uint8_t*)xfersPtr);
 
     for (uint32_t i = 0; i < xferTotal; ++i) {
-
         if (*current + xfersPtr[i].size > ptrEnd) return;
 
-        const char* src =
-            mCallbacks.getPtr(xfersPtr[i].physAddr);
+        const char* src = mCallbacks.getPtr(xfersPtr[i].physAddr);
 
         memcpy(*current, src, xfersPtr[i].size);
 
-        ring_buffer_advance_read(
-            mContext.to_host, sizeof(struct asg_type1_xfer), 1);
+        ring_buffer_advance_read(mContext.to_host, sizeof(struct asg_type1_xfer), 1);
 
         *current += xfersPtr[i].size;
         *count += xfersPtr[i].size;
     }
 }
 
-void RingStream::type3Read(
-    uint32_t available,
-    size_t* count, char** current, const char* ptrEnd) {
-
+void RingStream::type3Read(uint32_t available, size_t* count, char** current, const char* ptrEnd) {
     uint32_t xferTotal = __atomic_load_n(&mContext.ring_config->transfer_size, __ATOMIC_ACQUIRE);
     uint32_t maxCanRead = ptrEnd - *current;
     uint32_t ringAvail = available;
@@ -323,11 +294,9 @@ void RingStream::type3Read(
     // to the next time the guest sets transfer_size
     __atomic_fetch_sub(&mContext.ring_config->transfer_size, actuallyRead, __ATOMIC_RELEASE);
 
-    ring_buffer_read_fully_with_abort(
-            mContext.to_host_large_xfer.ring,
-            &mContext.to_host_large_xfer.view,
-            *current, actuallyRead,
-            1, &mContext.ring_config->in_error);
+    ring_buffer_read_fully_with_abort(mContext.to_host_large_xfer.ring,
+                                      &mContext.to_host_large_xfer.view, *current, actuallyRead, 1,
+                                      &mContext.ring_config->in_error);
 
     *current += actuallyRead;
     *count += actuallyRead;
@@ -346,14 +315,13 @@ int RingStream::writeFully(const void* buf, size_t len) {
     return 0;
 }
 
-const unsigned char *RingStream::readFully( void *buf, size_t len) {
+const unsigned char* RingStream::readFully(void* buf, size_t len) {
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "not intended for use with RingStream";
 }
 
 void RingStream::onSave(android::base::Stream* stream) {
     stream->putBe32(mReadBufferLeft);
-    stream->write(mReadBuffer.data() + mReadBuffer.size() - mReadBufferLeft,
-                  mReadBufferLeft);
+    stream->write(mReadBuffer.data() + mReadBuffer.size() - mReadBufferLeft, mReadBufferLeft);
     android::base::saveBuffer(stream, mWriteBuffer);
 }
 

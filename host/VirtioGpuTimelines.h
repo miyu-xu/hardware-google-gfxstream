@@ -101,8 +101,7 @@ class VirtioGpuTimelines {
         std::atomic_bool mHasCompleted;
         Task(TaskId id, const Ring& ring) : mId(id), mRing(ring), mHasCompleted(false) {}
     };
-    using TimelineItem =
-        std::variant<std::unique_ptr<Fence>, std::shared_ptr<Task>>;
+    using TimelineItem = std::variant<std::unique_ptr<Fence>, std::shared_ptr<Task>>;
     android::base::Lock mLock;
     std::atomic<TaskId> mNextId;
     // The mTaskIdToTask cache must be destroyed after the actual owner of Task,

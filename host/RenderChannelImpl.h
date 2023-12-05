@@ -13,9 +13,9 @@
 // limitations under the License.
 #pragma once
 
+#include "RendererImpl.h"
 #include "aemu/base/containers/BufferQueue.h"
 #include "render-utils/RenderChannel.h"
-#include "RendererImpl.h"
 
 namespace gfxstream {
 
@@ -27,7 +27,7 @@ using android::base::BufferQueue;
 // client thread (really an AndroidPipe implementation) to a host
 // RenderThread instance.
 class RenderChannelImpl final : public RenderChannel {
-public:
+   public:
     explicit RenderChannelImpl(android::base::Stream* loadStream = nullptr,
                                uint32_t contextId = -1);
     ~RenderChannelImpl();
@@ -104,7 +104,7 @@ public:
     // Resume the normal operation after saving or loading a snapshot.
     void resume();
 
-private:
+   private:
     void updateStateLocked();
     void notifyStateChangeLocked();
 

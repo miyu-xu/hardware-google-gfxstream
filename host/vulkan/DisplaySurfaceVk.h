@@ -25,20 +25,20 @@ namespace gfxstream {
 namespace vk {
 
 class DisplaySurfaceVk : public gfxstream::DisplaySurfaceImpl {
-  public:
-   static std::unique_ptr<DisplaySurfaceVk> create(const VulkanDispatch& vk, VkInstance vkInstance,
-                                                   FBNativeWindowType window);
+   public:
+    static std::unique_ptr<DisplaySurfaceVk> create(const VulkanDispatch& vk, VkInstance vkInstance,
+                                                    FBNativeWindowType window);
 
-   ~DisplaySurfaceVk();
+    ~DisplaySurfaceVk();
 
-   VkSurfaceKHR getSurface() const { return mSurface; }
+    VkSurfaceKHR getSurface() const { return mSurface; }
 
-  private:
-   DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance vkInstance, VkSurfaceKHR vkSurface);
+   private:
+    DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance vkInstance, VkSurfaceKHR vkSurface);
 
-   const VulkanDispatch& mVk;
-   VkInstance mInstance = VK_NULL_HANDLE;
-   VkSurfaceKHR mSurface = VK_NULL_HANDLE;
+    const VulkanDispatch& mVk;
+    VkInstance mInstance = VK_NULL_HANDLE;
+    VkSurfaceKHR mSurface = VK_NULL_HANDLE;
 };
 
 }  // namespace vk

@@ -20,9 +20,9 @@
 #include "OpenGLESDispatch/EGLDispatch.h"
 #include "OpenGLESDispatch/GLESv1Dispatch.h"
 #include "OpenGLESDispatch/GLESv2Dispatch.h"
-#include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/containers/Lookup.h"
 #include "aemu/base/files/StreamSerializing.h"
+#include "aemu/base/synchronization/Lock.h"
 #include "host-common/GfxstreamFatalError.h"
 
 namespace gfxstream {
@@ -41,15 +41,13 @@ RenderThreadInfoGl::RenderThreadInfoGl() {
     m_gl2Dec.initGL(gles2_dispatch_get_proc_func, nullptr);
 
     if (tlThreadInfo != nullptr) {
-      GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-        << "Attempted to set thread local GL render thread info twice.";
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+            << "Attempted to set thread local GL render thread info twice.";
     }
     tlThreadInfo = this;
 }
 
-RenderThreadInfoGl::~RenderThreadInfoGl() {
-    tlThreadInfo = nullptr;
-}
+RenderThreadInfoGl::~RenderThreadInfoGl() { tlThreadInfo = nullptr; }
 
 RenderThreadInfoGl* RenderThreadInfoGl::get() { return tlThreadInfo; }
 
@@ -70,12 +68,10 @@ void RenderThreadInfoGl::onSave(Stream* stream) {
         stream->putBe32(0);
     }
 
-    saveCollection(stream, m_contextSet, [](Stream* stream, HandleType val) {
-        stream->putBe32(val);
-    });
-    saveCollection(stream, m_windowSet, [](Stream* stream, HandleType val) {
-        stream->putBe32(val);
-    });
+    saveCollection(stream, m_contextSet,
+                   [](Stream* stream, HandleType val) { stream->putBe32(val); });
+    saveCollection(stream, m_windowSet,
+                   [](Stream* stream, HandleType val) { stream->putBe32(val); });
 
     stream->putBe64(m_puid);
 
@@ -102,12 +98,8 @@ bool RenderThreadInfoGl::onLoad(Stream* stream) {
     currReadSurf = fb->getWindowSurface_locked(readSurf);
     fb->unlock();
 
-    loadCollection(stream, &m_contextSet, [](Stream* stream) {
-        return stream->getBe32();
-    });
-    loadCollection(stream, &m_windowSet, [](Stream* stream) {
-        return stream->getBe32();
-    });
+    loadCollection(stream, &m_contextSet, [](Stream* stream) { return stream->getBe32(); });
+    loadCollection(stream, &m_windowSet, [](Stream* stream) { return stream->getBe32(); });
 
     m_puid = stream->getBe64();
 

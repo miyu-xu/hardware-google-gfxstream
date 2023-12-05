@@ -1,29 +1,29 @@
 /*
-* Copyright (C) 2011 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #pragma once
-
-#include "aemu/base/files/MemStream.h"
-#include "aemu/base/Optional.h"
-#include "host-common/address_space_graphics_types.h"
-#include "aemu/base/synchronization/ConditionVariable.h"
-#include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/threads/Thread.h"
 
 #include <atomic>
 #include <memory>
+
+#include "aemu/base/Optional.h"
+#include "aemu/base/files/MemStream.h"
+#include "aemu/base/synchronization/ConditionVariable.h"
+#include "aemu/base/synchronization/Lock.h"
+#include "aemu/base/threads/Thread.h"
+#include "host-common/address_space_graphics_types.h"
 
 namespace gfxstream {
 
@@ -37,19 +37,15 @@ class RingStream;
 class RenderThread : public android::base::Thread {
     using MemStream = android::base::MemStream;
 
-public:
+   public:
     // Create a new RenderThread instance.
-    RenderThread(RenderChannelImpl* channel,
-                 android::base::Stream* loadStream = nullptr,
+    RenderThread(RenderChannelImpl* channel, android::base::Stream* loadStream = nullptr,
                  uint32_t virtioGpuContextId = -1);
 
     // Create a new RenderThread instance tied to the address space device.
-    RenderThread(
-        struct asg_context context,
-        android::base::Stream* loadStream,
-        android::emulation::asg::ConsumerCallbacks callbacks,
-        uint32_t contextId, uint32_t capsetId,
-        std::optional<std::string> nameOpt);
+    RenderThread(struct asg_context context, android::base::Stream* loadStream,
+                 android::emulation::asg::ConsumerCallbacks callbacks, uint32_t contextId,
+                 uint32_t capsetId, std::optional<std::string> nameOpt);
     virtual ~RenderThread();
 
     // Returns true iff the thread has finished.
@@ -59,7 +55,7 @@ public:
     void resume(bool waitForSave);
     void save(android::base::Stream* stream);
 
-private:
+   private:
     virtual intptr_t main();
     void setFinished();
 
@@ -83,8 +79,7 @@ private:
 
     struct SnapshotObjects;
 
-    bool doSnapshotOperation(const SnapshotObjects& objects,
-                             SnapshotState operation);
+    bool doSnapshotOperation(const SnapshotObjects& objects, SnapshotState operation);
     void waitForSnapshotCompletion(android::base::AutoLock* lock);
     void loadImpl(android::base::AutoLock* lock, const SnapshotObjects& objects);
     void saveImpl(android::base::AutoLock* lock, const SnapshotObjects& objects);
@@ -95,7 +90,7 @@ private:
     std::unique_ptr<RingStream> mRingStream;
 
     SnapshotState mState = SnapshotState::Empty;
-    std::atomic<bool> mFinished { false };
+    std::atomic<bool> mFinished{false};
     android::base::Lock mLock;
     android::base::ConditionVariable mCondVar;
     android::base::Optional<android::base::MemStream> mStream;

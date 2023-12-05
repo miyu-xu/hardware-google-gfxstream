@@ -25,15 +25,13 @@ namespace emulation {
 // Most of the agents are not defined, add your agents here if you need
 // access to additional agents.
 class GfxStreamGraphicsAgentFactory : public GraphicsAgentFactory {
-public:
-    const QAndroidVmOperations* const android_get_QAndroidVmOperations()
-            const override;
+   public:
+    const QAndroidVmOperations* const android_get_QAndroidVmOperations() const override;
 
-    const QAndroidMultiDisplayAgent* const
-    android_get_QAndroidMultiDisplayAgent() const override;
+    const QAndroidMultiDisplayAgent* const android_get_QAndroidMultiDisplayAgent() const override;
 
-    const QAndroidEmulatorWindowAgent* const
-    android_get_QAndroidEmulatorWindowAgent() const override;
+    const QAndroidEmulatorWindowAgent* const android_get_QAndroidEmulatorWindowAgent()
+        const override;
 };
 
 }  // namespace emulation

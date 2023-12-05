@@ -13,14 +13,14 @@
 // limitations under the License.
 #include "RenderChannelImpl.h"
 
-#include "RenderThread.h"
-#include "aemu/base/synchronization/Lock.h"
+#include <assert.h>
+#include <string.h>
 
 #include <algorithm>
 #include <utility>
 
-#include <assert.h>
-#include <string.h>
+#include "RenderThread.h"
+#include "aemu/base/synchronization/Lock.h"
 
 #define EMUGL_DEBUG_LEVEL 0
 #include "host-common/debug.h"
@@ -46,8 +46,7 @@ static constexpr size_t kGuestToHostQueueCapacity = 1024U;
 static constexpr size_t kHostToGuestQueueCapacity = 16U;
 
 RenderChannelImpl::RenderChannelImpl(android::base::Stream* loadStream, uint32_t contextId)
-    : mFromGuest(kGuestToHostQueueCapacity, mLock),
-      mToGuest(kHostToGuestQueueCapacity, mLock) {
+    : mFromGuest(kGuestToHostQueueCapacity, mLock), mToGuest(kHostToGuestQueueCapacity, mLock) {
     if (loadStream) {
         mFromGuest.onLoadLocked(loadStream);
         mToGuest.onLoadLocked(loadStream);
@@ -88,8 +87,7 @@ IoResult RenderChannelImpl::tryWrite(Buffer&& buffer) {
     AutoLock lock(mLock);
     auto result = mFromGuest.tryPushLocked(std::move(buffer));
     updateStateLocked();
-    DD("mFromGuest.tryPushLocked() returned %d, state %d", (int)result,
-       (int)mState);
+    DD("mFromGuest.tryPushLocked() returned %d, state %d", (int)result, (int)mState);
     return result;
 }
 
@@ -103,8 +101,8 @@ IoResult RenderChannelImpl::tryRead(Buffer* buffer) {
     AutoLock lock(mLock);
     auto result = mToGuest.tryPopLocked(buffer);
     updateStateLocked();
-    DD("mToGuest.tryPopLocked() returned %d, buffer size %d, state %d",
-       (int)result, (int)buffer->size(), (int)mState);
+    DD("mToGuest.tryPopLocked() returned %d, buffer size %d, state %d", (int)result,
+       (int)buffer->size(), (int)mState);
     return result;
 }
 
@@ -113,8 +111,8 @@ IoResult RenderChannelImpl::readBefore(Buffer* buffer, Duration waitUntilUs) {
     AutoLock lock(mLock);
     auto result = mToGuest.popLockedBefore(buffer, waitUntilUs);
     updateStateLocked();
-    DD("mToGuest.popLockedBefore() returned %d, buffer size %d, state %d",
-       (int)result, (int)buffer->size(), (int)mState);
+    DD("mToGuest.popLockedBefore() returned %d, buffer size %d, state %d", (int)result,
+       (int)buffer->size(), (int)mState);
     return result;
 }
 
@@ -152,8 +150,7 @@ IoResult RenderChannelImpl::readFromGuest(Buffer* buffer, bool blocking) {
     }
     updateStateLocked();
     DD("mFromGuest.%s() return %d, buffer size %d, state %d",
-       blocking ? "popLocked" : "tryPopLocked", (int)result,
-       (int)buffer->size(), (int)mState);
+       blocking ? "popLocked" : "tryPopLocked", (int)result, (int)buffer->size(), (int)mState);
     notifyStateChangeLocked();
     return result;
 }
@@ -174,9 +171,7 @@ bool RenderChannelImpl::isStopped() const {
     return (mState & State::Stopped) != 0;
 }
 
-RenderThread* RenderChannelImpl::renderThread() const {
-    return mRenderThread.get();
-}
+RenderThread* RenderChannelImpl::renderThread() const { return mRenderThread.get(); }
 
 void RenderChannelImpl::pausePreSnapshot() {
     AutoLock lock(mLock);

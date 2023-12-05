@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2017 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2017 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "PostWorker.h"
 
 #include <string.h>
@@ -30,17 +30,15 @@
 
 #define POST_DEBUG 0
 #if POST_DEBUG >= 1
-#define DD(fmt, ...) \
-    fprintf(stderr, "%s:%d| " fmt, __func__, __LINE__, ##__VA_ARGS__)
+#define DD(fmt, ...) fprintf(stderr, "%s:%d| " fmt, __func__, __LINE__, ##__VA_ARGS__)
 #else
 #define DD(fmt, ...) (void)0
 #endif
 
-#define POST_ERROR(fmt, ...)                                                  \
-    do {                                                                      \
-        fprintf(stderr, "%s(%s:%d): " fmt "\n", __func__, __FILE__, __LINE__, \
-                ##__VA_ARGS__);                                               \
-        fflush(stderr);                                                       \
+#define POST_ERROR(fmt, ...)                                                                  \
+    do {                                                                                      \
+        fprintf(stderr, "%s(%s:%d): " fmt "\n", __func__, __FILE__, __LINE__, ##__VA_ARGS__); \
+        fflush(stderr);                                                                       \
     } while (0)
 
 static void sDefaultRunOnUiThread(UiUpdateFunc f, void* data, bool wait) {
@@ -78,8 +76,7 @@ PostWorker::PostWorker(bool mainThreadPostingOnly, FrameBuffer* fb, Compositor* 
       m_compositor(compositor) {}
 
 std::shared_future<void> PostWorker::composeImpl(const FlatComposeRequest& composeRequest) {
-    std::shared_future<void> completedFuture =
-        std::async(std::launch::deferred, [] {}).share();
+    std::shared_future<void> completedFuture = std::async(std::launch::deferred, [] {}).share();
     completedFuture.wait();
 
     if (!isComposeTargetReady(composeRequest.targetHandle)) {
@@ -134,11 +131,10 @@ PostWorker::~PostWorker() {}
 
 void PostWorker::post(ColorBuffer* cb, std::unique_ptr<Post::CompletionCallback> postCallback) {
     auto packagedPostCallback = std::shared_ptr<Post::CompletionCallback>(std::move(postCallback));
-    runTask(
-        std::packaged_task<void()>([cb, packagedPostCallback, this] {
-            auto completedFuture = postImpl(cb);
-            (*packagedPostCallback)(completedFuture);
-        }));
+    runTask(std::packaged_task<void()>([cb, packagedPostCallback, this] {
+        auto completedFuture = postImpl(cb);
+        (*packagedPostCallback)(completedFuture);
+    }));
 }
 
 void PostWorker::exit() {
@@ -146,8 +142,7 @@ void PostWorker::exit() {
 }
 
 void PostWorker::viewport(int width, int height) {
-    runTask(std::packaged_task<void()>(
-        [width, height, this] { viewportImpl(width, height); }));
+    runTask(std::packaged_task<void()>([width, height, this] { viewportImpl(width, height); }));
 }
 
 void PostWorker::compose(std::unique_ptr<FlatComposeRequest> composeRequest,
@@ -157,13 +152,12 @@ void PostWorker::compose(std::unique_ptr<FlatComposeRequest> composeRequest,
     auto packagedComposeCallback =
         std::shared_ptr<Post::CompletionCallback>(std::move(composeCallback));
     auto packagedComposeRequest = std::shared_ptr<FlatComposeRequest>(std::move(composeRequest));
-    runTask(
-        std::packaged_task<void()>([packagedComposeCallback, packagedComposeRequest, this] {
+    runTask(std::packaged_task<void()>([packagedComposeCallback, packagedComposeRequest, this] {
         auto completedFuture = composeImpl(*packagedComposeRequest);
         m_composeTargetToComposeFuture.emplace(packagedComposeRequest->targetHandle,
                                                completedFuture);
         (*packagedComposeCallback)(completedFuture);
-        }));
+    }));
 }
 
 void PostWorker::clear() {

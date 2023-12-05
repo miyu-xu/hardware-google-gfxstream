@@ -27,15 +27,13 @@ class DisplaySurfaceUser;
 // Base class used for controlling the lifetime of a particular surface
 // used for a display (e.g. EGLSurface or VkSurfaceKHR).
 class DisplaySurfaceImpl {
-  public:
+   public:
     virtual ~DisplaySurfaceImpl() {}
 };
 
 class DisplaySurface {
-  public:
-    DisplaySurface(uint32_t width,
-                   uint32_t height,
-                   std::unique_ptr<DisplaySurfaceImpl> impl);
+   public:
+    DisplaySurface(uint32_t width, uint32_t height, std::unique_ptr<DisplaySurfaceImpl> impl);
     ~DisplaySurface();
 
     DisplaySurface(const DisplaySurface&) = delete;
@@ -51,7 +49,7 @@ class DisplaySurface {
 
     void updateSize(uint32_t newWidth, uint32_t newHeight);
 
-  private:
+   private:
     friend class DisplaySurfaceUser;
 
     void registerUser(DisplaySurfaceUser* user);

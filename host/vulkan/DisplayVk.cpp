@@ -220,8 +220,12 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
                          [this](const std::unique_ptr<ImageBorrowResource>& imageBorrowResource) {
                              VkResult fenceStatus = m_vk.vkGetFenceStatus(
                                  m_vkDevice, imageBorrowResource->m_completeFence);
-                             if (fenceStatus == VK_SUCCESS) { return true; }
-                             if (fenceStatus == VK_NOT_READY) { return false; }
+                             if (fenceStatus == VK_SUCCESS) {
+                                 return true;
+                             }
+                             if (fenceStatus == VK_NOT_READY) {
+                                 return false;
+                             }
                              VK_CHECK(fenceStatus);
                              return false;
                          });

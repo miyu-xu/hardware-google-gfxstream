@@ -14,8 +14,8 @@
 #include "RenderLibImpl.h"
 
 #include "FrameBuffer.h"
-#include "OpenGLESDispatch/EGLDispatch.h"
 #include "OpenGLESDispatch/DispatchTables.h"
+#include "OpenGLESDispatch/EGLDispatch.h"
 #include "RendererImpl.h"
 #include "aemu/base/files/Stream.h"
 #include "host-common/address_space_device_control_ops.h"
@@ -29,25 +29,18 @@
 
 namespace gfxstream {
 
-void RenderLibImpl::setRenderer(SelectedRenderer renderer) {
-    emugl::setRenderer(renderer);
-}
+void RenderLibImpl::setRenderer(SelectedRenderer renderer) { emugl::setRenderer(renderer); }
 
-void RenderLibImpl::setAvdInfo(bool phone, int api) {
-    emugl::setAvdInfo(phone, api);
-}
+void RenderLibImpl::setAvdInfo(bool phone, int api) { emugl::setAvdInfo(phone, api); }
 
-void RenderLibImpl::getGlesVersion(int* maj, int* min) {
-    emugl::getGlesVersion(maj, min);
-}
+void RenderLibImpl::getGlesVersion(int* maj, int* min) { emugl::getGlesVersion(maj, min); }
 
 void RenderLibImpl::setLogger(emugl_logger_struct logger) {
     // set_emugl_logger(logger.coarse);
     // set_emugl_cxt_logger(logger.fine);
 }
 
-void RenderLibImpl::setGLObjectCounter(
-        android::base::GLObjectCounter* counter) {
+void RenderLibImpl::setGLObjectCounter(android::base::GLObjectCounter* counter) {
     emugl::setGLObjectCounter(counter);
 }
 
@@ -59,13 +52,12 @@ void RenderLibImpl::setFeatureController(emugl_feature_is_enabled_t featureContr
     android::featurecontrol::setFeatureEnabledCallback(featureController);
 }
 
-void RenderLibImpl::setSyncDevice
-    (emugl_sync_create_timeline_t create_timeline,
-     emugl_sync_create_fence_t create_fence,
-     emugl_sync_timeline_inc_t timeline_inc,
-     emugl_sync_destroy_timeline_t destroy_timeline,
-     emugl_sync_register_trigger_wait_t register_trigger_wait,
-     emugl_sync_device_exists_t device_exists) {
+void RenderLibImpl::setSyncDevice(emugl_sync_create_timeline_t create_timeline,
+                                  emugl_sync_create_fence_t create_fence,
+                                  emugl_sync_timeline_inc_t timeline_inc,
+                                  emugl_sync_destroy_timeline_t destroy_timeline,
+                                  emugl_sync_register_trigger_wait_t register_trigger_wait,
+                                  emugl_sync_device_exists_t device_exists) {
     emugl::set_emugl_sync_create_timeline(create_timeline);
     emugl::set_emugl_sync_create_fence(create_fence);
     emugl::set_emugl_sync_timeline_inc(timeline_inc);
@@ -79,7 +71,7 @@ void RenderLibImpl::setDmaOps(emugl_dma_ops ops) {
     emugl::set_emugl_dma_unlock(ops.unlock);
 }
 
-void RenderLibImpl::setVmOps(const QAndroidVmOperations &vm_operations) {
+void RenderLibImpl::setVmOps(const QAndroidVmOperations& vm_operations) {
     set_emugl_vm_operations(vm_operations);
 }
 
@@ -87,8 +79,8 @@ void RenderLibImpl::setAddressSpaceDeviceControlOps(struct address_space_device_
     set_emugl_address_space_device_control_ops(ops);
 }
 
-void RenderLibImpl::setWindowOps(const QAndroidEmulatorWindowAgent &window_operations,
-                                 const QAndroidMultiDisplayAgent &multi_display_operations) {
+void RenderLibImpl::setWindowOps(const QAndroidEmulatorWindowAgent& window_operations,
+                                 const QAndroidMultiDisplayAgent& multi_display_operations) {
     emugl::set_emugl_window_operations(window_operations);
     emugl::set_emugl_multi_display_operations(multi_display_operations);
 }
@@ -104,7 +96,7 @@ void RenderLibImpl::setGrallocImplementation(GrallocImplementation gralloc) {
 }
 
 bool RenderLibImpl::getOpt(RenderOpt* opt) {
-    FrameBuffer* fb  = FrameBuffer::getFB();
+    FrameBuffer* fb = FrameBuffer::getFB();
     if (fb == nullptr) {
         return false;
     }
@@ -113,11 +105,10 @@ bool RenderLibImpl::getOpt(RenderOpt* opt) {
     opt->surface = fb->getWindowSurface();
     opt->config = fb->getConfig();
 
-    return (opt->display && opt->surface  && opt->config);
+    return (opt->display && opt->surface && opt->config);
 }
 
-RendererPtr RenderLibImpl::initRenderer(int width, int height,
-                                        bool useSubWindow, bool egl2egl) {
+RendererPtr RenderLibImpl::initRenderer(int width, int height, bool useSubWindow, bool egl2egl) {
     if (!mRenderer.expired()) {
         return nullptr;
     }
@@ -132,8 +123,7 @@ RendererPtr RenderLibImpl::initRenderer(int width, int height,
 
 static void impl_onLastCbRef(uint32_t handle) {
     FrameBuffer* fb = FrameBuffer::getFB();
-    if (fb)
-        fb->onLastColorBufferRef(handle);
+    if (fb) fb->onLastColorBufferRef(handle);
 }
 
 OnLastColorBufferRef RenderLibImpl::getOnLastColorBufferRef() {

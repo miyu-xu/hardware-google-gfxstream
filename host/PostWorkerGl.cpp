@@ -89,8 +89,7 @@ std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
     const bool pixel_fold = multiDisplay.isPixelFold();
     if (pixel_fold) {
         post.layers.push_back(postWithOverlay(cb));
-    }
-    else if (multiDisplay.isMultiDisplayEnabled()) {
+    } else if (multiDisplay.isMultiDisplayEnabled()) {
         if (multiDisplay.isMultiDisplayWindow()) {
             int32_t previousDisplayId = -1;
             uint32_t currentDisplayId;
@@ -149,7 +148,7 @@ std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
 
                 const auto transform = getTransformFromRotation(mFb->getZrot());
                 postLayerOptions.transform = transform;
-                if ( transform == HWC_TRANSFORM_ROT_90 || transform == HWC_TRANSFORM_ROT_270) {
+                if (transform == HWC_TRANSFORM_ROT_90 || transform == HWC_TRANSFORM_ROT_270) {
                     std::swap(currentDisplayW, currentDisplayH);
                 }
                 postLayerOptions.displayFrame = {

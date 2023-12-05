@@ -26,7 +26,7 @@ namespace gfxstream {
 // operations. This is introduced to remove coupling from the FrameBuffer
 // class implementation.
 class ContextHelper {
-  public:
+   public:
     ContextHelper() = default;
     virtual ~ContextHelper() = default;
     virtual bool setupContext() = 0;
@@ -46,7 +46,7 @@ class ContextHelper {
 //     }   // automatically calls m_helper->teardownContext();
 //
 class RecursiveScopedContextBind {
-  public:
+   public:
     RecursiveScopedContextBind(ContextHelper* helper) : mHelper(helper) {
         if (helper->isBound()) return;
         if (!helper->setupContext()) {
@@ -68,7 +68,7 @@ class RecursiveScopedContextBind {
         mHelper = nullptr;
     }
 
-  private:
+   private:
     ContextHelper* mHelper;
     bool mNeedUnbind = false;
 };

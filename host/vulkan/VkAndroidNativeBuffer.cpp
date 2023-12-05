@@ -521,8 +521,7 @@ VkResult setAndroidNativeImageSemaphoreSignaled(VulkanDispatch* vk, VkDevice dev
         if (queueFamilyIndex >= anbInfo->queueStates.size()) {
             anbInfo->queueStates.resize(queueFamilyIndex + 1);
         }
-        AndroidNativeBufferInfo::QueueState& queueState =
-            anbInfo->queueStates[queueFamilyIndex];
+        AndroidNativeBufferInfo::QueueState& queueState = anbInfo->queueStates[queueFamilyIndex];
         if (!queueState.queue) {
             queueState.setup(vk, anbInfo->device, defaultQueue, queueFamilyIndex, defaultQueueLock);
         }

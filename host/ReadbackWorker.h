@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2017 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2017 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #pragma once
 
 namespace gfxstream {
@@ -22,7 +22,7 @@ class ColorBuffer;
 // This class implements async readback of ColorBuffers on both the FrameBuffer
 // posting thread and a separate worker thread.
 class ReadbackWorker {
-  public:
+   public:
     virtual ~ReadbackWorker() = default;
 
     virtual void init() = 0;
@@ -34,9 +34,9 @@ class ReadbackWorker {
     virtual void deinitReadbackForDisplay(uint32_t displayId) = 0;
 
     enum class DoNextReadbackResult {
-      OK_NOT_READY_FOR_READ,
+        OK_NOT_READY_FOR_READ,
 
-      OK_READY_FOR_READ,
+        OK_READY_FOR_READ,
     };
 
     // doNextReadback(): Call this from the emugl FrameBuffer::post thread
@@ -49,11 +49,8 @@ class ReadbackWorker {
     // |readbackBgra|: Whether to force the readback format as GL_BGRA_EXT,
     // so that we get (depending on driver quality, heh) a gpu conversion of the
     // readback image that is suitable for webrtc, which expects formats like that.
-    virtual DoNextReadbackResult doNextReadback(uint32_t displayId,
-                                                ColorBuffer* cb,
-                                                void* fbImage,
-                                                bool repaint,
-                                                bool readbackBgra) = 0;
+    virtual DoNextReadbackResult doNextReadback(uint32_t displayId, ColorBuffer* cb, void* fbImage,
+                                                bool repaint, bool readbackBgra) = 0;
 
     // Retrieves the latest framebuffer that has been posted and read with
     // doNextReadback.  This is meant for apps like video encoding to use as
@@ -66,11 +63,11 @@ class ReadbackWorker {
     // This is usually called when there was no doNextReadback activity
     // for a few ms, to guarantee that end users see the final frame.
     enum class FlushResult {
-      FAIL,
+        FAIL,
 
-      OK_NOT_READY_FOR_READ,
+        OK_NOT_READY_FOR_READ,
 
-      OK_READY_FOR_READ,
+        OK_READY_FOR_READ,
     };
 
     virtual FlushResult flushPipeline(uint32_t displayId) = 0;

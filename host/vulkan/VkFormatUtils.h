@@ -374,4 +374,3 @@ bool getFormatTransferInfo(VkFormat format, uint32_t width, uint32_t height,
 
 }  // namespace vk
 }  // namespace gfxstream
-
