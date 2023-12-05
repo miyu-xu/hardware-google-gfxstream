@@ -33,6 +33,24 @@
       "message": "Manually kicked a Mac build, please wait until \"Heavy Presubmit\" is green before merging. Thanks!",
       "revId": "aa79b8b58862fb9f740f88b1d0f9ddeed16edc3a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30f33238_f8c50de0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-05T00:20:25Z",
+      "side": 1,
+      "message": "`emulator-mac_aarch64_gfxstream` shows green!",
+      "parentUuid": "cddb8036_e2c56b2f",
+      "revId": "aa79b8b58862fb9f740f88b1d0f9ddeed16edc3a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
