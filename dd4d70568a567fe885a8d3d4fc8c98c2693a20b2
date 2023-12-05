@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef65563a_d21af9a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-05T17:40:17Z",
+      "side": 1,
+      "message": "Android + Linux work to satisfaction with this branch, but this probably breaks Fuchsia since BUILD.gn support for Mesa runtime/objects isn\u0027t added.  You might want to add it after this lands/sticks (~1 week), but just FYI...",
+      "revId": "dd4d70568a567fe885a8d3d4fc8c98c2693a20b2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
