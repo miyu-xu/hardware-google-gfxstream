@@ -42,10 +42,15 @@ void RenderLibImpl::getGlesVersion(int* maj, int* min) {
 }
 
 void RenderLibImpl::setLogger(emugl_logger_struct logger) {
+<<<<<<< HEAD   (ed0230 Fix recusion and thread safety of EGL context setup)
 #ifdef CONFIG_AEMU
     set_gfxstream_logger(logger.coarse);
     set_gfxstream_fine_logger(logger.fine);
 #endif
+=======
+    set_gfxstream_logger(logger.coarse);
+    set_gfxstream_fine_logger(logger.fine);
+>>>>>>> CHANGE (a5c31b Re-enable logger setup)
 }
 
 void RenderLibImpl::setGLObjectCounter(
