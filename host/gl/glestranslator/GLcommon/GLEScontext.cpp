@@ -1958,9 +1958,10 @@ void GLEScontext::initCapsLocked(const GLubyte * extensionString, GLSupport& glS
         glSupport.ext_GL_EXT_multiview_texture_multisample = true;
     }
 
-    if (strstr(cstring,"GL_EXT_shader_framebuffer_fetch")!=NULL) {
-        glSupport.ext_GL_EXT_shader_framebuffer_fetch = true;
-    }
+    // b/203446380
+    //if (strstr(cstring,"GL_EXT_shader_framebuffer_fetch")!=NULL) {
+    //    glSupport.ext_GL_EXT_shader_framebuffer_fetch = true;
+    //}
 
     if (!(Version((const char*)glVersion) < Version("3.0")) || strstr(cstring,"GL_OES_rgb8_rgba8")!=NULL)
         glSupport.GL_OES_RGB8_RGBA8 = true;
