@@ -19,6 +19,10 @@
 #include "KeyedVectorUtils.h"
 #include "glUtils.h"
 
+namespace gfxstream {
+namespace guest {
+namespace gl {
+
 /**** BufferData ****/
 
 BufferData::BufferData() : m_size(0), m_usage(0), m_mapped(false) {};
@@ -932,3 +936,6 @@ int GLSharedGroup::getActiveAttributesCountForProgram(GLuint program) {
     return pData->getActiveAttributesCount();
 }
 
+}  // namespace gl
+}  // namespace guest
+}  // namespace gfxstream
