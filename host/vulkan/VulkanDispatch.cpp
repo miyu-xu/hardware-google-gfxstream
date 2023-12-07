@@ -121,7 +121,7 @@ static void initIcdPaths(bool forTesting) {
 #ifdef _WIN32
 #define VULKAN_LOADER_FILENAME "vulkan-1.dll"
 #else
-#define VULKAN_LOADER_FILENAME "libvulkan.so"
+#define VULKAN_LOADER_FILENAME "libvulkan_gfxstream.so"
 #endif
 
 #endif

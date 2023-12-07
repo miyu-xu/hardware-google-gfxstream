@@ -29,6 +29,9 @@
 #define LOG_CHECKSUMHELPER(x...)
 #endif
 
+namespace gfxstream {
+namespace guest {
+
 // ChecksumCalculator adds checksum as an array of bytes to GL pipe communication, which
 // size depends on the protocol version. Each pipe should use one ChecksumCalculator.
 // It can:
@@ -185,3 +188,7 @@ private:
     // The buffer used in protocol version 1 to compute checksum.
     uint32_t m_v1BufferTotalLength;
 };
+
+
+}  // namespace guest
+}  // namespace gfxstream
