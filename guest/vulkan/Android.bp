@@ -29,12 +29,6 @@ cc_defaults {
     header_libs: [
         "gfxstream_vulkan_headers",
     ],
-    shared_libs: [
-        "libandroidemu",
-        "liblog",
-        "lib_renderControl_enc",
-        "libOpenglCodecCommon",
-    ],
     cflags: [
         "-DLOG_TAG=\"goldfish_vulkan\"",
         "-DVK_NO_PROTOTYPES",
@@ -68,19 +62,63 @@ cc_library_shared {
         "libgfxstream_guest_vulkan_defaults",
     ],
     shared_libs: [
+        "lib_renderControl_enc",
+        "libandroidemu",
+        "liblog",
+        "libOpenglCodecCommon",
         "libOpenglSystemCommon",
         "libvulkan_enc",
     ],
 }
 
-cc_library_shared {
+cc_library_host_shared {
     name: "libgfxstream_guest_vulkan_with_host",
     defaults: [
         "libgfxstream_guest_vulkan_defaults",
     ],
-    shared_libs: [
-        "libOpenglSystemCommonWithHost",
+    static_libs: [
+        "libbase",
+        "liblog",
+        "gfxstream_apigen_codec_common",
+        "gfxstream_base",
+        "gfxstream_compressedTextures",
+        "gfxstream_dispatch",
+        "gfxstream_emulated_textures",
+        "gfxstream_gl_host_common",
+        "gfxstream_gl_server",
+        "gfxstream_gles1_dec",
+        "gfxstream_gles2_dec",
+        "gfxstream_glm",
+        "gfxstream_glsnapshot",
+        "gfxstream_host_common",
+        "gfxstream_magma_dec",
+        "gfxstream_magma_server",
+        "gfxstream_renderControl_dec",
+        "gfxstream_translator_egl",
+        "gfxstream_translator_glcommon",
+        "gfxstream_translator_glescm",
+        "gfxstream_translator_glesv2",
+        "gfxstream_vulkan_cereal_host",
+        "gfxstream_vulkan_server",
+        "libandroidemu_static",
+        "libgfxstream_backend",
+        "libgfxstream_etc",
         "libgfxstream_guest_vulkan_encoder_with_host",
+        "libGLESv1_enc_static",
+        "libGLESv2_enc_static",
+        "lib_renderControl_enc_static",
+        "libGoldfishAddressSpaceWithHost",
+        "libOpenglCodecCommon_static",
+        "libOpenglSystemCommonWithHost",
+        "libplatform_rutabaga",
+        "libqemupipe.ranchu",
+    ],
+    cflags: [
+        "-O0",
+    ],
+    ldflags: [
+        // HACK: ignore duplicate GL symbols when linking both GLESv1 and GLESv2.
+        "-Wl,--allow-multiple-definition",
     ],
     target: {
         host: {

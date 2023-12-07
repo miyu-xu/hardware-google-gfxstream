@@ -35,6 +35,7 @@ cc_library_static {
         "-Wno-unused-function",
         "-Wno-uninitialized",
         "-Wno-unreachable-code-loop-increment",
+        "-O0",
     ],
     srcs: [
         "BorrowedImageVk.cpp",

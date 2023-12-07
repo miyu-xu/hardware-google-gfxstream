@@ -7,11 +7,11 @@ class VkEncoder::Impl {
     Impl(gfxstream::guest::IOStream* stream) : m_stream(stream), m_logEncodes(false) {
         if (!sResourceTracker) sResourceTracker = ResourceTracker::get();
         m_stream.incStreamRef();
-        const char* emuVkLogEncodesPropName = "qemu.vk.log";
-        char encodeProp[PROPERTY_VALUE_MAX];
-        if (property_get(emuVkLogEncodesPropName, encodeProp, nullptr) > 0) {
-            m_logEncodes = atoi(encodeProp) > 0;
-        }
+#if defined(__ANDROID__)
+        m_logEncodes = android::base::GetIntProperty("qemu.vk.log", 0) > 0;
+#else
+        m_logEncodes = false;
+#endif
         sFeatureBits = m_stream.getFeatureBits();
     }
 

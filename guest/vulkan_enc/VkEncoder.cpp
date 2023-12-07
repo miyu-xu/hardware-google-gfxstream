@@ -32,6 +32,7 @@
 
 #include "VkEncoder.h"
 
+#include "android-base/properties.h"
 #include <cutils/properties.h>
 
 #include <memory>

@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <vndk/hardware_buffer.h>
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -1864,6 +1865,23 @@ VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
 #endif
     }
 
+    // NOTE: the Vulkan Loader's trampoline functions will remove duplicates. This can lead
+    // to lead errors if this function returns VK_SUCCESS with N elements (including a duplicate)
+    // but the Vulkan Loader's trampoline function returns VK_INCOMPLETE with N-1 elements
+    // (without the duplicate).
+    std::sort(filteredExts.begin(),
+              filteredExts.end(),
+              [](const VkExtensionProperties& a, const VkExtensionProperties& b) {
+                  return strcmp(a.extensionName, b.extensionName);
+              });
+    filteredExts.erase(std::unique(filteredExts.begin(),
+                                   filteredExts.end(),
+                                   [](const VkExtensionProperties& a,
+                                      const VkExtensionProperties& b) {
+                                       return strcmp(a.extensionName, b.extensionName) == 0;
+                                   }),
+                       filteredExts.end());
+
     // Spec:
     //
     // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkEnumerateDeviceExtensionProperties.html
@@ -1888,6 +1906,8 @@ VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
     //
     // pPropertyCount must be a valid pointer to a uint32_t value
 
+
+
     if (!pPropertyCount) return VK_ERROR_INITIALIZATION_FAILED;
 
     if (!pProperties) {
@@ -1895,6 +1915,7 @@ VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
         return VK_SUCCESS;
     } else {
         auto actualExtensionCount = (uint32_t)filteredExts.size();
+
         if (*pPropertyCount > actualExtensionCount) {
             *pPropertyCount = actualExtensionCount;
         }
