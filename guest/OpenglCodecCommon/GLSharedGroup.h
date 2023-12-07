@@ -44,6 +44,10 @@
 using gfxstream::guest::AutoLock;
 using gfxstream::guest::Lock;
 
+namespace gfxstream {
+namespace guest {
+namespace gl {
+
 struct BufferData {
     BufferData();
     BufferData(GLsizeiptr size, const void* data);
@@ -211,7 +215,7 @@ public:
 
     bool    isProgram(GLuint program);
     bool    isProgramInitialized(GLuint program);
-    void    addProgramData(GLuint program); 
+    void    addProgramData(GLuint program);
     void    initProgramData(GLuint program, GLuint numIndexes, GLuint numAttributes);
     void    refProgramData(GLuint program);
     void    onUseProgram(GLuint previous, GLuint next);
@@ -261,5 +265,9 @@ public:
 };
 
 typedef std::shared_ptr<GLSharedGroup> GLSharedGroupPtr;
+
+}  // namespace gl
+}  // namespace guest
+}  // namespace gfxstream
 
 #endif //_GL_SHARED_GROUP_H_

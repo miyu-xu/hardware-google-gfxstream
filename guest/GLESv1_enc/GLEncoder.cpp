@@ -578,7 +578,7 @@ void GLEncoder::s_glDrawElements(void *self, GLenum mode, GLsizei count, GLenum 
             ctx->m_stream->flush();
             adjustIndices = false;
         } else {
-            BufferData * buf = ctx->m_shared->getBufferData(ctx->m_state->currentIndexVbo());
+            gfxstream::guest::gl::BufferData * buf = ctx->m_shared->getBufferData(ctx->m_state->currentIndexVbo());
             ctx->m_glBindBuffer_enc(self, GL_ELEMENT_ARRAY_BUFFER, 0);
             indices = &buf->m_fixedBuffer[(GLintptr)indices];
         }
@@ -1022,7 +1022,7 @@ void GLEncoder::s_glGetFramebufferAttachmentParameterivOES(void* self,
     ctx->m_glGetFramebufferAttachmentParameterivOES_enc(self, target, attachment, pname, params);
 }
 
-GLEncoder::GLEncoder(IOStream *stream, ChecksumCalculator *protocol)
+GLEncoder::GLEncoder(IOStream *stream, gfxstream::guest::ChecksumCalculator *protocol)
         : gl_encoder_context_t(stream, protocol)
 {
     m_initialized = false;
