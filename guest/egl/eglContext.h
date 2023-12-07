@@ -50,11 +50,11 @@ struct EGLContext_t {
     std::vector<std::string> extensionStringArray;
     EGLint              deletePending;
     GLClientState * getClientState(){ return clientState; }
-    GLSharedGroupPtr getSharedGroup(){ return sharedGroup; }
+    gfxstream::guest::gl::GLSharedGroup getSharedGroup(){ return sharedGroup; }
     int getGoldfishSyncFd();
 private:
     GLClientState    *    clientState;
-    GLSharedGroupPtr      sharedGroup;
+    gfxstream::guest::gl::GLSharedGroup      sharedGroup;
     int goldfishSyncFd;
 };
 

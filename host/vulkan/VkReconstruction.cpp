@@ -306,7 +306,7 @@ void VkReconstruction::dump() {
     mApiTrace.forEachLiveEntry_const(
         [&traceBytesTotal](bool live, uint64_t handle, const ApiInfo& info) {
             fprintf(stderr, "VkReconstruction::%s: api handle 0x%llx: %s\n", __func__,
-                    (unsigned long long)handle, api_opcode_to_string(info.opCode));
+                    (unsigned long long)handle, gfxstream::host::vk::api_opcode_to_string(info.opCode));
             traceBytesTotal += info.traceBytes;
         });
 
@@ -317,7 +317,7 @@ void VkReconstruction::dump() {
                     (unsigned long long)entityHandle);
             for (auto apiHandle : reconstruction.apiRefs) {
                 auto apiInfo = mApiTrace.get(apiHandle);
-                const char* apiName = apiInfo ? api_opcode_to_string(apiInfo->opCode) : "unalloced";
+                const char* apiName = apiInfo ? gfxstream::host::vk::api_opcode_to_string(apiInfo->opCode) : "unalloced";
                 fprintf(stderr, "VkReconstruction::%s:     0x%llx: %s\n", __func__,
                         (unsigned long long)apiHandle, apiName);
                 for (auto createdHandle : apiInfo->createdHandles) {
@@ -334,7 +334,7 @@ void VkReconstruction::dump() {
                 (unsigned long long)entityHandle);
         for (auto apiHandle : modification.apiRefs) {
             auto apiInfo = mApiTrace.get(apiHandle);
-            const char* apiName = apiInfo ? api_opcode_to_string(apiInfo->opCode) : "unalloced";
+            const char* apiName = apiInfo ? gfxstream::host::vk::api_opcode_to_string(apiInfo->opCode) : "unalloced";
             fprintf(stderr, "VkReconstruction::%s: mod:     0x%llx: %s\n", __func__,
                     (unsigned long long)apiHandle, apiName);
         }

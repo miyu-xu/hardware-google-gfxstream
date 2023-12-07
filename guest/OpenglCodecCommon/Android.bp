@@ -75,5 +75,65 @@ cc_library_shared {
     ],
     export_include_dirs: [
         ".",
+        "include",
     ],
+}
+
+cc_library_static {
+    name: "libOpenglCodecCommon_static",
+    host_supported: true,
+    vendor: true,
+    defaults: [
+        "libgfxstream_guest_cc_defaults",
+    ],
+    header_libs: [
+        "gfxstream_opengl_headers",
+        "libgfxstream_guest_graphics_headers",
+        "libgfxstream_guest_iostream",
+    ],
+    export_header_lib_headers: [
+        "gfxstream_opengl_headers",
+    ],
+    static_libs: [
+        "libandroidemu_static",
+        "libcutils",
+        "libutils",
+        "libgfxstream_etc",
+        "libqemupipe.ranchu",
+    ],
+    export_static_lib_headers: [
+        "libandroidemu_static",
+        "libcutils",
+    ],
+    cflags: [
+        "-DLOG_TAG=\"eglCodecCommon\"",
+        "-Wno-unused-private-field",
+    ],
+    srcs: [
+        "auto_goldfish_dma_context.cpp",
+        "ChecksumCalculator.cpp",
+        "EncoderDebug.cpp",
+        "GLClientState.cpp",
+        "GLESTextureUtils.cpp",
+        "GLSharedGroup.cpp",
+        "glUtils.cpp",
+        "goldfish_dma.cpp",
+        "IndexRangeCache.cpp",
+    ],
+    export_include_dirs: [
+        ".",
+        "include",
+    ],
+    target: {
+        android: {
+            shared_libs: [
+                "liblog",
+            ],
+        },
+        host: {
+            static_libs: [
+                "liblog",
+            ],
+        },
+    },
 }

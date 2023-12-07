@@ -16,6 +16,7 @@
 
 #include "EncoderDebug.h"
 
+using gfxstream::guest::ChecksumCalculator;
 using gfxstream::guest::IOStream;
 
 namespace {

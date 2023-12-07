@@ -70,7 +70,7 @@ static GLubyte *gExtensionsString= (GLubyte *) "GL_OES_EGL_image_external ";
         return ret; \
     } \
 
-GL2Encoder::GL2Encoder(IOStream *stream, ChecksumCalculator *protocol)
+GL2Encoder::GL2Encoder(IOStream *stream, gfxstream::guest::ChecksumCalculator *protocol)
         : gl2_encoder_context_t(stream, protocol)
 {
     m_currMajorVersion = 2;
@@ -1277,7 +1277,7 @@ void* GL2Encoder::recenterIndices(const void* src,
     return adjustedIndices;
 }
 
-void GL2Encoder::getBufferIndexRange(BufferData* buf,
+void GL2Encoder::getBufferIndexRange(gfxstream::guest::gl::BufferData* buf,
                                      const void* dataWithOffset,
                                      GLenum type,
                                      size_t count,
@@ -1376,7 +1376,7 @@ void GL2Encoder::sendVertexAttributes(GLint first, GLsizei count, bool hasClient
                     this->glVertexAttribPointerData(this, i, state.size, state.type, state.normalized, stride, data, datalen);
                 }
             } else {
-                const BufferData* buf = m_shared->getBufferData(bufferObject);
+                const gfxstream::guest::gl::BufferData* buf = m_shared->getBufferData(bufferObject);
                 // The following expression actually means bufLen = stride*count;
                 // But the last element doesn't have to fill up the whole stride.
                 // So it becomes the current form.
@@ -1492,7 +1492,7 @@ void GL2Encoder::s_glDrawElements(void *self, GLenum mode, GLsizei count, GLenum
         SET_ERROR_IF(status != GL_FRAMEBUFFER_COMPLETE, GL_INVALID_FRAMEBUFFER_OPERATION);
     }
 
-    BufferData* buf = NULL;
+    gfxstream::guest::gl::BufferData* buf = NULL;
     int minIndex = 0, maxIndex = 0;
 
     // For validation/immediate index array purposes,
@@ -1609,7 +1609,7 @@ void GL2Encoder::s_glDrawElementsNullAEMU(void *self, GLenum mode, GLsizei count
         SET_ERROR_IF(status != GL_FRAMEBUFFER_COMPLETE, GL_INVALID_FRAMEBUFFER_OPERATION);
     }
 
-    BufferData* buf = NULL;
+    gfxstream::guest::gl::BufferData* buf = NULL;
     int minIndex = 0, maxIndex = 0;
 
     // For validation/immediate index array purposes,
@@ -1777,7 +1777,7 @@ static std::vector<std::string> getSamplerExternalAliases(char* str) {
     return res;
 }
 
-static bool replaceExternalSamplerUniformDefinition(char* str, const std::string& samplerExternalType, ShaderData* data) {
+static bool replaceExternalSamplerUniformDefinition(char* str, const std::string& samplerExternalType, gfxstream::guest::gl::ShaderData* data) {
     // -- replace "samplerExternalOES" with "sampler2D" and record name
     char* c = str;
     while ((c = strstr(c, samplerExternalType.c_str()))) {
@@ -1828,7 +1828,7 @@ static bool replaceExternalSamplerUniformDefinition(char* str, const std::string
     return true;
 }
 
-static bool replaceSamplerExternalWith2D(char* const str, ShaderData* const data)
+static bool replaceSamplerExternalWith2D(char* const str, gfxstream::guest::gl::ShaderData* const data)
 {
     static const char STR_HASH_EXTENSION[] = "#extension";
     static const char STR_GL_OES_EGL_IMAGE_EXTERNAL[] = "GL_OES_EGL_image_external";
@@ -1882,7 +1882,7 @@ void GL2Encoder::s_glShaderBinary(void *self, GLsizei, const GLuint *, GLenum, c
 void GL2Encoder::s_glShaderSource(void *self, GLuint shader, GLsizei count, const GLchar * const *string, const GLint *length)
 {
     GL2Encoder* ctx = (GL2Encoder*)self;
-    ShaderData* shaderData = ctx->m_shared->getShaderData(shader);
+    gfxstream::guest::gl::ShaderData* shaderData = ctx->m_shared->getShaderData(shader);
     SET_ERROR_IF(!ctx->m_shared->isShaderOrProgramObject(shader), GL_INVALID_VALUE);
     SET_ERROR_IF(!shaderData, GL_INVALID_OPERATION);
     SET_ERROR_IF((count<0), GL_INVALID_VALUE);
@@ -2092,7 +2092,7 @@ void GL2Encoder::s_glGetShaderSource(void *self, GLuint shader, GLsizei bufsize,
     VALIDATE_SHADER_NAME(shader);
     SET_ERROR_IF(bufsize < 0, GL_INVALID_VALUE);
     ctx->m_glGetShaderSource_enc(self, shader, bufsize, length, source);
-    ShaderData* shaderData = ctx->m_shared->getShaderData(shader);
+    gfxstream::guest::gl::ShaderData* shaderData = ctx->m_shared->getShaderData(shader);
     if (shaderData) {
         std::string returned;
         int curr_len = 0;
@@ -2238,7 +2238,7 @@ bool GL2Encoder::updateHostTexture2DBinding(GLenum texUnit, GLenum newTarget)
 void GL2Encoder::updateHostTexture2DBindingsFromProgramData(GLuint program) {
     GL2Encoder *ctx = this;
     GLClientState* state = ctx->m_state;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
 
     GLenum origActiveTexture = state->getActiveTextureUnit();
     GLenum hostActiveTexture = origActiveTexture;
@@ -2263,7 +2263,7 @@ void GL2Encoder::updateHostTexture2DBindingsFromProgramData(GLuint program) {
 void GL2Encoder::s_glUseProgram(void *self, GLuint program)
 {
     GL2Encoder *ctx = (GL2Encoder*)self;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
 
     SET_ERROR_IF(program && !shared->isShaderOrProgramObject(program), GL_INVALID_VALUE);
     SET_ERROR_IF(program && !shared->isProgram(program), GL_INVALID_OPERATION);
@@ -2302,7 +2302,7 @@ void GL2Encoder::s_glUniform1i(void *self , GLint location, GLint x)
 {
     GL2Encoder *ctx = (GL2Encoder*)self;
     GLClientState* state = ctx->m_state;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
 
     ctx->m_state->validateUniform(false /* is float? */, false /* is unsigned? */, 1 /* columns */, 1 /* rows */, location, 1 /* count */, ctx->getErrorPtr());
 
@@ -2631,7 +2631,7 @@ bool GL2Encoder::validateTexBufferRange(void* self, GLenum target, GLenum intern
     RET_AND_SET_ERROR_IF((target != GL_TEXTURE_BUFFER_OES), GL_INVALID_ENUM, false);
     RET_AND_SET_ERROR_IF(!GLESv2Validation::textureBufferFormat(ctx, internalFormat), GL_INVALID_ENUM, false);
     if (buffer != 0) {
-        BufferData* buf = ctx->getBufferDataById(buffer);
+        gfxstream::guest::gl::BufferData* buf = ctx->getBufferDataById(buffer);
         RET_AND_SET_ERROR_IF(((!buf) || (buf->m_size < offset+size) || (offset < 0) || (size<0)), GL_INVALID_VALUE, false);
     }
     GLint tex_buffer_offset_align = 1;
@@ -3058,13 +3058,13 @@ GLuint GL2Encoder::boundBuffer(GLenum target) const {
     return m_state->getBuffer(target);
 }
 
-BufferData* GL2Encoder::getBufferData(GLenum target) const {
+gfxstream::guest::gl::BufferData* GL2Encoder::getBufferData(GLenum target) const {
     GLuint bufferId = m_state->getBuffer(target);
     if (!bufferId) return NULL;
     return m_shared->getBufferData(bufferId);
 }
 
-BufferData* GL2Encoder::getBufferDataById(GLuint bufferId) const {
+gfxstream::guest::gl::BufferData* GL2Encoder::getBufferDataById(GLuint bufferId) const {
     if (!bufferId) return NULL;
     return m_shared->getBufferData(bufferId);
 }
@@ -3074,7 +3074,7 @@ bool GL2Encoder::isBufferMapped(GLuint buffer) const {
 }
 
 bool GL2Encoder::isBufferTargetMapped(GLenum target) const {
-    BufferData* buf = getBufferData(target);
+    gfxstream::guest::gl::BufferData* buf = getBufferData(target);
     if (!buf) return false;
     return buf->m_mapped;
 }
@@ -3341,7 +3341,7 @@ void* GL2Encoder::s_glMapBufferOES(void* self, GLenum target, GLenum access) {
 
     RET_AND_SET_ERROR_IF(boundBuffer == 0, GL_INVALID_OPERATION, NULL);
 
-    BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
+    gfxstream::guest::gl::BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
     RET_AND_SET_ERROR_IF(!buf, GL_INVALID_VALUE, NULL);
 
     return ctx->glMapBufferRange(ctx, target, 0, buf->m_size, access);
@@ -3355,7 +3355,7 @@ GLboolean GL2Encoder::s_glUnmapBufferOES(void* self, GLenum target) {
 
 void* GL2Encoder::s_glMapBufferRangeAEMUImpl(GL2Encoder* ctx, GLenum target,
                                              GLintptr offset, GLsizeiptr length,
-                                             GLbitfield access, BufferData* buf) {
+                                             GLbitfield access, gfxstream::guest::gl::BufferData* buf) {
     char* bits = &buf->m_fixedBuffer[offset];
 
     if ((access & GL_MAP_READ_BIT) ||
@@ -3389,7 +3389,7 @@ void* GL2Encoder::s_glMapBufferRange(void* self, GLenum target, GLintptr offset,
 
     RET_AND_SET_ERROR_IF(boundBuffer == 0, GL_INVALID_OPERATION, NULL);
 
-    BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
+    gfxstream::guest::gl::BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
     RET_AND_SET_ERROR_IF(!buf, GL_INVALID_VALUE, NULL);
 
     GLsizeiptr bufferDataSize = buf->m_size;
@@ -3457,7 +3457,7 @@ GLboolean GL2Encoder::s_glUnmapBuffer(void* self, GLenum target) {
 
     RET_AND_SET_ERROR_IF(boundBuffer == 0, GL_INVALID_OPERATION, GL_FALSE);
 
-    BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
+    gfxstream::guest::gl::BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
     RET_AND_SET_ERROR_IF(!buf, GL_INVALID_VALUE, GL_FALSE);
     RET_AND_SET_ERROR_IF(!buf->m_mapped, GL_INVALID_OPERATION, GL_FALSE);
 
@@ -3522,7 +3522,7 @@ void GL2Encoder::s_glFlushMappedBufferRange(void* self, GLenum target, GLintptr 
     GLuint boundBuffer = ctx->m_state->getBuffer(target);
     SET_ERROR_IF(!boundBuffer, GL_INVALID_OPERATION);
 
-    BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
+    gfxstream::guest::gl::BufferData* buf = ctx->m_shared->getBufferData(boundBuffer);
     SET_ERROR_IF(!buf, GL_INVALID_VALUE);
     SET_ERROR_IF(!buf->m_mapped, GL_INVALID_OPERATION);
     SET_ERROR_IF(!(buf->m_mappedAccess & GL_MAP_FLUSH_EXPLICIT_BIT), GL_INVALID_OPERATION);
@@ -3754,7 +3754,7 @@ void GL2Encoder::s_glBindBufferBase(void* self, GLenum target, GLuint index, GLu
                  index >= state->getMaxIndexedBufferBindings(target),
                  GL_INVALID_VALUE);
 
-    BufferData* buf = ctx->getBufferDataById(buffer);
+    gfxstream::guest::gl::BufferData* buf = ctx->getBufferDataById(buffer);
     GLsizeiptr size = buf ? buf->m_size : 0;
 
     if (ctx->m_state->isIndexedBindNoOp(target, index, buffer, 0, size, 0, 0)) return;
@@ -3810,8 +3810,8 @@ void GL2Encoder::s_glCopyBufferSubData(void *self , GLenum readtarget, GLenum wr
     SET_ERROR_IF(writeoffset < 0, GL_INVALID_VALUE);
     SET_ERROR_IF(size < 0, GL_INVALID_VALUE);
 
-    BufferData* readBufferData = ctx->getBufferData(readtarget);
-    BufferData* writeBufferData = ctx->getBufferData(writetarget);
+    gfxstream::guest::gl::BufferData* readBufferData = ctx->getBufferData(readtarget);
+    gfxstream::guest::gl::BufferData* writeBufferData = ctx->getBufferData(writetarget);
 
     SET_ERROR_IF(
         readBufferData &&
@@ -3857,7 +3857,7 @@ void GL2Encoder::s_glGetBufferParameteriv(void* self, GLenum target, GLenum pnam
 
     if (!params) return;
 
-    BufferData* buf = ctx->getBufferData(target);
+    gfxstream::guest::gl::BufferData* buf = ctx->getBufferData(target);
 
     switch (pname) {
         case GL_BUFFER_ACCESS_FLAGS:
@@ -3909,7 +3909,7 @@ void GL2Encoder::s_glGetBufferParameteri64v(void* self, GLenum target, GLenum pn
 
     if (!params) return;
 
-    BufferData* buf = ctx->getBufferData(target);
+    gfxstream::guest::gl::BufferData* buf = ctx->getBufferData(target);
 
     switch (pname) {
         case GL_BUFFER_ACCESS_FLAGS:
@@ -3948,7 +3948,7 @@ void GL2Encoder::s_glGetBufferPointerv(void* self, GLenum target, GLenum pname, 
     SET_ERROR_IF(!ctx->boundBuffer(target), GL_INVALID_OPERATION);
     if (!params) return;
 
-    BufferData* buf = ctx->getBufferData(target);
+    gfxstream::guest::gl::BufferData* buf = ctx->getBufferData(target);
 
     if (!buf || !buf->m_mapped) { *params = NULL; return; }
 
@@ -4009,7 +4009,7 @@ void GL2Encoder::s_glGetUniformIndices(void* self, GLuint program, GLsizei unifo
 void GL2Encoder::s_glUniform1ui(void* self, GLint location, GLuint v0) {
     GL2Encoder *ctx = (GL2Encoder*)self;
     GLClientState* state = ctx->m_state;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
 
     ctx->m_state->validateUniform(false /* is float? */, true /* is unsigned? */, 1 /* columns */, 1 /* rows */, location, 1 /* count */, ctx->getErrorPtr());
     ctx->m_glUniform1ui_enc(self, location, v0);
@@ -4780,7 +4780,7 @@ void GL2Encoder::s_glDrawElementsInstanced(void* self, GLenum mode, GLsizei coun
         SET_ERROR_IF(status != GL_FRAMEBUFFER_COMPLETE, GL_INVALID_FRAMEBUFFER_OPERATION);
     }
 
-    BufferData* buf = NULL;
+    gfxstream::guest::gl::BufferData* buf = NULL;
     int minIndex = 0, maxIndex = 0;
 
     // For validation/immediate index array purposes,
@@ -4873,7 +4873,7 @@ void GL2Encoder::s_glDrawRangeElements(void* self, GLenum mode, GLuint start, GL
         SET_ERROR_IF(status != GL_FRAMEBUFFER_COMPLETE, GL_INVALID_FRAMEBUFFER_OPERATION);
     }
 
-    BufferData* buf = NULL;
+    gfxstream::guest::gl::BufferData* buf = NULL;
     int minIndex = 0, maxIndex = 0;
 
     // For validation/immediate index array purposes,
@@ -5538,7 +5538,7 @@ void GL2Encoder::s_glGetShaderiv(void* self, GLuint shader, GLenum pname, GLint*
     VALIDATE_SHADER_NAME(shader);
 
     if (pname == GL_SHADER_SOURCE_LENGTH) {
-        ShaderData* shaderData = ctx->m_shared->getShaderData(shader);
+        gfxstream::guest::gl::ShaderData* shaderData = ctx->m_shared->getShaderData(shader);
         if (shaderData) {
             int totalLen = 0;
             for (int i = 0; i < shaderData->sources.size(); i++) {
@@ -5554,7 +5554,7 @@ void GL2Encoder::s_glGetShaderiv(void* self, GLuint shader, GLenum pname, GLint*
 void GL2Encoder::s_glActiveShaderProgram(void* self, GLuint pipeline, GLuint program) {
     GL2Encoder *ctx = (GL2Encoder*)self;
     GLClientState* state = ctx->m_state;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
 
     SET_ERROR_IF(!pipeline, GL_INVALID_OPERATION);
     SET_ERROR_IF(program && !shared->isShaderOrProgramObject(program), GL_INVALID_VALUE);
@@ -5576,9 +5576,9 @@ GLuint GL2Encoder::s_glCreateShaderProgramv(void* self, GLenum shaderType, GLsiz
     glUtilsPackStrings(str, (char**)strings, (GLint*)length, count);
 
     // Do GLSharedGroup and location WorkARound-specific initialization
-    // Phase 1: create a ShaderData and initialize with replaceSamplerExternalWith2D()
+    // Phase 1: create a gfxstream::guest::gl::ShaderData and initialize with replaceSamplerExternalWith2D()
     uint32_t spDataId = ctx->m_shared->addNewShaderProgramData();
-    ShaderProgramData* spData = ctx->m_shared->getShaderProgramDataById(spDataId);
+    gfxstream::guest::gl::ShaderProgramData* spData = ctx->m_shared->getShaderProgramDataById(spDataId);
 
     if (!replaceSamplerExternalWith2D(str, &spData->shaderData)) {
         delete [] str;
@@ -5658,7 +5658,7 @@ void GL2Encoder::s_glProgramUniform1i(void* self, GLuint program, GLint location
     ctx->m_glProgramUniform1i_enc(self, program, location, v0);
 
     GLClientState* state = ctx->m_state;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
     GLenum target;
 
     if (shared->setSamplerUniform(program, location, v0, &target)) {
@@ -5682,7 +5682,7 @@ void GL2Encoder::s_glProgramUniform1ui(void* self, GLuint program, GLint locatio
     ctx->m_glProgramUniform1ui_enc(self, program, location, v0);
 
     GLClientState* state = ctx->m_state;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
     GLenum target;
 
     if (shared->setSamplerUniform(program, location, v0, &target)) {
@@ -5874,7 +5874,7 @@ void GL2Encoder::s_glUseProgramStages(void *self, GLuint pipeline, GLbitfield st
 {
     GL2Encoder *ctx = (GL2Encoder*)self;
     GLClientState* state = ctx->m_state;
-    GLSharedGroupPtr shared = ctx->m_shared;
+    gfxstream::guest::gl::GLSharedGroupPtr shared = ctx->m_shared;
 
     SET_ERROR_IF(!pipeline, GL_INVALID_OPERATION);
     SET_ERROR_IF(program && !shared->isShaderOrProgramObject(program), GL_INVALID_VALUE);
@@ -6066,7 +6066,7 @@ void GL2Encoder::s_glDrawArraysIndirect(void* self, GLenum mode, const void* ind
 
     GLuint indirectStructSize = glUtilsIndirectStructSize(INDIRECT_COMMAND_DRAWARRAYS);
     if (ctx->boundBuffer(GL_DRAW_INDIRECT_BUFFER)) {
-        // BufferData* buf = ctx->getBufferData(target);
+        // gfxstream::guest::gl::BufferData* buf = ctx->getBufferData(target);
         // if (buf) {
         //     SET_ERROR_IF((GLuint)(uintptr_t)indirect + indirectStructSize > buf->m_size, GL_INVALID_VALUE);
         // }
@@ -6097,7 +6097,7 @@ void GL2Encoder::s_glDrawElementsIndirect(void* self, GLenum mode, GLenum type, 
 
     GLuint indirectStructSize = glUtilsIndirectStructSize(INDIRECT_COMMAND_DRAWELEMENTS);
     if (ctx->boundBuffer(GL_DRAW_INDIRECT_BUFFER)) {
-        // BufferData* buf = ctx->getBufferData(target);
+        // gfxstream::guest::gl::BufferData* buf = ctx->getBufferData(target);
         // if (buf) {
         //     SET_ERROR_IF((GLuint)(uintptr_t)indirect + indirectStructSize > buf->m_size, GL_INVALID_VALUE);
         // }
