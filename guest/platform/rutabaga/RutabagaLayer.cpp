@@ -1097,8 +1097,10 @@ void EmulatedVirtioGpu::SignalEmulatedFence(int fenceId) {
     mImpl->SignalEmulatedFence(fenceId);
 }
 
+__attribute__((destructor))
 void ResetEmulatedVirtioGpu() {
     EmulatedVirtioGpu::Reset();
 }
 
 }  // namespace gfxstream
+
