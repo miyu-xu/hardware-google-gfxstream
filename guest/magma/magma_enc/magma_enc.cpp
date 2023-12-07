@@ -12,11 +12,11 @@
 
 #include <stdio.h>
 
-// TODO(fxbug.dev/122605): Why is modification needed for these two includes?
 #include "aemu/base/Tracing.h"
-#include "cutils/log.h"
 
 #include "EncoderDebug.h"
+
+using gfxstream::guest::ChecksumCalculator;
 
 using gfxstream::guest::IOStream;
 
@@ -34,7 +34,7 @@ magma_status_t magma_device_import_enc(void *self , magma_handle_t device_channe
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_device_out =  sizeof(magma_device_t);
@@ -62,7 +62,7 @@ magma_status_t magma_device_import_enc(void *self , magma_handle_t device_channe
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -80,7 +80,7 @@ void magma_device_release_enc(void *self , magma_device_t device)
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -107,7 +107,7 @@ magma_status_t magma_device_query_enc(void *self , magma_device_t device, uint64
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_result_buffer_out =  sizeof(magma_handle_t);
@@ -140,7 +140,7 @@ magma_status_t magma_device_query_enc(void *self , magma_device_t device, uint64
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -158,7 +158,7 @@ magma_status_t magma_device_query_fudge_enc(void *self , magma_device_t device, 
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_result_buffer_mapping_id_inout =  sizeof(uint64_t);
@@ -198,7 +198,7 @@ magma_status_t magma_device_query_fudge_enc(void *self , magma_device_t device, 
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -216,7 +216,7 @@ magma_status_t magma_device_create_connection_enc(void *self , magma_device_t de
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_connection_out =  sizeof(magma_connection_t);
@@ -244,7 +244,7 @@ magma_status_t magma_device_create_connection_enc(void *self , magma_device_t de
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -262,7 +262,7 @@ void magma_connection_release_enc(void *self , magma_connection_t connection)
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -289,7 +289,7 @@ magma_status_t magma_connection_get_error_enc(void *self , magma_connection_t co
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -313,7 +313,7 @@ magma_status_t magma_connection_get_error_enc(void *self , magma_connection_t co
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -331,7 +331,7 @@ magma_status_t magma_connection_create_context_enc(void *self , magma_connection
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_context_id_out =  sizeof(uint32_t);
@@ -359,7 +359,7 @@ magma_status_t magma_connection_create_context_enc(void *self , magma_connection
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -377,7 +377,7 @@ void magma_connection_release_context_enc(void *self , magma_connection_t connec
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -405,7 +405,7 @@ magma_status_t magma_connection_create_buffer_enc(void *self , magma_connection_
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_size_out =  sizeof(uint64_t);
@@ -442,7 +442,7 @@ magma_status_t magma_connection_create_buffer_enc(void *self , magma_connection_
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -460,7 +460,7 @@ void magma_connection_release_buffer_enc(void *self , magma_connection_t connect
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -488,7 +488,7 @@ magma_status_t magma_connection_import_buffer_enc(void *self , magma_connection_
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_size_out =  sizeof(uint64_t);
@@ -525,7 +525,7 @@ magma_status_t magma_connection_import_buffer_enc(void *self , magma_connection_
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -543,7 +543,7 @@ magma_status_t magma_connection_create_semaphore_enc(void *self , magma_connecti
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_semaphore_out =  sizeof(magma_semaphore_t);
@@ -575,7 +575,7 @@ magma_status_t magma_connection_create_semaphore_enc(void *self , magma_connecti
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -593,7 +593,7 @@ void magma_connection_release_semaphore_enc(void *self , magma_connection_t conn
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -621,7 +621,7 @@ magma_status_t magma_connection_import_semaphore_enc(void *self , magma_connecti
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_semaphore_out =  sizeof(magma_semaphore_t);
@@ -654,7 +654,7 @@ magma_status_t magma_connection_import_semaphore_enc(void *self , magma_connecti
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -672,7 +672,7 @@ magma_status_t magma_connection_perform_buffer_op_enc(void *self , magma_connect
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -700,7 +700,7 @@ magma_status_t magma_connection_perform_buffer_op_enc(void *self , magma_connect
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -718,7 +718,7 @@ magma_status_t magma_connection_map_buffer_enc(void *self , magma_connection_t c
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -747,7 +747,7 @@ magma_status_t magma_connection_map_buffer_enc(void *self , magma_connection_t c
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -765,7 +765,7 @@ void magma_connection_unmap_buffer_enc(void *self , magma_connection_t connectio
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -794,7 +794,7 @@ magma_status_t magma_connection_execute_command_enc(void *self , magma_connectio
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_descriptor =  sizeof(magma_command_descriptor_t);
@@ -822,7 +822,7 @@ magma_status_t magma_connection_execute_command_enc(void *self , magma_connectio
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -840,7 +840,7 @@ magma_status_t magma_connection_execute_command_fudge_enc(void *self , magma_con
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_descriptor =  descriptor_size;
@@ -869,7 +869,7 @@ magma_status_t magma_connection_execute_command_fudge_enc(void *self , magma_con
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -887,7 +887,7 @@ magma_status_t magma_connection_execute_immediate_commands_enc(void *self , magm
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_command_buffers =  command_count * sizeof(magma_inline_command_buffer_t);
@@ -916,7 +916,7 @@ magma_status_t magma_connection_execute_immediate_commands_enc(void *self , magm
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -934,7 +934,7 @@ magma_status_t magma_connection_execute_immediate_commands_fudge_enc(void *self 
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_command_buffers =  command_buffers_size;
@@ -967,7 +967,7 @@ magma_status_t magma_connection_execute_immediate_commands_fudge_enc(void *self 
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -985,7 +985,7 @@ magma_status_t magma_connection_flush_enc(void *self , magma_connection_t connec
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1009,7 +1009,7 @@ magma_status_t magma_connection_flush_enc(void *self , magma_connection_t connec
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1027,7 +1027,7 @@ magma_handle_t magma_connection_get_notification_channel_handle_enc(void *self ,
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1051,7 +1051,7 @@ magma_handle_t magma_connection_get_notification_channel_handle_enc(void *self ,
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1069,7 +1069,7 @@ magma_status_t magma_connection_read_notification_channel_enc(void *self , magma
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_buffer =  buffer_size;
@@ -1106,7 +1106,7 @@ magma_status_t magma_connection_read_notification_channel_enc(void *self , magma
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1124,7 +1124,7 @@ magma_status_t magma_buffer_clean_cache_enc(void *self , magma_buffer_t buffer, 
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1151,7 +1151,7 @@ magma_status_t magma_buffer_clean_cache_enc(void *self , magma_buffer_t buffer, 
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1169,7 +1169,7 @@ magma_status_t magma_buffer_set_cache_policy_enc(void *self , magma_buffer_t buf
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1194,7 +1194,7 @@ magma_status_t magma_buffer_set_cache_policy_enc(void *self , magma_buffer_t buf
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1212,7 +1212,7 @@ magma_status_t magma_buffer_get_cache_policy_enc(void *self , magma_buffer_t buf
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_cache_policy_out =  sizeof(magma_cache_policy_t);
@@ -1240,7 +1240,7 @@ magma_status_t magma_buffer_get_cache_policy_enc(void *self , magma_buffer_t buf
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1258,7 +1258,7 @@ magma_status_t magma_buffer_set_name_enc(void *self , magma_buffer_t buffer, con
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_name =  1;
@@ -1285,7 +1285,7 @@ magma_status_t magma_buffer_set_name_enc(void *self , magma_buffer_t buffer, con
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1303,7 +1303,7 @@ magma_status_t magma_buffer_set_name_fudge_enc(void *self , magma_buffer_t buffe
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_name =  name_size;
@@ -1331,7 +1331,7 @@ magma_status_t magma_buffer_set_name_fudge_enc(void *self , magma_buffer_t buffe
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1349,7 +1349,7 @@ magma_status_t magma_buffer_get_info_enc(void *self , magma_buffer_t buffer, mag
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_info_out =  sizeof(magma_buffer_info);
@@ -1377,7 +1377,7 @@ magma_status_t magma_buffer_get_info_enc(void *self , magma_buffer_t buffer, mag
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1395,7 +1395,7 @@ magma_status_t magma_buffer_get_handle_enc(void *self , magma_buffer_t buffer, m
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_handle_out =  sizeof(magma_handle_t);
@@ -1423,7 +1423,7 @@ magma_status_t magma_buffer_get_handle_enc(void *self , magma_buffer_t buffer, m
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1441,7 +1441,7 @@ magma_status_t magma_buffer_export_enc(void *self , magma_buffer_t buffer, magma
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_buffer_handle_out =  sizeof(magma_handle_t);
@@ -1469,7 +1469,7 @@ magma_status_t magma_buffer_export_enc(void *self , magma_buffer_t buffer, magma
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1487,7 +1487,7 @@ void magma_semaphore_signal_enc(void *self , magma_semaphore_t semaphore)
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1514,7 +1514,7 @@ void magma_semaphore_reset_enc(void *self , magma_semaphore_t semaphore)
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1541,7 +1541,7 @@ magma_status_t magma_semaphore_export_enc(void *self , magma_semaphore_t semapho
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_semaphore_handle_out =  sizeof(magma_handle_t);
@@ -1569,7 +1569,7 @@ magma_status_t magma_semaphore_export_enc(void *self , magma_semaphore_t semapho
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1587,7 +1587,7 @@ magma_status_t magma_poll_enc(void *self , magma_poll_item_t* items, uint32_t co
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_items =  count * sizeof(magma_poll_item_t);
@@ -1617,7 +1617,7 @@ magma_status_t magma_poll_enc(void *self , magma_poll_item_t* items, uint32_t co
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1635,7 +1635,7 @@ magma_status_t magma_initialize_tracing_enc(void *self , magma_handle_t channel)
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1659,7 +1659,7 @@ magma_status_t magma_initialize_tracing_enc(void *self , magma_handle_t channel)
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1677,7 +1677,7 @@ magma_status_t magma_initialize_logging_enc(void *self , magma_handle_t channel)
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1701,7 +1701,7 @@ magma_status_t magma_initialize_logging_enc(void *self , magma_handle_t channel)
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1719,7 +1719,7 @@ magma_status_t magma_connection_enable_performance_counter_access_enc(void *self
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1744,7 +1744,7 @@ magma_status_t magma_connection_enable_performance_counter_access_enc(void *self
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1762,7 +1762,7 @@ magma_status_t magma_connection_enable_performance_counters_enc(void *self , mag
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_counters =  counters_count * sizeof(uint64_t);
@@ -1790,7 +1790,7 @@ magma_status_t magma_connection_enable_performance_counters_enc(void *self , mag
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1808,7 +1808,7 @@ magma_status_t magma_connection_create_performance_counter_buffer_pool_enc(void 
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_pool_id_out =  sizeof(magma_perf_count_pool_t);
@@ -1840,7 +1840,7 @@ magma_status_t magma_connection_create_performance_counter_buffer_pool_enc(void 
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1858,7 +1858,7 @@ magma_status_t magma_connection_release_performance_counter_buffer_pool_enc(void
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1883,7 +1883,7 @@ magma_status_t magma_connection_release_performance_counter_buffer_pool_enc(void
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1901,7 +1901,7 @@ magma_status_t magma_connection_add_performance_counter_buffer_offsets_to_pool_e
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_offsets =  offsets_count * sizeof(magma_buffer_offset_t);
@@ -1930,7 +1930,7 @@ magma_status_t magma_connection_add_performance_counter_buffer_offsets_to_pool_e
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1948,7 +1948,7 @@ magma_status_t magma_connection_remove_performance_counter_buffer_from_pool_enc(
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -1974,7 +1974,7 @@ magma_status_t magma_connection_remove_performance_counter_buffer_from_pool_enc(
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -1992,7 +1992,7 @@ magma_status_t magma_connection_dump_performance_counters_enc(void *self , magma
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	 unsigned char *ptr;
@@ -2018,7 +2018,7 @@ magma_status_t magma_connection_dump_performance_counters_enc(void *self , magma
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -2036,7 +2036,7 @@ magma_status_t magma_connection_clear_performance_counters_enc(void *self , magm
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_counters =  counters_count * sizeof(uint64_t);
@@ -2064,7 +2064,7 @@ magma_status_t magma_connection_clear_performance_counters_enc(void *self , magm
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -2082,7 +2082,7 @@ magma_status_t magma_connection_read_performance_counter_completion_enc(void *se
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_trigger_id_out =  sizeof(uint32_t);
@@ -2127,7 +2127,7 @@ magma_status_t magma_connection_read_performance_counter_completion_enc(void *se
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -2145,7 +2145,7 @@ magma_status_t magma_virt_connection_create_image_enc(void *self , magma_connect
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_create_info =  sizeof(magma_image_create_info_t);
@@ -2184,7 +2184,7 @@ magma_status_t magma_virt_connection_create_image_enc(void *self , magma_connect
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
@@ -2202,7 +2202,7 @@ magma_status_t magma_virt_connection_get_image_info_enc(void *self , magma_conne
 
 	magma_encoder_context_t *ctx = (magma_encoder_context_t *)self;
 	IOStream *stream = ctx->m_stream;
-	ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
 	bool useChecksum = checksumCalculator->getVersion() > 0;
 
 	const unsigned int __size_image_info_out =  sizeof(magma_image_info_t);
@@ -2231,7 +2231,7 @@ magma_status_t magma_virt_connection_get_image_info_enc(void *self , magma_conne
 	if (useChecksum) checksumCalculator->addBuffer(&retval, 4);
 	if (useChecksum) {
 		unsigned char *checksumBufPtr = NULL;
-		unsigned char checksumBuf[ChecksumCalculator::kMaxChecksumSize];
+		unsigned char checksumBuf[gfxstream::guest::ChecksumCalculator::kMaxChecksumSize];
 		if (checksumSize > 0) checksumBufPtr = &checksumBuf[0];
 		stream->readback(checksumBufPtr, checksumSize);
 		if (!checksumCalculator->validate(checksumBufPtr, checksumSize)) {
