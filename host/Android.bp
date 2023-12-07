@@ -16,7 +16,7 @@ package {
     default_applicable_licenses: ["hardware_google_gfxstream_license"],
 }
 
-cc_library_shared {
+cc_library {
     name: "libgfxstream_backend",
     defaults: [ "gfxstream_defaults" ],
     vendor_available: true,

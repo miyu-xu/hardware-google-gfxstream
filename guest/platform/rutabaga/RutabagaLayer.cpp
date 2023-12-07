@@ -293,6 +293,40 @@ EmulatedVirtioGpu::EmulatedVirtioGpuImpl::~EmulatedVirtioGpuImpl() {
 
 namespace {
 
+std::string GetEnv(const std::string& name) {
+    const char* envvar = getenv(name.c_str());
+    return envvar != nullptr ? std::string(envvar) : "";
+}
+
+// Remove the Gfxstream ICD from any Vulkan loader environment variables to avoid
+// loading Gfxstream Vulkan recursively.
+void UpdateVulkanEnvironmentVars() {
+    std::string vk_icd_filenames_envvar(GetEnv("VK_ICD_FILENAMES"));
+    std::vector<std::string> vk_icd_filenames = Split(vk_icd_filenames_envvar, ":");
+    vk_icd_filenames.erase(std::remove_if(vk_icd_filenames.begin(),
+                                          vk_icd_filenames.end(),
+                                          [](const std::string& icd) {
+                                            return icd.find("gfxstream") != std::string::npos;
+                                          }),
+                           vk_icd_filenames.end());
+    if (vk_icd_filenames.empty()) {
+        ALOGE("Unsetting VK_ICD_FILESNAMES");
+        if (unsetenv("VK_ICD_FILENAMES") != 0) {
+            ALOGE("Failed to unset VK_ICD_FILENAMES: %s", strerror(errno));
+        }
+    } else {
+        vk_icd_filenames_envvar = Join(vk_icd_filenames, ":");
+        ALOGE("Setting VK_ICD_FILESNAMES=%s", vk_icd_filenames_envvar.c_str());
+        if (setenv("VK_ICD_FILENAMES", vk_icd_filenames_envvar.c_str(), /*overwrite=*/1) != 0) {
+            ALOGE("Failed to set VK_ICD_FILENAMES: %s", strerror(errno));
+        }
+    }
+
+    if (setenv("VK_LOADER_DRIVERS_DISABLE", "*gfxstream*", /*overwrite=*/1) != 0) {
+        ALOGE("Failed to set VK_LOADER_DRIVERS_DISABLE: %s", strerror(errno));
+    }
+}
+
 void WriteFenceTrampoline(void* cookie, struct stream_renderer_fence* fence) {
     auto* gpu = reinterpret_cast<EmulatedVirtioGpu*>(cookie);
     gpu->SignalEmulatedFence(fence->fence_id);
@@ -304,6 +338,8 @@ bool EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Init(bool withGl,
                                                     bool withVk,
                                                     bool withVkSnapshots,
                                                     EmulatedVirtioGpu* parent) {
+    //UpdateVulkanEnvironmentVars();
+
     std::vector<stream_renderer_param> renderer_params{
         stream_renderer_param{
             .key = STREAM_RENDERER_PARAM_USER_DATA,
@@ -331,7 +367,14 @@ bool EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Init(bool withGl,
             .value = 32,
         },
     };
-    return stream_renderer_init(renderer_params.data(), renderer_params.size()) == 0;
+    auto ret = stream_renderer_init(renderer_params.data(), renderer_params.size());
+    if (ret != 0) {
+        ALOGE("Failed to start Gfxstream host renderer (ret: %d).", ret);
+        return false;
+    }
+
+
+    return true;
 }
 
 VirtGpuCaps EmulatedVirtioGpu::EmulatedVirtioGpuImpl::GetCaps(VirtGpuCapset capset) {
@@ -1102,3 +1145,4 @@ void ResetEmulatedVirtioGpu() {
 }
 
 }  // namespace gfxstream
+

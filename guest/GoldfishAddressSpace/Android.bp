@@ -3,8 +3,8 @@ package {
     default_applicable_licenses: ["hardware_google_gfxstream_license"],
 }
 
-cc_library_static {
-    name: "libGoldfishAddressSpace",
+cc_defaults {
+    name: "libGoldfishAddressSpaceDefaults",
     host_supported: true,
     vendor: true,
     srcs: [
@@ -13,14 +13,6 @@ cc_library_static {
     ],
     header_libs: [
         "libgfxstream_guest_iostream",
-    ],
-    shared_libs: [
-        "libandroidemu",
-        "libdrm",
-        "liblog",
-    ],
-    static_libs: [
-        "libplatform",
     ],
     export_include_dirs: [
         "include",
@@ -41,6 +33,48 @@ cc_library_static {
             srcs: [
                 "goldfish_address_space.cpp",
                 "GoldfishAddressSpaceStream.cpp",
+            ],
+        },
+    },
+}
+
+cc_library_static {
+    name: "libGoldfishAddressSpace",
+    defaults: [
+        "libGoldfishAddressSpaceDefaults",
+    ],
+    shared_libs: [
+        "libandroidemu",
+        "libdrm",
+        "liblog",
+    ],
+    static_libs: [
+        "libplatform",
+    ],
+}
+
+
+cc_library_static {
+    name: "libGoldfishAddressSpaceWithHost",
+    defaults: [
+        "libGoldfishAddressSpaceDefaults",
+    ],
+    static_libs: [
+        "libandroidemu_static",
+        "libdrm",
+        "libplatform_rutabaga",
+    ],
+    target: {
+        android: {
+            compile_multilib: "64",
+            shared_libs: [
+                "liblog",
+            ],
+        },
+        host: {
+            compile_multilib: "64",
+            static_libs: [
+                "liblog",
             ],
         },
     },

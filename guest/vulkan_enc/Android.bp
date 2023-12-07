@@ -35,6 +35,7 @@ cc_defaults {
     ],
     shared_libs: [
         "libandroidemu",
+        "libbase",
         "libcutils",
         "liblog",
         "libOpenglCodecCommon",
@@ -103,15 +104,13 @@ cc_library_shared {
     ],
 }
 
-cc_library_shared {
+cc_library_static {
     name: "libgfxstream_guest_vulkan_encoder_with_host",
     defaults: [
         "libgfxstream_guest_vulkan_encoder_defaults",
     ],
-    shared_libs: [
-        "libgfxstream_backend",
-    ],
     static_libs: [
+        "libgfxstream_backend",
         "libplatform_rutabaga",
     ],
     target: {

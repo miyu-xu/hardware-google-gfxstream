@@ -457,7 +457,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceFeatures(
                         m_state, (VkPhysicalDeviceFeatures*)(pFeatures));
                 }
-                marshal_VkPhysicalDeviceFeatures(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkPhysicalDeviceFeatures(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                  (VkPhysicalDeviceFeatures*)(pFeatures));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -510,7 +510,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkFormatProperties(m_state,
                                                           (VkFormatProperties*)(pFormatProperties));
                 }
-                marshal_VkFormatProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkFormatProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                            (VkFormatProperties*)(pFormatProperties));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -587,7 +587,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkImageFormatProperties(
                         m_state, (VkImageFormatProperties*)(pImageFormatProperties));
                 }
-                marshal_VkImageFormatProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkImageFormatProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                 (VkImageFormatProperties*)(pImageFormatProperties));
                 vkStream->write(&vkGetPhysicalDeviceImageFormatProperties_VkResult_return,
                                 sizeof(VkResult));
@@ -639,7 +639,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceProperties(
                         m_state, (VkPhysicalDeviceProperties*)(pProperties));
                 }
-                marshal_VkPhysicalDeviceProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkPhysicalDeviceProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                    (VkPhysicalDeviceProperties*)(pProperties));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -738,7 +738,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pQueueFamilyProperties) {
                     if (pQueueFamilyPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pQueueFamilyPropertyCount)); ++i) {
-                            marshal_VkQueueFamilyProperties(
+                            gfxstream::host::vk::marshal_VkQueueFamilyProperties(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkQueueFamilyProperties*)(pQueueFamilyProperties + i));
                         }
@@ -793,7 +793,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceMemoryProperties(
                         m_state, (VkPhysicalDeviceMemoryProperties*)(pMemoryProperties));
                 }
-                marshal_VkPhysicalDeviceMemoryProperties(
+                gfxstream::host::vk::marshal_VkPhysicalDeviceMemoryProperties(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceMemoryProperties*)(pMemoryProperties));
                 vkStream->commitWrite();
@@ -1097,7 +1097,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                            marshal_VkExtensionProperties(
+                            gfxstream::host::vk::marshal_VkExtensionProperties(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkExtensionProperties*)(pProperties + i));
                         }
@@ -1218,7 +1218,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                            marshal_VkExtensionProperties(
+                            gfxstream::host::vk::marshal_VkExtensionProperties(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkExtensionProperties*)(pProperties + i));
                         }
@@ -1314,7 +1314,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                            marshal_VkLayerProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                            gfxstream::host::vk::marshal_VkLayerProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                       (VkLayerProperties*)(pProperties + i));
                         }
                     }
@@ -1421,7 +1421,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                            marshal_VkLayerProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                            gfxstream::host::vk::marshal_VkLayerProperties(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                       (VkLayerProperties*)(pProperties + i));
                         }
                     }
@@ -2227,7 +2227,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements(
                         m_state, (VkMemoryRequirements*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                              (VkMemoryRequirements*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -2281,7 +2281,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements(
                         m_state, (VkMemoryRequirements*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                              (VkMemoryRequirements*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -2391,7 +2391,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     if (pSparseMemoryRequirementCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount));
                              ++i) {
-                            marshal_VkSparseImageMemoryRequirements(
+                            gfxstream::host::vk::marshal_VkSparseImageMemoryRequirements(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageMemoryRequirements*)(pSparseMemoryRequirements + i));
                         }
@@ -2511,7 +2511,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                            marshal_VkSparseImageFormatProperties(
+                            gfxstream::host::vk::marshal_VkSparseImageFormatProperties(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageFormatProperties*)(pProperties + i));
                         }
@@ -3934,7 +3934,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkSubresourceLayout(m_state,
                                                            (VkSubresourceLayout*)(pLayout));
                 }
-                marshal_VkSubresourceLayout(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkSubresourceLayout(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                             (VkSubresourceLayout*)(pLayout));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -5933,7 +5933,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pGranularity) {
                     transform_fromhost_VkExtent2D(m_state, (VkExtent2D*)(pGranularity));
                 }
-                marshal_VkExtent2D(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkExtent2D(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                    (VkExtent2D*)(pGranularity));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -9159,7 +9159,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pPhysicalDeviceGroupProperties) {
                     if (pPhysicalDeviceGroupCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPhysicalDeviceGroupCount)); ++i) {
-                            marshal_VkPhysicalDeviceGroupProperties(
+                            gfxstream::host::vk::marshal_VkPhysicalDeviceGroupProperties(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkPhysicalDeviceGroupProperties*)(pPhysicalDeviceGroupProperties +
                                                                    i));
@@ -9224,7 +9224,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -9283,7 +9283,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -9398,7 +9398,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     if (pSparseMemoryRequirementCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount));
                              ++i) {
-                            marshal_VkSparseImageMemoryRequirements2(
+                            gfxstream::host::vk::marshal_VkSparseImageMemoryRequirements2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i));
                         }
@@ -9450,7 +9450,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceFeatures2(
                         m_state, (VkPhysicalDeviceFeatures2*)(pFeatures));
                 }
-                marshal_VkPhysicalDeviceFeatures2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkPhysicalDeviceFeatures2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                   (VkPhysicalDeviceFeatures2*)(pFeatures));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -9498,7 +9498,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceProperties2(
                         m_state, (VkPhysicalDeviceProperties2*)(pProperties));
                 }
-                marshal_VkPhysicalDeviceProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkPhysicalDeviceProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                     (VkPhysicalDeviceProperties2*)(pProperties));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -9552,7 +9552,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkFormatProperties2(
                         m_state, (VkFormatProperties2*)(pFormatProperties));
                 }
-                marshal_VkFormatProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkFormatProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                             (VkFormatProperties2*)(pFormatProperties));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -9622,7 +9622,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkImageFormatProperties2(
                         m_state, (VkImageFormatProperties2*)(pImageFormatProperties));
                 }
-                marshal_VkImageFormatProperties2(
+                gfxstream::host::vk::marshal_VkImageFormatProperties2(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageFormatProperties2*)(pImageFormatProperties));
                 vkStream->write(&vkGetPhysicalDeviceImageFormatProperties2_VkResult_return,
@@ -9725,7 +9725,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pQueueFamilyProperties) {
                     if (pQueueFamilyPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pQueueFamilyPropertyCount)); ++i) {
-                            marshal_VkQueueFamilyProperties2(
+                            gfxstream::host::vk::marshal_VkQueueFamilyProperties2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkQueueFamilyProperties2*)(pQueueFamilyProperties + i));
                         }
@@ -9780,7 +9780,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceMemoryProperties2(
                         m_state, (VkPhysicalDeviceMemoryProperties2*)(pMemoryProperties));
                 }
-                marshal_VkPhysicalDeviceMemoryProperties2(
+                gfxstream::host::vk::marshal_VkPhysicalDeviceMemoryProperties2(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceMemoryProperties2*)(pMemoryProperties));
                 vkStream->commitWrite();
@@ -9888,7 +9888,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                            marshal_VkSparseImageFormatProperties2(
+                            gfxstream::host::vk::marshal_VkSparseImageFormatProperties2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageFormatProperties2*)(pProperties + i));
                         }
@@ -10412,7 +10412,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkExternalBufferProperties(
                         m_state, (VkExternalBufferProperties*)(pExternalBufferProperties));
                 }
-                marshal_VkExternalBufferProperties(
+                gfxstream::host::vk::marshal_VkExternalBufferProperties(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalBufferProperties*)(pExternalBufferProperties));
                 vkStream->commitWrite();
@@ -10479,7 +10479,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkExternalFenceProperties(
                         m_state, (VkExternalFenceProperties*)(pExternalFenceProperties));
                 }
-                marshal_VkExternalFenceProperties(
+                gfxstream::host::vk::marshal_VkExternalFenceProperties(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalFenceProperties*)(pExternalFenceProperties));
                 vkStream->commitWrite();
@@ -10545,7 +10545,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkExternalSemaphoreProperties(
                         m_state, (VkExternalSemaphoreProperties*)(pExternalSemaphoreProperties));
                 }
-                marshal_VkExternalSemaphoreProperties(
+                gfxstream::host::vk::marshal_VkExternalSemaphoreProperties(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalSemaphoreProperties*)(pExternalSemaphoreProperties));
                 vkStream->commitWrite();
@@ -10608,7 +10608,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkDescriptorSetLayoutSupport(
                         m_state, (VkDescriptorSetLayoutSupport*)(pSupport));
                 }
-                marshal_VkDescriptorSetLayoutSupport(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkDescriptorSetLayoutSupport(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                      (VkDescriptorSetLayoutSupport*)(pSupport));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -11398,7 +11398,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pToolProperties) {
                     if (pToolCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pToolCount)); ++i) {
-                            marshal_VkPhysicalDeviceToolProperties(
+                            gfxstream::host::vk::marshal_VkPhysicalDeviceToolProperties(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkPhysicalDeviceToolProperties*)(pToolProperties + i));
                         }
@@ -12951,7 +12951,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -13012,7 +13012,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -13126,7 +13126,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     if (pSparseMemoryRequirementCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount));
                              ++i) {
-                            marshal_VkSparseImageMemoryRequirements2(
+                            gfxstream::host::vk::marshal_VkSparseImageMemoryRequirements2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i));
                         }
@@ -13561,7 +13561,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state,
                         (VkDeviceGroupPresentCapabilitiesKHR*)(pDeviceGroupPresentCapabilities));
                 }
-                marshal_VkDeviceGroupPresentCapabilitiesKHR(
+                gfxstream::host::vk::marshal_VkDeviceGroupPresentCapabilitiesKHR(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceGroupPresentCapabilitiesKHR*)(pDeviceGroupPresentCapabilities));
                 vkStream->write(&vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return,
@@ -13741,7 +13741,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pRects) {
                     if (pRectCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pRectCount)); ++i) {
-                            marshal_VkRect2D(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                            gfxstream::host::vk::marshal_VkRect2D(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                              (VkRect2D*)(pRects + i));
                         }
                     }
@@ -13935,7 +13935,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceFeatures2(
                         m_state, (VkPhysicalDeviceFeatures2*)(pFeatures));
                 }
-                marshal_VkPhysicalDeviceFeatures2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkPhysicalDeviceFeatures2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                   (VkPhysicalDeviceFeatures2*)(pFeatures));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -13983,7 +13983,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceProperties2(
                         m_state, (VkPhysicalDeviceProperties2*)(pProperties));
                 }
-                marshal_VkPhysicalDeviceProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkPhysicalDeviceProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                     (VkPhysicalDeviceProperties2*)(pProperties));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -14037,7 +14037,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkFormatProperties2(
                         m_state, (VkFormatProperties2*)(pFormatProperties));
                 }
-                marshal_VkFormatProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkFormatProperties2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                             (VkFormatProperties2*)(pFormatProperties));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -14107,7 +14107,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkImageFormatProperties2(
                         m_state, (VkImageFormatProperties2*)(pImageFormatProperties));
                 }
-                marshal_VkImageFormatProperties2(
+                gfxstream::host::vk::marshal_VkImageFormatProperties2(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageFormatProperties2*)(pImageFormatProperties));
                 vkStream->write(&vkGetPhysicalDeviceImageFormatProperties2KHR_VkResult_return,
@@ -14210,7 +14210,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pQueueFamilyProperties) {
                     if (pQueueFamilyPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pQueueFamilyPropertyCount)); ++i) {
-                            marshal_VkQueueFamilyProperties2(
+                            gfxstream::host::vk::marshal_VkQueueFamilyProperties2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkQueueFamilyProperties2*)(pQueueFamilyProperties + i));
                         }
@@ -14266,7 +14266,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkPhysicalDeviceMemoryProperties2(
                         m_state, (VkPhysicalDeviceMemoryProperties2*)(pMemoryProperties));
                 }
-                marshal_VkPhysicalDeviceMemoryProperties2(
+                gfxstream::host::vk::marshal_VkPhysicalDeviceMemoryProperties2(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceMemoryProperties2*)(pMemoryProperties));
                 vkStream->commitWrite();
@@ -14375,7 +14375,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pPropertyCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                            marshal_VkSparseImageFormatProperties2(
+                            gfxstream::host::vk::marshal_VkSparseImageFormatProperties2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageFormatProperties2*)(pProperties + i));
                         }
@@ -14497,7 +14497,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkExternalBufferProperties(
                         m_state, (VkExternalBufferProperties*)(pExternalBufferProperties));
                 }
-                marshal_VkExternalBufferProperties(
+                gfxstream::host::vk::marshal_VkExternalBufferProperties(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalBufferProperties*)(pExternalBufferProperties));
                 vkStream->commitWrite();
@@ -14572,7 +14572,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkExternalSemaphoreProperties(
                         m_state, (VkExternalSemaphoreProperties*)(pExternalSemaphoreProperties));
                 }
-                marshal_VkExternalSemaphoreProperties(
+                gfxstream::host::vk::marshal_VkExternalSemaphoreProperties(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalSemaphoreProperties*)(pExternalSemaphoreProperties));
                 vkStream->commitWrite();
@@ -15196,7 +15196,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkExternalFenceProperties(
                         m_state, (VkExternalFenceProperties*)(pExternalFenceProperties));
                 }
-                marshal_VkExternalFenceProperties(
+                gfxstream::host::vk::marshal_VkExternalFenceProperties(
                     vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalFenceProperties*)(pExternalFenceProperties));
                 vkStream->commitWrite();
@@ -15371,7 +15371,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -15430,7 +15430,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -15545,7 +15545,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     if (pSparseMemoryRequirementCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount));
                              ++i) {
-                            marshal_VkSparseImageMemoryRequirements2(
+                            gfxstream::host::vk::marshal_VkSparseImageMemoryRequirements2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i));
                         }
@@ -15875,7 +15875,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkDescriptorSetLayoutSupport(
                         m_state, (VkDescriptorSetLayoutSupport*)(pSupport));
                 }
-                marshal_VkDescriptorSetLayoutSupport(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkDescriptorSetLayoutSupport(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                      (VkDescriptorSetLayoutSupport*)(pSupport));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -16136,7 +16136,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pProperties) {
                     if (pExecutableCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pExecutableCount)); ++i) {
-                            marshal_VkPipelineExecutablePropertiesKHR(
+                            gfxstream::host::vk::marshal_VkPipelineExecutablePropertiesKHR(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkPipelineExecutablePropertiesKHR*)(pProperties + i));
                         }
@@ -16255,7 +16255,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pStatistics) {
                     if (pStatisticCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pStatisticCount)); ++i) {
-                            marshal_VkPipelineExecutableStatisticKHR(
+                            gfxstream::host::vk::marshal_VkPipelineExecutableStatisticKHR(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkPipelineExecutableStatisticKHR*)(pStatistics + i));
                         }
@@ -16388,7 +16388,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pInternalRepresentations) {
                     if (pInternalRepresentationCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pInternalRepresentationCount)); ++i) {
-                            marshal_VkPipelineExecutableInternalRepresentationKHR(
+                            gfxstream::host::vk::marshal_VkPipelineExecutableInternalRepresentationKHR(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkPipelineExecutableInternalRepresentationKHR*)(pInternalRepresentations +
                                                                                  i));
@@ -16852,7 +16852,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pCheckpointData) {
                     if (pCheckpointDataCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pCheckpointDataCount)); ++i) {
-                            marshal_VkCheckpointData2NV(
+                            gfxstream::host::vk::marshal_VkCheckpointData2NV(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkCheckpointData2NV*)(pCheckpointData + i));
                         }
@@ -17167,7 +17167,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -17229,7 +17229,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements2(
                         m_state, (VkMemoryRequirements2*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements2(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                               (VkMemoryRequirements2*)(pMemoryRequirements));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -17343,7 +17343,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     if (pSparseMemoryRequirementCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount));
                              ++i) {
-                            marshal_VkSparseImageMemoryRequirements2(
+                            gfxstream::host::vk::marshal_VkSparseImageMemoryRequirements2(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i));
                         }
@@ -17460,7 +17460,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pGranularity) {
                     transform_fromhost_VkExtent2D(m_state, (VkExtent2D*)(pGranularity));
                 }
-                marshal_VkExtent2D(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkExtent2D(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                    (VkExtent2D*)(pGranularity));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -17521,7 +17521,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkSubresourceLayout2KHR(m_state,
                                                                (VkSubresourceLayout2KHR*)(pLayout));
                 }
-                marshal_VkSubresourceLayout2KHR(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkSubresourceLayout2KHR(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                 (VkSubresourceLayout2KHR*)(pLayout));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -17586,7 +17586,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkSubresourceLayout2KHR(m_state,
                                                                (VkSubresourceLayout2KHR*)(pLayout));
                 }
-                marshal_VkSubresourceLayout2KHR(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkSubresourceLayout2KHR(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                 (VkSubresourceLayout2KHR*)(pLayout));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -18368,7 +18368,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pToolProperties) {
                     if (pToolCount) {
                         for (uint32_t i = 0; i < (uint32_t)(*(pToolCount)); ++i) {
-                            marshal_VkPhysicalDeviceToolProperties(
+                            gfxstream::host::vk::marshal_VkPhysicalDeviceToolProperties(
                                 vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                 (VkPhysicalDeviceToolProperties*)(pToolProperties + i));
                         }
@@ -19235,7 +19235,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkSubresourceLayout2KHR(m_state,
                                                                (VkSubresourceLayout2KHR*)(pLayout));
                 }
-                marshal_VkSubresourceLayout2KHR(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkSubresourceLayout2KHR(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                 (VkSubresourceLayout2KHR*)(pLayout));
                 vkStream->commitWrite();
                 vkReadStream->setReadPos((uintptr_t)(*readStreamPtrPtr) -
@@ -20201,7 +20201,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements(
                         m_state, (VkMemoryRequirements*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                              (VkMemoryRequirements*)(pMemoryRequirements));
                 vkStream->write(&vkCreateImageWithRequirementsGOOGLE_VkResult_return,
                                 sizeof(VkResult));
@@ -20302,7 +20302,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     transform_fromhost_VkMemoryRequirements(
                         m_state, (VkMemoryRequirements*)(pMemoryRequirements));
                 }
-                marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                gfxstream::host::vk::marshal_VkMemoryRequirements(vkStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                              (VkMemoryRequirements*)(pMemoryRequirements));
                 vkStream->write(&vkCreateBufferWithRequirementsGOOGLE_VkResult_return,
                                 sizeof(VkResult));
