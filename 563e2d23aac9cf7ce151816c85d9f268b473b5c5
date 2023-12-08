@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b940803_d936d305",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-08T18:06:21Z",
+      "side": 1,
+      "message": "Guest magma build seems broken:\n\n```\n../magma/magma_enc/magma_enc.cpp: In function ‘magma_status_t {anonymous}::magma_connection_read_performance_counter_completion_enc(void*, magma_connection_t, magma_perf_count_pool_t, uint32_t*, uint64_t*, uint32_t*, uint64_t*, uint32_t*)’:\n../magma/magma_enc/magma_enc.cpp:2134:25: error: ‘ALOGE’ was not declared in this scope\n 2134 |                         ALOGE(\"magma_connection_read_performance_counter_completion: GL communication error, please report this issue to b.android.com.\\n\");\n      |                         ^~~~~\n../magma/magma_enc/magma_enc.cpp: In function ‘magma_status_t {anonymous}::magma_virt_connection_create_image_enc(void*, magma_connection_t, magma_image_create_info_t*, uint64_t*, magma_buffer_t*, magma_buffer_id_t*)’:\n../magma/magma_enc/magma_enc.cpp:2191:25: error: ‘ALOGE’ was not declared in this scope\n 2191 |                         ALOGE(\"magma_virt_connection_create_image: GL communication error, please report this issue to b.android.com.\\n\");\n      |                         ^~~~~\n../magma/magma_enc/magma_enc.cpp: In function ‘magma_status_t {anonymous}::magma_virt_connection_get_image_info_enc(void*, magma_connection_t, magma_buffer_t, magma_image_info_t*)’:\n../magma/magma_enc/magma_enc.cpp:2238:25: error: ‘ALOGE’ was not declared in this scope\n 2238 |                         ALOGE(\"magma_virt_connection_get_image_info: GL communication error, please report this issue to b.android.com.\\n\");\n ```",
+      "revId": "563e2d23aac9cf7ce151816c85d9f268b473b5c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
