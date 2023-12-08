@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "950974c5_3717af54",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-08T17:24:29Z",
+      "side": 1,
+      "message": "Looks like it breaks the guest meson build:\n\n```\nIn file included from ../vulkan_enc/ResourceTracker.cpp:19:\n../vulkan_enc/../OpenglSystemCommon/HostConnection.h:24:10: fatal error: gfxstream/guest/ChecksumCalculator.h: No such file or directory\n   24 | #include \"gfxstream/guest/ChecksumCalculator.h\"\n      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\ncompilation terminated.\n[37/77] Compiling C++ object android-emu/aemu/base/libemu_android_base.a.p/AndroidSubAllocator.cpp.o\n```",
+      "revId": "719d2a2e172f8e4780ba0805873e49af5af1d4d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
