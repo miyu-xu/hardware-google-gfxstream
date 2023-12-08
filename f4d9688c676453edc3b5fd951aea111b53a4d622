@@ -16,6 +16,24 @@
       "message": "Kicked a build on Mac, let\u0027s wait for it.",
       "revId": "f4d9688c676453edc3b5fd951aea111b53a4d622",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "814e1c55_3d946458",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-12-08T23:28:15Z",
+      "side": 1,
+      "message": "Mac build failed at unittests https://android-build.corp.google.com/artifact/pending/P66603441/emulator-mac_aarch64_gfxstream/latest/view/logs%2Fbuild.log",
+      "parentUuid": "abc0eb1b_57b254b6",
+      "revId": "f4d9688c676453edc3b5fd951aea111b53a4d622",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
