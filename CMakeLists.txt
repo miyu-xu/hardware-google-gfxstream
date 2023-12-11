@@ -136,8 +136,6 @@ if(USE_ANGLE_SHADER_PARSER)
     add_compile_definitions(USE_ANGLE_SHADER_PARSER)
 endif()
 
-include(android.cmake)
-
 set(EXTRA_SUBDIR_TEST_INCLUDE_FILES)
 
 add_subdirectory(common)
