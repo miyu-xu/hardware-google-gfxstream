@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4cbe14f_7a58b3f6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-11T22:22:06Z",
+      "side": 1,
+      "message": "Can you confirm the cmake build still works? `hardware/google/gfxstream/common/vulkan/CMakeLists.txt` reference `android_license()` for example which IIUC is from this file.",
+      "revId": "04dbf17bbd48046318a308f0b9f2cedeb0984767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
