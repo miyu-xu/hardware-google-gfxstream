@@ -16,6 +16,24 @@
       "message": "In what scenarios will `scripts/build-nested-vulkan-loader.sh`?  By blueprint?",
       "revId": "cb5ce07c5583bb3608b6ce46d0512af6d7a26700",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "863aa295_086adab4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-11T17:31:48Z",
+      "side": 1,
+      "message": "The script is useful for anyone that wants to either debug or develop by running dEQP directly with Gfxstream ICD. Created aosp/2868395",
+      "parentUuid": "4205272d_76bce23a",
+      "revId": "cb5ce07c5583bb3608b6ce46d0512af6d7a26700",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
