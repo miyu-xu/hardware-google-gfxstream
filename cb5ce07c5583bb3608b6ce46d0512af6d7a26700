@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4205272d_76bce23a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-11T16:57:28Z",
+      "side": 1,
+      "message": "In what scenarios will `scripts/build-nested-vulkan-loader.sh`?  By blueprint?",
+      "revId": "cb5ce07c5583bb3608b6ce46d0512af6d7a26700",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
