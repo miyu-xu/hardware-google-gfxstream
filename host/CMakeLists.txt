@@ -143,8 +143,6 @@ if (APPLE)
         LINK_FLAGS  "-undefined dynamic_lookup -flat_namespace")
 endif()
 
-android_install_shared(gfxstream_backend)
-
 # Testing libraries
 add_subdirectory(testlibs)
 
