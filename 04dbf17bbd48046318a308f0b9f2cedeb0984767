@@ -16,6 +16,24 @@
       "message": "Can you confirm the cmake build still works? `hardware/google/gfxstream/common/vulkan/CMakeLists.txt` reference `android_license()` for example which IIUC is from this file.",
       "revId": "04dbf17bbd48046318a308f0b9f2cedeb0984767",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f6be937_69ebefee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-11T22:41:58Z",
+      "side": 1,
+      "message": "I removed references to `android_license()` and `android_install()` to make it work,\n\n`android_install()` is small function that can be recreated using CMake primitives and I\u0027m not if anyone actually installs to a proper sysroot [meson build is better for that, AEMU uses unified Cmake not this one].",
+      "parentUuid": "a4cbe14f_7a58b3f6",
+      "revId": "04dbf17bbd48046318a308f0b9f2cedeb0984767",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
