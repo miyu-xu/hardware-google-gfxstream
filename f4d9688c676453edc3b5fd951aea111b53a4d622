@@ -34,6 +34,24 @@
       "parentUuid": "abc0eb1b_57b254b6",
       "revId": "f4d9688c676453edc3b5fd951aea111b53a4d622",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a3d0467_b8fc29e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-11T03:37:00Z",
+      "side": 1,
+      "message": "Fixed (see checks tab for emulator*-gfxstream runs).",
+      "parentUuid": "814e1c55_3d946458",
+      "revId": "f4d9688c676453edc3b5fd951aea111b53a4d622",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
