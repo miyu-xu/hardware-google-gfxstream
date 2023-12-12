@@ -54,6 +54,11 @@ struct CompositorVkBase : public vk_util::MultiCrtp<CompositorVkBase,         //
     VkCommandPool m_vkCommandPool;
     // TODO: create additional VkSampler-s for YCbCr layers.
     VkSampler m_vkSampler;
+    struct DefaultImage {
+        VkImage m_vkImage = VK_NULL_HANDLE;
+        VkImageView m_vkImageView = VK_NULL_HANDLE;
+        VkDeviceMemory m_vkImageMemory = VK_NULL_HANDLE;
+    } m_defaultImage;
 
     // The underlying storage for all of the uniform buffer objects.
     struct UniformBufferStorage {
@@ -71,6 +76,8 @@ struct CompositorVkBase : public vk_util::MultiCrtp<CompositorVkBase,         //
     struct UniformBufferBinding {
         alignas(16) glm::mat4 positionTransform;
         alignas(16) glm::mat4 texCoordTransform;
+        glm::uvec4 mode;
+        glm::vec4 color;
     };
 
     // The cached contents of a given descriptor set.
@@ -155,6 +162,7 @@ class CompositorVk : protected CompositorVkBase, public Compositor {
     void setUpUniformBuffers();
     void setUpCommandPool();
     void setUpFences();
+    void setUpDefaultImage();
     void setUpFrameResourceFutures();
 
     std::optional<std::tuple<VkBuffer, VkDeviceMemory>> createBuffer(VkDeviceSize,
