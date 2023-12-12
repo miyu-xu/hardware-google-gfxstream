@@ -71,6 +71,8 @@ struct CompositorVkBase : public vk_util::MultiCrtp<CompositorVkBase,         //
     struct UniformBufferBinding {
         alignas(16) glm::mat4 positionTransform;
         alignas(16) glm::mat4 texCoordTransform;
+        alignas(16) glm::uvec4 mode;
+        alignas(16) glm::vec4 color;
     };
 
     // The cached contents of a given descriptor set.

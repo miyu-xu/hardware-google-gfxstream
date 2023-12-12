@@ -728,18 +728,22 @@ void CompositorVk::buildCompositionVk(const CompositionRequest& compositionReque
     compositionVk->targetFramebuffer = targetImageRenderTarget->m_vkFramebuffer;
 
     for (const CompositionRequestLayer& layer : compositionRequest.layers) {
-        // TODO(b/315817323): handle properly.
+        uint32_t sourceImageWidth = 0;
+        uint32_t sourceImageHeight = 0;
+        const BorrowedImageInfoVk* sourceImage = nullptr;
+
         if (layer.props.composeMode == HWC2_COMPOSITION_SOLID_COLOR) {
-            continue;
-        }
+            sourceImageWidth = targetWidth;
+            sourceImageHeight = targetHeight;
+        } else {
+            sourceImage = getInfoOrAbort(layer.source);
+            if (!canCompositeFrom(sourceImage->imageCreateInfo)) {
+                continue;
+            }
 
-        const BorrowedImageInfoVk* sourceImage = getInfoOrAbort(layer.source);
-        if (!canCompositeFrom(sourceImage->imageCreateInfo)) {
-            continue;
+            sourceImageWidth = sourceImage->width;
+            sourceImageHeight = sourceImage->height;
         }
-
-        const uint32_t sourceImageWidth = sourceImage->width;
-        const uint32_t sourceImageHeight = sourceImage->height;
 
         // Calculate the posTransform and the texcoordTransform needed in the
         // uniform of the Compositor.vert shader. The posTransform should transform
@@ -801,11 +805,7 @@ void CompositorVk::buildCompositionVk(const CompositionRequest& compositionReque
                 break;
         }
 
-        const DescriptorSetContents descriptorSetContents = {
-            .binding0 =
-                {
-                    .sampledImageView = sourceImage->imageView,
-                },
+        DescriptorSetContents descriptorSetContents = {
             .binding1 = {
                 .positionTransform =
                     glm::translate(glm::mat4(1.0f), glm::vec3(posTranslateX, posTranslateY, 0.0f)) *
@@ -815,7 +815,25 @@ void CompositorVk::buildCompositionVk(const CompositionRequest& compositionReque
                                    glm::vec3(texCoordTranslateX, texCoordTranslateY, 0.0f)) *
                     glm::scale(glm::mat4(1.0f), glm::vec3(texCoordScaleX, texCoordScaleY, 1.0f)) *
                     glm::rotate(glm::mat4(1.0f), texcoordRotation, glm::vec3(0.0f, 0.0f, 1.0f)),
-            }};
+            },
+        };
+
+        descriptorSetContents.binding1.mode.x = static_cast<uint32_t>(layer.props.composeMode);
+        if (layer.props.composeMode == HWC2_COMPOSITION_SOLID_COLOR) {
+            ERR("jasonjason doing solid\n");
+            descriptorSetContents.binding1.color = glm::vec4(
+                static_cast<float>(layer.props.color.r) / 255.0f,
+                static_cast<float>(layer.props.color.g) / 255.0f,
+                static_cast<float>(layer.props.color.b) / 255.0f,
+                static_cast<float>(layer.props.color.a) / 255.0f);
+        } else {
+            if (sourceImage == nullptr) {
+                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                    << "CompositorVk failed to find sourceImage.";
+            }
+            descriptorSetContents.binding0.sampledImageView = sourceImage->imageView;
+        }
+
         compositionVk->layersDescriptorSets.descriptorSets.emplace_back(descriptorSetContents);
         compositionVk->layersSourceImages.emplace_back(sourceImage);
     }
