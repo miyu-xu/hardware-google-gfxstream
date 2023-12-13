@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "16ba90bb_bc17e585",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-13T19:59:11Z",
+      "side": 1,
+      "message": "PTAL Updated to also use `alpha` from the layer.",
+      "revId": "c1322382864b367f928da59ebe4e47c3d9a0cc20",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
