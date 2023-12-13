@@ -16,6 +16,23 @@
       "message": "Doesn\u0027t seem to be working for me. I\u0027m testing on API 34.",
       "revId": "487740e5ae4958accf19d60aaf4cb54edef6c398",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "df8fb688_d771934c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2023-12-13T18:41:06Z",
+      "side": 1,
+      "message": "It seems API 34 is not using Vulkan composition. So there\u0027s a bug in the GL composition.",
+      "revId": "487740e5ae4958accf19d60aaf4cb54edef6c398",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
