@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c5afc28_9ff3387e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1140244
+      },
+      "writtenOn": "2023-12-14T00:13:28Z",
+      "side": 1,
+      "message": "Could this cause the following emulator build failures? https://android-build.corp.google.com/artifact/submitted/11217109/emulator-windows_x64_gfxstream/latest/view/logs%2Fbuild_tee_error.log\n\nIf yes, lets revert unless there is a quick fix.",
+      "revId": "3b39fa5e053cbc79a96a73a1e0b4e1102f96439f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
