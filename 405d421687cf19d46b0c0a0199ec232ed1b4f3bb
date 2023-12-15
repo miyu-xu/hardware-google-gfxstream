@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f61f1b26_ed530b53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-15T17:45:56Z",
+      "side": 1,
+      "message": "One change needed for main targets:\n\nhttps://googleplex-android-review.git.corp.google.com/c/platform/frameworks/native/+/25673366\n\nBut otherwise, should be fairly testable/runnable on AOSP builds.",
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
