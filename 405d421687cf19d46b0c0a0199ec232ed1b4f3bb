@@ -3,6 +3,75 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "b529ddeb_abedd4ad",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-16T00:16:46Z",
+      "side": 1,
+      "message": "+1 to making these all completely self contained libraries with no dynamic links for anything Gfxstream. This will help simplify sepolicy files + packaging.\n\nHopefully we can also migrate the names to `libGLESv1_gfxstream` + `libGLESv2_gfxstream` + `libvulkan_gfxstream` too 😊!",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 8
+      },
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "add0a5ee_3768fc7e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-16T00:16:46Z",
+      "side": 1,
+      "message": "Still +1 to doing this, but I think we would need to increase testing around \"Process Pipe\"/\"PerProcessResources\" on the host.",
+      "range": {
+        "startLine": 67,
+        "startChar": 31,
+        "endLine": 68,
+        "endChar": 7
+      },
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45545aeb_bd130a55",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-16T00:16:46Z",
+      "side": 1,
+      "message": "I think that the existing `HostConnection` instance in the end2end tests is mostly so that we can sneak in the mock Gralloc/AHB/ANW classes. Eventually, the `end2end` tests should not know anything about any Gfxstream internals (`HostConnection`/`VirtGpuDevice`/etc) and are simply a convenient area to run tests using only GL, VK, `virtio-gpu-gfxstream-renderer.h`. I think the existing mock classes can be moved into `platform` either into the existing `rutabaga` variant or a new `rutabaga_testing`/`rutabaga_android`/whatever-name. WDYT?",
+      "range": {
+        "startLine": 68,
+        "startChar": 49,
+        "endLine": 70,
+        "endChar": 50
+      },
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "f61f1b26_ed530b53",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 9
@@ -14,6 +83,46 @@
       "writtenOn": "2023-12-15T17:45:56Z",
       "side": 1,
       "message": "One change needed for main targets:\n\nhttps://googleplex-android-review.git.corp.google.com/c/platform/frameworks/native/+/25673366\n\nBut otherwise, should be fairly testable/runnable on AOSP builds.",
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1eb32b85_10d10f8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-16T00:16:46Z",
+      "side": 1,
+      "message": "-1 for now just to indicate I have not had time to fully look through this and just want to send out some top level comments for now.",
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "907a81d1_4f8d5f9f",
+        "filename": "guest/vulkan/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-16T00:16:46Z",
+      "side": 1,
+      "message": "Still trying to parse through all of this, but shouldn\u0027t the Android build not depend on any parts of Mesa since WSI is handled by the platform?",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 48,
+        "endChar": 40
+      },
       "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
