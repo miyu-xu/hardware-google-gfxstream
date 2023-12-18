@@ -84,7 +84,7 @@ cc_defaults {
         "-Wno-typedef-redefinition",
         "-Wno-uninitialized",
         "-Wno-implicit-const-int-float-conversion",
-        "-Wno-sync-alignment",
+        // "-Wno-sync-alignment",
         "-Wno-visibility",
         "-Wno-implicit-function-declaration",
         "-Wno-int-conversion",
