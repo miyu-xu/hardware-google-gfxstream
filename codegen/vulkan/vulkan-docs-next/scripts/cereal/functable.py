@@ -167,6 +167,12 @@ TYPES_TRANSFORM_LIST_METHOD = {
     "VkSemaphoreSubmitInfo",
 }
 
+# Types that have a corresponding method for transforming
+# an input parameter to its internal counterpart
+TYPES_TRANSFORM_PARAM_METHOD = {
+    "VkWriteDescriptorSet",
+}
+
 def is_cmdbuf_dispatch(api):
     return "VkCommandBuffer" == api.parameters[0].typeName
 
@@ -508,6 +514,19 @@ class VulkanFuncTable(VulkanWrapperGenerator):
             for param in outParams:
                 if not translationRequired(param.typeName):
                     continue
+                elif param.typeName in TYPES_TRANSFORM_PARAM_METHOD:
+                    # Use the corresponding transformList call
+                    countParamName = None
+                    if "len" in param.attribs:
+                        countParamName = param.attribs["len"]
+                    internalArrayName = "internal_%s" % param.paramName
+                    storageType = "%sListTransformStorage" % (param.typeName)
+                    storageVarName = "%sListTransformStorage" % (param.paramName)
+                    cgen.stmt("%s %s" % (storageType, storageVarName))
+                    cgen.funcCall("std::vector<%s> %s" % (param.typeName, internalArrayName),
+                                  transformListFuncName(param.typeName),
+                                  [param.paramName, countParamName, storageVarName])
+                    param.paramName = "%s.data()" % internalArrayName
                 elif isArrayParam(param) or isCompoundType(param.typeName):
                     if param.possiblyOutput():
                         print("ERROR: Unhandled CompoundType / Array output for API %s (param %s)" % (api.name, param.paramName))
