@@ -70,6 +70,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f1cf134_4f4e294b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-18T16:36:29Z",
+      "side": 1,
+      "message": "This change does move Gralloc/AHB/ANW to `TestingAndroidWsi`, with the same idea of not exposing internals.  \n\nThe `END2END_TESTS` compiler directive was needed to make the end2end tests pass.  For example, `usage3` of `VkNativeAndroidBufferAndroid` now passes in the `ahb-\u003eResourceId()`.\n\nThis is because with different `HostConnection` instances, the testing layer ends up with different instances of `RutabagaLayer` (which previously provided `resource_id`).\n\nSince `libgfxstream_backend.so` is shared, `stream_renderer_assign_id` is used to query the resource_id now.\n \nOverall, I think moving internals like `HostConnection` inside gfxstream is a good idea.  Maybe if the `VirtGpuDevice` layer is good enough, maybe we make minigbm use it long-term too and add a host build there.  Not sure how to test hwcomposer too.",
+      "parentUuid": "45545aeb_bd130a55",
+      "range": {
+        "startLine": 68,
+        "startChar": 49,
+        "endLine": 70,
+        "endChar": 50
+      },
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "f61f1b26_ed530b53",
@@ -117,6 +141,30 @@
       "writtenOn": "2023-12-16T00:16:46Z",
       "side": 1,
       "message": "Still trying to parse through all of this, but shouldn\u0027t the Android build not depend on any parts of Mesa since WSI is handled by the platform?",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 48,
+        "endChar": 40
+      },
+      "revId": "405d421687cf19d46b0c0a0199ec232ed1b4f3bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f586548_52d2c4e5",
+        "filename": "guest/vulkan/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-18T16:36:29Z",
+      "side": 1,
+      "message": "`struct gfxstream_vk_physical_device` (defined in gfxstream_vk_private.h) does embed `struct wsi_device` and needs to initialize the WSI entry-points [for Linux guest].  It is possible to `ifdef (ANDROID)` that part and `gfxstream_vk_device.cpp` uses the WSI code, but I thought it was cleaner just to build it for now.  Plus, Android\u0027s libvulkan is smart enough to consider the case where the underlying driver may provide vkCreateSwapchainKHR and this provides a test case of that.",
+      "parentUuid": "907a81d1_4f8d5f9f",
       "range": {
         "startLine": 42,
         "startChar": 8,
