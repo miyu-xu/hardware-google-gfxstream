@@ -243,4 +243,15 @@ std::vector<VkSemaphore> transformVkSemaphoreList(const VkSemaphore* pSemaphores
 std::vector<VkSemaphoreSubmitInfo> transformVkSemaphoreSubmitInfoList(
     const VkSemaphoreSubmitInfo* pSemaphoreSubmitInfos, uint32_t semaphoreSubmitInfoCount);
 
+struct VkWriteDescriptorSetListTransformStorage {
+    std::vector<std::vector<VkDescriptorImageInfo>> imageInfos;
+    std::vector<std::vector<VkDescriptorBufferInfo>> bufferInfos;
+    std::vector<std::vector<VkBufferView>> texelBuffers;
+};
+
+std::vector<VkWriteDescriptorSet> transformVkWriteDescriptorSetList(
+    const VkWriteDescriptorSet* pDescriptorSets,
+    uint32_t descriptorSetCount,
+    VkWriteDescriptorSetListTransformStorage& storage);
+
 #endif /* GFXSTREAM_VK_PRIVATE_H */
