@@ -92,56 +92,60 @@ std::vector<VkWriteDescriptorSet> transformVkWriteDescriptorSetList(
     VkWriteDescriptorSetListTransformStorage& storage) {
     std::vector<VkWriteDescriptorSet> outDescriptorSets(descriptorSetCount);
     for (uint32_t i = 0; i < descriptorSetCount; ++i) {
-        /* VkWriteDescriptorSet::pImageInfo */
+        const auto& srcDescriptorSet = pDescriptorSets[i];
+        const uint32_t descriptorCount = srcDescriptorSet.descriptorCount;
+
+        VkWriteDescriptorSet& outDescriptorSet = outDescriptorSets[i];
+        outDescriptorSet = srcDescriptorSet;
+
         storage.imageInfos.push_back(std::vector<VkDescriptorImageInfo>());
-        storage.imageInfos[i].reserve(pDescriptorSets[i].descriptorCount);
-        memset(&storage.imageInfos[i][0], 0,
-               sizeof(VkDescriptorImageInfo) * pDescriptorSets[i].descriptorCount);
-        for (uint32_t j = 0; j < pDescriptorSets[i].descriptorCount; ++j) {
-            if (pDescriptorSets[i].pImageInfo) {
-                storage.imageInfos[i][j] = pDescriptorSets[i].pImageInfo[j];
-                /* VkDescriptorImageInfo::imageView */
-                if (storage.imageInfos[i][j].imageView) {
-                    VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstream_imageView,
-                                   storage.imageInfos[i][j].imageView);
-                    storage.imageInfos[i][j].imageView = gfxstream_imageView->internal_object;
+        storage.imageInfos[i].reserve(descriptorCount);
+        memset(&storage.imageInfos[i][0], 0, sizeof(VkDescriptorImageInfo) * descriptorCount);
+        for (uint32_t j = 0; j < descriptorCount; ++j) {
+            const auto* srcImageInfo = srcDescriptorSet.pImageInfo;
+            if (srcImageInfo) {
+                storage.imageInfos[i][j] = srcImageInfo[j];
+                storage.imageInfos[i][j].imageView = VK_NULL_HANDLE;
+                if (vkDescriptorTypeHasImageView(srcDescriptorSet.descriptorType) &&
+                    srcImageInfo[j].imageView) {
+                    VK_FROM_HANDLE(gfxstream_vk_image_view, gfxstreamImageView,
+                                   srcImageInfo[j].imageView);
+                    storage.imageInfos[i][j].imageView = gfxstreamImageView->internal_object;
                 }
             }
         }
-        outDescriptorSets[i].pImageInfo = storage.imageInfos[i].data();
+        outDescriptorSet.pImageInfo = storage.imageInfos[i].data();
 
-        /* VkWriteDescriptorSet::pBufferInfo */
         storage.bufferInfos.push_back(std::vector<VkDescriptorBufferInfo>());
-        storage.bufferInfos[i].reserve(pDescriptorSets[i].descriptorCount);
-        memset(&storage.bufferInfos[i][0], 0,
-               sizeof(VkDescriptorBufferInfo) * pDescriptorSets[i].descriptorCount);
-        for (uint32_t j = 0; j < pDescriptorSets[i].descriptorCount; ++j) {
-            if (pDescriptorSets[i].pBufferInfo) {
-                storage.bufferInfos[i][j] = pDescriptorSets[i].pBufferInfo[j];
-                /* VkDescriptorBufferInfo::buffer */
-                if (storage.bufferInfos[i][j].buffer) {
-                    VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                                   storage.bufferInfos[i][j].buffer);
-                    storage.bufferInfos[i][j].buffer = gfxstream_buffer->internal_object;
+        storage.bufferInfos[i].reserve(descriptorCount);
+        memset(&storage.bufferInfos[i][0], 0, sizeof(VkDescriptorBufferInfo) * descriptorCount);
+        for (uint32_t j = 0; j < descriptorCount; ++j) {
+            const auto* srcBufferInfo = srcDescriptorSet.pBufferInfo;
+            if (srcBufferInfo) {
+                storage.bufferInfos[i][j] = srcBufferInfo[j];
+                storage.bufferInfos[i][j].buffer = VK_NULL_HANDLE;
+                if (vkDescriptorTypeHasDescriptorBuffer(srcDescriptorSet.descriptorType) &&
+                    srcBufferInfo[j].buffer) {
+                    VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstreamBuffer, srcBufferInfo[j].buffer);
+                    storage.bufferInfos[i][j].buffer = gfxstreamBuffer->internal_object;
                 }
             }
         }
-        outDescriptorSets[i].pBufferInfo = storage.bufferInfos[i].data();
+        outDescriptorSet.pBufferInfo = storage.bufferInfos[i].data();
 
-        /* VkWriteDescriptorSet::pTexelBufferView */
         storage.texelBuffers.push_back(std::vector<VkBufferView>());
-        storage.texelBuffers[i].reserve(pDescriptorSets[i].descriptorCount);
-        memset(&storage.texelBuffers[i][0], 0,
-               sizeof(VkBufferView) * pDescriptorSets[i].descriptorCount);
-        for (uint32_t j = 0; j < pDescriptorSets[i].descriptorCount; ++j) {
-            if (pDescriptorSets[i].pTexelBufferView) {
-                VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstream_pTexelBufferView,
-                               pDescriptorSets[i].pTexelBufferView[j]);
-                storage.texelBuffers[i][j] = gfxstream_pTexelBufferView->internal_object;
+        storage.texelBuffers[i].reserve(descriptorCount);
+        memset(&storage.texelBuffers[i][0], 0, sizeof(VkBufferView) * descriptorCount);
+        for (uint32_t j = 0; j < descriptorCount; ++j) {
+            const auto* srcBufferView = srcDescriptorSet.pTexelBufferView;
+            if (vkDescriptorTypeHasTexelBuffer(srcDescriptorSet.descriptorType) &&
+                srcBufferView) {
+                VK_FROM_HANDLE(gfxstream_vk_buffer_view, gfxstreamBufferView, srcBufferView[j]);
+                storage.texelBuffers[i][j] =
+                    gfxstreamBufferView->internal_object;
             }
         }
-        outDescriptorSets[i].pTexelBufferView = storage.texelBuffers[i].data();
+        outDescriptorSet.pTexelBufferView = storage.texelBuffers[i].data();
     }
-
     return outDescriptorSets;
 }
