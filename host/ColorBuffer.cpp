@@ -71,11 +71,11 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
             vk::ColorBufferVk::create(handle, width, height, format, frameworkFormat, vulkanOnly,
                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         if (!colorBuffer->mColorBufferVk) {
+            ERR("Failed to initialize ColorBufferVk.");
             if (emulationGl) {
                 // Historically, ColorBufferVk setup was deferred until the first actual Vulkan
                 // usage. This allowed ColorBufferVk setup failures to be unintentionally avoided.
             } else {
-                ERR("Failed to initialize ColorBufferVk.");
                 return nullptr;
             }
         }

@@ -1420,9 +1420,29 @@ static void rcCloseBuffer(uint32_t buffer) {
 
 static int rcSetColorBufferVulkanMode2(uint32_t colorBuffer, uint32_t mode,
                                        uint32_t memoryProperty) {
+/*    FrameBuffer* fb = FrameBuffer::getFB();
 #define VULKAN_MODE_VULKAN_ONLY 1
 
     bool modeIsVulkanOnly = mode == VULKAN_MODE_VULKAN_ONLY;
+
+    int width;
+    int height;
+    GLint internalFormat;
+    FrameworkFormat frameworkFormat;
+
+    if (!fb->getColorBufferInfo(colorBuffer, &width, &height,
+                                &internalFormat, &frameworkFormat)) {
+        return false;
+    }
+
+    if (!vk::setupVkColorBuffer(width, height, internalFormat,
+                             frameworkFormat, colorBuffer,
+                             modeIsVulkanOnly, memoryProperty)) {
+        fprintf(stderr,
+                "%s: error: failed to create VkImage for colorBuffer 0x%x\n",
+                __func__, colorBuffer);
+        return -1;
+    }*/
 
     if (!vk::setColorBufferVulkanMode(colorBuffer, mode)) {
         fprintf(stderr,

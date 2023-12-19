@@ -1967,7 +1967,7 @@ class VkDecoderGlobalState::Impl {
 
         *pFence = VK_NULL_HANDLE;
 
-        if (exportSyncFd) {
+        /*if (exportSyncFd) {
             // Remove VkExportFenceCreateInfo, since host doesn't need to create
             // an exportable fence in this case
             ExternalFencePool<VulkanDispatch>* externalFencePool = nullptr;
@@ -1982,7 +1982,7 @@ class VkDecoderGlobalState::Impl {
             if (*pFence != VK_NULL_HANDLE) {
                 fenceReused = true;
             }
-        }
+        }*/
 
         if (*pFence == VK_NULL_HANDLE) {
             VkResult res = vk->vkCreateFence(device, &createInfo, pAllocator, pFence);
@@ -2022,14 +2022,16 @@ class VkDecoderGlobalState::Impl {
             for (uint32_t i = 0; i < fenceCount; i++) {
                 if (pFences[i] == VK_NULL_HANDLE) continue;
 
-                DCHECK(mFenceInfo.find(pFences[i]) != mFenceInfo.end());
+                /*DCHECK(mFenceInfo.find(pFences[i]) != mFenceInfo.end());
                 if (mFenceInfo[pFences[i]].external) {
                     externalFences.push_back(pFences[i]);
                 } else {
                     // Reset all fences' states to kNotWaitable.
                     cleanedFences.push_back(pFences[i]);
                     mFenceInfo[pFences[i]].state = FenceInfo::State::kNotWaitable;
-                }
+                }*/
+                cleanedFences.push_back(pFences[i]);
+                mFenceInfo[pFences[i]].state = FenceInfo::State::kNotWaitable;
             }
         }
 
@@ -2037,7 +2039,7 @@ class VkDecoderGlobalState::Impl {
 
         // For external fences, we unilaterally put them in the pool to ensure they finish
         // TODO: should store creation info / pNext chain per fence and re-apply?
-        VkFenceCreateInfo createInfo{
+        /*VkFenceCreateInfo createInfo{
             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, .pNext = 0, .flags = 0};
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
         if (!deviceInfo) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
@@ -2063,7 +2065,8 @@ class VkDecoderGlobalState::Impl {
 
                 mFenceInfo[fence].boxed = VK_NULL_HANDLE;
             }
-        }
+        }*/
+                // Reset all fences' states to kNotWaitable.
 
         return VK_SUCCESS;
     }

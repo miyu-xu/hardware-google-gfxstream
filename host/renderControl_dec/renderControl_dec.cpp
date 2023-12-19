@@ -731,7 +731,7 @@ size_t renderControl_decoder_context_t::decode(void *buf, size_t len, IOStream *
 			size_t totalTmpSize = sizeof(int);
 			totalTmpSize += checksumSize;
 			unsigned char *tmpBuf = stream->alloc(totalTmpSize);
-			DECODER_DEBUG_LOG("renderControl(%p): rcUpdateColorBufferDMA(colorbuffer:0x%08x x:0x%08x y:0x%08x width:0x%08x height:0x%08x format:0x%08x type:0x%08x pixels:%p(%u) pixels_size:0x%08x )", stream, var_colorbuffer, var_x, var_y, var_width, var_height, var_format, var_type, var_pixels, var_pixels_size);
+			DECODER_DEBUG_LOG("renderControl(%p): rcUpdateColorBufferDMA(colorbuffer:0x%08x x:0x%08x y:0x%08x width:0x%08x height:0x%08x format:0x%08x type:0x%08x pixels:%p pixels_size:0x%08x )", stream, var_colorbuffer, var_x, var_y, var_width, var_height, var_format, var_type, var_pixels, var_pixels_size);
 			*(int *)(&tmpBuf[0]) = 			this->rcUpdateColorBufferDMA(var_colorbuffer, var_x, var_y, var_width, var_height, var_format, var_type, var_pixels, var_pixels_size);
 			stream->unlockDma(var_pixels_guest_paddr);
 			if (useChecksum) {
@@ -1351,7 +1351,7 @@ size_t renderControl_decoder_context_t::decode(void *buf, size_t len, IOStream *
 			size_t totalTmpSize = sizeof(int);
 			totalTmpSize += checksumSize;
 			unsigned char *tmpBuf = stream->alloc(totalTmpSize);
-			DECODER_DEBUG_LOG("renderControl(%p): rcReadColorBufferDMA(colorbuffer:0x%08x x:0x%08x y:0x%08x width:0x%08x height:0x%08x format:0x%08x type:0x%08x pixels:%p(%u) pixels_size:0x%08x )", stream, var_colorbuffer, var_x, var_y, var_width, var_height, var_format, var_type, var_pixels, var_pixels_size);
+			DECODER_DEBUG_LOG("renderControl(%p): rcReadColorBufferDMA(colorbuffer:0x%08x x:0x%08x y:0x%08x width:0x%08x height:0x%08x format:0x%08x type:0x%08x pixels:%p pixels_size:0x%08x )", stream, var_colorbuffer, var_x, var_y, var_width, var_height, var_format, var_type, var_pixels, var_pixels_size);
 			*(int *)(&tmpBuf[0]) = 			this->rcReadColorBufferDMA(var_colorbuffer, var_x, var_y, var_width, var_height, var_format, var_type, var_pixels, var_pixels_size);
 			stream->unlockDma(var_pixels_guest_paddr);
 			if (useChecksum) {
