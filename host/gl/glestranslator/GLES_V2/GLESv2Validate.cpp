@@ -16,6 +16,10 @@
 #include "GLESv2Validate.h"
 #include <string.h>
 
+#ifndef GL_TEXTURE_1D
+#define GL_TEXTURE_1D 0x0DE0
+#endif
+
 #define LIST_VALID_TEXFORMATS(f) \
     f(GL_DEPTH_COMPONENT) \
     f(GL_DEPTH_STENCIL) \
@@ -345,6 +349,7 @@ bool GLESv2Validate::textureTarget(GLEScontext* ctx, GLenum target) {
     int glesMajorVersion = ctx->getMajorVersion();
     int glesMinorVersion = ctx->getMinorVersion();
     switch (target) {
+    case GL_TEXTURE_1D:
     case GL_TEXTURE_2D:
     case GL_TEXTURE_CUBE_MAP:
         return true;

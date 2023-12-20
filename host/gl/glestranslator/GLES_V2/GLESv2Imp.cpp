@@ -52,6 +52,9 @@
 #include <numeric>
 #include <unordered_map>
 
+#ifndef GL_TEXTURE_1D
+#define GL_TEXTURE_1D 0x0DE0
+#endif
 
 #ifdef _MSC_VER
 #include "aemu/base/msvc.h"
@@ -231,6 +234,7 @@ GL_APICALL GLuint GL_APIENTRY glGetDebugMessageLog(GLuint count, GLsizei size, G
 GL_APICALL void GL_APIENTRY glPushDebugGroup(GLenum source, GLuint id, GLsizei length, const GLchar* message);
 GL_APICALL void GL_APIENTRY glPopDebugGroup(void);
 
+GL_APICALL void GL_APIENTRY glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
 
 } // namespace gles2
 } // namespace translator
@@ -3631,6 +3635,11 @@ GL_APICALL void  GL_APIENTRY glTexImage2D(GLenum target, GLint level, GLint inte
         fprintf(stderr, "%s: got err :( 0x%x internal 0x%x format 0x%x type 0x%x\n", __func__, err, internalformat, format, type);
         ctx->setGLerror(err);                                    \
     }
+}
+
+GL_APICALL void  GL_APIENTRY glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid* pixels){
+    GET_CTX_V2();
+    ctx->dispatcher().glTexImage1D(target,level,internalformat,width,border,format,type,pixels);
 }
 
 static void sEmulateUserTextureSwizzle(TextureData* texData,

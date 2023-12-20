@@ -24,6 +24,6 @@
   X(GLuint, glGetDebugMessageLogKHR, (GLuint count, GLsizei bufSize, GLenum * sources, GLenum * types, GLuint * ids, GLenum * severities, GLsizei * lengths, GLchar * messageLog), (count, bufSize, sources, types, ids, severities, lengths, messageLog)) \
   X(void, glPushDebugGroupKHR, (GLenum source, GLuint id, GLsizei length, const GLchar* message), (source, id, length, message)) \
   X(void, glPopDebugGroupKHR, (), ()) \
-
+  X(void, glTexImage1D, (GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid* pixels), (target, level, internalformat, width, border, format, type, pixels)) \
 
 #endif  // GLES2_EXTENSIONS_FUNCTIONS_H

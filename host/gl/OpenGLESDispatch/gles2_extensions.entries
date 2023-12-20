@@ -24,3 +24,4 @@ void glDebugMessageCallbackKHR(GLDEBUGPROCKHR callback, const void *userParam);
 GLuint glGetDebugMessageLogKHR(GLuint count, GLsizei bufSize, GLenum *sources, GLenum *types, GLuint *ids, GLenum *severities, GLsizei *lengths, GLchar *messageLog);
 void glPushDebugGroupKHR(GLenum source, GLuint id, GLsizei length, const GLchar* message);
 void glPopDebugGroupKHR(void);
+void glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid* pixels);

@@ -31,6 +31,10 @@
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/opengl/misc.h"
 
+#ifndef GL_TEXTURE_1D
+#define GL_TEXTURE_1D 0x0DE0
+#endif
+
 #define DEBUG_CB_FBO 0
 
 using android::base::ManagedDescriptor;
@@ -253,6 +257,23 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
     GLint prevUnpackAlignment;
     s_gles2.glGetIntegerv(GL_UNPACK_ALIGNMENT, &prevUnpackAlignment);
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    GLuint tex1d;
+    s_gles2.glGenTextures(1, &tex1d);
+    s_gles2.glBindTexture(GL_TEXTURE_1D, tex1d);
+    GLenum err = s_gles2.glGetError();
+    if (err) {
+        
+        printf("get error pre allocating 1d tex %d\n", err);
+    }
+    s_gles2.glTexImage1D(GL_TEXTURE_1D, 0, p_internalFormat, 16384, 0, texFormat, GL_UNSIGNED_BYTE, nullptr);
+    err = s_gles2.glGetError();
+    if (err) {
+        printf("get error after allocating 1d tex %d\n", err);
+    } else {
+        printf("allocating 1d tex success\n");
+    }
+    s_gles2.glDeleteTextures(1, &tex1d);
 
     s_gles2.glGenTextures(1, &cb->m_tex);
     s_gles2.glBindTexture(GL_TEXTURE_2D, cb->m_tex);
