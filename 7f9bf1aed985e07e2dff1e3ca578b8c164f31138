@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acebbffa_eb6149c5",
+        "filename": "guest/mesa/.clang-format",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T18:32:17Z",
+      "side": 1,
+      "message": "Is this empty just to prevent using the top level .clang-format and use mesa style? Maybe leave a comment if so.",
+      "revId": "7f9bf1aed985e07e2dff1e3ca578b8c164f31138",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afa683f0_7e7430a4",
+        "filename": "guest/mesa/.clang-format-ignore",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T18:32:17Z",
+      "side": 1,
+      "message": "Can delete this since `src/amd` not imported.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "7f9bf1aed985e07e2dff1e3ca578b8c164f31138",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe5c5069_5f09e131",
+        "filename": "guest/mesa/src/c11/impl/threads_posix.c",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T18:32:17Z",
+      "side": 1,
+      "message": "Looks like this adds a boost license to Gfxstream. Please update the licensing rules accordingly.",
+      "range": {
+        "startLine": 5,
+        "startChar": 1,
+        "endLine": 5,
+        "endChar": 61
+      },
+      "revId": "7f9bf1aed985e07e2dff1e3ca578b8c164f31138",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
