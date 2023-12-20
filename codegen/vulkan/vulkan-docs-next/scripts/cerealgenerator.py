@@ -452,6 +452,7 @@ using DlSymFunc = void* (void*, const char*);
         extensionStructsInclude = f"""
 {self.hostCommonExtraVulkanHeaders}
 #include "goldfish_vk_private_defs.h"
+#include "host-common/GfxstreamFatalError.h"
 """
 
         extensionStructsIncludeGuest = """
