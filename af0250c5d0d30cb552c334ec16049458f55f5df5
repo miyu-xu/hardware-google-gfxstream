@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "08122b83_13944e08",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "Given the change to `gfxstream_vk_private.h` and that entry points are created by a `genrule`/ not checked-in / not visible, please create a `guest/vulkan_enc/README.md` or `guest/vulkan/README.md` that explains the new flow across the layers.\n\nI guess ideally you could start with a snippet like:\n\n```\n// [1]\nauto* vkGetInstanceProcAddr \u003d dlsym(\u003cgfxstream lib\u003e, \u0027vkGetInstanceProcAddr\u0027);\n\n// [2]\nauto* vkCreateInstance \u003d vkGetInstanceProcAddr(VK_NULL_HANDLE, \u0027vkCreateInstance\u0027);\n\n// [3]\nVkInstance instance \u003d vkCreateInstance(...);\n\n// [4]\nauto* vkCreateDevice \u003d vkGetInstanceProcAddr(instance, \u0027vkCreateDevice\u0027);\n\n// [5]\nauto* vkGetDeviceProcAddr \u003d vkGetInstanceProcAddr(instance, \u0027vkGetDeviceProcAddr\u0027);\n\n// [6]\nVkDevice device \u003d vkCreateDevice(...);\n\n// [7]\nauto* vkAllocateMemory \u003d vkGetDeviceProcAddr(device, \u0027vkAllocateMemory\u0027);\n\n// [8]\nVkDeviceMemory memory \u003d vkAllocateMemory(...);\n```\n\nand show a snippet of a generated entry point with links to the mesa docs, explain that `VkInstance` from `// [3]` is really a `gfxstream_vk_instance` with a link to `guest/vulkan_enc/gfxstream_vk_private.h`, explain that `gfxstream_vk_instance::internal_object` is really a `goldfish_instance` with a link to `guest/vulkan_enc/Resources.h`, explain how the call from `vkAllocateMemory()` hits the mesa function and then the ResourceTracker function and then VkEncoder function, etc.",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 15
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "d9877d34_2767588d",
@@ -14,6 +37,207 @@
       "writtenOn": "2023-12-19T22:48:06Z",
       "side": 1,
       "message": "Ping?",
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e3bb2ed_efd1259e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "Sorry for the delay! Lots to process on a mega change :P",
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9bc8906b_e457eda4",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "Since you are moving these out of the end2end tests, can you move these into `libplatform_rutabaga` and give `ANativeWindowHelper`/`Gralloc` the same treatment as the other platform things?\n\nIn `platform/include/ANativeWindowHelper.h`, add a\n\n```\n#if defined(ANDROID)\nANativeWindowHelper* createPlatformANativeWindowHelper(); \n#endif\n```\n\nIn `platform/include/Gralloc.h`, add a\n\n```\n#if defined(ANDROID)\nGralloc* createPlatformGrallocHelper();\n#endif\n```\n\nIIUC, this has the added benefit of being able to hide `TestingAHardwareBuffer` and `TestingANativeWindow`.",
+      "range": {
+        "startLine": 157,
+        "startChar": 16,
+        "endLine": 157,
+        "endChar": 40
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "080acd90_b38f5287",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "Can we call this `libgfxstream_guest_system_common` or something to that effect? Since these are new build targets (where we don\u0027t have to worry about existing sepolicy files referring to old names for example), let\u0027s try to normalize on the library naming to mirror `libgfxstream_backend`.",
+      "range": {
+        "startLine": 207,
+        "startChar": 11,
+        "endLine": 207,
+        "endChar": 39
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b61b0656_2dd920da",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "Can we call this `libgfxstream_guest_system_common_with_host` or something to that effect? Since these are new build targets (where we don\u0027t have to worry about existing sepolicy files referring to old names for example), let\u0027s try to normalize on the library naming to mirror `libgfxstream_backend`.",
+      "range": {
+        "startLine": 224,
+        "startChar": 11,
+        "endLine": 224,
+        "endChar": 47
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a172f264_92a61aac",
+        "filename": "guest/vulkan/gfxstream_vk_android.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "nit: use Android style header",
+      "range": {
+        "startLine": 1,
+        "startChar": 1,
+        "endLine": 5,
+        "endChar": 0
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "975cd6f1_3c3ddc2a",
+        "filename": "guest/vulkan_enc/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "optional: `placeholder.c` to make lint happy",
+      "range": {
+        "startLine": 30,
+        "startChar": 19,
+        "endLine": 30,
+        "endChar": 24
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "902295d4_180c0037",
+        "filename": "guest/vulkan_enc/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "nit: `libgfxstream_guest_vulkan_entrypoints` to be consistent with the below",
+      "range": {
+        "startLine": 46,
+        "startChar": 11,
+        "endLine": 46,
+        "endChar": 38
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a294034_dbc7756b",
+        "filename": "guest/vulkan_enc/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "Please add comments on why these are needed.",
+      "range": {
+        "startLine": 167,
+        "startChar": 8,
+        "endLine": 168,
+        "endChar": 28
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bea6b9a_7b743e4d",
+        "filename": "guest/vulkan_enc_unit_tests/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2023-12-20T16:13:14Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by Check Contents: Please remove the trailing whitespace.\n\nAnalyzer Description: Validates that changes do not have prohibited expressions in them.\nOwner: ayeaye-team@google.com\n\nPlease remove the trailing whitespace.",
+      "range": {
+        "startLine": 36,
+        "startChar": 10,
+        "endLine": 36,
+        "endChar": 11
+      },
       "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
