@@ -19,12 +19,23 @@
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
 
+#include <stdio.h>
+
 namespace gfxstream {
 namespace gl {
 namespace {
 
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
+
+struct ThreadState {
+    int bindCount = 0;
+    EGLContext previousContext = EGL_NO_CONTEXT;
+    EGLSurface previousReadSurface = EGL_NO_SURFACE;
+    EGLSurface previousDrawSurface = EGL_NO_SURFACE;
+};
+
+static thread_local ThreadState sThreadState;
 
 class DisplaySurfaceGlContextHelper : public ContextHelper {
   public:
@@ -49,13 +60,28 @@ class DisplaySurfaceGlContextHelper : public ContextHelper {
     }
 
     bool setupContext() override {
+        ThreadState* state = &sThreadState;
+
         EGLContext currentContext = s_egl.eglGetCurrentContext();
         EGLSurface currentDrawSurface = s_egl.eglGetCurrentSurface(EGL_DRAW);
         EGLSurface currentReadSurface = s_egl.eglGetCurrentSurface(EGL_READ);
 
-        if (currentContext != mContext ||
-            currentDrawSurface != mSurface ||
-            currentReadSurface != mSurface) {
+        bool needsUpdate = (currentContext != mContext ||
+                            currentDrawSurface != mSurface ||
+                            currentReadSurface != mSurface);
+
+        if (state->bindCount > 0) {
+            if (!needsUpdate) {
+                ++state->bindCount;
+                return true;
+            }
+
+            ERR("DisplaySurfaceGlContextHelper context was preempted by others, "
+                "current=%p, needed=%p, thread=%p", currentContext, mContext, state);
+            // Fall through to attempt to recover from error.
+        }
+
+        if (needsUpdate) {
             if (!s_egl.eglMakeCurrent(mDisplay, mSurface, mSurface, mContext)) {
                 // b/284523053
                 // Legacy swiftshader logspam on exit with this line.
@@ -64,50 +90,49 @@ class DisplaySurfaceGlContextHelper : public ContextHelper {
             }
         }
 
-        mPreviousContext = currentContext;
-        mPreviousDrawSurface = currentDrawSurface;
-        mPreviousReadSurface = currentReadSurface;
-
-        mIsBound = true;
-
-        return mIsBound;
+        state->bindCount += 1;
+        state->previousContext = currentContext;
+        state->previousDrawSurface = currentDrawSurface;
+        state->previousReadSurface = currentReadSurface;
+        return true;
     }
 
     void teardownContext() override {
+        ThreadState* state = &sThreadState;
+
+        if (state->bindCount > 1) {
+            --state->bindCount;
+            return;
+        }
+
         EGLContext currentContext = s_egl.eglGetCurrentContext();
         EGLSurface currentDrawSurface = s_egl.eglGetCurrentSurface(EGL_DRAW);
         EGLSurface currentReadSurface = s_egl.eglGetCurrentSurface(EGL_READ);
 
-        if (currentContext != mPreviousContext ||
-            currentDrawSurface != mPreviousDrawSurface ||
-            currentReadSurface != mPreviousReadSurface) {
+        if (currentContext != state->previousContext ||
+            currentDrawSurface != state->previousDrawSurface ||
+            currentReadSurface != state->previousReadSurface) {
             if (!s_egl.eglMakeCurrent(mDisplay,
-                                      mPreviousDrawSurface,
-                                      mPreviousReadSurface,
-                                      mPreviousContext)) {
+                                      state->previousDrawSurface,
+                                      state->previousReadSurface,
+                                      state->previousContext)) {
                 ERR("Failed to make restore previous context: %d", s_egl.eglGetError());
                 return;
             }
         }
 
-        mPreviousContext = EGL_NO_CONTEXT;
-        mPreviousDrawSurface = EGL_NO_SURFACE;
-        mPreviousReadSurface = EGL_NO_SURFACE;
-        mIsBound = false;
+        state->bindCount = 0;
+        state->previousContext = EGL_NO_CONTEXT;
+        state->previousDrawSurface = EGL_NO_SURFACE;
+        state->previousReadSurface = EGL_NO_SURFACE;
     }
 
-    bool isBound() const override { return mIsBound; }
+    bool isBound() const override { return sThreadState.bindCount > 0; }
 
   private:
     EGLDisplay mDisplay = EGL_NO_DISPLAY;
     EGLSurface mSurface = EGL_NO_SURFACE;
     EGLContext mContext = EGL_NO_CONTEXT;
-
-    EGLContext mPreviousContext = EGL_NO_CONTEXT;
-    EGLSurface mPreviousReadSurface = EGL_NO_SURFACE;
-    EGLSurface mPreviousDrawSurface = EGL_NO_SURFACE;
-
-    bool mIsBound = false;
 };
 
 }  // namespace
