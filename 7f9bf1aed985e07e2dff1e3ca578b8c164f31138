@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "247f2807_f930e47d",
+        "filename": "guest/mesa/.clang-format",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T21:56:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "acebbffa_eb6149c5",
+      "revId": "7f9bf1aed985e07e2dff1e3ca578b8c164f31138",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "afa683f0_7e7430a4",
@@ -41,6 +59,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ab011ac1_1b83aede",
+        "filename": "guest/mesa/.clang-format-ignore",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T21:56:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "afa683f0_7e7430a4",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "7f9bf1aed985e07e2dff1e3ca578b8c164f31138",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fe5c5069_5f09e131",
@@ -54,6 +96,30 @@
       "writtenOn": "2023-12-20T18:32:17Z",
       "side": 1,
       "message": "Looks like this adds a boost license to Gfxstream. Please update the licensing rules accordingly.",
+      "range": {
+        "startLine": 5,
+        "startChar": 1,
+        "endLine": 5,
+        "endChar": 61
+      },
+      "revId": "7f9bf1aed985e07e2dff1e3ca578b8c164f31138",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b761e1ac_a8679d45",
+        "filename": "guest/mesa/src/c11/impl/threads_posix.c",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T21:56:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fe5c5069_5f09e131",
       "range": {
         "startLine": 5,
         "startChar": 1,
