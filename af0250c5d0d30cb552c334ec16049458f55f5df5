@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "c411a344_6517b28e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T22:09:36Z",
+      "side": 1,
+      "message": "I modified the top-level `README.md` with the instructions.  I didn\u0027t provide a Vulkan example: since even with the goldfish function table we didn\u0027t have that level of documentation.  But mentioned Mesa objects versus goldfish objects, and what should be done there.",
+      "parentUuid": "08122b83_13944e08",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 15
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "d9877d34_2767588d",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 10
@@ -81,6 +105,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "41d46c5a_2df2d925",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T22:09:36Z",
+      "side": 1,
+      "message": "Didn\u0027t move into `libplatform_rutabaga` to keep it virtio-gpu specific.  Plus, Gralloc.h is in OpenglSystemCommon, so more code needed to be migrated.",
+      "parentUuid": "9bc8906b_e457eda4",
+      "range": {
+        "startLine": 157,
+        "startChar": 16,
+        "endLine": 157,
+        "endChar": 40
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "080acd90_b38f5287",
@@ -94,6 +142,30 @@
       "writtenOn": "2023-12-20T16:13:14Z",
       "side": 1,
       "message": "Can we call this `libgfxstream_guest_system_common` or something to that effect? Since these are new build targets (where we don\u0027t have to worry about existing sepolicy files referring to old names for example), let\u0027s try to normalize on the library naming to mirror `libgfxstream_backend`.",
+      "range": {
+        "startLine": 207,
+        "startChar": 11,
+        "endLine": 207,
+        "endChar": 39
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5682b91a_9664ad85",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T22:09:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "080acd90_b38f5287",
       "range": {
         "startLine": 207,
         "startChar": 11,
@@ -140,6 +212,30 @@
       "writtenOn": "2023-12-20T16:13:14Z",
       "side": 1,
       "message": "nit: use Android style header",
+      "range": {
+        "startLine": 1,
+        "startChar": 1,
+        "endLine": 5,
+        "endChar": 0
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8e7fdd9_bd09d9bc",
+        "filename": "guest/vulkan/gfxstream_vk_android.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T22:09:36Z",
+      "side": 1,
+      "message": "For now, kept as is.  The reason is there is interest in moving gfxstream out of Android tree.  If those efforts don\u0027t pan out, we can change it to Android style.",
+      "parentUuid": "a172f264_92a61aac",
       "range": {
         "startLine": 1,
         "startChar": 1,
@@ -219,6 +315,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "800431ef_5371f9c0",
+        "filename": "guest/vulkan_enc/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T22:09:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a294034_dbc7756b",
+      "range": {
+        "startLine": 167,
+        "startChar": 8,
+        "endLine": 168,
+        "endChar": 28
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0bea6b9a_7b743e4d",
@@ -232,6 +352,30 @@
       "writtenOn": "2023-12-20T16:13:14Z",
       "side": 1,
       "message": "Please fix this WARNING reported by Check Contents: Please remove the trailing whitespace.\n\nAnalyzer Description: Validates that changes do not have prohibited expressions in them.\nOwner: ayeaye-team@google.com\n\nPlease remove the trailing whitespace.",
+      "range": {
+        "startLine": 36,
+        "startChar": 10,
+        "endLine": 36,
+        "endChar": 11
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51ce35af_33bcd74c",
+        "filename": "guest/vulkan_enc_unit_tests/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-26T22:09:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0bea6b9a_7b743e4d",
       "range": {
         "startLine": 36,
         "startChar": 10,
