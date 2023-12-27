@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4042c1f_a080442d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-12-27T18:09:56Z",
+      "side": 1,
+      "message": "Would you explain a bit more about the issue? Does it stop building with meson?\n\nFrom the commit itself it looks like we should remove calling setLogger instead of making it no-op, unless if you hit a compile error.",
+      "revId": "527ffa557c62b23cb051764e8c28aeae5130ce9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
