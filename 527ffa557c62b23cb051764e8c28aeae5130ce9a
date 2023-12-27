@@ -34,6 +34,24 @@
       "parentUuid": "a4042c1f_a080442d",
       "revId": "527ffa557c62b23cb051764e8c28aeae5130ce9a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a858a14_b4f6a474",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2023-12-27T18:44:07Z",
+      "side": 1,
+      "message": "What would be the future plan? gfxstream has dependencies on aemu-base. Could we do something better than adding #ifdef for all new dependencies?",
+      "parentUuid": "3712303d_c154cddb",
+      "revId": "527ffa557c62b23cb051764e8c28aeae5130ce9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
