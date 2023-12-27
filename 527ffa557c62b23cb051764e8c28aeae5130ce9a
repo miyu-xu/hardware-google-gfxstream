@@ -16,6 +16,24 @@
       "message": "Would you explain a bit more about the issue? Does it stop building with meson?\n\nFrom the commit itself it looks like we should remove calling setLogger instead of making it no-op, unless if you hit a compile error.",
       "revId": "527ffa557c62b23cb051764e8c28aeae5130ce9a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3712303d_c154cddb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-27T18:17:09Z",
+      "side": 1,
+      "message": "It depends on a newer version of AEMU, I think.  For Linux-distro style package management, it\u0027s desirable for older versions of AEMU to still.  That means a newer gfxstream can work with an older AEMU.  \n\nSome details regarding AEMU versioning still have to be worked out (https://buganizer.corp.google.com/issues/300166662).\n\nAs for removing setLogger, I think it\u0027s mostly useful for AEMU.  QEMU/crosvm/others has it\u0027s own logging infrastructure.  So the idea is to keep API churn to the bare minimum necessary.",
+      "parentUuid": "a4042c1f_a080442d",
+      "revId": "527ffa557c62b23cb051764e8c28aeae5130ce9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
