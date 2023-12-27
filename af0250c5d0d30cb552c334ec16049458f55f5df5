@@ -199,6 +199,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aafd8cb4_d25ac9fb",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-27T21:55:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b61b0656_2dd920da",
+      "range": {
+        "startLine": 224,
+        "startChar": 11,
+        "endLine": 224,
+        "endChar": 47
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a172f264_92a61aac",
@@ -246,6 +270,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a497b0c_671e043d",
+        "filename": "guest/vulkan/gfxstream_vk_android.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-27T21:55:32Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "c8e7fdd9_bd09d9bc",
+      "range": {
+        "startLine": 1,
+        "startChar": 1,
+        "endLine": 5,
+        "endChar": 0
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "975cd6f1_3c3ddc2a",
@@ -269,6 +317,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "510ae09d_f3da64d5",
+        "filename": "guest/vulkan_enc/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-27T21:55:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "975cd6f1_3c3ddc2a",
+      "range": {
+        "startLine": 30,
+        "startChar": 19,
+        "endLine": 30,
+        "endChar": 24
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "902295d4_180c0037",
@@ -282,6 +354,30 @@
       "writtenOn": "2023-12-20T16:13:14Z",
       "side": 1,
       "message": "nit: `libgfxstream_guest_vulkan_entrypoints` to be consistent with the below",
+      "range": {
+        "startLine": 46,
+        "startChar": 11,
+        "endLine": 46,
+        "endChar": 38
+      },
+      "revId": "af0250c5d0d30cb552c334ec16049458f55f5df5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3442224_cd60c37b",
+        "filename": "guest/vulkan_enc/Android.bp",
+        "patchSetId": 10
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-27T21:55:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "902295d4_180c0037",
       "range": {
         "startLine": 46,
         "startChar": 11,
