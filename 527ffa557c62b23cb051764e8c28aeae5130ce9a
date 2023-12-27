@@ -52,6 +52,24 @@
       "parentUuid": "3712303d_c154cddb",
       "revId": "527ffa557c62b23cb051764e8c28aeae5130ce9a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "839b4719_7f813e6c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2023-12-27T22:33:28Z",
+      "side": 1,
+      "message": "That\u0027s an interesting question, and gets to https://buganizer.corp.google.com/issues/300166662.  Currently, the AEMU library exports the following shared or static libs:\n\n-`aemu-base`\n-`aemu-host-common`\n-`aemu-logging`\n-`aemu-snapshot`\n\n`aemu-logging` (at-least in gfxstream) could be deprecated possibly.  There are many loggers inside gfxstream itself: `ERR`, `FATAL`, `GL_LOG`, `VKDGS_LOG`.  We should really settle on one, and since we\u0027ve designed `stream_renderer_debug_callback` to hook into upstream QEMU/crosvm existent infra, that\u0027s a strong candidate for the gfxstream logging face.\n\nSimilarly, `aemu-snapshot` provides `TextureLoader.cpp` and `TextureSaver.cpp`.  However with VK coming up, from an API perspective it needs to change  (only images in Vulkan, not textures).  Additionally, `snapshot/include/snapshot/common.h` only includes headers, not implementations [`isSnapshotAlive`, `failureReasonToString`, `resetSnapshotLiveness` etc.].  The implementations probably live in the Android Emulator.  If we want a snapshot to work with upstream QEMU/crosvm, we probably need to think about the interface that needs to be exposed.  It seems QEMU/crosvm mostly works with snapshots, with the exception of GPU snapshots.  So we could think about just the gfxstream API for that.  Tracked with b/298208786.\n\nFor `host-common`, a lot of it seems to be video and goldfish-asg related.  For example, `MediaH264DecoderFfmpeg.cpp` and friends.  Not sure what the plan is for virtio-video in AEMU, but virtio-video is the crosvm/qemu plan.  So large parts of it could be deleted/moved into gfxstream.\n\nProbably aemu/base contains the most useful system abstractions.  We can probably keep some of those.\n\nSo I think most of AEMU depdencies can moved within gfxstream, and those that can\u0027t we can likely use some versioning mechanism.  It really depends a lot if there\u0027s a desire to use AEMU in upstream crosvm/qemu, independent of gfxstream.  If long-term it\u0027s gfxstream only, that defeats the purpose of a shared library somewhat.",
+      "parentUuid": "0a858a14_b4f6a474",
+      "revId": "527ffa557c62b23cb051764e8c28aeae5130ce9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
