@@ -299,6 +299,16 @@ class VkDecoderSnapshot::Impl {
                            android::base::BumpPool* pool, VkResult input_result, VkDevice device,
                            VkImage image, VkDeviceMemory memory, VkDeviceSize memoryOffset) {
         // TODO: Implement
+        android::base::AutoLock lock(mLock);
+        // image modify
+        auto apiHandle = mReconstruction.createApiInfo();
+        auto apiInfo = mReconstruction.getApiInfo(apiHandle);
+        mReconstruction.setApiTrace(apiInfo, OP_vkBindImageMemory, snapshotTraceBegin,
+                                    snapshotTraceBytes);
+        for (uint32_t i = 0; i < 1; ++i) {
+            VkImage boxed = unboxed_to_boxed_non_dispatchable_VkImage((&image)[i]);
+            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
+        }
     }
     void vkGetBufferMemoryRequirements(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                        android::base::BumpPool* pool, VkDevice device,
