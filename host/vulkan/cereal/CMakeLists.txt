@@ -32,6 +32,7 @@ target_include_directories(OpenglRender_vulkan_cereal
                            PUBLIC
                            .
                            PRIVATE
+                           common/
                            ..
                            ../..
                            ../../../include)

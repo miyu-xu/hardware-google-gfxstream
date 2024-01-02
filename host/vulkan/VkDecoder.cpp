@@ -45,7 +45,7 @@
 #include "aemu/base/Tracing.h"
 #include "aemu/base/system/System.h"
 #include "common/goldfish_vk_marshaling.h"
-#include "common/goldfish_vk_private_defs.h"
+#include "goldfish_vk_private_defs.h"
 #include "common/goldfish_vk_reserved_marshaling.h"
 #include "common/goldfish_vk_transform.h"
 #include "host-common/GfxstreamFatalError.h"
