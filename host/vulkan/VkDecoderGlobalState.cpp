@@ -28,6 +28,7 @@
 #include "VkCommonOperations.h"
 #include "VkDecoderContext.h"
 #include "VkDecoderSnapshot.h"
+#include "VkDecoderSnapshotUtils.h"
 #include "VulkanDispatch.h"
 #include "VulkanStream.h"
 #include "aemu/base/ManagedDescriptor.hpp"
@@ -55,6 +56,8 @@
 #include "vulkan/VkFormatUtils.h"
 #include "utils/RenderDoc.h"
 #include "vk_util.h"
+#include "vulkan/VkDecoderInternalStructs.h"
+#include "vulkan/VkDecoderSnapshotUtils.h"
 #include "vulkan/emulated_textures/AstcTexture.h"
 #include "vulkan/emulated_textures/CompressedImageInfo.h"
 #include "vulkan/emulated_textures/GpuDecompressionPipeline.h"
@@ -398,7 +401,78 @@ class VkDecoderGlobalState::Impl {
 
     bool vkCleanupEnabled() const { return mVkCleanupEnabled; }
 
+<<<<<<< PATCH SET (ce2ded Add image snapshot test)
+    void save(android::base::Stream* stream) {
+        snapshot()->save(stream);
+        // Save mapped memory
+        uint32_t memoryCount = 0;
+        std::vector<VkDeviceMemory> memories;
+        for (const auto& it : mMemoryInfo) {
+            if (it.second.ptr) {
+                memoryCount++;
+            }
+        }
+        stream->putBe32(memoryCount);
+        for (const auto& it : mMemoryInfo) {
+            if (!it.second.ptr) {
+                continue;
+            }
+            stream->putBe64(reinterpret_cast<uint64_t>(
+                unboxed_to_boxed_non_dispatchable_VkDeviceMemory(it.first)));
+            stream->putBe64(it.second.size);
+            stream->write(it.second.ptr, it.second.size);
+        }
+        // Set up VK structs to snapshot other Vulkan objects
+        // TODO: group all images from the same device and reuse queue / command pool
+
+        VulkanDispatch* ivk = getGlobalVkEmulation()->ivk;
+        VulkanDispatch* dvk = getGlobalVkEmulation()->dvk;
+        for (const auto& imageIte: mImageInfo) {
+            const ImageInfo& imageInfo = imageIte.second;
+            if (imageInfo.memory == VK_NULL_HANDLE) {
+                continue;
+            }
+            const auto& device = imageInfo.device;
+            const auto& deviceInfo = android::base::find(mDeviceInfo, device);
+            const auto physicalDevice = deviceInfo->physicalDevice;
+            const auto& physicalDeviceInfo = android::base::find(mPhysdevInfo, physicalDevice);
+            StateBlock stateBlock {
+                .device = device,
+                .physicalDevice = physicalDevice,
+                .physicalDeviceInfo = physicalDeviceInfo,
+                .queue = VK_NULL_HANDLE,
+                .commandPool = VK_NULL_HANDLE,
+            };
+
+            uint32_t queueFamilyCount = 0;
+            ivk->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+            std::vector<VkQueueFamilyProperties> queueFamilyProps(queueFamilyCount);
+            ivk->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
+                                                          queueFamilyProps.data());
+            uint32_t queueFamilyIndex = 0;
+            for (auto queue: deviceInfo->queues) {
+                int idx = queue.first;
+                if ((queueFamilyProps[idx].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0) {
+                    continue;
+                }
+                stateBlock.queue = queue.second[0];
+                queueFamilyIndex = idx;
+                break;
+            }
+
+            VkCommandPoolCreateInfo commandPoolCi = {
+                VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, 0,
+                VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+                queueFamilyIndex,
+            };
+            dvk->vkCreateCommandPool(device, &commandPoolCi, nullptr, &stateBlock.commandPool);
+            // TODO: make sure the queue is empty before using.
+            saveImageContent(stream, &stateBlock, imageIte.first, &imageInfo);
+        }
+    }
+=======
     void save(android::base::Stream* stream) { snapshot()->save(stream); }
+>>>>>>> BASE      (f5fd42 Merge "Add basic image snapshot test case" into main)
 
     void load(android::base::Stream* stream, GfxApiLogger& gfxLogger,
               HealthMonitor<>* healthMonitor) {
@@ -1655,6 +1729,7 @@ class VkDecoderGlobalState::Impl {
         imageInfo.device = device;
         imageInfo.cmpInfo = std::move(cmpInfo);
         imageInfo.imageCreateInfoShallow = vk_make_orphan_copy(*pCreateInfo);
+        imageInfo.layout = pCreateInfo->initialLayout;
         if (nativeBufferANDROID) imageInfo.anbInfo = std::move(anbInfo);
 
         *pImage = new_boxed_non_dispatchable_VkImage(*pImage);
@@ -1774,12 +1849,19 @@ class VkDecoderGlobalState::Impl {
             }
         }
 #endif
+        auto* imageInfo = android::base::find(mImageInfo, image);
+        if (!imageInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        imageInfo->memory = memory;
+
         if (!deviceInfo->emulateTextureEtc2 && !deviceInfo->emulateTextureAstc) {
             return VK_SUCCESS;
         }
 
+<<<<<<< PATCH SET (ce2ded Add image snapshot test)
+=======
         if (!imageInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
 
+>>>>>>> BASE      (f5fd42 Merge "Add basic image snapshot test case" into main)
         CompressedImageInfo& cmpInfo = imageInfo->cmpInfo;
         if (!deviceInfo->needEmulatedDecompression(cmpInfo)) {
             return VK_SUCCESS;
@@ -3291,6 +3373,7 @@ class VkDecoderGlobalState::Impl {
         DeviceInfo* deviceInfo = android::base::find(mDeviceInfo, cmdBufferInfo->device);
         if (!deviceInfo) return;
 
+        // TODO: update image layout in ImageInfo
         if (!deviceInfo->emulateTextureEtc2 && !deviceInfo->emulateTextureAstc) {
             vk->vkCmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, dependencyFlags,
                                      memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
@@ -6541,6 +6624,8 @@ class VkDecoderGlobalState::Impl {
 
     std::recursive_mutex mLock;
 
+<<<<<<< PATCH SET (ce2ded Add image snapshot test)
+=======
     // We always map the whole size on host.
     // This makes it much easier to implement
     // the memory map API.
@@ -6764,6 +6849,7 @@ class VkDecoderGlobalState::Impl {
         VkDevice device;
     };
 
+>>>>>>> BASE      (f5fd42 Merge "Add basic image snapshot test case" into main)
     bool isBindingFeasibleForAlloc(const DescriptorPoolInfo::PoolState& poolState,
                                    const VkDescriptorSetLayoutBinding& binding) {
         if (binding.descriptorCount && (poolState.type != binding.descriptorType)) {

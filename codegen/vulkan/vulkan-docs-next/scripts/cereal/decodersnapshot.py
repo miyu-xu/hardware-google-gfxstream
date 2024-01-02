@@ -112,6 +112,11 @@ apiSequences = {
 
 apiModifies = {
     "vkMapMemoryIntoAddressSpaceGOOGLE" : ["memory"],
+<<<<<<< PATCH SET (ce2ded Add image snapshot test)
+    "vkGetBlobGOOGLE" : ["memory"],
+    "vkBindImageMemory": ["image"],
+=======
+>>>>>>> BASE      (f5fd42 Merge "Add basic image snapshot test case" into main)
 }
 
 def is_modify_operation(api, param):
