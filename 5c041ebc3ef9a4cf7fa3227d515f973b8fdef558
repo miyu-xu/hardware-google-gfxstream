@@ -16,6 +16,47 @@
       "message": "I think we should always check in the generated the code for better understanding of the code base. The code generation script is very complicated that we can\u0027t easily tell what is generated especially when working on the Android tree.",
       "revId": "5c041ebc3ef9a4cf7fa3227d515f973b8fdef558",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eba710f9_23a17e17",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-04T21:09:05Z",
+      "side": 1,
+      "message": "+1 to Kaiyi\u0027s comment, would you explain more regarding in which case you want to [not] check in the code, and document it somewhere (in a bug or in a small doc), so that we could discuss and maybe revisit in future?",
+      "parentUuid": "b3fe8a70_c409f356",
+      "revId": "5c041ebc3ef9a4cf7fa3227d515f973b8fdef558",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab240fa8_795045be",
+        "filename": "host/vulkan/VkDecoderGlobalState.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-04T21:09:05Z",
+      "side": 1,
+      "message": "remove this as well?",
+      "range": {
+        "startLine": 32,
+        "startChar": 10,
+        "endLine": 32,
+        "endChar": 24
+      },
+      "revId": "5c041ebc3ef9a4cf7fa3227d515f973b8fdef558",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
