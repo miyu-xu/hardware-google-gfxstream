@@ -56,6 +56,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "bece92eb_376ff1a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-04T23:31:51Z",
+      "side": 1,
+      "message": "`VkDecoder.cpp` is a generated file, please don\u0027t touch it without changing the generating script/",
+      "revId": "5c041ebc3ef9a4cf7fa3227d515f973b8fdef558",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ab240fa8_795045be",
         "filename": "host/vulkan/VkDecoderGlobalState.h",
         "patchSetId": 1
