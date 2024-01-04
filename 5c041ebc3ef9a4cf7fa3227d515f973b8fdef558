@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3fe8a70_c409f356",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-04T19:36:28Z",
+      "side": 1,
+      "message": "I think we should always check in the generated the code for better understanding of the code base. The code generation script is very complicated that we can\u0027t easily tell what is generated especially when working on the Android tree.",
+      "revId": "5c041ebc3ef9a4cf7fa3227d515f973b8fdef558",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
