@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecbf5744_1fa56bf3",
+        "filename": "common/end2end/Android.bp",
+        "patchSetId": 20
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-09T23:44:46Z",
+      "side": 1,
+      "message": "Do you plan on having lots of image tests at some point (or lots of basic tests at some point)? Just curious if there is a reason to not just have a single `GfxstreamEnd2EndVkSnapshotTests`.",
+      "range": {
+        "startLine": 16,
+        "startChar": 8,
+        "endLine": 16,
+        "endChar": 51
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6da7066c_2f5346c3",
+        "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-09T23:44:46Z",
+      "side": 1,
+      "message": "nit:\n\n```\n}  // namespace\n```",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 1
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d98465fe_47bd3f94",
+        "filename": "guest/platform/rutabaga/include/gfxstream/RutabagaLayerTestUtils.h",
+        "patchSetId": 20
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-09T23:44:46Z",
+      "side": 1,
+      "message": "Could we call this something like `UnpauseEmulatedVmm`? I think this makes it a little more clear to people reading/writing tests what is happening instead of just what the side-effects are.",
+      "range": {
+        "startLine": 22,
+        "startChar": 5,
+        "endLine": 22,
+        "endChar": 26
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "838b0539_04ac6624",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3996,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-09T23:44:46Z",
+      "side": 1,
+      "message": "IIUC, this is kind of the crux of the post-snapshot load memory remapping and it works by having `VirtGpuBlobMappingPtr` keep a dirty-bit `mValid` and having the Vulkan state tracker manually check the new bit.\n\nI guess this works for `GfxstreamEnd2EndVkSnapshotImageTest::HostMemoryContent` because the test explicitly does a `vkUnmapMemory()` before snapshot-ing and then explicitly gets a new `mapped` pointer for `memory` via another `vkMapMemory()` call after loading the snapshot.\n\nBut this unfortunately requires keeping test only code in the Vulkan state tracker and requires that test writers know that can\u0027t keep the pointer across a `SnapshotSaveAndLoad()` call (and I\u0027m not sure if there is a way to detect automatically). \n\nThinking out loud: I wonder if we could do something similar to what ANGLE does for frame captures (https://source.chromium.org/chromium/chromium/src/+/main:third_party/angle/src/libANGLE/capture/FrameCapture.h;drc\u003d53c5b145069310ac27a85918cb48679d589db05d;l\u003d530) which uses a custom page fault handler. `CreateBlob()` could create a secondary piece of memory which is the same size as the blob, `mprotect(... PROT_NONE ...)` the extra piece of memory so it is neither readable nor writable, track that \"host memory\" corresponds to \"extra guest memory\", and then handle page faults / signals and manually copy between the host/guest memory as needed. Snapshot loading do the same `InvalidateAllMappings()` to reset the mapping and then the custom handler would re-lookup the mappings from the host when it encouters the \"guest\" trying to use an invalidated mapping. Would something like this work? I\u0027m not very familiar with the custom handlers so please point out if this is crazy.",
+      "range": {
+        "startLine": 3963,
+        "startChar": 8,
+        "endLine": 3996,
+        "endChar": 42
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fef521fb_c87b593a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3605,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-09T23:44:46Z",
+      "side": 1,
+      "message": "Is `tInfo` not available in the tests?",
+      "range": {
+        "startLine": 3605,
+        "startChar": 30,
+        "endLine": 3605,
+        "endChar": 51
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "29c2fc0a_9627f917",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3706,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-09T23:44:46Z",
+      "side": 1,
+      "message": "Remove.",
+      "range": {
+        "startLine": 3706,
+        "startChar": 12,
+        "endLine": 3706,
+        "endChar": 73
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
