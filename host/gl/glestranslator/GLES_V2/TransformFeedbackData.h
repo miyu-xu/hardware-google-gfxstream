@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "GLcommon/GLEScontext.h"
 #include "GLcommon/ObjectData.h"
 
 #include <vector>
