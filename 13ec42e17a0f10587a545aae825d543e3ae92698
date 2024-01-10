@@ -52,6 +52,24 @@
       "parentUuid": "e8da4e76_27cc6a7f",
       "revId": "13ec42e17a0f10587a545aae825d543e3ae92698",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86a2cf98_4c5f50d3",
+        "filename": "host/gl/glestranslator/GLES_V2/TransformFeedbackData.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1135107
+      },
+      "writtenOn": "2024-01-10T19:20:08Z",
+      "side": 1,
+      "message": "std::vector and std::unique_ptr never allowed incomplete definitions, it\u0027s just with the old libc++ implementation it didn\u0027t blow up in some cases and now it does. It\u0027s the same thing like with missing headers - you\u0027re always supposed to include what you use, but it sometimes doesn\u0027t bite you (until some other random header stops including your dependencies).\n\nIf there\u0027s a potential to refactor this code, owners should probably do it. I have nothing to do with this code except for the fact it prevents libc++ update :).",
+      "parentUuid": "db46e7ed_4911f8da",
+      "revId": "13ec42e17a0f10587a545aae825d543e3ae92698",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
