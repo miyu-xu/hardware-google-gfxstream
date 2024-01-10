@@ -34,6 +34,24 @@
       "parentUuid": "34aaf0b3_4c924f3e",
       "revId": "13ec42e17a0f10587a545aae825d543e3ae92698",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db46e7ed_4911f8da",
+        "filename": "host/gl/glestranslator/GLES_V2/TransformFeedbackData.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1883347
+      },
+      "writtenOn": "2024-01-10T19:14:38Z",
+      "side": 1,
+      "message": "Just for my curiosity, why incomplete definition here creates a problem? I\u0027ve tried to find it in the bug attached... but I\u0027ve surrendered after see the size of the bug thread :D\n\nIf this is just to remove incomplete definition for whatever reason, wouldn\u0027t it be better to separate the definition for that BufferBinding structure into separate header, and include that new header in both TrasformFeedbackData.h and GLEScontext.h?",
+      "parentUuid": "e8da4e76_27cc6a7f",
+      "revId": "13ec42e17a0f10587a545aae825d543e3ae92698",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
