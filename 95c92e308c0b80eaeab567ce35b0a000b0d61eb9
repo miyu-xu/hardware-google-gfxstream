@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61acb472_07a04e39",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 3450,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-10T19:11:02Z",
+      "side": 1,
+      "message": "```suggestion\n        if (gralloc-\u003egetFormat(ahw) \u003d\u003d AHARDWAREBUFFER_FORMAT_BLOB \u0026\u0026\n            !gralloc-\u003etreatBlobAsImage()) {\n```",
+      "range": {
+        "startLine": 3447,
+        "startChar": 0,
+        "endLine": 3450,
+        "endChar": 40
+      },
+      "revId": "95c92e308c0b80eaeab567ce35b0a000b0d61eb9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b37277a_d7a4a287",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 6503,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-10T19:11:02Z",
+      "side": 1,
+      "message": "```suggestion\n    // Older versions of Goldfish\u0027s Gralloc did not support allocating AHARDWAREBUFFER_FORMAT_BLOB with GPU usage (b/299520213).\n```\nto explain a little more for future readers.",
+      "range": {
+        "startLine": 6502,
+        "startChar": 4,
+        "endLine": 6503,
+        "endChar": 45
+      },
+      "revId": "95c92e308c0b80eaeab567ce35b0a000b0d61eb9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
