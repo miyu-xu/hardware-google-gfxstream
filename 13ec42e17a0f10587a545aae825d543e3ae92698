@@ -70,6 +70,24 @@
       "parentUuid": "db46e7ed_4911f8da",
       "revId": "13ec42e17a0f10587a545aae825d543e3ae92698",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8558b46_8c60422c",
+        "filename": "host/gl/glestranslator/GLES_V2/TransformFeedbackData.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1883347
+      },
+      "writtenOn": "2024-01-10T19:27:08Z",
+      "side": 1,
+      "message": "I see  :) \n\nWith the second paragraph, I would say that by the rule of the thumb, modifier of the code should adhere to the standards of modified repository... but this is minor issue, IMHO, and everywhere TransformFeedbackData.h is included, GLESContext.h is included as well, so we are not bloating anything with such change... So I\u0027m not going to require that change :)",
+      "parentUuid": "86a2cf98_4c5f50d3",
+      "revId": "13ec42e17a0f10587a545aae825d543e3ae92698",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
