@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fc349e6_74fa80fa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-10T19:24:20Z",
+      "side": 1,
+      "message": "Cherry-picked from https://googleplex-android-review.git.corp.google.com/c/device/generic/goldfish-opengl/+/22605440.",
+      "revId": "1d076303dd264687907df185028c0a59beef3d9c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
