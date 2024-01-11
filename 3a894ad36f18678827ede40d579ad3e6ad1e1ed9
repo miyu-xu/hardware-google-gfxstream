@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45beedec_556c8323",
+        "filename": "guest/platform/linux/LinuxVirtGpuBlob.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-11T00:00:09Z",
+      "side": 0,
+      "message": "Can we keep the voids?",
+      "range": {
+        "startLine": 48,
+        "startChar": 41,
+        "endLine": 48,
+        "endChar": 45
+      },
+      "revId": "3a894ad36f18678827ede40d579ad3e6ad1e1ed9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c506d7b4_993e7785",
+        "filename": "guest/platform/linux/LinuxVirtGpuDevice.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-11T00:00:09Z",
+      "side": 0,
+      "message": "would `VirtGpuBlobPtr\u0026` also work or is there a recommendation against that?",
+      "range": {
+        "startLine": 248,
+        "startChar": 73,
+        "endLine": 248,
+        "endChar": 92
+      },
+      "revId": "3a894ad36f18678827ede40d579ad3e6ad1e1ed9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
