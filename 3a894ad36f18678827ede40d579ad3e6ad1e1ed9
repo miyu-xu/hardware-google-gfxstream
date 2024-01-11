@@ -141,6 +141,30 @@
       },
       "revId": "3a894ad36f18678827ede40d579ad3e6ad1e1ed9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d92e9a4_fa33565c",
+        "filename": "guest/platform/linux/LinuxVirtGpuDevice.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-11T00:13:19Z",
+      "side": 0,
+      "message": "Acknowledged",
+      "parentUuid": "1b280a84_1b5faaf0",
+      "range": {
+        "startLine": 248,
+        "startChar": 73,
+        "endLine": 248,
+        "endChar": 92
+      },
+      "revId": "3a894ad36f18678827ede40d579ad3e6ad1e1ed9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
