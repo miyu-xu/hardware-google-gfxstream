@@ -50,6 +50,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ab78658f_34de9dac",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-11T00:08:01Z",
+      "side": 1,
+      "message": "For crosvm + upstream QEMU, using `android::snaphot::ITextureLoaderPtr` in conjunction with the snapshot apis would be a bit difficult.  Reason being for crosvm, we in theory would have to generate Rust bindings for this, and C++ Rust bindings are trickier than plain old C.  Similarly, QEMU is plain old C and not sure how that would work.\n\nPlus, having an external API for every type of object (buffer, texture) wouldn\u0027t really scale.  But it makes sense an gfxstream internal.\n\nWhat about something like this?\n\n```\nuint8_t *data;\nuint64_t data_size;\nint32_t result \u003d stream_renderer_snapshot(rutabaga, \u0026data, \u0026data_size);\n```\n\nThis is similar to what we discussed in crrev.com/c/4853266 with the CF people interested in snapshot.  \n\nUsing `android::snapshot::ITextureLoaderPtr` internally for gfxstream is still fine btw.  You would just case your `(uint8_t*)` to that.",
+      "range": {
+        "startLine": 527,
+        "startChar": 0,
+        "endLine": 532,
+        "endChar": 0
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6da7066c_2f5346c3",
         "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
         "patchSetId": 20
@@ -155,6 +178,30 @@
       "side": 1,
       "message": "Thanks Jason, I would need to go through the ANGLE implementation before getting back to you.\n\nYes the current implementation fails if snapshot happens in between vkMapMemory and vkUnmapMemory. I was trying to avoid spending too much time to fix it up, because its implementation diverges significantly from the real world scenario, polishing it does not really improve our test coverage (or maybe only improves test coverage slightly).\n\nBut I will look into the ANGLE implementation to see if there would be an easy way to do that.",
       "parentUuid": "838b0539_04ac6624",
+      "range": {
+        "startLine": 3963,
+        "startChar": 8,
+        "endLine": 3996,
+        "endChar": 42
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f2a535d_b8cfe6f8",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3996,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-11T00:08:01Z",
+      "side": 1,
+      "message": "For the real scenario,  gfxstream will have to recreate the virtio-gpu level resource, restore its contents.  I\u0027m not sure how the snapshot decoder works: does it just re-create the host-side VulkanMemory objects too, or is that something that still needs to be done?   \n\nI think using external memory we should \"somewhat\" be able to emulate it.  The emulated CREATE_BLOB + MAP_BLOB request would be called:\n\n`stream_renderer_create_blob(..)` to allocate the memory\n`stream_renderer_export_blob(..)` to return a file descriptor to that memory (I\u0027m assuming this will initially be done only on Linux platforms, so it should work).\n`\nThis is the way vhost-user works on B*, BTW.  When a snapshot operation happens, we should call `stream_renderer_teardown` (?) to emulate a live migration.  But if we use external memory, the \"guest\"/client would still have the mapping created by the exported object and we would need less special cases then.\n\nGenerally, we should avoid special cases on the guest side for test code.  We have the `END2END_TESTS` pre-processor for that, but I think we use external memory and adopt a client/server model, we should be able to eliminate those too.",
+      "parentUuid": "d66a096b_2a29001b",
       "range": {
         "startLine": 3963,
         "startChar": 8,
