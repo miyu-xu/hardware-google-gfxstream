@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe6dfb75_332066a5",
+        "filename": "guest/platform/linux/LinuxVirtGpuBlob.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-11T00:12:15Z",
+      "side": 0,
+      "message": "Ack.",
+      "parentUuid": "53dca24d_1174b87d",
+      "range": {
+        "startLine": 48,
+        "startChar": 41,
+        "endLine": 48,
+        "endChar": 45
+      },
+      "revId": "3a894ad36f18678827ede40d579ad3e6ad1e1ed9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c506d7b4_993e7785",
@@ -85,6 +109,30 @@
       "side": 0,
       "message": "VirtGpuBlob\u0026 would work if blob can never be null. I believe there is one case where it is null so that isn\u0027t doable.\n\nVirtGpuBlobPtr\u0026 is recommended against for the same reason that VirtGpuBlobPtr is recommended against: passing smart pointers should only be done when modifying ownership.",
       "parentUuid": "c506d7b4_993e7785",
+      "range": {
+        "startLine": 248,
+        "startChar": 73,
+        "endLine": 248,
+        "endChar": 92
+      },
+      "revId": "3a894ad36f18678827ede40d579ad3e6ad1e1ed9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b280a84_1b5faaf0",
+        "filename": "guest/platform/linux/LinuxVirtGpuDevice.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-11T00:12:15Z",
+      "side": 0,
+      "message": "Ack.",
+      "parentUuid": "1a24bfdb_7c445993",
       "range": {
         "startLine": 248,
         "startChar": 73,
