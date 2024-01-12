@@ -121,6 +121,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "15b2772d_13421304",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-12T21:04:16Z",
+      "side": 1,
+      "message": "What about this, we create 2 APIs, one for crosvm with the write_callback, and the other with more complex parameters for goldfish. Internally it wraps up both APIs into a SnapshotSaver object and we use the SnapshotSaver object. The implementation of aemu::base::Stream seems pretty straight forward and we could create a CallbackStream(write_callback) easily.\n\nThis would give crosvm a clean API, and a flexible API for AEMU to experiment with and optimize. AEMU would need it because our long term plan is to turn most of the snapshot bits into protobuf, and might have an extra file to hold large data buffers.",
+      "parentUuid": "caabdd60_040c6792",
+      "range": {
+        "startLine": 527,
+        "startChar": 0,
+        "endLine": 532,
+        "endChar": 0
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6da7066c_2f5346c3",
         "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
         "patchSetId": 20
