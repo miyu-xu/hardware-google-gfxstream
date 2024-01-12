@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "caabdd60_040c6792",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-12T17:24:05Z",
+      "side": 1,
+      "message": "\u003e allocating the output buffer and writing a large amount of data into it\n\nGood point, I assume for upstream QEMU we are going to end writing to a QEMUFile anyways (crosvm has an equivalent too).\n\nhttps://github.com/qemu/qemu/blob/master/migration/qemu-file.c\n\ncrrev.com/c/4853266 suggested the use of callbacks, so maybe we can use that strategy?\n\n```\n/**\n * # Safety\n * - `data` is valid only for the duration of the call.\n * - Throwing an exception inside this callback is not allowed.\n */\ntypedef void (*stream_renderer_snapshot_write_callback)(uint64_t user_data, const uint8_t* data, size_t len);\n```\nSimilarly for reading.  That more or less matches `SnapshotSaveStream` does: reads or writes POD.\n\n\u003e What would be the use case for crosvm BTW? Do they care about GL snaphsot? Or do they care about VK only?\n\nVK only is the use case for CF.  Right now, snapshots are available with `-gpu_mode\u003dguest_swiftshader` and it actually saves a non-trivial amount of server time.  If we ever want to transition the AOSP CI to `--gpu_mode\u003dgfxstream_guest_angle_host_swiftshader`, the lack of snapshot support may be a regression/blocker:\n\ngo/cloud-android-gpu#x86-64-host-machines",
+      "parentUuid": "a55667f7_fc2d626b",
+      "range": {
+        "startLine": 527,
+        "startChar": 0,
+        "endLine": 532,
+        "endChar": 0
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6da7066c_2f5346c3",
         "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
         "patchSetId": 20
@@ -298,6 +322,30 @@
       "side": 1,
       "message": "I don\u0027t think I understand the details and would need to look into it. Do you have some example code for stream_renderer_export_blob? Do they still keep the pointer to the memory region unchanged after cleanup/snapshot load with the fake guest?",
       "parentUuid": "7f2a535d_b8cfe6f8",
+      "range": {
+        "startLine": 3963,
+        "startChar": 8,
+        "endLine": 3996,
+        "endChar": 42
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b01f367_850c7bf1",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3996,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-12T17:24:05Z",
+      "side": 1,
+      "message": "With `stream_renderer_export_blob` you would have two pointers to the same memory, since you would be using external memory to add another kernel-level reference. \n\nFor example, the ASG ring buffer is shared with the guest via map blob operation (\"guest mapping\"), and the host-side ASG ring buffer view is kept internal in gfxstream (\"gfxstream mapping\").\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/host/virtio-gpu-gfxstream-renderer.cpp#1693\n \nhttps://chromium.googlesource.com/chromiumos/platform/crosvm/+/refs/heads/main/devices/src/virtio/gpu/virtio_gpu.rs#712\n \nhttps://chromium.googlesource.com/chromiumos/platform/crosvm/+/refs/heads/main/rutabaga_gfx/src/gfxstream.rs#315 \n\nTo emulate live migration, one could possibly call in the test backed:\n\n1) stream_renderer_snapshot_save --\u003e copies content of all virtio-gpu resources to a file\n2) stream_renderer_teardown(),stream_renderer_init(..) --\u003e this emulates tearing down a guest, and restarting the guest\n\n3) Maybe in the test code, you would zero out the \"guest mapping\" here of the `VkDeviceMemory`\n\n4) stream_renderer_snapshot_restore --\u003e recreate all virtio-gpu resources, and if needed host side pointers (i.e, for the \"gfxstream mapping\" of the ASG ring).  For Vulkan memory, you\u0027ll need to recreate the `VkDeviceMemory`, but not the pointer: gfxstream doesn\u0027t itself read from the memory, but the GPU does.\n\nAfter (4), the memory should match the memory contents before (1), even though the zero\u0027ing operation was performed in (3).\n\nOther test back-ends that make use of external memory are vtest/virglrenderer, which uses a client/server model and sends fds between them:\n\nhttps://gitlab.freedesktop.org/virgl/virglrenderer/-/blob/main/vtest/vtest_renderer.c?ref_type\u003dheads#L1191",
+      "parentUuid": "d065c0a1_72ea0069",
       "range": {
         "startLine": 3963,
         "startChar": 8,
