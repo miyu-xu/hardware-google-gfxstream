@@ -82,13 +82,22 @@ bool getVirtioGpuResourceInfo(int fd, native_handle_t const* handle,
     info->bo_handle = managed_prime_handle.m_prime_handle;
 
     struct drm_virtgpu_3d_wait virtgpuWait {
-        .handle = managed_prime_handle.m_prime_handle, .flags = 0,
+        .handle = managed_prime_handle.m_prime_handle,
+        .flags = 0,
     };
     // This only works for host resources by VIRTGPU_RESOURCE_CREATE ioctl.
     // We need to use a different mechanism to synchronize with the host if
     // the minigbm gralloc swiches to virtio-gpu blobs or cross-domain
     // backend.
-    ret = drmIoctl(fd, DRM_IOCTL_VIRTGPU_WAIT, &virtgpuWait);
+    int retry = 0;
+    do {
+        if (retry > 10) {
+            ALOGE("%s DRM_IOCTL_VIRTGPU_WAIT failed with EBUSY %d times.", __func__, retry);
+            return false;
+        }
+        ret = drmIoctl(fd, DRM_IOCTL_VIRTGPU_WAIT, &virtgpuWait);
+        ++retry;
+    } while (ret < 0 && errno == EBUSY);
     if (ret) {
         ALOGE("%s: DRM_IOCTL_VIRTGPU_WAIT failed: %s(%d)", __func__, strerror(errno), errno);
         return false;
