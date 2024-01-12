@@ -911,7 +911,7 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskWithWaitable 
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::RunVirtioGpuTaskProcessingLoop() {
-    while (!mShuttingDown.load()) {
+    while (true) {
         std::optional<VirtioGpuTaskWithWaitable> task;
 
         {
@@ -924,6 +924,10 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::RunVirtioGpuTaskProcessingLoop() 
 
         if (task) {
             DoTask(std::move(*task));
+        } else {
+            if (mShuttingDown.load()) {
+                break;
+            }
         }
     }
 }
