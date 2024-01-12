@@ -118,6 +118,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a17567f_18cdc6bd",
+        "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-12T00:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6da7066c_2f5346c3",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 1
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d98465fe_47bd3f94",
@@ -344,6 +368,30 @@
       "writtenOn": "2024-01-09T23:44:46Z",
       "side": 1,
       "message": "Remove.",
+      "range": {
+        "startLine": 3706,
+        "startChar": 12,
+        "endLine": 3706,
+        "endChar": 73
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3cdf00d0_bf584289",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3706,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-12T00:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29c2fc0a_9627f917",
       "range": {
         "startLine": 3706,
         "startChar": 12,
