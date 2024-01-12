@@ -382,6 +382,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "66fc16d0_d1b4edd0",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3996,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-12T22:08:24Z",
+      "side": 1,
+      "message": "I think the main issue here is that in the e2e tests, guest ptr \u003d\u003d host ptr and on snapshot it re-creates the host ptr. Then we need to tag the guest memory info and say \"your cached ptr is invalidated, please update\", thus introducing a test only code path for snapshot.\n\nNote that this diverges significantly from the real world snapshot, where we virtualize the guest address and remap it without telling the guest. The divergence is also the reason why I would prefer to spend less time on the e2e tests on coherent memory, and rely more on the integration tests with a real VM.",
+      "parentUuid": "1b01f367_850c7bf1",
+      "range": {
+        "startLine": 3963,
+        "startChar": 8,
+        "endLine": 3996,
+        "endChar": 42
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fef521fb_c87b593a",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 20
