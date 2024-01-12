@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b672ae0_7ed484e9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-12T18:50:36Z",
+      "side": 1,
+      "message": "(carry over from aosp/2163497)",
+      "revId": "fcf28932b99ad8e33b2e9f4bf02b77f2a5787bb5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
