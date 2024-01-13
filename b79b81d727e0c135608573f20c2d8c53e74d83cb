@@ -145,6 +145,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "773d3f1d_004f0267",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-13T00:16:14Z",
+      "side": 1,
+      "message": "Using `protobuf` and extra files does make sense, even for crosvm.\n\nRegardless of crosvm/AEMU/QEMU, I think we\u0027ll need structured data anyways.  Protobuf is a good solution for that.  For example, we\u0027ll need to describe virtio-gpu resources, and that serialization format could be different from the snapshot decoder serialization format.\n\nFor example, `gfxstream.snapshot` could look like:\n\n```\n\u003cvirtio-gpu resource\u003e\n   \u003cresource_id\u003e 1 \u003c/resource_id\u003e\n   \u003ctype\u003e blob \u003c/type\u003e\n   \u003csize\u003e 4096 \u003c/size\u003e\n\u003c/virtio-gpu resource\u003e \n\u003cvirtio-gpu resource\u003e\n   \u003cresource_id\u003e 2 \u003c/resource_id\u003e\n   \u003ctype\u003e pipe \u003c/type\u003e\n   \u003cwidth\u003e 1024 \u003c/height\u003e\n   \u003cheight\u003e 512 \u003c/height\u003e\n   \u003cformat\u003e NV12 \u003c/format\u003e\n\u003c/virtio-gpu resource\u003e\n\u003cVK Decoder data path\u003e\n   \u003c/usr/local/emulator_snapshots/VkSnapshotDecoder1\u003e\n\u003c/VK Decoder data path\u003e\n\u003cTexture data path\u003e\n   \u003c/usr/local/emulator_snapshots/Texture1\u003e   \n\u003cTexture data path\u003e\n```\n\nThen, the crosvm API would just finding the path the to snapshot file(s), just as `STREAM_RENDERER_PARAM_SNAPSHOT_DATA_DIRECTORY`, which could be `/usr/local/aemu/emulator_snaphots`.  That would also make `android::snapshot::ITextureLoaderPtr` internal to gfxstream, since IIUC it only needs a path to be constructed.  WDYT?",
+      "parentUuid": "15b2772d_13421304",
+      "range": {
+        "startLine": 527,
+        "startChar": 0,
+        "endLine": 532,
+        "endChar": 0
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6da7066c_2f5346c3",
         "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
         "patchSetId": 20
@@ -394,6 +418,30 @@
       "side": 1,
       "message": "I think the main issue here is that in the e2e tests, guest ptr \u003d\u003d host ptr and on snapshot it re-creates the host ptr. Then we need to tag the guest memory info and say \"your cached ptr is invalidated, please update\", thus introducing a test only code path for snapshot.\n\nNote that this diverges significantly from the real world snapshot, where we virtualize the guest address and remap it without telling the guest. The divergence is also the reason why I would prefer to spend less time on the e2e tests on coherent memory, and rely more on the integration tests with a real VM.",
       "parentUuid": "1b01f367_850c7bf1",
+      "range": {
+        "startLine": 3963,
+        "startChar": 8,
+        "endLine": 3996,
+        "endChar": 42
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b347806_680cb0ef",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3996,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-13T00:16:14Z",
+      "side": 1,
+      "message": "Yes, we would have to improve the e2e tests backend to better emulate the real world scenario, but I do think it\u0027s technically feasible.\n\nAnother solution that doesn\u0027t involve changing the `./gfxstream_unittest.cpp` to test aspects of this.  This would be similar to what https://crrev.com/c/4853266 does: which tests the host side rutabaga API only.  That would avoid adding too many special cases for end2end tests that we\u0027ll eventually have to roll back.",
+      "parentUuid": "66fc16d0_d1b4edd0",
       "range": {
         "startLine": 3963,
         "startChar": 8,
