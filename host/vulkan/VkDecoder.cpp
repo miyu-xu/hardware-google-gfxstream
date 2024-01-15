@@ -122,7 +122,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
     auto& metricsLogger = *context.metricsLogger;
     if (len < 8) return 0;
     bool queueSubmitWithCommandsEnabled =
-        feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands);
+        feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands) && processResources;
     unsigned char* ptr = (unsigned char*)buf;
     const unsigned char* const end = (const unsigned char*)buf + len;
     if (m_forSnapshotLoad) {
