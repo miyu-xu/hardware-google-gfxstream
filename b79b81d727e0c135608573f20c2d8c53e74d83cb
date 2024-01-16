@@ -169,6 +169,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "93eed2c4_afb6751c",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-16T23:30:44Z",
+      "side": 1,
+      "message": "It is great to hear that crosvm would like to take the protobuf + extra large data files approach as well. I am not going to ask crosvm to pass ITextureLoaderPtr as input parameters so don\u0027t worry about it.\n\nNote that we are not going to know the snapshot path during initialization or in general anytime before a snapshot command is issued. This is because users are free to create multiple snapshots with different names (thus different paths). We need to pass them by parameters as strings, pointers to files, or write_bytes callback functions (might need seekp / tellp as well).\n\nFor now I am just going to get something up and running real quick. We will rework the API later when we rewrite VkDecoderSnapshot into protobufs. At that point we should also understand exactly what snapshot files we will write to.",
+      "parentUuid": "773d3f1d_004f0267",
+      "range": {
+        "startLine": 527,
+        "startChar": 0,
+        "endLine": 532,
+        "endChar": 0
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6da7066c_2f5346c3",
         "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
         "patchSetId": 20
@@ -442,6 +466,30 @@
       "side": 1,
       "message": "Yes, we would have to improve the e2e tests backend to better emulate the real world scenario, but I do think it\u0027s technically feasible.\n\nAnother solution that doesn\u0027t involve changing the `./gfxstream_unittest.cpp` to test aspects of this.  This would be similar to what https://crrev.com/c/4853266 does: which tests the host side rutabaga API only.  That would avoid adding too many special cases for end2end tests that we\u0027ll eventually have to roll back.",
       "parentUuid": "66fc16d0_d1b4edd0",
+      "range": {
+        "startLine": 3963,
+        "startChar": 8,
+        "endLine": 3996,
+        "endChar": 42
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b798adb_1c7f0a33",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3996,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-16T23:30:44Z",
+      "side": 1,
+      "message": "The focus here is to test VkDecoderSnapshot and VkReconstruction instead of rutabaga, and we do want to trigger it from guest side API since follow-up vk tests are going to depend on it. Due to the difference between e2e tests backend and real-world scenario, we could only provide, I would say, 50% test coverage. But it is still better than 0% coverage, and it unblocks the rest of the e2e tests.\n\nOf course, at the end of the day, we will need other tests to cover the rest (might be shared memory unittests, or could be integration tests with a full vm).",
+      "parentUuid": "3b347806_680cb0ef",
       "range": {
         "startLine": 3963,
         "startChar": 8,
