@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c60fc8a_74fe2092",
+        "filename": "guest/vulkan/gfxstream_vk_device.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 868,
+      "author": {
+        "id": 1033608
+      },
+      "writtenOn": "2024-01-16T23:02:56Z",
+      "side": 1,
+      "message": "the core of the fix is in adding these predicates",
+      "revId": "f1fc6215d51f47fcb06e310ee886a532774725cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
