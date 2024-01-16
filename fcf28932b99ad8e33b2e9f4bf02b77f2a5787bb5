@@ -33,6 +33,24 @@
       "message": "Do we have the exact Vulkan API dump logs for the failure case? I won\u0027t block this CL, but I want to know if it\u0027s really legitimate to destroy a `vkAcquireNextImageKHR` `VkSemaphore` before it\u0027s signaled? Or am I missing anything. If not, probably the dEQP test/ANGLE is doing something wrong?",
       "revId": "fcf28932b99ad8e33b2e9f4bf02b77f2a5787bb5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae174f74_5b95911c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-16T20:45:34Z",
+      "side": 1,
+      "message": "See b/239242320#comment3 for the guest vulkan API log / what ANGLE is calling.\n\nRe-scanning the VK spec again now...",
+      "parentUuid": "68265ec8_6451db8f",
+      "revId": "fcf28932b99ad8e33b2e9f4bf02b77f2a5787bb5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
