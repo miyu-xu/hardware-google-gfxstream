@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11a5d67c_efc9c161",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-16T16:54:21Z",
+      "side": 1,
+      "message": "Can you split the commit into two changes: (1) that adds the revelant descriptor set function into `HANDWRITTEN_ENTRY_POINTS` in the `functable.py`, but just copies the current implementation over to `gfxsream_vk_device.cpp`.  Then commit (2) would add the hand-written changes that you require into that function.\n\nEssentially, we would like to reduce the number of special cases in codegen, since it\u0027s already a bit tricky to follow.",
+      "revId": "7cf7b2f73be6fdc02eda1137be8dbea0f6ad9557",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
