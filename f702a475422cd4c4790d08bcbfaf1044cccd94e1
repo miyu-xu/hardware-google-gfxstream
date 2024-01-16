@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "89141633_16193547",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1033608
+      },
+      "writtenOn": "2024-01-16T19:10:25Z",
+      "side": 1,
+      "message": "https://paste.googleplex.com/6487519321915392",
+      "parentUuid": "4bfcc4c9_2cafd851",
+      "revId": "f702a475422cd4c4790d08bcbfaf1044cccd94e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4f6ae0cd_1529831e",
@@ -48,6 +66,30 @@
       "writtenOn": "2024-01-16T18:55:01Z",
       "side": 1,
       "message": "This file seems to move previousContext from a class member to thread-local. In the case where there are 3 or more context bindings, thread-local previousContext might have a problem. Here would be an example:\n\n(initial)           current context \u003d null, sPreviousContext \u003d null\ncontext A bind -\u003e   current context \u003d    A, sPreviousContext \u003d null\ncontext B bind -\u003e   current context \u003d    B, sPreviousContext \u003d    A\ncontext C bind -\u003e   current context \u003d    C, sPreviousContext \u003d    B\ncontext C unbind -\u003e current context \u003d    B, sPreviousContext \u003d null\ncontext B unbind -\u003e current context \u003d null, sPreviousContext \u003d null \u003c--- this should bind current context to A instead",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 52
+      },
+      "revId": "f702a475422cd4c4790d08bcbfaf1044cccd94e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9d530b5_5ce7b830",
+        "filename": "host/gl/DisplaySurfaceGl.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1033608
+      },
+      "writtenOn": "2024-01-16T19:10:25Z",
+      "side": 1,
+      "message": "I was trying to preserve the existing behavior somewhat... It wasn\u0027t recursive - the same state transition problem existed, but it was global, rather than thread-local\n\n(EGL context is thread-local, so I thought the state should do the same)",
+      "parentUuid": "4f6ae0cd_1529831e",
       "range": {
         "startLine": 33,
         "startChar": 0,
