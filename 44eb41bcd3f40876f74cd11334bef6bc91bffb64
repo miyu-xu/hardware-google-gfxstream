@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1e2dbc45_ed9006bf",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-16T18:32:42Z",
+      "side": 1,
+      "message": "This is a generated file, if you do want to modify it please try to modify the code generator.\n\nPlus I think there are a few other issues.\n\n1. You could disable it by simply modifying the advancedFeatures.ini file in your system image output folder (I think the source is in https://source.corp.google.com/h/android/platform/superproject/main/+/main:device/generic/goldfish/data/etc/)\n\n2. Missing processResources could mean a potential memory leak, so you do want to make sure it is not null. Do you know if it is always null, or it is null for some APPs but not the others?",
+      "range": {
+        "startLine": 125,
+        "startChar": 70,
+        "endLine": 125,
+        "endChar": 86
+      },
+      "revId": "44eb41bcd3f40876f74cd11334bef6bc91bffb64",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
