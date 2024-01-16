@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4bfcc4c9_2cafd851",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-16T18:55:01Z",
+      "side": 1,
+      "message": "The bug also implies that something is binding main context without going through RecursiveScopedContextBind. Do you have the callstack for it?",
+      "revId": "f702a475422cd4c4790d08bcbfaf1044cccd94e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f6ae0cd_1529831e",
+        "filename": "host/gl/DisplaySurfaceGl.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-16T18:55:01Z",
+      "side": 1,
+      "message": "This file seems to move previousContext from a class member to thread-local. In the case where there are 3 or more context bindings, thread-local previousContext might have a problem. Here would be an example:\n\n(initial)           current context \u003d null, sPreviousContext \u003d null\ncontext A bind -\u003e   current context \u003d    A, sPreviousContext \u003d null\ncontext B bind -\u003e   current context \u003d    B, sPreviousContext \u003d    A\ncontext C bind -\u003e   current context \u003d    C, sPreviousContext \u003d    B\ncontext C unbind -\u003e current context \u003d    B, sPreviousContext \u003d null\ncontext B unbind -\u003e current context \u003d null, sPreviousContext \u003d null \u003c--- this should bind current context to A instead",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 52
+      },
+      "revId": "f702a475422cd4c4790d08bcbfaf1044cccd94e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
