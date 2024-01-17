@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ded585da_20d6b0bc",
+        "filename": "Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-17T21:58:53Z",
+      "side": 1,
+      "message": "nit: Could you prefix the define with `GFXSTREAM_`? \n\nIt seems to be a good practice amongst other projects to \"namespace\" their defines/options. I think we should do this as well.",
+      "range": {
+        "startLine": 126,
+        "startChar": 11,
+        "endLine": 126,
+        "endChar": 19
+      },
+      "revId": "c5400568bfec36c5c93605a35128d897b23f51ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb5470b8_4172e1b3",
+        "filename": "Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-17T21:58:53Z",
+      "side": 1,
+      "message": "nit: Could we also call this something closer to \"decoders\" to match the meson option (`GFXSTREAM_ENABLE_GLES_DECODER`)?\n\nI could imagine simply `USE_GLES` being like \"enable the GLES translator layer\" or even \"GLES translator uses host EGL/GLES instead of desktop GL\".",
+      "range": {
+        "startLine": 126,
+        "startChar": 10,
+        "endLine": 126,
+        "endChar": 19
+      },
+      "revId": "c5400568bfec36c5c93605a35128d897b23f51ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
