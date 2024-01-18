@@ -45,6 +45,54 @@
       },
       "revId": "c5400568bfec36c5c93605a35128d897b23f51ba",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94af32b3_2da87131",
+        "filename": "Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-18T02:16:26Z",
+      "side": 1,
+      "message": "I changed it to something similiar: `GFXSTREAM_ENABLE_HOST_GLES`.  This is because the the decoder itself isn\u0027t the only that uses it.  For example, the Framebuffer/Colorbuffer/display logic.\n\nWe may change the meson option too in subsequent commit.",
+      "parentUuid": "fb5470b8_4172e1b3",
+      "range": {
+        "startLine": 126,
+        "startChar": 10,
+        "endLine": 126,
+        "endChar": 19
+      },
+      "revId": "c5400568bfec36c5c93605a35128d897b23f51ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c228297_86fd1744",
+        "filename": "Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-18T02:16:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ded585da_20d6b0bc",
+      "range": {
+        "startLine": 126,
+        "startChar": 11,
+        "endLine": 126,
+        "endChar": 19
+      },
+      "revId": "c5400568bfec36c5c93605a35128d897b23f51ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
