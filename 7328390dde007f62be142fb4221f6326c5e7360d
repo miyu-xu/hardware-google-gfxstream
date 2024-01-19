@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b76ebe8_d023c0b5",
+        "filename": "host/meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-19T18:46:21Z",
+      "side": 1,
+      "message": "Can this be `inc_mesa_include`? Or alternatively, does meson have some kind of alias system? It looks like there is a `inc_include` inside of `guest/mesa/include/meson.build`. It would be better if that could be referenced somehow so that the build target is defined/kept in sync at the mesa subdir instead of at the top level.",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 122,
+        "endChar": 58
+      },
+      "revId": "7328390dde007f62be142fb4221f6326c5e7360d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
