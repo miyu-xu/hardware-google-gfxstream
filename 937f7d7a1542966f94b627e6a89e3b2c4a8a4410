@@ -52,6 +52,24 @@
       "parentUuid": "33fd36c6_c565de4b",
       "revId": "937f7d7a1542966f94b627e6a89e3b2c4a8a4410",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5c8b8b6_ef792cf9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1033608
+      },
+      "writtenOn": "2024-01-19T22:42:29Z",
+      "side": 1,
+      "message": "yeah, that\u0027s a very good question... I think I\u0027m ~43% done with the design, which should also explain more precisely what\u0027s missing... over-simplified: we don\u0027t call anything that syncs the images",
+      "parentUuid": "62dcbe02_71a0d136",
+      "revId": "937f7d7a1542966f94b627e6a89e3b2c4a8a4410",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
