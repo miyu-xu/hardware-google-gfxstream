@@ -2790,6 +2790,7 @@ std::unique_ptr<BorrowedImageInfo> FrameBuffer::borrowColorBufferForComposition(
     } else {
 #if GFXSTREAM_ENABLE_HOST_GLES
         invalidateColorBufferForGl(colorBufferHandle);
+        flushColorBufferFromVk(colorBufferHandle);
 #endif
     }
 
