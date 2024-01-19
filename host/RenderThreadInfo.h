@@ -25,7 +25,7 @@
 #include "RenderThreadInfoGl.h"
 #include "RenderThreadInfoVk.h"
 
-#if GFXSTREAM_ENABLE_HOST_MAGMA
+#if USE_MAGMA
 #include "RenderThreadInfoMagma.h"
 #endif
 
@@ -58,7 +58,7 @@ struct RenderThreadInfo {
     std::optional<gl::RenderThreadInfoGl> m_glInfo;
     std::optional<vk::RenderThreadInfoVk> m_vkInfo;
 
-#if GFXSTREAM_ENABLE_HOST_MAGMA
+#if USE_MAGMA
     std::optional<RenderThreadInfoMagma> m_magmaInfo;
 #endif
 
