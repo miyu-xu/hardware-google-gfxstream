@@ -217,6 +217,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ae3d3ed9_5390ee7b",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-19T01:28:34Z",
+      "side": 1,
+      "message": "The interfaces for crosvm seem to be:\n\nhttps://crosvm.dev/doc/vm_control/fn.do_snapshot.html\nhttps://crosvm.dev/doc/vm_control/fn.do_restore.html\n\nUpstream QEMU uses a QMP protocol for snapshots: \n\nhttps://wiki.qemu.org/Features/Snapshots\nhttps://www.qemu.org/docs/master/interop/qemu-qmp-ref.html#qapidoc-2174\n\nMaybe `stream_renderer_snapshot_save(char** snapshot_dir, uint32_t num_dirs)` + `stream_renderer_snapshot_load(char** snapshot_dir, uint32_t num_dirs)` is a good unstable API given this?",
+      "parentUuid": "e41f7890_5adfbc98",
+      "range": {
+        "startLine": 527,
+        "startChar": 0,
+        "endLine": 532,
+        "endChar": 0
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6da7066c_2f5346c3",
         "filename": "guest/platform/rutabaga/RutabagaVirtGpuBlobMapping.cpp",
         "patchSetId": 20
@@ -514,6 +538,30 @@
       "side": 1,
       "message": "The focus here is to test VkDecoderSnapshot and VkReconstruction instead of rutabaga, and we do want to trigger it from guest side API since follow-up vk tests are going to depend on it. Due to the difference between e2e tests backend and real-world scenario, we could only provide, I would say, 50% test coverage. But it is still better than 0% coverage, and it unblocks the rest of the e2e tests.\n\nOf course, at the end of the day, we will need other tests to cover the rest (might be shared memory unittests, or could be integration tests with a full vm).",
       "parentUuid": "3b347806_680cb0ef",
+      "range": {
+        "startLine": 3963,
+        "startChar": 8,
+        "endLine": 3996,
+        "endChar": 42
+      },
+      "revId": "b79b81d727e0c135608573f20c2d8c53e74d83cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5035f875_6b23c184",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 3996,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-19T01:28:34Z",
+      "side": 1,
+      "message": "One option is modify the test to:\n\n1) Create 2 linear Vulkan images: one for uploading (memory1, image1) and destination (memory2, image2)\n2) Upload data memory1 (map)\n3) Blit from image1 from image2\n4) unmap memory1, destroy image1 and memory1\n5) Snapshot save + snapshot load\n6) Map memory2 after restore \n7) Verify pixels\n\nI think that *should* let you avoid modifications to ResourceTracker.cpp for the sake of the tests.  Long-term, we\u0027ll need to improve the testing layer.",
+      "parentUuid": "7b798adb_1c7f0a33",
       "range": {
         "startLine": 3963,
         "startChar": 8,
