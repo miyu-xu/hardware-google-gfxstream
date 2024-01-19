@@ -22,6 +22,30 @@
       },
       "revId": "7328390dde007f62be142fb4221f6326c5e7360d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d124bff7_bba6db3b",
+        "filename": "host/meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-19T21:07:03Z",
+      "side": 1,
+      "message": "Yeah, it\u0027s to avoid namespace collisions with Mesa, and we generally want to avoid modifications into the `guest/mesa` part since.  Right now, the namespace collision isn\u0027t an issue, since the host gfxstream build + mesa build are separated.\n\nBut as the Mesa build and host gfxstream becomes more integrated (for example for Vulkan headers, see `goto.google.com/gfxstream-guest-linux` for details), this does become more of an issue.",
+      "parentUuid": "6b76ebe8_d023c0b5",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 122,
+        "endChar": 58
+      },
+      "revId": "7328390dde007f62be142fb4221f6326c5e7360d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
