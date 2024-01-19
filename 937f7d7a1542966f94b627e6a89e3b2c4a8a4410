@@ -16,6 +16,24 @@
       "message": "Why is this necessary?",
       "revId": "937f7d7a1542966f94b627e6a89e3b2c4a8a4410",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "33fd36c6_c565de4b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1033608
+      },
+      "writtenOn": "2024-01-19T22:31:37Z",
+      "side": 1,
+      "message": "To propagate our VK buffers to Emulator\u0027s GLES composer : )\n\nBut this is a very rough hack, not for sumission",
+      "parentUuid": "15eaca06_98aab621",
+      "revId": "937f7d7a1542966f94b627e6a89e3b2c4a8a4410",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
