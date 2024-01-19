@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "66c2697e_8a4d2358",
+        "filename": "host/gl/ColorBufferGl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1033608
+      },
+      "writtenOn": "2024-01-19T18:30:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6bdce436_72f161b4",
+      "range": {
+        "startLine": 408,
+        "startChar": 62,
+        "endLine": 408,
+        "endChar": 63
+      },
+      "revId": "a86dd375aafbd1e6eff3c995d2ecc9a8c372f7dc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0a0f0cb_1555072d",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-01-19T18:11:54Z",
       "side": 1,
       "message": "you may remove it if it is not used.",
+      "range": {
+        "startLine": 109,
+        "startChar": 4,
+        "endLine": 109,
+        "endChar": 49
+      },
+      "revId": "a86dd375aafbd1e6eff3c995d2ecc9a8c372f7dc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5c56a93_53029c8d",
+        "filename": "host/gl/ColorBufferGl.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1033608
+      },
+      "writtenOn": "2024-01-19T18:30:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0a0f0cb_1555072d",
       "range": {
         "startLine": 109,
         "startChar": 4,
