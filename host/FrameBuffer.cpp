@@ -3535,6 +3535,7 @@ std::unique_ptr<BorrowedImageInfo> FrameBuffer::borrowColorBufferForComposition(
         invalidateColorBufferForVk(colorBufferHandle);
     } else {
         invalidateColorBufferForGl(colorBufferHandle);
+        flushColorBufferFromVk(colorBufferHandle);
     }
 
     const auto api = m_useVulkanComposition ? ColorBuffer::UsedApi::kVk : ColorBuffer::UsedApi::kGl;
