@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d50fa869_d5fb8183",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2028722
+      },
+      "writtenOn": "2024-01-19T19:30:56Z",
+      "side": 1,
+      "message": "This is going to be extremely slow especially with 4K or 1440p backgrounds in our platform. IIUC, doing the pixel by pixel copy  I would rather make the guest layer or guest OS avoid this path by not allocating RGB surfaces.",
+      "revId": "ed39a8d87e6b69b8c7512d17cffcf1347bc033e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
