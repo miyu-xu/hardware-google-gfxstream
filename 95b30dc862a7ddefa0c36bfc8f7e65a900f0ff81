@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c58e9af2_4d463262",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-19T03:13:03Z",
+      "side": 1,
+      "message": "Verified via presubmit and MacOS ATBD run:\n\nhttps://android-build.corp.google.com/abtd/run/L83600030001385520/",
+      "revId": "95b30dc862a7ddefa0c36bfc8f7e65a900f0ff81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
