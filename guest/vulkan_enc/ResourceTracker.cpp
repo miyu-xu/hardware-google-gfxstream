@@ -713,7 +713,10 @@ SetBufferCollectionBufferConstraintsResult setBufferCollectionBufferConstraintsI
 uint64_t getAHardwareBufferId(AHardwareBuffer* ahw) {
     uint64_t id = 0;
 #if defined(PLATFORM_SDK_VERSION) && PLATFORM_SDK_VERSION >= 31
-    AHardwareBuffer_getId(ahw, &id);
+    // BUG: 321786413
+    // disable the AHardwareBuffer for now
+    // AHardwareBuffer_getId(ahw, &id);
+    (void)ahw;
 #else
     (void)ahw;
 #endif
