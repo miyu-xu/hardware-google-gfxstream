@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5bca00d0_1703a033",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-01-22T23:59:31Z",
+      "side": 1,
+      "message": "Should we wait for go/oag/2922012 to land?",
+      "revId": "38c5934a7c62519b1d18e450eded637a6a5a5deb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
