@@ -486,6 +486,7 @@ using DlSymFunc = void* (void*, const char*);
 
         decoderHeaderIncludes = f"""
 #include "VkDecoderContext.h"
+#include "host/FrameBuffer.h"
 
 #include <memory>
 
