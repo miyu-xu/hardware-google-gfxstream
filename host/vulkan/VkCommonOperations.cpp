@@ -492,13 +492,13 @@ static std::vector<VkEmulation::ImageSupportInfo> getBasicImageSupportList() {
 
     std::vector<VkImageUsageFlags> usageFlags = {
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
-        VK_IMAGE_USAGE_SAMPLED_BIT,          VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-        VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+        VK_IMAGE_USAGE_SAMPLED_BIT,          VK_IMAGE_USAGE_STORAGE_BIT,
+        VK_IMAGE_USAGE_TRANSFER_SRC_BIT,     VK_IMAGE_USAGE_TRANSFER_DST_BIT,
     };
 
     std::vector<VkEmulation::ImageSupportInfo> res;
 
-    // Currently: 17 format + create flags combo, 2 tilings, 5 usage flags -> 170 cases to check.
+    // Currently: 17 format + create flags combo, 2 tilings, 6 usage flags -> 204 cases to check.
     for (auto combo : combos) {
         for (auto t : types) {
             for (auto ti : tilings) {
@@ -1798,6 +1798,7 @@ static std::unique_ptr<VkImageCreateInfo> generateColorBufferVkImageCreateInfo_l
         {VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT,
          VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT},
         {VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_IMAGE_USAGE_SAMPLED_BIT},
+        {VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT, VK_IMAGE_USAGE_STORAGE_BIT},
         {VK_FORMAT_FEATURE_TRANSFER_SRC_BIT, VK_IMAGE_USAGE_TRANSFER_SRC_BIT},
         {VK_FORMAT_FEATURE_TRANSFER_DST_BIT, VK_IMAGE_USAGE_TRANSFER_DST_BIT},
         {VK_FORMAT_FEATURE_BLIT_SRC_BIT, VK_IMAGE_USAGE_TRANSFER_SRC_BIT},
