@@ -90,13 +90,9 @@ using gfxstream::vk::VkEncoder;
 
 using gfxstream::guest::getCurrentThreadId;
 
-#ifdef VIRTIO_GPU
-
 #include "VirtGpu.h"
 #include "VirtioGpuPipeStream.h"
 #include "virtgpu_drm.h"
-
-#endif
 
 #if defined(__linux__) || defined(__ANDROID__)
 #include <fstream>
@@ -292,7 +288,6 @@ std::unique_ptr<HostConnection> HostConnection::connect(enum VirtGpuCapset capse
             break;
         }
 #endif
-#if defined(VIRTIO_GPU) && !defined(HOST_BUILD)
         case HOST_CONNECTION_VIRTIO_GPU_PIPE: {
             auto stream = new VirtioGpuPipeStream(STREAM_BUFFER_SIZE);
             if (!stream) {
@@ -357,7 +352,6 @@ std::unique_ptr<HostConnection> HostConnection::connect(enum VirtGpuCapset capse
 #endif
             break;
         }
-#endif // !VIRTIO_GPU && !HOST_BUILD_
         default:
             break;
     }
