@@ -137,7 +137,6 @@ void GLClientState::init() {
 
     m_extensions_set = false;
 
-#ifdef GFXSTREAM
     // The default transform feedback buffer object
     // The default sampler object
     GLuint defaultId = 0;
@@ -150,7 +149,6 @@ void GLClientState::init() {
     mBoundQueryValidity_AnySamplesPassed.valid = false;
     mBoundQueryValidity_AnySamplesPassedConservative.valid = false;
     mBoundQueryValidity_TransformFeedbackPrimitivesWritten.valid = false;
-#endif
 }
 
 GLClientState::GLClientState()
@@ -456,8 +454,6 @@ static void sClearIndexedBufferBinding(GLuint id, std::vector<GLClientState::Buf
     }
 }
 
-#ifdef GFXSTREAM
-
 void GLClientState::addBuffer(GLuint id) {
     mBufferIds.add(id);
     mBufferIds.set(id, true);
@@ -669,36 +665,6 @@ GLenum GLClientState::getLastQueryTarget(GLuint id) {
     if (!targetPtr) return 0;
     return *targetPtr;
 }
-
-#else // GFXSTREAM
-
-void GLClientState::addBuffer(GLuint id) {
-    mBufferIds.insert(id);
-}
-
-void GLClientState::removeBuffer(GLuint id) {
-    mBufferIds.erase(id);
-}
-
-bool GLClientState::bufferIdExists(GLuint id) const {
-    return mBufferIds.find(id) != mBufferIds.end();
-}
-
-void GLClientState::setBufferHostMapDirty(GLuint id, bool dirty) {
-    (void)id;
-    (void)dirty;
-}
-
-bool GLClientState::isBufferHostMapDirty(GLuint id) const {
-    (void)id;
-    return true;
-}
-
-void GLClientState::setExistence(ObjectType, bool, GLsizei, const GLuint*) {
-    // no-op in non-gfxstream
-}
-
-#endif // !GFXSTREAM
 
 void GLClientState::setBoundPixelPackBufferDirtyForHostMap() {
     if (m_pixelPackBuffer)
