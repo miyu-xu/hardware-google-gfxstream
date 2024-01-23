@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43db9073_a434b51f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-01-23T00:02:38Z",
+      "side": 1,
+      "message": "Gurchetan,\nsince you are on it, can you merge aosp/2922473 into this cl ?",
+      "revId": "cb40a71f146d3a8a894fc6645ef9a203949e5cf1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
