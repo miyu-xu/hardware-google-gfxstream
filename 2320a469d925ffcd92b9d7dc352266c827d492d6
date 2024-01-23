@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eee4e180_ad5951cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-23T22:38:00Z",
+      "side": 1,
+      "message": "LGTM assuming Goldfish switched over to virtiogpu",
+      "revId": "2320a469d925ffcd92b9d7dc352266c827d492d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
