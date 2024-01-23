@@ -16,6 +16,24 @@
       "message": "Should we wait for go/oag/2922012 to land?",
       "revId": "38c5934a7c62519b1d18e450eded637a6a5a5deb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6782a03_ce9857e2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-01-23T00:12:11Z",
+      "side": 1,
+      "message": "Thanks Joshua, just saw that;\nasked the author to include the PLATFORM_SDK_VERSION fix",
+      "parentUuid": "5bca00d0_1703a033",
+      "revId": "38c5934a7c62519b1d18e450eded637a6a5a5deb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
