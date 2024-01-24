@@ -75,6 +75,65 @@ TEST_P(GfxstreamEnd2EndVkSnapshotImageTest, BasicSaveLoad) {
     ASSERT_THAT(device->bindImageMemory(*image, *imageMemory, 0), IsVkSuccess());
 }
 
+TEST_P(GfxstreamEnd2EndVkSnapshotImageTest, HostMemoryContent) {
+    static constexpr const vkhpp::DeviceSize kSize = 16 * 1024;
+
+    std::vector<uint8_t> srcBufferContent(kSize);
+    for (size_t i = 0; i < kSize; i++) {
+        srcBufferContent[i] = static_cast<uint8_t>(i & 0xff);
+    }
+    auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
+        VK_ASSERT(SetUpTypicalVkTestEnvironment());
+
+    uint32_t hostMemoryTypeIndex = -1;
+    const auto memoryProperties = physicalDevice.getMemoryProperties();
+    for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++) {
+        const vkhpp::MemoryType& memoryType = memoryProperties.memoryTypes[i];
+        if (memoryType.propertyFlags & vkhpp::MemoryPropertyFlagBits::eHostVisible) {
+            hostMemoryTypeIndex = i;
+        }
+    }
+    if (hostMemoryTypeIndex == -1) {
+        GTEST_SKIP() << "Skipping test due to no host visible memory type.";
+        return;
+    }
+
+    const vkhpp::MemoryAllocateInfo memoryAllocateInfo = {
+        .allocationSize = kSize,
+        .memoryTypeIndex = hostMemoryTypeIndex,
+    };
+    auto memory = device->allocateMemoryUnique(memoryAllocateInfo).value;
+    ASSERT_THAT(memory, IsValidHandle());
+
+    void* mapped = nullptr;
+
+    auto mapResult = device->mapMemory(*memory, 0, VK_WHOLE_SIZE, vkhpp::MemoryMapFlags{}, &mapped);
+    ASSERT_THAT(mapResult, IsVkSuccess());
+    ASSERT_THAT(mapped, NotNull());
+
+    auto* bytes = reinterpret_cast<uint8_t*>(mapped);
+    std::memcpy(bytes, srcBufferContent.data(), kSize);
+
+    const vkhpp::MappedMemoryRange range = {
+        .memory = *memory,
+        .offset = 0,
+        .size = kSize,
+    };
+    device->unmapMemory(*memory);
+
+    SnapshotSaveAndLoad();
+
+    mapResult = device->mapMemory(*memory, 0, VK_WHOLE_SIZE, vkhpp::MemoryMapFlags{}, &mapped);
+    ASSERT_THAT(mapResult, IsVkSuccess());
+    ASSERT_THAT(mapped, NotNull());
+    bytes = reinterpret_cast<uint8_t*>(mapped);
+
+    for (uint32_t i = 0; i < kSize; ++i) {
+        ASSERT_THAT(bytes[i], Eq(srcBufferContent[i]));
+    }
+    device->unmapMemory(*memory);
+}
+
 INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkSnapshotImageTest,
                         ::testing::ValuesIn({
                             TestParams{
