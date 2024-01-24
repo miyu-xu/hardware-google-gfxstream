@@ -1387,7 +1387,13 @@ class PipeVirglRenderer {
                         *vk_emu->representativeColorBufferMemoryTypeIndex;
                 }
 
+#if CONFIG_AEMU
+                // android emulator always have rendercontrolenc on
+                // BUG: 320328717
+                capset->noRenderControlEnc = 0;
+#else
                 capset->noRenderControlEnc = 1;
+#endif
                 capset->blobAlignment = mPageSize;
                 if (vk_emu && vk_emu->live) {
                     capset->deferredMapping = 1;
