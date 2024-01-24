@@ -22,6 +22,30 @@
       },
       "revId": "c1897343537dd5af16100465c433d54645d89b43",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afa834d7_e0242032",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1393,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-01-24T21:13:41Z",
+      "side": 1,
+      "message": "This is a little strange; this codepath should never get hit unless guest side declares minigbm feature.",
+      "parentUuid": "5ccef90e_403228bc",
+      "range": {
+        "startLine": 1393,
+        "startChar": 24,
+        "endLine": 1393,
+        "endChar": 47
+      },
+      "revId": "c1897343537dd5af16100465c433d54645d89b43",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
