@@ -16,6 +16,24 @@
       "message": "Can we just do this?\n\nhttps://buganizer.corp.google.com/issues/320328717#comment9\n\nThe issue is Android thinks it\u0027s running virtio-gpu drivers, which have a newer initialization flow.  The way to fix that would just set the flag (\"using new initialization flow\") to be false when using goldfish drivers.",
       "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d482471b_4c896a87",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-01-24T21:04:00Z",
+      "side": 1,
+      "message": "It seems like the change mentioned in the bug pertains to the host side of noRenderControlEnc, setting it to false based on if we\u0027re in the old flow. In my case, noRenderControlEnc is already false (0) on the guest, so that\u0027s not the issue.\n\nIn my case, the issue is that even when noRenderControlEnc is false (it\u0027s hard to track all these negatives), the render control encoder is not created and initialized when particular threading paths are followed.",
+      "parentUuid": "790ddb7e_0c7a9d94",
+      "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
