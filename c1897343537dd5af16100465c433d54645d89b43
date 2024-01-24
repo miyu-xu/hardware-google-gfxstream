@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ccef90e_403228bc",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1393,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-24T21:06:23Z",
+      "side": 1,
+      "message": "*Not always*: only with using goldfish instead of virtio-gpu.  +joshuaduong@, do you know the emulator host side feature that enables selection of virtio-gpu in gfxstream?\n\nBut this should be good for.",
+      "range": {
+        "startLine": 1393,
+        "startChar": 24,
+        "endLine": 1393,
+        "endChar": 47
+      },
+      "revId": "c1897343537dd5af16100465c433d54645d89b43",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
