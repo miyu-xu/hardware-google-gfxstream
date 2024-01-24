@@ -45,6 +45,30 @@
       },
       "revId": "26b08131c4494e2e387d96c74189361963a8255e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "15ebd5fc_dce03159",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1445,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-24T18:41:55Z",
+      "side": 1,
+      "message": "Let\u0027s just keep the `mLock` right now.\n\nThe optimization will require a somewhat large refactor: we probably want to collect the resource to destroy and the queue to wait for, remove the entry from the map, and delete the `*Info` struct when we are still holding the lock, and wait and destroy after we release the mLock.\n\nI remember seeing strange hangs, but I need to check the stacks for those hangs to make sure we see `vkDestroyDevice` blocking the entire system.",
+      "parentUuid": "eb84798c_6c394e5e",
+      "range": {
+        "startLine": 1445,
+        "startChar": 36,
+        "endLine": 1445,
+        "endChar": 51
+      },
+      "revId": "26b08131c4494e2e387d96c74189361963a8255e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
