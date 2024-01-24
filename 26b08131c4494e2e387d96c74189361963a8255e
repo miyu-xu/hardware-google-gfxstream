@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "36b83c6c_787fd5a9",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1439,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-24T18:29:14Z",
+      "side": 1,
+      "message": "Carry over from aosp/2163497. Added the wait to ensure `vkDestroyDevice()` also waits as that is effectively the same issue that ANGLE does not know about how Gfxstream is implementing ANI.",
+      "range": {
+        "startLine": 1439,
+        "startChar": 16,
+        "endLine": 1439,
+        "endChar": 19
+      },
+      "revId": "26b08131c4494e2e387d96c74189361963a8255e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb84798c_6c394e5e",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1445,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-01-24T18:29:14Z",
+      "side": 1,
+      "message": "Do you think it is worth unlocking the global `mLock` so we\u0027re not holding onto that while doing the full wait? Or I guess the assumption is work should already be minimal and finishing up on the queues about to be destroyed?",
+      "range": {
+        "startLine": 1445,
+        "startChar": 36,
+        "endLine": 1445,
+        "endChar": 51
+      },
+      "revId": "26b08131c4494e2e387d96c74189361963a8255e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
