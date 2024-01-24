@@ -519,6 +519,7 @@ void GfxstreamEnd2EndTest::SnapshotSaveAndLoad() {
         .stream = stream.get(),
     };
     stream_renderer_snapshot_save(&saveStream);
+    gfxstream::UnpauseEmulatedVmm();
     stream.reset(new android::base::StdioStream(fopen(snapshotFileName.c_str(), "rb"),
                                                 android::base::StdioStream::kOwner));
     android::snapshot::SnapshotLoadStream loadStream{

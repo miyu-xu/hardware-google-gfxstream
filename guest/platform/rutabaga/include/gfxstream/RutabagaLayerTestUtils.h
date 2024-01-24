@@ -19,5 +19,6 @@
 namespace gfxstream {
 
 void ResetEmulatedVirtioGpu();
+void UnpauseEmulatedVmm();
 
 }  // namespace gfxstream
