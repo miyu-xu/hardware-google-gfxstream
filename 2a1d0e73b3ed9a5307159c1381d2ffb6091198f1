@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "790ddb7e_0c7a9d94",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-24T19:43:43Z",
+      "side": 1,
+      "message": "Can we just do this?\n\nhttps://buganizer.corp.google.com/issues/320328717#comment9\n\nThe issue is Android thinks it\u0027s running virtio-gpu drivers, which have a newer initialization flow.  The way to fix that would just set the flag (\"using new initialization flow\") to be false when using goldfish drivers.",
+      "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
