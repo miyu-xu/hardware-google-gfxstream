@@ -16,6 +16,24 @@
       "message": "LGTM assuming Goldfish switched over to virtiogpu",
       "revId": "2320a469d925ffcd92b9d7dc352266c827d492d6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97aad9a8_8df6f8a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-24T00:22:10Z",
+      "side": 1,
+      "message": "The goldfish system IIRC has both virtio-gpu and goldfish kernel drivers in it, and the guest userspace build always builds with VIRTIO_GPU.  The selection mechansim seems to be on the host.",
+      "parentUuid": "eee4e180_ad5951cb",
+      "revId": "2320a469d925ffcd92b9d7dc352266c827d492d6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
