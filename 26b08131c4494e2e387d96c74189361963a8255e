@@ -69,6 +69,40 @@
       },
       "revId": "26b08131c4494e2e387d96c74189361963a8255e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "956817f7_96e8a7ce",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 2259,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-24T19:16:32Z",
+      "side": 1,
+      "message": "In the old code, the `fenceInfo` for the external fence is not removed from `mFenceInfo` and we also don\u0027t call into the host Vulkan ICD`vkDestroyFence` as well.",
+      "revId": "26b08131c4494e2e387d96c74189361963a8255e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87ea3037_e1120c13",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 2270,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-24T19:16:32Z",
+      "side": 1,
+      "message": "Avoid holding the lock when call into the host Vulkan ICD for performance. Any reason we don\u0027t want to inline this function into `on_vkDestroyFence` as I don\u0027t see it being used elsewhere?",
+      "revId": "26b08131c4494e2e387d96c74189361963a8255e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
