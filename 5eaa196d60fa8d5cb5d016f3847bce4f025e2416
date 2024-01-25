@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b79069b9_53e0cc9c",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h",
+        "patchSetId": 22
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-25T17:09:08Z",
+      "side": 0,
+      "message": "Can you change this API to:\n\n`VG_EXPORT int stream_renderer_snapshot_save(char *dir);`\n\nTwo reasons:\n\n1) That\u0027s the API rutabaga uses (https://chromium-review.googlesource.com/c/crosvm/crosvm/+/4853266).  I think the test backend should use rutabaga.  The reason is then we can test additional context types (say a Rust only one) without having to boot a VM.  This will make the transition easier.\n\n2) I was doing another refactor/cleanup, and noticed GfxstreamEnd2EndTests have a dependency on AEMU base.  This leads to namespace collisions between `guest/android-emu/` and `hardware/google/aemu` with the cleanup.  I commented out the snapshot tests locally for it to build, but if the snapshot tests don\u0027t have such a reliance on AEMU base that would make it easier.  Having a reliance on AEMU base inside `libgfxstream_backend.so` is fine though.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 78
+      },
+      "revId": "5eaa196d60fa8d5cb5d016f3847bce4f025e2416",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
