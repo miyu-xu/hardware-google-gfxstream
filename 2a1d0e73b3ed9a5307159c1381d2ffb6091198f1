@@ -52,6 +52,24 @@
       "parentUuid": "d482471b_4c896a87",
       "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0b9e8c7_c11d9adb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-25T00:30:38Z",
+      "side": 1,
+      "message": "We should always set rcEncoder in goldfish.",
+      "parentUuid": "39a1ca3f_cac98078",
+      "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
