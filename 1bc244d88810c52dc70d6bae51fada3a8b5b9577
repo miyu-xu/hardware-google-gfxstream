@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50467b25_26d250cf",
+        "filename": "guest/fuchsia/include/cutils/log.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-25T00:18:55Z",
+      "side": 1,
+      "message": "Do we have a Fuchsia build in presubmit to validate it works? What would be the validation steps Fuchsia people recommend?",
+      "revId": "1bc244d88810c52dc70d6bae51fada3a8b5b9577",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
