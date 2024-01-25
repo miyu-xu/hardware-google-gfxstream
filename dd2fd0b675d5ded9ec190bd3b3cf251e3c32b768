@@ -70,6 +70,24 @@
       "parentUuid": "60a9f504_5a3a2247",
       "revId": "dd2fd0b675d5ded9ec190bd3b3cf251e3c32b768",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2741494_c86cf77f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-01-25T21:05:10Z",
+      "side": 1,
+      "message": "Could you please reimplement the namespacing and proper management of static variables in gfxstream_vk_device? The variables right now are leaking into the public namespace, which is dangerous.\n\nOut of curiosity, is there a reason not to take the existing change?",
+      "parentUuid": "cf2d6bad_017c3bc4",
+      "revId": "dd2fd0b675d5ded9ec190bd3b3cf251e3c32b768",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
