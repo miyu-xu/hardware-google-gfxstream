@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11480c75_b735a24d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-01-25T02:28:35Z",
+      "side": 1,
+      "message": "Downsides to this approach:\n1. SetupInstance semantics return to being unclear (is \u0027Instance\u0027 per thread? Is \u0027Instance\u0027 per process?)\n2. ::get() call is used to instantiate HostConnection from ANGLE path, rather than the ::getOrCreate() call used in the SetupInstance path. This call does not include the kCapsetGfxStreamVulkan used to instantiate the HostConnection on other threads. (Impact unknown, but incorrect per intent.)\n\nUpsides of this approach:\n1. Fewer lines of code changed (ignoring that they\u0027ve already been changed).\n2. rcEnc guaranteed to be created alongside HostConnection, rather than as an ancillary part.\n\nI like #2, but I still feel pretty strongly that the semantics around both SetupInstance and ::get/::getOrCreate need to be refined. I\u0027d personally rather keep the existing code and work to refine those semantics, then fall back to #2 once those have been cleared up?",
+      "revId": "dd2fd0b675d5ded9ec190bd3b3cf251e3c32b768",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
