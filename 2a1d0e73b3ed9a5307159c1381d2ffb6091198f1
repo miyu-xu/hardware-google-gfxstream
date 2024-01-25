@@ -70,6 +70,24 @@
       "parentUuid": "39a1ca3f_cac98078",
       "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eeb57db9_f9e8634d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-01-25T00:46:34Z",
+      "side": 1,
+      "message": "This might work, yeah. Just forces the rc encoder to exist at connect. I have some other misgivings with this init code, though - in particular, that get() is called in this path without the getAndCreate(caps).\n\nI feel like there\u0027s worth in a significant refactor to make ::get() never CREATE the HostConnection (otherwise what\u0027s the value of getOrCreate?). Without that you\u0027re left with two potential paths of creation - one without the caps, one with - and it\u0027s not clear what happens if the caps differs.\n\nEither way, this change addresses the above concern, for now.",
+      "parentUuid": "f0b9e8c7_c11d9adb",
+      "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
