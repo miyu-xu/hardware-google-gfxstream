@@ -34,6 +34,24 @@
       "parentUuid": "11480c75_b735a24d",
       "revId": "dd2fd0b675d5ded9ec190bd3b3cf251e3c32b768",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60a9f504_5a3a2247",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-01-25T02:51:51Z",
+      "side": 1,
+      "message": "(Additional minor downside: loss of syntax cleanup from the first CL.)",
+      "parentUuid": "6b08a0c4_5a89de74",
+      "revId": "dd2fd0b675d5ded9ec190bd3b3cf251e3c32b768",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
