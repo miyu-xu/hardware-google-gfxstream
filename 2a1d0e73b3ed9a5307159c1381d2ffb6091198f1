@@ -34,6 +34,24 @@
       "parentUuid": "790ddb7e_0c7a9d94",
       "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39a1ca3f_cac98078",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-25T00:06:03Z",
+      "side": 1,
+      "message": "Ah, I see.  I think the issue was `tInfo-\u003em_puid` needs to be set on the host side when using goldfish drivers.  Prior to your, `tinfo-\u003epuid` is only set once per process creation.\n\nI think this would be an issue with GL decoders too?  But I guess multi-threaded GL is rarer.\n\nDo you think the following would work?  \n\n```\n--- a/guest/OpenglSystemCommon/HostConnection.cpp\n+++ b/guest/OpenglSystemCommon/HostConnection.cpp\n@@ -368,6 +368,10 @@ std::unique_ptr\u003cHostConnection\u003e HostConnection::connect(enum VirtGpuCapset capse\n \n     auto fd \u003d (connType \u003d\u003d HOST_CONNECTION_VIRTIO_GPU_ADDRESS_SPACE) ? con-\u003em_rendernodeFd : -1;\n     processPipeInit(fd, connType, noRenderControlEnc);\n+    if (!noRenderControlEnc) {\n+        con-\u003ercEncoder();\n+    }\n+\n```\n\nThis creates `rcEncoder` when goldfish is used, which in turn calls `rcSetPuid(..)`.",
+      "parentUuid": "d482471b_4c896a87",
+      "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
