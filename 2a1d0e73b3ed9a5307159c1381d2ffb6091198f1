@@ -88,6 +88,24 @@
       "parentUuid": "f0b9e8c7_c11d9adb",
       "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1be4e91_5d79459b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-25T01:57:13Z",
+      "side": 1,
+      "message": "@yahan - I think it will always be set via goldfish path.\n\n@slumpwuffle, cool, did aosp/2927290.  Please test, since I only have a CF setup :-).  I agree with you that gfxstream guest code can be refactored/improved, and getInstance() versus createInstance() sounds like one of those refactorings.",
+      "parentUuid": "eeb57db9_f9e8634d",
+      "revId": "2a1d0e73b3ed9a5307159c1381d2ffb6091198f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
