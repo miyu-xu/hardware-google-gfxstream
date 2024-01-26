@@ -106,6 +106,24 @@
       "parentUuid": "e2741494_c86cf77f",
       "revId": "dd2fd0b675d5ded9ec190bd3b3cf251e3c32b768",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "271a5332_ef67e522",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-26T17:01:39Z",
+      "side": 1,
+      "message": "Added name-spacing again and also the thread callbacks cleanup.  Initially, I just reverted the change and added the rcEncoder() call since I didn\u0027t notice the other things done in the prior (along with the bug).  But I added those things back in, and squashed the commits since that was the most convenient thing to do.",
+      "parentUuid": "894aa002_d06ad528",
+      "revId": "dd2fd0b675d5ded9ec190bd3b3cf251e3c32b768",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
