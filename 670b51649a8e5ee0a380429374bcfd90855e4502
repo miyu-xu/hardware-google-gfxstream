@@ -3,6 +3,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "4cdff72b_3ff8adf7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-01-26T21:09:37Z",
+      "side": 1,
+      "message": "Sorry, setting back to 0 since I haven\u0027t tested this yet!\n\nAlso, your CL includes\n\u0027- proper management of static variables\n- define threading callbacks when needed.\u0027\n\nThese were already present in the code per the last CL, and are not new in this CL. Please remove them.",
+      "revId": "670b51649a8e5ee0a380429374bcfd90855e4502",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "142dc720_9d9e5388",
         "filename": "guest/vulkan/gfxstream_vk_device.cpp",
         "patchSetId": 3
