@@ -64,6 +64,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffbf4400_431280ef",
+        "filename": "guest/vulkan/gfxstream_vk_device.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-26T21:44:59Z",
+      "side": 1,
+      "message": "gfxstream doesn\u0027t really have a consistent style, and consists of various \"waves\" of development from different engineers to fit specific needs.  The only style guid I\u0027ve seen is the emulator one, and it says:\n\n\"C++ variables names use ‘lowerCamelCase’ or ‘lower_underscore_spacing’ to your convenience.\"\n\nhttps://android.googlesource.com/platform/external/qemu/+/emu-master-dev/android/docs/ANDROID-CODING-STYLE.md\n\nSo kept `noRenderControlEnc` as-is.  Other nits fixed tho.",
+      "parentUuid": "410dc751_722498b0",
+      "range": {
+        "startLine": 57,
+        "startChar": 9,
+        "endLine": 57,
+        "endChar": 27
+      },
+      "revId": "670b51649a8e5ee0a380429374bcfd90855e4502",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "97528106_8c9fc00f",
