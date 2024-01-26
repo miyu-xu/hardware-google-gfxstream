@@ -90,6 +90,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "bca6f3e6_0190288e",
+        "filename": "guest/vulkan/gfxstream_vk_device.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-01-26T22:03:13Z",
+      "side": 1,
+      "message": "Yeah, that\u0027s fine. There are other variables that use the convention in this file. Personally, I would strongly prefer that at least every FILE is consistent within itself, but I know even that\u0027s a struggle within Android code. Anyway, sounds good.",
+      "parentUuid": "ffbf4400_431280ef",
+      "range": {
+        "startLine": 57,
+        "startChar": 9,
+        "endLine": 57,
+        "endChar": 27
+      },
+      "revId": "670b51649a8e5ee0a380429374bcfd90855e4502",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "97528106_8c9fc00f",
         "filename": "guest/vulkan/gfxstream_vk_device.cpp",
         "patchSetId": 3
