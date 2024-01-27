@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "526af810_7a1cc208",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-27T00:59:28Z",
+      "side": 1,
+      "message": "@gurchetansingh we could continue the discussion here. My argument is we don\u0027t have a way to have full test coverage for mapped memory in VkDecoderGlobalState, but partial coverage is still better than no coverage. The other CLs are good enough to unblock us so I am OK not to merge this one.",
+      "revId": "bb383bce5703a6fd74ce2a186b7fa3c23a8f1375",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
