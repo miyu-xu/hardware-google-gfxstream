@@ -22,6 +22,30 @@
       },
       "revId": "5eaa196d60fa8d5cb5d016f3847bce4f025e2416",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89bd66b3_6f08c39e",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h",
+        "patchSetId": 22
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-27T01:07:31Z",
+      "side": 0,
+      "message": "I hear you. I could add the API but that would be in a separate commit. Our priority use case is for AEMU and the focus is in Vulkan itself, so at the current stage I am not going to add a lot of testing for crosvm. I would say we should finish all vulkan snapshot code before starting to worry too much about the API with crosvm.\n\nRemoving or simplifying TextureSaver in tests aligns with our future direction so I could do it as well.",
+      "parentUuid": "b79069b9_53e0cc9c",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 78
+      },
+      "revId": "5eaa196d60fa8d5cb5d016f3847bce4f025e2416",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
