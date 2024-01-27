@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c84357e_db1c31a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-27T00:53:56Z",
+      "side": 1,
+      "message": "@joshuaduong@google.com I am unsure if we actually need to manually copy the mapped memory content. If we don\u0027t we could remove that part later.",
+      "revId": "e516f6bb3ebe03f8b1482b598e169ae5ec4403ca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
