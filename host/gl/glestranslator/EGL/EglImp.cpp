@@ -31,6 +31,7 @@
 #include "aemu/base/system/System.h"
 #include "aemu/base/SharedLibrary.h"
 #include "host-common/GfxstreamFatalError.h"
+#include "host-common/emugl_vm_operations.h"
 #include "host-common/logging.h"
 
 #include "EglWindowSurface.h"
@@ -1418,6 +1419,7 @@ EGLAPI EGLImageKHR EGLAPIENTRY eglCreateImageKHR(EGLDisplay display, EGLContext 
 				current += 2;
 			}
 		}
+        get_emugl_vm_operations().setSkipSnapshotSave(true);
 		return dpy->addImageKHR(img);
 	}
 
