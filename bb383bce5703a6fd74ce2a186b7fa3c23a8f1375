@@ -16,6 +16,24 @@
       "message": "@gurchetansingh we could continue the discussion here. My argument is we don\u0027t have a way to have full test coverage for mapped memory in VkDecoderGlobalState, but partial coverage is still better than no coverage. The other CLs are good enough to unblock us so I am OK not to merge this one.",
       "revId": "bb383bce5703a6fd74ce2a186b7fa3c23a8f1375",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37b690ea_b66e40f4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-29T17:40:34Z",
+      "side": 1,
+      "message": "I think you just need to modify your test?\n\n1) Create 2 linear Vulkan images: one for uploading (memory1, image1) and destination (memory2, image2)\n2) Upload data memory1 (map)\n3) Blit from image1 from image2\n4) unmap memory1, destroy image1 and memory1\n5) Snapshot save + snapshot load\n6) Map memory2 after restore\n7) Verify pixels\n\nThat should get us *some* coverage that verifies host content, but also avoid modifications to `ResourceTracker.cpp` for the sake of the tests. Long-term, we\u0027ll need to improve the testing layer.",
+      "parentUuid": "526af810_7a1cc208",
+      "revId": "bb383bce5703a6fd74ce2a186b7fa3c23a8f1375",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
