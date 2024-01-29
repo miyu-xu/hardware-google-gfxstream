@@ -46,6 +46,30 @@
       },
       "revId": "5eaa196d60fa8d5cb5d016f3847bce4f025e2416",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09d25c08_e2eb2997",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-goldfish.h",
+        "patchSetId": 22
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-29T17:35:17Z",
+      "side": 0,
+      "message": "\u003e I could add the API but that would be in a separate commit.\n\nYeah, using `stream_renderer_snapshot_save(char *dir)` would be terrific, since it\u0027ll work both for crosvm and AEMU I think.  Fine as a separate commit.  \n\nI don\u0027t expect you to add rutabaga_gfx_ffi.h support (b/293897204), but it\u0027ll make the migration easier once it happens.  End2EndTests with `rutabaga_gfx_ffi.h` would enable testing of host driver in the guest workflows.",
+      "parentUuid": "89bd66b3_6f08c39e",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 78
+      },
+      "revId": "5eaa196d60fa8d5cb5d016f3847bce4f025e2416",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
