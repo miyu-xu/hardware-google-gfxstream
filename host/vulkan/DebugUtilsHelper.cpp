@@ -42,6 +42,15 @@ void DebugUtilsHelper::addDebugLabelToHandle(uint64_t object, VkObjectType objec
         return;
     }
 
+    const VkDebugUtilsObjectNameInfoEXT objectNameInfo2 = {
+        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+        .pNext = nullptr,
+        .objectType = objectType,
+        .objectHandle = object,
+        .pObjectName = nullptr,
+    };
+    m_vk->vkSetDebugUtilsObjectNameEXT(m_vkDevice, &objectNameInfo2);
+
     char objectLabelBuffer[256];
 
     va_list vararg;
