@@ -16,6 +16,40 @@
       "message": "@joshuaduong@google.com I am unsure if we actually need to manually copy the mapped memory content. If we don\u0027t we could remove that part later.",
       "revId": "e516f6bb3ebe03f8b1482b598e169ae5ec4403ca",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f4ccb2d_3028296b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-01-30T18:32:25Z",
+      "side": 1,
+      "message": "Looks like `memories` here is not used.",
+      "revId": "e516f6bb3ebe03f8b1482b598e169ae5ec4403ca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb52190e_49554b8b",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2822,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-01-30T18:32:25Z",
+      "side": 1,
+      "message": "Is this a partial implementation? Otherwise I believe the TODO comment here can be removed.",
+      "revId": "e516f6bb3ebe03f8b1482b598e169ae5ec4403ca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
