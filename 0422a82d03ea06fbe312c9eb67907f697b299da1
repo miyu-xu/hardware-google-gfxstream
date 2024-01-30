@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae337695_2741015f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-30T18:16:24Z",
+      "side": 1,
+      "message": "Friendly ping for +2 and Dr.No+1?",
+      "revId": "0422a82d03ea06fbe312c9eb67907f697b299da1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
