@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "96342462_651980da",
+        "filename": "host/vulkan/CompositorVk.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1033,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-30T23:29:42Z",
+      "side": 1,
+      "message": "Since we are using the same ID to identify the unique render target, I think we are Ok to use it here as well.",
+      "parentUuid": "3cb593c6_b5223007",
+      "range": {
+        "startLine": 1033,
+        "startChar": 71,
+        "endLine": 1033,
+        "endChar": 75
+      },
+      "revId": "81ea5a6a099eb81a1951a09f2446cac538d3e9bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d044bb9f_44b75b78",
@@ -79,6 +103,24 @@
       "side": 1,
       "message": "I think I agree that just comparing the `sampledImageId` is sufficient but I think it is easier for a reader to understand this if simply all members are compared. I don\u0027t think the extra comparison of the `VkImageView` causes any significant overhead. Did you have a strong opinion on this?",
       "parentUuid": "d044bb9f_44b75b78",
+      "revId": "81ea5a6a099eb81a1951a09f2446cac538d3e9bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4882171d_8f75241c",
+        "filename": "host/vulkan/CompositorVk.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1305,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-30T23:29:42Z",
+      "side": 1,
+      "message": "No strong opinion here, as I thought it was less confusing if we don\u0027t compare the `VkImageView` to convey the idea that we actually only care about the image content bound to the view, not the view itself, but either works.",
+      "parentUuid": "6084be65_ed89868b",
       "revId": "81ea5a6a099eb81a1951a09f2446cac538d3e9bb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
