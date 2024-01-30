@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "64418008_28dcc1b2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-30T18:54:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f4ccb2d_3028296b",
+      "revId": "e516f6bb3ebe03f8b1482b598e169ae5ec4403ca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eb52190e_49554b8b",
@@ -48,6 +66,24 @@
       "writtenOn": "2024-01-30T18:32:25Z",
       "side": 1,
       "message": "Is this a partial implementation? Otherwise I believe the TODO comment here can be removed.",
+      "revId": "e516f6bb3ebe03f8b1482b598e169ae5ec4403ca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b25d213f_71d2b40e",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2822,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-01-30T18:54:09Z",
+      "side": 1,
+      "message": "Done. Also it was printed from the auto-code generator and doesn\u0027t really tell us anything, so let\u0027s remove them all.",
+      "parentUuid": "eb52190e_49554b8b",
       "revId": "e516f6bb3ebe03f8b1482b598e169ae5ec4403ca",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
