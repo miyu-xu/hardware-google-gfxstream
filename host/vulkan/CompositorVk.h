@@ -73,6 +73,20 @@ struct CompositorVkBase : public vk_util::MultiCrtp<CompositorVkBase,         //
 
     // Keep in sync with vulkan/Compositor.frag.
     struct SamplerBinding {
+        // The image id, although not used directly by Vulkan, is stored as well to
+        // handle the case of
+        //
+        //   - Time1: Image1 created with VkImage 0x1 and VkImageView 0x2
+        //   - Time2: composition1 using Image1
+        //   - Time3: Image1 (with VkImage 0x1 and VkImageView 0x2) destroyed
+        //   - Time4: Image2 created with VkImage 0x1 and VkImageView 0x2
+        //   - Time5: composition2 using Image2
+        //
+        // Without storing the id, the cached contents of this binding would be
+        // identical between composition1 and composition2 and the compositor would
+        // avoid updating the descriptor. However, the underlying descriptor's
+        // implementation may still be referencing memory used by Image1.
+        uint32_t sampledImageId = 0;
         VkImageView sampledImageView = VK_NULL_HANDLE;
     };
 
