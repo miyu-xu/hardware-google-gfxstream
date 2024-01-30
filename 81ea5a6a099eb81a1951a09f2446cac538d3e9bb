@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8585a634_550dda27",
+        "filename": "host/vulkan/CompositorVk.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1033,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-30T23:11:09Z",
+      "side": 1,
+      "message": "I need to check how this ID is generated and make sure it is not recycled.",
+      "range": {
+        "startLine": 1033,
+        "startChar": 71,
+        "endLine": 1033,
+        "endChar": 75
+      },
+      "revId": "81ea5a6a099eb81a1951a09f2446cac538d3e9bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d044bb9f_44b75b78",
+        "filename": "host/vulkan/CompositorVk.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1305,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-30T23:11:09Z",
+      "side": 1,
+      "message": "Don\u0027t compare the Vulkan object then, since we won\u0027t change the `VkImageView` bound to a layer.",
+      "revId": "81ea5a6a099eb81a1951a09f2446cac538d3e9bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4ea9c5b_143e029c",
+        "filename": "host/vulkan/CompositorVk.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-30T23:11:09Z",
+      "side": 1,
+      "message": "Just mention that a different `sampledImageId` will trigger another descriptor update, and `VkImageView` can be recycled, so it\u0027s not suitable to be used for uniqueness comparison and leave a link to the bug should be enough. IMO, the comment is longer than necessary.",
+      "revId": "81ea5a6a099eb81a1951a09f2446cac538d3e9bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
