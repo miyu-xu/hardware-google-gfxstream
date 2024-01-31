@@ -67,10 +67,10 @@ if host_machine.system() == 'qnx'
   qnx_gles2_dep = declare_dependency(include_directories: inc_qnx_headers, dependencies: [qnx_gles2_lib])
 
 else
-  aemu_base_dep = dependency('aemu_base')
-  aemu_common_dep = dependency('aemu_host_common')
-  aemu_logging_dep = dependency('aemu_logging')
-  aemu_snapshot_dep = dependency('aemu_snapshot')
+  aemu_base_dep = dependency('aemu_base', fallback: ['aemu', 'aemu_base_dep'])
+  aemu_common_dep = dependency('aemu_host_common', fallback: ['aemu', 'aemu_host_common_dep'])
+  aemu_logging_dep = dependency('aemu_logging', fallback: ['aemu', 'aemu_logging_dep'])
+  aemu_snapshot_dep = dependency('aemu_snapshot',  fallback: ['aemu', 'aemu_snapshot_dep'])
   dl_dep = dependency('dl')
   thread_dep = dependency('threads')
 endif
@@ -276,6 +276,14 @@ gfxstream_backend = library(
   link_args : link_args_gfxstream_backend,
   version: '0.1.2',
   install: true,
+)
+gfxstream_backend_dep =  declare_dependency(
+    include_directories:  [inc_gfxstream_backend, inc_glm],
+    link_with: [gfxstream_backend],
+    link_args: link_args_gfxstream_backend,
+    variables: {
+      'lib_loc' : gfxstream_backend.path()  # Workaround to access the final location in parent projects
+    }
 )
 
 install_headers(gfxstream_headers,
