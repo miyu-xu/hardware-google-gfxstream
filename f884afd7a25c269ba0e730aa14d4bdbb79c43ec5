@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72ad1718_d6a6f75e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-01-31T17:35:56Z",
+      "side": 1,
+      "message": "Add yahan@ to the reviewer as the original author for the support for descriptor with inline uniform block in https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2786080",
+      "revId": "f884afd7a25c269ba0e730aa14d4bdbb79c43ec5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
