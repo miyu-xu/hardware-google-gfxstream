@@ -16,6 +16,24 @@
       "message": "Do we have a Fuchsia build in presubmit to validate it works? What would be the validation steps Fuchsia people recommend?",
       "revId": "1bc244d88810c52dc70d6bae51fada3a8b5b9577",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2b2d476_d367f51e",
+        "filename": "guest/fuchsia/include/cutils/log.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-01-31T17:14:01Z",
+      "side": 1,
+      "message": "None Fuchsia code at all in presubmit.  Though it\u0027s not Fuchsia specific: it is built by the Meson guest Linux build too, it just happens to be named Fuchsia since the Fuchsia port was done before the guest Linux port.",
+      "parentUuid": "50467b25_26d250cf",
+      "revId": "1bc244d88810c52dc70d6bae51fada3a8b5b9577",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
