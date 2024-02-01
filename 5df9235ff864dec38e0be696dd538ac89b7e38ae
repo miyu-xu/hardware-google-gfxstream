@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51628fe4_d4b7997e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-01T16:37:39Z",
+      "side": 1,
+      "message": "Added a few minor suggestions, which can also be fixed with a later CL.",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df05507b_24386dde",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-01T16:37:39Z",
+      "side": 1,
+      "message": "should be checking commandPool\n```suggestion\n    ASSERT_THAT(commandPool, IsValidHandle());\n```",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a94dab72_62b0b64c",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-01T16:37:39Z",
+      "side": 1,
+      "message": "transferFence \n```suggestion\n    ASSERT_THAT(transferFence, IsValidHandle());\n```",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8dd1745d_6e09ca83",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-01T16:37:39Z",
+      "side": 1,
+      "message": "readbackBufferCreateInfo \n```suggestion\n    auto readbackBuffer \u003d device-\u003ecreateBufferUnique(readbackBufferCreateInfo).value;\n```\n\nFlags can also be adjusted to indicate src/dst better. Or, readbackBufferCreateInfo  can be removed as it\u0027s not being used.",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61e04091_0adbe08c",
+        "filename": "host/vulkan/VkDecoderSnapshotUtils.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-01T16:37:39Z",
+      "side": 1,
+      "message": "Rather than checking this -1 return condition in many places in the tests, which can be error-prone, this can cause a failure here by default. Another function can be implemented for places where we want to query the support.",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
