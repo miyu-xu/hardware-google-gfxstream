@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d6a2793_b24b5d01",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-01T21:11:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df05507b_24386dde",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a94dab72_62b0b64c",
@@ -48,6 +66,24 @@
       "writtenOn": "2024-02-01T16:37:39Z",
       "side": 1,
       "message": "transferFence \n```suggestion\n    ASSERT_THAT(transferFence, IsValidHandle());\n```",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4902a5d_3a4327f8",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-01T21:11:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a94dab72_62b0b64c",
       "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -69,6 +105,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa60ae30_9596ff20",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-01T21:11:40Z",
+      "side": 1,
+      "message": "You are correct. Let me change the src/dst flags..",
+      "parentUuid": "8dd1745d_6e09ca83",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "61e04091_0adbe08c",
@@ -82,6 +136,24 @@
       "writtenOn": "2024-02-01T16:37:39Z",
       "side": 1,
       "message": "Rather than checking this -1 return condition in many places in the tests, which can be error-prone, this can cause a failure here by default. Another function can be implemented for places where we want to query the support.",
+      "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "595e6d56_97a0b9a2",
+        "filename": "host/vulkan/VkDecoderSnapshotUtils.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-01T21:11:40Z",
+      "side": 1,
+      "message": "Good point, I changed them to fatal errors (currently we have no way to recover)",
+      "parentUuid": "61e04091_0adbe08c",
       "revId": "5df9235ff864dec38e0be696dd538ac89b7e38ae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
