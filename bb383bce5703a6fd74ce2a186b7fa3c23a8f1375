@@ -34,6 +34,40 @@
       "parentUuid": "526af810_7a1cc208",
       "revId": "bb383bce5703a6fd74ce2a186b7fa3c23a8f1375",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d7b9b8b7_d502f09d",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-01T15:34:39Z",
+      "side": 1,
+      "message": "I believe we should also add eHostCoherent flag here? Otherwise, manual flush and invalidate calls will be required below for correctness.",
+      "revId": "bb383bce5703a6fd74ce2a186b7fa3c23a8f1375",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9886589b_834f734b",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-01T15:34:39Z",
+      "side": 1,
+      "message": "This test maps the newly created memory object after the snapshot is loaded and checks the contents, which LGTM. But the apps can actually be keeping the mapped pointer and the old `bytes` should be still be a valid pointer after the load to support that use case, right? If that\u0027s expected and supposed to be working right now, might be better to add an assertion here for the returned pointer of the second `mapMemory` call.",
+      "revId": "bb383bce5703a6fd74ce2a186b7fa3c23a8f1375",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
