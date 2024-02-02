@@ -34,6 +34,23 @@
       "parentUuid": "e5d19fa6_17f4f8de",
       "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65d6e1be_f6024cc7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-02T21:38:13Z",
+      "side": 1,
+      "message": "The snapshot tests pass but this test fails: GfxstreamEnd2EndTests/GfxstreamEnd2EndGlTest#Draw/WithGlWithoutVkWithoutSnapshotOverVirtioGpuAsg.\n\nThere might be more than 1 regresion",
+      "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
