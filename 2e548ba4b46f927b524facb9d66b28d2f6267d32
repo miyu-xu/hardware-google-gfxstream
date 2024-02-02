@@ -51,6 +51,23 @@
       "message": "The snapshot tests pass but this test fails: GfxstreamEnd2EndTests/GfxstreamEnd2EndGlTest#Draw/WithGlWithoutVkWithoutSnapshotOverVirtioGpuAsg.\n\nThere might be more than 1 regresion",
       "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f6a55c1_377d921e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-02T22:37:51Z",
+      "side": 1,
+      "message": "Hmm, it looks like a consequence `HostConnection::exit(..)` in the end2endtests.  That really should be internal to `libgfxstream_vulkan.so` or `libgfxstream_gles.so`.  So unless either Cuttlefish GLES/VK or Emulator GLES/VK are failing, I wouldn\u0027t make end2endtests a cause for revert [unless there\u0027s improvements in the fidelity of test backends themselves]. \n\nFor this particular test, I think we might be able to make it pass via the `GFXSTREAM_END2ENDTESTS` preprocessor.",
+      "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
