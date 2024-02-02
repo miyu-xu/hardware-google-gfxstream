@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9967bd6d_037224f0",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 371,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-02T23:06:45Z",
+      "side": 1,
+      "message": "is this going to impact goldfish? should we add `|| capset \u003d\u003d kCapsetGfxStreamGles` ?\n```suggestion\n    if (!noRenderControlEnc \u0026\u0026 (capset \u003d\u003d kCapsetGfxStreamVulkan || capset \u003d\u003d kCapsetGfxStreamGles)) {\n```",
+      "range": {
+        "startLine": 371,
+        "startChar": 41,
+        "endLine": 371,
+        "endChar": 63
+      },
+      "revId": "867d347970b5fba024f1962cee50ca6047bf6326",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
