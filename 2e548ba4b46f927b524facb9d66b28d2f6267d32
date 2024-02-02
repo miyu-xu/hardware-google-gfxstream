@@ -16,6 +16,24 @@
       "message": "Verifying, not ready for submit yet",
       "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69e0dc54_d12baa51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-02T20:33:12Z",
+      "side": 1,
+      "message": "Reverting the CL fixes the issue",
+      "parentUuid": "e5d19fa6_17f4f8de",
+      "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
