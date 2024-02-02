@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "634f1aa2_ca257f13",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-02T02:27:24Z",
+      "side": 1,
+      "message": "created https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27425 to upstream the change...",
+      "revId": "8a64ca84064cab403d2da1fbabf10e093f97dd8b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
