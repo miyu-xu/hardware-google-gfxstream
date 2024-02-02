@@ -68,6 +68,24 @@
       "message": "Hmm, it looks like a consequence `HostConnection::exit(..)` in the end2endtests.  That really should be internal to `libgfxstream_vulkan.so` or `libgfxstream_gles.so`.  So unless either Cuttlefish GLES/VK or Emulator GLES/VK are failing, I wouldn\u0027t make end2endtests a cause for revert [unless there\u0027s improvements in the fidelity of test backends themselves]. \n\nFor this particular test, I think we might be able to make it pass via the `GFXSTREAM_END2ENDTESTS` preprocessor.",
       "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "971e1904_57405346",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-02-02T22:50:23Z",
+      "side": 1,
+      "message": "Please take over and get a better fix",
+      "parentUuid": "8f6a55c1_377d921e",
+      "revId": "2e548ba4b46f927b524facb9d66b28d2f6267d32",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
