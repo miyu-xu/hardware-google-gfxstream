@@ -22,6 +22,30 @@
       },
       "revId": "867d347970b5fba024f1962cee50ca6047bf6326",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90a0ca12_e03e3be8",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 371,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-02T23:27:57Z",
+      "side": 1,
+      "message": "`noRenderControlEnc` is a feature of Vulkan capability set and doesn\u0027t make sense for gfxstream GLES.\n\nThis won\u0027t affect goldfish, since both `gfxstream_vk_device.cpp` passes in kCapsetGfxstreamVulkan in all cases.  The underlying problem is the end2end tests has different lifetime semantics than actual emulators.",
+      "parentUuid": "9967bd6d_037224f0",
+      "range": {
+        "startLine": 371,
+        "startChar": 41,
+        "endLine": 371,
+        "endChar": 63
+      },
+      "revId": "867d347970b5fba024f1962cee50ca6047bf6326",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
