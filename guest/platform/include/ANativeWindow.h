@@ -19,6 +19,8 @@
 
 #include "Gralloc.h"
 
+using EGLClientBuffer = void*;
+
 namespace gfxstream {
 
 // Abstraction around libnativewindow to support testing.
@@ -52,5 +54,7 @@ class ANativeWindowHelper {
     virtual int dequeueBuffer(EGLNativeWindowType window, EGLClientBuffer* buffer, int* fence) = 0;
     virtual int cancelBuffer(EGLNativeWindowType window, EGLClientBuffer buffer) = 0;
 };
+
+ANativeWindowHelper* createPlatformANativeWindowHelper();
 
 }  // namespace gfxstream

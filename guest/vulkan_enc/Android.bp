@@ -133,7 +133,6 @@ cc_defaults {
         "libdrm",
         "libandroidemu_static",
         "libGoldfishAddressSpace",
-        "libgfxstream_guest_gralloc",
         "libmesa_vulkan_util_gfxstream",
         "libmesa_vulkan_runtime_gfxstream",
         "libgfxstream_guest_vulkan_entrypoints",

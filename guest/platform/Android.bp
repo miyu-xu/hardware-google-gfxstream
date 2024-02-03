@@ -25,6 +25,10 @@ cc_library_static {
     vendor_available: true,
     srcs: [
         "VirtGpu.cpp",
+        "linux/ANativeWindowAndroid.cpp",
+        "linux/Gralloc.cpp",
+        "linux/GrallocGoldfish.cpp",
+        "linux/GrallocMinigbm.cpp",
         "linux/LinuxVirtGpuBlob.cpp",
         "linux/LinuxVirtGpuBlobMapping.cpp",
         "linux/LinuxVirtGpuDevice.cpp",
@@ -54,6 +58,7 @@ cc_library_static {
     target: {
         android: {
             shared_libs: [
+                "libnativewindow",
                 "libsync",
             ],
         }
@@ -66,6 +71,8 @@ cc_library_shared {
     vendor_available: true,
     srcs: [
         "VirtGpu.cpp",
+        "rutabaga/RutabagaANativeWindowHelper.cpp",
+        "rutabaga/RutabagaGralloc.cpp",
         "rutabaga/RutabagaLayer.cpp",
         "rutabaga/RutabagaVirtGpuBlob.cpp",
         "rutabaga/RutabagaVirtGpuBlobMapping.cpp",

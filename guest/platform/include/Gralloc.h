@@ -65,4 +65,6 @@ class Gralloc {
     virtual bool treatBlobAsImage() { return false; }
 };
 
+Gralloc* createPlatformGralloc(int deviceFd);
+
 }  // namespace gfxstream

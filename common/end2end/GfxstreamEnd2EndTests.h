@@ -43,7 +43,6 @@
 #include <android-base/expected.h>
 
 #include "HostConnection.h"
-#include "TestingAndroidWsi.h"
 
 namespace gfxstream {
 namespace tests {
@@ -182,7 +181,7 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     void TearDownHost();
     void TearDown() override;
 
-    std::unique_ptr<TestingANativeWindow> CreateEmulatedANW(uint32_t width, uint32_t height);
+    std::unique_ptr<ANativeWindow> CreateEmulatedANW(uint32_t width, uint32_t height);
 
     void SetUpEglContextAndSurface(uint32_t contextVersion,
                                    uint32_t width,
@@ -216,8 +215,8 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
 
     void SnapshotSaveAndLoad();
 
-    std::unique_ptr<TestingVirtGpuANativeWindowHelper> mAnwHelper;
-    std::unique_ptr<TestingVirtGpuGralloc> mGralloc;
+    std::unique_ptr<ANativeWindowHelper> mAnwHelper;
+    std::unique_ptr<Gralloc> mGralloc;
     SyncHelper* mSync;
     std::unique_ptr<GuestGlDispatchTable> mGl;
     std::unique_ptr<vkhpp::DynamicLoader> mVk;

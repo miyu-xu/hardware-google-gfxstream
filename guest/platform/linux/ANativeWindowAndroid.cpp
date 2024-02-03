@@ -218,4 +218,8 @@ int ANativeWindowHelperAndroid::getHostHandle(EGLClientBuffer buffer, Gralloc* g
 #endif  // defined(__ANDROID__)
 }
 
+ANativeWindowHelper* createPlatformANativeWindowHelper() {
+    return new ANativeWindowHelperAndroid();
+}
+
 }  // namespace gfxstream

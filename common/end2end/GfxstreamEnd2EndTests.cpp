@@ -177,12 +177,8 @@ void GfxstreamEnd2EndTest::SetUp() {
         ASSERT_THAT(mVk, NotNull());
     }
 
-    mAnwHelper = std::make_unique<TestingVirtGpuANativeWindowHelper>();
-    HostConnection::get()->setANativeWindowHelperForTesting(mAnwHelper.get());
-
-    mGralloc = std::make_unique<TestingVirtGpuGralloc>();
-    HostConnection::get()->setGrallocHelperForTesting(mGralloc.get());
-
+    mAnwHelper.reset(createPlatformANativeWindowHelper());
+    mGralloc.reset(createPlatformGralloc());
     mSync = HostConnection::get()->syncHelper();
 }
 
@@ -217,14 +213,14 @@ void GfxstreamEnd2EndTest::TearDown() {
     TearDownHost();
 }
 
-std::unique_ptr<TestingANativeWindow> GfxstreamEnd2EndTest::CreateEmulatedANW(
+std::unique_ptr<ANativeWindow> GfxstreamEnd2EndTest::CreateEmulatedANW(
         uint32_t width,
         uint32_t height) {
-    std::vector<std::unique_ptr<TestingAHardwareBuffer>> buffers;
+    std::vector<std::unique_ptr<ANativeWindow>> buffers;
     for (int i = 0; i < 3; i++) {
         buffers.push_back(mGralloc->allocate(width, height, DRM_FORMAT_ABGR8888));
     }
-    return std::make_unique<TestingANativeWindow>(width, height, DRM_FORMAT_ABGR8888, std::move(buffers));
+    return std::make_unique<ANativeWindow>(width, height, DRM_FORMAT_ABGR8888, std::move(buffers));
 }
 
 void GfxstreamEnd2EndTest::SetUpEglContextAndSurface(
