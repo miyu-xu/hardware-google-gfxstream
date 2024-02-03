@@ -21,7 +21,9 @@
 
 #include <assert.h>
 
-#include "../OpenglSystemCommon/HostConnection.h"
+#include <log/log.h>
+
+#include "Gralloc.h"
 #include "vk_format_info.h"
 #include "vk_util.h"
 

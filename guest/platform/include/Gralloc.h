@@ -14,6 +14,8 @@
 
 #pragma once
 
+#if defined(ANDROID)
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -44,6 +46,8 @@ class Gralloc {
                          uint64_t usage,
                          AHardwareBuffer** outputAhb) = 0;
 
+    virtual const native_handle_t* getNativeHandle(const AHardwareBuffer* ahb) = 0;
+
     virtual uint32_t getHostHandle(const native_handle_t* handle) = 0;
     virtual uint32_t getHostHandle(const AHardwareBuffer* handle) = 0;
 
@@ -65,4 +69,8 @@ class Gralloc {
     virtual bool treatBlobAsImage() { return false; }
 };
 
+Gralloc* createPlatformGralloc(int deviceFd = -1);
+
 }  // namespace gfxstream
+
+#endif  // defined(ANDROID)

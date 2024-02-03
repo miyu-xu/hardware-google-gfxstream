@@ -18,7 +18,7 @@
 
 namespace gfxstream {
 
-class MinigbmGralloc : public Gralloc {
+class GoldfishGralloc : public Gralloc {
    public:
     uint32_t createColorBuffer(void* rcEnc, int width, int height,
                                uint32_t glformat) override;
@@ -35,19 +35,16 @@ class MinigbmGralloc : public Gralloc {
     uint32_t getHostHandle(native_handle_t const* handle) override;
     uint32_t getHostHandle(const AHardwareBuffer* handle) override;
 
+    const native_handle_t* getNativeHandle(const AHardwareBuffer* ahb) override;
+
     int getFormat(const native_handle_t* handle) override;
     int getFormat(const AHardwareBuffer* handle) override;
-
-    uint32_t getFormatDrmFourcc(const native_handle_t* handle) override;
-    uint32_t getFormatDrmFourcc(const AHardwareBuffer* handle) override;
 
     size_t getAllocatedSize(const native_handle_t* handle) override;
     size_t getAllocatedSize(const AHardwareBuffer* handle) override;
 
-    void setFd(int fd) { m_fd = fd; }
-
-   private:
-    int m_fd;
+    bool treatBlobAsImage() override;
 };
+
 
 }  // namespace gfxstream

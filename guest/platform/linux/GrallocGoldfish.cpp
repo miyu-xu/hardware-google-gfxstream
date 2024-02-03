@@ -61,6 +61,10 @@ uint32_t GoldfishGralloc::getHostHandle(const AHardwareBuffer* ahb) {
     return getHostHandle(handle);
 }
 
+const native_handle_t* GoldfishGralloc::getNativeHandle(const AHardwareBuffer* ahb) {
+    return AHardwareBuffer_getNativeHandle(ahb);
+}
+
 int GoldfishGralloc::getFormat(const native_handle_t* handle) {
     return cb_handle_t::from(handle)->format;
 }

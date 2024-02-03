@@ -202,6 +202,10 @@ uint32_t MinigbmGralloc::getHostHandle(const AHardwareBuffer* ahb) {
     return getHostHandle(handle);
 }
 
+const native_handle_t* MinigbmGralloc::getNativeHandle(const AHardwareBuffer* ahb) {
+    return AHardwareBuffer_getNativeHandle(ahb);
+}
+
 int MinigbmGralloc::getFormat(const native_handle_t* handle) {
     return ((cros_gralloc_handle*)handle)->droid_format;
 }

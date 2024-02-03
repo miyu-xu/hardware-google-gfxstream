@@ -28,8 +28,8 @@ namespace gfxstream {
 // host server via rutabaga.
 class EmulatedVirtioGpu {
   public:
-    static EmulatedVirtioGpu& Get();
-    static void Reset();
+    static std::shared_ptr<EmulatedVirtioGpu> Get();
+    static uint32_t GetNumActiveUsers();
 
     bool Init(bool withGl, bool withVk, bool withVkSnapshots);
 
