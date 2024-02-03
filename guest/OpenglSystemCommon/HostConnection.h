@@ -16,9 +16,12 @@
 #ifndef __COMMON_HOST_CONNECTION_H
 #define __COMMON_HOST_CONNECTION_H
 
+#if defined(ANDROID)
 #include "ANativeWindow.h"
-#include "EmulatorFeatureInfo.h"
 #include "Gralloc.h"
+#endif
+
+#include "EmulatorFeatureInfo.h"
 #include "Sync.h"
 #include "VirtGpu.h"
 #include "gfxstream/guest/ChecksumCalculator.h"
@@ -115,14 +118,16 @@ public:
 
     gfxstream::guest::ChecksumCalculator *checksumHelper() { return &m_checksumHelper; }
 
+#if defined(ANDROID)
     gfxstream::Gralloc* grallocHelper() { return m_grallocHelper; }
     void setGrallocHelperForTesting(gfxstream::Gralloc* gralloc) { m_grallocHelper = gralloc; }
 
-    gfxstream::SyncHelper* syncHelper() { return m_syncHelper.get(); }
-    void setSyncHelperForTesting(gfxstream::SyncHelper* sync) { m_syncHelper.reset(sync); }
-
     gfxstream::ANativeWindowHelper* anwHelper() { return m_anwHelper; }
     void setANativeWindowHelperForTesting(gfxstream::ANativeWindowHelper* anw) { m_anwHelper = anw; }
+#endif
+
+    gfxstream::SyncHelper* syncHelper() { return m_syncHelper.get(); }
+    void setSyncHelperForTesting(gfxstream::SyncHelper* sync) { m_syncHelper.reset(sync); }
 
     void flush() {
         if (m_stream) {
@@ -187,7 +192,6 @@ private:
 
 private:
     HostConnectionType m_connectionType;
-    GrallocType m_grallocType;
 
     // intrusively refcounted
     gfxstream::guest::IOStream* m_stream = nullptr;
@@ -200,8 +204,10 @@ private:
     std::unique_ptr<ExtendedRCEncoderContext> m_rcEnc;
 
     gfxstream::guest::ChecksumCalculator m_checksumHelper;
+#if defined(ANDROID)
     gfxstream::ANativeWindowHelper* m_anwHelper = nullptr;
     gfxstream::Gralloc* m_grallocHelper = nullptr;
+#endif
     std::unique_ptr<gfxstream::SyncHelper> m_syncHelper;
     std::string m_hostExtensions;
     bool m_noHostError;

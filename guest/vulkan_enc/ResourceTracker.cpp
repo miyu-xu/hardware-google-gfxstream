@@ -5936,13 +5936,8 @@ void ResourceTracker::unwrap_VkNativeBufferANDROID(const VkNativeBufferANDROID* 
 
     auto* gralloc = ResourceTracker::threadingCallbacks.hostConnectionGetFunc()->grallocHelper();
     const native_handle_t* nativeHandle = (const native_handle_t*)inputNativeInfo->handle;
-
-#if defined(END2END_TESTS)
-    // This is valid since the testing backend creates the handle and we know the layout.
-    *(uint32_t*)(outputNativeInfo->handle) = (uint32_t)nativeHandle->data[0];
-#else
     *(uint32_t*)(outputNativeInfo->handle) = gralloc->getHostHandle(nativeHandle);
-#endif
+
 }
 
 void ResourceTracker::unwrap_VkBindImageMemorySwapchainInfoKHR(

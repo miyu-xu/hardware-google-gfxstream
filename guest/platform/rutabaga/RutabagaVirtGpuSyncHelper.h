@@ -16,17 +16,26 @@
 
 #include "Sync.h"
 
+#include <memory>
+
+#include "RutabagaLayer.h"
+
 namespace gfxstream {
 
 class RutabagaVirtGpuSyncHelper : public SyncHelper {
   public:
     RutabagaVirtGpuSyncHelper();
 
+    bool Init();
+
     int wait(int syncFd, int timeoutMilliseconds) override;
 
     int dup(int syncFd) override;
 
     int close(int) override;
+
+  private:
+    std::shared_ptr<EmulatedVirtioGpu> mEmulation;
 };
 
 SyncHelper* createPlatformSyncHelper();

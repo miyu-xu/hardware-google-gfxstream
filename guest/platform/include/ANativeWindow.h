@@ -14,10 +14,14 @@
 
 #pragma once
 
+#if defined(ANDROID)
+
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
 #include "Gralloc.h"
+
+using EGLClientBuffer = void*;
 
 namespace gfxstream {
 
@@ -51,6 +55,16 @@ class ANativeWindowHelper {
     virtual int queueBuffer(EGLNativeWindowType window, EGLClientBuffer buffer, int fence) = 0;
     virtual int dequeueBuffer(EGLNativeWindowType window, EGLClientBuffer* buffer, int* fence) = 0;
     virtual int cancelBuffer(EGLNativeWindowType window, EGLClientBuffer buffer) = 0;
+
+    virtual EGLNativeWindowType createNativeWindowForTesting(Gralloc* /*gralloc*/,
+                                                             uint32_t /*width*/,
+                                                             uint32_t /*height*/) {
+      return (EGLNativeWindowType)0;
+    }
 };
 
+ANativeWindowHelper* createPlatformANativeWindowHelper();
+
 }  // namespace gfxstream
+
+#endif  // defined(ANDROID)

@@ -19,6 +19,7 @@
 #include <thread>
 #include <variant>
 
+#include <android-base/expected.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -37,13 +38,12 @@
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vk_android_native_buffer.h>
-
 // clang-format on
 
-#include <android-base/expected.h>
+#include "ANativeWindow.h"
+#include "Gralloc.h"
+#include "Sync.h"
 
-#include "HostConnection.h"
-#include "TestingAndroidWsi.h"
 
 namespace gfxstream {
 namespace tests {
@@ -182,8 +182,6 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     void TearDownHost();
     void TearDown() override;
 
-    std::unique_ptr<TestingANativeWindow> CreateEmulatedANW(uint32_t width, uint32_t height);
-
     void SetUpEglContextAndSurface(uint32_t contextVersion,
                                    uint32_t width,
                                    uint32_t height,
@@ -216,9 +214,9 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
 
     void SnapshotSaveAndLoad();
 
-    std::unique_ptr<TestingVirtGpuANativeWindowHelper> mAnwHelper;
-    std::unique_ptr<TestingVirtGpuGralloc> mGralloc;
-    SyncHelper* mSync;
+    std::unique_ptr<ANativeWindowHelper> mAnwHelper;
+    std::unique_ptr<Gralloc> mGralloc;
+    std::unique_ptr<SyncHelper> mSync;
     std::unique_ptr<GuestGlDispatchTable> mGl;
     std::unique_ptr<vkhpp::DynamicLoader> mVk;
 };
