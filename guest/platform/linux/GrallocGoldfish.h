@@ -20,13 +20,9 @@ namespace gfxstream {
 
 class GoldfishGralloc : public Gralloc {
    public:
-    uint32_t createColorBuffer(void* rcEnc, int width, int height,
-                               uint32_t glformat) override;
+    uint32_t createColorBuffer(void* rcEnc, int width, int height, uint32_t glformat) override;
 
-    int allocate(uint32_t width,
-                 uint32_t height,
-                 uint32_t format,
-                 uint64_t usage,
+    int allocate(uint32_t width, uint32_t height, uint32_t format, uint64_t usage,
                  AHardwareBuffer** outputAhb) override;
 
     void acquire(AHardwareBuffer* ahb) override;
@@ -34,6 +30,8 @@ class GoldfishGralloc : public Gralloc {
 
     uint32_t getHostHandle(native_handle_t const* handle) override;
     uint32_t getHostHandle(const AHardwareBuffer* handle) override;
+
+    const native_handle_t* getNativeHandle(const AHardwareBuffer* ahb) override;
 
     int getFormat(const native_handle_t* handle) override;
     int getFormat(const AHardwareBuffer* handle) override;
@@ -43,6 +41,5 @@ class GoldfishGralloc : public Gralloc {
 
     bool treatBlobAsImage() override;
 };
-
 
 }  // namespace gfxstream
