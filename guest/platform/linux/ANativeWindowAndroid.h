@@ -22,7 +22,7 @@
 namespace gfxstream {
 
 class ANativeWindowHelperAndroid : public ANativeWindowHelper {
-  public:
+   public:
     ANativeWindowHelperAndroid() = default;
 
     bool isValid(EGLNativeWindowType window);
