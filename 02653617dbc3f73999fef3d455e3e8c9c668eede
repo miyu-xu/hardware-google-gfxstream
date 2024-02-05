@@ -16,6 +16,24 @@
       "message": "Interesting, is it going to run end2end tests on the host or on the guest?",
       "revId": "02653617dbc3f73999fef3d455e3e8c9c668eede",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "083012a8_986942bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-05T21:28:56Z",
+      "side": 1,
+      "message": "On the host.  So the flow is:\n\nVulkan (say `anv_magma.so`) links to `libmagma.a`, which links to `libplatform_rutabaga` which links to the \"host\" side code.",
+      "parentUuid": "9f6ac3f9_60a3e4d0",
+      "revId": "02653617dbc3f73999fef3d455e3e8c9c668eede",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
