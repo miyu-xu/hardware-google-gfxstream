@@ -2431,9 +2431,9 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
     // Vulkan drivers have been observed to actually perform the discard which leads to
     // ColorBuffer-s being unintentionally cleared. See go/ahb-vkimagelayout for a more
     // thorough write up.
-    if (colorBufferInfo->currentLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
-        colorBufferInfo->currentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    }
+    //if (colorBufferInfo->currentLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
+    //    colorBufferInfo->currentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    //}
 
     // Record our synchronization commands.
     const VkCommandBufferBeginInfo beginInfo = {
