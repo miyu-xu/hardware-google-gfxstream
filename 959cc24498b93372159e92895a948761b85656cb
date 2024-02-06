@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a36ab79_121f8431",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-06T22:57:07Z",
+      "side": 1,
+      "message": "Can we avoid gralloc in `libplatform`?  It should really be renamed `libplatform_virtgpu` since the goal is abstract out guest virtio-gpu, and not be a center for all platform specific code [we already have some of that, see `guest/fuchsia` and `guest/mesa/src/util`.  Plan is to move `fuchsia` stuff into Mesa util and upstream that].  I guess a good place to put Gralloc/ANativeWindow would be perhaps `./guest/gralloc_cb`?\n\nThough, it does make sense for the Gralloc to access the `EmulatedVirtioGpu` singleton.\n\nI also think RutabagaLayer eventually should be moved to its own shared library, while `libplatform_virtgpu` should be static but called the `EmulatedVirtioGpu` singleton.  The reason is `SnapshotSaveAndLoad` calls `stream_renderer_*` functions directly.  Those snapshot apis should also be only accessed through the `EmulatedVirtioGpu` singleton.  The reason is then we can migrate to the librutabaga_ffi.so, which doesn\u0027t maintain a singleton like `stream_renderer_*.`",
+      "revId": "959cc24498b93372159e92895a948761b85656cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2194a69_0faa097c",
+        "filename": "guest/platform/linux/GrallocGoldfish.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-06T22:57:07Z",
+      "side": 1,
+      "message": "definitely don\u0027t want `renderControl_enc` in libplatform",
+      "range": {
+        "startLine": 20,
+        "startChar": 10,
+        "endLine": 20,
+        "endChar": 27
+      },
+      "revId": "959cc24498b93372159e92895a948761b85656cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
