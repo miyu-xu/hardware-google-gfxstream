@@ -46,7 +46,6 @@ cc_library_static {
         "minigbm_headers",
     ],
     shared_libs: [
-        "lib_renderControl_enc",
         "libcutils",
         "libdrm",
         "liblog",
@@ -88,7 +87,7 @@ cc_library_static {
             ],
         },
     },
-}   
+}
 
 cc_library_shared {
     name: "libplatform_rutabaga_server",

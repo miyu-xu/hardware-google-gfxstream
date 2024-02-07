@@ -112,53 +112,6 @@ bool getVirtioGpuResourceInfo(int fd, native_handle_t const* handle,
 
 }  // namespace
 
-uint32_t MinigbmGralloc::createColorBuffer(void*, int width, int height, uint32_t glformat) {
-    // Only supported format for pbuffers in gfxstream should be RGBA8
-    const uint32_t kVirglFormatRGBA = 67;  // VIRGL_FORMAT_R8G8B8A8_UNORM;
-    uint32_t virtgpu_format = 0;
-    uint32_t bpp = 0;
-    switch (glformat) {
-        case kGlRGB:
-            ALOGV("Note: egl wanted GL_RGB, still using RGBA");
-            virtgpu_format = kVirglFormatRGBA;
-            bpp = 4;
-            break;
-        case kGlRGBA:
-            virtgpu_format = kVirglFormatRGBA;
-            bpp = 4;
-            break;
-        default:
-            ALOGV("Note: egl wanted 0x%x, still using RGBA", glformat);
-            virtgpu_format = kVirglFormatRGBA;
-            bpp = 4;
-            break;
-    }
-    const uint32_t kPipeTexture2D = 2;          // PIPE_TEXTURE_2D
-    const uint32_t kBindRenderTarget = 1 << 1;  // VIRGL_BIND_RENDER_TARGET
-    struct drm_virtgpu_resource_create res_create;
-    memset(&res_create, 0, sizeof(res_create));
-    res_create.target = kPipeTexture2D;
-    res_create.format = virtgpu_format;
-    res_create.bind = kBindRenderTarget;
-    res_create.width = width;
-    res_create.height = height;
-    res_create.depth = 1;
-    res_create.array_size = 1;
-    res_create.last_level = 0;
-    res_create.nr_samples = 0;
-    res_create.stride = bpp * width;
-    res_create.size = align_up(bpp * width * height, kPageSize);
-
-    int ret = drmIoctl(m_fd, DRM_IOCTL_VIRTGPU_RESOURCE_CREATE, &res_create);
-    if (ret) {
-        ALOGE("%s: DRM_IOCTL_VIRTGPU_RESOURCE_CREATE failed with %s (%d)\n", __func__,
-              strerror(errno), errno);
-        abort();
-    }
-
-    return res_create.res_handle;
-}
-
 int MinigbmGralloc::allocate(uint32_t width, uint32_t height, uint32_t format, uint64_t usage,
                              AHardwareBuffer** outputAhb) {
     struct AHardwareBuffer_Desc desc = {

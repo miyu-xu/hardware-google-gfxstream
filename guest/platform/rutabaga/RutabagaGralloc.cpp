@@ -93,20 +93,6 @@ void RutabagaAHardwareBuffer::release() {
 
 RutabagaGralloc::RutabagaGralloc() {}
 
-uint32_t RutabagaGralloc::createColorBuffer(void*, int width, int height, uint32_t glFormat) {
-    auto drmFormat = GlFormatToDrmFormat(glFormat);
-    if (!drmFormat) {
-        ALOGE("Unhandled format");
-    }
-
-    auto ahb = allocate(width, height, *drmFormat);
-
-    RutabagaAHardwareBuffer* rahb = reinterpret_cast<RutabagaAHardwareBuffer*>(ahb);
-
-    mOwned.emplace_back(rahb);
-
-    return rahb->getResourceId();
-}
 
 int RutabagaGralloc::allocate(uint32_t width, uint32_t height, uint32_t format, uint64_t usage,
                               AHardwareBuffer** outputAhb) {

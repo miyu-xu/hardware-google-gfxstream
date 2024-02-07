@@ -20,8 +20,6 @@ namespace gfxstream {
 
 class MinigbmGralloc : public Gralloc {
    public:
-    uint32_t createColorBuffer(void* rcEnc, int width, int height, uint32_t glformat) override;
-
     int allocate(uint32_t width, uint32_t height, uint32_t format, uint64_t usage,
                  AHardwareBuffer** outputAhb) override;
 
