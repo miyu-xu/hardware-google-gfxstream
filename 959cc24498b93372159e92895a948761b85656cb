@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3a0038d_f0b1a437",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-07T20:42:10Z",
+      "side": 1,
+      "message": "\u003e Can we avoid gralloc in `libplatform`?\n\nDone.\n\n\u003e I also think RutabagaLayer eventually should be moved to its own shared library, while `libplatform_virtgpu` should be static but called the `EmulatedVirtioGpu` singleton.\n\nThis change does exactly that with `libplatform_rutabaga_server`.",
+      "parentUuid": "1a36ab79_121f8431",
+      "revId": "959cc24498b93372159e92895a948761b85656cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c2194a69_0faa097c",
@@ -31,6 +49,30 @@
       "writtenOn": "2024-02-06T22:57:07Z",
       "side": 1,
       "message": "definitely don\u0027t want `renderControl_enc` in libplatform",
+      "range": {
+        "startLine": 20,
+        "startChar": 10,
+        "endLine": 20,
+        "endChar": 27
+      },
+      "revId": "959cc24498b93372159e92895a948761b85656cb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47b8f16b_afce050f",
+        "filename": "guest/platform/linux/GrallocGoldfish.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-07T20:42:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2194a69_0faa097c",
       "range": {
         "startLine": 20,
         "startChar": 10,
