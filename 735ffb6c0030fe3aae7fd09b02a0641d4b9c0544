@@ -22,6 +22,30 @@
       },
       "revId": "735ffb6c0030fe3aae7fd09b02a0641d4b9c0544",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4bc1dca_bf3d9016",
+        "filename": "guest/mesa/src/vulkan/runtime/vk_android.c",
+        "patchSetId": 3
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T22:21:13Z",
+      "side": 1,
+      "message": "Feel free to send it upstream. I\u0027m not sure how much work if any would need to be done to ensure their SDK/NDK or whatever has the enum defined.",
+      "parentUuid": "e5b41087_523b19e7",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 0
+      },
+      "revId": "735ffb6c0030fe3aae7fd09b02a0641d4b9c0544",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
