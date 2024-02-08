@@ -165,8 +165,6 @@ void GfxstreamEnd2EndTest::SetUp() {
                        params.with_gl ? "Y" : "N", /*overwrite=*/1), Eq(0));
     ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK",
                        params.with_vk ? "Y" : "N", /*overwrite=*/1), Eq(0));
-    ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK_SNAPSHOTS",
-                       params.with_vk_snapshot ? "Y" : "N", /*overwrite=*/1), Eq(0));
 
     if (params.with_gl) {
         mGl = SetupGuestGl();

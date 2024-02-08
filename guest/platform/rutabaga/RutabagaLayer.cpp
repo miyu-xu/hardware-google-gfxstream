@@ -296,8 +296,6 @@ bool EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Init(bool withGl, bool withVk, bo
                                                 STREAM_RENDERER_FLAGS_USE_GLES_BIT)
                         : 0) |
                 (withVk ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_VK_BIT) : 0) |
-                (withVkSnapshots ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_VULKAN_SNAPSHOTS)
-                                 : 0),
         },
         stream_renderer_param{
             .key = STREAM_RENDERER_PARAM_WIN0_WIDTH,
@@ -954,7 +952,6 @@ EmulatedVirtioGpu& EmulatedVirtioGpu::Get() {
         const std::vector<Option> options = {
             {"GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_GL", &withGl},
             {"GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK", &withVk},
-            {"GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK_SNAPSHOTS", &withVkSnapshots},
         };
         for (const Option option : options) {
             const char* val = std::getenv(option.env.c_str());
