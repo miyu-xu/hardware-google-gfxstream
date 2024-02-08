@@ -1,0 +1,176 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6186b4c_cbca45be",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "You should also change the meson build to also include a `libplatform_rutabaga_server` file rather building one `libplatform_rutabaga`\n\n`meson -Dgfxstream-build\u003dguest-test amd64-build/`",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 0
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "19041ca2_5fd76bae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "Looking nice!  A few extra comments, mostly aimed at closing out b/323902846",
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c660e2f6_2fdf6fb9",
+        "filename": "common/end2end/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "Can we remove this?  Since `libplatform_rutabaga_server` encapsulates `libgfxstream_backend`, it should only have access it. \n\nThat will also move the:\n\n\n        \"gfxstream_base\",\n        \"gfxstream_host_common\",\n        \"gfxstream_snapshot\",\n        \"gfxstream_vulkan_cereal_host\"\n        \n`SnapshotSaveAndLoad()` would call `EmulatedVirtioGpu::Save()` and `EmulatedVirtioGpu::Load()`\n\n (aside: not sure why we depend on `gfxstream_vulkan_cereal_host`). \n (aside: most use cases of `gfxstream_base` can be replaced with `libandroidemu`)",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 31
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "374bb8b5_a93636b7",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "Can we remove the here `SyncHelper` (`libplatform_rutabaga` dep) and call `EmulatedVirtioGpu::WaitOnEmulatedFence`?  Fence ids are global so it should work.",
+      "range": {
+        "startLine": 219,
+        "startChar": 20,
+        "endLine": 219,
+        "endChar": 30
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "40e41c96_7a85aea4",
+        "filename": "guest/android/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "Why `libgfxstream_guest_android_with_host` variant?  Can\u0027t we do     \n```\n        host: {\n            srcs: [\n        \"ANativeWindowEmulated.cpp\",\n        \"GrallocEmulated.cpp\"\n            ],\n        },\n        static_libs: [\n           \"libplatform_rutabaga\",\n        ],     \n```\n\nPerhaps we can nuke `GrallocStub.h`?",
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d0ac8c0_e6860561",
+        "filename": "guest/platform/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "Don\u0027t think you need this anymore?",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 17
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4779b2bb_485f7948",
+        "filename": "guest/platform/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "Can delete this: no more dependencies on OpenGL headers, but virgl headers.",
+      "range": {
+        "startLine": 115,
+        "startChar": 9,
+        "endLine": 115,
+        "endChar": 33
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ad0efff_85a712d5",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T01:50:40Z",
+      "side": 1,
+      "message": "We\u0027ll probably want to get rid of the header dependency too on the \"guest part\".  For example, \n\n```\nstruct rutabaga_command {\n    uint32_t ctx_id;\n    uint32_t cmd_size;\n    uint8_t *cmd;\n\n    /**\n     * Unstable, don\u0027t use until version \u003e 0.1.2\n     */\n    uint32_t num_in_fences;\n    uint64_t *fence_ids;\n};\n```\n\nwhile the \"guest\" works is more like this:\n\n```\nstruct VirtGpuExecBuffer {\n    void* command;\n    uint32_t command_size;\n    uint32_t ring_idx;\n    enum VirtGpuExecBufferFlags flags;\n    struct VirtGpuExternalHandle handle;\n};\n```\n\nSame with `VirtGpuCaps` + `VirtGpuCapset`: we can make it more low-level, and work besides vulkan capsets.",
+      "range": {
+        "startLine": 22,
+        "startChar": 10,
+        "endLine": 22,
+        "endChar": 19
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
