@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5b41087_523b19e7",
+        "filename": "guest/mesa/src/vulkan/runtime/vk_android.c",
+        "patchSetId": 3
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-08T21:42:06Z",
+      "side": 1,
+      "message": "Do you plan to send this upstream?  If not, I\u0027ll do it.  For example, https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2942387 made some changes that were upstreamed as part of https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27425.",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 0
+      },
+      "revId": "735ffb6c0030fe3aae7fd09b02a0641d4b9c0544",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
