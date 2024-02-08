@@ -3504,7 +3504,7 @@ class VkDecoderGlobalState::Impl {
         info->pageAlignedHva = reinterpret_cast<void*>(addr - pageOffset);
         info->sizeToPage = ((info->size + pageOffset + kPageSize - 1) >> kPageBits) << kPageBits;
 
-        if (mLogging) {
+        if (1) {
             fprintf(stderr, "%s: map: %p, %p -> [0x%llx 0x%llx]\n", __func__, info->ptr,
                     info->pageAlignedHva, (unsigned long long)info->guestPhysAddr,
                     (unsigned long long)info->guestPhysAddr + info->sizeToPage);
@@ -3530,7 +3530,7 @@ class VkDecoderGlobalState::Impl {
 
         get_emugl_vm_operations().mapUserBackedRam(gpa, hva, sizeToPage);
 
-        if (mVerbosePrints) {
+        if (1) {
             fprintf(stderr, "VERBOSE:%s: registering gpa 0x%llx to mOccupiedGpas\n", __func__,
                     (unsigned long long)gpa);
         }
@@ -3892,6 +3892,7 @@ class VkDecoderGlobalState::Impl {
             return result;
         }
 
+        fprintf(stderr, ":%s: vkAllocateMemory pMemory 0x%llx\n", __func__, (unsigned long long)(*pMemory));
 #ifdef _WIN32
         // Let ManagedDescriptor to close the underlying HANDLE when going out of scope. From the
         // VkImportMemoryWin32HandleInfoKHR spec: Importing memory object payloads from Windows
@@ -4249,7 +4250,7 @@ class VkDecoderGlobalState::Impl {
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
 
-        if (mLogging) {
+        if (1) {
             fprintf(stderr, "%s: deviceMemory: 0x%llx pAddress: 0x%llx\n", __func__,
                     (unsigned long long)memory, (unsigned long long)(*pAddress));
         }
