@@ -77,7 +77,7 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
     EmulatedVirtioGpuImpl();
     ~EmulatedVirtioGpuImpl();
 
-    bool Init(bool withGl, bool withVk, bool withVkSnapshots, EmulatedVirtioGpu* parent);
+    bool Init(bool withGl, bool withVk, EmulatedVirtioGpu* parent);
 
     VirtGpuCaps GetCaps(VirtGpuCapset capset);
 
@@ -102,6 +102,8 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
                                             uint32_t virglFormat);
 
     void DestroyResource(uint32_t contextId, uint32_t resourceId);
+    void SnapshotSave(std::string directory);
+    void SnapshotRestore(std::string directory);
 
     uint32_t CreateEmulatedFence();
 
@@ -160,12 +162,19 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
     struct VirtioGpuTaskUnrefResource {
         uint32_t resourceId;
     };
+    struct VirtioGpuTaskSnapshotSave {
+        std::string directory;
+    };
+    struct VirtioGpuTaskSnapshotRestore {
+        std::string directory;
+    };
     using VirtioGpuTask =
         std::variant<VirtioGpuTaskContextAttachResource, VirtioGpuTaskContextDetachResource,
                      VirtioGpuTaskCreateBlob, VirtioGpuTaskCreateContext,
                      VirtioGpuTaskCreateResource, VirtioGpuTaskDestroyContext, VirtioGpuTaskMap,
                      VirtioGpuTaskExecBuffer, VirtioGpuTaskTransferFromHost,
-                     VirtioGpuTaskTransferToHost, VirtioGpuTaskUnrefResource>;
+                     VirtioGpuTaskTransferToHost, VirtioGpuTaskUnrefResource,
+                     VirtioGpuTaskSnapshotSave, VirtioGpuTaskSnapshotRestore>;
     struct VirtioGpuTaskWithWaitable {
         uint32_t contextId;
         VirtioGpuTask task;
@@ -187,6 +196,8 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
     void DoTask(VirtioGpuTaskTransferToHost task);
     void DoTask(VirtioGpuTaskWithWaitable task);
     void DoTask(VirtioGpuTaskUnrefResource task);
+    void DoTask(VirtioGpuTaskSnapshotSave task);
+    void DoTask(VirtioGpuTaskSnapshotRestore task);
 
     void RunVirtioGpuTaskProcessingLoop();
 
@@ -277,7 +288,7 @@ void WriteFenceTrampoline(void* cookie, struct stream_renderer_fence* fence) {
 
 }  // namespace
 
-bool EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Init(bool withGl, bool withVk, bool withVkSnapshots,
+bool EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Init(bool withGl, bool withVk,
                                                     EmulatedVirtioGpu* parent) {
     std::vector<stream_renderer_param> renderer_params{
         stream_renderer_param{
@@ -290,15 +301,11 @@ bool EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Init(bool withGl, bool withVk, bo
         },
         stream_renderer_param{
             .key = STREAM_RENDERER_PARAM_RENDERER_FLAGS,
-            .value =
-                static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_SURFACELESS_BIT) |
-                (withGl ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_EGL_BIT |
-                                                STREAM_RENDERER_FLAGS_USE_GLES_BIT)
-                        : 0) |
-                (withVk ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_VK_BIT) : 0) |
-                (withVkSnapshots ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_VULKAN_SNAPSHOTS)
-                                 : 0),
-        },
+            .value = static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_SURFACELESS_BIT) |
+                     (withGl ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_EGL_BIT |
+                                                     STREAM_RENDERER_FLAGS_USE_GLES_BIT)
+                             : 0) |
+                     (withVk ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_VK_BIT) : 0)},
         stream_renderer_param{
             .key = STREAM_RENDERER_PARAM_WIN0_WIDTH,
             .value = 32,
@@ -579,6 +586,25 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DestroyResource(uint32_t contextI
         .resourceId = resourceId,
     };
     EnqueueVirtioGpuTask(contextId, std::move(detachTask));
+}
+
+void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::SnapshotSave(std::string directory) {
+    uint32_t contextId = 0;
+
+    VirtioGpuTaskSnapshotSave saveTask{
+        .directory = directory,
+    };
+    EnqueueVirtioGpuTask(contextId, std::move(saveTask));
+}
+
+void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::SnapshotRestore(std::string directory) {
+    uint32_t contextId = 0;
+
+    VirtioGpuTaskSnapshotRestore restoreTask{
+        .directory = directory,
+    };
+
+    EnqueueVirtioGpuTask(contextId, std::move(restoreTask));
 }
 
 int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::ExecBuffer(uint32_t contextId,
@@ -865,6 +891,14 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskUnrefResource
     stream_renderer_resource_unref(task.resourceId);
 }
 
+void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskSnapshotSave task) {
+    stream_renderer_snapshot(task.directory.c_str());
+}
+
+void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskSnapshotRestore task) {
+    stream_renderer_restore(task.directory.c_str());
+}
+
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskWithWaitable task) {
     std::visit(
         [this](auto&& work) {
@@ -890,6 +924,10 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskWithWaitable 
             } else if constexpr (std::is_same_v<T, VirtioGpuTaskTransferToHost>) {
                 DoTask(std::move(work));
             } else if constexpr (std::is_same_v<T, VirtioGpuTaskUnrefResource>) {
+                DoTask(std::move(work));
+            } else if constexpr (std::is_same_v<T, VirtioGpuTaskSnapshotSave>) {
+                DoTask(std::move(work));
+            } else if constexpr (std::is_same_v<T, VirtioGpuTaskSnapshotRestore>) {
                 DoTask(std::move(work));
             }
         },
@@ -952,7 +990,6 @@ std::shared_ptr<EmulatedVirtioGpu> EmulatedVirtioGpu::Get() {
 
     bool withGl = false;
     bool withVk = true;
-    bool withVkSnapshots = false;
 
     struct Option {
         std::string env;
@@ -961,7 +998,6 @@ std::shared_ptr<EmulatedVirtioGpu> EmulatedVirtioGpu::Get() {
     const std::vector<Option> options = {
         {"GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_GL", &withGl},
         {"GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK", &withVk},
-        {"GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK_SNAPSHOTS", &withVkSnapshots},
     };
     for (const Option option : options) {
         const char* val = std::getenv(option.env.c_str());
@@ -970,8 +1006,8 @@ std::shared_ptr<EmulatedVirtioGpu> EmulatedVirtioGpu::Get() {
         }
     }
 
-    ALOGE("Initializing withGl:%d withVk:%d withVkSnapshots:%d", withGl, withVk, withVkSnapshots);
-    if (!instance->Init(withGl, withVk, withVkSnapshots)) {
+    ALOGE("Initializing withGl:%d withVk:%d", withGl, withVk);
+    if (!instance->Init(withGl, withVk)) {
         ALOGE("Failed to initialize EmulatedVirtioGpu.");
         return nullptr;
     }
@@ -987,9 +1023,7 @@ uint32_t EmulatedVirtioGpu::GetNumActiveUsers() {
     return instance.use_count();
 }
 
-bool EmulatedVirtioGpu::Init(bool withGl, bool withVk, bool withVkSnapshots) {
-    return mImpl->Init(withGl, withVk, withVkSnapshots, this);
-}
+bool EmulatedVirtioGpu::Init(bool withGl, bool withVk) { return mImpl->Init(withGl, withVk, this); }
 
 std::optional<uint32_t> EmulatedVirtioGpu::CreateContext() { return mImpl->CreateContext(); }
 
@@ -1030,6 +1064,12 @@ std::optional<uint32_t> EmulatedVirtioGpu::CreateVirglBlob(uint32_t contextId, u
 
 void EmulatedVirtioGpu::DestroyResource(uint32_t contextId, uint32_t resourceId) {
     mImpl->DestroyResource(contextId, resourceId);
+}
+
+void EmulatedVirtioGpu::SnapshotSave(std::string directory) { mImpl->SnapshotSave(directory); }
+
+void EmulatedVirtioGpu::SnapshotRestore(std::string directory) {
+    mImpl->SnapshotRestore(directory);
 }
 
 int EmulatedVirtioGpu::WaitOnEmulatedFence(int fenceAsFileDescriptor, int timeoutMilliseconds) {

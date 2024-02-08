@@ -33,7 +33,7 @@ class EmulatedVirtioGpu {
    static std::shared_ptr<EmulatedVirtioGpu> Get();
    static uint32_t GetNumActiveUsers();
 
-   bool Init(bool withGl, bool withVk, bool withVkSnapshots);
+   bool Init(bool withGl, bool withVk);
 
    VirtGpuCaps GetCaps(VirtGpuCapset capset);
 
@@ -62,6 +62,9 @@ class EmulatedVirtioGpu {
    void SignalEmulatedFence(int fenceId);
 
    int WaitOnEmulatedFence(int fenceAsFileDescriptor, int timeoutMilliseconds);
+
+   void SnapshotSave(std::string directory);
+   void SnapshotRestore(std::string directory);
 
   private:
     EmulatedVirtioGpu();
