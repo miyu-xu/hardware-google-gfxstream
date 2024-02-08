@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "b8865817_403c60fd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T19:31:38Z",
+      "side": 1,
+      "message": "Filed b/324442400 to address part of the combined guest-host build with meson that seems to prevent handling this correctly.",
+      "parentUuid": "e6186b4c_cbca45be",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 0
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "19041ca2_5fd76bae",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 9
@@ -64,6 +88,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7e03834_7a898398",
+        "filename": "common/end2end/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T19:31:38Z",
+      "side": 1,
+      "message": "It looks like the snapshot tests use `virtio-gpu-gfxstream-renderer-goldfish.h` directly. This should be cleaned up to occur via `EmulatedVirtioGpu` (which should in turn be using rutabaga API eventually). I will leave this as a TODO (potentially for b/324440526) given this is an existing needed cleanup.",
+      "parentUuid": "c660e2f6_2fdf6fb9",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 31
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "374bb8b5_a93636b7",
@@ -77,6 +125,30 @@
       "writtenOn": "2024-02-08T01:50:40Z",
       "side": 1,
       "message": "Can we remove the here `SyncHelper` (`libplatform_rutabaga` dep) and call `EmulatedVirtioGpu::WaitOnEmulatedFence`?  Fence ids are global so it should work.",
+      "range": {
+        "startLine": 219,
+        "startChar": 20,
+        "endLine": 219,
+        "endChar": 30
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5b71f9d_12ada517",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T19:31:38Z",
+      "side": 1,
+      "message": "Err, I think the bodies of the tests, which are acting as the guests, should be using the `SyncHelper` abstraction (similar to the `ANativeWindowHelper` and `Gralloc`) as this is what the actual guests would be doing. Interacting with `EmulatedVirtioGpu` directly should only be allowed for components that \"know they are in a emulated VMM\" such as other parts of the emulation layer or parts of the test framework which are directly implementing other host functionality (e.g. snapshots).",
+      "parentUuid": "374bb8b5_a93636b7",
       "range": {
         "startLine": 219,
         "startChar": 20,
@@ -104,6 +176,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "70e66898_2a418e55",
+        "filename": "guest/android/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T19:31:38Z",
+      "side": 1,
+      "message": "I started out with trying to do exactly this but then ran into build dependency issues around `compile_multilib`. I think eventually we should be able to remove all of the `with_host` variants and do exactly what you recommended but this would need more clean ups around the existing usage of `compile_multilib` for the host components. Filed b/324445594 against myself but I don\u0027t believe that needs to block this change.",
+      "parentUuid": "40e41c96_7a85aea4",
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9d0ac8c0_e6860561",
@@ -117,6 +207,30 @@
       "writtenOn": "2024-02-08T01:50:40Z",
       "side": 1,
       "message": "Don\u0027t think you need this anymore?",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 17
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d6fddda_8bc2de65",
+        "filename": "guest/platform/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T19:31:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9d0ac8c0_e6860561",
       "range": {
         "startLine": 84,
         "startChar": 0,
@@ -150,6 +264,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8a41b6f_8dc06eec",
+        "filename": "guest/platform/Android.bp",
+        "patchSetId": 9
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T19:31:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4779b2bb_485f7948",
+      "range": {
+        "startLine": 115,
+        "startChar": 9,
+        "endLine": 115,
+        "endChar": 33
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9ad0efff_85a712d5",
@@ -163,6 +301,30 @@
       "writtenOn": "2024-02-08T01:50:40Z",
       "side": 1,
       "message": "We\u0027ll probably want to get rid of the header dependency too on the \"guest part\".  For example, \n\n```\nstruct rutabaga_command {\n    uint32_t ctx_id;\n    uint32_t cmd_size;\n    uint8_t *cmd;\n\n    /**\n     * Unstable, don\u0027t use until version \u003e 0.1.2\n     */\n    uint32_t num_in_fences;\n    uint64_t *fence_ids;\n};\n```\n\nwhile the \"guest\" works is more like this:\n\n```\nstruct VirtGpuExecBuffer {\n    void* command;\n    uint32_t command_size;\n    uint32_t ring_idx;\n    enum VirtGpuExecBufferFlags flags;\n    struct VirtGpuExternalHandle handle;\n};\n```\n\nSame with `VirtGpuCaps` + `VirtGpuCapset`: we can make it more low-level, and work besides vulkan capsets.",
+      "range": {
+        "startLine": 22,
+        "startChar": 10,
+        "endLine": 22,
+        "endChar": 19
+      },
+      "revId": "004a6b37a5157a23a3df0ac7274c6f7afa5acaeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f09bd5d_39c8fd64",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.h",
+        "patchSetId": 9
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-08T19:31:38Z",
+      "side": 1,
+      "message": "Agreed. Left a TODO for now as this is an existing issue.",
+      "parentUuid": "9ad0efff_85a712d5",
       "range": {
         "startLine": 22,
         "startChar": 10,
