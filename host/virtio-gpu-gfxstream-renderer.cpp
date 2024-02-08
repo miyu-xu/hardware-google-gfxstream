@@ -2147,6 +2147,8 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
 #endif
     }
 
+    fprintf(stderr, "%s %d feature settings\n\n", __func__, __LINE__);
+
     feature_set_enabled_override(kFeature_GLPipeChecksum, false);
     feature_set_enabled_override(kFeature_GLESDynamicVersion, true);
     feature_set_enabled_override(kFeature_PlayStoreImage, !enableGlEs31Flag);

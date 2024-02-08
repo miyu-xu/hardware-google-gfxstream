@@ -501,7 +501,7 @@ bool RenderWindow::getHardwareStrings(const char** vendor,
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     fb->getGLStrings(vendor, renderer, version);
-    D("Exiting vendor=[%s] renderer=[%s] version=[%s]\n",
+    fprintf(stderr, "Exiting vendor=[%s] renderer=[%s] version=[%s]\n",
       *vendor, *renderer, *version);
 
     return true;
