@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b431b6d0_5a498495",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-13T17:43:50Z",
+      "side": 1,
+      "message": "I guess I was imagining something like\n\n```\nTEST() {\n  guest_thread \u003d std::thread([]() {\n    for (i \u003c 10) {\n      Render();\n    }\n  });\n  host_thread \u003d std::thread([]() {\n    for (i \u003c 10) {\n      // SaveAndLoadSnapshot();\n      stream_renderer_snapshot();\n      stream_renderer_restore();\n    }\n  });\n}\n```\n\nwhere something like execbuffer commands from the guest thread could end up interleaved between the save task and the load task. My naive impression of how snapshoting would work in an actual VMM would have the VMM effectively stopping the queue entirely and would be more like\n\n```\nhost_thread \u003d std::thread([]() {\n for (i \u003c 10) {\n    // SaveAndLoadSnapshot();\n    auto emulation \u003d gfxstream::EmulatedVirtioGpu::Get();\n    \n    std::promise\u003cvoid\u003e resumeGuestSignal;\n    std::shared_future\u003cvoid\u003e resumeGuestFuture \u003d resumeGuestSignal.get_future();\n    \n    std::shared_future\u003cvoid\u003e guestPausedFuture \u003d \n        emulation-\u003eBlockGuest(resumeGuestFuture);\n    guestPausedFuture.wait();\n    \n    emulation-\u003eSaveSnapshot(); // direct call, not a task that is queued\n    emulation-\u003eLoadSnapshot(); // direct call, not a task that is queued\n    \n    resumeGuestSignal.set_value();\n  }\n});\n```",
+      "parentUuid": "54d4aac2_afdf6579",
+      "range": {
+        "startLine": 165,
+        "startChar": 4,
+        "endLine": 170,
+        "endChar": 6
+      },
+      "revId": "9bca6e42d7c4090d196ad89900ea9348ac62aaa7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "60b2bbcc_6d07dbe0",
         "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
         "patchSetId": 4
