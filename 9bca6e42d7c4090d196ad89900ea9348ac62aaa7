@@ -119,6 +119,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b60c8b47_f973d9fc",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-13T18:49:17Z",
+      "side": 1,
+      "message": "I\u0027m thinking the after the save task has been posted, then the queue is stopped for *guest* commands.  In crosvm, the `virtio-gpu` thread handles guest commands, but also requests from other services.\n\nFor `rutabaga_gfx_ffi`, there\u0027s no global singleton so one thread would have ownership of the rutabaga pointer.  So it\u0027s better a task is queue, but perhaps future `guest`-type requests would be blocked.  So the flow would be:\n\n```\nemulation-\u003eSaveSnapshot(); // queue snapshot and block future guest requests\nemulation-\u003eTeardown();     // not a guest request, allowed to be queue\nemulation-\u003eInit();         // recreate some state\nemulatation-\u003eload()        // recreate all state and all future guest commands\n```\n\nEither way, I\u0027ll leave it for future implementations to think about.",
+      "parentUuid": "b431b6d0_5a498495",
+      "range": {
+        "startLine": 165,
+        "startChar": 4,
+        "endLine": 170,
+        "endChar": 6
+      },
+      "revId": "9bca6e42d7c4090d196ad89900ea9348ac62aaa7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "60b2bbcc_6d07dbe0",
