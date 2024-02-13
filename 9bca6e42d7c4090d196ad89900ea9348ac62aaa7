@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf1706d3_ab6bc331",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-13T00:31:10Z",
+      "side": 1,
+      "message": "I think we would want to keep this as a runtime flag so that instances that are perf dependent or instances that simply can not take advantage of snapshots yet do not have to perform the additional tracking needed for snapshots.\n\nAlong these lines, I wonder if it makes sense to rename `VulkanSnapshots` as `CaptureVulkanSnapshot`? I can not imagine the need to hide the ability to *load* a snapshot behind a runtime flag (hiding behind build time seems okay for the various different builds) but I do imagine that perf-dependent applications/downstream cuttlefish users would want the ability to disable the extra tracking.\n\nI believe infra was interested in this as we would want to enable `CaptureVulkanSnapshot` once, warm up a device and let it finish any first time boot/setup, and then save a snapshot. Then, the actual CI instances load the \"ready\" instance but then they would never care about the ability to take snapshots and wouldn\u0027t have to waste cycles across the fleet.\n\nHaving the runtime flag also makes enabling/disabling more localized in case rollbacks are needed once the feature is fully ready.",
+      "range": {
+        "startLine": 20,
+        "startChar": 6,
+        "endLine": 21,
+        "endChar": 66
+      },
+      "revId": "9bca6e42d7c4090d196ad89900ea9348ac62aaa7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ca867a2_25ce5b49",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-13T00:31:10Z",
+      "side": 1,
+      "message": "Optional: I wonder if it makes sense to implement this more like `FrameBuffer::blockPostWorker()` which actually stops the queue from processing. This would help prevent any kind of weird queue\u0027ing interaction where a test might accidentally still be doing/finishing work while the snapshot has started. WDYT?",
+      "range": {
+        "startLine": 165,
+        "startChar": 4,
+        "endLine": 170,
+        "endChar": 6
+      },
+      "revId": "9bca6e42d7c4090d196ad89900ea9348ac62aaa7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60b2bbcc_6d07dbe0",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 2001,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-13T00:31:10Z",
+      "side": 1,
+      "message": "```suggestion\n    android_getOpenglesRenderer()-\u003esave(saveStream.stream, saveStream.textureSaver);\n    return 0;\n#else\n    stream_renderer_error(\"Snapshot save requested without support.\");\n    return -1;\n#endif\n```",
+      "range": {
+        "startLine": 1998,
+        "startChar": 0,
+        "endLine": 2001,
+        "endChar": 13
+      },
+      "revId": "9bca6e42d7c4090d196ad89900ea9348ac62aaa7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aaa56573_4638742a",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 2023,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-13T00:31:10Z",
+      "side": 1,
+      "message": "```suggestion\n    return 0;\n#else\n    stream_renderer_error(\"Snapshot load requested without support.\");\n    return -1;\n#endif\n```",
+      "range": {
+        "startLine": 2021,
+        "startChar": 0,
+        "endLine": 2023,
+        "endChar": 13
+      },
+      "revId": "9bca6e42d7c4090d196ad89900ea9348ac62aaa7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
