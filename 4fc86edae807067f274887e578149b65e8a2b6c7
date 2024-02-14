@@ -16,6 +16,29 @@
       "message": "serving as a secondary reviewer to gurchetansingh@",
       "revId": "4fc86edae807067f274887e578149b65e8a2b6c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48a84b4b_08dd500b",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 1992,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-02-14T15:47:54Z",
+      "side": 1,
+      "message": "One question: why doesn\u0027t the QNX platform advertise required dedicated allocation via `vkGetImageMemoryRequirements2` and `VkMemoryDedicatedRequirements`? The intention to import the handle should have been embedded in the `VkExternalMemoryImageCreateInfo` struct of the `VkCreateImageInfo`.",
+      "range": {
+        "startLine": 1992,
+        "startChar": 49,
+        "endLine": 1992,
+        "endChar": 95
+      },
+      "revId": "4fc86edae807067f274887e578149b65e8a2b6c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
