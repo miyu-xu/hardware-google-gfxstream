@@ -39,6 +39,30 @@
       },
       "revId": "4fc86edae807067f274887e578149b65e8a2b6c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36d532ba_2f698b9f",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 1992,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-14T17:14:21Z",
+      "side": 1,
+      "message": "\"Yah, the modification on this paritcular line probably isn\u0027t needed. Although, maybe at the time I was thinking of a particular driver (on QNX) that wasn\u0027t reporting properly in VkMemoryDedicatedRequirements properly. If that\u0027s the case, we can probably have some heuristic in FrameBuffer::initialize() to set useDedicatedAllocations, instead of this check for non-NULL extMemHandle in initilaizeVkColorBufferLocked.\" --aruby@\n\nIf it\u0027s causing an issue, send a CL and we\u0027ll if it still works on the target platform.",
+      "parentUuid": "48a84b4b_08dd500b",
+      "range": {
+        "startLine": 1992,
+        "startChar": 49,
+        "endLine": 1992,
+        "endChar": 95
+      },
+      "revId": "4fc86edae807067f274887e578149b65e8a2b6c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
