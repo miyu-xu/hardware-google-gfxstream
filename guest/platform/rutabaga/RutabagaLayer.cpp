@@ -30,8 +30,7 @@
 #include <unordered_map>
 #include <variant>
 
-#include "gfxstream/virtio-gpu-gfxstream-renderer.h"
-#include "gfxstream/virtio-gpu-gfxstream-renderer-unstable.h"
+#include "rutabaga_gfx_ffi.h"
 
 namespace gfxstream {
 namespace {
@@ -128,13 +127,13 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
     struct VirtioGpuTaskCreateBlob {
         uint32_t contextId;
         uint32_t resourceId;
-        struct stream_renderer_create_blob params;
+        struct rutabaga_create_blob params;
     };
     struct VirtioGpuTaskCreateResource {
         uint32_t contextId;
         uint32_t resourceId;
         uint8_t* resourceBytes;
-        struct stream_renderer_resource_create_args params;
+        struct rutabaga_create_3d params;
     };
     struct VirtioGpuTaskDestroyContext {
         uint32_t contextId;
@@ -267,6 +266,7 @@ class EmulatedVirtioGpu::EmulatedVirtioGpuImpl {
     std::unordered_map<uint32_t, EmulatedFence> mVirtioGpuFences;
 
     std::thread mWorkerThread;
+    struct rutabaga* mRutabaga = nullptr;
 };
 
 EmulatedVirtioGpu::EmulatedVirtioGpuImpl::EmulatedVirtioGpuImpl()
@@ -276,12 +276,15 @@ EmulatedVirtioGpu::EmulatedVirtioGpuImpl::~EmulatedVirtioGpuImpl() {
     mShuttingDown = true;
     mWorkerThread.join();
 
-    stream_renderer_teardown();
+    if (mRutabaga) {
+        rutabaga_finish(&mRutabaga);
+        mRutabaga = nullptr;
+    }
 }
 
 namespace {
 
-void WriteFenceTrampoline(void* cookie, struct stream_renderer_fence* fence) {
+void WriteFenceTrampoline(uint64_t cookie, const struct rutabaga_fence* fence) {
     auto* gpu = reinterpret_cast<EmulatedVirtioGpu*>(cookie);
     gpu->SignalEmulatedFence(fence->fence_id);
 }
@@ -290,39 +293,35 @@ void WriteFenceTrampoline(void* cookie, struct stream_renderer_fence* fence) {
 
 bool EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Init(bool withGl, bool withVk, bool withVkSnapshots,
                                                     EmulatedVirtioGpu* parent) {
-    int ret = setenv("ANDROID_GFXSTREAM_CAPTURE_VK_SNAPSHOT", withVkSnapshots ? "1" : "0",
-                     1 /* replace */);
+    int32_t ret;
+    uint64_t capset_mask = 0;
+    struct rutabaga_builder builder = {0};
+
+    ret = setenv("ANDROID_GFXSTREAM_CAPTURE_VK_SNAPSHOT", withVkSnapshots ? "1" : "0",
+                 1 /* replace */);
     if (ret) {
         ALOGE("Failed to set environment variable");
         return false;
     }
 
-    std::vector<stream_renderer_param> renderer_params{
-        stream_renderer_param{
-            .key = STREAM_RENDERER_PARAM_USER_DATA,
-            .value = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(parent)),
-        },
-        stream_renderer_param{
-            .key = STREAM_RENDERER_PARAM_FENCE_CALLBACK,
-            .value = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&WriteFenceTrampoline)),
-        },
-        stream_renderer_param{
-            .key = STREAM_RENDERER_PARAM_RENDERER_FLAGS,
-            .value = static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_SURFACELESS_BIT) |
-                     (withGl ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_EGL_BIT |
-                                                     STREAM_RENDERER_FLAGS_USE_GLES_BIT)
-                             : 0) |
-                     (withVk ? static_cast<uint64_t>(STREAM_RENDERER_FLAGS_USE_VK_BIT) : 0)},
-        stream_renderer_param{
-            .key = STREAM_RENDERER_PARAM_WIN0_WIDTH,
-            .value = 32,
-        },
-        stream_renderer_param{
-            .key = STREAM_RENDERER_PARAM_WIN0_HEIGHT,
-            .value = 32,
-        },
-    };
-    return stream_renderer_init(renderer_params.data(), renderer_params.size()) == 0;
+    if (withGl) {
+        capset_mask |= (1 << RUTABAGA_CAPSET_GFXSTREAM_GLES);
+        ALOGE("Setting gles capset mask");
+    }
+
+    if (withVk) {
+        capset_mask |= (1 << RUTABAGA_CAPSET_GFXSTREAM_VULKAN);
+    }
+
+    builder.user_data = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(parent)),
+    builder.fence_cb = WriteFenceTrampoline;
+    builder.capset_mask = capset_mask;
+    builder.wsi = RUTABAGA_WSI_SURFACELESS;
+
+    ret = rutabaga_init(&builder, &mRutabaga);
+    if (ret) return false;
+
+    return true;
 }
 
 VirtGpuCaps EmulatedVirtioGpu::EmulatedVirtioGpuImpl::GetCaps(VirtGpuCapset capset) {
@@ -341,8 +340,12 @@ VirtGpuCaps EmulatedVirtioGpu::EmulatedVirtioGpuImpl::GetCaps(VirtGpuCapset caps
             },
     };
 
-    stream_renderer_fill_caps(static_cast<uint32_t>(capset), 0, &caps.vulkanCapset);
+    if (capset == kCapsetGfxStreamMagma) {
+        return caps;
+    }
 
+    rutabaga_get_capset(mRutabaga, RUTABAGA_CAPSET_GFXSTREAM_VULKAN, 0,
+                        (uint8_t*)&caps.vulkanCapset, sizeof(caps.vulkanCapset));
     return caps;
 }
 
@@ -389,7 +392,7 @@ uint8_t* EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Map(uint32_t resourceId) {
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Unmap(uint32_t resourceId) {
-    stream_renderer_resource_unmap(resourceId);
+    rutabaga_resource_unmap(mRutabaga, resourceId);
 }
 
 int EmulatedVirtioGpu::EmulatedVirtioGpuImpl::Wait(uint32_t resourceId) {
@@ -554,7 +557,6 @@ std::optional<uint32_t> EmulatedVirtioGpu::EmulatedVirtioGpuImpl::CreateVirglBlo
         .resourceBytes = resource->guestBytes.get(),
         .params =
             {
-                .handle = resourceId,
                 .target = target,
                 .format = virglFormat,
                 .bind = bind,
@@ -734,7 +736,7 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskContextAttach
     ALOGV("Performing task to attach resource-id:%d to context-id:%d", task.resourceId,
           task.contextId);
 
-    stream_renderer_ctx_attach_resource(task.contextId, task.resourceId);
+    rutabaga_context_attach_resource(mRutabaga, task.contextId, task.resourceId);
 
     ALOGV("Performing task to attach resource-id:%d to context-id:%d - done", task.resourceId,
           task.contextId);
@@ -744,7 +746,7 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskContextDetach
     ALOGV("Performing task to detach resource-id:%d to context-id:%d", task.resourceId,
           task.contextId);
 
-    stream_renderer_ctx_detach_resource(task.contextId, task.resourceId);
+    rutabaga_context_detach_resource(mRutabaga, task.contextId, task.resourceId);
 
     ALOGV("Performing task to detach resource-id:%d to context-id:%d - done", task.resourceId,
           task.contextId);
@@ -753,10 +755,10 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskContextDetach
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskCreateBlob task) {
     ALOGV("Performing task to create blob resource-id:%d", task.resourceId);
 
-    int ret = stream_renderer_create_blob(task.contextId, task.resourceId, &task.params,
-                                          /*iovecs=*/nullptr,
-                                          /*num_iovs=*/0,
-                                          /*handle=*/nullptr);
+    int ret =
+        rutabaga_resource_create_blob(mRutabaga, task.contextId, task.resourceId, &task.params,
+                                      /*iovecs=*/nullptr,
+                                      /*handle=*/nullptr);
     if (ret) {
         ALOGE("Failed to create blob.");
     }
@@ -769,8 +771,8 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskCreateContext
           " context-name:%s",
           task.contextId, task.contextInit, task.contextName.c_str());
 
-    int ret = stream_renderer_context_create(task.contextId, task.contextName.size(),
-                                             task.contextName.data(), task.contextInit);
+    int ret = rutabaga_context_create(mRutabaga, task.contextId, task.contextName.size(),
+                                      task.contextName.data(), task.contextInit);
     if (ret) {
         ALOGE("Failed to create context-id:%" PRIu32 ".", task.contextId);
         return;
@@ -784,29 +786,34 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskCreateContext
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskCreateResource task) {
     ALOGV("Performing task to create resource resource:%d", task.resourceId);
 
-    int ret = stream_renderer_resource_create(&task.params, nullptr, 0);
+    int ret = rutabaga_resource_create_3d(mRutabaga, task.resourceId, &task.params);
     if (ret) {
         ALOGE("Failed to create resource:%d", task.resourceId);
     }
 
-    struct iovec iov = {
-        .iov_base = task.resourceBytes,
-        .iov_len = task.params.width,
-    };
-    ret = stream_renderer_resource_attach_iov(task.resourceId, &iov, 1);
+    // Need to free somewhere
+    struct iovec* iovecs = (struct iovec*)calloc(1, sizeof(struct iovec));
+    iovecs[0].iov_base = task.resourceBytes;
+    iovecs[0].iov_len = task.params.width;
+
+    struct rutabaga_iovecs vecs = {0};
+    vecs.iovecs = iovecs;
+    vecs.num_iovecs = 1;
+
+    ret = rutabaga_resource_attach_backing(mRutabaga, task.resourceId, &vecs);
     if (ret) {
         ALOGE("Failed to attach iov to resource:%d", task.resourceId);
     }
 
     ALOGV("Performing task to create resource resource:%d - done", task.resourceId);
 
-    stream_renderer_ctx_attach_resource(task.contextId, task.resourceId);
+    rutabaga_context_attach_resource(mRutabaga, task.contextId, task.resourceId);
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskDestroyContext task) {
     ALOGV("Performing task to destroy context-id:%" PRIu32, task.contextId);
 
-    stream_renderer_context_destroy(task.contextId);
+    rutabaga_context_destroy(mRutabaga, task.contextId);
 
     ALOGV("Performing task to destroy context-id:%" PRIu32 " - done", task.contextId);
 }
@@ -814,15 +821,14 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskDestroyContex
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskMap task) {
     ALOGV("Performing task to map resource resource:%d", task.resourceId);
 
-    void* mapped = nullptr;
-
-    int ret = stream_renderer_resource_map(task.resourceId, &mapped, nullptr);
+    struct rutabaga_mapping mapping;
+    int ret = rutabaga_resource_map(mRutabaga, task.resourceId, &mapping);
     if (ret) {
         ALOGE("Failed to map resource:%d", task.resourceId);
         return;
     }
 
-    task.resourceMappedPromise.set_value(reinterpret_cast<uint8_t*>(mapped));
+    task.resourceMappedPromise.set_value(reinterpret_cast<uint8_t*>(mapping.ptr));
     ALOGV("Performing task to map resource resource:%d - done", task.resourceId);
 }
 
@@ -834,15 +840,15 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskExecBuffer ta
         return;
     }
 
-    stream_renderer_command cmd = {
+    struct rutabaga_command cmd = {
         .ctx_id = task.contextId,
         .cmd_size = static_cast<uint32_t>(task.commandBuffer.size()),
         .cmd = reinterpret_cast<uint8_t*>(task.commandBuffer.data()),
         .num_in_fences = 0,
-        .fences = nullptr,
+        .fence_ids = nullptr,
     };
 
-    int ret = stream_renderer_submit_cmd(&cmd);
+    int ret = rutabaga_submit_command(mRutabaga, &cmd);
     if (ret) {
         ALOGE("Failed to execbuffer.");
     }
@@ -851,59 +857,49 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskExecBuffer ta
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskTransferFromHost task) {
-    struct stream_renderer_box transferBox = {
-        .x = task.transferOffset,
-        .y = 0,
-        .z = 0,
-        .w = task.transferSize,
-        .h = 1,
-        .d = 1,
-    };
+    struct rutabaga_transfer transfer = {0};
+    transfer.x = task.transferOffset;
+    transfer.w = task.transferSize;
+    transfer.h = 1;
+    transfer.d = 1;
 
-    int ret = stream_renderer_transfer_read_iov(task.resourceId, task.contextId,
-                                                /*level=*/0,
-                                                /*stride=*/0,
-                                                /*layer_stride=*/0, &transferBox,
-                                                /*offset=*/0,
-                                                /*iov=*/nullptr,
-                                                /*iovec_cnt=*/0);
+    int ret = rutabaga_resource_transfer_read(mRutabaga, task.contextId, task.resourceId, &transfer,
+                                              nullptr);
     if (ret) {
         ALOGE("Failed to transferFromHost() for resource:%" PRIu32, task.resourceId);
     }
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskTransferToHost task) {
-    struct stream_renderer_box transferBox = {
-        .x = task.transferOffset,
-        .y = 0,
-        .z = 0,
-        .w = task.transferSize,
-        .h = 1,
-        .d = 1,
-    };
+    struct rutabaga_transfer transfer = {0};
+    transfer.x = task.transferOffset;
+    transfer.w = task.transferSize;
+    transfer.h = 1;
+    transfer.d = 1;
 
-    int ret = stream_renderer_transfer_write_iov(task.resourceId, task.contextId,
-                                                 /*level=*/0,
-                                                 /*stride=*/0,
-                                                 /*layer_stride=*/0, &transferBox,
-                                                 /*offset=*/0,
-                                                 /*iov=*/nullptr,
-                                                 /*iovec_cnt=*/0);
+    int ret =
+        rutabaga_resource_transfer_write(mRutabaga, task.contextId, task.resourceId, &transfer);
     if (ret) {
         ALOGE("Failed to transferToHost() for resource:%" PRIu32, task.resourceId);
     }
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskUnrefResource task) {
-    stream_renderer_resource_unref(task.resourceId);
+    rutabaga_resource_unref(mRutabaga, task.resourceId);
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskSnapshotSave task) {
-    stream_renderer_snapshot(task.directory.c_str());
+    int ret = rutabaga_snapshot(mRutabaga, task.directory.c_str());
+    if (ret) {
+        ALOGE("snapshotting failed");
+    }
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskSnapshotRestore task) {
-    stream_renderer_restore(task.directory.c_str());
+    int ret = rutabaga_restore(mRutabaga, task.directory.c_str());
+    if (ret) {
+        ALOGE("snapshot restore failed");
+    }
 }
 
 void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskWithWaitable task) {
@@ -941,13 +937,13 @@ void EmulatedVirtioGpu::EmulatedVirtioGpuImpl::DoTask(VirtioGpuTaskWithWaitable 
         task.task);
 
     if (task.fence) {
-        const stream_renderer_fence fenceInfo = {
-            .flags = STREAM_RENDERER_FLAG_FENCE_RING_IDX,
+        const struct rutabaga_fence fenceInfo = {
+            .flags = RUTABAGA_FLAG_INFO_RING_IDX,
             .fence_id = *task.fence,
             .ctx_id = task.contextId,
             .ring_idx = 0,
         };
-        int ret = stream_renderer_create_fence(&fenceInfo);
+        int ret = rutabaga_create_fence(mRutabaga, &fenceInfo);
         if (ret) {
             ALOGE("Failed to create fence.");
         }
