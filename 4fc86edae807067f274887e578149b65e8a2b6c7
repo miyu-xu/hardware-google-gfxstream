@@ -63,6 +63,30 @@
       },
       "revId": "4fc86edae807067f274887e578149b65e8a2b6c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e62a8506_ea310c82",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 1992,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-02-14T19:10:02Z",
+      "side": 1,
+      "message": "No, it\u0027s not causing any issues. IIUC, it\u0027s a work around for driver that doesn\u0027t support `VkMemoryDedicatedRequirements`, so fair enough. You may probably also want to try always enabling dedicated allocation then, as that\u0027s cf\u0027s WA for a similar issue: some Linux Vulkan driver doesn\u0027t report correct `VkMemoryDedicatedRequirements` for exporting Vulkan memory.\n\nJust wondering if it\u0027s actually necessary. B* is importing D3D resources to Vulkan ColorBuffer for presentation optimization, so just want to understand how that should work in the upstream.",
+      "parentUuid": "36d532ba_2f698b9f",
+      "range": {
+        "startLine": 1992,
+        "startChar": 49,
+        "endLine": 1992,
+        "endChar": 95
+      },
+      "revId": "4fc86edae807067f274887e578149b65e8a2b6c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
