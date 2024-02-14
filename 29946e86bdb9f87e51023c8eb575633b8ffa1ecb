@@ -1,5 +1,52 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "56a3f1bb_ef4531b3",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-02-14T17:18:08Z",
+      "side": 1,
+      "message": "Same question about using const reference.",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 48
+      },
+      "revId": "29946e86bdb9f87e51023c8eb575633b8ffa1ecb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b159edb_eb189624",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-02-14T17:18:08Z",
+      "side": 1,
+      "message": "Do we want to take these arguments by const reference, to avoid making unnecessary string copies?  i.e.\n\n```\n   void SnapshotSave(const std::string\u0026 directory);\n   void SnapshotRestore(const std::string\u0026 directory);\n```",
+      "range": {
+        "startLine": 66,
+        "startChar": 0,
+        "endLine": 67,
+        "endChar": 47
+      },
+      "revId": "29946e86bdb9f87e51023c8eb575633b8ffa1ecb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
