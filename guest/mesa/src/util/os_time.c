@@ -39,7 +39,7 @@
 
 #include "util/u_atomic.h"
 
-#if DETECT_OS_UNIX
+#if DETECT_OS_UNIX || DETECT_OS_FUCHSIA
 #  include <unistd.h> /* usleep */
 #  include <time.h> /* timeval */
 #  include <sys/time.h> /* timeval */
@@ -65,7 +65,7 @@ os_time_get_nano(void)
 void
 os_time_sleep(int64_t usecs)
 {
-#if DETECT_OS_LINUX
+#if DETECT_OS_LINUX || DETECT_OS_FUCHSIA
    struct timespec time;
    time.tv_sec = usecs / 1000000;
    time.tv_nsec = (usecs % 1000000) * 1000;

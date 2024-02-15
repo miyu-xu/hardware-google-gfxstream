@@ -15,6 +15,10 @@
 #ifndef DETECT_OS_H
 #define DETECT_OS_H
 
+#if defined(__Fuchsia__)
+#define DETECT_OS_FUCHSIA 1
+#endif
+
 #if defined(__linux__)
 #define DETECT_OS_LINUX 1
 #define DETECT_OS_UNIX 1
@@ -24,7 +28,7 @@
  * Android defines __linux__, so DETECT_OS_LINUX and DETECT_OS_UNIX will
  * also be defined.
  */
-#if defined(__ANDROID__)
+#if defined(ANDROID)
 #define DETECT_OS_ANDROID 1
 #endif
 
@@ -102,6 +106,9 @@
 #endif
 #ifndef DETECT_OS_FREEBSD
 #define DETECT_OS_FREEBSD 0
+#endif
+#ifndef DETECT_OS_FUCHSIA
+#define DETECT_OS_FUCHSIA 0
 #endif
 #ifndef DETECT_OS_HAIKU
 #define DETECT_OS_HAIKU 0
