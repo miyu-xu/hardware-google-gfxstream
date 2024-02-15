@@ -3854,7 +3854,8 @@ class VkDecoderGlobalState::Impl {
         std::optional<SharedMemory> sharedMemory = std::nullopt;
 
         // TODO(b/261222354): Make sure the feature exists when initializing sVkEmulation.
-        if (hostVisible && feature_is_enabled(kFeature_SystemBlob)) {
+        if (hostVisible && !(memoryPropertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+          if (feature_is_enabled(kFeature_SystemBlob)) {
             // Ensure size is page-aligned.
             VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, kPageSizeforBlob);
             if (alignedSize != localAllocInfo.allocationSize) {
@@ -3884,6 +3885,30 @@ class VkDecoderGlobalState::Impl {
                               .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT,
                               .pHostPointer = mappedPtr};
             localAllocInfo.pNext = &importHostInfo;
+          } else {
+            WARN("XXX Allocating local memory instead of mapping it.");
+            // Ensure size is page-aligned.
+            VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, kPageSizeforBlob);
+            if (alignedSize != localAllocInfo.allocationSize) {
+                ERR("Warning: Aligning allocation size from %llu to %llu",
+                    static_cast<unsigned long long>(localAllocInfo.allocationSize),
+                    static_cast<unsigned long long>(alignedSize));
+            }
+            localAllocInfo.allocationSize = alignedSize;
+
+            mappedPtr = malloc(localAllocInfo.allocationSize);
+            int mappedPtrAlignment = reinterpret_cast<uintptr_t>(mappedPtr) % kPageSizeforBlob;
+            if (mappedPtrAlignment != 0) {
+                ERR("Warning: Mapped shared memory pointer is not aligned to page size, alignment "
+                    "is: %d",
+                    mappedPtrAlignment);
+            }
+            importHostInfo = {.sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT,
+                              .pNext = NULL,
+                              .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT,
+                              .pHostPointer = mappedPtr};
+            localAllocInfo.pNext = &importHostInfo;
+          }
         }
 
         VkResult result = vk->vkAllocateMemory(device, &localAllocInfo, pAllocator, pMemory);
