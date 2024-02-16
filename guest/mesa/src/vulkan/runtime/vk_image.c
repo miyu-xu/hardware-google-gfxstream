@@ -23,6 +23,10 @@
 
 #include "vk_image.h"
 
+#ifndef _WIN32
+#include <drm-uapi/drm_fourcc.h>
+#endif
+
 #include "vk_alloc.h"
 #include "vk_common_entrypoints.h"
 #include "vk_device.h"
