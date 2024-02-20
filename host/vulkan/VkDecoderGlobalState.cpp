@@ -1223,6 +1223,11 @@ class VkDecoderGlobalState::Impl {
                     pMemoryProperties->memoryTypes[i].propertyFlags &
                     ~(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             }
+
+            // for AMD, zap the type 0 memory
+            if (feature_is_enabled(kFeature_VulkanAllocateDeviceMemoryOnly) && heapIndex == 0) {
+                pMemoryProperties->memoryTypes[i].propertyFlags = 0;
+            }
         }
     }
 
@@ -1280,6 +1285,10 @@ class VkDecoderGlobalState::Impl {
                 pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags =
                     pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags &
                     ~(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            }
+            // for AMD, zap the type 0 memory
+            if (feature_is_enabled(kFeature_VulkanAllocateDeviceMemoryOnly) && heapIndex == 0) {
+                pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags = 0;
             }
         }
     }
