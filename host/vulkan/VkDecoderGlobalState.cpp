@@ -1223,6 +1223,11 @@ class VkDecoderGlobalState::Impl {
                     pMemoryProperties->memoryTypes[i].propertyFlags &
                     ~(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             }
+
+            // for AMD, zap the type 0 memory
+            if (heapIndex == 0) {
+                pMemoryProperties->memoryTypes[i].propertyFlags = 0;
+            }
         }
     }
 
@@ -1280,6 +1285,10 @@ class VkDecoderGlobalState::Impl {
                 pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags =
                     pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags &
                     ~(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            }
+            // for AMD, zap the type 0 memory
+            if (heapIndex == 0) {
+                pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags = 0;
             }
         }
     }
@@ -3886,6 +3895,7 @@ class VkDecoderGlobalState::Impl {
             localAllocInfo.pNext = &importHostInfo;
         }
 
+        fprintf(stderr, "%s %d memory type index is 0x%x\n", __func__, __LINE__, localAllocInfo.memoryTypeIndex);
         VkResult result = vk->vkAllocateMemory(device, &localAllocInfo, pAllocator, pMemory);
 
         if (result != VK_SUCCESS) {
