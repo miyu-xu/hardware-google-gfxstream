@@ -131,6 +131,7 @@ typedef void (*stream_renderer_debug_callback)(void* user_data,
 #define STREAM_RENDERER_PARAM_WIN0_WIDTH 4
 #define STREAM_RENDERER_PARAM_WIN0_HEIGHT 5
 #define STREAM_RENDERER_PARAM_DEBUG_CALLBACK 6
+#define STREAM_RENDERER_PARAM_RENDERER_FEATURES 7
 
 // An entry in the stream renderer parameters list.
 // The key should be one of STREAM_RENDERER_PARAM_*
