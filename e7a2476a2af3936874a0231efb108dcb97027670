@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "64ae9ec6_0ba3fe16",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-22T23:47:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e17244b_46160fa5",
+      "range": {
+        "startLine": 298,
+        "startChar": 8,
+        "endLine": 298,
+        "endChar": 25
+      },
+      "revId": "e7a2476a2af3936874a0231efb108dcb97027670",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3f13ee7f_67835031",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4910ae7d_4ed23740",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-22T23:47:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f13ee7f_67835031",
+      "range": {
+        "startLine": 327,
+        "startChar": 8,
+        "endLine": 327,
+        "endChar": 42
+      },
+      "revId": "e7a2476a2af3936874a0231efb108dcb97027670",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d7d997bd_17ea8c2b",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-02-21T19:35:10Z",
       "side": 1,
       "message": "```suggestion\n    struct iovec iov \u003d {\n        .iov_base \u003d task.resourceBytes,\n        .iov_len \u003d task.params.width,\n    };\n\n    struct rutabaga_iovecs vecs \u003d {0};\n    vecs.iovecs \u003d \u0026iov;\n```",
+      "range": {
+        "startLine": 799,
+        "startChar": 4,
+        "endLine": 804,
+        "endChar": 25
+      },
+      "revId": "e7a2476a2af3936874a0231efb108dcb97027670",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0561b194_a2eb31e3",
+        "filename": "guest/platform/rutabaga/RutabagaLayer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 804,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-22T23:47:58Z",
+      "side": 1,
+      "message": "It has to live for the lifetime of resource.  Just stuffed it in `EmulatedResource`",
+      "parentUuid": "d7d997bd_17ea8c2b",
       "range": {
         "startLine": 799,
         "startChar": 4,
