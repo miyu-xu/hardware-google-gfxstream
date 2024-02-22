@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5264c58c_b9524f8e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-22T01:11:18Z",
+      "side": 1,
+      "message": "I think it\u0027s better as not a flag, but on all AMDGPU + Linux builds?  gfxstream can generally determine it\u0027s AMDGPU.\n\nThat way, wouldn\u0027t this bug (https://b.corp.google.com/issues/254721007) also be worked around?  I.E, Vulkan would work in more places?",
+      "revId": "dcb2b4af0c7b3ade19cfd3a57368c6a8faf82bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
