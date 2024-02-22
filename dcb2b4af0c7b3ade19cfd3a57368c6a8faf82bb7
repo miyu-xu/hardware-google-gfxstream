@@ -34,6 +34,24 @@
       "parentUuid": "5264c58c_b9524f8e",
       "revId": "dcb2b4af0c7b3ade19cfd3a57368c6a8faf82bb7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e372241_9c835636",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-22T01:17:34Z",
+      "side": 1,
+      "message": "we can probably call uname internally from gfxstream for that?\n\nhttps://man7.org/linux/man-pages/man2/uname.2.html",
+      "parentUuid": "9c284c33_ff01611c",
+      "revId": "dcb2b4af0c7b3ade19cfd3a57368c6a8faf82bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
