@@ -149,6 +149,13 @@ public:
                          SaveableTexture::creator_t creator);
     void postLoadAllImages(android::base::Stream* stream);
 
+    bool nativeTextureDecompressionEnabled() const {
+        return m_nativeTextureDecompressionEnabled;
+    }
+    void setNativeTextureDecompressionEnabled(bool enabled) {
+        m_nativeTextureDecompressionEnabled = enabled;
+    }
+
 private:
     static void addConfig(void* opaque, const EglOS::ConfigInfo* configInfo);
 
@@ -171,6 +178,7 @@ private:
     unsigned int            m_nextEglImageId = 0;
     mutable std::shared_ptr<EglOS::Context> m_globalSharedContext;
     ConfigSet               m_uniqueConfigs;
+    bool                    m_nativeTextureDecompressionEnabled = false;
 };
 
 #endif
