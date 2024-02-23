@@ -14,14 +14,15 @@
 
 #pragma once
 
-#include <stddef.h>
-#include <vector>
-
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <GLES/gl.h>
+#include <stddef.h>
+
+#include <vector>
 
 #include "OpenGLESDispatch/GLESv2Dispatch.h"
+#include "gfxstream/host/Features.h"
 
 namespace gfxstream {
 namespace gl {
@@ -68,13 +69,13 @@ class EmulatedEglConfig {
   private:
     friend class EmulatedEglConfigList;
 
-    explicit EmulatedEglConfig(EGLint guestConfig,
-                               EGLConfig hostConfig,
-                               EGLDisplay hostDisplay);
+    explicit EmulatedEglConfig(EGLint guestConfig, EGLConfig hostConfig, EGLDisplay hostDisplay,
+                               bool glesDynamicVersion);
 
     EGLint mGuestConfig;
     EGLConfig mHostConfig;
     std::vector<GLint> mAttribValues;
+    bool mGlesDynamicVersion = false;
 };
 
 // A class to model the list of EmulatedEglConfig for a given EGLDisplay, this is
@@ -104,27 +105,27 @@ class EmulatedEglConfigList {
     //
     // After construction, call empty() to check if there are items.
     // An empty list means there was an error during construction.
-    explicit EmulatedEglConfigList(EGLDisplay display,
-                                   GLESDispatchMaxVersion dispatchMaxVersion);
+   explicit EmulatedEglConfigList(EGLDisplay display, GLESDispatchMaxVersion dispatchMaxVersion,
+                                  const gfxstream::host::FeatureSet& features);
 
-    // Return true iff the list is empty. true means there was an error
-    // during construction.
-    bool empty() const { return mConfigs.empty(); }
+   // Return true iff the list is empty. true means there was an error
+   // during construction.
+   bool empty() const { return mConfigs.empty(); }
 
-    // Return the number of EmulatedEglConfig instances in the list.
-    // Each instance is identified by a number from 0 to N-1,
-    // where N is the result of this function.
-    size_t size() const { return mConfigs.size(); }
+   // Return the number of EmulatedEglConfig instances in the list.
+   // Each instance is identified by a number from 0 to N-1,
+   // where N is the result of this function.
+   size_t size() const { return mConfigs.size(); }
 
-    // Retrieve the EmulatedEglConfig instance associated with |guestId|,
-    // which must be an integer between 0 and |size() - 1|. Returns
-    // NULL in case of failure.
-    const EmulatedEglConfig* get(int guestId) const {
-        if (guestId >= 0 && guestId < mConfigs.size()) {
-            return &mConfigs[guestId];
-        } else {
-            return NULL;
-        }
+   // Retrieve the EmulatedEglConfig instance associated with |guestId|,
+   // which must be an integer between 0 and |size() - 1|. Returns
+   // NULL in case of failure.
+   const EmulatedEglConfig* get(int guestId) const {
+       if (guestId >= 0 && guestId < mConfigs.size()) {
+           return &mConfigs[guestId];
+       } else {
+           return NULL;
+       }
     }
 
     std::vector<EmulatedEglConfig>::const_iterator begin() const { return mConfigs.begin(); }
@@ -163,6 +164,7 @@ class EmulatedEglConfigList {
     std::vector<EmulatedEglConfig> mConfigs;
     EGLDisplay mDisplay = 0;
     GLESDispatchMaxVersion mGlesDispatchMaxVersion;
+    bool mGlesDynamicVersion = false;
 };
 
 }  // namespace gl

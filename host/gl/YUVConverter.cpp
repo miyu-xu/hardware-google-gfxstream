@@ -42,13 +42,13 @@ namespace gl {
 #define YUV_DEBUG_LOG(fmt, ...)
 #endif
 
-bool isInterleaved(FrameworkFormat format) {
+bool isInterleaved(FrameworkFormat format, bool yuv420888ToNv21) {
     switch (format) {
     case FRAMEWORK_FORMAT_NV12:
     case FRAMEWORK_FORMAT_P010:
         return true;
     case FRAMEWORK_FORMAT_YUV_420_888:
-        return feature_is_enabled(kFeature_YUV420888toNV21);
+        return yuv420888ToNv21;
     case FRAMEWORK_FORMAT_YV12:
         return false;
     default:
@@ -62,8 +62,8 @@ enum class YUVInterleaveDirection {
     UV = 1,
 };
 
-YUVInterleaveDirection getInterleaveDirection(FrameworkFormat format) {
-    if (!isInterleaved(format)) {
+YUVInterleaveDirection getInterleaveDirection(FrameworkFormat format, bool yuv420888ToNv21) {
+    if (!isInterleaved(format, yuv420888ToNv21)) {
         FATAL("Format:%d not interleaved", format);
     }
 
@@ -72,7 +72,7 @@ YUVInterleaveDirection getInterleaveDirection(FrameworkFormat format) {
     case FRAMEWORK_FORMAT_P010:
         return YUVInterleaveDirection::UV;
     case FRAMEWORK_FORMAT_YUV_420_888:
-        if (feature_is_enabled(kFeature_YUV420888toNV21)) {
+        if (yuv420888ToNv21) {
             return YUVInterleaveDirection::VU;
         }
         FATAL("Format:%d not interleaved", format);
@@ -84,7 +84,7 @@ YUVInterleaveDirection getInterleaveDirection(FrameworkFormat format) {
     }
 }
 
-GLint getGlTextureFormat(FrameworkFormat format, YUVPlane plane) {
+GLint getGlTextureFormat(FrameworkFormat format, bool yuv420888ToNv21, YUVPlane plane) {
     switch (format) {
     case FRAMEWORK_FORMAT_YV12:
         switch (plane) {
@@ -97,7 +97,7 @@ GLint getGlTextureFormat(FrameworkFormat format, YUVPlane plane) {
             return 0;
         }
     case FRAMEWORK_FORMAT_YUV_420_888:
-        if (feature_is_enabled(kFeature_YUV420888toNV21)) {
+        if (yuv420888ToNv21) {
             switch (plane) {
             case YUVPlane::Y:
                 return GL_R8;
@@ -147,7 +147,7 @@ GLint getGlTextureFormat(FrameworkFormat format, YUVPlane plane) {
     }
 }
 
-GLenum getGlPixelFormat(FrameworkFormat format, YUVPlane plane) {
+GLenum getGlPixelFormat(FrameworkFormat format, bool yuv420888ToNv21, YUVPlane plane) {
     switch (format) {
     case FRAMEWORK_FORMAT_YV12:
         switch (plane) {
@@ -160,7 +160,7 @@ GLenum getGlPixelFormat(FrameworkFormat format, YUVPlane plane) {
             return 0;
         }
     case FRAMEWORK_FORMAT_YUV_420_888:
-        if (feature_is_enabled(kFeature_YUV420888toNV21)) {
+        if (yuv420888ToNv21) {
             switch (plane) {
             case YUVPlane::Y:
                 return GL_RED;
@@ -210,7 +210,7 @@ GLenum getGlPixelFormat(FrameworkFormat format, YUVPlane plane) {
     }
 }
 
-GLsizei getGlPixelType(FrameworkFormat format, YUVPlane plane) {
+GLsizei getGlPixelType(FrameworkFormat format, bool yuv420888ToNv21, YUVPlane plane) {
     switch (format) {
     case FRAMEWORK_FORMAT_YV12:
         switch (plane) {
@@ -223,7 +223,7 @@ GLsizei getGlPixelType(FrameworkFormat format, YUVPlane plane) {
             return 0;
         }
     case FRAMEWORK_FORMAT_YUV_420_888:
-        if (feature_is_enabled(kFeature_YUV420888toNV21)) {
+        if (yuv420888ToNv21) {
             switch (plane) {
             case YUVPlane::Y:
             case YUVPlane::UV:
@@ -306,24 +306,12 @@ inline uint32_t alignToPower2(uint32_t val, uint32_t align) {
 // |yOffsetBytes|: offset into |yv12| of the start of the Y component
 // |uOffsetBytes|: offset into |yv12| of the start of the U component
 // |vOffsetBytes|: offset into |yv12| of the start of the V component
-static void getYUVOffsets(int width,
-                          int height,
-                          FrameworkFormat format,
-                          uint32_t* yWidth,
-                          uint32_t* yHeight,
-                          uint32_t* yOffsetBytes,
-                          uint32_t* yStridePixels,
-                          uint32_t* yStrideBytes,
-                          uint32_t* uWidth,
-                          uint32_t* uHeight,
-                          uint32_t* uOffsetBytes,
-                          uint32_t* uStridePixels,
-                          uint32_t* uStrideBytes,
-                          uint32_t* vWidth,
-                          uint32_t* vHeight,
-                          uint32_t* vOffsetBytes,
-                          uint32_t* vStridePixels,
-                          uint32_t* vStrideBytes) {
+static void getYUVOffsets(int width, int height, FrameworkFormat format, bool yuv420888ToNv21,
+                          uint32_t* yWidth, uint32_t* yHeight, uint32_t* yOffsetBytes,
+                          uint32_t* yStridePixels, uint32_t* yStrideBytes, uint32_t* uWidth,
+                          uint32_t* uHeight, uint32_t* uOffsetBytes, uint32_t* uStridePixels,
+                          uint32_t* uStrideBytes, uint32_t* vWidth, uint32_t* vHeight,
+                          uint32_t* vOffsetBytes, uint32_t* vStridePixels, uint32_t* vStrideBytes) {
     switch (format) {
         case FRAMEWORK_FORMAT_YV12: {
             *yWidth = width;
@@ -350,7 +338,7 @@ static void getYUVOffsets(int width,
             break;
         }
         case FRAMEWORK_FORMAT_YUV_420_888: {
-            if (feature_is_enabled(kFeature_YUV420888toNV21)) {
+            if (yuv420888ToNv21) {
                 *yWidth = width;
                 *yHeight = height;
                 *yOffsetBytes = 0;
@@ -441,11 +429,8 @@ static void getYUVOffsets(int width,
 // Allocates an OpenGL texture that is large enough for a single plane of
 // a YUV buffer of the given format and returns the texture name in the
 // `outTextureName` argument.
-void YUVConverter::createYUVGLTex(GLenum textureUnit,
-                                  GLsizei width,
-                                  GLsizei height,
-                                  FrameworkFormat format,
-                                  YUVPlane plane,
+void YUVConverter::createYUVGLTex(GLenum textureUnit, GLsizei width, GLsizei height,
+                                  FrameworkFormat format, bool yuv420888ToNv21, YUVPlane plane,
                                   GLuint* outTextureName) {
     YUV_DEBUG_LOG("w:%d h:%d format:%d plane:%d", width, height, format, plane);
 
@@ -457,16 +442,16 @@ void YUVConverter::createYUVGLTex(GLenum textureUnit,
     GLint unprevAlignment = 0;
     s_gles2.glGetIntegerv(GL_UNPACK_ALIGNMENT, &unprevAlignment);
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    const GLint textureFormat = getGlTextureFormat(format, plane);
-    const GLenum pixelFormat = getGlPixelFormat(format, plane);
-    const GLenum pixelType = getGlPixelType(format, plane);
+    const GLint textureFormat = getGlTextureFormat(format, yuv420888ToNv21, plane);
+    const GLenum pixelFormat = getGlPixelFormat(format, yuv420888ToNv21, plane);
+    const GLenum pixelType = getGlPixelType(format, yuv420888ToNv21, plane);
     s_gles2.glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, NULL);
     s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, unprevAlignment);
     s_gles2.glActiveTexture(GL_TEXTURE0);
 }
 
-static void readYUVTex(GLuint tex, FrameworkFormat format, YUVPlane plane, void* pixels,
-                       uint32_t pixelsStride) {
+static void readYUVTex(GLuint tex, FrameworkFormat format, bool yuv420888ToNv21, YUVPlane plane,
+                       void* pixels, uint32_t pixelsStride) {
     YUV_DEBUG_LOG("format%d plane:%d pixels:%p", format, plane, pixels);
 
     GLuint prevTexture = 0;
@@ -479,8 +464,8 @@ static void readYUVTex(GLuint tex, FrameworkFormat format, YUVPlane plane, void*
     s_gles2.glGetIntegerv(GL_PACK_ROW_LENGTH, &prevStride);
     s_gles2.glPixelStorei(GL_PACK_ROW_LENGTH, pixelsStride);
 
-    const GLenum pixelFormat = getGlPixelFormat(format, plane);
-    const GLenum pixelType = getGlPixelType(format, plane);
+    const GLenum pixelFormat = getGlPixelFormat(format, yuv420888ToNv21, plane);
+    const GLenum pixelType = getGlPixelType(format, yuv420888ToNv21, plane);
     if (s_gles2.glGetTexImage) {
         s_gles2.glGetTexImage(GL_TEXTURE_2D, 0, pixelFormat, pixelType, pixels);
     } else {
@@ -496,19 +481,13 @@ static void readYUVTex(GLuint tex, FrameworkFormat format, YUVPlane plane, void*
 // (x, y, width, height), with the raw YUV data in |pixels|.  We
 // cannot view the result properly until after conversion; this is
 // to be used only as input to the conversion shader.
-static void subUpdateYUVGLTex(GLenum texture_unit,
-                              GLuint tex,
-                              int x,
-                              int y,
-                              int width,
-                              int height,
-                              FrameworkFormat format,
-                              YUVPlane plane,
+static void subUpdateYUVGLTex(GLenum texture_unit, GLuint tex, int x, int y, int width, int height,
+                              FrameworkFormat format, bool yuv420888ToNv21, YUVPlane plane,
                               const void* pixels) {
     YUV_DEBUG_LOG("x:%d y:%d w:%d h:%d format:%d plane:%d", x, y, width, height, format, plane);
 
-    const GLenum pixelFormat = getGlPixelFormat(format, plane);
-    const GLenum pixelType = getGlPixelType(format, plane);
+    const GLenum pixelFormat = getGlPixelFormat(format, yuv420888ToNv21, plane);
+    const GLenum pixelType = getGlPixelType(format, yuv420888ToNv21, plane);
 
     s_gles2.glActiveTexture(texture_unit);
     s_gles2.glBindTexture(GL_TEXTURE_2D, tex);
@@ -707,8 +686,8 @@ void main(void) {
     case FRAMEWORK_FORMAT_YUV_420_888:
     case FRAMEWORK_FORMAT_YV12:
         fragShaderSource += kSampleY;
-        if (isInterleaved(mFormat)) {
-            if (getInterleaveDirection(mFormat) == YUVInterleaveDirection::UV) {
+        if (isInterleaved(mFormat, mYuv420888ToNv21)) {
+            if (getInterleaveDirection(mFormat, mYuv420888ToNv21) == YUVInterleaveDirection::UV) {
                 fragShaderSource += kSampleInterleavedUV;
             } else {
                 fragShaderSource += kSampleInterleavedVU;
@@ -726,11 +705,11 @@ void main(void) {
     }
 
     if (mColorRange == 1 && mColorPrimaries == 4) {
-    fragShaderSource += kFragShaderMain_1_4_3;
+        fragShaderSource += kFragShaderMain_1_4_3;
     } else if (mColorRange == 2 && mColorPrimaries == 1) {
-    fragShaderSource += kFragShaderMain_2_1_3;
+        fragShaderSource += kFragShaderMain_2_1_3;
     } else {
-    fragShaderSource += kFragShaderMain_2_4_3;
+        fragShaderSource += kFragShaderMain_2_4_3;
     }
 
     if (mFormat == FRAMEWORK_FORMAT_P010) {
@@ -857,11 +836,12 @@ static void doYUVConversionDraw(GLuint program,
 
 // initialize(): allocate GPU memory for YUV components,
 // and create shaders and vertex data.
-YUVConverter::YUVConverter(int width, int height, FrameworkFormat format)
+YUVConverter::YUVConverter(int width, int height, FrameworkFormat format, bool yuv420888ToNv21)
     : mWidth(width),
       mHeight(height),
       mFormat(format),
-      mColorBufferFormat(format) {}
+      mColorBufferFormat(format),
+      mYuv420888ToNv21(yuv420888ToNv21) {}
 
 void YUVConverter::init(int width, int height, FrameworkFormat format) {
     YUV_DEBUG_LOG("w:%d h:%d format:%d", width, height, format);
@@ -869,26 +849,29 @@ void YUVConverter::init(int width, int height, FrameworkFormat format) {
     uint32_t yWidth, yHeight = 0, yOffsetBytes, yStridePixels = 0, yStrideBytes;
     uint32_t uWidth, uHeight = 0, uOffsetBytes, uStridePixels = 0, uStrideBytes;
     uint32_t vWidth, vHeight = 0, vOffsetBytes, vStridePixels = 0, vStrideBytes;
-    getYUVOffsets(width, height, mFormat,
-                  &yWidth, &yHeight, &yOffsetBytes, &yStridePixels, &yStrideBytes,
-                  &uWidth, &uHeight, &uOffsetBytes, &uStridePixels, &uStrideBytes,
-                  &vWidth, &vHeight, &vOffsetBytes, &vStridePixels, &vStrideBytes);
+    getYUVOffsets(width, height, mFormat, mYuv420888ToNv21, &yWidth, &yHeight, &yOffsetBytes,
+                  &yStridePixels, &yStrideBytes, &uWidth, &uHeight, &uOffsetBytes, &uStridePixels,
+                  &uStrideBytes, &vWidth, &vHeight, &vOffsetBytes, &vStridePixels, &vStrideBytes);
     mWidth = width;
     mHeight = height;
     if (!mTextureY) {
-        createYUVGLTex(GL_TEXTURE0, yStridePixels, yHeight, mFormat, YUVPlane::Y, &mTextureY);
+        createYUVGLTex(GL_TEXTURE0, yStridePixels, yHeight, mFormat, mYuv420888ToNv21, YUVPlane::Y,
+                       &mTextureY);
     }
-    if (isInterleaved(mFormat)) {
+    if (isInterleaved(mFormat, mYuv420888ToNv21)) {
         if (!mTextureU) {
-            createYUVGLTex(GL_TEXTURE1, uStridePixels, uHeight, mFormat, YUVPlane::UV, &mTextureU);
+            createYUVGLTex(GL_TEXTURE1, uStridePixels, uHeight, mFormat, mYuv420888ToNv21,
+                           YUVPlane::UV, &mTextureU);
             mTextureV = mTextureU;
         }
     } else {
         if (!mTextureU) {
-            createYUVGLTex(GL_TEXTURE1, uStridePixels, uHeight, mFormat, YUVPlane::U, &mTextureU);
+            createYUVGLTex(GL_TEXTURE1, uStridePixels, uHeight, mFormat, mYuv420888ToNv21,
+                           YUVPlane::U, &mTextureU);
         }
         if (!mTextureV) {
-            createYUVGLTex(GL_TEXTURE2, vStridePixels, vHeight, mFormat, YUVPlane::V, &mTextureV);
+            createYUVGLTex(GL_TEXTURE2, vStridePixels, vHeight, mFormat, mYuv420888ToNv21,
+                           YUVPlane::V, &mTextureV);
         }
     }
 
@@ -936,17 +919,18 @@ void YUVConverter::readPixels(uint8_t* pixels, uint32_t pixels_size) {
     uint32_t yWidth, yHeight, yOffsetBytes, yStridePixels, yStrideBytes;
     uint32_t uWidth, uHeight, uOffsetBytes, uStridePixels, uStrideBytes;
     uint32_t vWidth, vHeight, vOffsetBytes, vStridePixels, vStrideBytes;
-    getYUVOffsets(mWidth, mHeight, mFormat,
-                  &yWidth, &yHeight, &yOffsetBytes, &yStridePixels, &yStrideBytes,
-                  &uWidth, &uHeight, &uOffsetBytes, &uStridePixels, &uStrideBytes,
-                  &vWidth, &vHeight, &vOffsetBytes, &vStridePixels, &vStrideBytes);
+    getYUVOffsets(mWidth, mHeight, mFormat, mYuv420888ToNv21, &yWidth, &yHeight, &yOffsetBytes,
+                  &yStridePixels, &yStrideBytes, &uWidth, &uHeight, &uOffsetBytes, &uStridePixels,
+                  &uStrideBytes, &vWidth, &vHeight, &vOffsetBytes, &vStridePixels, &vStrideBytes);
 
-    if (isInterleaved(mFormat)) {
-        readYUVTex(mTextureV, mFormat, YUVPlane::UV, pixels + std::min(uOffsetBytes, vOffsetBytes),
-                   uStridePixels);
+    if (isInterleaved(mFormat, mYuv420888ToNv21)) {
+        readYUVTex(mTextureV, mFormat, mYuv420888ToNv21, YUVPlane::UV,
+                   pixels + std::min(uOffsetBytes, vOffsetBytes), uStridePixels);
     } else {
-        readYUVTex(mTextureU, mFormat, YUVPlane::U, pixels + uOffsetBytes, uStridePixels);
-        readYUVTex(mTextureV, mFormat, YUVPlane::V, pixels + vOffsetBytes, vStridePixels);
+        readYUVTex(mTextureU, mFormat, mYuv420888ToNv21, YUVPlane::U, pixels + uOffsetBytes,
+                   uStridePixels);
+        readYUVTex(mTextureV, mFormat, mYuv420888ToNv21, YUVPlane::V, pixels + vOffsetBytes,
+                   vStridePixels);
     }
 
     if (mFormat == FRAMEWORK_FORMAT_NV12 && mColorBufferFormat == FRAMEWORK_FORMAT_YUV_420_888) {
@@ -954,11 +938,12 @@ void YUVConverter::readPixels(uint8_t* pixels, uint32_t pixels_size) {
     }
 
     // Read the Y plane last because so that we can use it as a scratch space.
-    readYUVTex(mTextureY, mFormat, YUVPlane::Y, pixels + yOffsetBytes, yStridePixels);
+    readYUVTex(mTextureY, mFormat, mYuv420888ToNv21, YUVPlane::Y, pixels + yOffsetBytes,
+               yStridePixels);
 }
 
 void YUVConverter::swapTextures(FrameworkFormat format, GLuint* textures, void* metadata) {
-    if (isInterleaved(format)) {
+    if (isInterleaved(format, mYuv420888ToNv21)) {
         std::swap(textures[0], mTextureY);
         std::swap(textures[1], mTextureU);
         mTextureV = mTextureU;
@@ -1019,10 +1004,9 @@ void YUVConverter::drawConvertFromFormat(FrameworkFormat format, int x, int y, i
     uint32_t yWidth = 0, yHeight = 0, yOffsetBytes, yStridePixels = 0, yStrideBytes;
     uint32_t uWidth = 0, uHeight = 0, uOffsetBytes, uStridePixels = 0, uStrideBytes;
     uint32_t vWidth = 0, vHeight = 0, vOffsetBytes, vStridePixels = 0, vStrideBytes;
-    getYUVOffsets(width, height, mFormat,
-                  &yWidth, &yHeight, &yOffsetBytes, &yStridePixels, &yStrideBytes,
-                  &uWidth, &uHeight, &uOffsetBytes, &uStridePixels, &uStrideBytes,
-                  &vWidth, &vHeight, &vOffsetBytes, &vStridePixels, &vStrideBytes);
+    getYUVOffsets(width, height, mFormat, mYuv420888ToNv21, &yWidth, &yHeight, &yOffsetBytes,
+                  &yStridePixels, &yStrideBytes, &uWidth, &uHeight, &uOffsetBytes, &uStridePixels,
+                  &uStrideBytes, &vWidth, &vHeight, &vOffsetBytes, &vStridePixels, &vStrideBytes);
 
     YUV_DEBUG_LOG("Updating YUV textures for drawConvert() "
                   "x:%d y:%d width:%d height:%d "
@@ -1042,12 +1026,17 @@ void YUVConverter::drawConvertFromFormat(FrameworkFormat format, int x, int y, i
                   static_cast<float>(uStridePixels));
 
     if (pixels) {
-        subUpdateYUVGLTex(GL_TEXTURE0, mTextureY, x, y, yStridePixels, yHeight, mFormat, YUVPlane::Y, pixels + yOffsetBytes);
-        if (isInterleaved(mFormat)) {
-            subUpdateYUVGLTex(GL_TEXTURE1, mTextureU, x, y, uStridePixels, uHeight, mFormat, YUVPlane::UV, pixels + std::min(uOffsetBytes, vOffsetBytes));
+        subUpdateYUVGLTex(GL_TEXTURE0, mTextureY, x, y, yStridePixels, yHeight, mFormat,
+                          mYuv420888ToNv21, YUVPlane::Y, pixels + yOffsetBytes);
+        if (isInterleaved(mFormat, mYuv420888ToNv21)) {
+            subUpdateYUVGLTex(GL_TEXTURE1, mTextureU, x, y, uStridePixels, uHeight, mFormat,
+                              mYuv420888ToNv21, YUVPlane::UV,
+                              pixels + std::min(uOffsetBytes, vOffsetBytes));
         } else {
-            subUpdateYUVGLTex(GL_TEXTURE1, mTextureU, x, y, uStridePixels, uHeight, mFormat, YUVPlane::U, pixels + uOffsetBytes);
-            subUpdateYUVGLTex(GL_TEXTURE2, mTextureV, x, y, vStridePixels, vHeight, mFormat, YUVPlane::V, pixels + vOffsetBytes);
+            subUpdateYUVGLTex(GL_TEXTURE1, mTextureU, x, y, uStridePixels, uHeight, mFormat,
+                              mYuv420888ToNv21, YUVPlane::U, pixels + uOffsetBytes);
+            subUpdateYUVGLTex(GL_TEXTURE2, mTextureV, x, y, vStridePixels, vHeight, mFormat,
+                              mYuv420888ToNv21, YUVPlane::V, pixels + vOffsetBytes);
         }
     } else {
         // special case: draw from texture, only support NV12 for now
@@ -1102,7 +1091,7 @@ void YUVConverter::reset() {
     if (mQuadVertexBuffer) s_gles2.glDeleteBuffers(1, &mQuadVertexBuffer);
     if (mProgram) s_gles2.glDeleteProgram(mProgram);
     if (mTextureY) s_gles2.glDeleteTextures(1, &mTextureY);
-    if (isInterleaved(mFormat)) {
+    if (isInterleaved(mFormat, mYuv420888ToNv21)) {
         if (mTextureU) s_gles2.glDeleteTextures(1, &mTextureU);
     } else {
         if (mTextureU) s_gles2.glDeleteTextures(1, &mTextureU);

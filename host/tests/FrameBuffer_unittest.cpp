@@ -84,11 +84,8 @@ protected:
         if (mUseSubWindow) {
             ASSERT_NE(nullptr, mWindow->getFramebufferNativeWindow());
 
-            EXPECT_TRUE(
-                FrameBuffer::initialize(
-                    mWidth, mHeight,
-                    mUseSubWindow,
-                    !useHostGpu /* egl2egl */));
+            EXPECT_TRUE(FrameBuffer::initialize(mWidth, mHeight, {}, mUseSubWindow,
+                                                !useHostGpu /* egl2egl */));
             mFb = FrameBuffer::getFB();
             EXPECT_NE(nullptr, mFb);
 
@@ -100,11 +97,8 @@ protected:
                 mWindow->getDevicePixelRatio(), 0, false, false);
             mWindow->messageLoop();
         } else {
-            EXPECT_TRUE(
-                FrameBuffer::initialize(
-                    mWidth, mHeight,
-                    mUseSubWindow,
-                    !useHostGpu /* egl2egl */));
+            EXPECT_TRUE(FrameBuffer::initialize(mWidth, mHeight, {}, mUseSubWindow,
+                                                !useHostGpu /* egl2egl */));
             mFb = FrameBuffer::getFB();
             ASSERT_NE(nullptr, mFb);
         }

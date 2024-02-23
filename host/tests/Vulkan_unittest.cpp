@@ -14,11 +14,15 @@
 
 #include <gtest/gtest.h>
 
+#include <vulkan/vulkan.h>
+
+#include <sstream>
+#include <string>
+
 #include "FrameBuffer.h"
+#include "Standalone.h"
 #include "VkCommonOperations.h"
 #include "VulkanDispatch.h"
-#include "host-common/feature_control.h"
-
 #include "aemu/base/ArraySize.h"
 #include "aemu/base/GLObjectCounter.h"
 #include "aemu/base/files/PathUtils.h"
@@ -28,12 +32,6 @@
 #include "host-common/opengl/misc.h"
 #include "host-common/testing/MockGraphicsAgentFactory.h"
 #include "tests/VkTestUtils.h"
-
-#include "Standalone.h"
-
-#include <sstream>
-#include <string>
-#include <vulkan/vulkan.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -436,10 +434,11 @@ protected:
         // the rendering tests on Windows for now.
         SKIP_TEST_IF_WIN32();
 
-        feature_set_enabled_override(kFeature_GLESDynamicVersion, true);
-        feature_set_enabled_override(kFeature_PlayStoreImage, false);
-        feature_set_enabled_override(kFeature_Vulkan, true);
-        feature_set_enabled_override(kFeature_VulkanIgnoredHandles, true);
+        gfxstream::host::FeatureSet features;
+        features.GlesDynamicVersion.enabled = true;
+        features.PlayStoreImage.enabled = true;
+        features.Vulkan.enabled = true;
+        features.VulkanIgnoresHandles.enabled = true;
 
         VulkanTest::SetUp();
 
@@ -450,8 +449,8 @@ protected:
         ASSERT_NE(nullptr, gl::LazyLoadedGLESv2Dispatch::get());
 
         bool useHostGpu = false;
-        EXPECT_TRUE(FrameBuffer::initialize(mWidth, mHeight, false,
-                                            !useHostGpu /* egl2egl */));
+        EXPECT_TRUE(
+            FrameBuffer::initialize(mWidth, mHeight, features, false, !useHostGpu /* egl2egl */));
         mFb = FrameBuffer::getFB();
         ASSERT_NE(nullptr, mFb);
         mRenderThreadInfo = std::make_unique<RenderThreadInfo>();

@@ -28,8 +28,9 @@
 #include "aemu/base/AsyncResult.h"
 #include "aemu/base/HealthMonitor.h"
 #include "aemu/base/synchronization/Lock.h"
-#include "goldfish_vk_private_defs.h"
 #include "cereal/common/goldfish_vk_transform.h"
+#include "gfxstream/host/Features.h"
+#include "goldfish_vk_private_defs.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "utils/GfxApiLogger.h"
 #include "vk_util.h"
@@ -75,6 +76,8 @@ class VkDecoderGlobalState {
 
     // Snapshot save/load
     bool snapshotsEnabled() const;
+
+    const gfxstream::host::FeatureSet& getFeatures() const;
 
     // Whether to clean up VK instance.
     // bug 149997534

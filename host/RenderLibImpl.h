@@ -56,10 +56,8 @@ public:
 
     virtual bool getOpt(RenderOpt* opt) override;
 
-    virtual RendererPtr initRenderer(int width,
-                                     int height,
-                                     bool useSubWindow,
-                                     bool egl2egl) override;
+    virtual RendererPtr initRenderer(int width, int height, gfxstream::host::FeatureSet features,
+                                     bool useSubWindow, bool egl2egl) override;
 
     OnLastColorBufferRef getOnLastColorBufferRef() override;
 

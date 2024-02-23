@@ -252,10 +252,7 @@ SampleApplication::SampleApplication(int windowWidth, int windowHeight, int refr
     mWindow = createOrGetTestWindow(mXOffset, mYOffset, mWidth, mHeight);
     mUseSubWindow = mWindow != nullptr;
 
-    FrameBuffer::initialize(
-            mWidth, mHeight,
-            mUseSubWindow,
-            !useHostGpu /* egl2egl */);
+    FrameBuffer::initialize(mWidth, mHeight, {}, mUseSubWindow, !useHostGpu /* egl2egl */);
     mFb = FrameBuffer::getFB();
 
     if (mUseSubWindow) {

@@ -59,30 +59,28 @@ class YUVConverter {
 public:
     // call ctor when creating a gralloc buffer
     // with YUV format
-    YUVConverter(int width, int height, FrameworkFormat format);
-    // destroy when ColorBuffer is destroyed
-    ~YUVConverter();
-    // call when gralloc_unlock updates
-    // the host color buffer
-    // (rcUpdateColorBuffer)
-    void drawConvert(int x, int y, int width, int height, const char* pixels);
-    void drawConvertFromFormat(FrameworkFormat format, int x, int y, int width, int height,
-                               const char* pixels, void* metadata = nullptr);
+ YUVConverter(int width, int height, FrameworkFormat format, bool yuv420888ToNv21);
+ // destroy when ColorBuffer is destroyed
+ ~YUVConverter();
+ // call when gralloc_unlock updates
+ // the host color buffer
+ // (rcUpdateColorBuffer)
+ void drawConvert(int x, int y, int width, int height, const char* pixels);
+ void drawConvertFromFormat(FrameworkFormat format, int x, int y, int width, int height,
+                            const char* pixels, void* metadata = nullptr);
 
-    uint32_t getDataSize();
-    // read YUV data into pixels, exactly pixels_size bytes;
-    // if size mismatches, will read nothing.
-    void readPixels(uint8_t* pixels, uint32_t pixels_size);
+ uint32_t getDataSize();
+ // read YUV data into pixels, exactly pixels_size bytes;
+ // if size mismatches, will read nothing.
+ void readPixels(uint8_t* pixels, uint32_t pixels_size);
 
-    void swapTextures(FrameworkFormat type, GLuint* textures, void* metadata = nullptr);
+ void swapTextures(FrameworkFormat type, GLuint* textures, void* metadata = nullptr);
 
-    // public so other classes can call
-    static void createYUVGLTex(GLenum textureUnit,
-                               GLsizei width,
-                               GLsizei height,
-                               FrameworkFormat format,
-                               YUVPlane plane,
-                               GLuint* outTextureName);
+ // public so other classes can call
+ static void createYUVGLTex(GLenum textureUnit, GLsizei width, GLsizei height,
+                            FrameworkFormat format, bool yuv420888ToNv21, YUVPlane plane,
+                            GLuint* outTextureName);
+
 private:
     void init(int w, int h, FrameworkFormat format);
     void reset();
@@ -118,6 +116,7 @@ private:
     float mYWidthCutoff = 1.0;
     float mUVWidthCutoff = 1.0;
     bool mHasGlsl3Support = false;
+    bool mYuv420888ToNv21 = false;
 
     // YUVConverter can end up being used
     // in a TextureDraw / subwindow context, and subsequently

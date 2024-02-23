@@ -127,14 +127,12 @@ int android_initOpenglesEmulation() {
         << "Not meant to call android_initOpenglesEmulation in the new build.";
 }
 
-int
-android_startOpenglesRenderer(int width, int height, bool guestPhoneApi, int guestApiLevel,
-                              const QAndroidVmOperations *vm_operations,
-                              const QAndroidEmulatorWindowAgent *window_agent,
-                              const QAndroidMultiDisplayAgent *multi_display_agent,
-                              int* glesMajorVersion_out,
-                              int* glesMinorVersion_out)
-{
+int android_startOpenglesRenderer(int width, int height, gfxstream::host::FeatureSet features,
+                                  bool guestPhoneApi, int guestApiLevel,
+                                  const QAndroidVmOperations* vm_operations,
+                                  const QAndroidEmulatorWindowAgent* window_agent,
+                                  const QAndroidMultiDisplayAgent* multi_display_agent,
+                                  int* glesMajorVersion_out, int* glesMinorVersion_out) {
     if (!sRenderLib) {
         D("Can't start OpenGLES renderer without support libraries");
         return -1;
@@ -175,7 +173,7 @@ android_startOpenglesRenderer(int width, int height, bool guestPhoneApi, int gue
     // sRenderLib->setUsageTracker(android::base::CpuUsage::get(),
     //                             android::base::MemoryTracker::get());
 
-    sRenderer = sRenderLib->initRenderer(width, height, sRendererUsesSubWindow, sEgl2egl);
+    sRenderer = sRenderLib->initRenderer(width, height, features, sRendererUsesSubWindow, sEgl2egl);
     android_setOpenglesRenderer(&sRenderer);
 
     // android::snapshot::Snapshotter::get().addOperationCallback(

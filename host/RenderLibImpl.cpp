@@ -122,14 +122,14 @@ bool RenderLibImpl::getOpt(RenderOpt* opt) {
     return (opt->display && opt->surface  && opt->config);
 }
 
-RendererPtr RenderLibImpl::initRenderer(int width, int height,
+RendererPtr RenderLibImpl::initRenderer(int width, int height, gfxstream::host::FeatureSet features,
                                         bool useSubWindow, bool egl2egl) {
     if (!mRenderer.expired()) {
         return nullptr;
     }
 
     const auto res = std::make_shared<RendererImpl>();
-    if (!res->initialize(width, height, useSubWindow, egl2egl)) {
+    if (!res->initialize(width, height, features, useSubWindow, egl2egl)) {
         return nullptr;
     }
     mRenderer = res;
