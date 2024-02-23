@@ -52,7 +52,6 @@
 #include "host-common/HostmemIdMapping.h"
 #include "host-common/address_space_device_control_ops.h"
 #include "host-common/emugl_vm_operations.h"
-#include "host-common/feature_control.h"
 #include "host-common/vm_operations.h"
 #include "utils/RenderDoc.h"
 #include "vk_util.h"
@@ -325,10 +324,10 @@ struct ReadStreamRegistry {
 
     ReadStreamRegistry() { freeStreams.reserve(100); };
 
-    VulkanMemReadingStream* pop() {
+    VulkanMemReadingStream* pop(const gfxstream::host::FeatureSet& features) {
         AutoLock lock(mLock);
         if (freeStreams.empty()) {
-            return new VulkanMemReadingStream(0);
+            return new VulkanMemReadingStream(nullptr, features);
         } else {
             VulkanMemReadingStream* res = freeStreams.back();
             freeStreams.pop_back();
@@ -350,7 +349,7 @@ class VkDecoderGlobalState::Impl {
         : m_vk(vkDispatch()),
           m_emu(getGlobalVkEmulation()),
           mRenderDocWithMultipleVkInstances(m_emu->guestRenderDoc.get()) {
-        mSnapshotsEnabled = feature_is_enabled(kFeature_VulkanSnapshots);
+        mSnapshotsEnabled = m_emu->features.VulkanSnapshots.enabled;
         mVkCleanupEnabled =
             android::base::getEnvironmentVariable("ANDROID_EMU_VK_NO_CLEANUP") != "1";
         mLogging = android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1";
@@ -361,7 +360,7 @@ class VkDecoderGlobalState::Impl {
                                                 .control_get_hw_funcs()
                                                 ->getPhysAddrStartLocked();
         }
-        mGuestUsesAngle = feature_is_enabled(kFeature_GuestUsesAngle);
+        mGuestUsesAngle = m_emu->features.GuestUsesAngle.enabled;
     }
 
     ~Impl() = default;
@@ -405,6 +404,8 @@ class VkDecoderGlobalState::Impl {
     bool snapshotsEnabled() const { return mSnapshotsEnabled; }
 
     bool vkCleanupEnabled() const { return mVkCleanupEnabled; }
+
+    const gfxstream::host::FeatureSet& getFeatures() const { return m_emu->features; }
 
     void save(android::base::Stream* stream) {
         mSnapshotState = SnapshotState::Saving;
@@ -685,8 +686,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         // TODO: bug 129484301
-        get_emugl_vm_operations().setSkipSnapshotSave(
-            !feature_is_enabled(kFeature_VulkanSnapshots));
+        get_emugl_vm_operations().setSkipSnapshotSave(!m_emu->features.VulkanSnapshots.enabled);
 
         InstanceInfo info;
         info.apiVersion = apiVersion;
@@ -1217,15 +1217,15 @@ class VkDecoderGlobalState::Impl {
                 heap.size = kMaxSafeHeapSize;
             }
 
-            if (!feature_is_enabled(kFeature_GLDirectMem) &&
-                !feature_is_enabled(kFeature_VirtioGpuNext)) {
+            if (!m_emu->features.GlDirectMem.enabled &&
+                !m_emu->features.VirtioGpuNext.enabled) {
                 pMemoryProperties->memoryTypes[i].propertyFlags =
                     pMemoryProperties->memoryTypes[i].propertyFlags &
                     ~(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             }
 
             // for AMD, zap the type that is is not on device
-            if (feature_is_enabled(kFeature_VulkanAllocateDeviceMemoryOnly)) {
+            if (m_emu->features.VulkanAllocateDeviceMemoryOnly.enabled) {
                 auto memFlags = pMemoryProperties->memoryTypes[i].propertyFlags;
                 if (!(memFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
                     pMemoryProperties->memoryTypes[i].propertyFlags = 0;
@@ -1283,15 +1283,15 @@ class VkDecoderGlobalState::Impl {
                 heap.size = kMaxSafeHeapSize;
             }
 
-            if (!feature_is_enabled(kFeature_GLDirectMem) &&
-                !feature_is_enabled(kFeature_VirtioGpuNext)) {
+            if (!m_emu->features.GlDirectMem.enabled &&
+                !m_emu->features.VirtioGpuNext.enabled) {
                 pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags =
                     pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags &
                     ~(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             }
 
             // for AMD, zap the type that is is not on device
-            if (feature_is_enabled(kFeature_VulkanAllocateDeviceMemoryOnly)) {
+            if (m_emu->features.VulkanAllocateDeviceMemoryOnly.enabled) {
                 auto memFlags = pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags;
                 if (!(memFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
                     pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags = 0;
@@ -2497,7 +2497,7 @@ class VkDecoderGlobalState::Impl {
                 info.pools.push_back(state);
             }
 
-            if (feature_is_enabled(kFeature_VulkanBatchedDescriptorSetUpdate)) {
+            if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                 for (uint32_t i = 0; i < pCreateInfo->maxSets; ++i) {
                     info.poolIds.push_back(
                         (uint64_t)new_boxed_non_dispatchable_VkDescriptorSet(VK_NULL_HANDLE));
@@ -2517,12 +2517,12 @@ class VkDecoderGlobalState::Impl {
             auto unboxedSet = it.first;
             auto boxedSet = it.second;
             mDescriptorSetInfo.erase(unboxedSet);
-            if (!feature_is_enabled(kFeature_VulkanBatchedDescriptorSetUpdate)) {
+            if (!m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                 delete_VkDescriptorSet(boxedSet);
             }
         }
 
-        if (feature_is_enabled(kFeature_VulkanBatchedDescriptorSetUpdate)) {
+        if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
             if (isDestroy) {
                 for (auto poolId : info->poolIds) {
                     delete_VkDescriptorSet((VkDescriptorSet)poolId);
@@ -2650,7 +2650,7 @@ class VkDecoderGlobalState::Impl {
 
                 auto handleInfo = sBoxedHandleManager.get((uint64_t)*descSetAllocedEntry);
                 if (handleInfo) {
-                    if (feature_is_enabled(kFeature_VulkanBatchedDescriptorSetUpdate)) {
+                    if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                         handleInfo->underlying = reinterpret_cast<uint64_t>(VK_NULL_HANDLE);
                     } else {
                         delete_VkDescriptorSet(*descSetAllocedEntry);
@@ -3499,10 +3499,10 @@ class VkDecoderGlobalState::Impl {
     bool mapHostVisibleMemoryToGuestPhysicalAddressLocked(VulkanDispatch* vk, VkDevice device,
                                                           VkDeviceMemory memory,
                                                           uint64_t physAddr) {
-        if (!feature_is_enabled(kFeature_GLDirectMem) &&
-            !feature_is_enabled(kFeature_VirtioGpuNext)) {
+        if (!m_emu->features.GlDirectMem.enabled &&
+            !m_emu->features.VirtioGpuNext.enabled) {
             // fprintf(stderr, "%s: Tried to use direct mapping "
-            // "while GLDirectMem is not enabled!\n");
+            // "while GlDirectMem is not enabled!\n");
         }
 
         auto* info = android::base::find(mMemoryInfo, memory);
@@ -3830,7 +3830,7 @@ class VkDecoderGlobalState::Impl {
 #endif
 
         bool hostVisible = memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        if (hostVisible && feature_is_enabled(kFeature_ExternalBlob)) {
+        if (hostVisible && m_emu->features.ExternalBlob.enabled) {
             vk_append_struct(&structChainIter, &exportAllocate);
         }
 
@@ -3871,7 +3871,7 @@ class VkDecoderGlobalState::Impl {
         std::shared_ptr<PrivateMemory> privateMemory = {};
 
         // TODO(b/261222354): Make sure the feature exists when initializing sVkEmulation.
-        if (hostVisible && feature_is_enabled(kFeature_SystemBlob)) {
+        if (hostVisible && m_emu->features.SystemBlob.enabled) {
             // Ensure size is page-aligned.
             VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, kPageSizeforBlob);
             if (alignedSize != localAllocInfo.allocationSize) {
@@ -3904,7 +3904,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         VkImportMemoryHostPointerInfoEXT importHostInfoPrivate{};
-        if (hostVisible && feature_is_enabled(kFeature_VulkanAllocateHostMemory) &&
+        if (hostVisible && m_emu->features.VulkanAllocateHostMemory.enabled &&
             localAllocInfo.pNext == nullptr) {
             VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, kPageSizeforBlob);
             localAllocInfo.allocationSize = alignedSize;
@@ -3983,7 +3983,7 @@ class VkDecoderGlobalState::Impl {
         // When external blobs are on, we want to map memory only if a workaround is using it in
         // the gfxstream process. This happens when ASTC CPU emulation is on.
         bool needToMap =
-            (!feature_is_enabled(kFeature_ExternalBlob) ||
+            (!m_emu->features.ExternalBlob.enabled ||
              (deviceInfo->useAstcCpuDecompression && deviceInfo->emulateTextureAstc)) &&
             !createBlobInfoPtr;
 
@@ -4114,8 +4114,8 @@ class VkDecoderGlobalState::Impl {
     }
 
     bool usingDirectMapping() const {
-        return feature_is_enabled(kFeature_GLDirectMem) ||
-               feature_is_enabled(kFeature_VirtioGpuNext);
+        return m_emu->features.GlDirectMem.enabled ||
+               m_emu->features.VirtioGpuNext.enabled;
     }
 
     HostFeatureSupport getHostFeatureSupport() const {
@@ -4276,10 +4276,10 @@ class VkDecoderGlobalState::Impl {
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
 
-        if (!feature_is_enabled(kFeature_GLDirectMem)) {
+        if (!m_emu->features.GlDirectMem.enabled) {
             fprintf(stderr,
                     "FATAL: Tried to use direct mapping "
-                    "while GLDirectMem is not enabled!\n");
+                    "while GlDirectMem is not enabled!\n");
         }
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
@@ -4313,7 +4313,7 @@ class VkDecoderGlobalState::Impl {
 
         hostBlobId = (info->blobId && !hostBlobId) ? info->blobId : hostBlobId;
 
-        if (feature_is_enabled(kFeature_SystemBlob) && info->sharedMemory.has_value()) {
+        if (m_emu->features.SystemBlob.enabled && info->sharedMemory.has_value()) {
             uint32_t handleType = STREAM_MEM_HANDLE_TYPE_SHM;
             // We transfer ownership of the shared memory handle to the descriptor info.
             // The memory itself is destroyed only when all processes unmap / release their
@@ -4321,7 +4321,7 @@ class VkDecoderGlobalState::Impl {
             BlobManager::get()->addDescriptorInfo(ctx_id, hostBlobId,
                                                   info->sharedMemory->releaseHandle(), handleType,
                                                   info->caching, std::nullopt);
-        } else if (feature_is_enabled(kFeature_ExternalBlob)) {
+        } else if (m_emu->features.ExternalBlob.enabled) {
             VkResult result;
             auto device = unbox_VkDevice(boxed_device);
             DescriptorType handle;
@@ -5968,7 +5968,7 @@ class VkDecoderGlobalState::Impl {
         if (!elt) return 0;                                                                       \
         auto stream = elt->readStream;                                                            \
         if (!stream) {                                                                            \
-            stream = sReadStreamRegistry.pop();                                                   \
+            stream = sReadStreamRegistry.pop(getFeatures());                                      \
             elt->readStream = stream;                                                             \
         }                                                                                         \
         return stream;                                                                            \
@@ -6952,6 +6952,8 @@ void VkDecoderGlobalState::reset() {
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
+
+const gfxstream::host::FeatureSet& VkDecoderGlobalState::getFeatures() const { return mImpl->getFeatures(); }
 
 bool VkDecoderGlobalState::vkCleanupEnabled() const { return mImpl->vkCleanupEnabled(); }
 

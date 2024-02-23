@@ -4,12 +4,12 @@ package {
 }
 
 cc_library_static {
-    name: "libgfxstream_common_utils",
+    name: "libgfxstream_host_features",
     defaults: ["gfxstream_defaults"],
     export_include_dirs: [
         "include",
     ],
     srcs: [
-        "Strings.cpp",
+        "Features.cpp",
     ],
 }
