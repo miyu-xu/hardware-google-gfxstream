@@ -1642,6 +1642,24 @@ class VkDecoderGlobalState::Impl {
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
 
+        VkExternalMemoryBufferCreateInfo exinfo {};
+        exinfo.sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO;
+        exinfo.pNext = nullptr;
+        exinfo.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT;
+        if (feature_is_enabled(kFeature_SystemBlob)) {
+            fprintf(stderr, "VkDecoderGlobalState.cpp: %s %d allocate buffer pnext 0x%p\n",
+                    __func__, __LINE__, pCreateInfo->pNext);
+            if (pCreateInfo->pNext == nullptr) {
+                auto* ppInfo = const_cast<VkBufferCreateInfo*>(pCreateInfo);
+                ppInfo->pNext = &exinfo;
+                fprintf(stderr, "VkDecoderGlobalState.cpp: %s %d allocate buffer change pnext 0x%p\n",
+                    __func__, __LINE__, pCreateInfo->pNext);
+            } else {
+                fprintf(stderr, "VkDecoderGlobalState.cpp: %s %d allocate buffer no change pnext 0x%p\n",
+                    __func__, __LINE__, pCreateInfo->pNext);
+            }
+        }
+
         VkResult result = vk->vkCreateBuffer(device, pCreateInfo, pAllocator, pBuffer);
 
         if (result == VK_SUCCESS) {
@@ -1650,6 +1668,9 @@ class VkDecoderGlobalState::Impl {
             bufInfo.device = device;
             bufInfo.size = pCreateInfo->size;
             *pBuffer = new_boxed_non_dispatchable_VkBuffer(*pBuffer);
+        } else {
+            fprintf(stderr, "VkDecoderGlobalState.cpp: %s %d failed to allocate buffer pnext 0x%p 0x%x\n",
+                    __func__, __LINE__, pCreateInfo->pNext, result);
         }
 
         return result;
@@ -3905,7 +3926,12 @@ class VkDecoderGlobalState::Impl {
         VkResult result = vk->vkAllocateMemory(device, &localAllocInfo, pAllocator, pMemory);
 
         if (result != VK_SUCCESS) {
+            fprintf(stderr, "VkDecoderGlobalState.cpp: %s %d failed to allocate memory type 0x%llx code 0x%x\n",
+                    __func__, __LINE__, (long long)memoryPropertyFlags, result);
             return result;
+        } else {
+            fprintf(stderr, "VkDecoderGlobalState.cpp: %s %d succeeded to allocate memory  type 0x%llx code 0x%x\n",
+                    __func__, __LINE__, (long long)memoryPropertyFlags, result);
         }
 
 #ifdef _WIN32
