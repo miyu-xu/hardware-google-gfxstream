@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b045b5f_be47e38d",
+        "filename": "guest/platform/rutabaga/RutabagaVirtGpuDevice.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-02-23T16:04:24Z",
+      "side": 1,
+      "message": "We should give `mContextId` a default value here, to prevent it from being used uninitialized (especially since it is used in the destructor).",
+      "revId": "7f49afcede71c26a1849890550a343351eccf337",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
