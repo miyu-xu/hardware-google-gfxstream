@@ -54,6 +54,7 @@ cc_library_shared {
         "gfxstream_compressedTextures",
         "gfxstream_emulated_textures",
         "libgfxstream_common_utils",
+        "libgfxstream_host_features",
         "libgfxstream_etc",
     ],
     export_static_lib_headers: [
@@ -63,6 +64,7 @@ cc_library_shared {
         "gfxstream_glsnapshot",
         "gfxstream_magma_server",
         "gfxstream_vulkan_cereal_host",
+        "libgfxstream_host_features",
     ],
     shared_libs: [
         "liblog", // gfxstream_base uses this via perfetto-libperfettobase
