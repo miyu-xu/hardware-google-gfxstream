@@ -204,6 +204,7 @@ static std::optional<EGLConfig> getEmulationEglConfig(EGLDisplay display, bool a
 }  // namespace
 
 std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height,
+                                                 gfxstream::host::FeatureSet features,
                                                  bool allowWindowSurface, bool egl2egl) {
     // Loads the glestranslator function pointers.
     if (!LazyLoadedEGLDispatch::get()) {
@@ -225,6 +226,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
 
     std::unique_ptr<EmulationGl> emulationGl(new EmulationGl());
 
+    emulationGl->mFeatures = features;
     emulationGl->mWidth = width;
     emulationGl->mHeight = height;
 
@@ -283,7 +285,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     }
 
     emulationGl->mGlesDispatchMaxVersion
-        = calcMaxVersionFromDispatch(emulationGl->mEglDisplay);
+        = calcMaxVersionFromDispatch(emulationGl->mFeatures, emulationGl->mEglDisplay);
     if (s_egl.eglSetMaxGLESVersion) {
         // eglSetMaxGLESVersion must be called before any context binding
         // because it changes how we initialize the dispatcher table.
