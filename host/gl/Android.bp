@@ -38,5 +38,6 @@ cc_library_static {
         "gfxstream_gles1_dec",
         "gfxstream_gles2_dec",
         "gfxstream_glsnapshot",
+        "libgfxstream_host_features",
     ],
 }

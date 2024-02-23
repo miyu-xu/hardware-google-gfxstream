@@ -25,6 +25,7 @@ cc_library_static {
         "gfxstream_host_common",
         "gfxstream_apigen_codec_common",
         "gfxstream_vulkan_cereal_host",
+        "libgfxstream_host_features",
     ],
     cflags: [
         "-fvisibility=hidden",

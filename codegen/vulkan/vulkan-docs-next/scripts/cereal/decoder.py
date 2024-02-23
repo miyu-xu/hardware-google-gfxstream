@@ -67,7 +67,8 @@ public:
              m_boxedHandleDestroyMapping(m_state),
              m_boxedHandleUnwrapAndDeleteMapping(m_state),
              m_boxedHandleUnwrapAndDeletePreserveBoxedMapping(m_state),
-             m_prevSeqno(std::nullopt) {}
+             m_prevSeqno(std::nullopt),
+             m_queueSubmitWithCommandsEnabled(m_state->getFeatures().VulkanQueueSubmitWithCommands.enabled) {}
     %s* stream() { return &m_vkStream; }
     VulkanMemReadingStream* readStream() { return &m_vkMemReadingStream; }
 
@@ -92,6 +93,7 @@ private:
     android::base::BumpPool m_pool;
     BoxedHandleUnwrapAndDeletePreserveBoxedMapping m_boxedHandleUnwrapAndDeletePreserveBoxedMapping;
     std::optional<uint32_t> m_prevSeqno;
+    bool m_queueSubmitWithCommandsEnabled = false;
 };
 
 VkDecoder::VkDecoder() :
@@ -441,7 +443,7 @@ def emit_pool_free(cgen):
     cgen.stmt("%s->clearPool()" % READ_STREAM)
 
 def emit_seqno_incr(api, cgen):
-    cgen.stmt("if (queueSubmitWithCommandsEnabled) seqnoPtr->fetch_add(1, std::memory_order_seq_cst)")
+    cgen.stmt("if (m_queueSubmitWithCommandsEnabled) seqnoPtr->fetch_add(1, std::memory_order_seq_cst)")
 
 def emit_snapshot(typeInfo, api, cgen):
 
@@ -798,7 +800,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
         self.cgen.stmt("auto* healthMonitor = context.healthMonitor")
         self.cgen.stmt("auto& metricsLogger = *context.metricsLogger")
         self.cgen.stmt("if (len < 8) return 0")
-        self.cgen.stmt("bool queueSubmitWithCommandsEnabled = feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands)")
         self.cgen.stmt("unsigned char *ptr = (unsigned char *)buf")
         self.cgen.stmt("const unsigned char* const end = (const unsigned char*)buf + len")
 
@@ -846,7 +847,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
         std::atomic<uint32_t>* seqnoPtr = processResources ?
                 processResources->getSequenceNumberPtr() : nullptr;
 
-        if (queueSubmitWithCommandsEnabled && ((opcode >= OP_vkFirst && opcode < OP_vkLast) || (opcode >= OP_vkFirst_old && opcode < OP_vkLast_old))) {
+        if (m_queueSubmitWithCommandsEnabled && ((opcode >= OP_vkFirst && opcode < OP_vkLast) || (opcode >= OP_vkFirst_old && opcode < OP_vkLast_old))) {
             uint32_t seqno;
             memcpy(&seqno, *readStreamPtrPtr, sizeof(uint32_t)); *readStreamPtrPtr += sizeof(uint32_t);
             if (healthMonitor) executionData->insert({{"seqno", std::to_string(seqno)}});

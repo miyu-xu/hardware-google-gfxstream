@@ -18,6 +18,7 @@
 
 #include "aemu/base/c_header.h"
 #include "aemu/base/export.h"
+#include "gfxstream/host/Features.h"
 #include "host-common/multi_display_agent.h"
 #include "host-common/vm_operations.h"
 #include "host-common/window_agent.h"
@@ -52,6 +53,7 @@ AEMU_EXPORT int android_initOpenglesEmulation(void);
  * guestApiLevel: API level of guest image (23 for mnc, 24 for nyc, etc)
  */
 AEMU_EXPORT int android_startOpenglesRenderer(int width, int height,
+                                              gfxstream::host::FeatureSet features,
                                               bool isPhone, int guestApiLevel,
                                               const QAndroidVmOperations *vm_operations,
                                               const QAndroidEmulatorWindowAgent *window_agent,
