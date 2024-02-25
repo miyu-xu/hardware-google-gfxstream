@@ -36,6 +36,7 @@
 #include "aemu/base/system/System.h"
 #include "common/goldfish_vk_dispatch.h"
 #include "host-common/GfxstreamFatalError.h"
+#include "host-common/feature_control.h"
 #include "host-common/emugl_vm_operations.h"
 #include "host-common/vm_operations.h"
 
@@ -162,11 +163,23 @@ bool getStagingMemoryTypeIndex(VulkanDispatch* vk, VkDevice device,
     bool foundSuitableStagingMemoryType = false;
     uint32_t stagingMemoryTypeIndex = 0;
 
-    for (uint32_t i = 0; i < memProps->memoryTypeCount; ++i) {
+    for (uint32_t i = 0; i < 5; ++i) {
         const auto& typeInfo = memProps->memoryTypes[i];
         bool hostVisible = typeInfo.propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
         bool hostCached = typeInfo.propertyFlags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
         bool allowedInBuffer = (1 << i) & memReqs.memoryTypeBits;
+        // for AMD, zap the type that is is not on device
+        if (feature_is_enabled(kFeature_VulkanAllocateDeviceMemoryOnly)) {
+            auto memFlags = typeInfo.propertyFlags;
+            if (!(memFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+                continue;
+            }
+            if (memFlags & VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD) {
+                fprintf(stderr, "%s %d zap %llx due to BIT_AMD\n", __func__, __LINE__, (unsigned long long)memFlags);
+                continue;
+            }
+        }
+
         if (hostVisible && hostCached && allowedInBuffer) {
             foundSuitableStagingMemoryType = true;
             stagingMemoryTypeIndex = i;
@@ -1757,7 +1770,7 @@ bool getColorBufferAllocationInfo(uint32_t colorBufferHandle, VkDeviceSize* outS
 }
 
 static uint32_t lastGoodTypeIndex(uint32_t indices) {
-    for (int32_t i = 31; i >= 0; --i) {
+    for (int32_t i = 4; i >= 0; --i) {
         if (indices & (1 << i)) {
             return i;
         }
@@ -1767,7 +1780,7 @@ static uint32_t lastGoodTypeIndex(uint32_t indices) {
 
 static uint32_t lastGoodTypeIndexWithMemoryProperties(uint32_t indices,
                                                       VkMemoryPropertyFlags memoryProperty) {
-    for (int32_t i = 31; i >= 0; --i) {
+    for (int32_t i = 4; i >= 0; --i) {
         if ((indices & (1u << i)) &&
             (!memoryProperty ||
              (sVkEmulation->deviceInfo.memProps.memoryTypes[i].propertyFlags & memoryProperty))) {

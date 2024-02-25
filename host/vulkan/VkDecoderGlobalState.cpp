@@ -1230,6 +1230,11 @@ class VkDecoderGlobalState::Impl {
                 if (!(memFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
                     pMemoryProperties->memoryTypes[i].propertyFlags = 0;
                 }
+                if (memFlags & VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD) {
+                    pMemoryProperties->memoryTypes[i].propertyFlags = 0;
+                    fprintf(stderr, "%s %d zap %llx due to BIT_AMD\n",
+                           __func__, __LINE__, (unsigned long long)memFlags);
+                }
             }
         }
     }
@@ -1295,6 +1300,11 @@ class VkDecoderGlobalState::Impl {
                 auto memFlags = pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags;
                 if (!(memFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
                     pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags = 0;
+                }
+                if (memFlags & VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD) {
+                    pMemoryProperties->memoryProperties.memoryTypes[i].propertyFlags = 0;
+                    fprintf(stderr, "%s %d zap %llx due to BIT_AMD\n",
+                           __func__, __LINE__, (unsigned long long)memFlags);
                 }
             }
         }
@@ -3795,7 +3805,8 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
-        VkMemoryPropertyFlags memoryPropertyFlags;
+        VkMemoryPropertyFlags memoryPropertyFlags {};
+        int memoryTypeIndex {};
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
 
@@ -3825,6 +3836,7 @@ class VkDecoderGlobalState::Impl {
             memoryPropertyFlags =
                 physdevInfo->memoryProperties.memoryTypes[localAllocInfo.memoryTypeIndex]
                     .propertyFlags;
+            memoryTypeIndex = localAllocInfo.memoryTypeIndex;
         }
 
         if (shouldUseDedicatedAllocInfo) {
