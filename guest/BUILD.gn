@@ -275,6 +275,7 @@ loadable_module("libvulkan_gfxstream") {
       "OpenglSystemCommon/TraceProviderFuchsia.cpp",
       "OpenglSystemCommon/TraceProviderFuchsia.h",
       "fuchsia/fuchsia_stdio.cc",
+      "fuchsia/os_dirent_fuchsia.cpp",
       "fuchsia/port.cc",
       "fuchsia/service_connector.cc",
       "platform/fuchsia/FuchsiaVirtGpuBlob.cpp",
@@ -296,6 +297,7 @@ loadable_module("libvulkan_gfxstream") {
       "//zircon/system/ulib/trace:trace-with-static-engine",
       "//zircon/system/ulib/zx",
       "//zircon/system/ulib/zxio",
+      "//src/graphics/lib/magma/src/libmagma",
     ]
 
     public_deps = [ "//third_party/Vulkan-Headers:vulkan_headers" ]
