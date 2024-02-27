@@ -22,6 +22,30 @@
       },
       "revId": "6d28bf012c87f17d3c97bf68f4e97558d232660f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c911d94_085c7e1c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-02-27T17:25:30Z",
+      "side": 1,
+      "message": "Perhaps in another CL, since it doesn\u0027t only affect `genrules`.",
+      "parentUuid": "95c08e94_9785eedd",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 12,
+        "endChar": 15
+      },
+      "revId": "6d28bf012c87f17d3c97bf68f4e97558d232660f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
