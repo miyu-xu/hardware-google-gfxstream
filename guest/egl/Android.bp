@@ -90,8 +90,10 @@ cc_library_shared {
     ],
     shared_libs: [
         "libOpenglSystemCommonWithHost",
-        "libplatform_rutabaga",
         "libgfxstream_backend",
+    ],
+    static_libs: [
+        "libplatform_rutabaga",
     ],
     target: {
         host: {

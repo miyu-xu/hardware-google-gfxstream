@@ -66,13 +66,11 @@ class StubVirtGpuDevice : public VirtGpuDevice {
     struct VirtGpuCaps getCaps(void) override;
 
     VirtGpuBlobPtr createBlob(const struct VirtGpuCreateBlob& blobCreate) override;
-    VirtGpuBlobPtr createVirglBlob(uint32_t width, uint32_t height, uint32_t virglFormat);
+    VirtGpuBlobPtr createPipeBlob(uint32_t size) override;
+    VirtGpuBlobPtr createPipeTexture2D(uint32_t width, uint32_t height, uint32_t format) override;
     VirtGpuBlobPtr importBlob(const struct VirtGpuExternalHandle& handle) override;
 
     int execBuffer(struct VirtGpuExecBuffer& execbuffer, VirtGpuBlobPtr blob) override;
-
-    virtual VirtGpuBlobPtr createColorBuffer(int width, int height, uint32_t glFormat);
-    virtual VirtGpuBlobPtr createColorBuffer(int size);
 
   private:
     int64_t mDeviceHandle;

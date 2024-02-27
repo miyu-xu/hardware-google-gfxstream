@@ -1512,16 +1512,6 @@ DEFINE_ALIAS_FUNCTION(count_VkPhysicalDeviceTextureCompressionASTCHDRFeatures,
                       count_VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT)
 
 #endif
-#ifdef VK_EXT_depth_clip_enable
-void count_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
-    uint32_t featureBits, VkStructureType rootType,
-    const VkPhysicalDeviceDepthClipEnableFeaturesEXT* toCount, size_t* count);
-
-void count_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
-    uint32_t featureBits, VkStructureType rootType,
-    const VkPipelineRasterizationDepthClipStateCreateInfoEXT* toCount, size_t* count);
-
-#endif
 #ifdef VK_EXT_swapchain_colorspace
 #endif
 #ifdef VK_EXT_queue_family_foreign
@@ -1808,8 +1798,6 @@ void count_VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT(
     uint32_t featureBits, VkStructureType rootType,
     const VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT* toCount, size_t* count);
 
-#endif
-#ifdef VK_QNX_external_memory_screen_buffer
 #endif
 
 }  // namespace vk
