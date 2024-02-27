@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95c08e94_9785eedd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-02-27T17:21:03Z",
+      "side": 1,
+      "message": "optional: slight preference to prefixing (`libgfstream_mesa_drirc`) instead of suffixing (`libmesa_drirc_gfxstream`) to match existing libraries in gfxstream",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 12,
+        "endChar": 15
+      },
+      "revId": "6d28bf012c87f17d3c97bf68f4e97558d232660f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
