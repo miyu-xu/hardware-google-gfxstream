@@ -31,7 +31,6 @@ license {
         "SPDX-license-identifier-CC-BY-4.0",
         "SPDX-license-identifier-ISC",
         "SPDX-license-identifier-MIT",
-        "SPDX-license-identifier-BSL-1.0",
         "legacy_unencumbered",
     ],
 }
