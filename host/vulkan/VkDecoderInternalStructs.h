@@ -100,6 +100,24 @@ class ExternalFencePool {
     int mMaxSize;
 };
 
+class PrivateMemory {
+public:
+    PrivateMemory(size_t alignment, size_t size) {
+        mAddr = aligned_alloc(alignment, size);
+    }
+    ~PrivateMemory() {
+        if (mAddr) {
+            free(mAddr);
+            mAddr = nullptr;
+        }
+    }
+    void* getAddr() {
+        return mAddr;
+    }
+private:
+    void* mAddr{nullptr};
+};
+
 // We always map the whole size on host.
 // This makes it much easier to implement
 // the memory map API.
@@ -126,6 +144,7 @@ struct MemoryInfo {
     // Set if the memory is backed by shared memory.
     std::optional<android::base::SharedMemory> sharedMemory;
 
+    std::shared_ptr<PrivateMemory> privateMemory;
     // virtio-gpu blobs
     uint64_t blobId = 0;
 

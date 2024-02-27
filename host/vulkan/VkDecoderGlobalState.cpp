@@ -3868,6 +3868,7 @@ class VkDecoderGlobalState::Impl {
 
         VkImportMemoryHostPointerInfoEXT importHostInfo;
         std::optional<SharedMemory> sharedMemory = std::nullopt;
+        std::shared_ptr<PrivateMemory> privateMemory = {};
 
         // TODO(b/261222354): Make sure the feature exists when initializing sVkEmulation.
         if (hostVisible && feature_is_enabled(kFeature_SystemBlob)) {
@@ -3895,6 +3896,20 @@ class VkDecoderGlobalState::Impl {
                     "is: %d",
                     mappedPtrAlignment);
             }
+            importHostInfo = {.sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT,
+                              .pNext = NULL,
+                              .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT,
+                              .pHostPointer = mappedPtr};
+            vk_append_struct(&structChainIter, &importHostInfo);
+        }
+
+        if (hostVisible && feature_is_enabled(kFeature_VulkanAllocateHostMemory) &&
+            localAllocInfo.pNext == nullptr) {
+            VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, kPageSizeforBlob);
+            localAllocInfo.allocationSize = alignedSize;
+            privateMemory =
+                std::make_shared<PrivateMemory>(kPageSizeforBlob, localAllocInfo.allocationSize);
+            mappedPtr = privateMemory->getAddr();
             importHostInfo = {.sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT,
                               .pNext = NULL,
                               .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT,
@@ -3992,6 +4007,8 @@ class VkDecoderGlobalState::Impl {
             // Always assign the shared memory into memoryInfo. If it was used, then it will have
             // ownership transferred.
             memoryInfo.sharedMemory = std::exchange(sharedMemory, std::nullopt);
+
+            memoryInfo.privateMemory = privateMemory;
         }
 
         *pMemory = new_boxed_non_dispatchable_VkDeviceMemory(*pMemory);
