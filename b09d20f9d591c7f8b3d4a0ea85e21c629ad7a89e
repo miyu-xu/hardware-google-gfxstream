@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2093550b_80ccd3e8",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 3907,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-02-28T15:36:04Z",
+      "side": 1,
+      "message": "Small possible issue, we should probably use else-if or have some kind of early check, to control if both VulkanAllocateHostMemory and SystemBlob enabled at the same time and avoid appending more than one import info here for the allocation request.",
+      "revId": "b09d20f9d591c7f8b3d4a0ea85e21c629ad7a89e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
