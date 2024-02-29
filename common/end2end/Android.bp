@@ -1,4 +1,3 @@
-
 package {
     // See: http://go/android-license-faq
     default_applicable_licenses: ["hardware_google_gfxstream_license"],
@@ -7,7 +6,7 @@ package {
 // Run with `atest --host GfxstreamEnd2EndTests`
 cc_test_host {
     name: "GfxstreamEnd2EndTests",
-    defaults: [ "gfxstream_cc_defaults" ],
+    defaults: ["gfxstream_cc_defaults"],
     srcs: [
         "GfxstreamEnd2EndTests.cpp",
         "GfxstreamEnd2EndGlTests.cpp",
@@ -23,7 +22,7 @@ cc_test_host {
         "libGLESv2_emulation_with_host",
         "libEGL_emulation_with_host",
         "libgfxstream_guest_vulkan_with_host",
-        "libplatform_rutabaga_server",
+        "libgfxstream_platform_rutabaga_server",
     ],
     shared_libs: [
         "libandroidemu",
@@ -33,8 +32,12 @@ cc_test_host {
         "libcutils",
         "libdrm",
         "liblog",
+<<<<<<< HEAD   (4563fa Snap for 11435509 from 8bf20738d8417416c5b18fbbab59abc2626e8)
         "libgfxstream_backend",
         "libplatform_rutabaga_server",
+=======
+        "libgfxstream_platform_rutabaga_server",
+>>>>>>> BRANCH (b23315 Merge "Ignore STREAM_RENDERER_PARAM_NULL params" into main)
     ],
     static_libs: [
         "gfxstream_base",
@@ -44,8 +47,12 @@ cc_test_host {
         "libc++fs",
         "libgfxstream_guest_android_with_host",
         "libgmock",
+<<<<<<< HEAD   (4563fa Snap for 11435509 from 8bf20738d8417416c5b18fbbab59abc2626e8)
         "liblz4",
         "libplatform_rutabaga",
+=======
+        "libgfxstream_platform_rutabaga",
+>>>>>>> BRANCH (b23315 Merge "Ignore STREAM_RENDERER_PARAM_NULL params" into main)
     ],
     cflags: [
         // TODO: remove
