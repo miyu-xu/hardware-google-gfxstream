@@ -88,7 +88,28 @@ std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
     const auto& multiDisplay = emugl::get_emugl_multi_display_operations();
     const bool pixel_fold = multiDisplay.isPixelFold();
     if (pixel_fold) {
+        static int s_count = 0;
+
+                   uint32_t combinedDisplayW = 0;
+            uint32_t combinedDisplayH = 0;
+            multiDisplay.getCombinedDisplaySize(&combinedDisplayW, &combinedDisplayH);
+
+
+        fprintf(stderr, "%s %d w %d h %d disp w %d disp h %d view w %d view h %d\n",
+                __func__, __LINE__, cb->getWidth(), cb->getHeight(),
+                combinedDisplayW, combinedDisplayH, m_viewportWidth, m_viewportHeight);
+        if (cb->getWidth() != combinedDisplayW || cb->getHeight() != combinedDisplayH) {
+            if (s_count <= 0) {
+                s_count = 30;
+            }
+        }
+        -- s_count;
         post.layers.push_back(postWithOverlay(cb));
+        if (s_count > 0) {
+            fprintf(stderr, "SKIPP %s %d w %d h %d disp w %d disp h %d\n", __func__, __LINE__, cb->getWidth(), cb->getHeight(),
+                combinedDisplayW, combinedDisplayH);
+            post.layers.clear();
+        }
     }
     else if (multiDisplay.isMultiDisplayEnabled()) {
         if (multiDisplay.isMultiDisplayWindow()) {
