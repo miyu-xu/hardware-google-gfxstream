@@ -89,6 +89,7 @@ std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
     const bool pixel_fold = multiDisplay.isPixelFold();
     if (pixel_fold) {
         post.layers.push_back(postWithOverlay(cb));
+        fprintf(stderr, "%s %d w %d h %d\n", __func__, __LINE__, cb->getWidth(), cb->getHeight());
     }
     else if (multiDisplay.isMultiDisplayEnabled()) {
         if (multiDisplay.isMultiDisplayWindow()) {
