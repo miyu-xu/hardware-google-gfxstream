@@ -91,7 +91,8 @@ int moveSubWindow(FBNativeWindowType p_parent_window,
                   int x,
                   int y,
                   int width,
-                  int height) {
+                  int height,
+                  float dpr) {
     // This value is set during create, so if it is still null, simply
     // return because the global state is corrupted
     if (!s_display) {
