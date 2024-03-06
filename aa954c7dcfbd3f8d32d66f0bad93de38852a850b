@@ -22,6 +22,30 @@
       },
       "revId": "aa954c7dcfbd3f8d32d66f0bad93de38852a850b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "28362c37_f937a8e2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1893,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-06T18:12:42Z",
+      "side": 1,
+      "message": "Not really. This part is doing the following: \n\n(1) created a new image, with an underlying object and a dictionary entry;\n(2) removed its entry from the dictionary;\n(3) re-assign the underlying object to an existing entry.\n\nThis line is doing (2) and we still need it. The function names are confusing.",
+      "parentUuid": "c6f32a99_5d6121dd",
+      "range": {
+        "startLine": 1893,
+        "startChar": 12,
+        "endLine": 1893,
+        "endChar": 52
+      },
+      "revId": "aa954c7dcfbd3f8d32d66f0bad93de38852a850b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
