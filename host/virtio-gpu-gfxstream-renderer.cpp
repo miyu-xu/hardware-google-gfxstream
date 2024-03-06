@@ -2245,6 +2245,7 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
         feature_set_enabled_override(kFeature_VulkanSnapshots, true);
     }
 
+#ifdef CONFIG_AEMU
     for (const std::string& renderer_feature : gfxstream::Split(renderer_features, ",")) {
         if (renderer_feature.empty()) continue;
 
@@ -2274,6 +2275,7 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
         stream_renderer_error("Gfxstream feature %s %s", feature_name.c_str(),
                               feature_status.c_str());
     }
+#endif
 
     android::featurecontrol::productFeatureOverride();
 
