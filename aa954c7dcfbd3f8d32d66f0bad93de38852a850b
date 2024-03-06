@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6f32a99_5d6121dd",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1893,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-06T00:43:11Z",
+      "side": 1,
+      "message": "Should this be removed as well?",
+      "range": {
+        "startLine": 1893,
+        "startChar": 12,
+        "endLine": 1893,
+        "endChar": 52
+      },
+      "revId": "aa954c7dcfbd3f8d32d66f0bad93de38852a850b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
