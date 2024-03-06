@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da56f4e6_e7353f20",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4623,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-03-06T13:19:50Z",
+      "side": 1,
+      "message": "This is quite a big wait on host side and not sure if this would be better than flushing the buffers on demand during composition instead.",
+      "revId": "2744e5ddcf4db55a3f6cd03f140c785d3cd71b58",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
