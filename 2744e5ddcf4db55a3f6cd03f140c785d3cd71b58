@@ -16,6 +16,24 @@
       "message": "This is quite a big wait on host side and not sure if this would be better than flushing the buffers on demand during composition instead.",
       "revId": "2744e5ddcf4db55a3f6cd03f140c785d3cd71b58",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d75eef0_a49d5455",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4623,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-06T18:34:54Z",
+      "side": 1,
+      "message": "Good point. The wait would be an issue. Let\u0027s try to get it right first then we will worry about performance.\n\nFor the flushing, technically you could interleave reading/writing from GL/VK to the same AHB, which is not covered by putting it on demand during composition. On the other hand, we could design a more complex on-demand flushing mechanism. We will figure it out later after we get it right first.",
+      "parentUuid": "da56f4e6_e7353f20",
+      "revId": "2744e5ddcf4db55a3f6cd03f140c785d3cd71b58",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
