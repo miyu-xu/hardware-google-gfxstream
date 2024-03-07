@@ -16,6 +16,23 @@
       "message": "This should address question at the moment of discussion here:\n\nhttps://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2991969",
       "revId": "46b3f1bd5fc612cefbade720540c60691b35f700",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1bc6fc4_48ed8ded",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1569,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-07T00:10:22Z",
+      "side": 1,
+      "message": "We should have been clear that we prefer aggregate initialization over this normal initializer. In which case, the bug won\u0027t be there.",
+      "revId": "46b3f1bd5fc612cefbade720540c60691b35f700",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
