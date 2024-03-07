@@ -33,6 +33,23 @@
       "message": "We should have been clear that we prefer aggregate initialization over this normal initializer. In which case, the bug won\u0027t be there.",
       "revId": "46b3f1bd5fc612cefbade720540c60691b35f700",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f17af33a_12457c78",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2063,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-07T00:15:51Z",
+      "side": 1,
+      "message": "Do you know why we don\u0027t do this line in `updateExternalMemoryInfo`? This line of code suggests that `updateExternalMemoryInfo` doesn\u0027t complete its job.",
+      "revId": "46b3f1bd5fc612cefbade720540c60691b35f700",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
