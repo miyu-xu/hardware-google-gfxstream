@@ -16,6 +16,24 @@
       "message": "This logic should be more complicated:\n\n* if ColorBuffer is created from an external memory(the `VK_EXT_MEMORY_HANDLE_INVALID !\u003d extMemHandle` path in `initializeVkColorBufferLocked`), it is likely that we don\u0027t need to capability to export.\n\n* if ColorBuffer is created as an exportable `VkImage` with an exportable `VkDeviceMemory`(the `else` path in `initializeVkColorBufferLocked`, we call `deviceInfo.getMemoryHandleFunc` to export the memory), `supportsExternalMemoryExport` is required.",
       "revId": "394cfd7c9ac0bdccc426bc0f4d81cc318eaa08bb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1ee111c_31ed092a",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-07T00:42:07Z",
+      "side": 1,
+      "message": "Let\u0027s consider a platform where `supportsExternalMemoryExport` is `false`. Inside `allocExternalMemory`(`initializeVkColorBufferLocked` calls it), `externalHandle` is left uninitialized. Then `importExternalMemory` in `prepareAndroidNativeBufferImage` will fail.",
+      "parentUuid": "e4e69940_a4aa80e5",
+      "revId": "394cfd7c9ac0bdccc426bc0f4d81cc318eaa08bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
