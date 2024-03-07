@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25837e64_3cd72d89",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2092,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-07T23:31:30Z",
+      "side": 1,
+      "message": "This is only true if `sVkEmulation-\u003edeviceInfo.supportsExternalMemoryExport` is `true`. If `sVkEmulation-\u003edeviceInfo.supportsExternalMemoryExport` is `false`, `allocExternalMemory` returns without initializing the `infoPtr-\u003ememory-\u003eexternalHandle`. Check here: https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/2991970/2/host/vulkan/VkCommonOperations.cpp#1504.\n\nI would suggest that we should move the `externalMemoryCompatible` field to `ExternalMemoryInfo` and set the field in both `updateExternalMemoryInfo` and `allocExternalMemory`, but this won\u0027t block the CL, we can just write `infoPtr-\u003eexternalMemoryCompatible \u003d sVkEmulation-\u003edeviceInfo.supportsExternalMemoryExport` here.",
+      "revId": "bf6998ee03974d83eb5a8b0f67fe629e21ab5eca",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
