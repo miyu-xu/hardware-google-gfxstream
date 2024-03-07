@@ -34,6 +34,24 @@
       "parentUuid": "e4e69940_a4aa80e5",
       "revId": "394cfd7c9ac0bdccc426bc0f4d81cc318eaa08bb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2d0a369_eeb90618",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-03-07T22:27:31Z",
+      "side": 1,
+      "message": "Modified `colorBufferExportedToGl` to `getColorBufferShareInfo` to get all the information.",
+      "parentUuid": "b1ee111c_31ed092a",
+      "revId": "394cfd7c9ac0bdccc426bc0f4d81cc318eaa08bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
