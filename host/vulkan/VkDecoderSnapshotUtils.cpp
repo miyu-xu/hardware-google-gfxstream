@@ -121,12 +121,16 @@ VkExtent3D getMipmapExtent(VkExtent3D baseExtent, uint32_t mipLevel) {
 
 void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkImage image,
                       const ImageInfo* imageInfo) {
+    if (imageInfo->layout == VK_IMAGE_LAYOUT_UNDEFINED ||
+        imageInfo->layout == VK_IMAGE_LAYOUT_PREINITIALIZED) {
+        return;
+    }
     VkEmulation* vkEmulation = getGlobalVkEmulation();
     VulkanDispatch* dispatch = vkEmulation->dvk;
     const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
     VkCommandBufferAllocateInfo allocInfo{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .commandPool = vkEmulation->commandPool,
+        .commandPool = stateBlock->commandPool,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1,
     };
@@ -139,6 +143,7 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     VkFence fence;
     _RUN_AND_CHECK(dispatch->vkCreateFence(stateBlock->device, &fenceCreateInfo, nullptr, &fence));
     VkBufferCreateInfo bufferCreateInfo = {
+        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
         .size = static_cast<VkDeviceSize>(
             imageCreateInfo.extent.width * imageCreateInfo.extent.height *
             imageCreateInfo.extent.depth * bytes_per_pixel(imageCreateInfo.format)),
@@ -160,6 +165,7 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     // Staging memory
     // TODO(b/323064243): reuse staging memory
     VkMemoryAllocateInfo readbackBufferMemoryAllocateInfo = {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .allocationSize = readbackBufferMemoryRequirements.size,
         .memoryTypeIndex = readbackBufferMemoryType,
     };
@@ -263,12 +269,16 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
 
 void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkImage image,
                       const ImageInfo* imageInfo) {
+    if (imageInfo->layout == VK_IMAGE_LAYOUT_UNDEFINED ||
+        imageInfo->layout == VK_IMAGE_LAYOUT_PREINITIALIZED) {
+        return;
+    }
     VkEmulation* vkEmulation = getGlobalVkEmulation();
     VulkanDispatch* dispatch = vkEmulation->dvk;
     const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
     VkCommandBufferAllocateInfo allocInfo{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .commandPool = vkEmulation->commandPool,
+        .commandPool = stateBlock->commandPool,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1,
     };
@@ -281,6 +291,7 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     VkFence fence;
     _RUN_AND_CHECK(dispatch->vkCreateFence(stateBlock->device, &fenceCreateInfo, nullptr, &fence));
     VkBufferCreateInfo bufferCreateInfo = {
+        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
         .size = static_cast<VkDeviceSize>(
             imageCreateInfo.extent.width * imageCreateInfo.extent.height *
             imageCreateInfo.extent.depth * bytes_per_pixel(imageCreateInfo.format)),
@@ -302,6 +313,7 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     // Staging memory
     // TODO(b/323064243): reuse staging memory
     VkMemoryAllocateInfo stagingBufferMemoryAllocateInfo = {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .allocationSize = stagingBufferMemoryRequirements.size,
         .memoryTypeIndex = stagingBufferMemoryType,
     };
