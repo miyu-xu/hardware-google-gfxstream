@@ -27,6 +27,7 @@ public:
     void save(android::base::Stream* stream);
     void load(android::base::Stream* stream, emugl::GfxApiLogger& gfx_logger,
               emugl::HealthMonitor<>* healthMonitor);
+    void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
 """
 
 decoder_snapshot_decl_postamble = """
@@ -56,6 +57,9 @@ public:
         mReconstruction.load(stream, gfx_logger, healthMonitor);
     }
 
+    void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count) {
+        mReconstruction.createExtraHandlesForNextApi(created, count);
+    }
 """
 
 decoder_snapshot_impl_postamble = """
@@ -74,6 +78,10 @@ void VkDecoderSnapshot::save(android::base::Stream* stream) {
 void VkDecoderSnapshot::load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
                              HealthMonitor<>* healthMonitor) {
     mImpl->load(stream, gfx_logger, healthMonitor);
+}
+
+void VkDecoderSnapshot::createExtraHandlesForNextApi(const uint64_t* created, uint32_t count) {
+    mImpl->createExtraHandlesForNextApi(created, count);
 }
 
 VkDecoderSnapshot::~VkDecoderSnapshot() = default;
@@ -102,8 +110,27 @@ def extract_deps_vkAllocateCommandBuffers(param, access, lenExpr, api, cgen):
     cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
               (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkCommandPool(pAllocateInfo->commandPool)"))
 
+def extract_deps_vkCreateImageView(param, access, lenExpr, api, cgen):
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
+              (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkImage(pCreateInfo->image)"))
+
+def extract_deps_vkCreateGraphicsPipelines(param, access, lenExpr, api, cgen):
+    cgen.beginFor("uint32_t i = 0", "i < createInfoCount", "++i")
+    cgen.beginFor("uint32_t j = 0", "j < pCreateInfos[i].stageCount", "++j")
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)(%s + i), %s, (uint64_t)(uintptr_t)%s)" % \
+              (access, 1, "unboxed_to_boxed_non_dispatchable_VkShaderModule(pCreateInfos[i].pStages[j].module)"))
+    cgen.endFor()
+    cgen.endFor()
+
+def extract_deps_vkCreateFramebuffer(param, access, lenExpr, api, cgen):
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
+              (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkRenderPass(pCreateInfo->renderPass)"))
+
 specialCaseDependencyExtractors = {
     "vkAllocateCommandBuffers" : extract_deps_vkAllocateCommandBuffers,
+    "vkCreateImageView" : extract_deps_vkCreateImageView,
+    "vkCreateGraphicsPipelines" : extract_deps_vkCreateGraphicsPipelines,
+    "vkCreateFramebuffer" : extract_deps_vkCreateFramebuffer,
 }
 
 apiSequences = {
