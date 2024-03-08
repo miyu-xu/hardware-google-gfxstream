@@ -484,6 +484,9 @@ class VkDecoderSnapshot::Impl {
         // pView create
         mReconstruction.addHandles((const uint64_t*)pView, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pView, 1, (uint64_t)(uintptr_t)device);
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)pView, 1,
+            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(pCreateInfo->image));
         if (!pView) return;
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
@@ -571,6 +574,14 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandles((const uint64_t*)pPipelines, ((createInfoCount)));
         mReconstruction.addHandleDependency((const uint64_t*)pPipelines, ((createInfoCount)),
                                             (uint64_t)(uintptr_t)device);
+        for (uint32_t i = 0; i < createInfoCount; ++i) {
+            for (uint32_t j = 0; j < pCreateInfos[i].stageCount; ++j) {
+                mReconstruction.addHandleDependency(
+                    (const uint64_t*)(pPipelines + i), 1,
+                    (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkShaderModule(
+                        pCreateInfos[i].pStages[j].module));
+            }
+        }
         if (!pPipelines) return;
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
@@ -760,6 +771,10 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandles((const uint64_t*)pFramebuffer, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pFramebuffer, 1,
                                             (uint64_t)(uintptr_t)device);
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)pFramebuffer, 1,
+            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkRenderPass(
+                pCreateInfo->renderPass));
         if (!pFramebuffer) return;
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
