@@ -1,5 +1,210 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d324dca_3991770d",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 15631,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Here is one of many places where we unconditionally dereference `forMarshaling`...",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4e13da40_bfc22f92",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 15633,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "...but here we check `forMarshaling` for nullptr.  If it was null, we would have crashed by now.  Hopefully this is just an unnecessary check (in which case we could remove it and make the code slightly clearer).  But if we think `forMarshaling` could be null here, then we need to handle many more dereferences before this.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36bbbc8c_4069d384",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 15640,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Another check which is too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89a293e5_1aa4e6fb",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 15648,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Another check which is too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90ef7741_cf73615a",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 15694,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "This is a different function, but this check is too late here as well.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5aae061f_76c7a04b",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 15703,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Another check which is too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfb22b36_6d49ec76",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_marshaling.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 15712,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Another check which is too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e042937b_2ca19856",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7168,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Here we are unconditionally dereferencing `toTransform`...",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1fd4341e_912efe35",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7171,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "...so this null check of `toTransform` is too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f6e7e3fc_eb4b722d",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7179,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Also too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8cae290_45f01283",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7187,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Also too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e306b7d_21db9ef7",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7204,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T16:16:35Z",
+      "side": 1,
+      "message": "Same issue in this function, with the unconditional dereference above, and this and a couple more null checks later coming in too late.",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
