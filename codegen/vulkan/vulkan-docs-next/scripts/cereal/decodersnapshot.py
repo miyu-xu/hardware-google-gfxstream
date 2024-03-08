@@ -102,8 +102,13 @@ def extract_deps_vkAllocateCommandBuffers(param, access, lenExpr, api, cgen):
     cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
               (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkCommandPool(pAllocateInfo->commandPool)"))
 
+def extract_deps_vkCreateImageView(param, access, lenExpr, api, cgen):
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
+              (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkImage(pCreateInfo->image)"))
+
 specialCaseDependencyExtractors = {
     "vkAllocateCommandBuffers" : extract_deps_vkAllocateCommandBuffers,
+    "vkCreateImageView" : extract_deps_vkCreateImageView,
 }
 
 apiSequences = {

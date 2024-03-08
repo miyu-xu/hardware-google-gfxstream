@@ -484,6 +484,9 @@ class VkDecoderSnapshot::Impl {
         // pView create
         mReconstruction.addHandles((const uint64_t*)pView, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pView, 1, (uint64_t)(uintptr_t)device);
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)pView, 1,
+            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(pCreateInfo->image));
         if (!pView) return;
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
