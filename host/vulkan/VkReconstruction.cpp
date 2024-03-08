@@ -145,7 +145,7 @@ void VkReconstruction::save(android::base::Stream* stream) {
         for (auto apiHandle : uniqApiRefsByTopoOrder[i]) {
             auto item = mApiTrace.get(apiHandle);
             for (auto createdHandle : item->createdHandles) {
-                DEBUG_RECON("save handle: 0x%llx\n", createdHandle);
+                DEBUG_RECON("save handle: 0x%lx\n", createdHandle);
                 createdHandleBuffer.push_back(createdHandle);
             }
         }
@@ -355,19 +355,18 @@ void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
 void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count) {
     if (!toRemove) return;
 
-    forEachHandleDeleteApi(toRemove, count);
-
     for (uint32_t i = 0; i < count; ++i) {
         DEBUG_RECON("remove 0x%llx", (unsigned long long)toRemove[i]);
         auto item = mHandleReconstructions.get(toRemove[i]);
+        if (!item) abort();
 
-        if (!item) continue;
-
+        if (item->childHandles.size()) {
+            // TODO: perform delayed destroy when all children are destroyed.
+            item->destroyed = true;
+            continue;
+        }
+        forEachHandleDeleteApi(toRemove + i, 1);
         mHandleReconstructions.remove(toRemove[i]);
-
-        removeHandles(item->childHandles.data(), item->childHandles.size());
-
-        item->childHandles.clear();
     }
 }
 
@@ -427,9 +426,14 @@ void VkReconstruction::setCreatedHandlesForApi(uint64_t apiHandle, const uint64_
 
     if (!item) return;
 
-    for (uint32_t i = 0; i < count; ++i) {
-        item->createdHandles.push_back(created[i]);
-    }
+    item->createdHandles.insert(item->createdHandles.end(), created, created + count);
+    item->createdHandles.insert(item->createdHandles.end(), mExtraHandlesForNextApi.begin(),
+                                mExtraHandlesForNextApi.end());
+    mExtraHandlesForNextApi.clear();
+}
+
+void VkReconstruction::createExtraHandlesForNextApi(const uint64_t* created, uint32_t count) {
+    mExtraHandlesForNextApi.assign(created, created + count);
 }
 
 void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint32_t count,
