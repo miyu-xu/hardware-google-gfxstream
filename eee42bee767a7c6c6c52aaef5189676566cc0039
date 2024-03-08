@@ -157,6 +157,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "55099aa9_5f55edc0",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7168,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-03-08T17:58:24Z",
+      "side": 1,
+      "message": "Not a blocking issue.  This was noticed in static analysis of the code.\n\nIf the pointers could possibly be null, then this seems like a higher priority issue to make sure this code doesn\u0027t crash.  If the pointers can\u0027t (or are never expected) to be null, then this seems a lower priority clean up to make the assumptions and intentions of the code clearer (and also remove some unnecessary indentation).",
+      "parentUuid": "7615d364_300e6029",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1fd4341e_912efe35",
         "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
         "patchSetId": 1
