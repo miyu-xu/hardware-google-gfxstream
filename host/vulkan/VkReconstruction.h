@@ -49,6 +49,7 @@ class VkReconstruction {
     struct HandleReconstruction {
         std::vector<ApiHandle> apiRefs;
         std::vector<uint64_t> childHandles;
+        bool destroyed = false;
     };
 
     using HandleReconstructions =
@@ -85,7 +86,7 @@ class VkReconstruction {
     void forEachHandleAddModifyApi(const uint64_t* toProcess, uint32_t count, uint64_t apiHandle);
 
     void setModifiedHandlesForApi(uint64_t apiHandle, const uint64_t* modified, uint32_t count);
-
+    void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
    private:
     std::vector<uint64_t> getOrderedUniqueModifyApis() const;
 
@@ -93,6 +94,8 @@ class VkReconstruction {
 
     HandleReconstructions mHandleReconstructions;
     HandleModifications mHandleModifications;
+
+    std::vector<uint64_t> mExtraHandlesForNextApi;
 
     std::vector<uint8_t> mLoadedTrace;
 };
