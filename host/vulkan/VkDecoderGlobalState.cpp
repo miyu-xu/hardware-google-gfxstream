@@ -279,7 +279,9 @@ class BoxedHandleManager {
             auto h = r.handle;
             // VkDecoderGlobalState is already locked when callback is called.
             auto funcGlobalStateLocked = r.callback;
-            funcGlobalStateLocked();
+            if (funcGlobalStateLocked) {
+                funcGlobalStateLocked();
+            }
             store.remove(h);
         }
         delayedRemovesList.clear();
@@ -442,8 +444,17 @@ class VkDecoderGlobalState::Impl {
 
         VulkanDispatch* ivk = getGlobalVkEmulation()->ivk;
         VulkanDispatch* dvk = getGlobalVkEmulation()->dvk;
+        std::vector<VkImage> sortedBoxedImages;
         for (const auto& imageIte : mImageInfo) {
-            const ImageInfo& imageInfo = imageIte.second;
+            sortedBoxedImages.push_back(
+                unboxed_to_boxed_non_dispatchable_VkImage(imageIte.first));
+        }
+        // Image contents need to be saved and loaded in the same order.
+        // So sort them (by boxed handles) first.
+        std::sort(sortedBoxedImages.begin(), sortedBoxedImages.end());
+        for (const auto& boxedImage : sortedBoxedImages) {
+            auto unboxedImage = unbox_VkImage(boxedImage);
+            const ImageInfo& imageInfo = mImageInfo[unboxedImage];
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
@@ -484,7 +495,7 @@ class VkDecoderGlobalState::Impl {
             };
             dvk->vkCreateCommandPool(device, &commandPoolCi, nullptr, &stateBlock.commandPool);
             // TODO(b/294277842): make sure the queue is empty before using.
-            saveImageContent(stream, &stateBlock, imageIte.first, &imageInfo);
+            saveImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
         mSnapshotState = SnapshotState::Normal;
@@ -522,8 +533,15 @@ class VkDecoderGlobalState::Impl {
 
         VulkanDispatch* ivk = getGlobalVkEmulation()->ivk;
         VulkanDispatch* dvk = getGlobalVkEmulation()->dvk;
+        std::vector<VkImage> sortedBoxedImages;
         for (const auto& imageIte : mImageInfo) {
-            const ImageInfo& imageInfo = imageIte.second;
+            sortedBoxedImages.push_back(
+                unboxed_to_boxed_non_dispatchable_VkImage(imageIte.first));
+        }
+        sort(sortedBoxedImages.begin(), sortedBoxedImages.end());
+        for (const auto& boxedImage : sortedBoxedImages) {
+            auto unboxedImage = unbox_VkImage(boxedImage);
+            const ImageInfo& imageInfo = mImageInfo[unboxedImage];
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
@@ -564,7 +582,7 @@ class VkDecoderGlobalState::Impl {
             };
             dvk->vkCreateCommandPool(device, &commandPoolCi, nullptr, &stateBlock.commandPool);
             // TODO(b/294277842): make sure the queue is empty before using.
-            loadImageContent(stream, &stateBlock, imageIte.first, &imageInfo);
+            loadImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
         mSnapshotState = SnapshotState::Normal;
@@ -2029,7 +2047,6 @@ class VkDecoderGlobalState::Impl {
                                   const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
-
         if (!pCreateInfo) {
             return VK_ERROR_OUT_OF_HOST_MEMORY;
         }
@@ -2079,7 +2096,6 @@ class VkDecoderGlobalState::Impl {
         }
 
         *pView = new_boxed_non_dispatchable_VkImageView(*pView);
-
         return result;
     }
 
@@ -2512,6 +2528,8 @@ class VkDecoderGlobalState::Impl {
                     info.poolIds.push_back(
                         (uint64_t)new_boxed_non_dispatchable_VkDescriptorSet(VK_NULL_HANDLE));
                 }
+                snapshot()->createExtraHandlesForNextApi(info.poolIds.data(),
+                        info.poolIds.size());
             }
         }
 
@@ -4627,7 +4645,11 @@ class VkDecoderGlobalState::Impl {
                 auto* queueInfo = android::base::find(mQueueInfo, queue);
                 if (queueInfo) {
                     device = queueInfo->device;
-                    sBoxedHandleManager.processDelayedRemovesGlobalStateLocked(device);
+                    // Unsafe to release when snapshot enabled.
+                    // Snapshot load might fail to find the shader modules if we release them here.
+                    if (!snapshotsEnabled()) {
+                        sBoxedHandleManager.processDelayedRemovesGlobalStateLocked(device);
+                    }
                 }
             }
 
@@ -5565,7 +5587,8 @@ class VkDecoderGlobalState::Impl {
                 return (VkDescriptorSet)(setHandleInfo->underlying);
             }
         } else {
-            if (pendingAlloc) {
+            // Snapshot doesn't really replay the commands to allocate those descriptors.
+            if (pendingAlloc || snapshotsEnabled()) {
                 VkDescriptorSet allocedSet;
                 VkDescriptorSetAllocateInfo dsAi = {
                     VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, 0, pool, 1, &setLayout,
@@ -6064,9 +6087,10 @@ class VkDecoderGlobalState::Impl {
         if (!mCreatedHandlesForSnapshotLoad.empty() &&
             (mCreatedHandlesForSnapshotLoad.size() - mCreatedHandlesForSnapshotLoadIndex > 0)) {
             auto handle = mCreatedHandlesForSnapshotLoad[mCreatedHandlesForSnapshotLoadIndex];
-            VKDGS_LOG("use handle: %p", handle);
+            VKDGS_LOG("use handle: 0x%lx underlying 0x%lx", handle, item.underlying);
             ++mCreatedHandlesForSnapshotLoadIndex;
             auto res = sBoxedHandleManager.addFixed(handle, item, typeTag);
+
             return res;
         } else {
             return sBoxedHandleManager.add(item, typeTag);
