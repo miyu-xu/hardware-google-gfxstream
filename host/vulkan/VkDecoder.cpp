@@ -3984,6 +3984,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 *(VkImageView*)pView = (VkImageView)(VkImageView)((VkImageView)(*&cgen_var_2));
                 if (pCreateInfo) {
+                    printf("create image type 0x%x\n", pCreateInfo->sType);
+                    printf("create image view image %p\n", pCreateInfo->image);
                     transform_tohost_VkImageViewCreateInfo(m_state,
                                                            (VkImageViewCreateInfo*)(pCreateInfo));
                 }

@@ -19,6 +19,7 @@ SKIPPED_DECODER_DELETES = [
 ]
 
 DELAYED_DECODER_DELETES = [
+    "vkDestroyShaderModule",
     "vkDestroyPipelineLayout",
 ]
 

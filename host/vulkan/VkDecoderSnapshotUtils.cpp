@@ -181,6 +181,7 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
             VkCommandBufferBeginInfo beginInfo{
                 .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
             };
+            printf("begin cmd buffer %p\n", commandBuffer);
             if (dispatch->vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
                 GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
                     << "Failed to start command buffer on snapshot save";
@@ -330,6 +331,7 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
 
             VkExtent3D mipmapExtent = getMipmapExtent(imageCreateInfo.extent, mipLevel);
             size_t bytes = stream->getBe64();
+            printf("image reading %ld bytes staging memory size %ld\n", bytes, stagingBufferMemoryAllocateInfo.allocationSize);
             stream->read(mapped, bytes);
 
             // TODO(b/323059453): get the right aspect

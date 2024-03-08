@@ -100,7 +100,7 @@ using gfxstream::VulkanInfo;
 // TODO: Asserts build
 #define DCHECK(condition) (void)(condition);
 
-#define VKDGS_DEBUG 0
+#define VKDGS_DEBUG 1
 
 #if VKDGS_DEBUG
 #define VKDGS_LOG(fmt, ...) fprintf(stderr, "%s:%d " fmt "\n", __func__, __LINE__, ##__VA_ARGS__);
@@ -442,11 +442,21 @@ class VkDecoderGlobalState::Impl {
 
         VulkanDispatch* ivk = getGlobalVkEmulation()->ivk;
         VulkanDispatch* dvk = getGlobalVkEmulation()->dvk;
+        std::vector<VkImage> sortedBoxedImages;
         for (const auto& imageIte : mImageInfo) {
-            const ImageInfo& imageInfo = imageIte.second;
+            sortedBoxedImages.push_back(
+                unboxed_to_boxed_non_dispatchable_VkImage(imageIte.first));
+        }
+        // Image contents need to be saved and loaded in the same order.
+        // So sort them (by boxed handles) first.
+        std::sort(sortedBoxedImages.begin(), sortedBoxedImages.end());
+        for (const auto& boxedImage : sortedBoxedImages) {
+            auto unboxedImage = unbox_VkImage(boxedImage);
+            const ImageInfo& imageInfo = mImageInfo[unboxedImage];
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
+            printf("saving image content %p\n", boxedImage);
             const auto& device = imageInfo.device;
             const auto& deviceInfo = android::base::find(mDeviceInfo, device);
             const auto physicalDevice = deviceInfo->physicalDevice;
@@ -484,7 +494,7 @@ class VkDecoderGlobalState::Impl {
             };
             dvk->vkCreateCommandPool(device, &commandPoolCi, nullptr, &stateBlock.commandPool);
             // TODO(b/294277842): make sure the queue is empty before using.
-            saveImageContent(stream, &stateBlock, imageIte.first, &imageInfo);
+            saveImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
         mSnapshotState = SnapshotState::Normal;
@@ -522,11 +532,18 @@ class VkDecoderGlobalState::Impl {
 
         VulkanDispatch* ivk = getGlobalVkEmulation()->ivk;
         VulkanDispatch* dvk = getGlobalVkEmulation()->dvk;
+        std::vector<VkImage> sortedBoxedImages;
         for (const auto& imageIte : mImageInfo) {
-            const ImageInfo& imageInfo = imageIte.second;
+            sortedBoxedImages.push_back(
+                unboxed_to_boxed_non_dispatchable_VkImage(imageIte.first));
+        }
+        for (const auto& boxedImage : sortedBoxedImages) {
+            auto unboxedImage = unbox_VkImage(boxedImage);
+            const ImageInfo& imageInfo = mImageInfo[unboxedImage];
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
+            printf("loading image content %p\n", boxedImage);
             const auto& device = imageInfo.device;
             const auto& deviceInfo = android::base::find(mDeviceInfo, device);
             const auto physicalDevice = deviceInfo->physicalDevice;
@@ -564,7 +581,7 @@ class VkDecoderGlobalState::Impl {
             };
             dvk->vkCreateCommandPool(device, &commandPoolCi, nullptr, &stateBlock.commandPool);
             // TODO(b/294277842): make sure the queue is empty before using.
-            loadImageContent(stream, &stateBlock, imageIte.first, &imageInfo);
+            loadImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
         mSnapshotState = SnapshotState::Normal;
@@ -2024,20 +2041,27 @@ class VkDecoderGlobalState::Impl {
         return result;
     }
 
+    #define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
     VkResult on_vkCreateImageView(android::base::BumpPool* pool, VkDevice boxed_device,
                                   const VkImageViewCreateInfo* pCreateInfo,
                                   const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
-
+        _PR_LINE
         if (!pCreateInfo) {
+            _PR_LINE
             return VK_ERROR_OUT_OF_HOST_MEMORY;
         }
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
         auto* imageInfo = android::base::find(mImageInfo, pCreateInfo->image);
-        if (!deviceInfo || !imageInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        if (!deviceInfo || !imageInfo) {
+            _PR_LINE
+            *pView = new_boxed_non_dispatchable_VkImageView(*pView);
+            printf("handle %p\n", *pView);
+            return VK_ERROR_OUT_OF_HOST_MEMORY;
+        }
         VkImageViewCreateInfo createInfo;
         bool needEmulatedAlpha = false;
         if (deviceInfo->needEmulatedDecompression(pCreateInfo->format)) {
@@ -2066,6 +2090,7 @@ class VkDecoderGlobalState::Impl {
 
         VkResult result = vk->vkCreateImageView(device, pCreateInfo, pAllocator, pView);
         if (result != VK_SUCCESS) {
+            _PR_LINE
             return result;
         }
 
@@ -2079,7 +2104,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         *pView = new_boxed_non_dispatchable_VkImageView(*pView);
-
+        _PR_LINE
         return result;
     }
 
@@ -2512,6 +2537,8 @@ class VkDecoderGlobalState::Impl {
                     info.poolIds.push_back(
                         (uint64_t)new_boxed_non_dispatchable_VkDescriptorSet(VK_NULL_HANDLE));
                 }
+                snapshot()->createExtraHandlesForNextApi(info.poolIds.data(),
+                        info.poolIds.size());
             }
         }
 
@@ -5929,11 +5956,18 @@ class VkDecoderGlobalState::Impl {
         if (!mCreatedHandlesForSnapshotLoad.empty() &&
             (mCreatedHandlesForSnapshotLoad.size() - mCreatedHandlesForSnapshotLoadIndex > 0)) {
             auto handle = mCreatedHandlesForSnapshotLoad[mCreatedHandlesForSnapshotLoadIndex];
-            VKDGS_LOG("use handle: %p", handle);
+            VKDGS_LOG("use handle: 0x%lx underlying 0x%lx", handle, item.underlying);
             ++mCreatedHandlesForSnapshotLoadIndex;
             auto res = sBoxedHandleManager.addFixed(handle, item, typeTag);
+        
+            uint64_t toCheck = 0xa000300000021;
+            printf("checking ");
+            printf(" 0x%lx 0x%lx\n", toCheck, 
+                    sBoxedHandleManager.get(toCheck)->underlying);
+
             return res;
         } else {
+            VKDGS_LOG("use add for new handle underlying 0x%lx", item.underlying);
             return sBoxedHandleManager.add(item, typeTag);
         }
     }
