@@ -175,6 +175,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4704da2d_08bb02c9",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7168,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-03-11T17:09:03Z",
+      "side": 1,
+      "message": "Looks like there are conditional checks where the calls are made, and I don\u0027t think we\u0027re getting crashes from these functions. But, I agree that the automatic code generation requires some changes for these issues, which would also help a lot with the readability. I\u0027ll have a look and see what can be done in the mean time, and resolve these comments once those changes are submitted. Thanks",
+      "parentUuid": "55099aa9_5f55edc0",
+      "revId": "eee42bee767a7c6c6c52aaef5189676566cc0039",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1fd4341e_912efe35",
         "filename": "host/vulkan/cereal/common/goldfish_vk_transform.cpp",
         "patchSetId": 1
