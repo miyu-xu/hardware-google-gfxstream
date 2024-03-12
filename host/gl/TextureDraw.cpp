@@ -102,13 +102,17 @@ const char kFragmentShaderSource[] =
     "uniform float alpha;\n"
     "uniform int composeMode;\n"
     "uniform vec4 color ;\n"
+    "uniform mat4 in_colorTransform;\n"
 
     "void main(void) {\n"
+    "  vec4 outColor;\n"
     "  if (composeMode == kComposeModeDevice) {\n"
-    "    gl_FragColor = alpha * texture2D(tex, outCoord);\n"
+    "    outColor = alpha * texture2D(tex, outCoord);\n"
     "  } else {\n"
-    "    gl_FragColor = alpha * color;\n"
+    "    outColor = alpha * color;\n"
     "  }\n"
+    "  outColor = in_colorTransform * outColor;\n"
+    "  gl_FragColor = outColor;\n"
     "}\n";
 
 // Hard-coded arrays of vertex information.
@@ -231,6 +235,7 @@ TextureDraw::TextureDraw()
     mScaleSlot = s_gles2.glGetUniformLocation(mProgram, "scale");
     mTranslationSlot = s_gles2.glGetUniformLocation(mProgram, "translation");
     mTextureSlot = s_gles2.glGetUniformLocation(mProgram, "tex");
+    mColorTransform = s_gles2.glGetUniformLocation(mProgram, "in_colorTransform");
 
     // set default uniform values
     s_gles2.glUniform1f(mAlpha, 1.0);
@@ -239,6 +244,15 @@ TextureDraw::TextureDraw()
     s_gles2.glUniform2f(mScaleSlot, 1.0, 1.0);
     s_gles2.glUniform2f(mCoordTranslation, 0.0, 0.0);
     s_gles2.glUniform2f(mCoordScale, 1.0, 1.0);
+    const float matrix[16] = {
+        // clang-format off
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f,
+        // clang-format on
+    };
+    s_gles2.glUniformMatrix4fv(mColorTransform, 1, GL_FALSE, matrix);
 
 #if 0
     printf("SLOTS position=%d inCoord=%d texture=%d translation=%d\n",
@@ -335,6 +349,9 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
 
     // setup the |translation| uniform value.
     s_gles2.glUniform2f(mTranslationSlot, dx, dy);
+
+    //TODO000: how to get color transform from hwc?
+    //s_gles2.glUniformMatrix4fv(mColorTransform, 1, GL_FALSE, colorTransformMatrix);
 
 #ifndef NDEBUG
     // Validate program, just to be sure.
