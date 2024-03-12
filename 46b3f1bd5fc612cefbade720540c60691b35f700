@@ -50,6 +50,24 @@
       "message": "Do you know why we don\u0027t do this line in `updateExternalMemoryInfo`? This line of code suggests that `updateExternalMemoryInfo` doesn\u0027t complete its job.",
       "revId": "46b3f1bd5fc612cefbade720540c60691b35f700",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "776c7171_c41b673e",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2063,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-03-12T18:11:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f17af33a_12457c78",
+      "revId": "46b3f1bd5fc612cefbade720540c60691b35f700",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
