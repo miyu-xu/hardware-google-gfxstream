@@ -965,6 +965,13 @@ class VkDecoderGlobalState::Impl {
         if (ycbcrFeatures != nullptr) {
             ycbcrFeatures->samplerYcbcrConversion |= m_emu->enableYcbcrEmulation;
         }
+        VkPhysicalDeviceProtectedMemoryFeatures* protectedMemoryFeatures =
+            vk_find_struct<VkPhysicalDeviceProtectedMemoryFeatures>(pFeatures);
+        if (protectedMemoryFeatures != nullptr) {
+            // Protected memory is not supported on emulators. Override feature
+            // information to mark as unsupported.
+            protectedMemoryFeatures->protectedMemory = VK_FALSE;
+        }
     }
 
     VkResult on_vkGetPhysicalDeviceImageFormatProperties(
