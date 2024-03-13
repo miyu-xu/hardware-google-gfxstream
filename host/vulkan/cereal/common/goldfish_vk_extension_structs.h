@@ -34,6 +34,7 @@
 
 #include "goldfish_vk_private_defs.h"
 #include "host-common/GfxstreamFatalError.h"
+#include "host-common/feature_control.h"
 #include "vk_android_native_buffer_gfxstream.h"
 #include "vulkan_gfxstream.h"
 
