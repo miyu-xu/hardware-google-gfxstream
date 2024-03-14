@@ -33,6 +33,24 @@
       "message": "I don\u0027t quite understand about the test set up here:\n\nFor those threads that are currently shutting down their ASGs, they should have already completed all Vulkan works, so on `VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE` they shouldn\u0027t be waiting for anything.\n\nSince `VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE` is not blocked, other ASG Ping commands won\u0027t be blocked.\n\nWhat am I missing here?\n\nShouldn\u0027t just the following be enough to trigger the lock you mentioned?\n1. create ASG\n2. put ASG in sleep(waiting for ping)\n3. destroy ASG(issue VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE and wait for ASG thread to complete)\n\n\nAnd the fix seems to be very easy: ping on the host before we wait for ASG to return(we can\u0027t ping on the guest, as the guest userspace may have already died, and the guest kernel doesn\u0027t know anything about ASG). What am I missing here?",
       "revId": "64794106eeef8e39f206062f0981770597d1d8f1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2806051e_7eac1e54",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 482,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-14T20:48:50Z",
+      "side": 1,
+      "message": "Potential example to help:\n\n```\nT1: Host-RenderThread-1: \u003csleeping waiting for wakeup\u003e\nT2: Host-RenderThread-2: \u003csleeping waiting for wakeup\u003e\n\nT3: Guest-Thread-1: vkDestroyBuffer() called,\n                    VkEncoder grabs seqno-10\n                    writes seqno-10 into ASG-1 via resource-1\nT4: Guest-Thread-2: vkDestroyBuffer() called\n                    VkEncoder grabs seqno-11,\n                    writes into ASG-2 via resource-2\nT5: Guest-Thread-2: sends VIRTIO_GPU_CMD_SUBMIT_3D with GFXSTREAM_CONTEXT_PING on ASG-resource-2\nT6: Guest-Thread-2: guest thread finishes\n                    ASG-2 destructor destroys BLOB\n                    destruction sends VIRTIO_GPU_CMD_RESOURCE_UNREF on resource-2\nT7: Guest-Thread-1: sends VIRTIO_GPU_CMD_SUBMIT_3D with GFXSTREAM_CONTEXT_PING on ASG-resource-1\nT8: Host-Virtio-Gpu-Thread: performs VIRTIO_GPU_CMD_SUBMIT_3D from T5, pings ASG-2 which wakes up Host-RenderThread-2\nT9: Host-RenderThread-2: woken from T8,\n                         reads seqno-11 from ASG-2\n                         spin looping waiting for seqno-10 to execute\nT9: Host-Virtio-Gpu-Thread: performs VIRTIO_GPU_CMD_RESOURCE_UNREF for resource-2 from T6\n                            resource-2 is used by ASG-2 / Host-RenderThread-2\n                            waits for Host-RenderThread-2 to finish\n                            !!!DEADLOCKED!!!\n\n^ DEADLOCKED HERE: Host-RenderThread-2 is waiting for Host-RenderThread-1 to execute seqno-10 but Host-RenderThread-1\n       will not wake up until the wake up from the next virtio gpu command\n\n\u003cT10: Host-Virtio-Gpu-Thread: would perform VIRTIO_GPU_CMD_SUBMIT_3D from T7 to wake up Host-RenderThread-1\u003e\n```\n\nLet me know if I have misunderstood.\n\nIIUC, we would need to ping **all** ASGs for a given process before doing the wait or potentially move the resource unref to a secondary thread?",
+      "parentUuid": "49047afc_b6d7710f",
+      "revId": "64794106eeef8e39f206062f0981770597d1d8f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
