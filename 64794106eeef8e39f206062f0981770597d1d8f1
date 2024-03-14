@@ -51,6 +51,24 @@
       "parentUuid": "49047afc_b6d7710f",
       "revId": "64794106eeef8e39f206062f0981770597d1d8f1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "197870e7_22040899",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 482,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-14T21:07:10Z",
+      "side": 1,
+      "message": "Ok, I see what I was missing:\n\n`vkDestroy*` are APIs that returns `void` so they are async, and the guest can continue without the host completing the task, so when `VIRTIO_GPU_CMD_RESOURCE_UNREF` is sent to the host, there may be on-going tasks on the ASG channel.\n\nCan we elaborate that in the comment, since the actual problematic `vkDestroyBuffer` call isn\u0027t there?\n\n\u003e IIUC, we would need to ping all ASGs for a given process before doing the wait or potentially move the resource unref to a secondary thread?\n\nYes, you are correct. Another approach is to change `VIRTIO_GPU_CMD_RESOURCE_UNREF` to be an async command, so it won\u0027t block the virtio-gpu channel, but this approach may mess up the order of virtio-gpu commands. I don\u0027t have a strong opinion on either.",
+      "parentUuid": "2806051e_7eac1e54",
+      "revId": "64794106eeef8e39f206062f0981770597d1d8f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
