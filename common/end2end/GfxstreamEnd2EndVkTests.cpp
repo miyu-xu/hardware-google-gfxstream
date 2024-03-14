@@ -14,6 +14,9 @@
 
 #include <log/log.h>
 
+#include <atomic>
+#include <thread>
+
 #include "GfxstreamEnd2EndTests.h"
 #include "drm_fourcc.h"
 
@@ -444,6 +447,47 @@ TEST_P(GfxstreamEnd2EndVkTest, DISABLED_DescriptorSetAllocFreeDestroy) {
     // The double free should also work
     auto descriptorSetHandles = AsHandles(bundle.descriptorSets);
     EXPECT_THAT(device->freeDescriptorSets(*bundle.descriptorPool, kNumSets, descriptorSetHandles.data()), IsVkSuccess());
+}
+
+TEST_P(GfxstreamEnd2EndVkTest, DISABLED_MultiThreadedShutdown) {
+    constexpr const int kNumIterations = 100;
+    for (int i = 0; i < kNumIterations; i++) {
+        auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
+                VK_ASSERT(SetUpTypicalVkTestEnvironment());
+
+        const vkhpp::BufferCreateInfo bufferCreateInfo = {
+            .size = 1024,
+            .usage = vkhpp::BufferUsageFlagBits::eTransferSrc,
+        };
+
+        std::atomic_int threadsReady{0};
+        std::vector<std::thread> threads;
+
+        constexpr const int kNumThreads = 5;
+        for (int threadIndex = 0; threadIndex < kNumThreads; threadIndex++) {
+            threads.emplace_back([&, this, threadIndex](){
+                // Perform some work to ensure host RenderThread started.
+                auto buffer1 = device->createBufferUnique(bufferCreateInfo).value;
+
+                ++threadsReady;
+                while (threadsReady.load() != kNumThreads) {}
+
+                // Sleep a little which is hopefully enough time to potentially get
+                // the corresponding host ASG RenderThreads to go sleep waiting for
+                // a WAKEUP via a GFXSTREAM_CONTEXT_PING.
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+                // Perform a little more work which could potentially cause some
+                // interleaving between the threads sending GFXSTREAM_CONTEXT_PING
+                // commands and the threads shutting down their ASGs.
+                auto buffer2 = device->createBufferUnique(bufferCreateInfo).value;
+            });
+        }
+
+        for (auto& thread : threads) {
+            thread.join();
+        }
+    }
 }
 
 INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkTest,
