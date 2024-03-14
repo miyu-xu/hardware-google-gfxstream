@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "505c4a9b_35e6856d",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 473,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-14T18:28:48Z",
+      "side": 1,
+      "message": "nit: use `std::barrier`, we are on C++20 now so should be safe to use.",
+      "revId": "64794106eeef8e39f206062f0981770597d1d8f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49047afc_b6d7710f",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 482,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-14T18:28:48Z",
+      "side": 1,
+      "message": "I don\u0027t quite understand about the test set up here:\n\nFor those threads that are currently shutting down their ASGs, they should have already completed all Vulkan works, so on `VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE` they shouldn\u0027t be waiting for anything.\n\nSince `VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE` is not blocked, other ASG Ping commands won\u0027t be blocked.\n\nWhat am I missing here?\n\nShouldn\u0027t just the following be enough to trigger the lock you mentioned?\n1. create ASG\n2. put ASG in sleep(waiting for ping)\n3. destroy ASG(issue VIRTIO_GPU_CMD_CTX_DETACH_RESOURCE and wait for ASG thread to complete)\n\n\nAnd the fix seems to be very easy: ping on the host before we wait for ASG to return(we can\u0027t ping on the guest, as the guest userspace may have already died, and the guest kernel doesn\u0027t know anything about ASG). What am I missing here?",
+      "revId": "64794106eeef8e39f206062f0981770597d1d8f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
