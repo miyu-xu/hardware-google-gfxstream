@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "36b11dc0_997d6d84",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 12
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-15T22:51:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a1b5c83c_566d007a",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 26,
+        "endChar": 68
+      },
+      "revId": "b05abb5b74a52239b3f76b5ae7c396ca0b1c2a0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7bdc28b2_593c181c",
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "Thank you for telling me, I don\u0027t know we already have `hardware/google/gfxstream/scripts/glsl-shader-to-spv-c-array.py`. Will regenerate with the existing one.",
       "parentUuid": "7bdc28b2_593c181c",
+      "range": {
+        "startLine": 17,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 127
+      },
+      "revId": "b05abb5b74a52239b3f76b5ae7c396ca0b1c2a0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bb68416_4f0dec13",
+        "filename": "common/end2end/simple_shader_vert.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-15T22:51:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cccd3710_c334cfe1",
       "range": {
         "startLine": 17,
         "startChar": 3,
