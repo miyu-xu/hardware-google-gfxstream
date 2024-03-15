@@ -16,6 +16,24 @@
       "message": "This looks good to me if it\u0027s blocking something or causing crashes on the apps using it, but the feature might become a MUST in the CTS (ref: [7.1.4.1/H-1-3] ) and apps will start relying on the support. So might be better to prioritize the emulation of it instead. Maybe add a tracker ticket in the code with a TODO note?",
       "revId": "6f593615dc11457417a7a377aee0e53d760ba1c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24520327_a51567ea",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 973,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-03-15T16:02:46Z",
+      "side": 1,
+      "message": "Done, filed b/329845987.  It could be best to change the CDD spec: there are a few other exceptions made for emulators too.",
+      "parentUuid": "ea061338_4fde2125",
+      "revId": "6f593615dc11457417a7a377aee0e53d760ba1c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
