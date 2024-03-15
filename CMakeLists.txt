@@ -39,9 +39,10 @@ endif()
 
 option(VIRGL_RENDERER_UNSTABLE_APIS "Use unstable virglrenderer APIs" ON)
 if(VIRGL_RENDERER_UNSTABLE_APIS)
+    # Unused in code base?
     add_definitions(-DVIRGL_RENDERER_UNSTABLE_APIS)
 endif()
-    
+
 add_definitions(-DGFXSTREAM_ENABLE_HOST_GLES=1)
 
 option(ASTC_CPU_DECODING "Enable decoding ASTC textures on the CPU" OFF)
@@ -94,8 +95,8 @@ elseif(WIN32)
     add_compile_definitions(VK_USE_PLATFORM_WIN32_KHR)
 endif()
 
-add_compile_definitions(GLM_FORCE_RADIANS)
-add_compile_definitions(GLM_FORCE_DEFAULT_ALIGNED_GENTYPES)
+add_compile_definitions(GLM_FORCE_RADIANS) # Appears to be unused?
+add_compile_definitions(GLM_FORCE_DEFAULT_ALIGNED_GENTYPES)  # Appears to be unused?
 add_compile_definitions(VK_GFXSTREAM_STRUCTURE_TYPE_EXT)
 
 if (MSVC)
@@ -144,15 +145,15 @@ endif()
 
 set(EXTRA_SUBDIR_TEST_INCLUDE_FILES)
 
-add_subdirectory(common)
+add_subdirectory(common) # Done
 
 # Third party dependencies
-add_subdirectory(third-party)
+add_subdirectory(third-party) # Done
 
 # Backends######################################################################
 
-add_subdirectory(utils)
-add_subdirectory(host)
+add_subdirectory(utils) # Done
+add_subdirectory(host)  # Working on
 
 # Protocols and associated code generators######################################
 
