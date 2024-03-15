@@ -27,6 +27,7 @@
 #if GFXSTREAM_ENABLE_HOST_GLES
 #include "gl/ColorBufferGl.h"
 #else
+#error ENABLE GFXSTREAM_ENABLE_HOST_GLES
 #include "GlesCompat.h"
 #endif
 
