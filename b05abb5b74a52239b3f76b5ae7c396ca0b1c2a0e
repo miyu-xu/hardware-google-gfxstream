@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "276085d6_6ccece64",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 12
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-15T21:34:38Z",
+      "side": 1,
+      "message": "Can you expand more on this? I am having trouble understanding what \"NextApi\" is and how these extra handles are used.",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 26,
+        "endChar": 68
+      },
+      "revId": "b05abb5b74a52239b3f76b5ae7c396ca0b1c2a0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7bdc28b2_593c181c",
+        "filename": "common/end2end/simple_shader_vert.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-15T21:34:38Z",
+      "side": 1,
+      "message": "optional: Maybe use `hardware/google/gfxstream/scripts/glsl-shader-to-spv-c-array.py` or update the compositor shaders in `hardware/google/gfxstream/host/vulkan` to use `generate_spirv.py` so we\u0027re consistent across the project.",
+      "range": {
+        "startLine": 17,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 127
+      },
+      "revId": "b05abb5b74a52239b3f76b5ae7c396ca0b1c2a0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e32d6b35_c0c1bbae",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-15T21:34:38Z",
+      "side": 1,
+      "message": "Drop the extra assignment.\n\n```suggestion\n            if (r.callback) {\n                r.callback();\n            }\n```",
+      "range": {
+        "startLine": 281,
+        "startChar": 12,
+        "endLine": 284,
+        "endChar": 13
+      },
+      "revId": "b05abb5b74a52239b3f76b5ae7c396ca0b1c2a0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "873cb29f_f4e71080",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 451,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-15T21:34:38Z",
+      "side": 1,
+      "message": "Can you explain why they need to be saved and loaded in the same order? Are `VkImage`s not independent of each other?",
+      "range": {
+        "startLine": 451,
+        "startChar": 8,
+        "endLine": 451,
+        "endChar": 72
+      },
+      "revId": "b05abb5b74a52239b3f76b5ae7c396ca0b1c2a0e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
