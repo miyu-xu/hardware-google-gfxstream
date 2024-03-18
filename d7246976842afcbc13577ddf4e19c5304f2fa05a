@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69e68505_f557d2a7",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "```suggestion\n    auto image \u003d device-\u003ecreateImageUnique(imageCreateInfo).value;\n    ASSERT_THAT(image, IsValidHandle());\n```",
+      "range": {
+        "startLine": 101,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 14
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b8556a7_8662934a",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "```suggestion\n    auto imageView \u003d device-\u003ecreateImageViewUnique(imageViewCreateInfo).value;\n    ASSERT_THAT(imageView, IsValidHandle());\n```",
+      "range": {
+        "startLine": 131,
+        "startChar": 4,
+        "endLine": 131,
+        "endChar": 18
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6340b736_5c2ce008",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "```suggestion\n    auto renderPass \u003d device-\u003ecreateRenderPassUnique(renderPassCreateInfo).value;\n    ASSERT_THAT(renderPass, IsValidHandle());\n```",
+      "range": {
+        "startLine": 63,
+        "startChar": 4,
+        "endLine": 63,
+        "endChar": 19
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53e5f71d_fe38423f",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "```suggestion\n    auto vertexShaderModule \u003d device-\u003ecreateShaderModuleUnique(vertexShaderModuleCreateInfo).value;\n    ASSERT_THAT(vertexShaderModule, IsValidHandle());\n```",
+      "range": {
+        "startLine": 79,
+        "startChar": 4,
+        "endLine": 79,
+        "endChar": 27
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "316dc410_19ead5a4",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "```suggestion\n    auto fragmentShaderModule \u003d\n        device-\u003ecreateShaderModuleUnique(fragmentShaderModuleCreateInfo).value;\n    ASSERT_THAT(fragmentShaderModule, IsValidHandle());\n```",
+      "range": {
+        "startLine": 80,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 79
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b144c2e_4dfa5887",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "Could this test also render with the graphics pipeline after the snapshot load to make sure it is indeed valid?",
+      "range": {
+        "startLine": 179,
+        "startChar": 4,
+        "endLine": 179,
+        "endChar": 18
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74621797_6544f4cf",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 6093,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "```suggestion\n            return sBoxedHandleManager.addFixed(handle, item, typeTag);\n```",
+      "range": {
+        "startLine": 6091,
+        "startChar": 12,
+        "endLine": 6093,
+        "endChar": 23
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c13f9aa8_1732dd70",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "```suggestion\n#define DEBUG_RECONSTRUCTION 0\n```\n\nRevert back before submission.",
+      "range": {
+        "startLine": 28,
+        "startChar": 29,
+        "endLine": 28,
+        "endChar": 30
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "283caa77_2848492e",
+        "filename": "host/vulkan/VkReconstruction.h",
+        "patchSetId": 14
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-18T22:50:30Z",
+      "side": 1,
+      "message": "Could we also add a snapshot test which calls `vkCreateDescriptorPool()` twice, does some `vkAllocateDescriptorSets()`, `SnapshotSaveAndLoad()`, and then performs `vkUpdateDescriptorSets()` on some of the descriptors? IIUC, that should exercise the use of the extra handles?",
+      "range": {
+        "startLine": 108,
+        "startChar": 4,
+        "endLine": 108,
+        "endChar": 37
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
