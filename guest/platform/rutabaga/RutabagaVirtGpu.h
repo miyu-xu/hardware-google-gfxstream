@@ -53,7 +53,10 @@ class RutabagaVirtGpuResource : public std::enable_shared_from_this<RutabagaVirt
     int wait() override;
 
     int transferFromHost(uint32_t offset, uint32_t size) override;
+    int transferFromHost(uint32_t x, uint32_t y, uint32_t w, uint32_t h) override;
+
     int transferToHost(uint32_t offset, uint32_t size) override;
+    int transferToHost(uint32_t x, uint32_t y, uint32_t w, uint32_t h) override;
 
   private:
     friend class RutabagaVirtGpuDevice;
