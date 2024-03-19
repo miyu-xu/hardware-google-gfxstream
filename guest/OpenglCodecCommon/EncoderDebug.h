@@ -20,7 +20,7 @@ void encoderLog(const char* format, ...);
 
 // Uncomment to log function calls with arguments:
 // #define ENABLE_ENCODER_DEBUG_LOGGING_FOR_ALL_APPS 1
-// #define ENABLE_ENCODER_DEBUG_LOGGING_FOR_APP "com.android.systemui"
+#define ENABLE_ENCODER_DEBUG_LOGGING_FOR_APP "cts"
 
 #if defined(ENABLE_ENCODER_DEBUG_LOGGING_FOR_ALL_APPS) || \
     defined(ENABLE_ENCODER_DEBUG_LOGGING_FOR_APP)

@@ -15,8 +15,6 @@
 */
 
 #include "GL2Encoder.h"
-#include "GLESv2Validation.h"
-#include "GLESTextureUtils.h"
 
 #include <string>
 #include <map>
@@ -30,6 +28,10 @@
 
 #include <GLES3/gl3.h>
 #include <GLES3/gl31.h>
+
+#include "EncoderDebug.h"
+#include "GLESv2Validation.h"
+#include "GLESTextureUtils.h"
 
 using gfxstream::guest::BufferData;
 using gfxstream::guest::ChecksumCalculator;
@@ -1888,8 +1890,36 @@ void GL2Encoder::s_glShaderBinary(void *self, GLsizei, const GLuint *, GLenum, c
     SET_ERROR_IF(1, GL_INVALID_ENUM);
 }
 
+std::vector<std::string> JasonSplit(const std::string& s, const std::string& delimiters) {
+    if (delimiters.empty()) {
+        return {};
+    }
+
+    std::vector<std::string> result;
+
+    size_t base = 0;
+    size_t found;
+    while (true) {
+        found = s.find_first_of(delimiters, base);
+        result.push_back(s.substr(base, found - base));
+        if (found == s.npos) break;
+        base = found + 1;
+    }
+
+    return result;
+}
+
 void GL2Encoder::s_glShaderSource(void *self, GLuint shader, GLsizei count, const GLchar * const *string, const GLint *length)
 {
+    for (GLsizei i = 0; i < count; i++) {
+        const std::string shaderSourceString(string[i], length[i]);
+        const std::vector<std::string> shaderLines = JasonSplit(shaderSourceString, "\n");
+        ENCODER_DEBUG_LOG("Shader %d", i);
+        for (const std::string& shaderLine : shaderLines) {
+            ENCODER_DEBUG_LOG("%s", shaderLine.c_str());
+        }
+    }
+
     GL2Encoder* ctx = (GL2Encoder*)self;
     ShaderData* shaderData = ctx->m_shared->getShaderData(shader);
     SET_ERROR_IF(!ctx->m_shared->isShaderOrProgramObject(shader), GL_INVALID_VALUE);
@@ -1939,6 +1969,61 @@ void GL2Encoder::s_glFinish(void *self)
     ctx->glFinishRoundTrip(self);
 }
 
+void GL2Encoder::updateProgramInfoAfterLink(GLuint program) {
+    GL2Encoder *ctx = this;
+
+    GLint linkStatus = 0;
+    ctx->m_glGetProgramiv_enc(ctx, program, GL_LINK_STATUS, &linkStatus);
+    ctx->m_shared->setProgramLinkStatus(program, linkStatus);
+    if (!linkStatus) {
+        return;
+    }
+
+    // get number of active uniforms and attributes in the program
+    GLint numUniforms=0;
+    GLint numAttributes=0;
+    ctx->m_glGetProgramiv_enc(ctx, program, GL_ACTIVE_UNIFORMS, &numUniforms);
+    ctx->m_glGetProgramiv_enc(ctx, program, GL_ACTIVE_ATTRIBUTES, &numAttributes);
+    ctx->m_shared->initProgramData(program,numUniforms,numAttributes);
+
+    //get the length of the longest uniform name
+    GLint maxLength=0;
+    GLint maxAttribLength=0;
+    ctx->m_glGetProgramiv_enc(ctx, program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength);
+    ctx->m_glGetProgramiv_enc(ctx, program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxAttribLength);
+
+    GLint size;
+    GLenum type;
+    size_t bufLen = maxLength > maxAttribLength ? maxLength : maxAttribLength;
+    GLchar *name = new GLchar[bufLen + 1];
+    GLint location;
+    //for each active uniform, get its size and starting location.
+    for (GLint i=0 ; i<numUniforms ; ++i)
+    {
+        ctx->m_glGetActiveUniform_enc(ctx, program, i, maxLength, NULL, &size, &type, name);
+        location = ctx->m_glGetUniformLocation_enc(ctx, program, name);
+        ctx->m_shared->setProgramIndexInfo(program, i, location, size, type, name);
+    }
+
+    for (GLint i = 0; i < numAttributes; ++i) {
+        ctx->m_glGetActiveAttrib_enc(ctx, program, i, maxAttribLength,  NULL, &size, &type, name);
+        location = ctx->m_glGetAttribLocation_enc(ctx, program, name);
+        ctx->m_shared->setProgramAttribInfo(program, i, location, size, type, name);
+    }
+
+    if (ctx->majorVersion() > 2) {
+        GLint numBlocks;
+        ctx->m_glGetProgramiv_enc(ctx, program, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
+        ctx->m_shared->setActiveUniformBlockCountForProgram(program, numBlocks);
+
+        GLint tfVaryingsCount;
+        ctx->m_glGetProgramiv_enc(ctx, program, GL_TRANSFORM_FEEDBACK_VARYINGS, &tfVaryingsCount);
+        ctx->m_shared->setTransformFeedbackVaryingsCountForProgram(program, tfVaryingsCount);
+    }
+
+    delete[] name;
+}
+
 void GL2Encoder::s_glLinkProgram(void * self, GLuint program)
 {
     GL2Encoder *ctx = (GL2Encoder *)self;
@@ -1954,56 +2039,7 @@ void GL2Encoder::s_glLinkProgram(void * self, GLuint program)
 
     ctx->m_glLinkProgram_enc(self, program);
 
-    GLint linkStatus = 0;
-    ctx->m_glGetProgramiv_enc(self, program, GL_LINK_STATUS, &linkStatus);
-    ctx->m_shared->setProgramLinkStatus(program, linkStatus);
-    if (!linkStatus) {
-        return;
-    }
-
-    // get number of active uniforms and attributes in the program
-    GLint numUniforms=0;
-    GLint numAttributes=0;
-    ctx->m_glGetProgramiv_enc(self, program, GL_ACTIVE_UNIFORMS, &numUniforms);
-    ctx->m_glGetProgramiv_enc(self, program, GL_ACTIVE_ATTRIBUTES, &numAttributes);
-    ctx->m_shared->initProgramData(program,numUniforms,numAttributes);
-
-    //get the length of the longest uniform name
-    GLint maxLength=0;
-    GLint maxAttribLength=0;
-    ctx->m_glGetProgramiv_enc(self, program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength);
-    ctx->m_glGetProgramiv_enc(self, program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxAttribLength);
-
-    GLint size;
-    GLenum type;
-    size_t bufLen = maxLength > maxAttribLength ? maxLength : maxAttribLength;
-    GLchar *name = new GLchar[bufLen + 1];
-    GLint location;
-    //for each active uniform, get its size and starting location.
-    for (GLint i=0 ; i<numUniforms ; ++i)
-    {
-        ctx->m_glGetActiveUniform_enc(self, program, i, maxLength, NULL, &size, &type, name);
-        location = ctx->m_glGetUniformLocation_enc(self, program, name);
-        ctx->m_shared->setProgramIndexInfo(program, i, location, size, type, name);
-    }
-
-    for (GLint i = 0; i < numAttributes; ++i) {
-        ctx->m_glGetActiveAttrib_enc(self, program, i, maxAttribLength,  NULL, &size, &type, name);
-        location = ctx->m_glGetAttribLocation_enc(self, program, name);
-        ctx->m_shared->setProgramAttribInfo(program, i, location, size, type, name);
-    }
-
-    if (ctx->majorVersion() > 2) {
-        GLint numBlocks;
-        ctx->m_glGetProgramiv_enc(ctx, program, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
-        ctx->m_shared->setActiveUniformBlockCountForProgram(program, numBlocks);
-
-        GLint tfVaryingsCount;
-        ctx->m_glGetProgramiv_enc(ctx, program, GL_TRANSFORM_FEEDBACK_VARYINGS, &tfVaryingsCount);
-        ctx->m_shared->setTransformFeedbackVaryingsCountForProgram(program, tfVaryingsCount);
-    }
-
-    delete[] name;
+    ctx->updateProgramInfoAfterLink(program);
 }
 
 #define VALIDATE_PROGRAM_NAME(program) \
@@ -6355,6 +6391,8 @@ void GL2Encoder::s_glProgramBinary(void *self , GLuint program, GLenum binaryFor
     SET_ERROR_IF(~0 == binaryFormat, GL_INVALID_ENUM);
 
     ctx->m_glProgramBinary_enc(self, program, binaryFormat, binary, length);
+
+    ctx->updateProgramInfoAfterLink(program);
 }
 
 void GL2Encoder::s_glGetSamplerParameterfv(void *self, GLuint sampler, GLenum pname, GLfloat* params) {

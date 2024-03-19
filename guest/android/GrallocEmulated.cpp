@@ -91,6 +91,33 @@ void EmulatedAHardwareBuffer::release() {
     }
 }
 
+int EmulatedAHardwareBuffer::lock(uint8_t** ptr) {
+    if (!mMapped) {
+        mMapped = mResource->createMapping();
+        if (!mMapped) {
+            ALOGE("Failed to lock EmulatedAHardwareBuffer: failed to create mapping.");
+            return -1;
+        }
+
+        mResource->transferFromHost(0, 0, mWidth, mHeight);
+        mResource->wait();
+    }
+
+    *ptr = (*mMapped)->asRawPtr();
+    return 0;
+}
+
+int EmulatedAHardwareBuffer::unlock() {
+    if (!mMapped) {
+        ALOGE("Failed to unlock EmulatedAHardwareBuffer: never locked?");
+        return -1;
+    }
+    mResource->transferToHost(0, 0, mWidth, mHeight);
+    mResource->wait();
+    mMapped.reset();
+    return 0;
+}
+
 EmulatedGralloc::EmulatedGralloc() {}
 
 uint32_t EmulatedGralloc::createColorBuffer(void*, int width, int height, uint32_t glFormat) {
@@ -150,6 +177,16 @@ void EmulatedGralloc::acquire(AHardwareBuffer* ahb) {
 void EmulatedGralloc::release(AHardwareBuffer* ahb) {
     auto* rahb = reinterpret_cast<EmulatedAHardwareBuffer*>(ahb);
     rahb->release();
+}
+
+int EmulatedGralloc::lock(AHardwareBuffer* ahb, uint8_t** ptr) {
+    auto* rahb = reinterpret_cast<EmulatedAHardwareBuffer*>(ahb);
+    return rahb->lock(ptr);
+}
+
+int EmulatedGralloc::unlock(AHardwareBuffer* ahb) {
+    auto* rahb = reinterpret_cast<EmulatedAHardwareBuffer*>(ahb);
+    return rahb->unlock();
 }
 
 uint32_t EmulatedGralloc::getHostHandle(const native_handle_t* handle) {
