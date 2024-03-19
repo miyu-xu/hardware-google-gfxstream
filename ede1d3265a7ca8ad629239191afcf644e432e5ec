@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b77085df_62cbc73f",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-19T23:13:42Z",
+      "side": 1,
+      "message": "I found something more broken after turning on validation layer. Currently we don\u0027t have a good way to enforce vkBindImageMemory is played back before vkCreateImageView. Will try to figure out how to fix it.\n\nAlso I forgot to set many enums in many other places.",
+      "parentUuid": "cf4c1907_5792eee6",
+      "revId": "ede1d3265a7ca8ad629239191afcf644e432e5ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69e0354f_5cfbb2f7",
         "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
         "patchSetId": 15
