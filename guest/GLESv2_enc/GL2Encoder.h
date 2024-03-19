@@ -43,7 +43,7 @@ struct Extensions
 
 class GL2Encoder : public gl2_encoder_context_t {
 public:
-    GL2Encoder(gfxstream::guest::IOStream *stream, 
+    GL2Encoder(gfxstream::guest::IOStream *stream,
                gfxstream::guest::ChecksumCalculator* protocol);
     virtual ~GL2Encoder();
     const Extensions& getExtensions() const { return m_extensions; }
@@ -201,6 +201,8 @@ private:
     bool updateHostTexture2DBinding(GLenum texUnit, GLenum newTarget);
     void updateHostTexture2DBindingsFromProgramData(GLuint program);
     bool texture2DNeedsOverride(GLenum target) const;
+
+    void updateProgramInfoAfterLink(GLuint program);
 
     // Utility classes for safe queries that
     // need access to private class members
