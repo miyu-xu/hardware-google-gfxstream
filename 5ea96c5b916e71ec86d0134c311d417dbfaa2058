@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "20b0bf92_ff9481c7",
+        "filename": "host/vulkan/VkDecoder.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-20T22:05:47Z",
+      "side": 1,
+      "message": "this file is auto generated. if you want to modify it, please update this file:\nhttps://source.corp.google.com/h/googleplex-android/platform/superproject/main/+/main:hardware/google/gfxstream/codegen/vulkan/vulkan-docs-next/scripts/cerealgenerator.py;drc\u003d80c47dc5ac5f352c0c6842dac35ce843bd4cc385;l\u003d498\n\nsame for VkDecoder.cpp",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 29
+      },
+      "revId": "5ea96c5b916e71ec86d0134c311d417dbfaa2058",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
