@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09c1ec6a_c843b234",
+        "filename": "guest/fuchsia/include/msd-virtio-gpu/magma-virtio-gpu-defs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1019788
+      },
+      "writtenOn": "2024-03-20T20:47:09Z",
+      "side": 1,
+      "message": "This is a copy of a file from fuchsia.git - not sure if I should change the license header",
+      "revId": "1871367b6a45268c221ec5e5ba697d151f79b5ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
