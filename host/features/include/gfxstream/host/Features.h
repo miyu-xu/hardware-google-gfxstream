@@ -120,9 +120,14 @@ struct FeatureSet {
         "Default description: consider contributing a description if you see this!",
         &map,
     };
-    FeatureInfo HwcMultiConfigs = {
-        "HwcMultiConfigs",
-        "Default description: consider contributing a description if you see this!",
+    FeatureInfo HWCMultiConfigs = {
+        "HWCMultiConfigs",
+        "Support resizable emualtor",
+        &map,
+    };
+    FeatureInfo SupportPixelFold = {
+        "SupportPixelFold",
+        "Support Foldable emualtor!",
         &map,
     };
     FeatureInfo Minigbm = {
