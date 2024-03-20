@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39452366_c641e46c",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 646,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-20T23:09:53Z",
+      "side": 1,
+      "message": "We need to add a health monitor here and the worker exit, but that\u0027s on me for another CL.",
+      "revId": "6e7a1605ba5be2016c8e60a8fc80e5b85dc2ecf7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

@@ -108,6 +108,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b5fb93af_fe1b1b4f",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-20T23:09:53Z",
+      "side": 1,
+      "message": "Let\u0027s leave a comment here:\n\n* We could still end up in a hang here.\n* In practice, we only see this happens on shutdown.\n* And a link to the bug(https://b.corp.google.com/issues/329287602).\n\nThanks!",
+      "parentUuid": "9a5726c1_d8d27f65",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9ab0eea7_22ec7540",
         "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
         "patchSetId": 3
