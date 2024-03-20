@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01a7b73e_3afbe0a4",
+        "filename": "host/features/include/gfxstream/host/Features.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-20T16:51:38Z",
+      "side": 1,
+      "message": "I think we can drop this feature as `SupportPixelFold` is not used anywhere inside of `hardware/google/gfxstream`.",
+      "range": {
+        "startLine": 128,
+        "startChar": 4,
+        "endLine": 132,
+        "endChar": 6
+      },
+      "revId": "a5ecc0ac8bd57f30a495dae20c81beaad5d8e4e8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
