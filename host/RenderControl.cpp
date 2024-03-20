@@ -492,7 +492,7 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
     bool syncBufferDataEnabled = true;
     bool vulkanAsyncQsri = shouldEnableVulkanAsyncQsri(features);
     bool readColorBufferDma = directMemEnabled && hasSharedSlotsHostMemoryAllocatorEnabled;
-    bool hwcMultiConfigs = features.HwcMultiConfigs.enabled;
+    bool hwcMultiConfigs = features.HWCMultiConfigs.enabled;
 
     if (isChecksumEnabled && name == GL_EXTENSIONS) {
         glStr += ChecksumCalculatorThreadInfo::getMaxVersionString();
