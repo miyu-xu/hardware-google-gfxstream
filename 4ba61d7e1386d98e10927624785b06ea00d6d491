@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6dc13b1c_6718a026",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-20T21:35:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ceb398c_4320416b",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "56e5702d_550a7dcf",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-03-20T21:04:38Z",
       "side": 1,
       "message": "Use DISALLOW_COPY_ASSIGN_AND_MOVE for this class.",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f4476df_cd773b26",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 667,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-20T21:35:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "56e5702d_550a7dcf",
       "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a5726c1_d8d27f65",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-20T21:35:53Z",
+      "side": 1,
+      "message": "Yes, I think it might be possible with:\n\n```\nT1: Host-RenderThread-1: \u003csleeping waiting for wakeup\u003e\n\nT2: Host-RenderThread-2: \u003csleeping waiting for wakeup\u003e\n\nT3: Guest-Thread-1: vkDestroyBuffer() called,\n                    VkEncoder grabs sequence-number-10,\n                    writes sequence-number-10 into ASG-1 via resource-1\n\nT4: Guest-Thread-2: vkDestroyBuffer() called,\n                    VkEncoder grabs sequence-number-11,\n                    writes into ASG-2 via resource-2\n\nT5: Guest-Thread-2: ASG-2 sends a VIRTIO_GPU_CMD_SUBMIT_3D with\n                    GFXSTREAM_CONTEXT_PING on ASG-resource-2\n\nT6: Guest-Thread-2: guest thread finishes,\n                    ASG-2 destructor destroys the virtio-gpu resource used,\n                    destruction sends VIRTIO_GPU_CMD_RESOURCE_UNREF on\n                    resource-2\n\n\u003cdifference from before\u003e\nT7: Guest process exits: Note ASG-1 did not have a chance to send \n                         VIRTIO_GPU_CMD_SUBMIT_3D with GFXSTREAM_CONTEXT_PING on\n                         ASG-resource-1,\n                         guest kernel closes files\n                         guest kernel sends VIRTIO_GPU_CMD_CTX_DESTROY\n\nT8: Host-Virtio-Gpu-Thread: performs VIRTIO_GPU_CMD_SUBMIT_3D from T5,\n                            pings ASG-2 which wakes up Host-RenderThread-2\n\nT9: Host-RenderThread-2: woken from T8,\n                          reads sequence-number-11 from ASG-2,\n                          spin looping waiting for sequence-number-10 to execute\n\n```\n\n😭",
+      "parentUuid": "25eaefc6_7a00baa1",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9ab0eea7_22ec7540",
@@ -69,6 +123,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca95f07c_14a0794e",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 861,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-20T21:35:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ab0eea7_22ec7540",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fe32a44b_a4ba6e67",
@@ -82,6 +154,24 @@
       "writtenOn": "2024-03-20T21:04:38Z",
       "side": 1,
       "message": "I don\u0027t feel strong, but you can use `std::visit` to avoid deriving `std::variant` and defining the new member functions for `RingBlob`:\n\n```\nif (entry.ringBlob) {\n    std::visit([handle](auto\u0026\u0026 ringBlob) {\n        using T \u003d std::decay_t\u003cdecltype(ringBlob)\u003e;\n        if constexpr (std::is_same_v\u003cT, std::unique_ptr\u003cSharedMemory\u003e\u003e) {\n#ifdef _WIN32\n            handle-\u003eos_handle \u003d\n                static_cast\u003cint64_t\u003e(reinterpret_cast\u003cintptr_t\u003e(ringBlob-\u003ereleaseHandle()));\n#else\n            handle-\u003eos_handle \u003d static_cast\u003cint64_t\u003e(ringBlob-\u003ereleaseHandle());\n#endif\n            handle-\u003ehandle_type \u003d STREAM_MEM_HANDLE_TYPE_SHM;\n        }\n    }, *entry.ringBlob);\n}\n```",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea3faa59_221c32e9",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1796,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-20T21:35:53Z",
+      "side": 1,
+      "message": "Minor preference to keep as is so that all of the variant-ness of the variant is kept in one spot.",
+      "parentUuid": "fe32a44b_a4ba6e67",
       "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
