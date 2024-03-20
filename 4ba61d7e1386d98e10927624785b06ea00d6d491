@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ceb398c_4320416b",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-20T21:04:38Z",
+      "side": 1,
+      "message": "Use `DISALLOW_COPY_ASSIGN_AND_MOVE` for this class.",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "56e5702d_550a7dcf",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 667,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-20T21:04:38Z",
+      "side": 1,
+      "message": "Use DISALLOW_COPY_ASSIGN_AND_MOVE for this class.",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25eaefc6_7a00baa1",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-20T21:04:38Z",
+      "side": 1,
+      "message": "Out of the scope of this CL: but is it theoretically possible that we may end up here and hit another dead lock?",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ab0eea7_22ec7540",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 861,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-20T21:04:38Z",
+      "side": 1,
+      "message": "Add comment here: we are removing the ASG handle in an async way, so we can\u0027t just use the `resourceId` as the handle: the lifetime of `resourceId` is shorter than the ASG handle.",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe32a44b_a4ba6e67",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1796,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-03-20T21:04:38Z",
+      "side": 1,
+      "message": "I don\u0027t feel strong, but you can use `std::visit` to avoid deriving `std::variant` and defining the new member functions for `RingBlob`:\n\n```\nif (entry.ringBlob) {\n    std::visit([handle](auto\u0026\u0026 ringBlob) {\n        using T \u003d std::decay_t\u003cdecltype(ringBlob)\u003e;\n        if constexpr (std::is_same_v\u003cT, std::unique_ptr\u003cSharedMemory\u003e\u003e) {\n#ifdef _WIN32\n            handle-\u003eos_handle \u003d\n                static_cast\u003cint64_t\u003e(reinterpret_cast\u003cintptr_t\u003e(ringBlob-\u003ereleaseHandle()));\n#else\n            handle-\u003eos_handle \u003d static_cast\u003cint64_t\u003e(ringBlob-\u003ereleaseHandle());\n#endif\n            handle-\u003ehandle_type \u003d STREAM_MEM_HANDLE_TYPE_SHM;\n        }\n    }, *entry.ringBlob);\n}\n```",
+      "revId": "4ba61d7e1386d98e10927624785b06ea00d6d491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
