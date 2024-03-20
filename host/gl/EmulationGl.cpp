@@ -204,7 +204,6 @@ static std::optional<EGLConfig> getEmulationEglConfig(EGLDisplay display, bool a
 }  // namespace
 
 std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height,
-                                                 gfxstream::host::FeatureSet features,
                                                  bool allowWindowSurface, bool egl2egl) {
     // Loads the glestranslator function pointers.
     if (!LazyLoadedEGLDispatch::get()) {
@@ -224,10 +223,8 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         s_egl.eglUseOsEglApi(egl2egl, EGL_FALSE);
     }
 
-
     std::unique_ptr<EmulationGl> emulationGl(new EmulationGl());
 
-    emulationGl->mFeatures = features;
     emulationGl->mWidth = width;
     emulationGl->mHeight = height;
 
@@ -247,8 +244,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
 
     if (s_egl.eglSetNativeTextureDecompressionEnabledANDROID) {
         s_egl.eglSetNativeTextureDecompressionEnabledANDROID(
-            emulationGl->mEglDisplay,
-            emulationGl->mFeatures.NativeTextureDecompression.enabled);
+            emulationGl->mEglDisplay, feature_is_enabled(kFeature_NativeTextureDecompression));
     }
 
     s_egl.eglBindAPI(EGL_OPENGL_ES_API);
@@ -292,7 +288,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     }
 
     emulationGl->mGlesDispatchMaxVersion
-        = calcMaxVersionFromDispatch(emulationGl->mFeatures, emulationGl->mEglDisplay);
+        = calcMaxVersionFromDispatch(emulationGl->mEglDisplay);
     if (s_egl.eglSetMaxGLESVersion) {
         // eglSetMaxGLESVersion must be called before any context binding
         // because it changes how we initialize the dispatcher table.
@@ -364,8 +360,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
 
     emulationGl->mEmulatedEglConfigs =
         std::make_unique<EmulatedEglConfigList>(emulationGl->mEglDisplay,
-                                                emulationGl->mGlesDispatchMaxVersion,
-                                                emulationGl->mFeatures);
+                                                emulationGl->mGlesDispatchMaxVersion);
     if (emulationGl->mEmulatedEglConfigs->empty()) {
         ERR("Failed to initialize emulated configs.");
         return nullptr;
@@ -634,12 +629,12 @@ std::unique_ptr<ColorBufferGl> EmulationGl::createColorBuffer(uint32_t width, ui
                                                               HandleType handle) {
     return ColorBufferGl::create(mEglDisplay, width, height, internalFormat, frameworkFormat,
                                  handle, getColorBufferContextHelper(), mTextureDraw.get(),
-                                 isFastBlitSupported(), mFeatures);
+                                 isFastBlitSupported());
 }
 
 std::unique_ptr<ColorBufferGl> EmulationGl::loadColorBuffer(android::base::Stream* stream) {
     return ColorBufferGl::onLoad(stream, mEglDisplay, getColorBufferContextHelper(),
-                                 mTextureDraw.get(), isFastBlitSupported(), mFeatures);
+                                 mTextureDraw.get(), isFastBlitSupported());
 }
 
 std::unique_ptr<EmulatedEglContext> EmulationGl::createEmulatedEglContext(

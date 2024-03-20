@@ -404,6 +404,7 @@ void GLEScontext::initGlobal(EGLiface* iface) {
 void GLEScontext::init(bool nativeTextureDecompressionEnabled) {
     if (!m_initialized) {
         m_nativeTextureDecompressionEnabled = nativeTextureDecompressionEnabled;
+
         initExtensionString();
 
         m_maxTexUnits = getMaxCombinedTexUnits();

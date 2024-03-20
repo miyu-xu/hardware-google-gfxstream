@@ -17,6 +17,7 @@
 #include "FrameBuffer.h"
 #include "VkCommonOperations.h"
 #include "VulkanDispatch.h"
+#include "host-common/feature_control.h"
 
 #include "aemu/base/ArraySize.h"
 #include "aemu/base/GLObjectCounter.h"
@@ -435,11 +436,10 @@ protected:
         // the rendering tests on Windows for now.
         SKIP_TEST_IF_WIN32();
 
-        gfxstream::host::FeatureSet features;
-        features.GlesDynamicVersion.enabled = true;
-        features.PlayStoreImage.enabled = true;
-        features.Vulkan.enabled = true;
-        features.VulkanIgnoredHandles.enabled = true;
+        feature_set_enabled_override(kFeature_GLESDynamicVersion, true);
+        feature_set_enabled_override(kFeature_PlayStoreImage, false);
+        feature_set_enabled_override(kFeature_Vulkan, true);
+        feature_set_enabled_override(kFeature_VulkanIgnoredHandles, true);
 
         VulkanTest::SetUp();
 
@@ -450,7 +450,7 @@ protected:
         ASSERT_NE(nullptr, gl::LazyLoadedGLESv2Dispatch::get());
 
         bool useHostGpu = false;
-        EXPECT_TRUE(FrameBuffer::initialize(mWidth, mHeight, features, false,
+        EXPECT_TRUE(FrameBuffer::initialize(mWidth, mHeight, false,
                                             !useHostGpu /* egl2egl */));
         mFb = FrameBuffer::getFB();
         ASSERT_NE(nullptr, mFb);

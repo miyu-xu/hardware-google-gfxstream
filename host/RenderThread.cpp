@@ -29,6 +29,7 @@
 #include "aemu/base/synchronization/MessageChannel.h"
 #include "aemu/base/system/System.h"
 #include "apigen-codec-common/ChecksumCalculatorThreadInfo.h"
+#include "host-common/feature_control.h"
 #include "host-common/logging.h"
 #include "vulkan/VkCommonOperations.h"
 
@@ -273,7 +274,7 @@ intptr_t RenderThread::main() {
     //
     // initialize decoders
 #if GFXSTREAM_ENABLE_HOST_GLES
-    if (!FrameBuffer::getFB()->getFeatures().GuestUsesAngle.enabled) {
+    if (!feature_is_enabled(kFeature_GuestUsesAngle)) {
         tInfo.initGl();
     }
 

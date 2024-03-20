@@ -31,7 +31,6 @@
 #include "aemu/base/ManagedDescriptor.hpp"
 #include "aemu/base/Optional.h"
 #include "aemu/base/synchronization/Lock.h"
-#include "gfxstream/host/Features.h"
 #include "goldfish_vk_private_defs.h"
 #include "utils/GfxApiLogger.h"
 #include "utils/RenderDoc.h"
@@ -89,8 +88,6 @@ enum class AstcEmulationMode {
 struct VkEmulation {
     // Whether initialization succeeded.
     bool live = false;
-
-    gfxstream::host::FeatureSet features;
 
     // Whether to use deferred command submission.
     bool useDeferredCommands = false;
@@ -404,7 +401,7 @@ struct VkEmulation {
     std::optional<uint32_t> representativeColorBufferMemoryTypeIndex;
 };
 
-VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::FeatureSet features);
+VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, bool useVulkanNativeSwapchain);
 
 struct VkEmulationFeatures {
     bool glInteropSupported = false;

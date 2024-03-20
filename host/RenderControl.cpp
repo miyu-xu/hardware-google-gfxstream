@@ -32,6 +32,7 @@
 #include "RenderThreadInfoGl.h"
 #include "SyncThread.h"
 #include "aemu/base/Tracing.h"
+#include "host-common/feature_control.h"
 #include "host-common/logging.h"
 #include "host-common/misc.h"
 #include "host-common/opengl/misc.h"
@@ -105,7 +106,7 @@ public:
         // in many situations
         // (switching camera sides, exiting benchmark apps, etc).
         // So, we put GrallocSync under the feature control.
-        mEnabled = FrameBuffer::getFB()->getFeatures().GrallocSync.enabled;
+        mEnabled = feature_is_enabled(kFeature_GrallocSync);
 
         // There are two potential tricky situations to handle:
         // a. Multiple users of gralloc buffers that all want to
@@ -298,7 +299,7 @@ static EGLint rcQueryEGLString(EGLenum name, void* buffer, EGLint bufferSize)
 
     std::string eglStr(str);
     if ((fb->getMaxGLESVersion() >= GLES_DISPATCH_MAX_VERSION_3_0) &&
-        fb->getFeatures().GlesDynamicVersion.enabled &&
+        feature_is_enabled(kFeature_GLESDynamicVersion) &&
         eglStr.find("EGL_KHR_create_context") == std::string::npos) {
         eglStr += "EGL_KHR_create_context ";
     }
@@ -312,17 +313,26 @@ static EGLint rcQueryEGLString(EGLenum name, void* buffer, EGLint bufferSize)
     return len;
 }
 
-static bool shouldEnableAsyncSwap(const gfxstream::host::FeatureSet& features) {
+static bool shouldEnableAsyncSwap() {
     bool isPhone = true;
-    bool playStoreImage = features.PlayStoreImage.enabled;
-    return features.GlAsyncSwap.enabled &&
+    bool playStoreImage = feature_is_enabled(
+            kFeature_PlayStoreImage);
+    return feature_is_enabled(kFeature_GLAsyncSwap) &&
            emugl_sync_device_exists() && (isPhone || playStoreImage) &&
            sizeof(void*) == 8;
 }
 
-static bool shouldEnableVulkan(const gfxstream::host::FeatureSet& features) {
+static bool shouldEnableVirtioGpuNativeSync() {
+    return feature_is_enabled(kFeature_VirtioGpuNativeSync);
+}
+
+static bool shouldEnableHostComposition() {
+    return feature_is_enabled(kFeature_HostComposition);
+}
+
+static bool shouldEnableVulkan() {
     // TODO: Restrict further to devices supporting external memory.
-    return features.Vulkan.enabled && vk::getGlobalVkEmulation() &&
+    return feature_is_enabled(kFeature_Vulkan) && vk::getGlobalVkEmulation() &&
            vk::VkDecoderGlobalState::get()->getHostFeatureSupport().supportsVulkan;
 }
 
@@ -338,23 +348,24 @@ static bool shouldEnableCreateResourcesWithRequirements() {
            supportInfo.useCreateResourcesWithRequirements;
 }
 
-static bool shouldEnableVulkanShaderFloat16Int8(const gfxstream::host::FeatureSet& features) {
-    return shouldEnableVulkan(features) && features.VulkanShaderFloat16Int8.enabled;
+static bool shouldEnableVulkanShaderFloat16Int8() {
+    return shouldEnableVulkan() &&
+        feature_is_enabled(kFeature_VulkanShaderFloat16Int8);
 }
 
-static bool shouldEnableAsyncQueueSubmit(const gfxstream::host::FeatureSet& features) {
-    return shouldEnableVulkan(features);
+static bool shouldEnableAsyncQueueSubmit() {
+    return shouldEnableVulkan();
 }
 
-static bool shouldEnableVulkanAsyncQsri(const gfxstream::host::FeatureSet& features) {
-    return shouldEnableVulkan(features) &&
-        (features.GlAsyncSwap.enabled ||
-         (features.VirtioGpuNativeSync.enabled &&
-          features.VirtioGpuFenceContexts.enabled));
+static bool shouldEnableVulkanAsyncQsri() {
+    return shouldEnableVulkan() &&
+        (feature_is_enabled(kFeature_GLAsyncSwap) ||
+         (feature_is_enabled(kFeature_VirtioGpuNativeSync) &&
+          feature_is_enabled(kFeature_VirtioGpuFenceContexts)));
 }
 
-static bool shouldEnableVsyncGatedSyncFences(const gfxstream::host::FeatureSet& features) {
-    return shouldEnableAsyncSwap(features);
+static bool shouldEnableVsyncGatedSyncFences() {
+    return shouldEnableAsyncSwap();
 }
 
 const char* maxVersionToFeatureString(GLESDispatchMaxVersion version) {
@@ -370,14 +381,15 @@ const char* maxVersionToFeatureString(GLESDispatchMaxVersion version) {
     }
 }
 
-static bool shouldEnableQueueSubmitWithCommands(const gfxstream::host::FeatureSet& features) {
-    return shouldEnableVulkan(features) && features.VulkanQueueSubmitWithCommands.enabled;
+static bool shouldEnableQueueSubmitWithCommands() {
+    return shouldEnableVulkan() &&
+        feature_is_enabled(kFeature_VulkanQueueSubmitWithCommands);
 }
 
-static bool shouldEnableBatchedDescriptorSetUpdate(const gfxstream::host::FeatureSet& features) {
-    return shouldEnableVulkan(features) &&
-        shouldEnableQueueSubmitWithCommands(features) &&
-        features.VulkanBatchedDescriptorSetUpdate.enabled;
+static bool shouldEnableBatchedDescriptorSetUpdate() {
+    return shouldEnableVulkan() &&
+        shouldEnableQueueSubmitWithCommands() &&
+        feature_is_enabled(kFeature_VulkanBatchedDescriptorSetUpdate);
 }
 
 // OpenGL ES 3.x support involves changing the GL_VERSION string, which is
@@ -449,50 +461,53 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         }
     }
 
-    FrameBuffer* fb = FrameBuffer::getFB();
-
-    const gfxstream::host::FeatureSet& features = fb->getFeatures();
-
     // We add the maximum supported GL protocol number into GL_EXTENSIONS
 
     // filter extensions by name to match guest-side support
-    GLESDispatchMaxVersion maxVersion = fb->getMaxGLESVersion();
+    GLESDispatchMaxVersion maxVersion = FrameBuffer::getFB()->getMaxGLESVersion();
     if (name == GL_EXTENSIONS) {
-        glStr = gl::filterExtensionsBasedOnMaxVersion(features, maxVersion, glStr);
+        glStr = gl::filterExtensionsBasedOnMaxVersion(maxVersion, glStr);
     }
 
-    bool isChecksumEnabled = features.GlPipeChecksum.enabled;
-    bool asyncSwapEnabled = shouldEnableAsyncSwap(features);
-    bool virtioGpuNativeSyncEnabled = features.VirtioGpuNativeSync.enabled;
-    bool dma1Enabled = features.GlDma.enabled;
-    bool dma2Enabled = features.GlDma2.enabled;
-    bool directMemEnabled = features.GlDirectMem.enabled;
-    bool hostCompositionEnabled = features.HostComposition.enabled;
-    bool vulkanEnabled = shouldEnableVulkan(features);
+    bool isChecksumEnabled =
+        feature_is_enabled(kFeature_GLPipeChecksum);
+    bool asyncSwapEnabled = shouldEnableAsyncSwap();
+    bool virtioGpuNativeSyncEnabled = shouldEnableVirtioGpuNativeSync();
+    bool dma1Enabled =
+        feature_is_enabled(kFeature_GLDMA);
+    bool dma2Enabled =
+        feature_is_enabled(kFeature_GLDMA2);
+    bool directMemEnabled =
+        feature_is_enabled(kFeature_GLDirectMem);
+    bool hostCompositionEnabled = shouldEnableHostComposition();
+    bool vulkanEnabled = shouldEnableVulkan();
     bool deferredVulkanCommandsEnabled =
-        shouldEnableVulkan(features) && shouldEnableDeferredVulkanCommands();
+        shouldEnableVulkan() && shouldEnableDeferredVulkanCommands();
     bool vulkanNullOptionalStringsEnabled =
-        shouldEnableVulkan(features) && features.VulkanNullOptionalStrings.enabled;
+        shouldEnableVulkan() && feature_is_enabled(kFeature_VulkanNullOptionalStrings);
     bool vulkanCreateResourceWithRequirementsEnabled =
-        shouldEnableVulkan(features) && shouldEnableCreateResourcesWithRequirements();
-    bool YUV420888toNV21Enabled = features.Yuv420888ToNv21.enabled;
-    bool YUVCacheEnabled = features.YuvCache.enabled;
-    bool AsyncUnmapBufferEnabled = features.AsyncComposeSupport.enabled;
+        shouldEnableVulkan() && shouldEnableCreateResourcesWithRequirements();
+    bool YUV420888toNV21Enabled =
+        feature_is_enabled(kFeature_YUV420888toNV21);
+    bool YUVCacheEnabled =
+        feature_is_enabled(kFeature_YUVCache);
+    bool AsyncUnmapBufferEnabled = feature_is_enabled(kFeature_AsyncComposeSupport);
     bool vulkanIgnoredHandlesEnabled =
-        shouldEnableVulkan(features) && features.VulkanIgnoredHandles.enabled;
-    bool virtioGpuNextEnabled = features.VirtioGpuNext.enabled;
+        shouldEnableVulkan() && feature_is_enabled(kFeature_VulkanIgnoredHandles);
+    bool virtioGpuNextEnabled =
+        feature_is_enabled(kFeature_VirtioGpuNext);
     bool hasSharedSlotsHostMemoryAllocatorEnabled =
-        features.HasSharedSlotsHostMemoryAllocator.enabled;
+        feature_is_enabled(kFeature_HasSharedSlotsHostMemoryAllocator);
     bool vulkanFreeMemorySyncEnabled =
-        shouldEnableVulkan(features);
-    bool vulkanShaderFloat16Int8Enabled = shouldEnableVulkanShaderFloat16Int8(features);
-    bool vulkanAsyncQueueSubmitEnabled = shouldEnableAsyncQueueSubmit(features);
-    bool vulkanQueueSubmitWithCommands = shouldEnableQueueSubmitWithCommands(features);
-    bool vulkanBatchedDescriptorSetUpdate = shouldEnableBatchedDescriptorSetUpdate(features);
+        shouldEnableVulkan();
+    bool vulkanShaderFloat16Int8Enabled = shouldEnableVulkanShaderFloat16Int8();
+    bool vulkanAsyncQueueSubmitEnabled = shouldEnableAsyncQueueSubmit();
+    bool vulkanQueueSubmitWithCommands = shouldEnableQueueSubmitWithCommands();
+    bool vulkanBatchedDescriptorSetUpdate = shouldEnableBatchedDescriptorSetUpdate();
     bool syncBufferDataEnabled = true;
-    bool vulkanAsyncQsri = shouldEnableVulkanAsyncQsri(features);
+    bool vulkanAsyncQsri = shouldEnableVulkanAsyncQsri();
     bool readColorBufferDma = directMemEnabled && hasSharedSlotsHostMemoryAllocatorEnabled;
-    bool hwcMultiConfigs = features.HwcMultiConfigs.enabled;
+    bool hwcMultiConfigs = feature_is_enabled(kFeature_HWCMultiConfigs);
 
     if (isChecksumEnabled && name == GL_EXTENSIONS) {
         glStr += ChecksumCalculatorThreadInfo::getMaxVersionString();
@@ -637,8 +652,9 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
     }
 
     if (name == GL_EXTENSIONS) {
+
         GLESDispatchMaxVersion guestExtVer = GLES_DISPATCH_MAX_VERSION_2;
-        if (features.GlesDynamicVersion.enabled) {
+        if (feature_is_enabled(kFeature_GLESDynamicVersion)) {
             // If the image is in ES 3 mode, add GL_OES_EGL_image_external_essl3 for better Skia support.
             glStr += "GL_OES_EGL_image_external_essl3 ";
             guestExtVer = maxVersion;
@@ -649,6 +665,8 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         if (maxVersion > GLES_DISPATCH_MAX_VERSION_2) {
             glStr += "GL_OES_vertex_array_object ";
         }
+
+
 
         // ASTC LDR compressed texture support.
         const std::string& glExtensions =
@@ -670,7 +688,7 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         glStr += kHostSideTracing;
         glStr += " ";
 
-        if (features.AsyncComposeSupport.enabled) {
+        if (feature_is_enabled(kFeature_AsyncComposeSupport)) {
             // Async makecurrent support.
             glStr += kAsyncFrameCommands;
             glStr += " ";
@@ -681,7 +699,7 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
     }
 
     if (name == GL_VERSION) {
-        if (features.GlesDynamicVersion.enabled) {
+        if (feature_is_enabled(kFeature_GLESDynamicVersion)) {
             switch (maxVersion) {
             // Underlying GLES implmentation's max version string
             // is allowed to be higher than the version of the request
@@ -1121,15 +1139,13 @@ static void rcCreateSyncKHR(EGLenum type,
     // rcTriggerWait is registered.
     emugl_sync_register_trigger_wait(rcTriggerWait);
 
-    FrameBuffer* fb = FrameBuffer::getFB();
-
-    fb->createEmulatedEglFenceSync(type,
-                                   destroyWhenSignaled,
-                                   outSync,
-                                   outSyncThread);
+    FrameBuffer::getFB()->createEmulatedEglFenceSync(type,
+                                                     destroyWhenSignaled,
+                                                     outSync,
+                                                     outSyncThread);
 
     RenderThreadInfo* tInfo = RenderThreadInfo::get();
-    if (tInfo && outSync && shouldEnableVsyncGatedSyncFences(fb->getFeatures())) {
+    if (tInfo && outSync && shouldEnableVsyncGatedSyncFences()) {
         auto fenceSync = reinterpret_cast<EmulatedEglFenceSync*>(outSync);
         fenceSync->setIsCompositionFence(tInfo->m_isCompositionThread);
     }

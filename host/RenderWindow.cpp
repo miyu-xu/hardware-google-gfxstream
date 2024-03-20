@@ -81,7 +81,6 @@ struct RenderWindowMessage {
         struct {
             int width;
             int height;
-            gfxstream::host::FeatureSet* features;
             bool useSubWindow;
             bool egl2egl;
         } init;
@@ -148,7 +147,6 @@ struct RenderWindowMessage {
                        msg.init.width, msg.init.height);
                 result = FrameBuffer::initialize(msg.init.width,
                                                  msg.init.height,
-                                                 *msg.init.features,
                                                  msg.init.useSubWindow,
                                                  msg.init.egl2egl);
                 break;
@@ -426,7 +424,6 @@ private:
 
 RenderWindow::RenderWindow(int width,
                            int height,
-                           gfxstream::host::FeatureSet features,
                            bool use_thread,
                            bool use_sub_window,
                            bool egl2egl)
@@ -453,7 +450,6 @@ RenderWindow::RenderWindow(int width,
     msg.cmd = CMD_INITIALIZE;
     msg.init.width = width;
     msg.init.height = height;
-    msg.init.features = &features;
     msg.init.useSubWindow = use_sub_window;
     msg.init.egl2egl = egl2egl;
     mValid = processMessage(msg);

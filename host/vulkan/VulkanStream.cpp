@@ -30,16 +30,16 @@ namespace vk {
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
 
-VulkanStream::VulkanStream(IOStream* stream, const gfxstream::host::FeatureSet& features) : mStream(stream) {
+VulkanStream::VulkanStream(IOStream* stream) : mStream(stream) {
     unsetHandleMapping();
 
-    if (features.VulkanNullOptionalStrings.enabled) {
+    if (feature_is_enabled(kFeature_VulkanNullOptionalStrings)) {
         mFeatureBits |= VULKAN_STREAM_FEATURE_NULL_OPTIONAL_STRINGS_BIT;
     }
-    if (features.VulkanIgnoredHandles.enabled) {
+    if (feature_is_enabled(kFeature_VulkanIgnoredHandles)) {
         mFeatureBits |= VULKAN_STREAM_FEATURE_IGNORED_HANDLES_BIT;
     }
-    if (features.VulkanShaderFloat16Int8.enabled) {
+    if (feature_is_enabled(kFeature_VulkanShaderFloat16Int8)) {
         mFeatureBits |= VULKAN_STREAM_FEATURE_SHADER_FLOAT16_INT8_BIT;
     }
 }
@@ -181,8 +181,8 @@ uint32_t VulkanStream::getFeatureBits() const { return mFeatureBits; }
 
 android::base::BumpPool* VulkanStream::pool() { return &mPool; }
 
-VulkanMemReadingStream::VulkanMemReadingStream(uint8_t* start, const gfxstream::host::FeatureSet& features)
-    : VulkanStream(nullptr, features), mStart(start) {}
+VulkanMemReadingStream::VulkanMemReadingStream(uint8_t* start)
+    : VulkanStream(nullptr), mStart(start) {}
 
 VulkanMemReadingStream::~VulkanMemReadingStream() {}
 

@@ -16,7 +16,6 @@
 #include <memory>
 
 #include "aemu/base/files/Stream.h"
-#include "gfxstream/host/Features.h"
 #include "host-common/crash_reporter.h"
 #include "host-common/dma_device.h"
 #include "host-common/multi_display_agent.h"
@@ -107,7 +106,6 @@ public:
     //
     // There might be only one renderer.
     virtual RendererPtr initRenderer(int width, int height,
-                                     gfxstream::host::FeatureSet features,
                                      bool useSubWindow, bool egl2egl) = 0;
 
     virtual OnLastColorBufferRef getOnLastColorBufferRef() = 0;

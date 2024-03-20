@@ -22,7 +22,6 @@
 #include "aemu/base/BumpPool.h"
 #include "aemu/base/files/Stream.h"
 #include "aemu/base/files/StreamSerializing.h"
-#include "gfxstream/host/Features.h"
 #include "goldfish_vk_private_defs.h"
 
 #define E(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__)
@@ -42,7 +41,7 @@ namespace vk {
 
 class VulkanStream : public android::base::Stream {
    public:
-    VulkanStream(IOStream* stream, const gfxstream::host::FeatureSet& features);
+    VulkanStream(IOStream* stream);
     ~VulkanStream();
 
     void setStream(IOStream* stream);
@@ -92,7 +91,7 @@ class VulkanStream : public android::base::Stream {
 
 class VulkanMemReadingStream : public VulkanStream {
    public:
-    VulkanMemReadingStream(uint8_t* start, const gfxstream::host::FeatureSet& features);
+    VulkanMemReadingStream(uint8_t* start);
     ~VulkanMemReadingStream();
 
     void setBuf(uint8_t* buf);

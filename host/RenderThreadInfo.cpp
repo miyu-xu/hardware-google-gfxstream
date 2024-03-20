@@ -17,7 +17,7 @@
 #include "RenderThreadInfo.h"
 
 #include "aemu/base/synchronization/Lock.h"
-#include "FrameBuffer.h"
+#include "host-common/feature_control.h"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -69,7 +69,7 @@ void RenderThreadInfo::initGl() {
 
 void RenderThreadInfo::onSave(Stream* stream) {
     // TODO(b/309858017): remove if when ready to bump snapshot version
-    if (FrameBuffer::getFB()->getFeatures().VulkanSnapshots.enabled) {
+    if (feature_is_enabled(kFeature_VulkanSnapshots)) {
         stream->putBe64(m_puid);
     }
 
@@ -80,7 +80,7 @@ void RenderThreadInfo::onSave(Stream* stream) {
 
 bool RenderThreadInfo::onLoad(Stream* stream) {
     // TODO(b/309858017): remove if when ready to bump snapshot version
-    if (FrameBuffer::getFB()->getFeatures().VulkanSnapshots.enabled) {
+    if (feature_is_enabled(kFeature_VulkanSnapshots)) {
         m_puid = stream->getBe64();
     }
 

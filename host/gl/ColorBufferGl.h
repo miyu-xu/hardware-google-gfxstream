@@ -32,7 +32,6 @@
 #include "Hwc2.h"
 #include "aemu/base/ManagedDescriptor.hpp"
 #include "aemu/base/files/Stream.h"
-#include "gfxstream/host/Features.h"
 #include "render-utils/Renderer.h"
 
 // From ANGLE "src/common/angleutils.h"
@@ -94,8 +93,7 @@ class ColorBufferGl {
                                                  GLint internalFormat,
                                                  FrameworkFormat frameworkFormat, HandleType handle,
                                                  ContextHelper* helper, TextureDraw* textureDraw,
-                                                 bool fastBlitSupported,
-                                                 const gfxstream::host::FeatureSet& features);
+                                                 bool fastBlitSupported);
 
     // Sometimes things happen and we need to reformat the GL texture
     // used. This function replaces the format of the underlying texture
@@ -195,8 +193,7 @@ class ColorBufferGl {
     void onSave(android::base::Stream* stream);
     static std::unique_ptr<ColorBufferGl> onLoad(android::base::Stream* stream,
                                                  EGLDisplay p_display, ContextHelper* helper,
-                                                 TextureDraw* textureDraw, bool fastBlitSupported,
-                                                 const gfxstream::host::FeatureSet& features);
+                                                 TextureDraw* textureDraw, bool fastBlitSupported);
 
     HandleType getHndl() const;
 
@@ -271,7 +268,6 @@ private:
     TextureDraw* m_textureDraw = nullptr;
     TextureResize* m_resizer = nullptr;
     FrameworkFormat m_frameworkFormat;
-    bool m_yuv420888ToNv21 = false;
     GLuint m_yuv_conversion_fbo = 0;  // FBO to offscreen-convert YUV to RGB
     GLuint m_scaleRotationFbo = 0;  // FBO to read scaled rotation pixels
     std::unique_ptr<YUVConverter> m_yuv_converter;

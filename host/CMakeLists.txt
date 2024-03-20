@@ -1,5 +1,3 @@
-add_subdirectory(features)
-
 # Codec common sources
 add_subdirectory(apigen-codec-common)
 add_subdirectory(compressedTextureFormats)
@@ -78,7 +76,6 @@ target_link_libraries(
         GLES_CM_translator_static
         OpenGLESDispatch
         renderControl_dec
-        gfxstream_features
         gfxstream-gl-server
         gfxstream-magma-server
         gfxstream-vulkan-server
@@ -133,7 +130,6 @@ target_link_libraries(
     gfxstream_backend
     PUBLIC
     gfxstream_common_utils
-    gfxstream_features
     gfxstream_backend_static
     PRIVATE
     )

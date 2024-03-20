@@ -47,7 +47,6 @@
 #include "aemu/base/synchronization/MessageChannel.h"
 #include "aemu/base/threads/Thread.h"
 #include "aemu/base/threads/WorkerThread.h"
-#include "gfxstream/host/Features.h"
 
 #if GFXSTREAM_ENABLE_HOST_GLES
 
@@ -135,8 +134,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // own sub-windows. If false, this means the caller will use
     // setPostCallback() instead to retrieve the content.
     // Returns true on success, false otherwise.
-    static bool initialize(int width, int height, gfxstream::host::FeatureSet features,
-                           bool useSubWindow, bool egl2egl);
+    static bool initialize(int width, int height, bool useSubWindow,
+                           bool egl2egl);
 
     // Finalize the instance.
     static void finalize();
@@ -668,10 +667,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     const gl::GLESv2Dispatch* getGles2Dispatch();
 #endif
 
-    const gfxstream::host::FeatureSet& getFeatures() const { return m_features; }
-
    private:
-    FrameBuffer(int p_width, int p_height, gfxstream::host::FeatureSet features, bool useSubWindow);
+    FrameBuffer(int p_width, int p_height, bool useSubWindow);
     // Requires the caller to hold the m_colorBufferMapLock until the new handle is inserted into of
     // the object handle maps.
     HandleType genHandle_locked();
@@ -716,8 +713,6 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     static FrameBuffer* s_theFrameBuffer;
     static HandleType s_nextHandle;
-
-    gfxstream::host::FeatureSet m_features;
     int m_x = 0;
     int m_y = 0;
     int m_framebufferWidth = 0;

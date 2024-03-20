@@ -22,7 +22,6 @@
 #include <GLES/gl.h>
 
 #include "OpenGLESDispatch/GLESv2Dispatch.h"
-#include "gfxstream/host/Features.h"
 
 namespace gfxstream {
 namespace gl {
@@ -71,13 +70,11 @@ class EmulatedEglConfig {
 
     explicit EmulatedEglConfig(EGLint guestConfig,
                                EGLConfig hostConfig,
-                               EGLDisplay hostDisplay,
-                               bool glesDynamicVersion);
+                               EGLDisplay hostDisplay);
 
     EGLint mGuestConfig;
     EGLConfig mHostConfig;
     std::vector<GLint> mAttribValues;
-    bool mGlesDynamicVersion = false;
 };
 
 // A class to model the list of EmulatedEglConfig for a given EGLDisplay, this is
@@ -108,8 +105,7 @@ class EmulatedEglConfigList {
     // After construction, call empty() to check if there are items.
     // An empty list means there was an error during construction.
     explicit EmulatedEglConfigList(EGLDisplay display,
-                                   GLESDispatchMaxVersion dispatchMaxVersion,
-                                   const gfxstream::host::FeatureSet& features);
+                                   GLESDispatchMaxVersion dispatchMaxVersion);
 
     // Return true iff the list is empty. true means there was an error
     // during construction.
@@ -167,7 +163,6 @@ class EmulatedEglConfigList {
     std::vector<EmulatedEglConfig> mConfigs;
     EGLDisplay mDisplay = 0;
     GLESDispatchMaxVersion mGlesDispatchMaxVersion;
-    bool mGlesDynamicVersion = false;
 };
 
 }  // namespace gl

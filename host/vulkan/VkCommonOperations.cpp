@@ -518,7 +518,7 @@ static std::vector<VkEmulation::ImageSupportInfo> getBasicImageSupportList() {
     return res;
 }
 
-VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::FeatureSet features) {
+VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, bool useVulkanNativeSwapchain) {
 // Downstream branches can provide abort logic or otherwise use result without a new macro
 #define VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, ...) \
     do {                                               \
@@ -536,8 +536,6 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     }
 
     sVkEmulation = new VkEmulation;
-
-    sVkEmulation->features = features;
 
     sVkEmulation->gvk = vk;
     auto gvk = vk;
@@ -613,7 +611,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     }
 #endif
 
-    if (sVkEmulation->features.VulkanNativeSwapchain.enabled) {
+    if (useVulkanNativeSwapchain) {
         for (auto extension : SwapChainStateVk::getRequiredInstanceExtensions()) {
             enabledExtensions.emplace(extension);
         }
@@ -1024,7 +1022,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
             selectedDeviceExtensionNames_.emplace(extension);
         }
     }
-    if (sVkEmulation->features.VulkanNativeSwapchain.enabled) {
+    if (useVulkanNativeSwapchain) {
         for (auto extension : SwapChainStateVk::getRequiredDeviceExtensions()) {
             selectedDeviceExtensionNames_.emplace(extension);
         }
@@ -1045,10 +1043,8 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     // Setting up VkDeviceCreateInfo::pNext
     auto deviceCiChain = vk_make_chain_iterator(&dCi);
 
-    VkPhysicalDeviceFeatures2 physicalDeviceFeatures = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-    };
-    vk_append_struct(&deviceCiChain, &physicalDeviceFeatures);
+    VkPhysicalDeviceFeatures2 features = {.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+    vk_append_struct(&deviceCiChain, &features);
 
     std::unique_ptr<VkPhysicalDeviceSamplerYcbcrConversionFeatures> samplerYcbcrConversionFeatures =
         nullptr;
