@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6773e7f8_e8bd6d7a",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-21T20:48:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b77085df_62cbc73f",
+      "revId": "ede1d3265a7ca8ad629239191afcf644e432e5ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "69e0354f_5cfbb2f7",
@@ -49,6 +67,24 @@
       "writtenOn": "2024-03-19T14:36:22Z",
       "side": 1,
       "message": "```suggestion\n        .image \u003d *image,\n        .viewType \u003d vkhpp::ImageViewType::e2D,\n        .format \u003d imageCreateInfo.format,\n```\n\nTo avoid validation errors.",
+      "revId": "ede1d3265a7ca8ad629239191afcf644e432e5ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f7cdbf4_de5de247",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-21T20:48:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69e0354f_5cfbb2f7",
       "revId": "ede1d3265a7ca8ad629239191afcf644e432e5ec",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -70,6 +106,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ed153097_da42320a",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-21T20:48:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a74737e3_8c93b61a",
+      "revId": "ede1d3265a7ca8ad629239191afcf644e432e5ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dddf1d0c_7cb19527",
@@ -83,6 +137,24 @@
       "writtenOn": "2024-03-19T14:36:22Z",
       "side": 1,
       "message": "nit: checking/asserting the returned buffer here against the values provided via the function parameters would be good for debugging.",
+      "revId": "ede1d3265a7ca8ad629239191afcf644e432e5ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec3303ac_9329d029",
+        "filename": "host/ColorBuffer.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-21T20:48:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dddf1d0c_7cb19527",
       "revId": "ede1d3265a7ca8ad629239191afcf644e432e5ec",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }

@@ -307,6 +307,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "997b3c3b_52c0373f",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-21T20:48:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "521e82be_845cc5ac",
+      "range": {
+        "startLine": 179,
+        "startChar": 4,
+        "endLine": 179,
+        "endChar": 18
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74621797_6544f4cf",
@@ -438,6 +462,30 @@
       "side": 1,
       "message": "Good point, will do",
       "parentUuid": "283caa77_2848492e",
+      "range": {
+        "startLine": 108,
+        "startChar": 4,
+        "endLine": 108,
+        "endChar": 37
+      },
+      "revId": "d7246976842afcbc13577ddf4e19c5304f2fa05a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe316127_d0c8afd6",
+        "filename": "host/vulkan/VkReconstruction.h",
+        "patchSetId": 14
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-21T20:48:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f395e61_1902e6df",
       "range": {
         "startLine": 108,
         "startChar": 4,
