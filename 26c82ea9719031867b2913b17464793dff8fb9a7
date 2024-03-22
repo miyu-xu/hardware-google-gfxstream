@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17b0f93a_67ce982e",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-03-22T00:06:09Z",
+      "side": 1,
+      "message": "Since this occurs prior to process cleanup conclusion, does this run the risk of existing processes continuing to use resources post-cleanup?",
+      "range": {
+        "startLine": 595,
+        "startChar": 0,
+        "endLine": 599,
+        "endChar": 52
+      },
+      "revId": "26c82ea9719031867b2913b17464793dff8fb9a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
