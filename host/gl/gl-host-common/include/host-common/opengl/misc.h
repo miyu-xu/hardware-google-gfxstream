@@ -40,6 +40,10 @@ namespace emugl {
     EMUGL_COMMON_API void setGlesVersion(int maj, int min);
     EMUGL_COMMON_API void getGlesVersion(int* maj, int* min);
 
+    // Set/get Vulkan major/minor/patch version.
+    EMUGL_COMMON_API void setVulkanVersion(int maj, int min, int patch);
+    EMUGL_COMMON_API void getVulkanVersion(int* maj, int* min, int* patch);
+
     // Set/get renderer
     EMUGL_COMMON_API void setRenderer(SelectedRenderer renderer);
     EMUGL_COMMON_API SelectedRenderer getRenderer();

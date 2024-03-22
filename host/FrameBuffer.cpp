@@ -62,6 +62,7 @@
 #include "host-common/vm_operations.h"
 #include "render-utils/MediaNative.h"
 #include "vulkan/DisplayVk.h"
+#include "vulkan/vk_util.h"
 #include "vulkan/PostWorkerVk.h"
 #include "vulkan/VkCommonOperations.h"
 #include "vulkan/VkDecoderGlobalState.h"
@@ -3856,3 +3857,9 @@ const gl::EGLDispatch* FrameBuffer::getEglDispatch() {
 #endif
 
 }  // namespace gfxstream
+
+extern "C"  {
+    void android_detectVulkanVersion1() {
+    gfxstream::vk::vk_util::detectVulkanDriverApiVersion();
+}
+}

@@ -127,6 +127,10 @@ AEMU_EXPORT bool android_screenShot(const char* dirname, uint32_t displayId);
 /* Stop the renderer process */
 EMUGL_COMMON_API void android_stopOpenglesRenderer(bool wait);
 
+/* deteck vulkan version */
+EMUGL_COMMON_API void android_detectVulkanVersion();
+AEMU_EXPORT void android_detectVulkanVersion1();
+
 /* Finish all renderer work, deleting current
  * render threads. Renderer is allowed to get
  * new render threads after that. */

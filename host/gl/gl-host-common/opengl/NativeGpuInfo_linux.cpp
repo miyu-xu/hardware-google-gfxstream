@@ -19,6 +19,8 @@
 #include "aemu/base/misc/FileUtils.h"
 #include "aemu/base/system/System.h"
 
+#include <vulkan/vulkan.h>
+
 #include <string>
 
 using android::base::PathUtils;
