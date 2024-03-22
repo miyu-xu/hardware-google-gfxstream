@@ -22,6 +22,30 @@
       },
       "revId": "26c82ea9719031867b2913b17464793dff8fb9a7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49f9ddc0_363fbd40",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-22T18:08:20Z",
+      "side": 1,
+      "message": "Host threads (render threads and process threads) should have been fully disconnected from the guest and cleaned up before calling ~FrameBuffer, there should be no risk to receive future commands.",
+      "parentUuid": "17b0f93a_67ce982e",
+      "range": {
+        "startLine": 595,
+        "startChar": 0,
+        "endLine": 599,
+        "endChar": 52
+      },
+      "revId": "26c82ea9719031867b2913b17464793dff8fb9a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
