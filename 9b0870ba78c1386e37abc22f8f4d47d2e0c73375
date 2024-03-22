@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b1c38f3_966a2881",
+        "filename": "guest/android/GrallocEmulated.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-03-22T19:59:31Z",
+      "side": 1,
+      "message": "nit\n```suggestion\n            return VIRGL_FORMAT_R8G8B8A8_UNORM;\n```",
+      "range": {
+        "startLine": 44,
+        "startChar": 47,
+        "endLine": 44,
+        "endChar": 48
+      },
+      "revId": "9b0870ba78c1386e37abc22f8f4d47d2e0c73375",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
