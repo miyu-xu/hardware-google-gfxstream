@@ -17,9 +17,14 @@
 #include "aemu/base/GLObjectCounter.h"
 
 #include <cstring>
+#include <vulkan/vulkan.h>
 
 static int s_glesMajorVersion = 2;
 static int s_glesMinorVersion = 0;
+
+static int s_VulkanMajorVersion = 1;
+static int s_VulkanMinorVersion = 3;
+static int s_VulkanPatchVersion = 0;
 
 android::base::GLObjectCounter* s_default_gl_object_counter = nullptr;
 
@@ -37,6 +42,18 @@ void emugl::setGlesVersion(int maj, int min) {
 void emugl::getGlesVersion(int* maj, int* min) {
     if (maj) *maj = s_glesMajorVersion;
     if (min) *min = s_glesMinorVersion;
+}
+
+void emugl::setVulkanVersion(int maj, int min, int patch) {
+    s_VulkanMajorVersion = maj;
+    s_VulkanMinorVersion = min;
+    s_VulkanPatchVersion = patch;
+}
+
+void emugl::getVulkanVersion(int* maj, int* min, int* patch) {
+    if (maj) *maj = s_VulkanMajorVersion;
+    if (min) *min = s_VulkanMinorVersion;
+    if (patch) *patch= s_VulkanPatchVersion;
 }
 
 void emugl::setRenderer(SelectedRenderer renderer) {

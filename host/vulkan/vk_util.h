@@ -353,6 +353,11 @@ class CallbacksWrapper {
     std::unique_ptr<T> mCallbacks;
 };
 
+// to detect vulkan physical device driver version, some
+// drivers are only supporting 1.2 and they should not
+// be used. as android assumes 1.3 in most cases
+bool detectVulkanDriverApiVersion();
+
 std::optional<uint32_t> findMemoryType(const VulkanDispatch* ivk, VkPhysicalDevice physicalDevice,
                                        uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
