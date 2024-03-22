@@ -22,6 +22,30 @@
       },
       "revId": "9b0870ba78c1386e37abc22f8f4d47d2e0c73375",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d56480f_272038b5",
+        "filename": "guest/android/GrallocEmulated.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-03-22T20:00:07Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "6b1c38f3_966a2881",
+      "range": {
+        "startLine": 44,
+        "startChar": 47,
+        "endLine": 44,
+        "endChar": 48
+      },
+      "revId": "9b0870ba78c1386e37abc22f8f4d47d2e0c73375",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
