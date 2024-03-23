@@ -130,6 +130,32 @@ std::unique_ptr<GuestGlDispatchTable> GfxstreamEnd2EndTest::SetupGuestGl() {
     return gl;
 }
 
+std::unique_ptr<GuestRenderControlDispatchTable> GfxstreamEnd2EndTest::SetupGuestRc() {
+    const std::filesystem::path testDirectory = gfxstream::guest::getProgramDirectory();
+    const std::string rcLibPath = (testDirectory / "libgfxstream_guest_rendercontrol_with_host.so").string();
+
+    void* rcLib = dlopen(rcLibPath.c_str(), RTLD_NOW | RTLD_LOCAL);
+    if (!rcLib) {
+        ALOGE("Failed to load Gfxstream RenderControl library from %s.", rcLibPath.c_str());
+        return nullptr;
+    }
+
+    auto rc = std::make_unique<GuestRenderControlDispatchTable>();
+
+#define LOAD_RENDERCONTROL_FUNCTION(name)                               \
+    rc->name = reinterpret_cast<PFN_ ## name>(dlsym(rcLib, #name));     \
+    if (rc->name == nullptr) {                                          \
+        ALOGE("Failed to load RenderControl function %s", #name);       \
+        return nullptr;                                                 \
+    }
+
+    LOAD_RENDERCONTROL_FUNCTION(rcCreateDevice);
+    LOAD_RENDERCONTROL_FUNCTION(rcDestroyDevice);
+    LOAD_RENDERCONTROL_FUNCTION(rcCompose);
+
+    return rc;
+}
+
 std::unique_ptr<vkhpp::DynamicLoader> GfxstreamEnd2EndTest::SetupGuestVk() {
     const std::filesystem::path testDirectory = gfxstream::guest::getProgramDirectory();
     const std::string vkLibPath = (testDirectory / "libgfxstream_guest_vulkan_with_host.so").string();
@@ -175,6 +201,9 @@ void GfxstreamEnd2EndTest::SetUp() {
         mVk = SetupGuestVk();
         ASSERT_THAT(mVk, NotNull());
     }
+
+    mRc = SetupGuestRc();
+    ASSERT_THAT(mRc, NotNull());
 
     mAnwHelper.reset(createPlatformANativeWindowHelper());
     mGralloc.reset(createPlatformGralloc());

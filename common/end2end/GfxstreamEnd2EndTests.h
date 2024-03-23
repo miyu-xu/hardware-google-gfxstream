@@ -43,6 +43,7 @@
 
 #include "gfxstream/guest/ANativeWindow.h"
 #include "gfxstream/guest/Gralloc.h"
+#include "gfxstream/guest/RenderControlApi.h"
 #include "Sync.h"
 
 namespace gfxstream {
@@ -170,6 +171,48 @@ struct GuestGlDispatchTable {
     LIST_RENDER_EGL_FUNCTIONS(DECLARE_EGL_FUNCTION)
     LIST_RENDER_EGL_EXTENSIONS_FUNCTIONS(DECLARE_EGL_FUNCTION)
     LIST_GLES_FUNCTIONS(DECLARE_GLES_FUNCTION, DECLARE_GLES_FUNCTION)
+};
+
+struct GuestRenderControlDispatchTable {
+    PFN_rcCreateDevice rcCreateDevice = nullptr;
+    PFN_rcDestroyDevice rcDestroyDevice = nullptr;
+    PFN_rcCompose rcCompose = nullptr;
+};
+
+class ScopedRenderControlDevice {
+  public:
+    ScopedRenderControlDevice() {}
+
+    ScopedRenderControlDevice(GuestRenderControlDispatchTable& dispatch) : mDispatch(&dispatch) {
+        mDevice = dispatch.rcCreateDevice();
+    }
+
+    ScopedRenderControlDevice(const ScopedRenderControlDevice& rhs) = delete;
+    ScopedRenderControlDevice& operator=(const ScopedRenderControlDevice& rhs) = delete;
+
+    ScopedRenderControlDevice(ScopedRenderControlDevice&& rhs) : mDispatch(rhs.mDispatch), mDevice(rhs.mDevice) {
+        rhs.mDevice = nullptr;
+    }
+
+    ScopedRenderControlDevice& operator=(ScopedRenderControlDevice&& rhs) {
+        mDispatch = rhs.mDispatch;
+        std::swap(mDevice, rhs.mDevice);
+        return *this;
+    }
+
+    ~ScopedRenderControlDevice() {
+        if (mDevice != nullptr) {
+            mDispatch->rcDestroyDevice(mDevice);
+            mDevice = nullptr;
+        }
+    }
+
+    operator RenderControlDevice*() { return mDevice; }
+    operator RenderControlDevice*() const { return mDevice; }
+
+   private:
+    GuestRenderControlDispatchTable* mDispatch = nullptr;
+    RenderControlDevice* mDevice = nullptr;
 };
 
 class ScopedGlType {
@@ -393,6 +436,7 @@ std::string GetTestName(const ::testing::TestParamInfo<TestParams>& info);
 class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
    public:
     std::unique_ptr<GuestGlDispatchTable> SetupGuestGl();
+    std::unique_ptr<GuestRenderControlDispatchTable> SetupGuestRc();
     std::unique_ptr<vkhpp::DynamicLoader> SetupGuestVk();
 
     void SetUp() override;
@@ -440,6 +484,7 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     std::unique_ptr<Gralloc> mGralloc;
     std::unique_ptr<SyncHelper> mSync;
     std::unique_ptr<GuestGlDispatchTable> mGl;
+    std::unique_ptr<GuestRenderControlDispatchTable> mRc;
     std::unique_ptr<vkhpp::DynamicLoader> mVk;
 };
 
