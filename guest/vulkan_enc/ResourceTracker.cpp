@@ -1738,9 +1738,12 @@ VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
         "VK_KHR_get_memory_requirements2",
         "VK_KHR_sampler_ycbcr_conversion",
         "VK_KHR_shader_float16_int8",
-    // Timeline semaphores buggy in newer NVIDIA drivers
-    // (vkWaitSemaphoresKHR causes further vkCommandBuffer dispatches to deadlock)
-#ifndef VK_USE_PLATFORM_ANDROID_KHR
+        // Timeline semaphores buggy in newer NVIDIA drivers
+        // (vkWaitSemaphoresKHR causes further vkCommandBuffer dispatches to deadlock)
+        //
+        // TODO(https://fxbug.dev/​330767177): Support timeline semaphore on
+        // Fuchsia and remove the #if statement for Fuchsia.
+#if (!defined(VK_USE_PLATFORM_ANDROID_KHR) && !defined(VK_USE_PLATFORM_FUCHSIA))
         "VK_KHR_timeline_semaphore",
 #endif
         "VK_AMD_gpu_shader_half_float",
@@ -2054,6 +2057,22 @@ void ResourceTracker::on_vkGetPhysicalDeviceFeatures2(void*, VkPhysicalDevice,
             memoryReportFeaturesEXT->deviceMemoryReport = VK_TRUE;
         }
     }
+
+#ifdef VK_USE_PLATFORM_FUCHSIA
+    // TODO(https://fxbug.dev/​330767177): Support timeline semaphore on
+    // Fuchsia and remove this override.
+    VkPhysicalDeviceVulkan12Features* vulkan12Features =
+        vk_find_struct<VkPhysicalDeviceVulkan12Features>(pFeatures);
+    if (vulkan12Features) {
+        vulkan12Features->timelineSemaphore = VK_FALSE;
+    }
+
+    VkPhysicalDeviceTimelineSemaphoreFeatures* timelineSemaphoreFeatures =
+        vk_find_struct<VkPhysicalDeviceTimelineSemaphoreFeatures>(pFeatures);
+    if (timelineSemaphoreFeatures) {
+        timelineSemaphoreFeatures->timelineSemaphore = VK_FALSE;
+    }
+#endif  // VK_USE_PLATFORM_FUCHSIA
 }
 
 void ResourceTracker::on_vkGetPhysicalDeviceFeatures2KHR(void* context,

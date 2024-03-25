@@ -122,6 +122,13 @@ REGISTER_VK_STRUCT_ID(VkRenderPassAttachmentBeginInfo,
 REGISTER_VK_STRUCT_ID(VkImportMemoryHostPointerInfoEXT,
                       VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT);
 
+#ifdef VK_VERSION_1_2
+REGISTER_VK_STRUCT_ID(VkPhysicalDeviceVulkan12Features,
+                      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES);
+REGISTER_VK_STRUCT_ID(VkPhysicalDeviceTimelineSemaphoreFeatures,
+                      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES);
+#endif  // VK_VERSION_1_2
+
 #undef REGISTER_VK_STRUCT_ID
 
 }  // namespace
