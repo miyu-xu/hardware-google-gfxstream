@@ -630,7 +630,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     instCi.ppEnabledExtensionNames = enabledExtensions_.data();
 
     VkApplicationInfo appInfo = {
-        VK_STRUCTURE_TYPE_APPLICATION_INFO, 0, "AEMU", 1, "AEMU", 1, VK_MAKE_VERSION(1, 0, 0),
+        VK_STRUCTURE_TYPE_APPLICATION_INFO, 0, "AEMU", 1, "AEMU", 1, VK_MAKE_VERSION(1, 3, 0),
     };
 
     instCi.pApplicationInfo = &appInfo;
@@ -641,23 +641,56 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         uint32_t instanceVersion;
         VkResult res = gvk->vkEnumerateInstanceVersion(&instanceVersion);
         if (VK_SUCCESS == res) {
-            if (instanceVersion >= VK_MAKE_VERSION(1, 1, 0)) {
+            if (instanceVersion >= VK_MAKE_VERSION(1, 3, 0)) {
                 // LOG(VERBOSE) << "global loader has vkEnumerateInstanceVersion returning >= 1.1.";
-                appInfo.apiVersion = VK_MAKE_VERSION(1, 1, 0);
+                appInfo.apiVersion = VK_MAKE_VERSION(1, 3, 0);
             }
+            INFO("vk instance version is %d.%d.%d",
+            VK_VERSION_MAJOR(instanceVersion),
+            VK_VERSION_MINOR(instanceVersion),
+            VK_VERSION_PATCH(instanceVersion));
         }
     }
 
-    // LOG(VERBOSE) << "Creating instance, asking for version "
-    //              << VK_VERSION_MAJOR(appInfo.apiVersion) << "."
-    //              << VK_VERSION_MINOR(appInfo.apiVersion) << "."
-    //              << VK_VERSION_PATCH(appInfo.apiVersion) << " ...";
+    INFO("Creating instance, asking for version %d.%d.%d",
+            VK_VERSION_MAJOR(appInfo.apiVersion),
+            VK_VERSION_MINOR(appInfo.apiVersion),
+            VK_VERSION_PATCH(appInfo.apiVersion));
 
     VkResult res = gvk->vkCreateInstance(&instCi, nullptr, &sVkEmulation->instance);
 
     if (res != VK_SUCCESS) {
         VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, "Failed to create Vulkan instance. Error %s.",
                                              string_VkResult(res));
+    } else {
+           uint32_t deviceCount = 0;
+           auto result = gvk->vkEnumeratePhysicalDevices(sVkEmulation->instance, &deviceCount, nullptr);
+           if (result != VK_SUCCESS) {
+               fprintf(stderr, "failed to query physical devices count %d\n", result);
+           } else {
+               fprintf(stderr, "success to query physical devices count is %d\n", (int)(deviceCount));
+           }
+   
+           std::vector<VkPhysicalDevice> devices(deviceCount);
+           result = gvk->vkEnumeratePhysicalDevices(sVkEmulation->instance, &deviceCount, devices.data());
+           if (result != VK_SUCCESS) {
+               fprintf(stderr, "failed to query physical devices %d\n", result);
+           } else {
+               fprintf(stderr, "success to query physical devices\n");
+           }
+   
+           for (auto& physicalDevice: devices) {
+               VkPhysicalDeviceProperties physicalProp {};
+               gvk->vkGetPhysicalDeviceProperties( physicalDevice, &physicalProp);
+               fprintf(stderr, "physical device name is %s api major %d minor %d patch %d\n", physicalProp.deviceName,
+                       VK_API_VERSION_MAJOR(physicalProp.apiVersion),
+                       VK_API_VERSION_MINOR(physicalProp.apiVersion),
+                       VK_API_VERSION_PATCH(physicalProp.apiVersion)
+                       );
+               auto major = VK_API_VERSION_MAJOR(physicalProp.apiVersion);
+               auto minor = VK_API_VERSION_MINOR(physicalProp.apiVersion);
+               auto patch = VK_API_VERSION_PATCH(physicalProp.apiVersion);
+            }
     }
 
     // Create instance level dispatch.
