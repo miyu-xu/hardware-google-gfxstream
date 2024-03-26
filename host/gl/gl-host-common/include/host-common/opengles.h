@@ -97,6 +97,9 @@ AEMU_EXPORT void android_getOpenglesHardwareStrings(char** vendor,
                                                     char** renderer,
                                                     char** version);
 
+AEMU_EXPORT void android_getVulkanHardwareGpu(char** vendor,
+        int* major, int* minor, int* patch);
+
 AEMU_EXPORT int android_showOpenglesWindow(void* window,
                                            int wx,
                                            int wy,
