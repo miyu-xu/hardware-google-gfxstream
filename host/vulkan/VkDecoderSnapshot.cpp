@@ -531,7 +531,7 @@ class VkDecoderSnapshot::Impl {
                                const VkAllocationCallbacks* pAllocator) {
         android::base::AutoLock lock(mLock);
         // shaderModule destroy
-        mReconstruction.removeHandles((const uint64_t*)(&shaderModule), 1);
+        mReconstruction.removeHandles((const uint64_t*)(&shaderModule), 1, false);
     }
     void vkCreatePipelineCache(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                android::base::BumpPool* pool, VkResult input_result,
@@ -781,6 +781,12 @@ class VkDecoderSnapshot::Impl {
             (const uint64_t*)pFramebuffer, 1,
             (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkRenderPass(
                 pCreateInfo->renderPass));
+        for (uint32_t i = 0; i < pCreateInfo->attachmentCount; ++i) {
+            mReconstruction.addHandleDependency(
+                (const uint64_t*)pFramebuffer, 1,
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImageView(
+                    pCreateInfo->pAttachments[i]));
+        }
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCreateFramebuffer, snapshotTraceBegin,

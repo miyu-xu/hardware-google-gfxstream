@@ -3966,6 +3966,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 1 * 8;
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkImageViewCreateInfo));
+                printf("image handle %p\n", pCreateInfo->image);
                 reservedunmarshal_VkImageViewCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                         (VkImageViewCreateInfo*)(pCreateInfo),
                                                         readStreamPtrPtr);
