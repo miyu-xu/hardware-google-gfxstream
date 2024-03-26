@@ -32,6 +32,7 @@
 #include "host-common/opengl/GLProcessPipe.h"
 #include "host-common/opengl/logger.h"
 #include "host-common/opengl/gpuinfo.h"
+#include "vulkan/vulkan.h"
 
 #include "render-utils/render_api_functions.h"
 #include "OpenGLESDispatch/EGLDispatch.h"
@@ -532,3 +533,97 @@ void android_setOpenglesDisplayActiveConfig(int configId) {
         sRenderer->setDisplayActiveConfig(configId);
     }
 }
+
+std::string getVulkanGpuName() {
+#if defined(_WIN32)
+    const char* mylibname = "vulkan-1.dll";
+#elif defined(__linux__)
+    const char* mylibname = "libvulkan.so";
+#elif defined(__APPLE__)
+    //const char* mylibname = "libvulkan.dylib";
+    const char* mylibname = "/Users/bohu/src/emu-master-dev/external/qemu/objs/lib64/vulkan/libvulkan.dylib";
+#endif
+
+#if defined(_WIN32)
+    HMODULE library = LoadLibraryA(mylibname);
+    if (!library) {
+	    derror("cannot open lib %s\n", mylibname);
+            return "";
+    }
+    auto* pvkCreateInstance = reinterpret_cast<PFN_vkCreateInstance>(GetProcAddress(library, "vkCreateInstance"));
+    auto* pvkEnumeratePhysicalDevices= reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(GetProcAddress(library, "vkEnumeratePhysicalDevices"));
+    auto* pvkGetPhysicalDeviceProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties>(GetProcAddress(library, "vkGetPhysicalDeviceProperties"));
+#else
+    auto library = ::dlopen(mylibname, RTLD_NOW);
+    if (!library) {
+        derror ("failed to open %s", mylibname);
+        return "";
+    } else {
+        derror ("succes sopen %s", mylibname);
+    }
+    auto* pvkCreateInstance = reinterpret_cast<PFN_vkCreateInstance>(dlsym(library, "vkCreateInstance"));
+    auto* pvkEnumeratePhysicalDevices= reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(dlsym(library, "vkEnumeratePhysicalDevices"));
+    auto* pvkGetPhysicalDeviceProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties>(dlsym(library, "vkGetPhysicalDeviceProperties"));
+#endif
+    if (!pvkCreateInstance || !pvkEnumeratePhysicalDevices || !pvkGetPhysicalDeviceProperties) {
+        derror("failed to find vkCreateInstance vkEnumeratePhysicalDevices vkGetPhysicalDeviceProperties");
+    }
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "Graphics Engine";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1,0,0);
+    appInfo.pEngineName = "fun engine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1,0,0);
+    appInfo.apiVersion = VK_API_VERSION_1_0;
+
+    VkInstanceCreateInfo createInfo {};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+
+    uint32_t extensionCount = 0;
+    createInfo.enabledExtensionCount = extensionCount;
+    createInfo.ppEnabledExtensionNames = nullptr;
+
+    VkInstance instance;
+
+    VkResult result = pvkCreateInstance(&createInfo, 0, &instance);
+
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "failed to create instance %d\n", result);
+        return "";
+    } else {
+        fprintf(stderr, "successfully created instance %d\n", result);
+    }
+
+    uint32_t deviceCount = 0;
+    result = pvkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "failed to query physical devices count %d\n", result);
+    } else {
+        fprintf(stderr, "success to query physical devices count is %d\n", (int)(deviceCount));
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    result = pvkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "failed to query physical devices %d\n", result);
+    } else {
+        fprintf(stderr, "success to query physical devices\n");
+    }
+
+    for (auto& physicalDevice: devices) {
+        VkPhysicalDeviceProperties physicalProp {};
+        pvkGetPhysicalDeviceProperties( physicalDevice, &physicalProp);
+        fprintf(stderr, "physical device name is %s api major %d minor %d patch %d\n", physicalProp.deviceName,
+                VK_API_VERSION_MAJOR(physicalProp.apiVersion),
+                VK_API_VERSION_MINOR(physicalProp.apiVersion),
+                VK_API_VERSION_PATCH(physicalProp.apiVersion)
+                );
+        auto major = VK_API_VERSION_MAJOR(physicalProp.apiVersion);
+        auto minor = VK_API_VERSION_MINOR(physicalProp.apiVersion);
+        auto patch = VK_API_VERSION_PATCH(physicalProp.apiVersion);
+    }
+    
+    return "";
+}
+
