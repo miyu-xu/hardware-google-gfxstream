@@ -25,7 +25,7 @@
 namespace gfxstream {
 namespace vk {
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -59,27 +59,41 @@ void VkReconstruction::save(android::base::Stream* stream) {
     dump();
 #endif
 
-    std::unordered_map<uint64_t, uint64_t> backDeps;
+    std::unordered_map<uint64_t, int> totalParents;
 
     mHandleReconstructions.forEachLiveComponent_const(
-        [&backDeps](bool live, uint64_t componentHandle, uint64_t entityHandle,
+        [&totalParents](bool live, uint64_t componentHandle, uint64_t entityHandle,
                     const HandleReconstruction& item) {
             for (auto handle : item.childHandles) {
-                backDeps[handle] = entityHandle;
+                totalParents[handle]++;
             }
         });
 
     std::vector<uint64_t> topoOrder;
 
     mHandleReconstructions.forEachLiveComponent_const(
-        [&topoOrder, &backDeps](bool live, uint64_t componentHandle, uint64_t entityHandle,
+        [&topoOrder, &totalParents](bool live, uint64_t componentHandle, uint64_t entityHandle,
                                 const HandleReconstruction& item) {
             // Start with populating the roots
-            if (backDeps.find(entityHandle) == backDeps.end()) {
+            if (totalParents.find(entityHandle) == totalParents.end()) {
                 DEBUG_RECON("found root: 0x%llx", (unsigned long long)entityHandle);
                 topoOrder.push_back(entityHandle);
             }
         });
+
+    for (size_t idx = 0; idx < topoOrder.size(); idx ++)
+        auto handle = topoOrder[idx];
+        auto item = mHandleReconstructions.get(handle);
+        // item could have been deleted.
+        if (!item) {
+            continue;
+        }
+        for (auto childHandle : item->childHandles) {
+            if (--totalParents[childHandle] == 0) {
+                topoOrder.push_back(childHandle);
+            }
+        }
+    }
 
     std::vector<uint64_t> next;
 
@@ -353,21 +367,26 @@ void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
     }
 }
 
-void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count) {
+void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive) {
     if (!toRemove) return;
+    forEachHandleDeleteApi(toRemove, count);
 
     for (uint32_t i = 0; i < count; ++i) {
         DEBUG_RECON("remove 0x%llx", (unsigned long long)toRemove[i]);
         auto item = mHandleReconstructions.get(toRemove[i]);
-        if (!item) abort();
+        if (!item) continue;
 
-        if (item->childHandles.size()) {
+        if (!recursive && item->childHandles.size()) {
             // TODO(b/330769702): perform delayed destroy when all children are destroyed.
+            DEBUG_RECON("delay destroy of 0x%lx, TODO: actually destroy it",
+                    toRemove[i]);
             item->destroyed = true;
-            continue;
+            //continue;
         }
-        forEachHandleDeleteApi(toRemove + i, 1);
+        //forEachHandleDeleteApi(toRemove + i, 1);        
         mHandleReconstructions.remove(toRemove[i]);
+        removeHandles(item->childHandles.data(), item->childHandles.size());
+        item->childHandles.clear();
     }
 }
 

@@ -74,7 +74,7 @@ class VkReconstruction {
     void dump();
 
     void addHandles(const uint64_t* toAdd, uint32_t count);
-    void removeHandles(const uint64_t* toRemove, uint32_t count);
+    void removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive = true);
 
     void forEachHandleAddApi(const uint64_t* toProcess, uint32_t count, uint64_t apiHandle);
     void forEachHandleDeleteApi(const uint64_t* toProcess, uint32_t count);
