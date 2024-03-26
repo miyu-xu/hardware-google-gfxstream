@@ -1864,6 +1864,10 @@ class VkDecoderGlobalState::Impl {
 
     void on_vkDestroyImage(android::base::BumpPool* pool, VkDevice boxed_device, VkImage image,
                            const VkAllocationCallbacks* pAllocator) {
+        if (snapshotsEnabled() && !image) {
+            return;
+        }
+
         auto device = unbox_VkDevice(boxed_device);
         auto deviceDispatch = dispatch_VkDevice(boxed_device);
 
@@ -2046,19 +2050,25 @@ class VkDecoderGlobalState::Impl {
         return result;
     }
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
     VkResult on_vkCreateImageView(android::base::BumpPool* pool, VkDevice boxed_device,
                                   const VkImageViewCreateInfo* pCreateInfo,
                                   const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
         if (!pCreateInfo) {
+            _PR_LINE
             return VK_ERROR_OUT_OF_HOST_MEMORY;
         }
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
         auto* imageInfo = android::base::find(mImageInfo, pCreateInfo->image);
-        if (!deviceInfo || !imageInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        if (!deviceInfo || !imageInfo) {
+            _PR_LINE
+            return VK_ERROR_OUT_OF_HOST_MEMORY;
+        }
         VkImageViewCreateInfo createInfo;
         bool needEmulatedAlpha = false;
         if (deviceInfo->needEmulatedDecompression(pCreateInfo->format)) {
@@ -2105,6 +2115,9 @@ class VkDecoderGlobalState::Impl {
 
     void on_vkDestroyImageView(android::base::BumpPool* pool, VkDevice boxed_device,
                                VkImageView imageView, const VkAllocationCallbacks* pAllocator) {
+        if (snapshotsEnabled() && !imageView) {
+            return;
+        }
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
 
@@ -8336,8 +8349,10 @@ GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HAN
         if (!boxed) return boxed;                                                                 \
         auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
         if (!elt) {                                                                               \
-            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))                                       \
-                << "Unbox " << boxed << " failed, not found.";                                    \
+            if (true || !VkDecoderGlobalState::get()->snapshotsEnabled()) {                               \
+                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))                                   \
+                    << "Unbox " << boxed << " failed, not found.";                                \
+            } else { printf("handle %p not found\n", boxed); }                                                                                     \
             return VK_NULL_HANDLE;                                                                \
         }                                                                                         \
         return (type)elt->underlying;                                                             \
