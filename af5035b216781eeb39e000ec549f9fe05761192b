@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "733dc84c_147a871d",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 617,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-03-27T16:26:09Z",
+      "side": 1,
+      "message": "Right, I thought I was still getting the errors when instance extensions are not enabled, but just tried it again and looks like this part is not necessary.",
+      "parentUuid": "40eb77f5_3ca96917",
+      "range": {
+        "startLine": 617,
+        "startChar": 13,
+        "endLine": 617,
+        "endChar": 44
+      },
+      "revId": "af5035b216781eeb39e000ec549f9fe05761192b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a02f8c08_cb791755",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-03-27T16:16:47Z",
       "side": 1,
       "message": "WDYT about \n\n```suggestion\n    enabledExtensions.emplace(VK_KHR_SWAPCHAIN_EXTENSION_NAME);\n\n    if (sVkEmulation-\u003efeatures.VulkanNativeSwapchain.enabled) {\n        for (auto extension : SwapChainStateVk::getRequiredDeviceExtensions()) {\n            selectedDeviceExtensionNames_.emplace(extension);\n        }\n    }\n```\n\npotentially so that changes in `SwapChainStateVk` do not pull in extra unneeded extensions and so that the comment directly shows the extension that is needed being added?\n\n(potentially this might require a new dedup step below)",
+      "range": {
+        "startLine": 1032,
+        "startChar": 4,
+        "endLine": 1034,
+        "endChar": 5
+      },
+      "revId": "af5035b216781eeb39e000ec549f9fe05761192b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4eb8817_924b6ced",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1034,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-03-27T16:26:09Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "a02f8c08_cb791755",
       "range": {
         "startLine": 1032,
         "startChar": 4,
