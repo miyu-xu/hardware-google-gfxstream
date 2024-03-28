@@ -30,7 +30,29 @@ using testing::IsNull;
 using testing::Not;
 using testing::NotNull;
 
-class GfxstreamEnd2EndVkSnapshotPipelineTest : public GfxstreamEnd2EndTest {};
+struct PipelineInfo {
+    vkhpp::UniqueRenderPass renderPass;
+    vkhpp::UniqueDescriptorSetLayout descriptorSetLayout;
+    vkhpp::UniquePipelineLayout pipelineLayout;
+    vkhpp::UniqueShaderModule vertexShaderModule;
+    vkhpp::UniqueShaderModule fragmentShaderModule;
+    vkhpp::UniquePipeline pipeline;
+};
+
+struct ImageInfo {
+    vkhpp::UniqueImage image;
+    vkhpp::UniqueDeviceMemory memory;
+    vkhpp::UniqueImageView imageView;
+};
+
+class GfxstreamEnd2EndVkSnapshotPipelineTest : public GfxstreamEnd2EndTest {
+    protected:
+        vkhpp::UniqueRenderPass createRenderPass(vkhpp::Device device);
+        std::unique_ptr<ImageInfo> createColorAttachment(vkhpp::PhysicalDevice physicalDevice, vkhpp::Device device);
+        std::unique_ptr<PipelineInfo> createPipeline(vkhpp::Device device);
+        static const uint32_t kFbWidth = 32;
+        static const uint32_t kFbHeight = 32;
+};
 
 // A blue triangle
 const float kVertexData[] = {
@@ -38,9 +60,7 @@ const float kVertexData[] = {
     0.0f,  0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 };
 
-TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanRecreateShaderModule) {
-    auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
-        VK_ASSERT(SetUpTypicalVkTestEnvironment());
+vkhpp::UniqueRenderPass GfxstreamEnd2EndVkSnapshotPipelineTest::createRenderPass(vkhpp::Device device) {
     vkhpp::AttachmentDescription colorAttachmentDescription = {
         .format = vkhpp::Format::eR8G8B8A8Unorm,
         .loadOp = vkhpp::AttachmentLoadOp::eDontCare,
@@ -60,14 +80,18 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanRecreateShaderModule) {
         .subpassCount = 1,
         .pSubpasses = &subpassDescription,
     };
-    auto renderPass = device->createRenderPassUnique(renderPassCreateInfo).value;
-    ASSERT_THAT(renderPass, IsValidHandle());
+    return device.createRenderPassUnique(renderPassCreateInfo).value;
+}
+
+std::unique_ptr<PipelineInfo> GfxstreamEnd2EndVkSnapshotPipelineTest::createPipeline(vkhpp::Device device) {
+    std::unique_ptr<PipelineInfo> res(new PipelineInfo);
+    res->renderPass = createRenderPass(device);
 
     vkhpp::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {};
-    auto descriptorSetLayout =
-        device->createDescriptorSetLayoutUnique(descriptorSetLayoutInfo).value;
-    auto pipelineLayout =
-        device->createPipelineLayoutUnique(vkhpp::PipelineLayoutCreateInfo{}).value;
+    res->descriptorSetLayout =
+        device.createDescriptorSetLayoutUnique(descriptorSetLayoutInfo).value;
+    res->pipelineLayout =
+        device.createPipelineLayoutUnique(vkhpp::PipelineLayoutCreateInfo{}).value;
 
     vkhpp::ShaderModuleCreateInfo vertexShaderModuleCreateInfo = {
         .codeSize = sizeof(kSimpleShaderVert),
@@ -77,21 +101,19 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanRecreateShaderModule) {
         .codeSize = sizeof(kSimpleShaderFrag),
         .pCode = (const uint32_t*)kSimpleShaderFrag,
     };
-    auto vertexShaderModule = device->createShaderModuleUnique(vertexShaderModuleCreateInfo).value;
-    ASSERT_THAT(vertexShaderModule, IsValidHandle());
-    auto fragmentShaderModule =
-        device->createShaderModuleUnique(fragmentShaderModuleCreateInfo).value;
-    ASSERT_THAT(fragmentShaderModule, IsValidHandle());
+    res->vertexShaderModule = device.createShaderModuleUnique(vertexShaderModuleCreateInfo).value;
+    res->fragmentShaderModule =
+        device.createShaderModuleUnique(fragmentShaderModuleCreateInfo).value;
 
     vkhpp::PipelineShaderStageCreateInfo pipelineShaderStageCreateInfos[2] = {
         {
             .stage = vkhpp::ShaderStageFlagBits::eVertex,
-            .module = *vertexShaderModule,
+            .module = *res->vertexShaderModule,
             .pName = "main",
         },
         {
             .stage = vkhpp::ShaderStageFlagBits::eFragment,
-            .module = *fragmentShaderModule,
+            .module = *res->fragmentShaderModule,
             .pName = "main",
         },
     };
@@ -165,18 +187,83 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanRecreateShaderModule) {
         .pDepthStencilState = &pipelineDepthStencilStateCreateInfo,
         .pColorBlendState = &pipelineColorBlendStateCreateInfo,
         .pDynamicState = &pipelineDynamicStateCreateInfo,
-        .layout = *pipelineLayout,
-        .renderPass = *renderPass,
+        .layout = *res->pipelineLayout,
+        .renderPass = *res->renderPass,
     };
 
-    auto resultWithPipeline =
-        device->createGraphicsPipelineUnique(nullptr, graphicsPipelineCreateInfo);
+    res->pipeline =
+        device.createGraphicsPipelineUnique(nullptr, graphicsPipelineCreateInfo).value;
 
-    ASSERT_THAT(resultWithPipeline.result, IsVkSuccess());
+    return res;
+}
+
+std::unique_ptr<ImageInfo> GfxstreamEnd2EndVkSnapshotPipelineTest::createColorAttachment(vkhpp::PhysicalDevice physicalDevice, vkhpp::Device device) {
+    std::unique_ptr<ImageInfo> res(new ImageInfo);
+
+    const vkhpp::ImageCreateInfo imageCreateInfo = {
+        .pNext = nullptr,
+        .imageType = vkhpp::ImageType::e2D,
+        .extent.width = kFbWidth,
+        .extent.height = kFbHeight,
+        .extent.depth = 1,
+        .mipLevels = 1,
+        .arrayLayers = 1,
+        .format = vkhpp::Format::eR8G8B8A8Unorm,
+        .tiling = vkhpp::ImageTiling::eOptimal,
+        .initialLayout = vkhpp::ImageLayout::eUndefined,
+        .usage = vkhpp::ImageUsageFlagBits::eColorAttachment | vkhpp::ImageUsageFlagBits::eSampled | vkhpp::ImageUsageFlagBits::eTransferDst |
+                 vkhpp::ImageUsageFlagBits::eTransferSrc,
+        .sharingMode = vkhpp::SharingMode::eExclusive,
+        .samples = vkhpp::SampleCountFlagBits::e1,
+    };
+    res->image = device.createImageUnique(imageCreateInfo).value;
+
+    vkhpp::MemoryRequirements imageMemoryRequirements{};
+    device.getImageMemoryRequirements(*res->image, &imageMemoryRequirements);
+
+    const uint32_t imageMemoryIndex = GetMemoryType(physicalDevice, imageMemoryRequirements,
+                                                    vkhpp::MemoryPropertyFlagBits::eDeviceLocal);
+
+    const vkhpp::MemoryAllocateInfo imageMemoryAllocateInfo = {
+        .allocationSize = imageMemoryRequirements.size,
+        .memoryTypeIndex = imageMemoryIndex,
+    };
+
+    res->memory = device.allocateMemoryUnique(imageMemoryAllocateInfo).value;
+
+    device.bindImageMemory(*res->image, *res->memory, 0);
+
+    const vkhpp::ImageViewCreateInfo imageViewCreateInfo = {
+        .image = *res->image,
+        .viewType = vkhpp::ImageViewType::e2D,
+        .format = vkhpp::Format::eR8G8B8A8Unorm,
+        .subresourceRange =
+            {
+                .aspectMask = vkhpp::ImageAspectFlagBits::eColor,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            },
+    };
+    res->imageView = device.createImageViewUnique(imageViewCreateInfo).value;
+    return res;
+}
+
+TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanRecreateShaderModule) {
+    auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
+        VK_ASSERT(SetUpTypicalVkTestEnvironment());
+    auto pipelineInfo = createPipeline(device.get());
+    ASSERT_THAT(pipelineInfo->renderPass, IsValidHandle());
+    ASSERT_THAT(pipelineInfo->descriptorSetLayout, IsValidHandle());
+    ASSERT_THAT(pipelineInfo->pipelineLayout, IsValidHandle());
+    ASSERT_THAT(pipelineInfo->vertexShaderModule, IsValidHandle());
+    ASSERT_THAT(pipelineInfo->fragmentShaderModule, IsValidHandle());
+    ASSERT_THAT(pipelineInfo->pipeline, IsValidHandle());
 
     // Check if snapshot can restore the pipeline even after shaders are destroyed.
-    vertexShaderModule.reset();
-    fragmentShaderModule.reset();
+    pipelineInfo->vertexShaderModule.reset();
+    pipelineInfo->fragmentShaderModule.reset();
 
     SnapshotSaveAndLoad();
     // Don't crash
@@ -230,6 +317,32 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanSnapshotDescriptorPool) {
     EXPECT_THAT(descriptorSets1.result, Eq(vkhpp::Result::eSuccess));
 }
 
+TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanSnapshotFramebuffer) {
+    auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
+        VK_ASSERT(SetUpTypicalVkTestEnvironment());
+    auto renderPass = createRenderPass(device.get());
+    ASSERT_THAT(renderPass, IsValidHandle());
+
+    auto colorAttachmentInfo = createColorAttachment(physicalDevice, device.get());
+    ASSERT_THAT(colorAttachmentInfo->image, IsValidHandle());
+    ASSERT_THAT(colorAttachmentInfo->memory, IsValidHandle());
+    ASSERT_THAT(colorAttachmentInfo->imageView, IsValidHandle());
+
+    const std::vector<vkhpp::ImageView> attachments(1, *colorAttachmentInfo->imageView);
+    vkhpp::FramebufferCreateInfo framebufferCreateInfo = {
+        .renderPass = *renderPass,
+        .attachmentCount = 1,
+        .pAttachments = attachments.data(),
+        .width = kFbWidth,
+        .height = kFbHeight,
+        .layers = 1,
+    };
+    auto framebuffer = device->createFramebufferUnique(framebufferCreateInfo).value;
+    ASSERT_THAT(framebuffer, IsValidHandle());
+
+    SnapshotSaveAndLoad();
+}
+
 INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkSnapshotPipelineTest,
                         ::testing::ValuesIn({
                             TestParams{
@@ -239,7 +352,6 @@ INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkSnapshotPipelin
                             },
                         }),
                         &GetTestName);
-
 }  // namespace
 }  // namespace tests
 }  // namespace gfxstream
