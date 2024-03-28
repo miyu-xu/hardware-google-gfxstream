@@ -457,6 +457,8 @@ class VkDecoderGlobalState::Impl {
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
+            // Playback doesn't recover image layout. We need to do it here.
+            stream->putBe32(imageInfo.layout);
             const auto& device = imageInfo.device;
             const auto& deviceInfo = android::base::find(mDeviceInfo, device);
             const auto physicalDevice = deviceInfo->physicalDevice;
@@ -539,10 +541,12 @@ class VkDecoderGlobalState::Impl {
         sort(sortedBoxedImages.begin(), sortedBoxedImages.end());
         for (const auto& boxedImage : sortedBoxedImages) {
             auto unboxedImage = unbox_VkImage(boxedImage);
-            const ImageInfo& imageInfo = mImageInfo[unboxedImage];
+            ImageInfo& imageInfo = mImageInfo[unboxedImage];
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
+            // Playback doesn't recover image layout. We need to do it here.
+            imageInfo.layout = static_cast<VkImageLayout>(stream->getBe32());
             const auto& device = imageInfo.device;
             const auto& deviceInfo = android::base::find(mDeviceInfo, device);
             const auto physicalDevice = deviceInfo->physicalDevice;
