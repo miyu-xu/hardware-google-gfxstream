@@ -14,6 +14,8 @@
 
 #include "gfxstream/Strings.h"
 
+#include <sstream>
+
 namespace gfxstream {
 
 std::vector<std::string> Split(const std::string& s, const std::string& delimiters) {
@@ -33,6 +35,19 @@ std::vector<std::string> Split(const std::string& s, const std::string& delimite
     }
 
     return result;
+}
+
+std::string Join(const std::vector<std::string>& parts, const std::string& delimiter) {
+    if (parts.empty()) {
+        return "";
+    }
+
+    std::ostringstream result;
+    result << *parts.begin();
+    for (auto it = std::next(parts.begin()); it != parts.end(); ++it) {
+        result << delimiter << *it;
+    }
+    return result.str();
 }
 
 }  // namespace gfxstream

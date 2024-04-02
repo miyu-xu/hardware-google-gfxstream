@@ -20,5 +20,6 @@
 namespace gfxstream {
 
 std::vector<std::string> Split(const std::string& s, const std::string& delimiters);
+std::string Join(const std::vector<std::string>& parts, const std::string& delimiter);
 
 }  // namespace gfxstream

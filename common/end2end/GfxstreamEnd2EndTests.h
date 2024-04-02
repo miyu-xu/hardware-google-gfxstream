@@ -440,7 +440,7 @@ enum class GfxstreamTransport {
 struct TestParams {
     bool with_gl;
     bool with_vk;
-    bool with_vk_snapshot = false;
+    std::vector<std::string> with_features;
     GfxstreamTransport with_transport = GfxstreamTransport::kVirtioGpuAsg;
 
     std::string ToString() const;

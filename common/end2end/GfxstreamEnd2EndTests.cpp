@@ -27,6 +27,7 @@
 #include "aemu/base/Path.h"
 #include "gfxstream/ImageUtils.h"
 #include "gfxstream/RutabagaLayerTestUtils.h"
+#include "gfxstream/Strings.h"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
@@ -77,8 +78,10 @@ std::string TestParams::ToString() const {
     ret += "Gl";
     ret += (with_vk ? "With" : "Without");
     ret += "Vk";
-    ret += (with_vk_snapshot ? "With" : "Without");
-    ret += "Snapshot";
+    if (!with_features.empty()) {
+        ret += "WithFeatures_";
+        ret += Join(with_features, "_");
+    }
     ret += "Over";
     ret += GfxstreamTransportToString(with_transport);
     return ret;
@@ -198,10 +201,16 @@ void GfxstreamEnd2EndTest::SetUp() {
     ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK", params.with_vk ? "Y" : "N",
                        /*overwrite=*/1),
                 Eq(0));
-    ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_VK_SNAPSHOTS",
-                       params.with_vk_snapshot ? "Y" : "N",
-                       /*overwrite=*/1),
-                Eq(0));
+    if (!params.with_features.empty()) {
+        std::vector<std::string> featureEnables;
+        for (const std::string& feature : params.with_features) {
+            featureEnables.push_back(feature + ":enabled");
+        }
+        const std::string features = Join(featureEnables, ",");
+        ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_RENDERER_FEATURES", features.c_str(),
+                           /*overwrite=*/1),
+                    Eq(0));
+    }
 
     if (params.with_gl) {
         mGl = SetupGuestGl();
