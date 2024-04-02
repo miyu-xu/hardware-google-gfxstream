@@ -1500,9 +1500,9 @@ class PipeVirglRenderer {
                 capset->bufferSize = 1048576;
 
                 auto vk_emu = gfxstream::vk::getGlobalVkEmulation();
-                if (vk_emu && vk_emu->live && vk_emu->representativeColorBufferMemoryTypeIndex) {
+                if (vk_emu && vk_emu->live && vk_emu->representativeColorBufferMemoryTypeInfo) {
                     capset->colorBufferMemoryIndex =
-                        *vk_emu->representativeColorBufferMemoryTypeIndex;
+                        vk_emu->representativeColorBufferMemoryTypeInfo->guestMemoryTypeIndex;
                 }
 
                 capset->noRenderControlEnc = 1;
