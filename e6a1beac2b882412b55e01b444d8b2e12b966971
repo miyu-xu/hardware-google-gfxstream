@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a38d4306_e8c78fdc",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-08T18:31:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2dc0d110_3207b01d",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f98163be_6af5c813",
@@ -48,6 +66,24 @@
       "writtenOn": "2024-04-08T14:45:15Z",
       "side": 1,
       "message": "NIT: I would add brackets just to avoid questions re: application order.\n\nSame in a few places below.",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49925e1d_2cd7b180",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-08T18:31:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f98163be_6af5c813",
       "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -69,6 +105,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e079f89_a0910358",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 1907,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-08T18:31:52Z",
+      "side": 1,
+      "message": "Updated the text. It seems to be mostly still valid.",
+      "parentUuid": "9c20a88b_5c7f7231",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "83dd6eb6_42b642b3",
@@ -82,6 +136,24 @@
       "writtenOn": "2024-04-08T14:45:15Z",
       "side": 1,
       "message": "Not sure I understand this comment. What is Playback in this context? \n\nIs it possible to name the function call that would be expected to recover the image layout but doesn\u0027t? I cannot seem to see any playback reference immediately around the point of call.",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "455d747b_137eb0b0",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 548,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-08T18:31:52Z",
+      "side": 1,
+      "message": "Hi Sergiu,\n\nwe record and playback a small subset of Vulkan commands to call the vkCreate* for all Vulkan objects on snapshot load, \"Playback\" is referring to the vulkan command playback on snapshot load.\n\nPlayback was triggered in line 514: `snapshot()-\u003eload(stream, gfxLogger, healthMonitor);`. VkDecoderSnapshot::load only re-creates the vulkan objects but does not load any image / buffer contents. Actual image content is loaded in line 587: `loadImageContent`.\n\nCurrently the layout transform is done in line 587: `loadImageContent` (after loading image content, the last command will transform it from transfer_dst to imageInfo.layout). We still have missing corner cases at the moment. (Actually missing important scenarios... they are not really corner cases.)\n\nI will add it in the comments.",
+      "parentUuid": "83dd6eb6_42b642b3",
       "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
