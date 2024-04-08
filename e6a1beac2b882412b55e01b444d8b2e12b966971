@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7375d196_267dc39c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-04-08T14:45:15Z",
+      "side": 1,
+      "message": "LGTM. \n\nA few NITs and some questions.",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2dc0d110_3207b01d",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-04-08T14:45:15Z",
+      "side": 1,
+      "message": "NIT: I would add brackets just to avoid questions re: application order.",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f98163be_6af5c813",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-04-08T14:45:15Z",
+      "side": 1,
+      "message": "NIT: I would add brackets just to avoid questions re: application order.\n\nSame in a few places below.",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c20a88b_5c7f7231",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 1907,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-04-08T14:45:15Z",
+      "side": 1,
+      "message": "Is this todo still valid?",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83dd6eb6_42b642b3",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 548,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-04-08T14:45:15Z",
+      "side": 1,
+      "message": "Not sure I understand this comment. What is Playback in this context? \n\nIs it possible to name the function call that would be expected to recover the image layout but doesn\u0027t? I cannot seem to see any playback reference immediately around the point of call.",
+      "revId": "e6a1beac2b882412b55e01b444d8b2e12b966971",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
