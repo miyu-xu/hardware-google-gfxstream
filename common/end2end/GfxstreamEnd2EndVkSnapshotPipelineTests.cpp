@@ -354,6 +354,8 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanSnapshotFramebuffer) {
     SnapshotSaveAndLoad();
 }
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanSubmitQueue) {
     auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
         VK_ASSERT(SetUpTypicalVkTestEnvironment());
@@ -437,21 +439,23 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanSubmitQueue) {
         nullptr, colorAttachmentBarrier);
 
     commandBuffer->end();
-
+    _PR_LINE
     std::vector<vkhpp::CommandBuffer> commandBufferHandles;
     commandBufferHandles.push_back(*commandBuffer);
-
+    _PR_LINE
     const vkhpp::SubmitInfo submitInfo = {
         .commandBufferCount = static_cast<uint32_t>(commandBufferHandles.size()),
         .pCommandBuffers = commandBufferHandles.data(),
     };
     queue.submit(submitInfo, *fence);
-
+    _PR_LINE
     auto waitResult = device->waitForFences(*fence, VK_TRUE, 3000000000L);
+    _PR_LINE
     ASSERT_THAT(waitResult, IsVkSuccess());
     commandBuffer->reset();
-
+    _PR_LINE
     SnapshotSaveAndLoad();
+    _PR_LINE
     // TODO(b/332763326): fix validation layer complain about unreleased pipeline layout
 
     // Try to draw something.
