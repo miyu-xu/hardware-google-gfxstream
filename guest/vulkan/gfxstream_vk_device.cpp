@@ -438,6 +438,17 @@ VkResult gfxstream_vk_CreateDevice(VkPhysicalDevice physicalDevice,
                 reinterpret_cast<VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT*>(
                     extensionCreateInfo);
             swapchainMaintenance1Features->swapchainMaintenance1 = VK_FALSE;
+        } else if (extensionCreateInfo->sType == VK_STRUCTURE_TYPE_DEVICE_GROUP_DEVICE_CREATE_INFO) {
+            // HACK: not respecting const
+            auto deviceGroupDeviceCreateInfo =
+                reinterpret_cast<VkDeviceGroupDeviceCreateInfo*>(extensionCreateInfo);
+            if (deviceGroupDeviceCreateInfo->physicalDeviceCount && deviceGroupDeviceCreateInfo->pPhysicalDevices) {
+                auto mutablePhysicalDevices = const_cast<VkPhysicalDevice*>(deviceGroupDeviceCreateInfo->pPhysicalDevices);
+                for (uint32_t i = 0; i < deviceGroupDeviceCreateInfo->physicalDeviceCount; i++) {
+                    VK_FROM_HANDLE(gfxstream_vk_physical_device, gfxstream_physicalDevice, physicalDevice);
+                    mutablePhysicalDevices[i] = gfxstream_physicalDevice->internal_object;
+                }
+            }
         }
         extensionCreateInfo = (VkBaseInStructure*)(extensionCreateInfo->pNext);
     }

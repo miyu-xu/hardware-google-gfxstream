@@ -630,6 +630,45 @@ TEST_P(GfxstreamEnd2EndVkTest, MultiThreadedShutdown) {
     }
 }
 
+<<<<<<< HEAD
+=======
+TEST_P(GfxstreamEnd2EndVkTest, AcquireImageAndroidWithFence) {
+    DoAcquireImageAndroidWithSync(/*withFence=*/true, /*withSemaphore=*/false);
+}
+
+TEST_P(GfxstreamEnd2EndVkTest, AcquireImageAndroidWithSemaphore) {
+    DoAcquireImageAndroidWithSync(/*withFence=*/false, /*withSemaphore=*/true);
+}
+
+TEST_P(GfxstreamEnd2EndVkTest, AcquireImageAndroidWithFenceAndSemaphore) {
+    DoAcquireImageAndroidWithSync(/*withFence=*/true, /*withSemaphore=*/true);
+}
+
+TEST_P(GfxstreamEnd2EndVkTest, PhysicalDeviceGroup) {
+    auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
+        VK_ASSERT(SetUpTypicalVkTestEnvironment());
+
+    const vkhpp::DeviceGroupDeviceCreateInfo deviceGroupDeviceCreateInfo = {
+        .physicalDeviceCount = 1,
+        .pPhysicalDevices = &physicalDevice,
+    };
+
+    const float queuePriority = 1.0f;
+    const vkhpp::DeviceQueueCreateInfo deviceQueueCreateInfo = {
+        .queueFamilyIndex = 0,
+        .queueCount = 1,
+        .pQueuePriorities = &queuePriority,
+    };
+    const vkhpp::DeviceCreateInfo deviceCreateInfo = {
+        .pNext = &deviceGroupDeviceCreateInfo,
+        .pQueueCreateInfos = &deviceQueueCreateInfo,
+        .queueCreateInfoCount = 1,
+    };
+    auto device2 = VK_ASSERT_RV(physicalDevice.createDeviceUnique(deviceCreateInfo));
+    ASSERT_THAT(device2, IsValidHandle());
+}
+
+>>>>>>> efb2fe04e (Partial revert of aosp/2858589 to avoid Mesa layer for Android)
 std::vector<TestParams> GenerateTestCases() {
     std::vector<TestParams> cases = {TestParams{
                                          .with_gl = false,
