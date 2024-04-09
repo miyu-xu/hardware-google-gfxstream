@@ -46,15 +46,32 @@ class VkReconstruction {
     using ApiTrace = android::base::EntityManager<32, 16, 16, ApiInfo>;
     using ApiHandle = ApiTrace::EntityHandle;
 
+    enum HandleState {
+        BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, HANDLE_STATE_COUNT
+    };
+
+    typedef std::pair<uint64_t, HandleState> HandleWithState;
+    struct HandleWithStateHash {
+        inline size_t operator()(const HandleWithState &v) const {
+            std::hash<uint64_t> int_hasher;
+            return int_hasher(v.first) ^ int_hasher(v.second);
+        }
+    };
+
     struct HandleReconstruction {
         std::vector<ApiHandle> apiRefs;
-        std::unordered_set<uint64_t> childHandles;
-        std::vector<uint64_t> parentHandles;
+        std::unordered_set<HandleWithState, HandleWithStateHash> childHandles;
+        std::vector<HandleWithState> parentHandles;
+    };
+
+    struct HandleWithStateReconstruction {
+        std::vector<HandleReconstruction> states
+                = std::vector<HandleReconstruction>(HANDLE_STATE_COUNT);
         bool destroyed = false;
     };
 
-    using HandleReconstructions =
-        android::base::UnpackedComponentManager<32, 16, 16, HandleReconstruction>;
+    using HandleWithStateReconstructions =
+        android::base::UnpackedComponentManager<32, 16, 16, HandleWithStateReconstruction>;
 
     struct HandleModification {
         std::vector<ApiHandle> apiRefs;
@@ -77,10 +94,10 @@ class VkReconstruction {
     void addHandles(const uint64_t* toAdd, uint32_t count);
     void removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive = true);
 
-    void forEachHandleAddApi(const uint64_t* toProcess, uint32_t count, uint64_t apiHandle);
+    void forEachHandleAddApi(const uint64_t* toProcess, uint32_t count, uint64_t apiHandle, HandleState state = CREATED);
     void forEachHandleDeleteApi(const uint64_t* toProcess, uint32_t count);
 
-    void addHandleDependency(const uint64_t* handles, uint32_t count, uint64_t parentHandle);
+    void addHandleDependency(const uint64_t* handles, uint32_t count, uint64_t parentHandle, HandleState childState = CREATED, HandleState parentState = CREATED);
 
     void setCreatedHandlesForApi(uint64_t apiHandle, const uint64_t* created, uint32_t count);
 
@@ -113,7 +130,7 @@ class VkReconstruction {
 
     ApiTrace mApiTrace;
 
-    HandleReconstructions mHandleReconstructions;
+    HandleWithStateReconstructions mHandleReconstructions;
     HandleModifications mHandleModifications;
 
     std::vector<uint64_t> mExtraHandlesForNextApi;

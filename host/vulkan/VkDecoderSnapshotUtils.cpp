@@ -21,6 +21,8 @@ namespace vk {
 
 namespace {
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 uint32_t GetMemoryType(const PhysicalDeviceInfo& physicalDevice,
                        const VkMemoryRequirements& memoryRequirements,
                        VkMemoryPropertyFlags memoryProperties) {
@@ -124,9 +126,16 @@ VkExtent3D getMipmapExtent(VkExtent3D baseExtent, uint32_t mipLevel) {
 
 void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkImage image,
                       const ImageInfo* imageInfo) {
+    _PR_LINE
     if (imageInfo->layout == VK_IMAGE_LAYOUT_UNDEFINED) {
+        _PR_LINE
         return;
     }
+    if (imageInfo->imageCreateInfoShallow.samples != VK_SAMPLE_COUNT_1_BIT) {
+        _PR_LINE
+        return;
+    } 
+    _PR_LINE
     VkEmulation* vkEmulation = getGlobalVkEmulation();
     VulkanDispatch* dispatch = vkEmulation->dvk;
     const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
@@ -163,7 +172,7 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     const auto readbackBufferMemoryType =
         GetMemoryType(*stateBlock->physicalDeviceInfo, readbackBufferMemoryRequirements,
                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
+    _PR_LINE
     // Staging memory
     // TODO(b/323064243): reuse staging memory
     VkMemoryAllocateInfo readbackBufferMemoryAllocateInfo = {
@@ -181,14 +190,17 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     _RUN_AND_CHECK(dispatch->vkMapMemory(stateBlock->device, readbackMemory, 0, VK_WHOLE_SIZE,
                                          VkMemoryMapFlags{}, &mapped));
 
+    _PR_LINE
     for (uint32_t mipLevel = 0; mipLevel < imageInfo->imageCreateInfoShallow.mipLevels;
          mipLevel++) {
+        _PR_LINE
         for (uint32_t arrayLayer = 0; arrayLayer < imageInfo->imageCreateInfoShallow.arrayLayers;
              arrayLayer++) {
             // TODO(b/323064243): reuse command buffers
             VkCommandBufferBeginInfo beginInfo{
                 .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
             };
+            _PR_LINE
             if (dispatch->vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
                 GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
                     << "Failed to start command buffer on snapshot save";
@@ -217,7 +229,7 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
             dispatch->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
                                            VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
                                            nullptr, 1, &imgMemoryBarrier);
-
+            _PR_LINE
             VkBufferImageCopy region{
                 .bufferOffset = 0,
                 .bufferRowLength = 0,
@@ -234,6 +246,7 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
                     },
                 .imageExtent = mipmapExtent,
             };
+            _PR_LINE
             dispatch->vkCmdCopyImageToBuffer(commandBuffer, image,
                                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, readbackBuffer,
                                              1, &region);
@@ -248,6 +261,7 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
                                                VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
                                                nullptr, 1, &imgMemoryBarrier);
             }
+            _PR_LINE
             _RUN_AND_CHECK(dispatch->vkEndCommandBuffer(commandBuffer));
 
             // Execute the command to copy image
@@ -263,9 +277,12 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
             size_t bytes = mipmapExtent.width * mipmapExtent.height * mipmapExtent.depth *
                            bytes_per_pixel(imageCreateInfo.format);
             stream->putBe64(bytes);
+            printf("bytes %lu\n", bytes);
             stream->write(mapped, bytes);
+            _PR_LINE
         }
     }
+    _PR_LINE
     dispatch->vkDestroyFence(stateBlock->device, fence, nullptr);
     dispatch->vkUnmapMemory(stateBlock->device, readbackMemory);
     dispatch->vkDestroyBuffer(stateBlock->device, readbackBuffer, nullptr);
@@ -274,9 +291,14 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
 
 void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkImage image,
                       const ImageInfo* imageInfo) {
+    _PR_LINE
     if (imageInfo->layout == VK_IMAGE_LAYOUT_UNDEFINED) {
         return;
     }
+    if (imageInfo->imageCreateInfoShallow.samples != VK_SAMPLE_COUNT_1_BIT) {
+        return;
+    }
+    _PR_LINE
     VkEmulation* vkEmulation = getGlobalVkEmulation();
     VulkanDispatch* dispatch = vkEmulation->dvk;
     const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
@@ -289,6 +311,7 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     VkCommandBuffer commandBuffer;
     _RUN_AND_CHECK(dispatch->vkAllocateCommandBuffers(stateBlock->device, &allocInfo,
                                                       &commandBuffer) != VK_SUCCESS);
+    _PR_LINE
     VkFenceCreateInfo fenceCreateInfo{
         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
     };
@@ -310,6 +333,7 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     dispatch->vkGetBufferMemoryRequirements(stateBlock->device, stagingBuffer,
                                             &stagingBufferMemoryRequirements);
 
+    _PR_LINE
     const auto stagingBufferMemoryType =
         GetMemoryType(*stateBlock->physicalDeviceInfo, stagingBufferMemoryRequirements,
                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -331,10 +355,13 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     _RUN_AND_CHECK(dispatch->vkMapMemory(stateBlock->device, stagingMemory, 0, VK_WHOLE_SIZE,
                                          VkMemoryMapFlags{}, &mapped));
 
+    _PR_LINE
     for (uint32_t mipLevel = 0; mipLevel < imageInfo->imageCreateInfoShallow.mipLevels;
          mipLevel++) {
+        _PR_LINE
         for (uint32_t arrayLayer = 0; arrayLayer < imageInfo->imageCreateInfoShallow.arrayLayers;
              arrayLayer++) {
+            _PR_LINE
             // TODO(b/323064243): reuse command buffers
             VkCommandBufferBeginInfo beginInfo{
                 .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -346,6 +373,7 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
 
             VkExtent3D mipmapExtent = getMipmapExtent(imageCreateInfo.extent, mipLevel);
             size_t bytes = stream->getBe64();
+            printf("bytes %lu\n", bytes);
             stream->read(mapped, bytes);
 
             // TODO(b/323059453): get the right aspect
@@ -399,6 +427,7 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
                                                VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
                                                nullptr, 1, &imgMemoryBarrier);
             }
+            _PR_LINE
             _RUN_AND_CHECK(dispatch->vkEndCommandBuffer(commandBuffer));
 
             // Execute the command to copy image
@@ -411,12 +440,14 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
             _RUN_AND_CHECK(
                 dispatch->vkWaitForFences(stateBlock->device, 1, &fence, VK_TRUE, 3000000000L));
             _RUN_AND_CHECK(dispatch->vkResetFences(stateBlock->device, 1, &fence));
+            _PR_LINE
         }
     }
     dispatch->vkDestroyFence(stateBlock->device, fence, nullptr);
     dispatch->vkUnmapMemory(stateBlock->device, stagingMemory);
     dispatch->vkDestroyBuffer(stateBlock->device, stagingBuffer, nullptr);
     dispatch->vkFreeMemory(stateBlock->device, stagingMemory, nullptr);
+    _PR_LINE
 }
 
 }  // namespace vk
