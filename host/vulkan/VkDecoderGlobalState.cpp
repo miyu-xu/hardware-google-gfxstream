@@ -453,6 +453,7 @@ class VkDecoderGlobalState::Impl {
         // So sort them (by boxed handles) first.
         std::sort(sortedBoxedImages.begin(), sortedBoxedImages.end());
         for (const auto& boxedImage : sortedBoxedImages) {
+            printf("saving boxed image %p\n", boxedImage);
             auto unboxedImage = unbox_VkImage(boxedImage);
             const ImageInfo& imageInfo = mImageInfo[unboxedImage];
             if (imageInfo.memory == VK_NULL_HANDLE) {
@@ -541,6 +542,7 @@ class VkDecoderGlobalState::Impl {
         }
         sort(sortedBoxedImages.begin(), sortedBoxedImages.end());
         for (const auto& boxedImage : sortedBoxedImages) {
+            printf("loading boxed image %p\n", boxedImage);
             auto unboxedImage = unbox_VkImage(boxedImage);
             ImageInfo& imageInfo = mImageInfo[unboxedImage];
             if (imageInfo.memory == VK_NULL_HANDLE) {
