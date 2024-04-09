@@ -214,6 +214,22 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandles((const uint64_t*)pMemory, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pMemory, 1,
                                             (uint64_t)(uintptr_t)device);
+        const VkMemoryDedicatedAllocateInfo* dedicatedAllocateInfo =
+            vk_find_struct<VkMemoryDedicatedAllocateInfo>(pAllocateInfo);
+        if (dedicatedAllocateInfo) {
+            if (dedicatedAllocateInfo->image) {
+                mReconstruction.addHandleDependency(
+                    (const uint64_t*)pMemory, 1,
+                    (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(
+                        dedicatedAllocateInfo->image));
+            }
+            if (dedicatedAllocateInfo->buffer) {
+                mReconstruction.addHandleDependency(
+                    (const uint64_t*)pMemory, 1,
+                    (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkBuffer(
+                        dedicatedAllocateInfo->buffer));
+            }
+        }
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkAllocateMemory, snapshotTraceBegin,

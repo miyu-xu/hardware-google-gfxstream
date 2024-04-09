@@ -106,6 +106,19 @@ SNAPSHOT_HANDLE_DEPENDENCIES = [
 
 handleDependenciesDict = dict(SNAPSHOT_HANDLE_DEPENDENCIES)
 
+def extract_deps_vkAllocateMemory(param, access, lenExpr, api, cgen):
+    cgen.stmt("const VkMemoryDedicatedAllocateInfo* dedicatedAllocateInfo = vk_find_struct<VkMemoryDedicatedAllocateInfo>(pAllocateInfo)");
+    cgen.beginIf("dedicatedAllocateInfo");
+    cgen.beginIf("dedicatedAllocateInfo->image")
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
+              (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkImage(dedicatedAllocateInfo->image)"))
+    cgen.endIf()
+    cgen.beginIf("dedicatedAllocateInfo->buffer")
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
+              (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkBuffer(dedicatedAllocateInfo->buffer)"))
+    cgen.endIf()
+    cgen.endIf()
+
 def extract_deps_vkAllocateCommandBuffers(param, access, lenExpr, api, cgen):
     cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s)" % \
               (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkCommandPool(pAllocateInfo->commandPool)"))
@@ -136,6 +149,7 @@ def extract_deps_vkBindImageMemory(param, access, lenExpr, api, cgen):
 
 specialCaseDependencyExtractors = {
     "vkAllocateCommandBuffers" : extract_deps_vkAllocateCommandBuffers,
+    "vkAllocateMemory" : extract_deps_vkAllocateMemory,
     "vkCreateImageView" : extract_deps_vkCreateImageView,
     "vkCreateGraphicsPipelines" : extract_deps_vkCreateGraphicsPipelines,
     "vkCreateFramebuffer" : extract_deps_vkCreateFramebuffer,
