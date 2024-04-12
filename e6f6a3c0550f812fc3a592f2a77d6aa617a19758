@@ -52,6 +52,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b8c8a75_4de917f7",
+        "filename": "codegen/vulkan/vulkan-docs-next/scripts/cereal/decodersnapshot.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-12T18:33:25Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "75a7b513_e6c778e7",
+      "revId": "e6f6a3c0550f812fc3a592f2a77d6aa617a19758",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd2b60ce_ed86e051",
@@ -69,6 +87,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9aeaf1a2_5d983c4c",
+        "filename": "codegen/vulkan/vulkan-docs-next/scripts/cereal/decodersnapshot.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-12T18:33:25Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "bd2b60ce_ed86e051",
+      "revId": "e6f6a3c0550f812fc3a592f2a77d6aa617a19758",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a6cca15c_78c9d69e",
@@ -82,6 +118,24 @@
       "writtenOn": "2024-04-12T09:28:34Z",
       "side": 1,
       "message": "Is this test doing a dedicated allocation?\n\nDo we need to enable/check for:\n\nhttps://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_dedicated_allocation.html\n\nsomewhere in the test environment setup?\n\nNot fully sure whether MemoryDedicatedAllocateInfo actually requires it, just a thought.",
+      "revId": "e6f6a3c0550f812fc3a592f2a77d6aa617a19758",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "74ab4358_0c77a110",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotImageTests.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-12T18:33:25Z",
+      "side": 1,
+      "message": "The spec says promoted to Vulkan 1.1, and our test sets up vk1.2 by default, so I think it should be safe to ignore the check.",
+      "parentUuid": "a6cca15c_78c9d69e",
       "revId": "e6f6a3c0550f812fc3a592f2a77d6aa617a19758",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
