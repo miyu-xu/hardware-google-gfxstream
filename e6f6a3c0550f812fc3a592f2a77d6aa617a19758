@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a99d9bf7_18e081fc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-04-12T10:23:47Z",
+      "side": 1,
+      "message": "Also - it\u0027s really useful to see the detailed commit message. Helpful to wrap my head around",
+      "revId": "e6f6a3c0550f812fc3a592f2a77d6aa617a19758",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "75a7b513_e6c778e7",
