@@ -16,6 +16,24 @@
       "message": "Why is this something we want?",
       "revId": "77d84117812ac3b3dc89b8184c4c7dbfc3b3bffd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c9d4258_cfcb211c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-04-12T09:41:40Z",
+      "side": 1,
+      "message": "NVM, checked the bug.",
+      "parentUuid": "3a275a43_899de490",
+      "revId": "77d84117812ac3b3dc89b8184c4c7dbfc3b3bffd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
