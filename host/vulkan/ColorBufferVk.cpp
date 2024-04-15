@@ -28,9 +28,10 @@ std::unique_ptr<ColorBufferVk> ColorBufferVk::create(uint32_t handle, uint32_t w
     VkImageLayout initLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     if (getGlobalVkEmulation()->features.VulkanSnapshots.enabled && stream) {
         initLayout = static_cast<VkImageLayout>(stream->getBe32());
+        printf("loading cb %d layout %d\n", handle, initLayout);
     }
     if (!createVkColorBuffer(width, height, format, frameworkFormat, handle, vulkanOnly,
-                             memoryProperty)) {
+                             memoryProperty, initLayout)) {
         GL_LOG("Failed to create ColorBufferVk:%d", handle);
         return nullptr;
     }

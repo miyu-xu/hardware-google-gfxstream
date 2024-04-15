@@ -176,6 +176,7 @@ TEST_P(GfxstreamEnd2EndVkTest, ImportAHB) {
 
     auto imageMemory = device->allocateMemoryUnique(imageMemoryAllocateInfo).value;
     ASSERT_THAT(imageMemory, IsValidHandle());
+    printf("binding memory ImportAHB\n");
     ASSERT_THAT(device->bindImageMemory(*image, *imageMemory, 0), IsVkSuccess());
 
     const vkhpp::BufferCreateInfo bufferCreateInfo = {
