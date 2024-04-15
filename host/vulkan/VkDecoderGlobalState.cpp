@@ -509,6 +509,7 @@ class VkDecoderGlobalState::Impl {
         // from FrameBuffer's onLoad method.
 
         // destroy all current internal data structures
+        printf("vk snapshot start\n");
         clear();
         mSnapshotState = SnapshotState::Loading;
         // this part will replay in the decoder
@@ -598,6 +599,7 @@ class VkDecoderGlobalState::Impl {
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
         mSnapshotState = SnapshotState::Normal;
+        printf("vk snapshot end\n");
     }
 
     void lock() { mLock.lock(); }
@@ -6249,7 +6251,7 @@ class VkDecoderGlobalState::Impl {
     GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_IMPL)
 
     VkDecoderSnapshot* snapshot() { return &mSnapshot; }
-
+    SnapshotState getSnapshotState() { return mSnapshotState; }
    private:
     bool isEmulatedInstanceExtension(const char* name) const {
         for (auto emulatedExt : kEmulatedInstanceExtensions) {
@@ -7148,11 +7150,6 @@ class VkDecoderGlobalState::Impl {
     std::unordered_map<LinearImageCreateInfo, LinearImageProperties, LinearImageCreateInfo::Hash>
         mLinearImageProperties;
 
-    enum SnapshotState {
-        Normal,
-        Saving,
-        Loading,
-    };
     SnapshotState mSnapshotState = SnapshotState::Normal;
 };
 
@@ -7177,6 +7174,10 @@ void VkDecoderGlobalState::reset() {
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
+
+VkDecoderGlobalState::SnapshotState VkDecoderGlobalState::getSnapshotState() const {
+    return mImpl->getSnapshotState();
+}
 
 const gfxstream::host::FeatureSet& VkDecoderGlobalState::getFeatures() const { return mImpl->getFeatures(); }
 
