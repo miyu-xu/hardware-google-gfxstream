@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bca1ff0f_f50091d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-04-18T17:17:58Z",
+      "side": 1,
+      "message": "Can you do a history-preserving method?  Ideal: eventually up-streaming cereal-generators.  For example:\n\ncommit 0: import Vulkan-docs from 463f8c\ncommit 1: vulkan-Docs: import the cerealgenerator\n\nI think it should be possible via git format patch HEAD~30, and changing the `vulkan-doc-next` to `vulkan-docs`?  Feel free to a file a bug and assign to me if you want me to do it.",
+      "revId": "133c73638dc52cf6b1a9ec3b521e03fd0249673f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
