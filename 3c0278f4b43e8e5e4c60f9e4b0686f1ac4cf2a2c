@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4833a09b_a078a996",
+        "filename": "host/PostWorkerGl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-19T21:53:52Z",
+      "side": 1,
+      "message": "nit: wrap the #ifdef around \"if (pixel_fold)\" ?\n```suggestion\n#ifdef CONFIG_AEMU\n    if (pixel_fold) {\n        if (emugl::shouldSkipDraw()) {\n            post.layers.clear();\n        } else {\n            post.layers.push_back(postWithOverlay(cb));\n        }\n    }\n#endif\n```",
+      "range": {
+        "startLine": 90,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 5
+      },
+      "revId": "3c0278f4b43e8e5e4c60f9e4b0686f1ac4cf2a2c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
