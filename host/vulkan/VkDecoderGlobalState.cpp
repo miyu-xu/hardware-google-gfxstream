@@ -500,6 +500,15 @@ class VkDecoderGlobalState::Impl {
             saveImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
+
+        // snapshot buffers
+        std::vector<VkBuffer> sortedBoxedBuffers;
+        for (const auto& bufferIte : mBufferInfo) {
+            sortedBoxedBuffers.push_back(unboxed_to_boxed_non_dispatchable_VkBuffer(bufferIte.first));
+        }
+        sort(sortedBoxedBuffers.begin(), sortedBoxedBuffers.end());
+
+
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -597,6 +606,15 @@ class VkDecoderGlobalState::Impl {
             loadImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
+
+        // snapshot buffers
+        std::vector<VkBuffer> sortedBoxedBuffers;
+        for (const auto& bufferIte : mBufferInfo) {
+            sortedBoxedBuffers.push_back(unboxed_to_boxed_non_dispatchable_VkBuffer(bufferIte.first));
+        }
+        sort(sortedBoxedBuffers.begin(), sortedBoxedBuffers.end());
+
+        
         mSnapshotState = SnapshotState::Normal;
     }
 
