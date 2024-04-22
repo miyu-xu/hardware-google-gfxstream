@@ -34,6 +34,24 @@
       "parentUuid": "bca1ff0f_f50091d4",
       "revId": "133c73638dc52cf6b1a9ec3b521e03fd0249673f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9292cc07_ff2a6e05",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-04-22T21:21:13Z",
+      "side": 1,
+      "message": "Once we hopefully fix b/333133323, I can move `vulkan-docs-next` to `vulkan-docs` in the manner that can be conducive to potential upstreaming.  Does that sound good?",
+      "parentUuid": "cd58cc8b_eea5b587",
+      "revId": "133c73638dc52cf6b1a9ec3b521e03fd0249673f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
