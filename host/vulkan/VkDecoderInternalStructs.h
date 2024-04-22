@@ -225,6 +225,7 @@ struct QueueInfo {
 
 struct BufferInfo {
     VkDevice device;
+    VkBufferCreateInfo bufferCreateInfoShallow;
     VkDeviceMemory memory = 0;
     VkDeviceSize memoryOffset = 0;
     VkDeviceSize size;
