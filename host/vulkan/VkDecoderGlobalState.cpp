@@ -500,6 +500,61 @@ class VkDecoderGlobalState::Impl {
             saveImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
+
+        // snapshot buffers
+        std::vector<VkBuffer> sortedBoxedBuffers;
+        for (const auto& bufferIte : mBufferInfo) {
+            sortedBoxedBuffers.push_back(unboxed_to_boxed_non_dispatchable_VkBuffer(bufferIte.first));
+        }
+        sort(sortedBoxedBuffers.begin(), sortedBoxedBuffers.end());
+        for (const auto& boxedBuffer : sortedBoxedBuffers) {
+            auto unboxedBuffer = unbox_VkBuffer(boxedBuffer);
+            const BufferInfo& bufferInfo = mBufferInfo[unboxedBuffer];
+            if (bufferInfo.memory == VK_NULL_HANDLE) {
+                continue;
+            }
+            // TODO: add a special case for host mapped memory
+            const auto& device = bufferInfo.device;
+            const auto& deviceInfo = android::base::find(mDeviceInfo, device);
+            const auto physicalDevice = deviceInfo->physicalDevice;
+            const auto& physicalDeviceInfo = android::base::find(mPhysdevInfo, physicalDevice);
+            StateBlock stateBlock{
+                .physicalDevice = physicalDevice,
+                .physicalDeviceInfo = physicalDeviceInfo,
+                .device = device,
+                .queue = VK_NULL_HANDLE,
+                .commandPool = VK_NULL_HANDLE,
+            };
+
+            uint32_t queueFamilyCount = 0;
+            ivk->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
+                                                          nullptr);
+            std::vector<VkQueueFamilyProperties> queueFamilyProps(queueFamilyCount);
+            ivk->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
+                                                          queueFamilyProps.data());
+            uint32_t queueFamilyIndex = 0;
+            for (auto queue : deviceInfo->queues) {
+                int idx = queue.first;
+                if ((queueFamilyProps[idx].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0) {
+                    continue;
+                }
+                stateBlock.queue = queue.second[0];
+                queueFamilyIndex = idx;
+                break;
+            }
+
+            VkCommandPoolCreateInfo commandPoolCi = {
+                VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+                0,
+                VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+                queueFamilyIndex,
+            };
+            dvk->vkCreateCommandPool(device, &commandPoolCi, nullptr, &stateBlock.commandPool);
+            // TODO(b/294277842): make sure the queue is empty before using.
+            saveBufferContent(stream, &stateBlock, unboxedBuffer, &bufferInfo);
+            dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
+        }
+
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -597,6 +652,61 @@ class VkDecoderGlobalState::Impl {
             loadImageContent(stream, &stateBlock, unboxedImage, &imageInfo);
             dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
         }
+
+        // snapshot buffers
+        std::vector<VkBuffer> sortedBoxedBuffers;
+        for (const auto& bufferIte : mBufferInfo) {
+            sortedBoxedBuffers.push_back(unboxed_to_boxed_non_dispatchable_VkBuffer(bufferIte.first));
+        }
+        sort(sortedBoxedBuffers.begin(), sortedBoxedBuffers.end());
+        for (const auto& boxedBuffer : sortedBoxedBuffers) {
+            auto unboxedBuffer = unbox_VkBuffer(boxedBuffer);
+            const BufferInfo& bufferInfo = mBufferInfo[unboxedBuffer];
+            if (bufferInfo.memory == VK_NULL_HANDLE) {
+                continue;
+            }
+            // TODO: add a special case for host mapped memory
+            const auto& device = bufferInfo.device;
+            const auto& deviceInfo = android::base::find(mDeviceInfo, device);
+            const auto physicalDevice = deviceInfo->physicalDevice;
+            const auto& physicalDeviceInfo = android::base::find(mPhysdevInfo, physicalDevice);
+            StateBlock stateBlock{
+                .physicalDevice = physicalDevice,
+                .physicalDeviceInfo = physicalDeviceInfo,
+                .device = device,
+                .queue = VK_NULL_HANDLE,
+                .commandPool = VK_NULL_HANDLE,
+            };
+
+            uint32_t queueFamilyCount = 0;
+            ivk->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
+                                                          nullptr);
+            std::vector<VkQueueFamilyProperties> queueFamilyProps(queueFamilyCount);
+            ivk->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
+                                                          queueFamilyProps.data());
+            uint32_t queueFamilyIndex = 0;
+            for (auto queue : deviceInfo->queues) {
+                int idx = queue.first;
+                if ((queueFamilyProps[idx].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0) {
+                    continue;
+                }
+                stateBlock.queue = queue.second[0];
+                queueFamilyIndex = idx;
+                break;
+            }
+
+            VkCommandPoolCreateInfo commandPoolCi = {
+                VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+                0,
+                VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+                queueFamilyIndex,
+            };
+            dvk->vkCreateCommandPool(device, &commandPoolCi, nullptr, &stateBlock.commandPool);
+            // TODO(b/294277842): make sure the queue is empty before using.
+            loadBufferContent(stream, &stateBlock, unboxedBuffer, &bufferInfo);
+            dvk->vkDestroyCommandPool(device, stateBlock.commandPool, nullptr);
+        }
+        
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -1669,6 +1779,8 @@ class VkDecoderGlobalState::Impl {
             auto& bufInfo = mBufferInfo[*pBuffer];
             bufInfo.device = device;
             bufInfo.size = pCreateInfo->size;
+            bufInfo.bufferCreateInfoShallow = *pCreateInfo;
+            bufInfo.bufferCreateInfoShallow.pNext = nullptr;
             *pBuffer = new_boxed_non_dispatchable_VkBuffer(*pBuffer);
         }
 
