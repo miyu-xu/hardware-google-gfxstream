@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1774bc51_cbe04aa3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-04-22T17:22:02Z",
+      "side": 1,
+      "message": "Sorry, was OOO.",
+      "revId": "1871367b6a45268c221ec5e5ba697d151f79b5ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "09c1ec6a_c843b234",
@@ -14,6 +31,24 @@
       "writtenOn": "2024-03-20T20:47:09Z",
       "side": 1,
       "message": "This is a copy of a file from fuchsia.git - not sure if I should change the license header",
+      "revId": "1871367b6a45268c221ec5e5ba697d151f79b5ac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e0f6114_8327dc36",
+        "filename": "guest/fuchsia/include/msd-virtio-gpu/magma-virtio-gpu-defs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-04-22T17:22:02Z",
+      "side": 1,
+      "message": "Looks file since it\u0027s OSS.",
+      "parentUuid": "09c1ec6a_c843b234",
       "revId": "1871367b6a45268c221ec5e5ba697d151f79b5ac",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
