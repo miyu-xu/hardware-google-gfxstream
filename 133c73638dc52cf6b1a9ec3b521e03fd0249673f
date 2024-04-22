@@ -16,6 +16,24 @@
       "message": "Can you do a history-preserving method?  Ideal: eventually up-streaming cereal-generators.  For example:\n\ncommit 0: import Vulkan-docs from 463f8c\ncommit 1: vulkan-Docs: import the cerealgenerator\n\nI think it should be possible via git format patch HEAD~30, and changing the `vulkan-doc-next` to `vulkan-docs`?  Feel free to a file a bug and assign to me if you want me to do it.",
       "revId": "133c73638dc52cf6b1a9ec3b521e03fd0249673f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd58cc8b_eea5b587",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-04-22T20:47:36Z",
+      "side": 1,
+      "message": "This change was made with `git mv codegen/vulkan/vulkan-docs-next codegen/vulkan/vulkan-docs` which I believe does preserve the history (Gerrit UI shows everything as `R` for rename I believe).\n\n`git log --follow -p -- codegen/vulkan/vulkan-docs/scripts/cereal/common/vulkantypes.py` shows aosp/2824967 for example.",
+      "parentUuid": "bca1ff0f_f50091d4",
+      "revId": "133c73638dc52cf6b1a9ec3b521e03fd0249673f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
