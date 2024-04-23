@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "67fa162f_8999cfec",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-04-23T19:48:50Z",
+      "side": 1,
+      "message": "The rough assumption is that the vk objects and polling functions are added to their respective queues in the order they are used so encountering an unsignaled/pending fence likely means that all objects after that are also still pending. This might not necessarily always be the case but it seemed like a simple heuristic which could be used to try to minimize the amount of work performed since `PollAndProcessGarbage()` is being used within other functions. WDYT?\n\n\nUpdated to `std::find_if` which IIUC is the function that lets you supply a predicate.",
+      "parentUuid": "581542b9_fde23d54",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "62a3e85b_691aa704",
         "filename": "host/vulkan/DeviceOpTracker.cpp",
         "patchSetId": 7
@@ -54,6 +72,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "27197ba8_017c1310",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-04-23T19:48:50Z",
+      "side": 1,
+      "message": "Same as above. WDYT?",
+      "parentUuid": "62a3e85b_691aa704",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "84391ba7_170292d4",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 7
@@ -65,6 +101,24 @@
       "writtenOn": "2024-04-23T18:09:32Z",
       "side": 1,
       "message": "We must call `vkDeviceWaitIdle` here, as now we allow the caller to even call `vkDestroyDevice` before the semaphore is signaled.\n\nWe don\u0027t need to call `vkDeviceWaitIdle` for pooled external fences and normal `VkFence`\u0027s because they associate with an actual guest payload, and the spec(our assumption) doesn\u0027t allow the caller to call `vkDestroyDevice` before the guest payload actually completes. This is different from the swapchain acquire semaphore, which doesn\u0027t associate with any guest payload.",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c65b961b_a434d794",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 1641,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-04-23T19:48:50Z",
+      "side": 1,
+      "message": "Done. Moved into the helper class as a new `OnDestroyDevice()`.",
+      "parentUuid": "84391ba7_170292d4",
       "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
