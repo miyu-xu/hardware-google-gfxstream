@@ -16,6 +16,57 @@
       "message": "(friendly post weekend bump)",
       "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "581542b9_fde23d54",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-23T18:09:32Z",
+      "side": 1,
+      "message": "I am not sure I understand why we want to stop poll functions when we hit the first pending status.\n\nIf we still want to stop when we hit the first pending status, an optional nit: use `std::find_first_of` + `(*it)() \u003d\u003d DeviceOpStatus::kPending` so that later if we want to change `mPollFunctions` to `std::vector`, the code won\u0027t break because of error-prone iterator invalidation.",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62a3e85b_691aa704",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-23T18:09:32Z",
+      "side": 1,
+      "message": "I don\u0027t understand why we want to stop early if we fail to reclaim one garbage. Use `continue` if we want to check further garbage.",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84391ba7_170292d4",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 1641,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-23T18:09:32Z",
+      "side": 1,
+      "message": "We must call `vkDeviceWaitIdle` here, as now we allow the caller to even call `vkDestroyDevice` before the semaphore is signaled.\n\nWe don\u0027t need to call `vkDeviceWaitIdle` for pooled external fences and normal `VkFence`\u0027s because they associate with an actual guest payload, and the spec(our assumption) doesn\u0027t allow the caller to call `vkDestroyDevice` before the guest payload actually completes. This is different from the swapchain acquire semaphore, which doesn\u0027t associate with any guest payload.",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
