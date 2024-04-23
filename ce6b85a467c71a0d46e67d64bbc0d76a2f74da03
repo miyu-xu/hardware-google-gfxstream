@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc56bc5e_828c3f5c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-04-23T16:05:46Z",
+      "side": 1,
+      "message": "(friendly post weekend bump)",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
