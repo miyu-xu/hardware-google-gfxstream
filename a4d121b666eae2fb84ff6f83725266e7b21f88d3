@@ -46,6 +46,30 @@
       },
       "revId": "a4d121b666eae2fb84ff6f83725266e7b21f88d3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3af0ceb3_8c50e6e0",
+        "filename": "host/vulkan/VkCommonOperations.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-04-24T17:48:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e6738a8_bab84993",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 6
+      },
+      "revId": "a4d121b666eae2fb84ff6f83725266e7b21f88d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
