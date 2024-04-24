@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d71557a0_37849431",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-24T21:05:44Z",
+      "side": 1,
+      "message": "I guess this is the cost we need to pay for the optimization that we don\u0027t poll all waitables.\n\nI am Ok with the current implementation.",
+      "parentUuid": "18d18485_531bd10b",
+      "revId": "3a9a2006b569ac6c812c17dd5a87165bcdccd8f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "162ef09a_b7414a7b",
