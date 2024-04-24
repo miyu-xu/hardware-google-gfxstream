@@ -2337,7 +2337,20 @@ class VkDecoderSnapshot::Impl {
         const uint64_t* pDescriptorSetPoolIds, const uint32_t* pDescriptorSetWhichPool,
         const uint32_t* pDescriptorSetPendingAllocation,
         const uint32_t* pDescriptorWriteStartingIndices, uint32_t pendingDescriptorWriteCount,
-        const VkWriteDescriptorSet* pPendingDescriptorWrites) {}
+        const VkWriteDescriptorSet* pPendingDescriptorWrites) {
+        android::base::AutoLock lock(mLock);
+        // pDescriptorPools modify
+        auto apiHandle = mReconstruction.createApiInfo();
+        auto apiInfo = mReconstruction.getApiInfo(apiHandle);
+        mReconstruction.setApiTrace(apiInfo, OP_vkQueueCommitDescriptorSetUpdatesGOOGLE,
+                                    snapshotTraceBegin, snapshotTraceBytes);
+        for (uint32_t i = 0; i < ((descriptorPoolCount)); ++i) {
+            VkDescriptorPool boxed =
+                unboxed_to_boxed_non_dispatchable_VkDescriptorPool(pDescriptorPools[i]);
+            mReconstruction.forEachHandleResetModifyApi((const uint64_t*)(&boxed), 1);
+            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
+        }
+    }
     void vkCollectDescriptorPoolIdsGOOGLE(const uint8_t* snapshotTraceBegin,
                                           size_t snapshotTraceBytes, android::base::BumpPool* pool,
                                           VkDevice device, VkDescriptorPool descriptorPool,

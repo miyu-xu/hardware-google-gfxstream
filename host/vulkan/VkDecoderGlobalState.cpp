@@ -2512,6 +2512,7 @@ class VkDecoderGlobalState::Impl {
                 info.pools.push_back(state);
             }
 
+            printf("VulkanBatchedDescriptorSetUpdate %d\n", m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled);
             if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                 for (uint32_t i = 0; i < pCreateInfo->maxSets; ++i) {
                     info.poolIds.push_back(

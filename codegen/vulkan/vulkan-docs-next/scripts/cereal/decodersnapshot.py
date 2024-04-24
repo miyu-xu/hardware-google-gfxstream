@@ -10,6 +10,7 @@ from .wrapperdefs import VULKAN_STREAM_TYPE
 
 from copy import copy
 from dataclasses import dataclass
+from typing import Callable
 
 decoder_snapshot_decl_preamble = """
 
@@ -173,9 +174,21 @@ apiChangeState = {
     "vkBindImageMemory": VkObjectState("image", "VkReconstruction::BOUND_MEMORY"),
 }
 
+@dataclass(frozen=True)
+class VkModifierApi:
+    vk_object : str
+    custom_modification_function : Callable[..., None] = None
+
+
+def extract_modifies_vkQueueCommitDescriptorSetUpdatesGOOGLE(cgen):
+    cgen.stmt("mReconstruction.forEachHandleResetModifyApi((const uint64_t*)(&boxed), 1)")
+    cgen.stmt("mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle)")
+
+
 apiModifies = {
-    "vkMapMemoryIntoAddressSpaceGOOGLE" : ["memory"],
-    "vkGetBlobGOOGLE" : ["memory"],
+    "vkMapMemoryIntoAddressSpaceGOOGLE" : VkModifierApi("memory"),
+    "vkGetBlobGOOGLE" : VkModifierApi("memory"),
+    "vkQueueCommitDescriptorSetUpdatesGOOGLE" : VkModifierApi("pDescriptorPools", extract_modifies_vkQueueCommitDescriptorSetUpdatesGOOGLE),
 }
 
 delayedDestroys = [
@@ -200,7 +213,7 @@ def get_target_state(api, param):
 
 def is_modify_operation(api, param):
     if api.name in apiModifies:
-        if param.paramName in apiModifies[api.name]:
+        if param.paramName == apiModifies[api.name].vk_object:
             return True
     return False
 
@@ -277,7 +290,10 @@ def emit_impl(typeInfo, api, cgen):
                 cgen.stmt("%s boxed = unboxed_to_boxed_non_dispatchable_%s(%s[i])" % (p.typeName, p.typeName, access))
             else:
                 cgen.stmt("%s boxed = unboxed_to_boxed_%s(%s[i])" % (p.typeName, p.typeName, access))
-            cgen.stmt("mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle)")
+            if apiModifies[api.name].custom_modification_function is None:
+                cgen.stmt("mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle)")
+            else:
+                apiModifies[api.name].custom_modification_function(cgen)
             cgen.endFor()
             if lenAccessGuard is not None:
                 cgen.endIf()
