@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a480245f_3b1a9247",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-24T19:18:33Z",
+      "side": 1,
+      "message": "Why don\u0027t we poll old `pendingGarbage.waitable` here?",
+      "revId": "3a9a2006b569ac6c812c17dd5a87165bcdccd8f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "162ef09a_b7414a7b",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-24T19:18:33Z",
+      "side": 1,
+      "message": "Move side effects out of the lambda:\n\n```\nfor (auto i \u003d mPendingGarbage.begin(); i !\u003d firstPendingIt; i++) {\n    if (i-\u003etimepoint \u003c old) {\n        ...\n    }\n    std::visit(...);\n}\n```\n\nWhile the for loop is the only reasonable implementation of `find_if`, it\u0027s not guaranteed as such.",
+      "revId": "3a9a2006b569ac6c812c17dd5a87165bcdccd8f6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

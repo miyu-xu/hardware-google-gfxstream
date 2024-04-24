@@ -53,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5bcc85cd_d7076335",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-24T19:18:33Z",
+      "side": 1,
+      "message": "I agree currently it\u0027s an Ok optimization: all fences are on the same present queue associated with temporally sequential tasks, so they should almost be signaled in the order they are submitted, as you mentioned in the comment.",
+      "parentUuid": "67fa162f_8999cfec",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "62a3e85b_691aa704",
@@ -84,6 +102,24 @@
       "side": 1,
       "message": "Same as above. WDYT?",
       "parentUuid": "62a3e85b_691aa704",
+      "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "87269573_8a8a93f8",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-24T19:18:33Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "27197ba8_017c1310",
       "revId": "ce6b85a467c71a0d46e67d64bbc0d76a2f74da03",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
