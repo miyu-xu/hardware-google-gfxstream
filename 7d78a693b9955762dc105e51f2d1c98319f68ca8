@@ -47,6 +47,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "58d325d4_0b11897a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 501,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-25T23:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0eceea50_825d33ac",
+      "range": {
+        "startLine": 498,
+        "startChar": 12,
+        "endLine": 501,
+        "endChar": 79
+      },
+      "revId": "7d78a693b9955762dc105e51f2d1c98319f68ca8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dca2f5e6_37c6884a",
@@ -60,6 +84,30 @@
       "writtenOn": "2024-04-25T21:42:28Z",
       "side": 1,
       "message": "Because these buffers are device specific buffers, shouldn\u0027t all of these `ivk-\u003e` and `dvk-\u003e` calls all be using the dispatch associated with that device/instance and not the global ones?\n\nI guess we could potentially save the `VkDevice boxed_device` from `vkCreateBuffer()` in `BufferInfo` and do a\n\n```\nauto deviceDispatch \u003d dispatch_VkDevice(bufferInfo.boxed_device);\n```\n\nhere or maybe just save the `VulkanDispatch*` directly (looks like there is already precedent with `FenceInfo`).",
+      "range": {
+        "startLine": 553,
+        "startChar": 12,
+        "endLine": 556,
+        "endChar": 79
+      },
+      "revId": "7d78a693b9955762dc105e51f2d1c98319f68ca8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f427942_05122914",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 556,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-25T23:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dca2f5e6_37c6884a",
       "range": {
         "startLine": 553,
         "startChar": 12,
@@ -93,6 +141,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "506be05f_8b167d38",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 654,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-25T23:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18663da5_f979d146",
+      "range": {
+        "startLine": 651,
+        "startChar": 12,
+        "endLine": 654,
+        "endChar": 79
+      },
+      "revId": "7d78a693b9955762dc105e51f2d1c98319f68ca8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f073a477_34ecd9c7",
@@ -106,6 +178,30 @@
       "writtenOn": "2024-04-25T21:42:28Z",
       "side": 1,
       "message": "ditto with using the device specific dispatch",
+      "range": {
+        "startLine": 706,
+        "startChar": 12,
+        "endLine": 709,
+        "endChar": 79
+      },
+      "revId": "7d78a693b9955762dc105e51f2d1c98319f68ca8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "956f3620_0321455d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 709,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-25T23:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f073a477_34ecd9c7",
       "range": {
         "startLine": 706,
         "startChar": 12,
@@ -139,6 +235,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f671298c_22ec16ea",
+        "filename": "host/vulkan/VkDecoderSnapshotUtils.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-25T23:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d639b24a_47182e36",
+      "range": {
+        "startLine": 474,
+        "startChar": 4,
+        "endLine": 474,
+        "endChar": 48
+      },
+      "revId": "7d78a693b9955762dc105e51f2d1c98319f68ca8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2eef7f57_677b2011",
@@ -152,6 +272,30 @@
       "writtenOn": "2024-04-25T21:42:28Z",
       "side": 1,
       "message": "ditto with taking device specific dispatch as an argument",
+      "range": {
+        "startLine": 573,
+        "startChar": 4,
+        "endLine": 573,
+        "endChar": 48
+      },
+      "revId": "7d78a693b9955762dc105e51f2d1c98319f68ca8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6d44500_29963acd",
+        "filename": "host/vulkan/VkDecoderSnapshotUtils.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 573,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-25T23:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2eef7f57_677b2011",
       "range": {
         "startLine": 573,
         "startChar": 4,
