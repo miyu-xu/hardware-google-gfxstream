@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "536d15f7_66ed2d37",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-04-26T23:12:03Z",
+      "side": 1,
+      "message": "I believe we need to do the same with `ivk`. It looks like `physicalDeviceInfo` has the unboxed `instance` member.",
+      "range": {
+        "startLine": 535,
+        "startChar": 12,
+        "endLine": 535,
+        "endChar": 17
+      },
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
