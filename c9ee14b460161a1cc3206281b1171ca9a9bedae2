@@ -52,6 +52,24 @@
       "parentUuid": "2bc3c8c6_80314c32",
       "revId": "c9ee14b460161a1cc3206281b1171ca9a9bedae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11650a1d_edbb5b2e",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 3957,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-26T23:53:40Z",
+      "side": 1,
+      "message": "In case we still want to allow holding locks when calling `VkEncoder`, we can change the timing when the seqno is generated as I commented in the bug: if we generate the seqno right before we send the command, IIUC, this issue can also be fixed.\n\nI am also 100% Ok with this CL.",
+      "parentUuid": "21daaa7c_71ec4492",
+      "revId": "c9ee14b460161a1cc3206281b1171ca9a9bedae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
