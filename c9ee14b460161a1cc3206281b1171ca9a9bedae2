@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f60bd40f_8b0fbd45",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 3957,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-26T23:43:56Z",
+      "side": 1,
+      "message": "Our team used to have a discussion on not holding locks when calling into `VkEncoder` the result is changing all the locks in `ResourceTracker` to be `RecursiveLock` as a \"temporary\" solution.",
+      "revId": "c9ee14b460161a1cc3206281b1171ca9a9bedae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
