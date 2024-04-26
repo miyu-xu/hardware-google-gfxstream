@@ -34,6 +34,24 @@
       "parentUuid": "f60bd40f_8b0fbd45",
       "revId": "c9ee14b460161a1cc3206281b1171ca9a9bedae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "21daaa7c_71ec4492",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 3957,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-04-26T23:51:02Z",
+      "side": 1,
+      "message": "Right, the recursive lock won\u0027t help in this specific bug. Sorry for the confusion, my comment was meant to say that it is not strictly forbidden to call into `VkEncoder` with a lock held. We used to think that we should do that on another issue, but later we just change to use recursive lock for simplicitly.\n\nWas just trying to add some history context here.",
+      "parentUuid": "2bc3c8c6_80314c32",
+      "revId": "c9ee14b460161a1cc3206281b1171ca9a9bedae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
