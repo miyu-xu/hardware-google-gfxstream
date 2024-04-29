@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "34ac832f_e0b9ca9d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-29T20:11:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3fdf5d13_e870c4dc",
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "536d15f7_66ed2d37",
@@ -31,6 +49,30 @@
       "writtenOn": "2024-04-26T23:12:03Z",
       "side": 1,
       "message": "I believe we need to do the same with `ivk`. It looks like `physicalDeviceInfo` has the unboxed `instance` member.",
+      "range": {
+        "startLine": 535,
+        "startChar": 12,
+        "endLine": 535,
+        "endChar": 17
+      },
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a64885de_479befa0",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-29T20:11:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "536d15f7_66ed2d37",
       "range": {
         "startLine": 535,
         "startChar": 12,
@@ -60,6 +102,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "329659cd_1ee4d7c4",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-29T20:11:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "307b52f1_4a5559aa",
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "2355e300_2cc97dd5",
         "filename": "host/vulkan/VkDecoderSnapshot.cpp",
         "patchSetId": 5
@@ -71,6 +131,24 @@
       "writtenOn": "2024-04-29T14:04:37Z",
       "side": 1,
       "message": "nit: we should fix this multiple type casting situation with the generator script.",
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e4ec99e_21242146",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-29T20:11:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2355e300_2cc97dd5",
       "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
