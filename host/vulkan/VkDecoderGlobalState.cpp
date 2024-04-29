@@ -632,7 +632,7 @@ class VkDecoderGlobalState::Impl {
             if (*pApiVersion > kMaxSafeVersion) {
                 *pApiVersion = kMaxSafeVersion;
             }
-
+            printf("vkEnumerateInstanceVersion version 0x%x\n", *pApiVersion);
             return res;
         }
         *pApiVersion = kMinVersion;
