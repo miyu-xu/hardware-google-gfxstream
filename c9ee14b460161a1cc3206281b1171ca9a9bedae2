@@ -70,6 +70,24 @@
       "parentUuid": "21daaa7c_71ec4492",
       "revId": "c9ee14b460161a1cc3206281b1171ca9a9bedae2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f2fb25a_b57d0ab3",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 3957,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-04-29T15:51:58Z",
+      "side": 1,
+      "message": "Ahh, sorry misunderstood. \n\nAck, will follow up in another change to move the seqno generation later.",
+      "parentUuid": "11650a1d_edbb5b2e",
+      "revId": "c9ee14b460161a1cc3206281b1171ca9a9bedae2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
