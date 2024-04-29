@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3fdf5d13_e870c4dc",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-04-29T14:04:37Z",
+      "side": 1,
+      "message": "Looks like these global ones are not going to be used here anymore, so, similar to the one below, they can be removed or renamed to make reading and following the code easier.",
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "536d15f7_66ed2d37",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 5
@@ -20,6 +37,40 @@
         "endLine": 535,
         "endChar": 17
       },
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "307b52f1_4a5559aa",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-04-29T14:04:37Z",
+      "side": 1,
+      "message": "I believe we don\u0027t need this new variable (unless it\u0027s only for debugging) and using the shallow copy to make decisions may actually result in invalid usage. eg. actual `usage` parameter can be overwritten with a pNext.",
+      "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2355e300_2cc97dd5",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-04-29T14:04:37Z",
+      "side": 1,
+      "message": "nit: we should fix this multiple type casting situation with the generator script.",
       "revId": "96321a31dffe56d0916e45b569ef97e4d1036999",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
