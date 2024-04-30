@@ -16,6 +16,24 @@
       "message": "It is dangerous to advertise an extension without checking host support. Which test is failing? Could we change it to mesa only / linux only, or fix the test?",
       "revId": "ad878d4e92934a9c78aa4435830fe57247d43cdd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1e3294b2_283edf08",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-04-30T22:31:50Z",
+      "side": 1,
+      "message": "GfxstreamEnd2EndVkTest::DeviceMemoryReport is failing with the Mesa reland.  9f755ae1d5b8 (\"Filter guest VK_EXT_device_memory_report structs from host\") always does filter it out the host side -- whether the host has it or not.  So in this instance it\u0027s safe.  \n\nAs for modifying the test, I agree that\u0027s a good solution, but I\u0027m honestly not an end2end tests + vulkanhpp specialist.  I can file a bug for that if that\u0027s desired.",
+      "parentUuid": "0db7d5fa_fe780a6a",
+      "revId": "ad878d4e92934a9c78aa4435830fe57247d43cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
