@@ -16,6 +16,7 @@
 
 #include "GfxstreamEnd2EndTestUtils.h"
 #include "GfxstreamEnd2EndTests.h"
+#include "GfxstreamEnd2EndTestUtils.h"
 #include "gfxstream/RutabagaLayerTestUtils.h"
 
 namespace gfxstream {
