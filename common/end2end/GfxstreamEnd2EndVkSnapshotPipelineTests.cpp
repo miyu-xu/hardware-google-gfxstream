@@ -102,7 +102,25 @@ std::unique_ptr<PipelineInfo> GfxstreamEnd2EndVkSnapshotPipelineTest::createPipe
     std::unique_ptr<PipelineInfo> res(new PipelineInfo);
     res->renderPass = createRenderPass(device);
 
-    vkhpp::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {};
+    vkhpp::DescriptorSetLayoutBinding bindings[2] = {
+        {
+            .binding = 0,
+            .descriptorType = vkhpp::DescriptorType::eUniformBuffer,
+            .descriptorCount = 1,
+            .stageFlags =  vkhpp::ShaderStageFlagBits::eVertex,
+        },
+        {
+            .binding = 1,
+            .descriptorType = vkhpp::DescriptorType::eUniformBuffer,
+            .descriptorCount = 1,
+            .stageFlags =  vkhpp::ShaderStageFlagBits::eVertex,
+        },
+    };
+    vkhpp::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {
+        .bindingCount = 0,
+        //.bindingCount = 2,
+        //.pBindings = bindings,
+    };
     res->descriptorSetLayout =
         device.createDescriptorSetLayoutUnique(descriptorSetLayoutInfo).value;
     res->pipelineLayout =
