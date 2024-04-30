@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0db7d5fa_fe780a6a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-04-30T20:37:22Z",
+      "side": 1,
+      "message": "It is dangerous to advertise an extension without checking host support. Which test is failing? Could we change it to mesa only / linux only, or fix the test?",
+      "revId": "ad878d4e92934a9c78aa4435830fe57247d43cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
