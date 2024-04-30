@@ -527,6 +527,107 @@ class VkDecoderGlobalState::Impl {
             releaseSnapshotStateBlock(&stateBlock);
         }
 
+        // snapshot descriptors
+        std::vector<VkDescriptorPool> sortedBoxedDescriptorPools;
+        for (const auto& descriptorPoolIte : mDescriptorPoolInfo) {
+            auto boxed = unboxed_to_boxed_non_dispatchable_VkDescriptorPool(descriptorPoolIte.first);
+            sortedBoxedDescriptorPools.push_back(boxed);
+        }
+        sort(sortedBoxedDescriptorPools.begin(), sortedBoxedDescriptorPools.end());
+        for (const auto& boxedDescriptorPool : sortedBoxedDescriptorPools) {
+            auto unboxedDescriptorPool = unbox_VkDescriptorPool(boxedDescriptorPool);
+            const DescriptorPoolInfo& poolInfo = mDescriptorPoolInfo[unboxedDescriptorPool];
+
+            for (uint64_t poolId : poolInfo.poolIds) {
+                DispatchableHandleInfo<uint64_t>* setHandleInfo = sBoxedHandleManager.get(poolId);
+                bool allocated = setHandleInfo->underlying != 0;
+                stream->putByte(allocated);
+                if (!allocated) {
+                    continue;
+                }
+
+                const DescriptorSetInfo& descriptorSetInfo = mDescriptorSetInfo[
+                    (VkDescriptorSet)setHandleInfo->underlying];
+                VkDescriptorSetLayout boxedLayout = unboxed_to_boxed_non_dispatchable_VkDescriptorSetLayout(
+                    descriptorSetInfo.unboxedLayout);
+                stream->putBe64((uint64_t)boxedLayout);
+                // Count all valid descriptors
+                std::vector<std::pair<int, int>> validWriteIndices;
+                for (int i = 0; i < descriptorSetInfo.allWrites.size(); i++) {
+                    for (int j = 0; j < descriptorSetInfo.allWrites[i].size(); j++) {
+                        const auto& entry = descriptorSetInfo.allWrites[i][j];
+                        if (entry.writeType == DescriptorSetInfo::DescriptorWriteType::Empty) {
+                            continue;
+                        }
+                        int dependencyObjCount = descriptorDependencyObjectCount(entry.descriptorType);
+                        if (entry.alives.size() < dependencyObjCount) {
+                            continue;
+                        }
+                        bool isValid = true;
+                        for (const auto& alive : entry.alives) {
+                            isValid &= !alive.expired();
+                            if (!isValid) {
+                                break;
+                            }
+                        }
+                        if (!isValid) {
+                            continue;
+                        }
+                        validWriteIndices.push_back(std::make_pair(i, j));
+                    }
+                }
+                stream->putBe64(validWriteIndices.size());
+                // Save all valid descriptors
+                for (const auto& idx : validWriteIndices) {
+                    const auto& entry = descriptorSetInfo.allWrites[idx.first][idx.second];
+                    stream->putBe32(idx.first);
+                    stream->putBe32(idx.second);
+                    stream->putBe32(entry.writeType);
+                    // entry.descriptorType might be redundant.
+                    stream->putBe32(entry.descriptorType);
+                    switch (entry.writeType) {
+                        case DescriptorSetInfo::DescriptorWriteType::ImageInfo:
+                            {
+                                VkDescriptorImageInfo imageInfo = entry.imageInfo;
+                                // Get the unboxed version
+                                imageInfo.imageView = descriptorTypeContainsImage(entry.descriptorType) ?
+                                        unboxed_to_boxed_non_dispatchable_VkImageView(imageInfo.imageView)
+                                        : 0;
+                                imageInfo.sampler = descriptorTypeContainsSampler(entry.descriptorType) ?
+                                        unboxed_to_boxed_non_dispatchable_VkSampler(imageInfo.sampler)
+                                        : 0;
+                                stream->write(&imageInfo, sizeof(imageInfo));
+                            }
+                            break;
+                        case DescriptorSetInfo::DescriptorWriteType::BufferInfo:
+                            {
+                                VkDescriptorBufferInfo bufferInfo = entry.bufferInfo;
+                                // Get the unboxed version
+                                bufferInfo.buffer = unboxed_to_boxed_non_dispatchable_VkBuffer(bufferInfo.buffer);
+                                stream->write(&bufferInfo, sizeof(bufferInfo));
+                            }
+                            break;
+                        case DescriptorSetInfo::DescriptorWriteType::BufferView:
+                            {
+                                // Get the unboxed version
+                                VkBufferView bufferView = unboxed_to_boxed_non_dispatchable_VkBufferView(entry.bufferView);
+                                stream->write(&bufferView, sizeof(bufferView));
+                            }
+                            break;
+                        case DescriptorSetInfo::DescriptorWriteType::InlineUniformBlock:
+                        case DescriptorSetInfo::DescriptorWriteType::AccelerationStructure:
+                            // TODO
+                            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                                << "Encountered pending inline uniform block or acceleration structure "
+                                "desc write, abort (NYI)";
+                        default:
+                            break;
+                    }
+
+                }
+            }
+        }
+        stream->putBe32(123);
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -538,6 +639,7 @@ class VkDecoderGlobalState::Impl {
         // destroy all current internal data structures
         clear();
         mSnapshotState = SnapshotState::Loading;
+        android::base::BumpPool bumpPool;
         // this part will replay in the decoder
         snapshot()->load(stream, gfxLogger, healthMonitor);
         // load mapped memory
@@ -608,6 +710,115 @@ class VkDecoderGlobalState::Impl {
             releaseSnapshotStateBlock(&stateBlock);
         }
 
+        // snapshot descriptors
+        std::vector<VkDescriptorPool> sortedBoxedDescriptorPools;
+        for (const auto& descriptorPoolIte : mDescriptorPoolInfo) {
+            auto boxed = unboxed_to_boxed_non_dispatchable_VkDescriptorPool(descriptorPoolIte.first);
+            sortedBoxedDescriptorPools.push_back(boxed);
+        }
+        sort(sortedBoxedDescriptorPools.begin(), sortedBoxedDescriptorPools.end());
+        for (const auto& boxedDescriptorPool : sortedBoxedDescriptorPools) {
+            auto unboxedDescriptorPool = unbox_VkDescriptorPool(boxedDescriptorPool);
+            const DescriptorPoolInfo& poolInfo = mDescriptorPoolInfo[unboxedDescriptorPool];
+
+            std::vector<VkDescriptorSetLayout> layouts;
+            std::vector<uint64_t> poolIds;
+            std::vector<VkWriteDescriptorSet> writeDescriptorSets;
+            std::vector<uint32_t> writeStartingIndices;
+
+            // Temporary structures for the pointers in VkWriteDescriptorSet.
+            // Use unique_ptr so that the pointers don't change when vector resizes.
+            std::vector<std::unique_ptr<VkDescriptorImageInfo>> tmpImageInfos;
+            std::vector<std::unique_ptr<VkDescriptorBufferInfo>> tmpBufferInfos;
+            std::vector<std::unique_ptr<VkBufferView>> tmpBufferViews;
+
+            for (uint64_t poolId : poolInfo.poolIds) {
+                bool allocated = stream->getByte();
+                if (!allocated) {
+                    continue;
+                }
+                poolIds.push_back(poolId);
+                writeStartingIndices.push_back(writeDescriptorSets.size());
+                printf("poolId %d writeStartingIndices %d\n", (int)poolId, writeStartingIndices.back());
+                VkDescriptorSetLayout boxedLayout = (VkDescriptorSetLayout)stream->getBe64();
+                layouts.push_back(unbox_VkDescriptorSetLayout(boxedLayout));
+                uint64_t validWriteCount = stream->getBe64();
+                for (int write = 0; write < validWriteCount; write++) {
+                    uint32_t binding = stream->getBe32();
+                    uint32_t arrayElement = stream->getBe32();
+                    DescriptorSetInfo::DescriptorWriteType writeType =
+                            static_cast<DescriptorSetInfo::DescriptorWriteType>(stream->getBe32());
+                    VkDescriptorType descriptorType = static_cast<VkDescriptorType>(stream->getBe32());
+                    VkWriteDescriptorSet writeDescriptorSet = {
+                        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                        .dstSet = (VkDescriptorSet)poolId,
+                        .dstBinding = binding,
+                        .dstArrayElement = arrayElement,
+                        .descriptorCount = 1,
+                        .descriptorType = descriptorType,
+                    };
+                    switch (writeType) {
+                        case DescriptorSetInfo::DescriptorWriteType::ImageInfo:
+                            {
+                                tmpImageInfos.push_back(std::make_unique<VkDescriptorImageInfo>());
+                                writeDescriptorSet.pImageInfo = tmpImageInfos.back().get();
+                                VkDescriptorImageInfo& imageInfo = *tmpImageInfos.back();
+                                stream->read(&imageInfo, sizeof(imageInfo));
+                                imageInfo.imageView = descriptorTypeContainsImage(descriptorType) ?
+                                        unbox_VkImageView(imageInfo.imageView)
+                                        : 0;
+                                imageInfo.sampler = descriptorTypeContainsSampler(descriptorType) ?
+                                        unbox_VkSampler(imageInfo.sampler)
+                                        : 0;
+                            }
+                            break;
+                        case DescriptorSetInfo::DescriptorWriteType::BufferInfo:
+                            {
+                                tmpBufferInfos.push_back(std::make_unique<VkDescriptorBufferInfo>());
+                                writeDescriptorSet.pBufferInfo = tmpBufferInfos.back().get();
+                                VkDescriptorBufferInfo& bufferInfo = *tmpBufferInfos.back();
+                                stream->read(&bufferInfo, sizeof(bufferInfo));
+                                bufferInfo.buffer = unbox_VkBuffer(bufferInfo.buffer);
+                            }
+                            break;
+                        case DescriptorSetInfo::DescriptorWriteType::BufferView:
+                            {
+                                tmpBufferViews.push_back(std::make_unique<VkBufferView>());
+                                writeDescriptorSet.pTexelBufferView = tmpBufferViews.back().get();
+                                VkBufferView& bufferView = *tmpBufferViews.back();
+                                stream->read(&bufferView, sizeof(bufferView));
+                                bufferView = unbox_VkBufferView(bufferView);
+                            }
+                            break;
+                        case DescriptorSetInfo::DescriptorWriteType::InlineUniformBlock:
+                        case DescriptorSetInfo::DescriptorWriteType::AccelerationStructure:
+                            // TODO
+                            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                                << "Encountered pending inline uniform block or acceleration structure "
+                                "desc write, abort (NYI)";
+                        default:
+                            break;
+                    }
+                    writeDescriptorSets.push_back(writeDescriptorSet);
+                }
+            }
+            std::vector<uint32_t> whichPool(poolIds.size(), 0);
+            std::vector<uint32_t> pendingAlloc(poolIds.size(), true);
+
+            const auto& device = poolInfo.device;
+            const auto& deviceInfo = android::base::find(mDeviceInfo, device);
+            VulkanDispatch* dvk = dispatch_VkDevice(deviceInfo->boxed);
+            on_vkQueueCommitDescriptorSetUpdatesGOOGLE(&bumpPool,
+                    dvk, device, 1, &unboxedDescriptorPool,
+                    poolIds.size(), layouts.data(), poolIds.data(),
+                    whichPool.data(), pendingAlloc.data(), writeStartingIndices.data(),
+                    writeDescriptorSets.size(), writeDescriptorSets.data());
+        }
+        int magicNumber = stream->getBe32();
+        if (magicNumber != 123) {
+            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "bad magic number " << __func__ << ":" << __LINE__;
+            abort();
+        }
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -1660,6 +1871,12 @@ class VkDecoderGlobalState::Impl {
                                const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer) {
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
+        VkBufferCreateInfo localCreateInfo;
+        if (snapshotsEnabled()) {
+            localCreateInfo = *pCreateInfo;
+            localCreateInfo.usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+            pCreateInfo = &localCreateInfo;
+        }
 
         VkResult result = vk->vkCreateBuffer(device, pCreateInfo, pAllocator, pBuffer);
 
@@ -2655,7 +2872,20 @@ class VkDecoderGlobalState::Impl {
         auto& setInfo = mDescriptorSetInfo[descriptorSet];
 
         setInfo.pool = pool;
+        setInfo.unboxedLayout = setLayout;
         setInfo.bindings = setLayoutInfo->bindings;
+        for (size_t i = 0; i < setInfo.bindings.size(); i++) {
+            VkDescriptorSetLayoutBinding dslBinding = setInfo.bindings[i];
+            int bindingIdx = dslBinding.binding;
+            if (setInfo.allWrites.size() <= bindingIdx) {
+                setInfo.allWrites.resize(bindingIdx + 1);
+            }
+            setInfo.allWrites[bindingIdx].resize(dslBinding.descriptorCount);
+            for (auto& write : setInfo.allWrites[bindingIdx]) {
+                write.descriptorType = dslBinding.descriptorType;
+                write.dstArrayElement = 0;
+            }
+        }
 
         poolInfo->allocedSetsToBoxed[descriptorSet] = (VkDescriptorSet)boxedDescriptorSet;
         applyDescriptorSetAllocationLocked(*poolInfo, setInfo.bindings);
@@ -2751,6 +2981,103 @@ class VkDecoderGlobalState::Impl {
                                        const VkWriteDescriptorSet* pDescriptorWrites,
                                        uint32_t descriptorCopyCount,
                                        const VkCopyDescriptorSet* pDescriptorCopies) {
+        if (snapshotsEnabled()) {
+            for (uint32_t i = 0; i < descriptorWriteCount; i++) {
+                const VkWriteDescriptorSet& descriptorWrite = pDescriptorWrites[i];
+                auto ite = mDescriptorSetInfo.find(descriptorWrite.dstSet);
+                if (ite == mDescriptorSetInfo.end()) {
+                    continue;
+                }
+                DescriptorSetInfo& descriptorSetInfo = ite->second;
+                auto& table = descriptorSetInfo.allWrites;
+                VkDescriptorType descType = descriptorWrite.descriptorType;
+                uint32_t dstBinding = descriptorWrite.dstBinding;
+                uint32_t dstArrayElement = descriptorWrite.dstArrayElement;
+                uint32_t descriptorCount = descriptorWrite.descriptorCount;
+            
+                uint32_t arrOffset = dstArrayElement;
+
+                if (isDescriptorTypeImageInfo(descType)) {
+                    for (uint32_t i = 0; i < descriptorCount; ++i, ++arrOffset) {
+                        if (arrOffset >= table[dstBinding].size()) {
+                            ++dstBinding;
+                            arrOffset = 0;
+                        }
+                        auto& entry = table[dstBinding][arrOffset];
+                        entry.imageInfo = descriptorWrite.pImageInfo[i];
+                        entry.writeType = DescriptorSetInfo::DescriptorWriteType::ImageInfo;
+                        entry.descriptorType = descType;
+                        entry.alives.clear();
+                        if (descriptorTypeContainsImage(descType)) {
+                            auto* imageViewInfo = android::base::find(mImageViewInfo, entry.imageInfo.imageView);
+                            entry.alives.push_back(imageViewInfo->alive);
+                        }
+                        if (descriptorTypeContainsSampler(descType)) {
+                            auto* samplerInfo = android::base::find(mSamplerInfo, entry.imageInfo.sampler);
+                            entry.alives.push_back(samplerInfo->alive);
+                        }
+                    }
+                } else if (isDescriptorTypeBufferInfo(descType)) {
+                    for (uint32_t i = 0; i < descriptorCount; ++i, ++arrOffset) {
+                        if (arrOffset >= table[dstBinding].size()) {
+                            ++dstBinding;
+                            arrOffset = 0;
+                        }
+                        auto& entry = table[dstBinding][arrOffset];
+                        entry.bufferInfo = descriptorWrite.pBufferInfo[i];
+                        entry.writeType = DescriptorSetInfo::DescriptorWriteType::BufferInfo;
+                        entry.descriptorType = descType;
+                        entry.alives.clear();
+                        auto* bufferInfo = android::base::find(mBufferInfo, entry.bufferInfo.buffer);
+                        entry.alives.push_back(bufferInfo->alive);
+                    }
+                } else if (isDescriptorTypeBufferView(descType)) {
+                    for (uint32_t i = 0; i < descriptorCount; ++i, ++arrOffset) {
+                        if (arrOffset >= table[dstBinding].size()) {
+                            ++dstBinding;
+                            arrOffset = 0;
+                        }
+                        auto& entry = table[dstBinding][arrOffset];
+                        entry.bufferView = descriptorWrite.pTexelBufferView[i];
+                        entry.writeType = DescriptorSetInfo::DescriptorWriteType::BufferView;
+                        entry.descriptorType = descType;
+                        // TODO: check alive
+                    }
+                } else if (isDescriptorTypeInlineUniformBlock(descType)) {
+                    const VkWriteDescriptorSetInlineUniformBlock* descInlineUniformBlock =
+                        static_cast<const VkWriteDescriptorSetInlineUniformBlock*>(descriptorWrite.pNext);
+                    while (descInlineUniformBlock &&
+                        descInlineUniformBlock->sType !=
+                            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK) {
+                        descInlineUniformBlock = static_cast<const VkWriteDescriptorSetInlineUniformBlock*>(
+                            descInlineUniformBlock->pNext);
+                    }
+                    if (!descInlineUniformBlock) {
+                        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << __func__
+                                << ": did not find inline uniform block";
+                        return;
+                    }
+                    auto& entry = table[dstBinding][0];
+                    entry.inlineUniformBlock = *descInlineUniformBlock;
+                    entry.inlineUniformBlockBuffer.assign(
+                        static_cast<const uint8_t*>(descInlineUniformBlock->pData),
+                        static_cast<const uint8_t*>(descInlineUniformBlock->pData) +
+                            descInlineUniformBlock->dataSize);
+                    entry.writeType = DescriptorSetInfo::DescriptorWriteType::InlineUniformBlock;
+                    entry.descriptorType = descType;
+                    entry.dstArrayElement = dstArrayElement;
+                } else if (isDescriptorTypeAccelerationStructure(descType)) {
+                    // TODO
+                    // Look for pNext inline uniform block or acceleration structure.
+                    // Append new DescriptorWrite entry that holds the buffer
+                    ERR("%s: Ignoring emulated write for descriptor type 0x%x\n", __func__, descType);
+                }
+            }
+            // TODO: check copy
+            for (uint32_t i = 0; i < descriptorCopyCount; i++) {
+
+            }
+        }
         bool needEmulateWriteDescriptor = false;
         // c++ seems to allow for 0-size array allocation
         std::unique_ptr<bool[]> descriptorWritesNeedDeepCopy(new bool[descriptorWriteCount]);
@@ -5726,7 +6053,7 @@ class VkDecoderGlobalState::Impl {
             }
         } else {
             // Snapshot doesn't really replay the commands to allocate those descriptors.
-            if (pendingAlloc || snapshotsEnabled()) {
+            if (pendingAlloc /*|| snapshotsEnabled()*/) {
                 VkDescriptorSet allocedSet;
                 VkDescriptorSetAllocateInfo dsAi = {
                     VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, 0, pool, 1, &setLayout,
@@ -5766,7 +6093,20 @@ class VkDecoderGlobalState::Impl {
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
                 << "queue " << queue << "(boxed: " << boxed_queue << ") with no device registered";
         }
+        on_vkQueueCommitDescriptorSetUpdatesGOOGLE(
+            pool, vk, device, descriptorPoolCount, pDescriptorPools, descriptorSetCount, pDescriptorSetLayouts,
+            pDescriptorSetPoolIds, pDescriptorSetWhichPool, pDescriptorSetPendingAllocation,
+            pDescriptorWriteStartingIndices, pendingDescriptorWriteCount, pPendingDescriptorWrites
+        );
+    }
 
+    void on_vkQueueCommitDescriptorSetUpdatesGOOGLE(
+        android::base::BumpPool* pool, VulkanDispatch* vk, VkDevice device, uint32_t descriptorPoolCount,
+        const VkDescriptorPool* pDescriptorPools, uint32_t descriptorSetCount,
+        const VkDescriptorSetLayout* pDescriptorSetLayouts, const uint64_t* pDescriptorSetPoolIds,
+        const uint32_t* pDescriptorSetWhichPool, const uint32_t* pDescriptorSetPendingAllocation,
+        const uint32_t* pDescriptorWriteStartingIndices, uint32_t pendingDescriptorWriteCount,
+        const VkWriteDescriptorSet* pPendingDescriptorWrites) {
         std::vector<VkDescriptorSet> setsToUpdate(descriptorSetCount, nullptr);
 
         bool didAlloc = false;
@@ -5797,7 +6137,6 @@ class VkDecoderGlobalState::Impl {
                 } else {
                     writeEndIndex = pDescriptorWriteStartingIndices[i + 1];
                 }
-
                 for (uint32_t j = writeStartIndex; j < writeEndIndex; ++j) {
                     writeDescriptorSetsForHostDriver[j].dstSet = setsToUpdate[i];
                 }
@@ -6873,6 +7212,22 @@ class VkDecoderGlobalState::Impl {
                (descType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT);
     }
 
+    bool descriptorTypeContainsImage(VkDescriptorType descType) {
+        return (descType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) ||
+               (descType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE) ||
+               (descType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE) ||
+               (descType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT);
+    }
+
+    bool descriptorTypeContainsSampler(VkDescriptorType descType) {
+        return (descType == VK_DESCRIPTOR_TYPE_SAMPLER) ||
+               (descType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+    }
+
+    bool isDescriptorTypeCombinedImageSampler(VkDescriptorType descType) {
+        return descType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    }
+
     bool isDescriptorTypeBufferInfo(VkDescriptorType descType) {
         return (descType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) ||
                (descType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC) ||
@@ -6883,6 +7238,34 @@ class VkDecoderGlobalState::Impl {
     bool isDescriptorTypeBufferView(VkDescriptorType descType) {
         return (descType == VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER) ||
                (descType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER);
+    }
+
+    bool isDescriptorTypeInlineUniformBlock(VkDescriptorType descType) {
+        return descType == VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT;
+    }
+
+    bool isDescriptorTypeAccelerationStructure(VkDescriptorType descType) {
+        return descType == VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+    }
+
+    int descriptorDependencyObjectCount(VkDescriptorType descType) {
+        switch (descType) {
+            case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+                return 2;
+            case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
+            case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
+            case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
+            case VK_DESCRIPTOR_TYPE_SAMPLER:
+            case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+            case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+            case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+            case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+            case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+            case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+                return 1;
+            default:
+                return 0;
+        }
     }
 
     struct DescriptorUpdateTemplateInfo {
