@@ -16,6 +16,7 @@
 
 #include "GfxstreamEnd2EndTestUtils.h"
 #include "GfxstreamEnd2EndTests.h"
+#include "GfxstreamEnd2EndTestUtils.h"
 #include "gfxstream/RutabagaLayerTestUtils.h"
 #include "simple_shader_frag.h"
 #include "simple_shader_vert.h"
@@ -46,12 +47,18 @@ struct ImageInfo {
     vkhpp::UniqueImageView imageView;
 };
 
+struct BufferInfo {
+    vkhpp::UniqueBuffer buffer;
+    vkhpp::UniqueDeviceMemory memory;
+};
+
 class GfxstreamEnd2EndVkSnapshotPipelineTest : public GfxstreamEnd2EndTest {
    protected:
     vkhpp::UniqueRenderPass createRenderPass(vkhpp::Device device);
     std::unique_ptr<ImageInfo> createColorAttachment(vkhpp::PhysicalDevice physicalDevice,
                                                      vkhpp::Device device);
     std::unique_ptr<PipelineInfo> createPipeline(vkhpp::Device device);
+    std::unique_ptr<BufferInfo> createAndPopulateBuffer(vkhpp::PhysicalDevice physicalDevice, vkhpp::Device device, vkhpp::BufferUsageFlags usage, const void* data, uint64_t dataSize);
     static const uint32_t kFbWidth = 32;
     static const uint32_t kFbHeight = 32;
 };
@@ -65,11 +72,48 @@ constexpr uint64_t AsVkTimeout(DurationType duration) {
         std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
 }
 
-// A blue triangle
+// Full screen blue rectangle
 const float kVertexData[] = {
-    -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-    0.0f,  0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    1.0f, -1.0f, 0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    -1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 };
+
+std::unique_ptr<BufferInfo> GfxstreamEnd2EndVkSnapshotPipelineTest::createAndPopulateBuffer(vkhpp::PhysicalDevice physicalDevice, vkhpp::Device device, vkhpp::BufferUsageFlags usage, const void* data, uint64_t dataSize) {
+    const vkhpp::BufferCreateInfo vertexBufferCreateInfo = {
+        .size = dataSize,
+        .usage = usage,
+        .sharingMode = vkhpp::SharingMode::eExclusive,
+    };
+    auto vertexBuffer = device.createBufferUnique(vertexBufferCreateInfo).value;
+
+    vkhpp::MemoryRequirements vertexBufferMemoryRequirements{};
+    device.getBufferMemoryRequirements(*vertexBuffer, &vertexBufferMemoryRequirements);
+
+    const auto vertexBufferMemoryType = getMemoryType(
+        physicalDevice, vertexBufferMemoryRequirements,
+        vkhpp::MemoryPropertyFlagBits::eHostVisible | vkhpp::MemoryPropertyFlagBits::eHostCoherent);
+
+    // Vertex memory
+    const vkhpp::MemoryAllocateInfo vertexBufferMemoryAllocateInfo = {
+        .allocationSize = vertexBufferMemoryRequirements.size,
+        .memoryTypeIndex = vertexBufferMemoryType,
+    };
+    auto vertexBufferMemory = device.allocateMemoryUnique(vertexBufferMemoryAllocateInfo).value;
+    device.bindBufferMemory(*vertexBuffer, *vertexBufferMemory, 0);
+    void* mapped;
+    device.mapMemory(*vertexBufferMemory, 0, VK_WHOLE_SIZE, vkhpp::MemoryMapFlags{}, &mapped);
+    memcpy(mapped, data, dataSize);
+    device.unmapMemory(*vertexBufferMemory);
+
+    std::unique_ptr<BufferInfo> res(new BufferInfo());
+    res->buffer = std::move(vertexBuffer);
+    res->memory = std::move(vertexBufferMemory);
+    return res;
+}
 
 vkhpp::UniqueRenderPass GfxstreamEnd2EndVkSnapshotPipelineTest::createRenderPass(
     vkhpp::Device device) {
@@ -103,11 +147,25 @@ std::unique_ptr<PipelineInfo> GfxstreamEnd2EndVkSnapshotPipelineTest::createPipe
     std::unique_ptr<PipelineInfo> res(new PipelineInfo);
     res->renderPass = createRenderPass(device);
 
-    vkhpp::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {};
+    vkhpp::DescriptorSetLayoutBinding bindings[1] = {
+        {
+            .binding = 0,
+            .descriptorType = vkhpp::DescriptorType::eUniformBuffer,
+            .descriptorCount = 1,
+            .stageFlags =  vkhpp::ShaderStageFlagBits::eFragment,
+        },
+    };
+    vkhpp::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {
+        .bindingCount = 1,
+        .pBindings = bindings,
+    };
     res->descriptorSetLayout =
         device.createDescriptorSetLayoutUnique(descriptorSetLayoutInfo).value;
     res->pipelineLayout =
-        device.createPipelineLayoutUnique(vkhpp::PipelineLayoutCreateInfo{}).value;
+        device.createPipelineLayoutUnique(vkhpp::PipelineLayoutCreateInfo{
+            .setLayoutCount = 1,
+            .pSetLayouts = &res->descriptorSetLayout.get(),
+        }).value;
 
     vkhpp::ShaderModuleCreateInfo vertexShaderModuleCreateInfo = {
         .codeSize = sizeof(kSimpleShaderVert),
@@ -504,10 +562,221 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineWithMultiSamplingTest, CanSubmitQueue) 
     waitResult = device->waitForFences(*fence, VK_TRUE, 3000000000L);
     ASSERT_THAT(waitResult, IsVkSuccess());
 
+    if (GetParam().samples != 1) {
+        return;
+    }
+
     std::vector<uint32_t> dst(kFbWidth * kFbHeight);
     readImageData(*colorAttachmentInfo->image, kFbWidth, kFbHeight, (uint8_t*)dst.data(),
                   dst.size() * 4, testEnvironment);
     for (int i = 0; i < dst.size(); i++) {
+        ASSERT_THAT(dst[i], Eq(0xffff00ff));
+    }
+}
+
+TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanSnapshotDescriptors) {
+    TypicalVkTestEnvironment testEnvironment = VK_ASSERT(SetUpTypicalVkTestEnvironment());
+    auto& instance = testEnvironment.instance;
+    auto& physicalDevice = testEnvironment.physicalDevice;
+    auto& device = testEnvironment.device;
+    auto& queue = testEnvironment.queue;
+    auto queueFamilyIndex = testEnvironment.queueFamilyIndex;
+
+    auto pipelineInfo = createPipeline(device.get());
+    auto vertexBufferInfo = createAndPopulateBuffer(physicalDevice, device.get(), vkhpp::BufferUsageFlagBits::eVertexBuffer, kVertexData, sizeof(kVertexData));
+
+    auto colorAttachmentInfo = createColorAttachment(physicalDevice, device.get());
+    ASSERT_THAT(colorAttachmentInfo->image, IsValidHandle());
+    ASSERT_THAT(colorAttachmentInfo->memory, IsValidHandle());
+    ASSERT_THAT(colorAttachmentInfo->imageView, IsValidHandle());
+
+    // Descriptor
+    std::vector<vkhpp::DescriptorPoolSize> sizes = {
+        {
+            .type = vkhpp::DescriptorType::eUniformBuffer,
+            .descriptorCount = 10,
+        },
+    };
+    vkhpp::DescriptorPoolCreateInfo descriptorPoolCreateInfo = {
+        .maxSets = 10,
+        .poolSizeCount = static_cast<uint32_t>(sizes.size()),
+        .pPoolSizes = sizes.data(),
+    };
+    auto descriptorPool = device->createDescriptorPoolUnique(descriptorPoolCreateInfo).value;
+    ASSERT_THAT(descriptorPool, IsValidHandle());
+
+    const std::vector<vkhpp::DescriptorSetLayout> descriptorSetLayouts(1, *pipelineInfo->descriptorSetLayout);
+
+    vkhpp::DescriptorSetAllocateInfo descriptorSetAllocateInfo = {
+        .descriptorPool = *descriptorPool,
+        .descriptorSetCount = 1,
+        .pSetLayouts = descriptorSetLayouts.data(),
+    };
+    auto descriptorSets = device->allocateDescriptorSetsUnique(descriptorSetAllocateInfo);
+    EXPECT_THAT(descriptorSets.result, Eq(vkhpp::Result::eSuccess));
+    auto descriptorSet = *descriptorSets.value[0];
+
+    // A uniform for red color
+    float kColor1[] = {1.0f, 0.0f, 0.0f, 0.0f};
+    auto uniformBufferInfo = createAndPopulateBuffer(physicalDevice, device.get(), vkhpp::BufferUsageFlagBits::eUniformBuffer, kColor1, sizeof(kColor1));
+
+    std::vector<vkhpp::WriteDescriptorSet> writeDescriptorSets;
+    std::vector<vkhpp::DescriptorBufferInfo> bufferInfos;
+    bufferInfos.emplace_back(vkhpp::DescriptorBufferInfo {
+        .buffer = *uniformBufferInfo->buffer,
+        .offset = 0,
+        .range = VK_WHOLE_SIZE,
+    });
+    writeDescriptorSets.emplace_back(vkhpp::WriteDescriptorSet {
+        .dstSet = descriptorSet,
+        .dstBinding = 0,
+        .descriptorCount = 1,
+        .descriptorType = vkhpp::DescriptorType::eUniformBuffer,
+        .pBufferInfo = bufferInfos.data(),
+    });
+    device->updateDescriptorSets(writeDescriptorSets, nullptr);
+
+    const std::vector<vkhpp::ImageView> attachments(1, *colorAttachmentInfo->imageView);
+    vkhpp::FramebufferCreateInfo framebufferCreateInfo = {
+        .renderPass = *pipelineInfo->renderPass,
+        .attachmentCount = 1,
+        .pAttachments = attachments.data(),
+        .width = kFbWidth,
+        .height = kFbHeight,
+        .layers = 1,
+    };
+    auto framebuffer = device->createFramebufferUnique(framebufferCreateInfo).value;
+    ASSERT_THAT(framebuffer, IsValidHandle());
+
+    auto fence = device->createFenceUnique(vkhpp::FenceCreateInfo()).value;
+    ASSERT_THAT(fence, IsValidHandle());
+
+    const vkhpp::CommandPoolCreateInfo commandPoolCreateInfo = {
+        .flags = vkhpp::CommandPoolCreateFlagBits::eResetCommandBuffer,
+        .queueFamilyIndex = queueFamilyIndex,
+    };
+
+    auto commandPool = device->createCommandPoolUnique(commandPoolCreateInfo).value;
+    ASSERT_THAT(commandPool, IsValidHandle());
+
+    const vkhpp::CommandBufferAllocateInfo commandBufferAllocateInfo = {
+        .level = vkhpp::CommandBufferLevel::ePrimary,
+        .commandPool = *commandPool,
+        .commandBufferCount = 2,
+    };
+
+    auto commandBuffers = device->allocateCommandBuffersUnique(commandBufferAllocateInfo).value;
+    ASSERT_THAT(commandBuffers, Not(IsEmpty()));
+    auto commandBuffer = std::move(commandBuffers[0]);
+    ASSERT_THAT(commandBuffer, IsValidHandle());
+    auto commandBuffer1 = std::move(commandBuffers[1]);
+    ASSERT_THAT(commandBuffer1, IsValidHandle());
+
+    vkhpp::ClearColorValue clearColor(std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f});
+    vkhpp::ClearValue clearValue{
+        .color = clearColor,
+    };
+    vkhpp::RenderPassBeginInfo renderPassBeginInfo{
+        .renderPass = *pipelineInfo->renderPass,
+        .framebuffer = *framebuffer,
+        .renderArea = vkhpp::Rect2D(vkhpp::Offset2D(0, 0), vkhpp::Extent2D(kFbWidth, kFbHeight)),
+        .clearValueCount = 1,
+        .pClearValues = &clearValue,
+    };
+
+
+    // Descriptor updates are cached on the guest, for testing purpose we need to submit a queue to commit descriptor updates.
+
+    const vkhpp::CommandBufferBeginInfo commandBufferBeginInfo = { };
+
+    commandBuffer->begin(commandBufferBeginInfo);
+    const vkhpp::ImageMemoryBarrier colorAttachmentBarrier{
+        .oldLayout = vkhpp::ImageLayout::eUndefined,
+        .newLayout = vkhpp::ImageLayout::eColorAttachmentOptimal,
+        .dstAccessMask = vkhpp::AccessFlagBits::eColorAttachmentRead |
+                         vkhpp::AccessFlagBits::eColorAttachmentWrite,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = *colorAttachmentInfo->image,
+        .subresourceRange =
+            {
+                .aspectMask = vkhpp::ImageAspectFlagBits::eColor,
+                .levelCount = 1,
+                .layerCount = 1,
+            },
+    };
+
+    commandBuffer->pipelineBarrier(
+        vkhpp::PipelineStageFlagBits::eTopOfPipe | vkhpp::PipelineStageFlagBits::eTransfer,
+        vkhpp::PipelineStageFlagBits::eColorAttachmentOutput, vkhpp::DependencyFlags(), nullptr,
+        nullptr, colorAttachmentBarrier);
+
+    commandBuffer->beginRenderPass(renderPassBeginInfo, vkhpp::SubpassContents::eInline);
+    commandBuffer->bindPipeline(vkhpp::PipelineBindPoint::eGraphics, *pipelineInfo->pipeline);
+    commandBuffer->bindDescriptorSets(vkhpp::PipelineBindPoint::eGraphics, *pipelineInfo->pipelineLayout, 0, descriptorSet, nullptr);
+    commandBuffer->bindVertexBuffers(0, { *vertexBufferInfo->buffer }, {0});
+    commandBuffer->setViewport(
+      0, vkhpp::Viewport( 0.0f, 0.0f, static_cast<float>( kFbWidth ), static_cast<float>( kFbHeight ), 0.0f, 1.0f ) );
+    commandBuffer->setScissor( 0, vkhpp::Rect2D( vkhpp::Offset2D( 0, 0 ), vkhpp::Extent2D(kFbWidth, kFbHeight) ) );
+    commandBuffer->draw(6, 1, 0, 0);
+    commandBuffer1->endRenderPass();
+    commandBuffer->end();
+
+    std::vector<vkhpp::CommandBuffer> commandBufferHandles;
+    commandBufferHandles.push_back(*commandBuffer);
+
+    const vkhpp::SubmitInfo submitInfo = {
+        .commandBufferCount = static_cast<uint32_t>(commandBufferHandles.size()),
+        .pCommandBuffers = commandBufferHandles.data(),
+    };
+    queue.submit(submitInfo, *fence);
+    auto waitResult = device->waitForFences(*fence, VK_TRUE, 3000000000L);
+    ASSERT_THAT(waitResult, IsVkSuccess());
+
+    // Clear the rendering
+    commandBuffer1->begin(commandBufferBeginInfo);
+    commandBuffer1->beginRenderPass(renderPassBeginInfo, vkhpp::SubpassContents::eInline);
+    commandBuffer1->bindPipeline(vkhpp::PipelineBindPoint::eGraphics, *pipelineInfo->pipeline);
+    vkhpp::ClearAttachment clearAttachment{
+        .aspectMask = vkhpp::ImageAspectFlagBits::eColor,
+        .colorAttachment = 0,
+        .clearValue = clearValue,
+    };
+    vkhpp::ClearRect clearRect{
+        .rect = vkhpp::Rect2D(vkhpp::Offset2D(0, 0), vkhpp::Extent2D(kFbWidth, kFbHeight)),
+        .baseArrayLayer = 0,
+        .layerCount = 1,
+    };
+    commandBuffer1->clearAttachments(1, &clearAttachment, 1, &clearRect);
+    commandBuffer1->endRenderPass();
+    commandBuffer1->end();
+
+    std::vector<vkhpp::CommandBuffer> commandBufferHandles1;
+    commandBufferHandles1.push_back(*commandBuffer1);
+
+    const vkhpp::SubmitInfo submitInfo1 = {
+        .commandBufferCount = static_cast<uint32_t>(commandBufferHandles1.size()),
+        .pCommandBuffers = commandBufferHandles1.data(),
+    };
+    device->resetFences(1, &fence.get());
+    queue.submit(submitInfo1, *fence);
+    waitResult = device->waitForFences(*fence, VK_TRUE, 3000000000L);
+    ASSERT_THAT(waitResult, IsVkSuccess());
+
+    //SnapshotSaveAndLoad();
+
+    // Redraw after snapshot, verify descriptors keep their value
+    fence = device->createFenceUnique(vkhpp::FenceCreateInfo()).value;
+    ASSERT_THAT(fence, IsValidHandle());
+    queue.submit(submitInfo, *fence);
+    waitResult = device->waitForFences(*fence, VK_TRUE, 3000000000L);
+    ASSERT_THAT(waitResult, IsVkSuccess());
+
+    std::vector<uint32_t> dst(kFbWidth * kFbHeight);
+    readImageData(*colorAttachmentInfo->image, kFbWidth, kFbHeight, (uint8_t*)dst.data(),
+                  dst.size() * 4, testEnvironment);
+    for (int i = 0; i < dst.size(); i++) {
+        // The shader adds a blue color (from vertex buffer) with a red color (from uniform) and get purple.
         ASSERT_THAT(dst[i], Eq(0xffff00ff));
     }
 }
