@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8885277d_6abdc92d",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6828,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-07T19:20:28Z",
+      "side": 1,
+      "message": "optional: to dedup a little bit:\n\n```suggestion\n    VkResult res \u003d VK_SUCCESS;\n    if (supportsDeferredCommands()) {\n        enc-\u003evkResetCommandBufferAsyncGOOGLE(commandBuffer, flags, true /* do lock */);\n    } else {\n        res \u003d enc-\u003evkResetCommandBuffer(commandBuffer, flags, true /* do lock */);\n    }\n\n    resetCommandBufferStagingInfo(commandBuffer, true /* also reset primaries */,\n                                  true /* also clear pending descriptor sets */);\n    return res;\n```",
+      "range": {
+        "startLine": 6818,
+        "startChar": 0,
+        "endLine": 6828,
+        "endChar": 22
+      },
+      "revId": "ed8433a67a134e13b755c207d4229d217ef78a2f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
