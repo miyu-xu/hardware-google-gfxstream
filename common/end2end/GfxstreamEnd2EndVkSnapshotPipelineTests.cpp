@@ -14,6 +14,7 @@
 
 #include <string>
 
+#include "GfxstreamEnd2EndTestUtils.h"
 #include "GfxstreamEnd2EndTests.h"
 #include "gfxstream/RutabagaLayerTestUtils.h"
 #include "simple_shader_frag.h"
@@ -236,7 +237,7 @@ std::unique_ptr<ImageInfo> GfxstreamEnd2EndVkSnapshotPipelineTest::createColorAt
     vkhpp::MemoryRequirements imageMemoryRequirements{};
     device.getImageMemoryRequirements(*(res->image), &imageMemoryRequirements);
 
-    const uint32_t imageMemoryIndex = GetMemoryType(physicalDevice, imageMemoryRequirements,
+    const uint32_t imageMemoryIndex = getMemoryType(physicalDevice, imageMemoryRequirements,
                                                     vkhpp::MemoryPropertyFlagBits::eDeviceLocal);
 
     const vkhpp::MemoryAllocateInfo imageMemoryAllocateInfo = {
@@ -359,8 +360,13 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, CanSnapshotFramebuffer) {
 }
 
 TEST_P(GfxstreamEnd2EndVkSnapshotPipelineWithMultiSamplingTest, CanSubmitQueue) {
-    auto [instance, physicalDevice, device, queue, queueFamilyIndex] =
-        VK_ASSERT(SetUpTypicalVkTestEnvironment());
+    TypicalVkTestEnvironment testEnvironment = VK_ASSERT(SetUpTypicalVkTestEnvironment());
+    auto& instance = testEnvironment.instance;
+    auto& physicalDevice = testEnvironment.physicalDevice;
+    auto& device = testEnvironment.device;
+    auto& queue = testEnvironment.queue;
+    auto queueFamilyIndex = testEnvironment.queueFamilyIndex;
+
     auto pipelineInfo = createPipeline(device.get());
 
     auto colorAttachmentInfo = createColorAttachment(physicalDevice, device.get());
@@ -402,7 +408,7 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineWithMultiSamplingTest, CanSubmitQueue) 
     auto commandBuffer = std::move(commandBuffers[0]);
     ASSERT_THAT(commandBuffer, IsValidHandle());
 
-    vkhpp::ClearColorValue clearColor(std::array<float, 4>{0.2f, 0.2f, 0.2f, 0.2f});
+    vkhpp::ClearColorValue clearColor(std::array<float, 4>{1.0f, 0.0f, 1.0f, 1.0f});
     vkhpp::ClearValue clearValue{
         .color = clearColor,
     };
@@ -497,6 +503,13 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineWithMultiSamplingTest, CanSubmitQueue) 
 
     waitResult = device->waitForFences(*fence, VK_TRUE, 3000000000L);
     ASSERT_THAT(waitResult, IsVkSuccess());
+
+    std::vector<uint32_t> dst(kFbWidth * kFbHeight);
+    readImageData(*colorAttachmentInfo->image, kFbWidth, kFbHeight, (uint8_t*)dst.data(),
+                  dst.size() * 4, testEnvironment);
+    for (int i = 0; i < dst.size(); i++) {
+        ASSERT_THAT(dst[i], Eq(0xffff00ff));
+    }
 }
 
 INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkSnapshotPipelineTest,
