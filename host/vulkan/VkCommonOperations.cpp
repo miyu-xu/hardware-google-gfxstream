@@ -40,6 +40,8 @@
 #include "host-common/emugl_vm_operations.h"
 #include "host-common/vm_operations.h"
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -2003,6 +2005,7 @@ bool initializeVkColorBufferLocked(
         VK_COMMON_VERBOSE("Failed to create Vulkan image for ColorBuffer %d, error: %s", colorBufferHandle, string_VkResult(createRes));
         return false;
     }
+    printf("createc color buffer %u -> %p\n", colorBufferHandle, infoPtr->image);
 
     bool useDedicated = sVkEmulation->useDedicatedAllocations;
 
@@ -2343,10 +2346,12 @@ bool colorBufferNeedsUpdateBetweenGlAndVk(uint32_t colorBufferHandle) {
 }
 
 bool readColorBufferToBytes(uint32_t colorBufferHandle, std::vector<uint8_t>* bytes) {
+    _PR_LINE
     if (!sVkEmulation || !sVkEmulation->live) {
         VK_COMMON_VERBOSE("VkEmulation not available.");
         return false;
     }
+    _PR_LINE
 
     AutoLock lock(sVkEmulationLock);
 
@@ -2356,6 +2361,7 @@ bool readColorBufferToBytes(uint32_t colorBufferHandle, std::vector<uint8_t>* by
         bytes->clear();
         return false;
     }
+    _PR_LINE
 
     VkDeviceSize bytesNeeded = 0;
     bool result = getFormatTransferInfo(colorBufferInfo->imageCreateInfoShallow.format,
@@ -2367,12 +2373,14 @@ bool readColorBufferToBytes(uint32_t colorBufferHandle, std::vector<uint8_t>* by
                         colorBufferHandle);
         return false;
     }
+    _PR_LINE
 
     bytes->resize(bytesNeeded);
 
     result = readColorBufferToBytesLocked(
         colorBufferHandle, 0, 0, colorBufferInfo->imageCreateInfoShallow.extent.width,
         colorBufferInfo->imageCreateInfoShallow.extent.height, bytes->data());
+    _PR_LINE
     if (!result) {
         VK_COMMON_ERROR("Failed to read from ColorBuffer:%d, failed to get read size.",
                         colorBufferHandle);
@@ -2399,7 +2407,7 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
         VK_COMMON_ERROR("VkEmulation not available.");
         return false;
     }
-
+    _PR_LINE
     auto vk = sVkEmulation->dvk;
 
     auto colorBufferInfo = android::base::find(sVkEmulation->colorBuffers, colorBufferHandle);
@@ -2407,19 +2415,19 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
         VK_COMMON_ERROR("Failed to read from ColorBuffer:%d, not found.", colorBufferHandle);
         return false;
     }
-
+    _PR_LINE
     if (!colorBufferInfo->image) {
         VK_COMMON_ERROR("Failed to read from ColorBuffer:%d, no VkImage.", colorBufferHandle);
         return false;
     }
-
+    _PR_LINE
     if (x != 0 || y != 0 || w != colorBufferInfo->imageCreateInfoShallow.extent.width ||
         h != colorBufferInfo->imageCreateInfoShallow.extent.height) {
         VK_COMMON_ERROR("Failed to read from ColorBuffer:%d, unhandled subrect.",
                         colorBufferHandle);
         return false;
     }
-
+    _PR_LINE
     VkDeviceSize bufferCopySize = 0;
     std::vector<VkBufferImageCopy> bufferImageCopies;
     if (!getFormatTransferInfo(colorBufferInfo->imageCreateInfoShallow.format,
@@ -2430,7 +2438,7 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
                         colorBufferHandle);
         return false;
     }
-
+    _PR_LINE
     // Avoid transitioning from VK_IMAGE_LAYOUT_UNDEFINED. Unfortunetly, Android does not
     // yet have a mechanism for sharing the expected VkImageLayout. However, the Vulkan
     // spec's image layout transition sections says "If the old layout is
@@ -2441,7 +2449,7 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
     if (colorBufferInfo->currentLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
         colorBufferInfo->currentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
     }
-
+    _PR_LINE
     // Record our synchronization commands.
     const VkCommandBufferBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -2450,7 +2458,7 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
     };
 
     VkCommandBuffer commandBuffer = sVkEmulation->commandBuffer;
-
+    _PR_LINE
     VK_CHECK(vk->vkBeginCommandBuffer(commandBuffer, &beginInfo));
 
     sVkEmulation->debugUtilsHelper.cmdBeginDebugLabel(
@@ -2481,6 +2489,7 @@ bool readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32
                              &toTransferSrcImageBarrier);
 
     colorBufferInfo->currentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    printf("setting currentLayout to VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL\n");
 
     vk->vkCmdCopyImageToBuffer(commandBuffer, colorBufferInfo->image,
                                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, sVkEmulation->staging.buffer,
@@ -3347,6 +3356,7 @@ void setColorBufferCurrentLayout(uint32_t colorBufferHandle, VkImageLayout layou
         return;
     }
     infoPtr->currentLayout = layout;
+    printf("setting currentLayout to layout\n");
 }
 
 VkImageLayout getColorBufferCurrentLayout(uint32_t colorBufferHandle) {
@@ -3452,6 +3462,7 @@ void releaseColorBufferForGuestUse(uint32_t colorBufferHandle) {
                 },
         };
         infoPtr->currentLayout = kGuestUseDefaultImageLayout;
+        printf("setting currentLayout to kGuestUseDefaultImageLayout\n");
     }
 
     std::optional<VkImageMemoryBarrier> queueTransferBarrier;
@@ -3569,6 +3580,7 @@ std::unique_ptr<BorrowedImageInfoVk> borrowColorBufferForComposition(uint32_t co
     }
 
     colorBufferInfo->currentLayout = compositorInfo->postBorrowLayout;
+    printf("setting currentLayout to compositorInfo->postBorrowLayout\n");
     colorBufferInfo->currentQueueFamilyIndex = compositorInfo->postBorrowQueueFamilyIndex;
 
     return compositorInfo;
@@ -3599,6 +3611,7 @@ std::unique_ptr<BorrowedImageInfoVk> borrowColorBufferForDisplay(uint32_t colorB
     compositorInfo->postBorrowLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     colorBufferInfo->currentLayout = compositorInfo->postBorrowLayout;
+    printf("setting currentLayout to compositorInfo->postBorrowLayout\n");
     colorBufferInfo->currentQueueFamilyIndex = compositorInfo->postBorrowQueueFamilyIndex;
 
     return compositorInfo;

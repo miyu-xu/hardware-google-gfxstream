@@ -497,6 +497,7 @@ class VkDecoderGlobalState::Impl {
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
+            printf("boxed image %p unboxed %p\n", boxedImage, unboxedImage);
             // Vulkan command playback doesn't recover image layout. We need to do it here.
             stream->putBe32(imageInfo.layout);
 
@@ -674,6 +675,7 @@ class VkDecoderGlobalState::Impl {
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
+            printf("boxed image %p unboxed %p\n", boxedImage, unboxedImage);
             // Playback doesn't recover image layout. We need to do it here.
             //
             // Layout transform was done by vkCmdPipelineBarrier but we don't record such command
@@ -3897,10 +3899,12 @@ class VkDecoderGlobalState::Impl {
                 continue;
             }
             HandleType cb = imageInfo->boundColorBuffer.value();
+            printf("image %p bound cb %d\n", barrier.image, cb);
             if (barrier.srcQueueFamilyIndex == VK_QUEUE_FAMILY_EXTERNAL) {
                 cmdBufferInfo->acquiredColorBuffers.insert(cb);
             }
             if (barrier.dstQueueFamilyIndex == VK_QUEUE_FAMILY_EXTERNAL) {
+                printf("adding release %d to cmdbuffer %p\n", cb, commandBuffer);
                 cmdBufferInfo->releasedColorBuffers.insert(cb);
             }
             cmdBufferInfo->cbLayouts[cb] = barrier.newLayout;
@@ -4186,11 +4190,11 @@ class VkDecoderGlobalState::Impl {
                 importInfo.buffer = cbExtMemoryHandle;
 #else
                 externalMemoryHandle = ManagedDescriptor(dupExternalMemory(cbExtMemoryHandle));
-
 #ifdef _WIN32
                 importInfo.handle = externalMemoryHandle.get().value_or(static_cast<HANDLE>(NULL));
 #else
                 importInfo.fd = externalMemoryHandle.get().value_or(-1);
+                printf("dup %d -> %d\n", cbExtMemoryHandle, importInfo.fd);
 #endif
 #endif
                 vk_append_struct(&structChainIter, &importInfo);
@@ -5055,6 +5059,13 @@ class VkDecoderGlobalState::Impl {
         std::unordered_set<HandleType> releasedColorBuffers;
         bool vulkanOnly = mGuestUsesAngle;
         if (!vulkanOnly) {
+            auto fb = FrameBuffer::getFB();
+            if (fb) {
+                for (HandleType cb : acquiredColorBuffers) {
+                    printf("%s: invalidateColorBufferForVk %u\n", __func__, cb);
+                    fb->invalidateColorBufferForVk(cb);
+                }
+            }
             {
                 std::lock_guard<std::recursive_mutex> lock(mLock);
                 for (int i = 0; i < submitCount; i++) {
@@ -5068,15 +5079,10 @@ class VkDecoderGlobalState::Impl {
                         acquiredColorBuffers.merge(cmdBufferInfo->acquiredColorBuffers);
                         releasedColorBuffers.merge(cmdBufferInfo->releasedColorBuffers);
                         for (const auto& ite : cmdBufferInfo->cbLayouts) {
+                            printf("setting layout %d -> %d\n", ite.first, ite.second);
                             setColorBufferCurrentLayout(ite.first, ite.second);
                         }
                     }
-                }
-            }
-            auto fb = FrameBuffer::getFB();
-            if (fb) {
-                for (HandleType cb : acquiredColorBuffers) {
-                    fb->invalidateColorBufferForVk(cb);
                 }
             }
         }
@@ -5159,6 +5165,7 @@ class VkDecoderGlobalState::Impl {
             auto fb = FrameBuffer::getFB();
             if (fb) {
                 for (HandleType cb : releasedColorBuffers) {
+                    printf("%s: flushColorBufferFromVk %u\n", __func__, cb);
                     fb->flushColorBufferFromVk(cb);
                 }
             }

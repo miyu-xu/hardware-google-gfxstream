@@ -4701,6 +4701,7 @@ GL_APICALL void GL_APIENTRY glTexStorageMem2DEXT(GLenum target, GLsizei levels, 
     GLint err = GL_NO_ERROR;
     GLenum format, type;
     GLESv2Validate::getCompatibleFormatTypeForInternalFormat(internalFormat, &format, &type);
+    printf("format 0x%x internal format 0x%x\n", format, internalFormat);
     sPrepareTexImage2D(target, 0, (GLint)internalFormat, width, height, 0, format, type, 0, NULL, &type, (GLint*)&internalFormat, &err);
     SET_ERROR_IF(err != GL_NO_ERROR, err);
     TextureData *texData = getTextureTargetData(target);

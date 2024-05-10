@@ -57,6 +57,9 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
                                                  android::base::Stream* stream) {
     std::shared_ptr<ColorBuffer> colorBuffer(
         new ColorBuffer(handle, width, height, format, frameworkFormat));
+    if (stream) {
+        colorBuffer->mNeedRestore = true;
+    }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (emulationGl) {
@@ -95,9 +98,12 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     bool b271028352Workaround = emulationGl && strstr(emulationGl->getGlesRenderer().c_str(), "Intel");
+    bool vkSnapshotEnabled = emulationVk && emulationVk->features.VulkanSnapshots.enabled;
+    //b271028352Workaround = true;
 
-    if (!stream && colorBuffer->mColorBufferGl && colorBuffer->mColorBufferVk &&
+    if ((!stream || vkSnapshotEnabled) && colorBuffer->mColorBufferGl && colorBuffer->mColorBufferVk &&
         !b271028352Workaround && shouldAttemptExternalMemorySharing(frameworkFormat)) {
+        colorBuffer->touch();
         auto memoryExport = vk::exportColorBufferMemory(handle);
         if (memoryExport) {
             if (colorBuffer->mColorBufferGl->importMemory(
@@ -110,7 +116,7 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
         }
     }
 #endif
-
+    printf("color buffer created %d\n", handle);
     return colorBuffer;
 }
 
@@ -126,8 +132,6 @@ std::shared_ptr<ColorBuffer> ColorBuffer::onLoad(gl::EmulationGl* emulationGl,
 
     std::shared_ptr<ColorBuffer> colorBuffer = ColorBuffer::create(
         emulationGl, emulationVk, width, height, format, frameworkFormat, handle, stream);
-
-    colorBuffer->mNeedRestore = true;
 
     return colorBuffer;
 }
@@ -318,19 +322,26 @@ bool ColorBuffer::flushFromGl() {
     return true;
 }
 
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
+
+
 bool ColorBuffer::flushFromVk() {
+    _PR_LINE
     if (!(mColorBufferGl && mColorBufferVk)) {
         return true;
     }
+    _PR_LINE
 
     if (mGlAndVkAreSharingExternalMemory) {
         return true;
     }
+    _PR_LINE
     std::vector<uint8_t> contents;
     if (!vk::readColorBufferToBytes(mHandle, &contents)) {
         ERR("Failed to get VK contents for ColorBuffer:%d", mHandle);
         return false;
     }
+    _PR_LINE
 
     if (contents.empty()) {
         return false;
