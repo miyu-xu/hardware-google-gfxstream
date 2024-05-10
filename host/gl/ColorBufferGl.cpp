@@ -31,11 +31,15 @@
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/opengl/misc.h"
 
-#define DEBUG_CB_FBO 0
+#define DEBUG_CB_FBO 1
 
 using android::base::ManagedDescriptor;
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
+
+#define _CHECK_GL_ERROR {     GLenum error1 = s_gles2.glGetError(); if (error1 != GL_NO_ERROR) printf("%s: %s %d glGetError %d\n", __func__, __FILE__, __LINE__, error1);}
+
+#define _PR_LINE printf("%s: %s %d\n", __func__, __FILE__, __LINE__);
 
 namespace gfxstream {
 namespace gl {
@@ -47,24 +51,30 @@ namespace {
 // on creation only. I.e. all rendering operations will target it.
 // returns true in case of success, false on failure.
 bool bindFbo(GLuint* fbo, GLuint tex, bool ensureTextureAttached) {
+    _PR_LINE
     if (*fbo) {
+        _PR_LINE
         // fbo already exist - just bind
         s_gles2.glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
         if (ensureTextureAttached) {
             s_gles2.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_OES,
                                            GL_TEXTURE_2D, tex, 0);
         }
+        _CHECK_GL_ERROR
         return true;
     }
 
+    _PR_LINE
     s_gles2.glGenFramebuffers(1, fbo);
     s_gles2.glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
     s_gles2.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_OES,
                                    GL_TEXTURE_2D, tex, 0);
-
+    printf("binding tex %d\n", tex);
+    _CHECK_GL_ERROR
 #if DEBUG_CB_FBO
     GLenum status = s_gles2.glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
+        _PR_LINE
         ERR("ColorBufferGl::bindFbo: FBO not complete: %#x\n", status);
         s_gles2.glBindFramebuffer(GL_FRAMEBUFFER, 0);
         s_gles2.glDeleteFramebuffers(1, fbo);
@@ -72,6 +82,7 @@ bool bindFbo(GLuint* fbo, GLuint tex, bool ensureTextureAttached) {
         return false;
     }
 #endif
+    _PR_LINE
 
     return true;
 }
@@ -238,6 +249,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
         new ColorBufferGl(p_display, hndl, p_width, p_height, helper, textureDraw)};
     cb->m_internalFormat = p_internalFormat;
     cb->m_sizedInternalFormat = p_sizedInternalFormat;
+    printf("m_sizedInternalFormat 0x%x\n", cb->m_sizedInternalFormat);
     cb->m_format = texFormat;
     cb->m_type = pixelType;
     cb->m_frameworkFormat = p_frameworkFormat;
@@ -400,11 +412,15 @@ bool ColorBufferGl::readPixels(int x, int y, int width, int height, GLenum p_for
 
     waitSync();
 
+    _CHECK_GL_ERROR
+
     if (bindFbo(&m_fbo, m_tex, m_needFboReattach)) {
+        _CHECK_GL_ERROR
         m_needFboReattach = false;
         GLint prevAlignment = 0;
         s_gles2.glGetIntegerv(GL_PACK_ALIGNMENT, &prevAlignment);
         s_gles2.glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        _CHECK_GL_ERROR
         if ((p_format == GL_RGB || p_format == GL_RGB8) && p_type == GL_UNSIGNED_BYTE) {
             // GL_RGB reads fail with SwiftShader.
             uint8_t* tmpPixels = new uint8_t[width * height * 4];
@@ -417,6 +433,7 @@ bool ColorBufferGl::readPixels(int x, int y, int width, int height, GLenum p_for
         unbindFbo();
         return true;
     }
+    _CHECK_GL_ERROR
 
     return false;
 }
@@ -622,7 +639,7 @@ bool ColorBufferGl::subUpdateFromFrameworkFormat(int x, int y, int width, int he
     } else {
         s_gles2.glBindTexture(GL_TEXTURE_2D, m_tex);
         s_gles2.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
+        printf("subupdate format 0x%x unsized 0x%x\n", p_format, p_unsizedFormat);
         s_gles2.glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, p_unsizedFormat,
                                 p_type, pixels);
     }
@@ -636,6 +653,7 @@ bool ColorBufferGl::subUpdateFromFrameworkFormat(int x, int y, int width, int he
 }
 
 bool ColorBufferGl::replaceContents(const void* newContents, size_t numBytes) {
+    printf("replaceContents m_format 0x%x\n", m_format);
     return subUpdate(0, 0, m_width, m_height, m_format, m_type, newContents);
 }
 
@@ -990,11 +1008,16 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::onLoad(android::base::Stream* stre
     bool isBlob;
     sGetFormatParameters(&cb->m_internalFormat, &texFormat, &pixelType, &bytesPerPixel,
                          &sizedInternalFormat, &isBlob);
+    cb->m_type = pixelType;
+    cb->m_format = texFormat;
+    cb->m_sizedInternalFormat = sizedInternalFormat;
+    printf("m_sizedInternalFormat 0x%x\n", cb->m_sizedInternalFormat);
     cb->m_numBytes = ((unsigned long)bytesPerPixel) * width * height;
     return cb;
 }
 
 void ColorBufferGl::restore() {
+    printf("restoring\n");
     RecursiveScopedContextBind context(m_helper);
     s_gles2.glGenTextures(1, &m_tex);
     s_gles2.glBindTexture(GL_TEXTURE_2D, m_tex);
@@ -1013,6 +1036,7 @@ void ColorBufferGl::restore() {
                     new YUVConverter(m_width, m_height, m_frameworkFormat, m_yuv420888ToNv21));
             break;
     }
+    printf("restore done tex %d\n", m_tex);
 }
 
 GLuint ColorBufferGl::getTexture() { return m_tex; }
@@ -1026,19 +1050,22 @@ void ColorBufferGl::postLayer(const ComposeLayer& l, int frameWidth, int frameHe
 bool ColorBufferGl::importMemory(ManagedDescriptor externalDescriptor, uint64_t size,
                                  bool dedicated, bool linearTiling) {
     RecursiveScopedContextBind context(m_helper);
+    _CHECK_GL_ERROR
     s_gles2.glCreateMemoryObjectsEXT(1, &m_memoryObject);
+    _CHECK_GL_ERROR
     if (dedicated) {
         static const GLint DEDICATED_FLAG = GL_TRUE;
         s_gles2.glMemoryObjectParameterivEXT(m_memoryObject,
                                              GL_DEDICATED_MEMORY_OBJECT_EXT,
                                              &DEDICATED_FLAG);
     }
+    _CHECK_GL_ERROR
     std::optional<ManagedDescriptor::DescriptorType> maybeRawDescriptor = externalDescriptor.get();
     if (!maybeRawDescriptor.has_value()) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Uninitialized external descriptor.";
     }
     ManagedDescriptor::DescriptorType rawDescriptor = *maybeRawDescriptor;
-
+    _CHECK_GL_ERROR
 #ifdef _WIN32
     s_gles2.glImportMemoryWin32HandleEXT(m_memoryObject, size, GL_HANDLE_TYPE_OPAQUE_WIN32_EXT,
                                          rawDescriptor);
@@ -1070,9 +1097,11 @@ bool ColorBufferGl::importMemory(ManagedDescriptor externalDescriptor, uint64_t 
     std::vector<uint8_t> prevContents;
 
     size_t bytes;
+    printf("reading cb gl content\n");
     readContents(&bytes, nullptr);
     prevContents.resize(bytes, 0);
     readContents(&bytes, prevContents.data());
+    printf("reading cb gl content done\n");
 
     s_gles2.glDeleteTextures(1, &m_tex);
     s_gles2.glDeleteFramebuffers(1, &m_fbo);

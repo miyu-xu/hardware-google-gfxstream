@@ -196,9 +196,11 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
                     << "Failed to start command buffer on snapshot save";
             }
 
-            // TODO(b/323059453): get the right aspect
             VkExtent3D mipmapExtent = getMipmapExtent(imageCreateInfo.extent, mipLevel);
             VkImageAspectFlags aspects = VK_IMAGE_ASPECT_COLOR_BIT;
+            if (imageCreateInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+                aspects = VK_IMAGE_ASPECT_STENCIL_BIT;
+            }
             VkImageLayout layoutBeforeSave = imageInfo->layout;
             VkImageMemoryBarrier imgMemoryBarrier = {
                 .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -298,8 +300,10 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     if (imageInfo->imageCreateInfoShallow.samples != VK_SAMPLE_COUNT_1_BIT) {
         // Set the layout and quit
         // TODO: resolve and save image content
-        // TODO: get the right aspect
         VkImageAspectFlags aspects = VK_IMAGE_ASPECT_COLOR_BIT;
+        if (imageCreateInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+            aspects = VK_IMAGE_ASPECT_STENCIL_BIT;
+        }
         VkImageMemoryBarrier imgMemoryBarrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
             .pNext = nullptr,

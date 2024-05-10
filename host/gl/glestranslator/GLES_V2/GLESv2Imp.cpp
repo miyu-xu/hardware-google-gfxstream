@@ -3874,6 +3874,7 @@ GL_APICALL void  GL_APIENTRY glTexSubImage2D(GLenum target, GLint level, GLint x
     GET_CTX_V2();
     SET_ERROR_IF(!(GLESv2Validate::textureTarget(ctx, target) ||
                    GLESv2Validate::textureTargetEx(ctx, target)), GL_INVALID_ENUM);
+    printf("validating format 0x%x\n", format);
     SET_ERROR_IF(!GLESv2Validate::pixelFrmt(ctx,format), GL_INVALID_ENUM);
     SET_ERROR_IF(!GLESv2Validate::pixelType(ctx,type),GL_INVALID_ENUM);
 
@@ -4701,6 +4702,7 @@ GL_APICALL void GL_APIENTRY glTexStorageMem2DEXT(GLenum target, GLsizei levels, 
     GLint err = GL_NO_ERROR;
     GLenum format, type;
     GLESv2Validate::getCompatibleFormatTypeForInternalFormat(internalFormat, &format, &type);
+    printf("format 0x%x internal format 0x%x\n", format, internalFormat);
     sPrepareTexImage2D(target, 0, (GLint)internalFormat, width, height, 0, format, type, 0, NULL, &type, (GLint*)&internalFormat, &err);
     SET_ERROR_IF(err != GL_NO_ERROR, err);
     TextureData *texData = getTextureTargetData(target);
