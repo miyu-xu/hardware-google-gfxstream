@@ -184,6 +184,9 @@ apiChangeState = {
 apiModifies = {
     "vkMapMemoryIntoAddressSpaceGOOGLE" : ["memory"],
     "vkGetBlobGOOGLE" : ["memory"],
+    "vkBeginCommandBuffer" : ["commandBuffer"],
+    "vkEndCommandBuffer" : ["commandBuffer"],
+    "vkResetCommandBuffer" : ["commandBuffer"], # TODO: clear the command buffer
 }
 
 delayedDestroys = [
@@ -210,6 +213,8 @@ def is_modify_operation(api, param):
     if api.name in apiModifies:
         if param.paramName in apiModifies[api.name]:
             return True
+    if api.name.startswith('vkCmd') and param.paramName == 'commandBuffer':
+        return True
     return False
 
 def emit_impl(typeInfo, api, cgen):
