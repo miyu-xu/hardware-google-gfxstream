@@ -1,0 +1,125 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57bc774d_4bd543a7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-10T13:31:39Z",
+      "side": 1,
+      "message": "Added just a few nit comments, lgtm, thanks.",
+      "revId": "c1815ce1f3ae2f4b1789f7cc4780be641a7350f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd49cecf_fec51679",
+        "filename": "common/end2end/GfxstreamEnd2EndTestUtils.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-10T13:31:39Z",
+      "side": 1,
+      "message": "I guess there is no way we can assert this old image layout since we don\u0027t track the state, might be better to get it as an argument to the function.",
+      "revId": "c1815ce1f3ae2f4b1789f7cc4780be641a7350f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4efc7123_9ad26a50",
+        "filename": "common/end2end/GfxstreamEnd2EndTestUtils.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-10T13:31:39Z",
+      "side": 1,
+      "message": "nit: it would be better to put these functions inside an extra namespace, e.g. \u0027utils\u0027, to make the source of them easier to follow.",
+      "revId": "c1815ce1f3ae2f4b1789f7cc4780be641a7350f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66789c6e_05efeb82",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 508,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-10T13:31:39Z",
+      "side": 1,
+      "message": "nit: dst argument is void**, (uint8_t*) cast might be unnecessary here.",
+      "fixSuggestions": [
+        {
+          "fixId": "a9e44c93_c88ff97e",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+              "range": {
+                "startLine": 508,
+                "startChar": 0,
+                "endLine": 509,
+                "endChar": 0
+              },
+              "replacement": "    readImageData(*colorAttachmentInfo-\u003eimage, kFbWidth, kFbHeight, dst.data(),\n"
+            }
+          ]
+        }
+      ],
+      "revId": "c1815ce1f3ae2f4b1789f7cc4780be641a7350f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "abffbf8a_8329c79c",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 509,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-10T13:31:39Z",
+      "side": 1,
+      "message": "sizeof(uint32_t) would be more readable than 4.",
+      "fixSuggestions": [
+        {
+          "fixId": "7db2b78c_7592c311",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+              "range": {
+                "startLine": 508,
+                "startChar": 0,
+                "endLine": 510,
+                "endChar": 0
+              },
+              "replacement": "    readImageData(*colorAttachmentInfo-\u003eimage, kFbWidth, kFbHeight, dst.data(),\n                  dst.size() * sizeof(uint32_t), testEnvironment);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "c1815ce1f3ae2f4b1789f7cc4780be641a7350f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
