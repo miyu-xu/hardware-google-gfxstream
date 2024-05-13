@@ -24,12 +24,7 @@ inline std::string libDir() {
 inline std::string testIcdFilename() {
     using android::base::pj;
     return pj(libDir(),
-#ifdef _WIN32
-        // Windows uses mock Vulkan ICD.
-        "VkICD_mock_icd.json"
-#else
         "vk_swiftshader_icd.json"
-#endif
     );
 }
 
