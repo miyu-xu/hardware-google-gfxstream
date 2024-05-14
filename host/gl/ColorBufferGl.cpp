@@ -990,6 +990,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::onLoad(android::base::Stream* stre
     bool isBlob;
     sGetFormatParameters(&cb->m_internalFormat, &texFormat, &pixelType, &bytesPerPixel,
                          &sizedInternalFormat, &isBlob);
+    cb->m_sizedInternalFormat = sizedInternalFormat;
     cb->m_numBytes = ((unsigned long)bytesPerPixel) * width * height;
     return cb;
 }
