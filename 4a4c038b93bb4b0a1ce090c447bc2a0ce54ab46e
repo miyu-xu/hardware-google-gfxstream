@@ -16,6 +16,24 @@
       "message": "Friendly ping for review?",
       "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79aa1343_f01b403d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-14T21:31:55Z",
+      "side": 1,
+      "message": "Changes lgtm, I\u0027d like to test it locally tomorrow before approving though. Thanks",
+      "parentUuid": "5bab7a05_8ee49660",
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
