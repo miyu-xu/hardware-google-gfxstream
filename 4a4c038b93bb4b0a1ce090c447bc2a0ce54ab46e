@@ -284,6 +284,29 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ecd22f5_f32f2787",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 556,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:37:51Z",
+      "side": 1,
+      "message": "optional: maybe just add a note about why we need to check for validity. Took a couple minutes for me to think through this. IIUC, it is okay for a descriptor set to be outdated/no-longer valid as long as it is never used - which is what made me question whether or not we actually had to track whether something was valid in the first place. But for snapshot loading, we cannot do `vkUpdateDescriptorSets()` using an invalid object.",
+      "range": {
+        "startLine": 556,
+        "startChar": 15,
+        "endLine": 556,
+        "endChar": 46
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "43fa36fd_0f38b197",
