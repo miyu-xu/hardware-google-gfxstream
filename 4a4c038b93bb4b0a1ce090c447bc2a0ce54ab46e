@@ -125,6 +125,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5e4ae686_72ada6d7",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-15T15:35:54Z",
+      "side": 1,
+      "message": "nit: it\u0027s a generic function, but variable names start with \u0027vertex\u0027",
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "61b8780e_6610f525",
         "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
         "patchSetId": 17
