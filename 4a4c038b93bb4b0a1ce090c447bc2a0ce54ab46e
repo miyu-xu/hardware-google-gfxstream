@@ -52,6 +52,420 @@
       "parentUuid": "79aa1343_f01b403d",
       "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36007dda_783c09b6",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\nconst float kFullscreenBlueRectangleVertexData[] \u003d {\n```",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 29
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "201dfa8c_dbc1af78",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n    // clang-format off\n    /*pos\u003d*/ -1.0f, -1.0f, 0.0f, 1.0f, /*color\u003d*/ 0.0f,  0.0f,  1.0f, 1.0f,\n    /*pos\u003d*/  1.0f, -1.0f, 0.0f, 1.0f, /*color\u003d*/ 0.0f,  0.0f,  1.0f, 1.0f,\n    /*pos\u003d*/  1.0f,  1.0f, 0.0f, 1.0f, /*color\u003d*/ 0.0f,  0.0f,  1.0f, 1.0f,\n    /*pos\u003d*/  1.0f,  1.0f, 0.0f, 1.0f, /*color\u003d*/ 0.0f,  0.0f,  1.0f, 1.0f,\n    /*pos\u003d*/ -1.0f,  1.0f, 0.0f, 1.0f, /*color\u003d*/ 0.0f,  0.0f,  1.0f, 1.0f,\n    /*pos\u003d*/ -1.0f, -1.0f, 0.0f, 1.0f, /*color\u003d*/ 0.0f,  0.0f,  1.0f, 1.0f,\n    // clang-format on\n```",
+      "range": {
+        "startLine": 79,
+        "startChar": 4,
+        "endLine": 82,
+        "endChar": 81
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9aac33f4_d30055db",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\nVkExpected\u003cBufferInfo\u003e GfxstreamEnd2EndVkSnapshotPipelineTest::createAndPopulateBuffer(\n```",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 15
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61b8780e_6610f525",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n    auto vertexBuffer \u003d VK_EXPECT_RV(device.createBufferUnique(vertexBufferCreateInfo));\n```",
+      "range": {
+        "startLine": 93,
+        "startChar": 24,
+        "endLine": 93,
+        "endChar": 79
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a5a1e72_89160a75",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n    const auto vertexBufferMemoryType \u003d utils::getMemoryType(\n        physicalDevice, vertexBufferMemoryRequirements,\n        vkhpp::MemoryPropertyFlagBits::eHostVisible | vkhpp::MemoryPropertyFlagBits::eHostCoherent);\n    if (vertexBufferMemoryType \u003d\u003d -1) {\n      return android::base::unexpected(VK_ERROR_OUT_OF_HOST_MEMORY);\n    }\n```",
+      "range": {
+        "startLine": 98,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 0
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e3393ec_768ca701",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n    auto vertexBufferMemory \u003d VK_EXPECT_RV(device.allocateMemoryUnique(vertexBufferMemoryAllocateInfo));\n```",
+      "range": {
+        "startLine": 107,
+        "startChar": 30,
+        "endLine": 107,
+        "endChar": 96
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc741559_1f141d66",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 566,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "Maybe add another similar test that deletes the `VkBuffer` after drawing just to test that the validity check code is working as intended",
+      "range": {
+        "startLine": 566,
+        "startChar": 47,
+        "endLine": 566,
+        "endChar": 69
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b357c727_03186166",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 572,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "Can this just be\n\n```\nauto [instance, physicalDevice, device, queue, queueFamilyIndex] \u003d\n        VK_ASSERT(SetUpTypicalVkTestEnvironment());\n```\n\ninstead of having to manually unwrap each field?\n\nor I guess does \n\n```\nauto testEnvironment \u003d VK_ASSERT(SetUpTypicalVkTestEnvironment());\nauto\u0026 [instance, physicalDevice, device, queue, queueFamilyIndex] \u003d testEnvironment;\n```\nwork?",
+      "range": {
+        "startLine": 567,
+        "startChar": 4,
+        "endLine": 572,
+        "endChar": 61
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32741f80_f3150fa4",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "strange spacing",
+      "range": {
+        "startLine": 781,
+        "startChar": 0,
+        "endLine": 783,
+        "endChar": 66
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8df42203_877a423b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n        std::sort(sortedBoxedDescriptorPools.begin(), sortedBoxedDescriptorPools.end());\n```",
+      "range": {
+        "startLine": 537,
+        "startChar": 8,
+        "endLine": 537,
+        "endChar": 12
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43fa36fd_0f38b197",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 558,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "nit: use `descriptorBindingIndex` since there are a couple of indices involved here",
+      "range": {
+        "startLine": 558,
+        "startChar": 25,
+        "endLine": 558,
+        "endChar": 26
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a679d144_e696536b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 559,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "nit: use `descriptorBindingElementIndex` since there are a couple of indices involved here",
+      "range": {
+        "startLine": 559,
+        "startChar": 29,
+        "endLine": 559,
+        "endChar": 31
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43976d01_70bcfb11",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "WDYT about just looking up the infos here instead of keeping a `std::vector\u003cstd::weak_ptr\u003cbool\u003e\u003e` and several `std::shared_ptr\u003cbool\u003e`  throughout the info structs? IIUC, we only need to know validity at the time of snapshot saving.\n\n```\nbool AreDescriptorDependenciesStillValid(const DescriptorSetInfo::DescriptorWrite\u0026 \n write) {\n   switch (write.writeType) {\n     case BUFFER: {\n       return mBufferInfo.find(write.bufferInfo.buffer) !\u003d mBufferInfo.end();\n     }\n     ...\n     default:\n       ERR();\n   }\n }\n ```\n \nThis helps to keep the info structs a little more simple and avoids lots of small allocations and atomics for the `std::shared_ptr` handling during normal operation time and instead just adds the small cost of a couple hashmap lookups at snapshot time.",
+      "range": {
+        "startLine": 566,
+        "startChar": 24,
+        "endLine": 568,
+        "endChar": 25
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b1084f3_41d333be",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n                                    : VK_NULL_HANDLE;\n```",
+      "range": {
+        "startLine": 599,
+        "startChar": 37,
+        "endLine": 599,
+        "endChar": 39
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89720f3c_918251e5",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 603,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n                                    : VK_NULL_HANDLE;\n```",
+      "range": {
+        "startLine": 603,
+        "startChar": 38,
+        "endLine": 603,
+        "endChar": 39
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "580dac53_6b5ac96e",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 2993,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "Will this overwrite the `i` from line 2977? Maybe should give `i` on line 2977 the name `desciprotrWriteIndex` and this `i` the name `descriptorIndex`.",
+      "range": {
+        "startLine": 2993,
+        "startChar": 20,
+        "endLine": 2993,
+        "endChar": 81
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0cdaa495_b09cc5a6",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 2994,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "```suggestion\n                        // Descriptor writes wrap to the next binding. See\n                        // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkWriteDescriptorSet.html\n                        if (arrOffset \u003e\u003d table[dstBinding].size()) {\n```\n\nmaybe just leave a comment since this was confusing and we ran into the issue with aosp/3059645",
+      "range": {
+        "startLine": 2994,
+        "startChar": 24,
+        "endLine": 2994,
+        "endChar": 68
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e8f1aa2_f799286e",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 7230,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-15T13:29:46Z",
+      "side": 1,
+      "message": "This looks unused.",
+      "range": {
+        "startLine": 7228,
+        "startChar": 4,
+        "endLine": 7230,
+        "endChar": 5
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
