@@ -124,6 +124,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bfaf8a83_a5a99a04",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "201dfa8c_dbc1af78",
+      "range": {
+        "startLine": 79,
+        "startChar": 4,
+        "endLine": 82,
+        "endChar": 81
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9aac33f4_d30055db",
@@ -137,6 +161,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "```suggestion\nVkExpected\u003cBufferInfo\u003e GfxstreamEnd2EndVkSnapshotPipelineTest::createAndPopulateBuffer(\n```",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 15
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dc2eba5_56f10820",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "9aac33f4_d30055db",
       "range": {
         "startLine": 85,
         "startChar": 0,
@@ -187,6 +235,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "97e11645_16495caf",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "61b8780e_6610f525",
+      "range": {
+        "startLine": 93,
+        "startChar": 24,
+        "endLine": 93,
+        "endChar": 79
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6a5a1e72_89160a75",
@@ -210,6 +282,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "85c1b925_bdc1158e",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "6a5a1e72_89160a75",
+      "range": {
+        "startLine": 98,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 0
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8e3393ec_768ca701",
@@ -223,6 +319,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "```suggestion\n    auto vertexBufferMemory \u003d VK_EXPECT_RV(device.allocateMemoryUnique(vertexBufferMemoryAllocateInfo));\n```",
+      "range": {
+        "startLine": 107,
+        "startChar": 30,
+        "endLine": 107,
+        "endChar": 96
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85f6f459_dff9fb0a",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "8e3393ec_768ca701",
       "range": {
         "startLine": 107,
         "startChar": 30,
@@ -327,6 +447,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "3bfa62b4_92846a0d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "8df42203_877a423b",
+      "range": {
+        "startLine": 537,
+        "startChar": 8,
+        "endLine": 537,
+        "endChar": 12
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "6ecd22f5_f32f2787",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 17
@@ -338,6 +482,30 @@
       "writtenOn": "2024-05-15T13:37:51Z",
       "side": 1,
       "message": "optional: maybe just add a note about why we need to check for validity. Took a couple minutes for me to think through this. IIUC, it is okay for a descriptor set to be outdated/no-longer valid as long as it is never used - which is what made me question whether or not we actually had to track whether something was valid in the first place. But for snapshot loading, we cannot do `vkUpdateDescriptorSets()` using an invalid object.",
+      "range": {
+        "startLine": 556,
+        "startChar": 15,
+        "endLine": 556,
+        "endChar": 46
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19817e45_e8cff3d7",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 556,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Will do",
+      "parentUuid": "6ecd22f5_f32f2787",
       "range": {
         "startLine": 556,
         "startChar": 15,
@@ -443,6 +611,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6e392a82_accc370a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "The main concern was for reusing handles after deletion and recreation, because driver implementation might choose to reuse deleted handles. The current implementation is definitely the safest, but let me look up the spec to see if it says anything about deleted underlying objects (if users try to use it, should it be undefined behavior or should it give default values)",
+      "parentUuid": "d6ba3587_6b07f3a2",
+      "range": {
+        "startLine": 566,
+        "startChar": 24,
+        "endLine": 568,
+        "endChar": 25
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1b1084f3_41d333be",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 17
@@ -454,6 +646,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "```suggestion\n                                    : VK_NULL_HANDLE;\n```",
+      "range": {
+        "startLine": 599,
+        "startChar": 37,
+        "endLine": 599,
+        "endChar": 39
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "627ad111_8da0d7b0",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "1b1084f3_41d333be",
       "range": {
         "startLine": 599,
         "startChar": 37,
@@ -477,6 +693,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "```suggestion\n                                    : VK_NULL_HANDLE;\n```",
+      "range": {
+        "startLine": 603,
+        "startChar": 38,
+        "endLine": 603,
+        "endChar": 39
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c8db01f_393184fd",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 603,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-15T21:13:30Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "89720f3c_918251e5",
       "range": {
         "startLine": 603,
         "startChar": 38,
