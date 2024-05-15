@@ -79,6 +79,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e0754de3_f6688f6a",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-15T16:10:07Z",
+      "side": 1,
+      "message": "I think this can also be marked as static",
+      "parentUuid": "36007dda_783c09b6",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 29
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "201dfa8c_dbc1af78",
         "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
         "patchSetId": 17
@@ -383,6 +407,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "WDYT about just looking up the infos here instead of keeping a `std::vector\u003cstd::weak_ptr\u003cbool\u003e\u003e` and several `std::shared_ptr\u003cbool\u003e`  throughout the info structs? IIUC, we only need to know validity at the time of snapshot saving.\n\n```\nbool AreDescriptorDependenciesStillValid(const DescriptorSetInfo::DescriptorWrite\u0026 \n write) {\n   switch (write.writeType) {\n     case BUFFER: {\n       return mBufferInfo.find(write.bufferInfo.buffer) !\u003d mBufferInfo.end();\n     }\n     ...\n     default:\n       ERR();\n   }\n }\n ```\n \nThis helps to keep the info structs a little more simple and avoids lots of small allocations and atomics for the `std::shared_ptr` handling during normal operation time and instead just adds the small cost of a couple hashmap lookups at snapshot time.",
+      "range": {
+        "startLine": 566,
+        "startChar": 24,
+        "endLine": 568,
+        "endChar": 25
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6ba3587_6b07f3a2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-15T16:10:07Z",
+      "side": 1,
+      "message": "Agreed, shared/weak ptr and their usages over vector\u003cvector\u003e and unordered sets can be quite slow. I liked the suggestion here as it\u0027d mainly slow down the snapshot saving time. I am not sure if there are any edge cases with it; even if we re-create the same buffer handle after a deletion, I don\u0027t think it\u0027d be invalid to still write that on into the descriptor set, since it\u0027s not expected to be used anyway.",
+      "parentUuid": "43976d01_70bcfb11",
       "range": {
         "startLine": 566,
         "startChar": 24,
