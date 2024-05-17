@@ -20,7 +20,6 @@
 #endif
 
 #include <assert.h>
-#include <log/log.h>
 
 #include "gfxstream/guest/Gralloc.h"
 #include "vk_format_info.h"
@@ -188,7 +187,7 @@ VkResult getAndroidHardwareBufferPropertiesANDROID(
                         break;
 
                     default:
-                        ALOGE("%s: Unhandled YUV drm format:%" PRIu32, __FUNCTION__, drmFormat);
+                        mesa_loge("%s: Unhandled YUV drm format:%" PRIu32, __FUNCTION__, drmFormat);
                         break;
                 }
             }
