@@ -22,6 +22,30 @@
       },
       "revId": "00a97c3ddb8cea6f1a9224ff13fd59095d08135e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "253a7372_8b12b1d6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-05-20T17:27:37Z",
+      "side": 1,
+      "message": "Re: For my use case, we only need Wayland.  The Vulkan WSI Layer (https://gitlab.freedesktop.org/mesa/vulkan-wsi-layer) does have it, but that\u0027s less maintained than Mesa WSI.  No distros pick it up [while everyone picks up Mesa], so we would have to package it as well.\n\nPlus, Mesa also has X11 support, allows running Fedora/Ubuntu/Debian type VMs with Zink/gfxstream vk.  I use that to run gfxbench and other X11 benchmarks, which is an easier dev environment guest side than Android.    \n\nWe\u0027re also thinking of adding `mesa/vulkan/wsi/fuchsia`, with gfxstream/Mesa being the first user.  \n\nGenerally, Mesa is a good choice for Linux WSI.\n\nI do agree with you mixing parts of gfxstream/Mesa is sub-optimal, hence the goal of gfxstream in Mesa so we can have more maintainable implementation.  But to get gfxstream in Mesa, we first have to Mesa-ify and clean-up guest side code, so hence `mesa_log(..)`.  \n\nRe: separate `Linux` and `Android` func-tables, we did have that for a time, but it was rolled back with aosp/3066068.  I do think one function table is better, since it\u0027s ~10K less LoC, and maintaining two difference object mapping styles would more annoying.\n\nI do agree having `goldfish_\u003cVK_TYPE\u003e` and `gfxstream_vk_\u003cTYPE\u003e` (defined in `gfxstream_vk_private.h`) is sub-optimal.  The strategy here would be to refactor `ResourceTracker.cpp` do away with it\u0027s internal hashmaps.  For example, we have `info_VkImage.find(..)` while it\u0027s possible to do `gfxstream_vk_image-\u003e` since the API gives you back the object of interest.",
+      "parentUuid": "bf958693_f979b6bf",
+      "range": {
+        "startLine": 7,
+        "startChar": 11,
+        "endLine": 7,
+        "endChar": 46
+      },
+      "revId": "00a97c3ddb8cea6f1a9224ff13fd59095d08135e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
