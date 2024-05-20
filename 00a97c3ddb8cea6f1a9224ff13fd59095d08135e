@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf958693_f979b6bf",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-20T16:35:00Z",
+      "side": 1,
+      "message": "It is not clear to me that we would want to do this. For Android which does not use a winsys integration, it is not even clear to me that we should even be building/including the mesa stuff at all.\n\nIMO, I think we should have\n\n1. Android\u0027s Vulkan entry points should be the \"existing Gfxstream\"/\"Gfxstream ResourceTracker/Encoder\" layer directly which use the existing `goldfish_\u003cVK_TYPE\u003e` (IMO should be renamed to `gfxstream_\u003cVK_TYPE\u003e`). \n\n2. \"Gfxstream Linux\" Vulkan entry points are the mesa functions which additionally wrap all of the `goldfish_\u003cVK_TYPE\u003e` handles with `gfxstream_mesa_\u003cVK_TYPE\u003e` handles and provide the additional functionality on top.\n\n3. We should consolidate the existing logging in the \"existing Gfxstream\" layer into a `gfxstream_log` setup similar to `stream_renderer_debug` which defaults to a per-platform logger (ALOGE for Android, stdout/stderr for Linux, etc). The \"Gfxstream Linux\" build could register a `gfxstream_mesa_log()` on first use.\n\nHonestly, given #2, I think the \"Gfxstream mesa winsys integration\" should really be implemented as a proper Vulkan Layer instead of mixing parts of Mesa into Gfxstream. IIUC, you could replace all of the \n\n```\nauto resources \u003d gfxstream::vk::ResourceTracker::get();\nresource-\u003eon_vkFunctionCall()\n```\n\nin the `hardware/google/Gfxstream/guest/Vulkan/gfxstream_vk*` files with calls into any other Vulkan implementation and nothing would change. This suggests that it should not even be part of Gfxstream.",
+      "range": {
+        "startLine": 7,
+        "startChar": 11,
+        "endLine": 7,
+        "endChar": 46
+      },
+      "revId": "00a97c3ddb8cea6f1a9224ff13fd59095d08135e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
