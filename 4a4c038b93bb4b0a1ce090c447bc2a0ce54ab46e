@@ -101,6 +101,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d14d7f0_ac0cf8a9",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0754de3_f6688f6a",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 29
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "201dfa8c_dbc1af78",
@@ -208,6 +232,24 @@
       "writtenOn": "2024-05-15T15:35:54Z",
       "side": 1,
       "message": "nit: it\u0027s a generic function, but variable names start with \u0027vertex\u0027",
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "129c72a7_47d54ad3",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5e4ae686_72ada6d7",
       "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -399,6 +441,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5794d896_c54a8711",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 572,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b357c727_03186166",
+      "range": {
+        "startLine": 567,
+        "startChar": 4,
+        "endLine": 572,
+        "endChar": 61
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "32741f80_f3150fa4",
@@ -412,6 +478,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "strange spacing",
+      "range": {
+        "startLine": 781,
+        "startChar": 0,
+        "endLine": 783,
+        "endChar": 66
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0da4f26a_58806d79",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotPipelineTests.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "32741f80_f3150fa4",
       "range": {
         "startLine": 781,
         "startChar": 0,
@@ -516,6 +606,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f647eab_312f9f3c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 556,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19817e45_e8cff3d7",
+      "range": {
+        "startLine": 556,
+        "startChar": 15,
+        "endLine": 556,
+        "endChar": 46
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "43fa36fd_0f38b197",
@@ -539,6 +653,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f376357_98edcbf0",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 558,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43fa36fd_0f38b197",
+      "range": {
+        "startLine": 558,
+        "startChar": 25,
+        "endLine": 558,
+        "endChar": 26
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a679d144_e696536b",
@@ -552,6 +690,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "nit: use `descriptorBindingElementIndex` since there are a couple of indices involved here",
+      "range": {
+        "startLine": 559,
+        "startChar": 29,
+        "endLine": 559,
+        "endChar": 31
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d60eeb38_2ef4a067",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 559,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a679d144_e696536b",
       "range": {
         "startLine": 559,
         "startChar": 29,
@@ -705,6 +867,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2f2043f_e1ed787d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9a89115_814b7620",
+      "range": {
+        "startLine": 566,
+        "startChar": 24,
+        "endLine": 568,
+        "endChar": 25
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b1084f3_41d333be",
@@ -822,6 +1008,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8891235_980f2b0a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 2993,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "580dac53_6b5ac96e",
+      "range": {
+        "startLine": 2993,
+        "startChar": 20,
+        "endLine": 2993,
+        "endChar": 81
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0cdaa495_b09cc5a6",
@@ -845,6 +1055,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfc68532_f1ad174d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 2994,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0cdaa495_b09cc5a6",
+      "range": {
+        "startLine": 2994,
+        "startChar": 24,
+        "endLine": 2994,
+        "endChar": 68
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8e8f1aa2_f799286e",
@@ -858,6 +1092,30 @@
       "writtenOn": "2024-05-15T13:29:46Z",
       "side": 1,
       "message": "This looks unused.",
+      "range": {
+        "startLine": 7228,
+        "startChar": 4,
+        "endLine": 7230,
+        "endChar": 5
+      },
+      "revId": "4a4c038b93bb4b0a1ce090c447bc2a0ce54ab46e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24a6345e_f8ad2c60",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 17
+      },
+      "lineNbr": 7230,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-20T21:38:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e8f1aa2_f799286e",
       "range": {
         "startLine": 7228,
         "startChar": 4,
