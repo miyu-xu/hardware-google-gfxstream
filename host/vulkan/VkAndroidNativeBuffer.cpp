@@ -174,11 +174,22 @@ VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
         }
         // Create the image with extension structure about external backing.
         VkExternalMemoryImageCreateInfo extImageCi = {
-            VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO,
-            0,
+            VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, 0,
             VK_EXT_MEMORY_HANDLE_TYPE_BIT,
         };
 
+#if defined(__APPLE__)
+        //On MoltenVK, use metal objects to be able to export metal handles
+        VkExportMetalObjectCreateInfoEXT metalImageExport = {
+            VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT, nullptr,
+            VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT};
+        if (emu->instanceSupportsMoltenVK) {
+            // Also change handle type requested to mtltexture
+            extImageCi.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_KHR;
+
+            vk_insert_struct(createImageCi, metalImageExport);
+        }
+#endif
         vk_insert_struct(createImageCi, extImageCi);
 
         VkResult createResult = vk->vkCreateImage(device, &createImageCi, pAllocator, &out->image);

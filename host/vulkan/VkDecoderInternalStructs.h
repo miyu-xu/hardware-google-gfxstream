@@ -37,6 +37,8 @@
 #include "vulkan/VkFormatUtils.h"
 #include "vulkan/emulated_textures/CompressedImageInfo.h"
 
+#define DEBUG_SHADER_INFO 0 //TODO0: temp for debugging shader compilation problems..
+
 namespace gfxstream {
 namespace vk {
 
@@ -156,7 +158,7 @@ struct MemoryInfo {
     uint64_t sizeToPage = 0;
     uint64_t hostmemId = 0;
     VkDevice device = VK_NULL_HANDLE;
-    MTLTextureRef mtlTexture = nullptr;
+    MTLTextureRef mtlMemory = nullptr; //TODO0: remove?
     uint32_t memoryIndex = 0;
     // Set if the memory is backed by shared memory.
     std::optional<android::base::SharedMemory> sharedMemory;
@@ -369,6 +371,10 @@ struct DescriptorSetInfo {
 
 struct ShaderModuleInfo {
     VkDevice device;
+#if DEBUG_SHADER_INFO
+    VkShaderModuleCreateInfo createInfoShallow;
+    std::vector<uint8_t> shaderCode;
+#endif
 };
 
 struct PipelineCacheInfo {
