@@ -49,7 +49,7 @@
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
-#include <vulkan/vulkan_beta.h> // for MoltenVK portability extensions
+#include <vulkan/vulkan_beta.h>  // for MoltenVK portability extensions
 #endif
 
 namespace gfxstream {
@@ -267,7 +267,10 @@ static bool getImageFormatExternalMemorySupportInfo(VulkanDispatch* vk, VkPhysic
         outFormatProps,
     };
 
-    if (!sVkEmulation->instanceSupportsExternalMemoryCapabilities) {
+    bool deviceSupportsExternalMemory = sVkEmulation->deviceInfo.supportsExternalMemoryExport &&
+                                        sVkEmulation->deviceInfo.supportsExternalMemoryImport;
+
+    if (!deviceSupportsExternalMemory) {
         info->supportsExternalMemory = false;
         info->requiresDedicatedAllocation = false;
 
@@ -312,6 +315,10 @@ static bool getImageFormatExternalMemorySupportInfo(VulkanDispatch* vk, VkPhysic
         0,
         VK_EXT_MEMORY_HANDLE_TYPE_BIT,
     };
+    if (sVkEmulation->instanceSupportsMoltenVK) {
+        // Using a different handle type when in MoltenVK mode
+        extInfo.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_KHR;
+    }
 
     VkPhysicalDeviceImageFormatInfo2 formatInfo2 = {
         VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
@@ -347,6 +354,12 @@ static bool getImageFormatExternalMemorySupportInfo(VulkanDispatch* vk, VkPhysic
 
     if (res != VK_SUCCESS) {
         if (res == VK_ERROR_FORMAT_NOT_SUPPORTED) {
+            VK_COMMON_VERBOSE("Not Supported: %s %s %s %s",
+                                string_VkFormat(info->format),
+                                string_VkImageType(info->type),
+                                string_VkImageTiling(info->tiling),
+                                string_VkImageUsageFlagBits((VkImageUsageFlagBits)info->usageFlags));
+
             info->supported = false;
             return true;
         } else {
@@ -372,7 +385,13 @@ static bool getImageFormatExternalMemorySupportInfo(VulkanDispatch* vk, VkPhysic
     VkExternalMemoryHandleTypeFlags compatibleHandleTypes =
         outExternalProps.externalMemoryProperties.compatibleHandleTypes;
 
-    info->supportsExternalMemory = (VK_EXT_MEMORY_HANDLE_TYPE_BIT & compatibleHandleTypes) &&
+    VkExternalMemoryHandleTypeFlagBits handleTypeNeeded = VK_EXT_MEMORY_HANDLE_TYPE_BIT;
+    if (sVkEmulation->instanceSupportsMoltenVK) {
+        // Using a different handle type when in MoltenVK mode
+        handleTypeNeeded = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_KHR;
+    }
+
+    info->supportsExternalMemory = (handleTypeNeeded & compatibleHandleTypes) &&
                                    (VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT & featureFlags) &&
                                    (VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT & featureFlags);
 
@@ -550,6 +569,9 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME,
 #elif defined(__QNX__)
         VK_QNX_EXTERNAL_MEMORY_SCREEN_BUFFER_EXTENSION_NAME,
+#elif defined(__APPLE__)
+        // VK_EXT_metal_objects will be added if host MoltenVK is enabled,
+        // otherwise VK_KHR_external_memory_fd will be used
 #else
         VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
 #endif
@@ -584,17 +606,11 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         extensionsSupported(instanceExts, externalMemoryInstanceExtNames);
     bool externalSemaphoreCapabilitiesSupported =
         extensionsSupported(instanceExts, externalSemaphoreInstanceExtNames);
-    bool surfaceSupported =
-        extensionsSupported(instanceExts, surfaceInstanceExtNames);
+    bool surfaceSupported = extensionsSupported(instanceExts, surfaceInstanceExtNames);
 #if defined(__APPLE__) && defined(VK_MVK_moltenvk)
-    bool moltenVKSupported = (vk->vkGetMTLTextureMVK != nullptr) &&
+    bool moltenVKSupported = (vk->vkGetMTLTextureMVK != nullptr) && //TODO0: check aemu icd variable instead?
                              (vk->vkSetMTLTextureMVK != nullptr) &&
                              extensionsSupported(instanceExts, moltenVkInstanceExtNames);
-    if (moltenVKSupported) {
-        // We don't need both moltenVK and external memory. Disable
-        // external memory if moltenVK is supported.
-        externalMemoryCapabilitiesSupported = false;
-    }
 #endif
 
     VkInstanceCreateInfo instCi = {
@@ -603,8 +619,9 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
 
     std::unordered_set<const char*> selectedInstanceExtensionNames;
 
-    const bool debugUtilsSupported = extensionsSupported(instanceExts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
-    const bool debugUtilsRequested = false; // TODO: enable via a feature or env var?
+    const bool debugUtilsSupported =
+        extensionsSupported(instanceExts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
+    const bool debugUtilsRequested = false;  // TODO: enable via a feature or env var?
     const bool debugUtilsAvailableAndRequested = debugUtilsSupported && debugUtilsRequested;
     if (debugUtilsAvailableAndRequested) {
         selectedInstanceExtensionNames.emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -630,6 +647,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
 
 #if defined(__APPLE__) && defined(VK_MVK_moltenvk)
     if (moltenVKSupported) {
+        VK_COMMON_LOG("MoltenVK is supported, enabling Vulkan portability.");
         instCi.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
         for (auto extension : moltenVkInstanceExtNames) {
             selectedInstanceExtensionNames.emplace(extension);
@@ -637,7 +655,8 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     }
 #endif
 
-    std::vector<const char*> selectedInstanceExtensionNames_(selectedInstanceExtensionNames.begin(), selectedInstanceExtensionNames.end());
+    std::vector<const char*> selectedInstanceExtensionNames_(selectedInstanceExtensionNames.begin(),
+                                                             selectedInstanceExtensionNames.end());
     instCi.enabledExtensionCount = static_cast<uint32_t>(selectedInstanceExtensionNames_.size());
     instCi.ppEnabledExtensionNames = selectedInstanceExtensionNames_.data();
 
@@ -738,6 +757,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
 
 #if defined(__APPLE__) && defined(VK_MVK_moltenvk)
     if (sVkEmulation->instanceSupportsMoltenVK) {
+        //TODO0: remove these get/set usage
         // These functions are directly loaded from the shared molten library
         // and are not available via vkGetInstanceProcAddr
         sVkEmulation->setMTLTextureFunc = gvk->vkSetMTLTextureMVK;
@@ -750,7 +770,13 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
             VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(ABORT_REASON_OTHER,
                                                  "Cannot find vkGetMTLTextureMVK.");
         }
-        VK_COMMON_LOG("Instance supports VK_MVK_moltenvk.");
+
+        // Using metal_objects extension on MacOS when moltenVK is used.
+        externalMemoryDeviceExtNames.push_back(VK_EXT_METAL_OBJECTS_EXTENSION_NAME);
+    }
+    else {
+        // When MoltenVK is not used(e.g. SwiftShader), use memory fd extension for external memory.
+        externalMemoryDeviceExtNames.push_back(VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME);
     }
 #endif
 
@@ -770,7 +796,8 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     for (int i = 0; i < physdevCount; ++i) {
         ivk->vkGetPhysicalDeviceProperties(physdevs[i], &deviceInfos[i].physdevProps);
 
-        VK_COMMON_VERBOSE("Considering Vulkan physical device %d : %s", i, deviceInfos[i].physdevProps.deviceName);
+        VK_COMMON_VERBOSE("Considering Vulkan physical device %d : %s", i,
+                          deviceInfos[i].physdevProps.deviceName);
 
         // It's easier to figure out the staging buffer along with
         // external memories if we have the memory properties on hand.
@@ -788,7 +815,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         deviceInfos[i].supportsExternalMemoryExport = false;
         deviceInfos[i].glInteropSupported = 0;  // set later
 
-#if defined(__APPLE__) && defined(VK_MVK_moltenvk)
+#if defined(__APPLE__)
         if (moltenVKSupported && !extensionsSupported(deviceExts, moltenVkDeviceExtNames)) {
             VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(
                 ABORT_REASON_OTHER,
@@ -863,6 +890,8 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
 
             deviceInfos[i].driverVendor = driverVendor;
             deviceInfos[i].driverVersion = driverVersion;
+            VK_COMMON_VERBOSE("driverVendor: %s, driverVersion: %s", driverVendor.c_str(),
+                              driverVersion.c_str());
         }
 
         deviceInfos[i].hasSamplerYcbcrConversionExtension =
@@ -1065,7 +1094,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         selectedDeviceExtensionNames_.emplace(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
     }
 
-#if defined(__APPLE__) && defined(VK_MVK_moltenvk)
+#if defined(__APPLE__)
     if (moltenVKSupported) {
         for (auto extension : moltenVkDeviceExtNames) {
             selectedDeviceExtensionNames_.emplace(extension);
@@ -1158,17 +1187,32 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     }
     if (sVkEmulation->deviceInfo.supportsExternalMemoryExport) {
 #ifdef _WIN32
+        // Use vkGetMemoryWin32HandleKHR
         sVkEmulation->deviceInfo.getMemoryHandleFunc =
             reinterpret_cast<PFN_vkGetMemoryWin32HandleKHR>(
                 dvk->vkGetDeviceProcAddr(sVkEmulation->device, "vkGetMemoryWin32HandleKHR"));
-#else
-        sVkEmulation->deviceInfo.getMemoryHandleFunc = reinterpret_cast<PFN_vkGetMemoryFdKHR>(
-            dvk->vkGetDeviceProcAddr(sVkEmulation->device, "vkGetMemoryFdKHR"));
-#endif
         if (!sVkEmulation->deviceInfo.getMemoryHandleFunc) {
             VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(ABORT_REASON_OTHER,
-                                                 "Cannot find vkGetMemory(Fd|Win32Handle)KHR");
+                                                 "Cannot find vkGetMemoryWin32HandleKHR");
         }
+#else
+        if (sVkEmulation->instanceSupportsMoltenVK) {
+            // vkExportMetalObjectsEXT will be used directly
+            sVkEmulation->deviceInfo.getMemoryHandleFunc = nullptr;
+            if (!dvk->vkGetDeviceProcAddr(sVkEmulation->device, "vkExportMetalObjectsEXT")) {
+                VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(ABORT_REASON_OTHER,
+                                                     "Cannot find vkExportMetalObjectsEXT");
+            }
+        } else {
+            // Use vkGetMemoryFdKHR
+            sVkEmulation->deviceInfo.getMemoryHandleFunc = reinterpret_cast<PFN_vkGetMemoryFdKHR>(
+                dvk->vkGetDeviceProcAddr(sVkEmulation->device, "vkGetMemoryFdKHR"));
+            if (!sVkEmulation->deviceInfo.getMemoryHandleFunc) {
+                VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(ABORT_REASON_OTHER,
+                                                     "Cannot find vkGetMemoryFdKHR");
+            }
+        }
+#endif
     }
 
     VK_COMMON_VERBOSE("Vulkan logical device created and extension functions obtained.");
@@ -1428,24 +1472,43 @@ std::unique_ptr<gfxstream::DisplaySurface> createDisplaySurface(FBNativeWindowTy
     return std::make_unique<gfxstream::DisplaySurface>(width, height, std::move(surfaceVk));
 }
 
+#ifdef __APPLE__
+static MTLBufferRef getMtlBufferFromVkDeviceMemory(VulkanDispatch* vk, VkDeviceMemory memory) {
+    VkExportMetalBufferInfoEXT exportMetalBufferInfo = {
+        VK_STRUCTURE_TYPE_EXPORT_METAL_BUFFER_INFO_EXT, nullptr, memory, VK_NULL_HANDLE};
+    VkExportMetalObjectsInfoEXT metalObjectsInfo = {VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECTS_INFO_EXT,
+                                                    &exportMetalBufferInfo};
+    vk->vkExportMetalObjectsEXT(sVkEmulation->device, &metalObjectsInfo);
+    VK_COMMON_VERBOSE("getMtlBufferFromVkDeviceMemory returns = %p for VkMemory %p",
+                      exportMetalBufferInfo.mtlBuffer, memory);
+
+    return exportMetalBufferInfo.mtlBuffer;
+}
+
+static MTLTextureRef getMtlTextureFromVkImage(VulkanDispatch* vk, VkImage image) {
+    VkExportMetalTextureInfoEXT exportMetalTextureInfo = {
+        VK_STRUCTURE_TYPE_EXPORT_METAL_TEXTURE_INFO_EXT,
+        nullptr,
+        image,
+        VK_NULL_HANDLE,
+        VK_NULL_HANDLE,
+        VK_IMAGE_ASPECT_PLANE_0_BIT,
+        VK_NULL_HANDLE};
+    VkExportMetalObjectsInfoEXT metalObjectsInfo = {VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECTS_INFO_EXT,
+                                                    &exportMetalTextureInfo};
+    vk->vkExportMetalObjectsEXT(sVkEmulation->device, &metalObjectsInfo);
+    VK_COMMON_VERBOSE("getMtlTextureFromVkImage returns = %p for VkImage %p",
+                      exportMetalTextureInfo.mtlTexture, image);
+
+    return exportMetalTextureInfo.mtlTexture;
+}
+#endif
+
 // Precondition: sVkEmulation has valid device support info
 bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* info,
                          bool actuallyExternal, Optional<uint64_t> deviceAlignment,
                          Optional<VkBuffer> bufferForDedicatedAllocation,
                          Optional<VkImage> imageForDedicatedAllocation) {
-    VkExportMemoryAllocateInfo exportAi = {
-        .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
-        .pNext = nullptr,
-        .handleTypes = VK_EXT_MEMORY_HANDLE_TYPE_BIT,
-    };
-
-    VkMemoryDedicatedAllocateInfo dedicatedAllocInfo = {
-        .sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO,
-        .pNext = nullptr,
-        .image = VK_NULL_HANDLE,
-        .buffer = VK_NULL_HANDLE,
-    };
-
     VkMemoryAllocateInfo allocInfo = {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .pNext = nullptr,
@@ -1455,13 +1518,44 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
 
     auto allocInfoChain = vk_make_chain_iterator(&allocInfo);
 
+    VkExportMemoryAllocateInfo exportAi = {
+        .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
+        .pNext = nullptr,
+        .handleTypes = VK_EXT_MEMORY_HANDLE_TYPE_BIT,
+    };
+#ifdef __APPLE__
+    // On MoltenVK, use metal objects to export metal handles
+    VkExportMetalObjectCreateInfoEXT metalBufferExport = {
+        VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT,
+        nullptr,
+        VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT
+    };
+#endif
+
     if (sVkEmulation->deviceInfo.supportsExternalMemoryExport && actuallyExternal) {
+#ifdef __APPLE__
+        if (sVkEmulation->instanceSupportsMoltenVK) {
+            // Change handle type to metal buffers
+            exportAi.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_KHR;
+
+            // Append metal buffer export for getting metal handles for the allocation
+            vk_append_struct(&allocInfoChain, &metalBufferExport);
+        }
+#endif
+
         vk_append_struct(&allocInfoChain, &exportAi);
     }
 
+    VkMemoryDedicatedAllocateInfo dedicatedAllocInfo = {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO,
+        .pNext = nullptr,
+        .image = VK_NULL_HANDLE,
+        .buffer = VK_NULL_HANDLE,
+    };
     if (bufferForDedicatedAllocation.hasValue() || imageForDedicatedAllocation.hasValue()) {
         info->dedicatedAllocation = true;
         if (bufferForDedicatedAllocation.hasValue()) {
+            // TODO00: test this condition for moltenvk
             dedicatedAllocInfo.buffer = *bufferForDedicatedAllocation;
         }
         if (imageForDedicatedAllocation.hasValue()) {
@@ -1530,12 +1624,17 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
     if (!memoryAllocated) {
         return false;
     }
+    if (!actuallyExternal) {
+        return true;
+    }
 
-    if (!sVkEmulation->deviceInfo.supportsExternalMemoryExport || !actuallyExternal) {
+    if (!sVkEmulation->deviceInfo.supportsExternalMemoryExport) {
+        WARN("External allocation export is requested, but not supported!");
         return true;
     }
 
     VkResult exportRes = VK_SUCCESS;
+    bool validHandle = false;
 #ifdef _WIN32
     VkMemoryGetWin32HandleInfoKHR getWin32HandleInfo = {
         VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR,
@@ -1545,19 +1644,34 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
     };
     exportRes = sVkEmulation->deviceInfo.getMemoryHandleFunc(
         sVkEmulation->device, &getWin32HandleInfo, &info->externalHandle);
+    validHandle = (VK_EXT_MEMORY_HANDLE_INVALID != info->externalHandle);
 #elif !defined(__QNX__)
-    VkMemoryGetFdInfoKHR getFdInfo = {
-        VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR,
-        0,
-        info->memory,
-        VK_EXT_MEMORY_HANDLE_TYPE_BIT,
-    };
-    exportRes = sVkEmulation->deviceInfo.getMemoryHandleFunc(sVkEmulation->device, &getFdInfo,
-                                                             &info->externalHandle);
+    if (sVkEmulation->instanceSupportsMoltenVK) {
+        info->externalMetalHandle = getMtlTextureFromVkImage(vk, *imageForDedicatedAllocation);
+        validHandle = (nullptr != info->externalMetalHandle);
+        if (validHandle) {
+            if (info->externalMetalHandle) {
+                CFRetain(info->externalMetalHandle);
+            }
+            exportRes = VK_SUCCESS;
+        } else {
+            exportRes = VK_ERROR_INVALID_EXTERNAL_HANDLE;
+        }
+    } else {
+        VkMemoryGetFdInfoKHR getFdInfo = {
+            VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR,
+            0,
+            info->memory,
+            VK_EXT_MEMORY_HANDLE_TYPE_BIT,
+        };
+        exportRes = sVkEmulation->deviceInfo.getMemoryHandleFunc(sVkEmulation->device, &getFdInfo,
+                                                                &info->externalHandle);
+        validHandle = (VK_EXT_MEMORY_HANDLE_INVALID != info->externalHandle);
+    }
 #endif
 
-    if (exportRes != VK_SUCCESS || VK_EXT_MEMORY_HANDLE_INVALID == info->externalHandle) {
-        VK_COMMON_VERBOSE("allocExternalMemory: Failed to get external memory, native handle: %s", string_VkResult(exportRes));
+    if (exportRes != VK_SUCCESS || !validHandle) {
+        VK_COMMON_VERBOSE("allocExternalMemory: Failed to get external memory, result: %s", string_VkResult(exportRes));
         return false;
     }
 
@@ -1592,10 +1706,17 @@ void freeExternalMemoryLocked(VulkanDispatch* vk, VkEmulation::ExternalMemoryInf
 #endif
         info->externalHandle = VK_EXT_MEMORY_HANDLE_INVALID;
     }
+
+#if defined(__APPLE__)
+    if (info->externalMetalHandle) {
+        CFRelease(info->externalMetalHandle);
+    }
+#endif
 }
 
 bool importExternalMemory(VulkanDispatch* vk, VkDevice targetDevice,
                           const VkEmulation::ExternalMemoryInfo* info, VkDeviceMemory* out) {
+    const void* importInfoPtr = nullptr;
 #ifdef _WIN32
     VkImportMemoryWin32HandleInfoKHR importInfo = {
         VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR,
@@ -1604,23 +1725,41 @@ bool importExternalMemory(VulkanDispatch* vk, VkDevice targetDevice,
         info->externalHandle,
         0,
     };
+    importInfoPtr = &importInfo;
 #elif defined(__QNX__)
     VkImportScreenBufferInfoQNX importInfo = {
         VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX,
         NULL,
         info->externalHandle,
     };
+    importInfoPtr = &importInfo;
 #else
-    VkImportMemoryFdInfoKHR importInfo = {
+    VkImportMetalTextureInfoEXT importInfoMetalTexture = {
+        VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT,
+        0,
+        VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT,
+        nullptr,
+    };
+    VkImportMemoryFdInfoKHR importInfoFd = {
         VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
         0,
         VK_EXT_MEMORY_HANDLE_TYPE_BIT,
-        dupExternalMemory(info->externalHandle),
+        VK_EXT_MEMORY_HANDLE_INVALID,
     };
+
+    if (sVkEmulation->instanceSupportsMoltenVK) {
+        //TODO0: should also support importing buffers with VkImportMetalBufferInfoEXT?
+        importInfoMetalTexture.mtlTexture = info->externalMetalHandle;
+        importInfoPtr = &importInfoMetalTexture;
+    }
+    else {
+        importInfoFd.fd  = dupExternalMemory(info->externalHandle);
+        importInfoPtr = &importInfoFd;
+    }
 #endif
     VkMemoryAllocateInfo allocInfo = {
         VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-        &importInfo,
+        importInfoPtr,
         info->size,
         info->typeIndex,
     };
@@ -1645,6 +1784,7 @@ bool importExternalMemoryDedicatedImage(VulkanDispatch* vk, VkDevice targetDevic
         VK_NULL_HANDLE,
     };
 
+    const void *importInfoPtr = nullptr;
 #ifdef _WIN32
     VkImportMemoryWin32HandleInfoKHR importInfo = {
         VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR,
@@ -1653,23 +1793,40 @@ bool importExternalMemoryDedicatedImage(VulkanDispatch* vk, VkDevice targetDevic
         info->externalHandle,
         0,
     };
+    importInfoPtr = &importInfo;
 #elif defined(__QNX__)
     VkImportScreenBufferInfoQNX importInfo = {
         VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX,
         &dedicatedInfo,
         info->externalHandle,
     };
+    importInfoPtr = &importInfo;
 #else
-    VkImportMemoryFdInfoKHR importInfo = {
+    VkImportMetalTextureInfoEXT importInfoMetalTexture = {
+        VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT,
+        0,
+        VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT,
+        nullptr,
+    };
+    VkImportMemoryFdInfoKHR importInfoFd = {
         VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
         &dedicatedInfo,
         VK_EXT_MEMORY_HANDLE_TYPE_BIT,
-        dupExternalMemory(info->externalHandle),
+        -1,
     };
+
+    if (sVkEmulation->instanceSupportsMoltenVK) {
+        importInfoMetalTexture.mtlTexture = info->externalMetalHandle;
+        importInfoPtr = &importInfoMetalTexture;
+    }
+    else {
+        importInfoFd.fd = dupExternalMemory(info->externalHandle);
+        importInfoPtr = &importInfoFd;
+    }
 #endif
     VkMemoryAllocateInfo allocInfo = {
         VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-        &importInfo,
+        importInfoPtr,
         info->size,
         info->typeIndex,
     };
@@ -1806,19 +1963,42 @@ static uint32_t lastGoodTypeIndex(uint32_t indices) {
             return i;
         }
     }
+    ERR("Could not find memory for indices: %d!", indices);
     return 0;
 }
 
 static uint32_t lastGoodTypeIndexWithMemoryProperties(uint32_t indices,
                                                       VkMemoryPropertyFlags memoryProperty) {
+    if(!memoryProperty) {
+        return lastGoodTypeIndex(indices);
+    }
+    uint32_t secondBest = ~0;
     for (int32_t i = 31; i >= 0; --i) {
-        if ((indices & (1u << i)) &&
-            (!memoryProperty ||
-             (sVkEmulation->deviceInfo.memProps.memoryTypes[i].propertyFlags & memoryProperty))) {
+        if ((indices & (1u << i)) == 0) {
+            // Not a suitable memory index
+            continue;
+        }
+
+        const VkMemoryPropertyFlags memPropertyFlags =
+            sVkEmulation->deviceInfo.memProps.memoryTypes[i].propertyFlags;
+
+        if (memPropertyFlags == memoryProperty) {
+            // Exact match, return immediately
             return i;
         }
+
+        // Valid memory index, but keep looking for an exact match
+        const bool propertyValid = (sVkEmulation->deviceInfo.memProps.memoryTypes[i].propertyFlags & memoryProperty);
+        if (propertyValid) {
+            secondBest = i;
+        }
     }
-    return 0;
+
+    if (secondBest == ~0) {
+        ERR("Could not find memory index for indices %d, with memory properties: %s", indices, string_VkMemoryPropertyFlags(memoryProperty));
+        return 0;
+    }
+    return secondBest;
 }
 
 // pNext, sharingMode, queueFamilyIndexCount, pQueueFamilyIndices, and initialLayout won't be
@@ -1899,6 +2079,7 @@ std::unique_ptr<VkImageCreateInfo> generateColorBufferVkImageCreateInfo(VkFormat
 static bool updateExternalMemoryInfo(VK_EXT_MEMORY_HANDLE extMemHandle,
                                      const VkMemoryRequirements* pMemReqs,
                                      VkEmulation::ExternalMemoryInfo* pInfo) {
+    //TODO0: extMemHandle is invalid for moltenvk
     // Set externalHandle on the output info
     pInfo->externalHandle = extMemHandle;
     pInfo->dedicatedAllocation = true;
@@ -2001,6 +2182,7 @@ bool initializeVkColorBufferLocked(
     VkImageTiling tiling = (infoPtr->memoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
                                ? VK_IMAGE_TILING_LINEAR
                                : VK_IMAGE_TILING_OPTIMAL;
+
     std::unique_ptr<VkImageCreateInfo> imageCi = generateColorBufferVkImageCreateInfo_locked(
         vkFormat, infoPtr->width, infoPtr->height, tiling);
     // pNext will be filled later.
@@ -2019,13 +2201,16 @@ bool initializeVkColorBufferLocked(
         0,
         VK_EXT_MEMORY_HANDLE_TYPE_BIT,
     };
+    if (sVkEmulation->instanceSupportsMoltenVK) {
+        // Using a different handle type when in MoltenVK mode
+        extImageCi.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_KHR;
+    }
 
     VkExternalMemoryImageCreateInfo* extImageCiPtr = nullptr;
 
     if (extMemImport || sVkEmulation->deviceInfo.supportsExternalMemoryExport) {
         extImageCiPtr = &extImageCi;
     }
-
     imageCi->pNext = extImageCiPtr;
 
     auto vk = sVkEmulation->dvk;
@@ -2082,6 +2267,7 @@ bool initializeVkColorBufferLocked(
                         infoPtr->memoryProperty);
 
     Optional<VkImage> dedicatedImage = useDedicated ? Optional<VkImage>(infoPtr->image) : kNullopt;
+    bool alignBindingToPage = false;
     if (VK_EXT_MEMORY_HANDLE_INVALID != extMemHandle) {
         if (!updateExternalMemoryInfo(extMemHandle, &infoPtr->memReqs, &infoPtr->memory)) {
             VK_COMMON_ERROR(
@@ -2105,6 +2291,8 @@ bool initializeVkColorBufferLocked(
         }
 
         infoPtr->externalMemoryCompatible = true;
+
+        alignBindingToPage = true;
     } else {
         bool isHostVisible = infoPtr->memoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
         Optional<uint64_t> deviceAlignment =
@@ -2112,16 +2300,25 @@ bool initializeVkColorBufferLocked(
         bool allocRes = allocExternalMemory(vk, &infoPtr->memory, true /*actuallyExternal*/,
                                             deviceAlignment, kNullopt, dedicatedImage);
         if (!allocRes) {
-            VK_COMMON_VERBOSE("Failed to allocate ColorBuffer with Vulkan backing.");
+            VK_COMMON_LOG("Failed to allocate ColorBuffer with Vulkan backing.");
             return false;
         }
 
         infoPtr->externalMemoryCompatible = sVkEmulation->deviceInfo.supportsExternalMemoryExport;
+
+        alignBindingToPage = isHostVisible;
     }
 
-    infoPtr->memory.pageOffset = reinterpret_cast<uint64_t>(infoPtr->memory.mappedPtr) % kPageSize;
-    infoPtr->memory.bindOffset =
-        infoPtr->memory.pageOffset ? kPageSize - infoPtr->memory.pageOffset : 0u;
+    // TODO0: properly avoid VVL errors with non page aligned mappings, increase the allocation size?
+    if (alignBindingToPage) {
+        infoPtr->memory.pageOffset =
+            reinterpret_cast<uint64_t>(infoPtr->memory.mappedPtr) % kPageSize;
+        infoPtr->memory.bindOffset =
+            infoPtr->memory.pageOffset ? kPageSize - infoPtr->memory.pageOffset : 0u;
+    } else {
+        infoPtr->memory.pageOffset = 0;
+        infoPtr->memory.bindOffset = 0;
+    }
 
     VkResult bindImageMemoryRes = vk->vkBindImageMemory(
         sVkEmulation->device, infoPtr->image, infoPtr->memory.memory, infoPtr->memory.bindOffset);
@@ -2157,17 +2354,16 @@ bool initializeVkColorBufferLocked(
     createRes =
         vk->vkCreateImageView(sVkEmulation->device, &imageViewCi, nullptr, &infoPtr->imageView);
     if (createRes != VK_SUCCESS) {
-        VK_COMMON_VERBOSE("Failed to create Vulkan image for ColorBuffer %d, Error: %s", colorBufferHandle, string_VkResult(createRes));
+        VK_COMMON_VERBOSE("Failed to create Vulkan image view for ColorBuffer %d, Error: %s",
+                          colorBufferHandle, string_VkResult(createRes));
         return false;
     }
 
-#if defined(VK_MVK_moltenvk) && defined(__APPLE__)
+#if defined(__APPLE__)
     if (sVkEmulation->instanceSupportsMoltenVK) {
-        sVkEmulation->getMTLTextureFunc(infoPtr->image, &infoPtr->mtlTexture);
-        if (!infoPtr->mtlTexture) {
-            VK_COMMON_ERROR("Failed to get MTLTexture for Vulkan image %p.", infoPtr->image);
-        }
-
+        // Retrieve metal texture and memory for this image
+        //TODO0 remove?
+        infoPtr->mtlTexture = getMtlTextureFromVkImage(vk, infoPtr->image);
         CFRetain(infoPtr->mtlTexture);
     }
 #endif
@@ -2260,12 +2456,20 @@ std::optional<VkColorBufferMemoryExport> exportColorBufferMemory(uint32_t colorB
     }
 
 #if !defined(__QNX__)
-    ManagedDescriptor descriptor(dupExternalMemory(info->memory.externalHandle));
+    //TODO0: do not support on apple? remove metalDescriptor from VkColorBufferMemoryExport?
+    ManagedDescriptor descriptor;
+    MTLTextureRef metalHandle = info->memory.externalMetalHandle;
+    if (metalHandle) {
+        CFRetain(metalHandle);
+    } else {
+        descriptor = (dupExternalMemory(info->memory.externalHandle));
+    }
 
     info->glExported = true;
 
     return VkColorBufferMemoryExport{
         .descriptor = std::move(descriptor),
+        .metalDescriptor = metalHandle,
         .size = info->memory.size,
         .linearTiling = info->imageCreateInfoShallow.tiling == VK_IMAGE_TILING_LINEAR,
         .dedicatedAllocation = info->memory.dedicatedAllocation,
@@ -2818,7 +3022,7 @@ VK_EXT_MEMORY_HANDLE getColorBufferExtMemoryHandle(uint32_t colorBuffer) {
 }
 
 bool setColorBufferVulkanMode(uint32_t colorBuffer, uint32_t vulkanMode) {
-    if (!sVkEmulation || !sVkEmulation->live) return VK_EXT_MEMORY_HANDLE_INVALID;
+    if (!sVkEmulation || !sVkEmulation->live) return false;
 
     AutoLock lock(sVkEmulationLock);
 
@@ -2833,6 +3037,7 @@ bool setColorBufferVulkanMode(uint32_t colorBuffer, uint32_t vulkanMode) {
     return true;
 }
 
+#ifdef __APPLE__
 MTLTextureRef getColorBufferMTLTexture(uint32_t colorBuffer) {
     if (!sVkEmulation || !sVkEmulation->live) return nullptr;
 
@@ -2845,11 +3050,26 @@ MTLTextureRef getColorBufferMTLTexture(uint32_t colorBuffer) {
         return nullptr;
     }
 
-#ifdef __APPLE__
     CFRetain(infoPtr->mtlTexture);
-#endif
     return infoPtr->mtlTexture;
 }
+
+MTLTextureRef getColorBufferMetalMemoryHandle(uint32_t colorBuffer) {
+    if (!sVkEmulation || !sVkEmulation->live) return nullptr;
+
+    AutoLock lock(sVkEmulationLock);
+
+    auto infoPtr = android::base::find(sVkEmulation->colorBuffers, colorBuffer);
+
+    if (!infoPtr) {
+        // Color buffer not found; this is usually OK.
+        return nullptr;
+    }
+
+    CFRetain(infoPtr->memory.externalMetalHandle); //TODO0: move this outside?
+    return infoPtr->memory.externalMetalHandle;
+}
+#endif  // __APPLE__
 
 int32_t mapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa, uint64_t size) {
     if (!sVkEmulation || !sVkEmulation->live) return VK_ERROR_DEVICE_LOST;
@@ -2962,18 +3182,27 @@ bool setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulkanOnly, uint32
 
     res.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    // Create the image. If external memory is supported, make it external.
+    // Create the buffer. If external memory is supported, make it external.
     VkExternalMemoryBufferCreateInfo extBufferCi = {
         VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO,
         0,
         VK_EXT_MEMORY_HANDLE_TYPE_BIT,
     };
-
-    VkExternalMemoryBufferCreateInfo* extBufferCiPtr = nullptr;
+    void* extBufferCiPtr = nullptr;
     if (sVkEmulation->deviceInfo.supportsExternalMemoryImport ||
         sVkEmulation->deviceInfo.supportsExternalMemoryExport) {
         extBufferCiPtr = &extBufferCi;
     }
+
+#if defined(__APPLE__)
+    //  On MoltenVK, use metal objects to export metal handles for external memory handling
+    VkExportMetalObjectCreateInfoEXT metalBufferExport = {
+        VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT, nullptr,
+        VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT};
+    if (sVkEmulation->instanceSupportsMoltenVK) {
+        extBufferCiPtr = &metalBufferExport;
+    }
+#endif
 
     VkBufferCreateInfo bufferCi = {
         VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
