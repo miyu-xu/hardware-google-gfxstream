@@ -156,7 +156,7 @@ struct MemoryInfo {
     uint64_t sizeToPage = 0;
     uint64_t hostmemId = 0;
     VkDevice device = VK_NULL_HANDLE;
-    MTLTextureRef mtlTexture = nullptr;
+    MTLBufferRef mtlMemory = nullptr;
     uint32_t memoryIndex = 0;
     // Set if the memory is backed by shared memory.
     std::optional<android::base::SharedMemory> sharedMemory;
