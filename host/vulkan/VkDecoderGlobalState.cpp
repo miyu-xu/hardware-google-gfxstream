@@ -68,7 +68,7 @@
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
-#include <vulkan/vulkan_beta.h> // for MoltenVK portability extensions
+#include <vulkan/vulkan_beta.h>  // for MoltenVK portability extensions
 #endif
 
 #include <climits>
@@ -2103,6 +2103,27 @@ class VkDecoderGlobalState::Impl {
         const VkNativeBufferANDROID* nativeBufferANDROID =
             vk_find_struct<VkNativeBufferANDROID>(pCreateInfo);
 
+#if defined(__APPLE__)
+        VkExportMetalObjectCreateInfoEXT metalImageExportCI = {
+            VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT, nullptr,
+            VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT};
+
+        if (m_emu->instanceSupportsMoltenVK) {
+            // Replace VkExternalMemoryImageCreateInfo with metalImageExportCI on MoltenVK
+            // TODO: avoid changing the incoming chain with const_cast, always do a deep copy?
+            const VkExternalMemoryImageCreateInfo* constExternalMemCI =
+                vk_find_struct<VkExternalMemoryImageCreateInfo>(pCreateInfo);
+            if (constExternalMemCI) {
+                VkExternalMemoryImageCreateInfo* externalMemCI =
+                    const_cast<VkExternalMemoryImageCreateInfo*>(constExternalMemCI);
+
+                // Insert metalImageExportCI to the chain
+                metalImageExportCI.pNext = externalMemCI->pNext;
+                externalMemCI->pNext = &metalImageExportCI;
+            }
+        }
+#endif
+
         VkResult createRes = VK_SUCCESS;
 
         if (nativeBufferANDROID) {
@@ -2251,16 +2272,6 @@ class VkDecoderGlobalState::Impl {
 
         auto* memoryInfo = android::base::find(mMemoryInfo, memory);
         if (!memoryInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
-
-#if defined(__APPLE__) && defined(VK_MVK_moltenvk)
-        if (memoryInfo->mtlTexture) {
-            result = m_vk->vkSetMTLTextureMVK(image, memoryInfo->mtlTexture);
-            if (result != VK_SUCCESS) {
-                fprintf(stderr, "vkSetMTLTexture failed\n");
-                return VK_ERROR_OUT_OF_HOST_MEMORY;
-            }
-        }
-#endif
 
         auto* imageInfo = android::base::find(mImageInfo, image);
         if (!imageInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -4256,6 +4267,20 @@ class VkDecoderGlobalState::Impl {
         };
 #endif
 
+#if defined(__APPLE__)
+        VkImportMetalTextureInfoEXT importInfoMetalTexture = {
+            VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT,
+            0,
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            nullptr,
+        };
+        VkImportMetalBufferInfoEXT importInfoMetalBuffer = {
+            VK_STRUCTURE_TYPE_IMPORT_METAL_BUFFER_INFO_EXT,
+            0,
+            nullptr,
+        };
+#endif
+
         void* mappedPtr = nullptr;
         ManagedDescriptor externalMemoryHandle;
         if (importCbInfoPtr) {
@@ -4280,7 +4305,26 @@ class VkDecoderGlobalState::Impl {
                 }
             }
 
-            if (m_emu->instanceSupportsExternalMemoryCapabilities) {
+#if defined(__APPLE__)
+            // Use metal object extension on MoltenVK mode for color buffer import,
+            // non-moltenVK path on MacOS will use FD handles
+            if (m_emu->instanceSupportsMoltenVK) {
+                MTLBufferRef cbExtMemoryHandle =
+                    getColorBufferMetalMemoryHandle(importCbInfoPtr->colorBuffer);
+
+                if (cbExtMemoryHandle == nullptr) {
+                    fprintf(stderr,
+                            "%s: VK_ERROR_OUT_OF_DEVICE_MEMORY: "
+                            "colorBuffer 0x%x does not have Vulkan external memory backing\n",
+                            __func__, importCbInfoPtr->colorBuffer);
+                    return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+                }
+
+                importInfoMetalBuffer.mtlBuffer = cbExtMemoryHandle;
+                vk_append_struct(&structChainIter, &importInfoMetalBuffer);
+            } else
+#endif
+            if (m_emu->deviceInfo.supportsExternalMemoryImport) {
                 VK_EXT_MEMORY_HANDLE cbExtMemoryHandle =
                     getColorBufferExtMemoryHandle(importCbInfoPtr->colorBuffer);
 
@@ -4318,7 +4362,25 @@ class VkDecoderGlobalState::Impl {
 
             shouldUseDedicatedAllocInfo &= bufferMemoryUsesDedicatedAlloc;
 
-            if (m_emu->instanceSupportsExternalMemoryCapabilities) {
+#ifdef __APPLE__
+            if (m_emu->instanceSupportsMoltenVK) {
+                MTLBufferRef bufferMetalMemoryHandle =
+                    getBufferMetalMemoryHandle(importBufferInfoPtr->buffer);
+
+                if (bufferMetalMemoryHandle == nullptr) {
+                    fprintf(stderr,
+                            "%s: VK_ERROR_OUT_OF_DEVICE_MEMORY: "
+                            "buffer 0x%x does not have Vulkan external memory "
+                            "backing\n",
+                            __func__, importBufferInfoPtr->buffer);
+                    return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+                }
+
+                importInfoMetalBuffer.mtlBuffer = bufferMetalMemoryHandle;
+                vk_append_struct(&structChainIter, &importInfoMetalBuffer);
+            } else
+#endif
+            if (m_emu->deviceInfo.supportsExternalMemoryImport) {
                 VK_EXT_MEMORY_HANDLE bufferExtMemoryHandle =
                     getBufferExtMemoryHandle(importBufferInfoPtr->buffer);
 
@@ -4519,9 +4581,12 @@ class VkDecoderGlobalState::Impl {
         memoryInfo.size = localAllocInfo.allocationSize;
         memoryInfo.device = device;
         memoryInfo.memoryIndex = localAllocInfo.memoryTypeIndex;
-#if defined(__APPLE__) && defined(VK_MVK_moltenvk)
-        if (importCbInfoPtr && m_emu->instanceSupportsMoltenVK) {
-            memoryInfo.mtlTexture = getColorBufferMTLTexture(importCbInfoPtr->colorBuffer);
+#if defined(__APPLE__)
+        if (m_emu->instanceSupportsMoltenVK) {
+            memoryInfo.mtlMemory = importInfoMetalBuffer.mtlBuffer;
+            if (memoryInfo.mtlMemory) {
+                CFRetain(memoryInfo.mtlMemory);
+            }
         }
 #endif
 
@@ -4542,8 +4607,6 @@ class VkDecoderGlobalState::Impl {
             memoryInfo.caching = MAP_CACHE_WC;
         }
 
-        VkInstance* instance = deviceToInstanceLocked(device);
-        InstanceInfo* instanceInfo = android::base::find(mInstanceInfo, *instance);
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
         if (!deviceInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
 
@@ -4594,9 +4657,9 @@ class VkDecoderGlobalState::Impl {
         if (!info) return;  // Invalid usage.
 
 #ifdef __APPLE__
-        if (info->mtlTexture) {
-            CFRelease(info->mtlTexture);
-            info->mtlTexture = nullptr;
+        if (info->mtlMemory) {
+            CFRelease(info->mtlMemory);
+            info->mtlMemory = nullptr;
         }
 #endif
 
@@ -6757,7 +6820,7 @@ class VkDecoderGlobalState::Impl {
     void set_boxed_non_dispatchable_##type(type boxed, type underlying) {                         \
         DispatchableHandleInfo<uint64_t> item;                                                    \
         item.underlying = (uint64_t)underlying;                                                   \
-        sBoxedHandleManager.update((uint64_t)boxed, item, Tag_##type);                          \
+        sBoxedHandleManager.update((uint64_t)boxed, item, Tag_##type);                            \
     }                                                                                             \
     type unboxed_to_boxed_non_dispatchable_##type(type unboxed) {                                 \
         AutoLock lock(sBoxedHandleManager.lock);                                                  \
