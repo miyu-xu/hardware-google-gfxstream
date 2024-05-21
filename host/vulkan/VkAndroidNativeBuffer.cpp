@@ -168,7 +168,7 @@ VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
         }
         vk_struct_chain_remove(nativeBufferAndroid, &createImageCi);
 
-        // VkBindImageMemorySwapchainInfoKHR should also not be passed to image creation
+        // VkBindImageMemorySwapchainInfoKHR should not be passed to image creation
         auto* bindSwapchainInfo = vk_find_struct<VkBindImageMemorySwapchainInfoKHR>(&createImageCi);
         vk_struct_chain_remove(bindSwapchainInfo, &createImageCi);
 
@@ -178,10 +178,31 @@ VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
         }
         // Create the image with extension structure about external backing.
         VkExternalMemoryImageCreateInfo extImageCi = {
-            VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO,
-            0,
+            VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, 0,
             VK_EXT_MEMORY_HANDLE_TYPE_BIT,
         };
+
+#if defined(__APPLE__)
+        VkImportMetalTextureInfoEXT metalImageImport = {
+            VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT};
+
+        if (emu->instanceSupportsMoltenVK) {
+            // Change handle type requested to mtltexture
+            extImageCi.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_KHR;
+
+            if (out->colorBufferHandle) {
+                auto mtlTexture = getColorBufferMTLTexture(out->colorBufferHandle);
+                INFO("*memoryInfo->boundColorBuffer = %d, mtlTexture = %p", out->colorBufferHandle,
+                    mtlTexture);
+
+                metalImageImport.plane = VK_IMAGE_ASPECT_PLANE_0_BIT;
+                metalImageImport.mtlTexture = mtlTexture;
+
+                // Insert metalImageImport to the chain
+                vk_insert_struct(createImageCi, metalImageImport);
+            }
+        }
+#endif
 
         vk_insert_struct(createImageCi, extImageCi);
 
@@ -348,7 +369,6 @@ VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
             teardownAndroidNativeBufferImage(vk, out);
             return VK_ERROR_OUT_OF_HOST_MEMORY;
         }
-
         if (VK_SUCCESS != vk->vkMapMemory(device, out->stagingMemory, 0, VK_WHOLE_SIZE, 0,
                                           (void**)&out->mappedStagingPtr)) {
             VK_ANB_ERR(

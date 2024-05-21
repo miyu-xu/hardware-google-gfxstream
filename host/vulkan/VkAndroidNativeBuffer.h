@@ -110,7 +110,7 @@ struct AndroidNativeBufferInfo {
     // mode (reflected in this struct's |sharingMode| field),
     // this part doesn't really matter.
     bool everSynced = false;
-    uint32_t lastUsedQueueFamilyIndex;
+    uint32_t lastUsedQueueFamilyIndex = ~0;
 
     // On first acquire, we might use a different queue family
     // to initially set the semaphore/fence to be signaled.
