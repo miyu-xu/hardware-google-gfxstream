@@ -183,6 +183,28 @@ VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
             VK_EXT_MEMORY_HANDLE_TYPE_BIT,
         };
 
+#if defined(__APPLE__)
+        VkImportMetalTextureInfoEXT metalImageImport = {
+            VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT};
+
+        if (emu->instanceSupportsMoltenVK) {
+            // Change handle type requested to mtltexture
+            extImageCi.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_KHR;
+
+            if (out->colorBufferHandle) {
+                auto mtlTexture = getColorBufferMTLTexture(out->colorBufferHandle);
+                INFO("*memoryInfo->boundColorBuffer = %d, mtlTexture = %p", out->colorBufferHandle,
+                    mtlTexture);
+
+                metalImageImport.plane = VK_IMAGE_ASPECT_PLANE_0_BIT;
+                metalImageImport.mtlTexture = mtlTexture;
+
+                // Insert metalImageImport to the chain
+                vk_insert_struct(createImageCi, metalImageImport);
+            }
+        }
+#endif
+
         vk_insert_struct(createImageCi, extImageCi);
 
         VkResult createResult = vk->vkCreateImage(device, &createImageCi, pAllocator, &out->image);
