@@ -52,6 +52,24 @@
       "parentUuid": "a6b10acf_1a762d38",
       "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1a8f460_a48a48bb",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 0,
+      "message": "My understanding was that this was used for populating `VkAndroidHardwareBufferPropertiesANDROID` via `vkGetAndroidHardwareBufferPropertiesANDROID()`.\n\nThen, applications in the guest take the `format` and put it in the `VkImageCreateInfo` and take the `externalFormat` and put it in the `VkExternalFormatANDROID` (which is chained to the `VkImageCreateInfo::pNext`) for use with `vkCreateImage()`.\n\nIIUC, the `VkExternalFormatANDROID`/`externalFormat` is only used within the guest and is never sent to the host. A quick search for `VkExternalFormatANDROID` in `hardware/google/gfxstream/host` seems to confirm this which means old-guest plus new-host should be okay.",
+      "parentUuid": "a6b10acf_1a762d38",
+      "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

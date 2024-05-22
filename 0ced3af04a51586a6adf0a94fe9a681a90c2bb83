@@ -54,6 +54,202 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "81a42b9c_5aafaacf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "Nice!",
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "175bb037_0def5332",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "```suggestion\n                ahbFormatProps-\u003eexternalFormat \u003d DRM_FORMAT_ABGR8888;\n```\n\nNote: the AHB formats generally read kind of \"naturally\" in low to high bytes but DRM formats are the reverse. See the comment on rgba for example:\n\n```\n#define DRM_FORMAT_ABGR8888    fourcc_code(\u0027A\u0027, \u0027B\u0027, \u00272\u0027, \u00274\u0027) /* [31:0] A:B:G:R 8:8:8:8 little endian */\n```",
+      "range": {
+        "startLine": 81,
+        "startChar": 49,
+        "endLine": 81,
+        "endChar": 68
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2e2d844_ef35c68f",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "```suggestion\n                ahbFormatProps-\u003eexternalFormat \u003d DRM_FORMAT_XBGR8888;\n```",
+      "range": {
+        "startLine": 85,
+        "startChar": 49,
+        "endLine": 85,
+        "endChar": 68
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7aafff7a_05d1fe2a",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "```suggestion\n                ahbFormatProps-\u003eexternalFormat \u003d DRM_FORMAT_BGR888;\n```",
+      "range": {
+        "startLine": 89,
+        "startChar": 49,
+        "endLine": 89,
+        "endChar": 66
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d778735_1a0a2c11",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "NOTE: Despite the other comments, don\u0027t change this one! This one is correct as is. IIUC, this named this way for historical reasons.",
+      "range": {
+        "startLine": 91,
+        "startChar": 12,
+        "endLine": 93,
+        "endChar": 67
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8d14b9f_2edf34ff",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "```suggestion\n                ahbFormatProps-\u003eexternalFormat \u003d DRM_FORMAT_ABGR16161616F;\n```",
+      "range": {
+        "startLine": 97,
+        "startChar": 49,
+        "endLine": 97,
+        "endChar": 73
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "690954c6_815e20a4",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+              "range": {
+                "startLine": 97,
+                "startChar": 0,
+                "endLine": 98,
+                "endChar": 0
+              },
+              "replacement": "                ahbFormatProps-\u003eexternalFormat \u003d DRM_FORMAT_ABGR16161616F;\n"
+            }
+          ]
+        }
+      ],
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ede5829_59d3fac5",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "Is this needed? I see we have `#include \u003clog/log.h\u003e` on line 37",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 25
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4fb83b5a_194e68b4",
+        "filename": "guest/vulkan_enc/ResourceTracker.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 778,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-05-22T10:19:53Z",
+      "side": 1,
+      "message": "optional drive by comment: maybe just make this `uint32_t` to be consistent with the other DRM format handling.",
+      "range": {
+        "startLine": 778,
+        "startChar": 8,
+        "endLine": 778,
+        "endChar": 16
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "86a52dd6_6cbba51b",
