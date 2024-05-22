@@ -94,6 +94,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f971f85_89d2780a",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-05-22T11:36:00Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "175bb037_0def5332",
+      "range": {
+        "startLine": 81,
+        "startChar": 49,
+        "endLine": 81,
+        "endChar": 68
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b2e2d844_ef35c68f",
@@ -117,6 +141,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "893486cf_8ceba223",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-05-22T11:36:00Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "b2e2d844_ef35c68f",
+      "range": {
+        "startLine": 85,
+        "startChar": 49,
+        "endLine": 85,
+        "endChar": 68
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7aafff7a_05d1fe2a",
@@ -130,6 +178,30 @@
       "writtenOn": "2024-05-22T10:19:53Z",
       "side": 1,
       "message": "```suggestion\n                ahbFormatProps-\u003eexternalFormat \u003d DRM_FORMAT_BGR888;\n```",
+      "range": {
+        "startLine": 89,
+        "startChar": 49,
+        "endLine": 89,
+        "endChar": 66
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "36bfaa9c_b9c643e1",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-05-22T11:36:00Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "7aafff7a_05d1fe2a",
       "range": {
         "startLine": 89,
         "startChar": 49,
@@ -204,6 +276,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "46a691b4_03c91d04",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-05-22T11:36:00Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "e8d14b9f_2edf34ff",
+      "range": {
+        "startLine": 97,
+        "startChar": 49,
+        "endLine": 97,
+        "endChar": 73
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6ede5829_59d3fac5",
@@ -217,6 +313,30 @@
       "writtenOn": "2024-05-22T10:19:53Z",
       "side": 1,
       "message": "Is this needed? I see we have `#include \u003clog/log.h\u003e` on line 37",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 25
+      },
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72a4fff9_6517ba66",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-05-22T11:36:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ede5829_59d3fac5",
       "range": {
         "startLine": 30,
         "startChar": 0,
