@@ -34,6 +34,24 @@
       "parentUuid": "8b531504_a45b349e",
       "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19678122_7ef4df33",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-05-22T10:11:32Z",
+      "side": 0,
+      "message": "The consideration here, which I am also rather unsure about, is whether we can have some level of assurance that the path back (meaning host-\u003eguest) will be okay since we still seem to be using android formats on the way in, I believe.",
+      "parentUuid": "a6b10acf_1a762d38",
+      "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
