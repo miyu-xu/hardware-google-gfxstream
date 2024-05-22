@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "507ae6e7_cb77bd37",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-22T09:47:18Z",
+      "side": 1,
+      "message": "Ones with `external_format_resolve` and `ahb_external_format_resolve` would be good, e.g. dEQP-VK.api.external.memory.android_hardware_buffer.external_format_resolve.*",
+      "parentUuid": "58d9c800_6e997257",
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "86a52dd6_6cbba51b",
         "filename": "guest/vulkan_enc/vk_format_info.h",
         "patchSetId": 1

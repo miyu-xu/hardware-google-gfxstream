@@ -16,6 +16,24 @@
       "message": "@yahan@google.com, @natsu@google.com, when using the new version of the emulator on old system images, which won\u0027t have this externalFormat change, things may fail in various ways, right? Should we add some kind of flags or preconditions for this behavior change, to keep supporting old images?",
       "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a6b10acf_1a762d38",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-22T09:47:18Z",
+      "side": 0,
+      "message": "Thinking about this again, it might not be a big issue as the host side is not that much involved and all is done over Vulkan, but still would be good to hear your thoughts.",
+      "parentUuid": "8b531504_a45b349e",
+      "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
