@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93e886ec_60a48857",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-22T09:24:30Z",
+      "side": 1,
+      "message": "I suggest also running some external format related dEQP tests on top of this to ensure everything is working as expected",
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86a52dd6_6cbba51b",
+        "filename": "guest/vulkan_enc/vk_format_info.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-22T09:24:30Z",
+      "side": 1,
+      "message": "This TODO note can now be removed, right?",
+      "revId": "0ced3af04a51586a6adf0a94fe9a681a90c2bb83",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
