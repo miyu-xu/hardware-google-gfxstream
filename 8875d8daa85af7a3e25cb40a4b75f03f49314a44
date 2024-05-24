@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da5a83ce_5af43d29",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-24T20:06:09Z",
+      "side": 1,
+      "message": "nit: sort the include? Or just git clang-format",
+      "range": {
+        "startLine": 18,
+        "startChar": 10,
+        "endLine": 18,
+        "endChar": 16
+      },
+      "revId": "8875d8daa85af7a3e25cb40a4b75f03f49314a44",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
