@@ -70,6 +70,24 @@
       "parentUuid": "a6b10acf_1a762d38",
       "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a646028c_e8890f8a",
+        "filename": "guest/vulkan_enc/AndroidHardwareBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-05-24T13:41:59Z",
+      "side": 0,
+      "message": "Acknowledged",
+      "parentUuid": "c1a8f460_a48a48bb",
+      "revId": "3eaf77cde099ec52f2f8caeae8511df9c57bf29e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
