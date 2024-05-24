@@ -86,7 +86,8 @@ TEST_P(GfxstreamEnd2EndVkSnapshotBufferTest, BufferContent) {
     // Vertex buffer
     const vkhpp::BufferCreateInfo vertexBufferCreateInfo = {
         .size = static_cast<VkDeviceSize>(kSize),
-        .usage = vkhpp::BufferUsageFlagBits::eVertexBuffer,
+        .usage =
+            vkhpp::BufferUsageFlagBits::eVertexBuffer | vkhpp::BufferUsageFlagBits::eTransferDst,
         .sharingMode = vkhpp::SharingMode::eExclusive,
     };
     auto vertexBuffer = device->createBufferUnique(vertexBufferCreateInfo).value;

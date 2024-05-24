@@ -1906,8 +1906,11 @@ class VkDecoderGlobalState::Impl {
         VkBufferCreateInfo localCreateInfo;
         if (snapshotsEnabled()) {
             localCreateInfo = *pCreateInfo;
-            localCreateInfo.usage |=
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+            if (localCreateInfo.usage & VK_BUFFER_USAGE_TRANSFER_SRC_BIT ||
+                localCreateInfo.usage & VK_BUFFER_USAGE_TRANSFER_DST_BIT) {
+                localCreateInfo.usage |=
+                    VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+            }
             pCreateInfo = &localCreateInfo;
         }
 
@@ -1917,6 +1920,7 @@ class VkDecoderGlobalState::Impl {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto& bufInfo = mBufferInfo[*pBuffer];
             bufInfo.device = device;
+            bufInfo.usage = pCreateInfo->usage;
             bufInfo.size = pCreateInfo->size;
             *pBuffer = new_boxed_non_dispatchable_VkBuffer(*pBuffer);
         }
