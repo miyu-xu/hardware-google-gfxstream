@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61025480_41fa2017",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-29T20:25:08Z",
+      "side": 1,
+      "message": "why should Android build mesa?",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3711921_5c46357d",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-29T20:25:08Z",
+      "side": 1,
+      "message": "I would suggest to replace it with GFXSTREAM_LOG and define it differently for Android and mesa build.",
+      "range": {
+        "startLine": 499,
+        "startChar": 8,
+        "endLine": 499,
+        "endChar": 17
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
