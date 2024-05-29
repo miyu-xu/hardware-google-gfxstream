@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fac89582_a0be2cbe",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-05-29T21:41:20Z",
+      "side": 1,
+      "message": "`libgfxstream_vulkan.so` (gfxstream Vulkan) already has a dependency on Mesa code.\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/guest/vulkan_enc/Android.bp#137\n\nOne trivial reason is the function table.  Without using the Mesa way of generating entrypoints, we would need separate function tables (aosp/3066068 did this).  I do think one function table is better, since it\u0027s ~10K less LoC, and maintaining two different entry points would be hard to test/maintain.  \n\nAlso, goto.google.com/gfxstream-upstream-mesa does have an explicit goal of moving gfxstream vulkan guest in Mesa.  To make that process easier, we have to follow Mesa conventions whenever feasible since that\u0027s what Mesa developers often expect.",
+      "parentUuid": "61025480_41fa2017",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d3711921_5c46357d",
         "filename": "guest/vulkan_enc/ResourceTracker.cpp",
         "patchSetId": 6
@@ -37,6 +61,30 @@
       "writtenOn": "2024-05-29T20:25:08Z",
       "side": 1,
       "message": "I would suggest to replace it with GFXSTREAM_LOG and define it differently for Android and mesa build.",
+      "range": {
+        "startLine": 499,
+        "startChar": 8,
+        "endLine": 499,
+        "endChar": 17
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f55a5b9_8224274c",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-05-29T21:41:20Z",
+      "side": 1,
+      "message": "Just FYI, Mesa does call into `ALOGE(..)` under the hood:\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/guest/mesa/src/util/log.c#284\n\nWhy Mesa `mesa_log()` over `gfxstream_log` (at-least guest side)?  Since we want move gfxstream VK into Mesa for Linux/Fuchsia reasons, and `mesa_log(.)` is preferred method in that code base.",
+      "parentUuid": "d3711921_5c46357d",
       "range": {
         "startLine": 499,
         "startChar": 8,
