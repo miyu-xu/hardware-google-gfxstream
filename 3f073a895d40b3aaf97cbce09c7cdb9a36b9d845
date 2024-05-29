@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cb078af_87ce13dc",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 3774,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-05-29T19:34:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f4ca1bf_dd4bd1b1",
+      "revId": "3f073a895d40b3aaf97cbce09c7cdb9a36b9d845",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "579c519a_8c69c653",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-05-29T19:25:57Z",
       "side": 1,
       "message": "Should this be tracked with a buganizer bug?",
+      "revId": "3f073a895d40b3aaf97cbce09c7cdb9a36b9d845",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1b3553b_b487642b",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4117,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-05-29T19:34:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "579c519a_8c69c653",
       "revId": "3f073a895d40b3aaf97cbce09c7cdb9a36b9d845",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
