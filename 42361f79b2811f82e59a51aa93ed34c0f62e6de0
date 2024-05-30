@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fa1c4bca_2a498bfd",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-30T21:59:52Z",
+      "side": 1,
+      "message": "We did agree to upstream gfxstream into mesa, but I don\u0027t remember we agreed on adding dependencies from gfxstream to mesa (mesa to gfxstream is OK). I would suggest to keep them decoupled as much as possible. For Android guest I don\u0027t see the benefit of introducing extra dependencies. I am OK with adding some adapter code between gfxstream and mesa, but we will need to be able to turn it on and off easily depending on platforms.\n\nRegarding making it easieer to upstream gfxstream into mesa, could we have a list of their requirements? It is difficult to discuss without a clear requirement document.",
+      "parentUuid": "fac89582_a0be2cbe",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d3711921_5c46357d",
         "filename": "guest/vulkan_enc/ResourceTracker.cpp",
         "patchSetId": 6
