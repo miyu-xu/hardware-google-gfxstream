@@ -752,7 +752,8 @@ class PipeVirglRenderer {
                       uint32_t context_init) {
         std::string contextName(name, nlen);
 
-        stream_renderer_debug("ctxid: %u len: %u name: %s", ctx_id, nlen, contextName.c_str());
+        // stream_renderer_debug("ctxid: %u len: %u name: %s", ctx_id, nlen, contextName.c_str());
+        stream_renderer_info("ctxid: %u len: %u name: %s context_init=%u", ctx_id, nlen, contextName.c_str(), context_init);
         auto ops = ensureAndGetServiceOps();
         auto hostPipe = ops->guest_open_with_flags(reinterpret_cast<GoldfishHwPipe*>(ctx_id),
                                                    0x1 /* is virtio */);
@@ -931,6 +932,7 @@ class PipeVirglRenderer {
         }
 
         DECODE(header, gfxstream::gfxstreamHeader, buffer);
+        stream_renderer_error("header opCode=0x%X", header.opCode);
         switch (header.opCode) {
             case GFXSTREAM_CONTEXT_CREATE:
             case GFXSTREAM_CONTEXT_PING:
@@ -1483,7 +1485,7 @@ class PipeVirglRenderer {
                 *max_size = sizeof(struct gfxstream::composerCapset);
                 break;
             default:
-                stream_renderer_error("Incorrect capability set specified");
+                stream_renderer_error("Incorrect capability set specified (%u)", set);
         }
     }
 
@@ -1893,9 +1895,11 @@ class PipeVirglRenderer {
 
         if (linearSize) linear = malloc(linearSize);
 
-        entry.iov = (iovec*)malloc(sizeof(*iov) * num_iovs);
         entry.numIovs = num_iovs;
-        memcpy(entry.iov, iov, num_iovs * sizeof(*iov));
+        entry.iov = (iovec*)malloc(sizeof(*iov) * num_iovs);
+        if (entry.numIovs > 0) {
+            memcpy(entry.iov, iov, num_iovs * sizeof(*iov));
+        }
         entry.linear = linear;
         entry.linearSize = linearSize;
     }
