@@ -98,6 +98,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "24fe8653_65c38d7e",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-05-31T23:01:05Z",
+      "side": 1,
+      "message": "I think there is one point that we did not have an agreement, that is how coupled/decoupled we want gfxstream to be. But that would be a topic too big for this commit. So let\u0027s modify the name here, and have a separate doc to discuss it.",
+      "parentUuid": "d013d932_be0b3a25",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d3711921_5c46357d",
         "filename": "guest/vulkan_enc/ResourceTracker.cpp",
         "patchSetId": 6
