@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d013d932_be0b3a25",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-05-31T16:05:04Z",
+      "side": 1,
+      "message": "\u003e on adding dependencies from gfxstream to mesa (mesa to gfxstream is OK)\n\n`libmesa_util_gfxstream.a` is already a dependency of `libvulkan_enc.a`, so the public shared library `libgfxstream_vulkan.so` would qualify as \"Mesa common code to gfxstream\".\n\nI think what you mean is what you don\u0027t Mesa common code to leak into *core gfxstream vulkan guest*, where *core gfxstream vulkan guest* is somewhat fuzzily defined (since at the static library level, the dependencies to Mesa common code static libs exist).\n\nThere are two scenarios regarding this.\n\n1) gfxstream upstream attempt to Mesa succeeds.  Then there\u0027s not much of a problem using `mesa_log` -- every other Mesa Vulkan driver uses it.  I actually think it\u0027s *better* if you use `mesa_log`, since Fuchsia/Linux have to include\n`gfxstream/guest/fuchsia/cutils/log.h` internally so they can use `ALOGE(..)`.  In fact, if you take a look at Fuchsia\u0027s Mesa fork:\n\nhttps://fuchsia.googlesource.com/third_party/mesa/+/refs/heads/main/src/util/log.c#102\n\nThey use `mesa_log` to (with Lavapipe, ANV Fuchsia), and the implementation is exactly the same as Fuchsia\u0027s `ALOGE` implementation in gfxstream.  So the Mesa model of all drivers using a single logging function has the potential to de-dup logging.\n\n2) gfxstream upstream fails.  Then all of the code in `gfxstream/guest/mesa` could be considered technical debt, and further Mesa-ification wouldn\u0027t add much value.  \n\nHowever, for the particular case of `mesa_log`, I think we can just keep that small particular function around, remain it `gfxstream_guest_log` and delete the parts of Mesa we don\u0027t need.  We would just copy the implementation and call it `gfxstream_guest_log` or whatever.\n\nBut I am aiming for the optimistic scenario (1), so using `mesa_log(..)` here.  I agree with you further Mesa-ificiation should probably wait until we are actually in-tree.  For example, transitioning `goldfish_\u003cVK_TYPE\u003e` to `gfxstream_vk_\u003cTYPE\u003e` (they both duplicate each other) is a more significant refactor and may make sense at a later date.\n\n\u003e Regarding making it easieer to upstream gfxstream into mesa, could we have a list of their requirements?\n\nSure, I can write a separate doc about this.  \n\nFor the purposes of this discussions, the rule of thumb is *use Mesa common code whenever reasonable*.  There are cases where it isn\u0027t: transitioning `std::vector` to `u_dynarray` would be a regression.\n\nFor cross-platform C-like APIs, I do think the rule of thumb applies.  The implementations of `mesa_log(..)` and `gfxstream_guest_log(..)` should be exactly the same -- the only question is the naming, and to which internal static library it belongs.",
+      "parentUuid": "fa1c4bca_2a498bfd",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d3711921_5c46357d",
         "filename": "guest/vulkan_enc/ResourceTracker.cpp",
         "patchSetId": 6
