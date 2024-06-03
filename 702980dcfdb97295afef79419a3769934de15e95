@@ -16,6 +16,58 @@
       "message": "Friendly ping for review?",
       "revId": "702980dcfdb97295afef79419a3769934de15e95",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3230f2a7_da9384cd",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotBufferTests.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-03T18:46:13Z",
+      "side": 1,
+      "message": "We use a host visible vertex buffer here, so maybe we should not use the eTransferDst bit and the staging buffers here to better test the path via memory object loading and binding instead, which is quite common? Otherwise, that can be a separate test, but for correctness, we should also add src bit here since we use the buffer in copyBuffer for the readback operation below. We probably need some buffer copy compute shaders to be able to improve the test coverage here.",
+      "fixSuggestions": [
+        {
+          "fixId": "cebe87de_a49502cd",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "common/end2end/GfxstreamEnd2EndVkSnapshotBufferTests.cpp",
+              "range": {
+                "startLine": 90,
+                "startChar": 0,
+                "endLine": 91,
+                "endChar": 0
+              },
+              "replacement": "            vkhpp::BufferUsageFlagBits::eVertexBuffer,\n"
+            }
+          ]
+        }
+      ],
+      "revId": "702980dcfdb97295afef79419a3769934de15e95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "742cee48_87428552",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1909,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-03T18:46:13Z",
+      "side": 1,
+      "message": "Is there a reason we need dst bit for buffers? Can\u0027t we always depend on the memory objects and binding during the load time? If adding src bit only would improve the situation for Chrome\u0027s stability, I would prefer adding it unconditionally here to be able to save the data and avoid different behavior based on the buffer properties.",
+      "revId": "702980dcfdb97295afef79419a3769934de15e95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
