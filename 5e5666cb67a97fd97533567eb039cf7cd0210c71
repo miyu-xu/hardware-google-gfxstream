@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9298a30e_0714324b",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 755,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-03T20:30:32Z",
+      "side": 1,
+      "message": "nit: remove",
+      "range": {
+        "startLine": 755,
+        "startChar": 0,
+        "endLine": 755,
+        "endChar": 98
+      },
+      "revId": "5e5666cb67a97fd97533567eb039cf7cd0210c71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
