@@ -146,6 +146,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4070e8d8_18c608a4",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-03T21:40:50Z",
+      "side": 1,
+      "message": "I would suggest to do it the other way. Once you start using `mesa_log` people will follow and add more mesa dependencies. Then it becomes difficult to clean up.\n\nYou could add a\n```\n#ifdef VK_USE_PLATFORM_ANDROID_KHR\n#define gfxstream_guest_log ALOG\n#else\n#define gfxstream_guest_log mesa_log\n#endif\n```\ninto a header (for example gfxstream_vk_private.h or vk_util.h), then you can reduce the reference to mesa in Android build and can skip dependencies on libmesa_util_c11_gfxstream. If I am reading it correctly, libmesa_util_c11_gfxstream seems to bring in quite some header files (including directX headers), which shouldn\u0027t be part of Android build.\n\nOr we can talk about it in tomorrow\u0027s meeting.",
+      "parentUuid": "8b91219b_813e0aed",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d3711921_5c46357d",
         "filename": "guest/vulkan_enc/ResourceTracker.cpp",
         "patchSetId": 6
