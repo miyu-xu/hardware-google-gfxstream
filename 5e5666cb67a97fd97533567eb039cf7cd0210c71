@@ -22,6 +22,30 @@
       },
       "revId": "5e5666cb67a97fd97533567eb039cf7cd0210c71",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c9dad55_4bfc0a48",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 755,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-06-03T20:32:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9298a30e_0714324b",
+      "range": {
+        "startLine": 755,
+        "startChar": 0,
+        "endLine": 755,
+        "endChar": 98
+      },
+      "revId": "5e5666cb67a97fd97533567eb039cf7cd0210c71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
