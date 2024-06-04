@@ -170,6 +170,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "42c83bf9_1afbf948",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-04T16:17:16Z",
+      "side": 1,
+      "message": "\u003e Once you start using mesa_log people will follow and add more mesa dependencies. \n\nI wrote the design doc here:\n\ngoto.google.com/gfxstream-vk-landing-mesa\n\nMy preference is for landing this, since the current design does use Mesa dependencies and doesn\u0027t consider it much of a problem (if up-streamed of-course, which is a Q3 goal).  Curious about other designs :-)  \n\n\u003e reduce the reference to mesa in Android build and can skip dependencies on libmesa_util_c11_gfxstream\n\n`libmesa_util_gfxstream` + `libmesa_util_c11_gfxstream` are currently built when building `libvulkan_enc.a` + `vulkan.ranchu` (the main Vulkan libs).  \n\nSo you won\u0027t save anything at compile-time due to this.  Maybe you can minimize *link-time*, but I wouldn\u0027t worry about that level of optimization too much  just yet.  AOSP has many unnecessary compile-time deps and most people generally don\u0027t care.  For example, the `CommandBufferStagingTests` target in this CL isn\u0027t even used and we can probably delete it :-)\n\nWe have landed build-time optimizations with Mesa in the past:\n\nhttps://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26574\n\nWe can always build-time/link-time optimize later after we\u0027re upstream.\n\n\u003e If I am reading it correctly, libmesa_util_c11_gfxstream seems to bring in quite some header files (including directX headers\n\nThere is no DirectX code/headers built.  It\u0027s in the `mesa/include` src, but it\u0027s not built.",
+      "parentUuid": "4070e8d8_18c608a4",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d3711921_5c46357d",
         "filename": "guest/vulkan_enc/ResourceTracker.cpp",
         "patchSetId": 6
