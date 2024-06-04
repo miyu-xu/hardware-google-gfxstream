@@ -53,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1fa7d7e_043417d9",
+        "filename": "common/end2end/GfxstreamEnd2EndVkSnapshotBufferTests.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-04T22:24:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3230f2a7_da9384cd",
+      "revId": "702980dcfdb97295afef79419a3769934de15e95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "742cee48_87428552",
@@ -84,6 +102,24 @@
       "side": 1,
       "message": "Adding it unconditionally or not adding it will both fail. (They fail differently, though.) The only situation that works is to add it for non-uniform buffers and not add it for uniform buffers, and I don\u0027t really know why (neither validation layer nor logcat tells me anything useful).\n\n(For some reason, all uniform buffers come with no transfer bits.)\n\nIf I add it unconditionally, it crashes chrome after 10~20 seconds with no complaints from validation layer. If I do not add anything, snapshot seems to fail to capture some buffer content.",
       "parentUuid": "742cee48_87428552",
+      "revId": "702980dcfdb97295afef79419a3769934de15e95",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5480fe91_ce22f4a2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1909,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-04T22:24:22Z",
+      "side": 1,
+      "message": "I did more checks. It creates device local memories for vertex buffers so we will need to add transfer src for those to copy them out.\n\nThose without transfer_dst are usually host visible and handled automatically when snapshotting mapped memories. Otherwise there is no way to write to the buffer. Compute shader and storage might still break but they belong to future work.\n\nIt also avoids adding more flags than necessary.\n\nI still don\u0027t understand why adding transfer_src and dst to uniform buffers will unstabalize chrome. But the current implementation works so let\u0027s keep it. I will add the discussion into the comments.",
+      "parentUuid": "47fa91ff_193331c9",
       "revId": "702980dcfdb97295afef79419a3769934de15e95",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
