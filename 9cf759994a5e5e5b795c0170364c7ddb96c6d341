@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c6a818e_22e5e461",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 575,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-05T22:19:06Z",
+      "side": 1,
+      "message": "should we still add VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME for non-MoltenVK (swiftshader) ?",
+      "range": {
+        "startLine": 574,
+        "startChar": 0,
+        "endLine": 575,
+        "endChar": 59
+      },
+      "revId": "9cf759994a5e5e5b795c0170364c7ddb96c6d341",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca938999_4a0a760a",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 3009,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-05T22:19:06Z",
+      "side": 1,
+      "message": "not used?",
+      "range": {
+        "startLine": 3009,
+        "startChar": 4,
+        "endLine": 3009,
+        "endChar": 32
+      },
+      "revId": "9cf759994a5e5e5b795c0170364c7ddb96c6d341",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf7152b4_1b14581c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 4277,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-05T22:19:06Z",
+      "side": 1,
+      "message": "a random question. Is a metal buffer similar to a vulkan buffer or similar to a vulkan memory?",
+      "range": {
+        "startLine": 4277,
+        "startChar": 8,
+        "endLine": 4277,
+        "endChar": 34
+      },
+      "revId": "9cf759994a5e5e5b795c0170364c7ddb96c6d341",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
