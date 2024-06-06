@@ -192,6 +192,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad3b11d5_4fc60df8",
+        "filename": "guest/OpenglSystemCommon/Android.bp",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-06T14:59:07Z",
+      "side": 1,
+      "message": "Plan is to discuss goto.google.com/gfxstream-vk-landing-mesa sometime in next couple weeks.",
+      "parentUuid": "42c83bf9_1afbf948",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 31
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d3711921_5c46357d",
@@ -229,6 +253,30 @@
       "side": 1,
       "message": "Just FYI, Mesa does call into `ALOGE(..)` under the hood:\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/guest/mesa/src/util/log.c#284\n\nWhy Mesa `mesa_log()` over `gfxstream_log` (at-least guest side)?  Since we want move gfxstream VK into Mesa for Linux/Fuchsia reasons, and `mesa_log(.)` is preferred method in that code base.",
       "parentUuid": "d3711921_5c46357d",
+      "range": {
+        "startLine": 499,
+        "startChar": 8,
+        "endLine": 499,
+        "endChar": 17
+      },
+      "revId": "42361f79b2811f82e59a51aa93ed34c0f62e6de0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bd5fbd9_8bdd0ded",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-06T14:59:07Z",
+      "side": 1,
+      "message": "Plan is to discuss goto.google.com/gfxstream-vk-landing-mesa sometime in next couple weeks.",
+      "parentUuid": "2f55a5b9_8224274c",
       "range": {
         "startLine": 499,
         "startChar": 8,
