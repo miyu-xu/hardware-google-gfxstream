@@ -1898,6 +1898,7 @@ class VkDecoderGlobalState::Impl {
         mDeviceToPhysicalDevice.erase(device);
     }
 
+
     VkResult on_vkCreateBuffer(android::base::BumpPool* pool, VkDevice boxed_device,
                                const VkBufferCreateInfo* pCreateInfo,
                                const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer) {
