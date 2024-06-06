@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83e0b6c7_cf87697b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-06T08:23:31Z",
+      "side": 1,
+      "message": "This is an [optional dependency](http://shortn/_XAaLreoZeN), that doesn\u0027t *force* us to add Valgrind libs to Android images, is that right?",
+      "revId": "415bdd59e3e702dc041408bf04d71c7480eec791",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
