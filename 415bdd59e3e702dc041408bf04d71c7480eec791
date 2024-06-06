@@ -16,6 +16,24 @@
       "message": "This is an [optional dependency](http://shortn/_XAaLreoZeN), that doesn\u0027t *force* us to add Valgrind libs to Android images, is that right?",
       "revId": "415bdd59e3e702dc041408bf04d71c7480eec791",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ddf4f84_b471abe2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-06T15:41:22Z",
+      "side": 1,
+      "message": "This is the Meson build system for the gfxstream guest Linux build [Android uses Soong]:\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#guest-side-gfxstream-libraries\n\nThis is only in effect if `pkgconfig` finds valgrind in a sysroot, so no additional dependencies are being added to AOSP.",
+      "parentUuid": "83e0b6c7_cf87697b",
+      "revId": "415bdd59e3e702dc041408bf04d71c7480eec791",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
