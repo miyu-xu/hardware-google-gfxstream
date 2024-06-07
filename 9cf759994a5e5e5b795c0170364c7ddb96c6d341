@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ac46621_a35305fc",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 575,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-07T12:20:46Z",
+      "side": 1,
+      "message": "It\u0027s added into the list based on the runtime moltenvk check around line 779, so swiftshader path should enable it.",
+      "parentUuid": "0c6a818e_22e5e461",
+      "range": {
+        "startLine": 574,
+        "startChar": 0,
+        "endLine": 575,
+        "endChar": 59
+      },
+      "revId": "9cf759994a5e5e5b795c0170364c7ddb96c6d341",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ca938999_4a0a760a",
@@ -49,6 +73,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "9a16d243_26dd80ae",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 3009,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-07T12:20:46Z",
+      "side": 1,
+      "message": "Acknowledged, will update with the next patchset.",
+      "parentUuid": "ca938999_4a0a760a",
+      "range": {
+        "startLine": 3009,
+        "startChar": 4,
+        "endLine": 3009,
+        "endChar": 32
+      },
+      "revId": "9cf759994a5e5e5b795c0170364c7ddb96c6d341",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "bf7152b4_1b14581c",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 8
@@ -60,6 +108,30 @@
       "writtenOn": "2024-06-05T22:19:06Z",
       "side": 1,
       "message": "a random question. Is a metal buffer similar to a vulkan buffer or similar to a vulkan memory?",
+      "range": {
+        "startLine": 4277,
+        "startChar": 8,
+        "endLine": 4277,
+        "endChar": 34
+      },
+      "revId": "9cf759994a5e5e5b795c0170364c7ddb96c6d341",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bba584d1_742c6d78",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 4277,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-07T12:20:46Z",
+      "side": 1,
+      "message": "I understand it\u0027s more like a vulkan buffer. Metal provides a separate mtlheap structure if you\u0027d like to manage the memory in a better way, and has explicit properties on objects to make them aliasable.",
+      "parentUuid": "bf7152b4_1b14581c",
       "range": {
         "startLine": 4277,
         "startChar": 8,
