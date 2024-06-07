@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "199e79fe_e374aaea",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4021,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-07T15:26:27Z",
+      "side": 1,
+      "message": "Q: Do we not need to keep track of ownership, or do we do this in some different way?",
+      "range": {
+        "startLine": 4020,
+        "startChar": 0,
+        "endLine": 4021,
+        "endChar": 57
+      },
+      "revId": "7609a836990c9c44f83728f5210b3a4a9404c85f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
