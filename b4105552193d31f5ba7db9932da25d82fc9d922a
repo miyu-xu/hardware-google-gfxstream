@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6180cca_7c6a7b05",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 5290,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-07T15:04:16Z",
+      "side": 0,
+      "message": "Q: will this now be destroyed by `deviceInfo-\u003edeviceOpTracker`\u0027s garbage collection?",
+      "range": {
+        "startLine": 5290,
+        "startChar": 0,
+        "endLine": 5290,
+        "endChar": 60
+      },
+      "revId": "b4105552193d31f5ba7db9932da25d82fc9d922a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
