@@ -4174,6 +4174,7 @@ class VkDecoderGlobalState::Impl {
                                  const VkMemoryAllocateInfo* pAllocateInfo,
                                  const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
         auto device = unbox_VkDevice(boxed_device);
+        printf("boxed device %p unboxed %p\n", boxed_device, device);
         auto vk = dispatch_VkDevice(boxed_device);
         auto* tInfo = RenderThreadInfoVk::get();
 
@@ -4368,6 +4369,7 @@ class VkDecoderGlobalState::Impl {
             if (!physicalDevice) {
                 // User app gave an invalid VkDevice, but we don't really want to crash here.
                 // We should allow invalid apps.
+                printf("cannot find physical device!!!\n");
                 return VK_ERROR_DEVICE_LOST;
             }
             auto* physicalDeviceInfo = android::base::find(mPhysdevInfo, *physicalDevice);
