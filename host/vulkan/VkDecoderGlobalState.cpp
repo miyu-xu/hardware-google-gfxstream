@@ -101,7 +101,7 @@ using gfxstream::VulkanInfo;
 // TODO: Asserts build
 #define DCHECK(condition) (void)(condition);
 
-#define VKDGS_DEBUG 0
+#define VKDGS_DEBUG 1
 
 #if VKDGS_DEBUG
 #define VKDGS_LOG(fmt, ...) fprintf(stderr, "%s:%d " fmt "\n", __func__, __LINE__, ##__VA_ARGS__);
@@ -1827,6 +1827,7 @@ class VkDecoderGlobalState::Impl {
             queueFamilyIndexCounts[queueFamilyIndex] = queueCount;
         }
 
+        std::vector<uint64_t> extraHandles;
         for (auto it : queueFamilyIndexCounts) {
             auto index = it.first;
             auto count = it.second;
@@ -1849,9 +1850,14 @@ class VkDecoderGlobalState::Impl {
 
                 auto boxed = new_boxed_VkQueue(queueOut, dispatch_VkDevice(deviceInfo.boxed),
                                                false /* does not own dispatch */);
+                extraHandles.push_back((uint64_t)boxed);
                 mQueueInfo[queueOut].boxed = boxed;
                 mQueueInfo[queueOut].lock = new Lock;
             }
+        }
+        if (snapshotsEnabled()) {
+            snapshot()->createExtraHandlesForNextApi(extraHandles.data(),
+                                                     extraHandles.size());
         }
 
         // Box the device.
@@ -4238,6 +4244,7 @@ class VkDecoderGlobalState::Impl {
                                  const VkMemoryAllocateInfo* pAllocateInfo,
                                  const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
         auto device = unbox_VkDevice(boxed_device);
+        printf("boxed device %p unboxed %p\n", boxed_device, device);
         auto vk = dispatch_VkDevice(boxed_device);
         auto* tInfo = RenderThreadInfoVk::get();
 
@@ -4432,6 +4439,7 @@ class VkDecoderGlobalState::Impl {
             if (!physicalDevice) {
                 // User app gave an invalid VkDevice, but we don't really want to crash here.
                 // We should allow invalid apps.
+                printf("cannot find physical device!!!\n");
                 return VK_ERROR_DEVICE_LOST;
             }
             auto* physicalDeviceInfo = android::base::find(mPhysdevInfo, *physicalDevice);

@@ -25,7 +25,7 @@
 namespace gfxstream {
 namespace vk {
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -75,6 +75,10 @@ void VkReconstruction::save(android::base::Stream* stream) {
                 const auto& parents = item.states[state].parentHandles;
                 HandleWithState handleWithState = {entityHandle, static_cast<HandleState>(state)};
                 totalParents[handleWithState] = parents.size();
+                for (auto parent : parents) {
+                    printf("handle 0x%lx 0x%lx parent 0x%lx\n", componentHandle, entityHandle,
+                        parent.first);
+                }
                 if (parents.empty()) {
                     next.push_back(handleWithState);
                 }
@@ -93,6 +97,8 @@ void VkReconstruction::save(android::base::Stream* stream) {
                 if (--totalParents[childHandle] == 0) {
                     next.push_back(childHandle);
                 }
+                printf("handle 0x%lx child 0x%lx\n", handle.first,
+                        childHandle.first);
             }
         }
     }
@@ -136,7 +142,7 @@ void VkReconstruction::save(android::base::Stream* stream) {
         for (auto apiHandle : uniqApiRefsByTopoOrder[i]) {
             auto item = mApiTrace.get(apiHandle);
             for (auto createdHandle : item->createdHandles) {
-                DEBUG_RECON("save handle: 0x%lx\n", createdHandle);
+                DEBUG_RECON("api 0x%lx created handle: 0x%lx\n", apiHandle, createdHandle);
                 createdHandleBuffer.push_back(createdHandle);
             }
         }
