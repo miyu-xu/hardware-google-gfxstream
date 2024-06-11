@@ -31,7 +31,8 @@ lib_vulkan_gfxstream = shared_library(
    link_depends: vulkan_icd_link_depends,
    dependencies: [dependency('libdrm'), idep_vulkan_wsi_headers,
                   idep_vulkan_runtime_headers, idep_vulkan_runtime,
-                  idep_vulkan_util_headers, idep_vulkan_wsi, dep_valgrind],
+                  idep_vulkan_util_headers, idep_vulkan_wsi, dep_valgrind,
+                  virtgpu_rutabaga_dep],
    install: true,
 )
 

@@ -35,7 +35,7 @@ drm_dep = dependency('libdrm')
 thread_dep = dependency('threads')
 
 if with_guest_test
-  rutabaga_gfx_ffi_dep = dependency('rutabaga_gfx_ffi')
+  virtgpu_rutabaga_dep = dependency('virtgpu_rutabaga_ffi')
 endif
 
 #===============#
