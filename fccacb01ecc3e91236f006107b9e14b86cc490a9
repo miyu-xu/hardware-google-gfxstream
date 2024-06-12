@@ -22,6 +22,30 @@
       },
       "revId": "fccacb01ecc3e91236f006107b9e14b86cc490a9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c60bf0d_79fd117e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-12T23:14:32Z",
+      "side": 1,
+      "message": "One of our partners said they needed it, didn\u0027t ask why.",
+      "parentUuid": "a179b214_749f3220",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 12,
+        "endChar": 12
+      },
+      "revId": "fccacb01ecc3e91236f006107b9e14b86cc490a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
