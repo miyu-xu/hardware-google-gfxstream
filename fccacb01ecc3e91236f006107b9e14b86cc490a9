@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a179b214_749f3220",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-06-12T23:12:40Z",
+      "side": 1,
+      "message": "Any confirmation via something like `CtsDeqpTestCases:include-filter:dEQP-VK.*instanced*`?",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 12,
+        "endChar": 12
+      },
+      "revId": "fccacb01ecc3e91236f006107b9e14b86cc490a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
