@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a3d8b6de_f7ae788b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-12T15:55:54Z",
+      "side": 1,
+      "message": "Sounds like a good idea, but I want to make sure b/346348303 is fully resolved before writing tests.\n\nSo the idea would be:\n\n1) Land this change\n2) Re-enable cuttlefish_gfxstream_guest_angle_graphics_vts_tests\n3) Wait a few days\n4) Write the test",
+      "parentUuid": "f8f8f38d_9e0cd408",
+      "revId": "f5373b97ef58d1ef60b17855da8b13d3d9db6313",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "825cc8c3_3e9db953",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
@@ -31,6 +49,30 @@
       "writtenOn": "2024-06-12T15:13:21Z",
       "side": 1,
       "message": "Should this be something along the lines of\n\n```\n        if (addExternal) {\n            if (fenceInfo.external) {\n                deviceInfo.externalFencePool-\u003eadd(fence);\n                return;\n            }\n        }\n```\n\notherwise external fences would never be destroyed during device destruction because it would hit the `return` from 2805?",
+      "range": {
+        "startLine": 2801,
+        "startChar": 8,
+        "endLine": 2806,
+        "endChar": 9
+      },
+      "revId": "f5373b97ef58d1ef60b17855da8b13d3d9db6313",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3e10526_000bfb1c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2806,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-12T15:55:54Z",
+      "side": 1,
+      "message": "Done, simplified even more.",
+      "parentUuid": "825cc8c3_3e9db953",
       "range": {
         "startLine": 2801,
         "startChar": 8,
