@@ -150,6 +150,22 @@ def extract_deps_vkBindImageMemory(param, access, lenExpr, api, cgen):
     cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)((%s)[0]), VkReconstruction::BOUND_MEMORY)" % \
               (access, lenExpr, access))
 
+def extract_deps_vkBindImageMemory2(param, access, lenExpr, api, cgen):
+    childType = "VkImage"
+    parentType = "VkDeviceMemory"
+    childObj = "boxed_%s" % childType
+    parentObj = "boxed_%s" % parentType
+    cgen.beginFor("uint32_t i = 0", "i < %s" % lenExpr, "++i")
+    cgen.stmt("%s boxed_%s = unboxed_to_boxed_non_dispatchable_%s(%s[i].image)"
+              % (childType, childType, childType, access))
+    cgen.stmt("%s boxed_%s = unboxed_to_boxed_non_dispatchable_%s(%s[i].memory)"
+              % (parentType, parentType, parentType, access))
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s, VkReconstruction::BOUND_MEMORY)" % \
+              (childObj, "1", parentObj))
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)((%s)[0]), VkReconstruction::BOUND_MEMORY)" % \
+              (childObj, "1", childObj))
+    cgen.endFor()
+
 def extract_deps_vkBindBufferMemory(param, access, lenExpr, api, cgen):
     cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)%s, %s, (uint64_t)(uintptr_t)%s, VkReconstruction::BOUND_MEMORY)" % \
               (access, lenExpr, "unboxed_to_boxed_non_dispatchable_VkDeviceMemory(memory)"))
@@ -163,6 +179,7 @@ specialCaseDependencyExtractors = {
     "vkCreateGraphicsPipelines" : extract_deps_vkCreateGraphicsPipelines,
     "vkCreateFramebuffer" : extract_deps_vkCreateFramebuffer,
     "vkBindImageMemory": extract_deps_vkBindImageMemory,
+    "vkBindImageMemory2": extract_deps_vkBindImageMemory2,
     "vkBindBufferMemory": extract_deps_vkBindBufferMemory,
 }
 
@@ -179,6 +196,38 @@ class VkObjectState:
 apiChangeState = {
     "vkBindImageMemory": VkObjectState("image", "VkReconstruction::BOUND_MEMORY"),
     "vkBindBufferMemory": VkObjectState("buffer", "VkReconstruction::BOUND_MEMORY"),
+}
+
+def api_special_implementation_vkBindImageMemory2(api, cgen):
+    childType = "VkImage"
+    parentType = "VkDeviceMemory"
+    childObj = "boxed_%s" % childType
+    parentObj = "boxed_%s" % parentType
+    cgen.stmt("android::base::AutoLock lock(mLock)")
+    cgen.beginFor("uint32_t i = 0", "i < bindInfoCount", "++i")
+    cgen.stmt("%s boxed_%s = unboxed_to_boxed_non_dispatchable_%s(pBindInfos[i].image)"
+              % (childType, childType, childType))
+    cgen.stmt("%s boxed_%s = unboxed_to_boxed_non_dispatchable_%s(pBindInfos[i].memory)"
+              % (parentType, parentType, parentType))
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)&%s, %s, (uint64_t)(uintptr_t)%s, VkReconstruction::BOUND_MEMORY)" % \
+              (childObj, "1", parentObj))
+    cgen.stmt("mReconstruction.addHandleDependency((const uint64_t*)&%s, %s, (uint64_t)(uintptr_t)%s, VkReconstruction::BOUND_MEMORY)" % \
+              (childObj, "1", childObj))
+    cgen.endFor()
+
+    cgen.stmt("auto apiHandle = mReconstruction.createApiInfo()")
+    cgen.stmt("auto apiInfo = mReconstruction.getApiInfo(apiHandle)")
+    cgen.stmt("mReconstruction.setApiTrace(apiInfo, OP_%s, snapshotTraceBegin, snapshotTraceBytes)" % api.name)
+    cgen.line("// Note: the implementation does not work with bindInfoCount > 1");
+    cgen.beginFor("uint32_t i = 0", "i < bindInfoCount", "++i")
+    cgen.stmt("%s boxed_%s = unboxed_to_boxed_non_dispatchable_%s(pBindInfos[i].image)"
+              % (childType, childType, childType))
+    cgen.stmt(f"mReconstruction.forEachHandleAddApi((const uint64_t*)&{childObj}, {1}, apiHandle, VkReconstruction::BOUND_MEMORY)")
+    cgen.endFor()
+
+apiSpecialImplementation = {
+    "vkBindImageMemory2": api_special_implementation_vkBindImageMemory2,
+    "vkBindImageMemory2KHR": api_special_implementation_vkBindImageMemory2,
 }
 
 apiModifies = {
@@ -234,6 +283,8 @@ def is_clear_modifier_operation(api, param):
 
 
 def emit_impl(typeInfo, api, cgen):
+    if api.name in apiSpecialImplementation:
+        apiSpecialImplementation[api.name](api, cgen)
     for p in api.parameters:
         if not (p.isHandleType):
             continue
@@ -251,7 +302,9 @@ def emit_impl(typeInfo, api, cgen):
         else:
             access = "(&%s)" % p.paramName
 
-        if is_state_change_operation(api, p):
+        if api in apiSpecialImplementation:
+            apiSpecialImplementation()
+        elif is_state_change_operation(api, p):
             if p.isCreatedBy(api):
                 boxed_access = access
             else:

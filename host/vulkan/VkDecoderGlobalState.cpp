@@ -2327,6 +2327,12 @@ class VkDecoderGlobalState::Impl {
     VkResult on_vkBindImageMemory2(android::base::BumpPool* pool, VkDevice boxed_device,
                                    uint32_t bindInfoCount,
                                    const VkBindImageMemoryInfo* pBindInfos) {
+        if (bindInfoCount > 1 && snapshotsEnabled()) {
+            // TODO: add metrics
+            GFXSTREAM_LOG(stderr, 'I', "vkBindImageMemory2 with more than 1 bindInfoCount not supporting snapshot");
+            get_emugl_vm_operations().setSkipSnapshotSave(true);
+        }
+        
         auto device = unbox_VkDevice(boxed_device);
         auto vk = dispatch_VkDevice(boxed_device);
         bool needEmulation = false;
