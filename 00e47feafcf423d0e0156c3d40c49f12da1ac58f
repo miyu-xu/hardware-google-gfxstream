@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "376164d3_468968e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-13T08:50:54Z",
+      "side": 1,
+      "message": "LGTM but I have no idea what causes the conflict",
+      "revId": "00e47feafcf423d0e0156c3d40c49f12da1ac58f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
