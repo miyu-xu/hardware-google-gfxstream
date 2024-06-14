@@ -452,6 +452,18 @@ static const QAndroidVmOperations sQAndroidVmOperations = {
                             "skipped\n");
                     return false;
                 },
+        .setSkipSnapshotSaveReason =
+                [](SnapshotSkipReason reason) {
+                    DEBUG_LOG(stderr,
+                            "goldfish-opengl vm ops: set skip snapshot save reason"
+                            "skipped\n");
+                },
+        .setStatSnapshotUseVulkan =
+                []() {
+                    DEBUG_LOG(stderr,
+                            "goldfish-opengl vm ops: set stat snapshot use Vulkan"
+                            "skipped\n");
+                },
         .hostmemRegister = android_emulation_hostmem_register,
         .hostmemUnregister = android_emulation_hostmem_unregister,
         .hostmemGetInfo = android_emulation_hostmem_get_info,
