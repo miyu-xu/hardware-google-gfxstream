@@ -58,6 +58,10 @@ class DebugUtilsHelper {
             objectType = VK_OBJECT_TYPE_PIPELINE;
         } else if constexpr (std::is_same_v<VkObjectT, VkSampler>) {
             objectType = VK_OBJECT_TYPE_SAMPLER;
+        } else if constexpr (std::is_same_v<VkObjectT, VkInstance>) {
+            objectType = VK_OBJECT_TYPE_INSTANCE;
+        } else if constexpr (std::is_same_v<VkObjectT, VkDevice>) {
+            objectType = VK_OBJECT_TYPE_DEVICE;
         } else {
             static_assert(sizeof(VkObjectT) == 0,
                           "Unhandled VkObjectT. Please update DebugUtilsHelper.h.");
