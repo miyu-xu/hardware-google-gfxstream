@@ -1803,25 +1803,42 @@ bool getColorBufferAllocationInfo(uint32_t colorBufferHandle, VkDeviceSize* outS
                                               outMemoryIsDedicatedAlloc, outMappedPtr);
 }
 
-static uint32_t lastGoodTypeIndex(uint32_t indices) {
-    for (int32_t i = 31; i >= 0; --i) {
-        if (indices & (1 << i)) {
-            return i;
+// This function will return the first memory type that exactly matches the
+// requested properties, if there is any. Otherwise it'll return the last
+// index that supports all the requested memory property flags.
+// Eg. this avoids returning a host coherent memory type when only device local
+// memory flag is requested, which may be slow or not support some other features,
+// such as association with optimal-tiling images on some implementations.
+static uint32_t getValidMemoryTypeIndex(uint32_t requiredMemoryTypeBits,
+                                        VkMemoryPropertyFlags memoryProperty = 0) {
+    uint32_t secondBest = ~0;
+    for (int32_t i = 0; i <= 31; i++) {
+        if ((requiredMemoryTypeBits & (1u << i)) == 0) {
+            // Not a suitable memory index
+            continue;
         }
-    }
-    return 0;
-}
 
-static uint32_t lastGoodTypeIndexWithMemoryProperties(uint32_t indices,
-                                                      VkMemoryPropertyFlags memoryProperty) {
-    for (int32_t i = 31; i >= 0; --i) {
-        if ((indices & (1u << i)) &&
-            (!memoryProperty ||
-             (sVkEmulation->deviceInfo.memProps.memoryTypes[i].propertyFlags & memoryProperty))) {
+        const VkMemoryPropertyFlags memPropertyFlags =
+            sVkEmulation->deviceInfo.memProps.memoryTypes[i].propertyFlags;
+
+        // Exact match, return immediately
+        if (memPropertyFlags == memoryProperty) {
             return i;
         }
+
+        // Valid memory index, but keep looking for an exact match
+        const bool propertyValid = ((memPropertyFlags & memoryProperty) == memoryProperty);
+        if (propertyValid) {
+            secondBest = i;
+        }
     }
-    return 0;
+
+    if (secondBest == ~0) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+            << "Could not find memory index for type bits 0x%x, with memory properties: %s",
+            requiredMemoryTypeBits, string_VkMemoryPropertyFlags(memoryProperty).c_str();
+    }
+    return secondBest;
 }
 
 // pNext, sharingMode, queueFamilyIndexCount, pQueueFamilyIndices, and initialLayout won't be
@@ -2068,12 +2085,8 @@ bool initializeVkColorBufferLocked(
     infoPtr->memory.size = infoPtr->memReqs.size;
 
     // Determine memory type.
-    if (infoPtr->memoryProperty) {
-        infoPtr->memory.typeIndex = lastGoodTypeIndexWithMemoryProperties(
-            infoPtr->memReqs.memoryTypeBits, infoPtr->memoryProperty);
-    } else {
-        infoPtr->memory.typeIndex = lastGoodTypeIndex(infoPtr->memReqs.memoryTypeBits);
-    }
+    infoPtr->memory.typeIndex =
+        getValidMemoryTypeIndex(infoPtr->memReqs.memoryTypeBits, infoPtr->memoryProperty);
 
     VK_COMMON_VERBOSE("ColorBuffer %d, "
                         "allocation size and type index: %lu, %d, "
@@ -3019,12 +3032,7 @@ bool setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulkanOnly, uint32
     res.memory.size = res.memReqs.size;
 
     // Determine memory type.
-    if (memoryProperty) {
-        res.memory.typeIndex =
-            lastGoodTypeIndexWithMemoryProperties(res.memReqs.memoryTypeBits, memoryProperty);
-    } else {
-        res.memory.typeIndex = lastGoodTypeIndex(res.memReqs.memoryTypeBits);
-    }
+    res.memory.typeIndex = getValidMemoryTypeIndex(res.memReqs.memoryTypeBits, memoryProperty);
 
     VK_COMMON_VERBOSE("Buffer %d "
                         "allocation size and type index: %lu, %d, "
