@@ -16,6 +16,23 @@
       "message": "This should not affect software rendering path, as they only support one memory type anyways.",
       "revId": "88924e7405b4a27055f046ff76c5c4ee4cd4ebf3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db7bb1dd_d7ac1c1b",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1836,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-06-17T11:05:48Z",
+      "side": 1,
+      "message": "Nit: this makes me a bit uncomfortable. \n~0 is afaik 11...111 which is technically a valid value for requiredMemoryTypeBits (just purely looking at the types) but we can still error on it.\n\nWhy don\u0027t we just have a \u0027bool found\u003dfalse\u0027 and tweak that when we found it and use that?",
+      "revId": "88924e7405b4a27055f046ff76c5c4ee4cd4ebf3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
