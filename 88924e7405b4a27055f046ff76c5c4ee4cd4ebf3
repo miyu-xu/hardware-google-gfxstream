@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31bdee19_cc661bc5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-17T10:38:35Z",
+      "side": 1,
+      "message": "This should not affect software rendering path, as they only support one memory type anyways.",
+      "revId": "88924e7405b4a27055f046ff76c5c4ee4cd4ebf3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
