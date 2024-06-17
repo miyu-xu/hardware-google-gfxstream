@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4494111e_d501c31a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-17T13:11:42Z",
+      "side": 1,
+      "message": "This depends on some changes to vk_struct_id.h, which I\u0027ll submit with a separate CL first.",
+      "revId": "e4decec9b2d4eee107ca3ab64adf6d42419c80b9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
