@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "692127db_241f551d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-06-17T21:30:27Z",
+      "side": 1,
+      "message": "Looks like this introduces a real failure:\n\n```\n3331 VkCommonOperations.cpp:1839] FATAL in getValidMemoryTypeIndex, err code: 4300000000: Could not find a valid memory index\n```",
+      "revId": "20a33e72f047e78c02e6348504d6456992767149",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
