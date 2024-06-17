@@ -16,6 +16,24 @@
       "message": "This depends on some changes to vk_struct_id.h, which I\u0027ll submit with a separate CL first.",
       "revId": "e4decec9b2d4eee107ca3ab64adf6d42419c80b9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "972c488d_41f28551",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-17T13:23:28Z",
+      "side": 1,
+      "message": "Uploaded patchset 2, should be fine now.",
+      "parentUuid": "4494111e_d501c31a",
+      "revId": "e4decec9b2d4eee107ca3ab64adf6d42419c80b9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
