@@ -1,0 +1,56 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b12c3b4e_f4e2d09f",
+        "filename": "guest/vulkan_enc/func_table.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4006,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-06-17T10:00:02Z",
+      "side": 1,
+      "message": "What purpose does this serve? Looks like a leftover to me.",
+      "fixSuggestions": [
+        {
+          "fixId": "660cfda1_58e21887",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "guest/vulkan_enc/func_table.cpp",
+              "range": {
+                "startLine": 4007,
+                "startChar": 0,
+                "endLine": 4007,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            }
+          ]
+        }
+      ],
+      "revId": "75f3a3e5019b023c83394bf4d97932f8e7f04a24",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03d7e0c5_31570ef0",
+        "filename": "guest/vulkan_enc/goldfish_vk_counting_guest.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 1494,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-06-17T10:00:02Z",
+      "side": 1,
+      "message": "Same here and in a bunch of other files",
+      "revId": "75f3a3e5019b023c83394bf4d97932f8e7f04a24",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
