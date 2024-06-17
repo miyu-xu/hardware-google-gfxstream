@@ -16,6 +16,24 @@
       "message": "Looks like this introduces a real failure:\n\n```\n3331 VkCommonOperations.cpp:1839] FATAL in getValidMemoryTypeIndex, err code: 4300000000: Could not find a valid memory index\n```",
       "revId": "20a33e72f047e78c02e6348504d6456992767149",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35db39cc_a6aeaeff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-17T22:13:00Z",
+      "side": 1,
+      "message": "Thanks, I think this is because there was a bug in the previous code, where it checks validity with:\n```\n(!memoryProperty || (sVkEmulation-\u003edeviceInfo.memProps.memoryTypes[i].propertyFlags \u0026 memoryProperty))) {\n```\n\nThis can return the memory index even it\u0027s only supporting one of the flags requested, e.g. host_visible|device_local requested, but a host_visible-only memory type can be selected.\n\nI use `(propertyFlags \u0026 requestedFlags) \u003d\u003d requestedFlags` to avoid that. I\u0027ll add some extra info in the message printed and run presubmit again.",
+      "parentUuid": "692127db_241f551d",
+      "revId": "20a33e72f047e78c02e6348504d6456992767149",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
