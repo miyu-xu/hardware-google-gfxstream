@@ -33,6 +33,24 @@
       "message": "Nit: this makes me a bit uncomfortable. \n~0 is afaik 11...111 which is technically a valid value for requiredMemoryTypeBits (just purely looking at the types) but we can still error on it.\n\nWhy don\u0027t we just have a \u0027bool found\u003dfalse\u0027 and tweak that when we found it and use that?",
       "revId": "88924e7405b4a27055f046ff76c5c4ee4cd4ebf3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a53c4e1_70ee9ac5",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1836,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-17T12:04:14Z",
+      "side": 1,
+      "message": "This is the index of the memory type, so ~0 not a valid value as the length of the bitset is 32. I think this aligns well with similar other usages for checking the validity without introducing an indirect relation to another variable, but adding \u0027found\u0027 might improve readability. Thanks",
+      "parentUuid": "db7bb1dd_d7ac1c1b",
+      "revId": "88924e7405b4a27055f046ff76c5c4ee4cd4ebf3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
