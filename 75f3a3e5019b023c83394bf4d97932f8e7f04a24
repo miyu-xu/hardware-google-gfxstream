@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d27b6e91_c160f44b",
+        "filename": "guest/vulkan_enc/func_table.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4006,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-17T10:35:00Z",
+      "side": 1,
+      "message": "This is due to the automatic code generation, some improvements should be made on it(b/329094533) but it\u0027s not a priority.",
+      "parentUuid": "b12c3b4e_f4e2d09f",
+      "revId": "75f3a3e5019b023c83394bf4d97932f8e7f04a24",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "03d7e0c5_31570ef0",
@@ -49,6 +67,24 @@
       "writtenOn": "2024-06-17T10:00:02Z",
       "side": 1,
       "message": "Same here and in a bunch of other files",
+      "revId": "75f3a3e5019b023c83394bf4d97932f8e7f04a24",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec0b37d2_1efc5740",
+        "filename": "guest/vulkan_enc/goldfish_vk_counting_guest.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 1494,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-17T10:35:00Z",
+      "side": 1,
+      "message": "Automatic code gen.",
+      "parentUuid": "03d7e0c5_31570ef0",
       "revId": "75f3a3e5019b023c83394bf4d97932f8e7f04a24",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
