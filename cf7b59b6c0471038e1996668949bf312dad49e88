@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de9e074f_42a59e48",
+        "filename": "host/vulkan/DebugUtilsHelper.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-06-17T15:36:44Z",
+      "side": 1,
+      "message": "nit: sort",
+      "range": {
+        "startLine": 61,
+        "startChar": 29,
+        "endLine": 61,
+        "endChar": 66
+      },
+      "revId": "cf7b59b6c0471038e1996668949bf312dad49e88",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
