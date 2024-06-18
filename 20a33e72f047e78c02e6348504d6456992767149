@@ -52,6 +52,24 @@
       "parentUuid": "35db39cc_a6aeaeff",
       "revId": "20a33e72f047e78c02e6348504d6456992767149",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a1db1cc_8f8dc6c3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-06-18T14:50:52Z",
+      "side": 1,
+      "message": "Presubmit results. Click into the error link, then the \"tests\" tab has all the artifacts, and then `launcher.log` is kind of Cuttlefish\u0027s \"host\" logging.\n\n```\n3349 VkCommonOperations.cpp:1850] FATAL in getValidMemoryTypeIndex, err code: 4300000000: Could not find a valid memory index with memoryProperty: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, and requiredMemoryTypeBits: 15\n```\n\nin the latest results.",
+      "parentUuid": "a2bfe243_9b7c4211",
+      "revId": "20a33e72f047e78c02e6348504d6456992767149",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
