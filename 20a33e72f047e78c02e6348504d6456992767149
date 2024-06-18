@@ -34,6 +34,24 @@
       "parentUuid": "692127db_241f551d",
       "revId": "20a33e72f047e78c02e6348504d6456992767149",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a2bfe243_9b7c4211",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-18T13:04:33Z",
+      "side": 1,
+      "message": "btw, did you get that message by running it locally or from the presubmit results? I cannot find it in the host logs at Android test investigate.",
+      "parentUuid": "35db39cc_a6aeaeff",
+      "revId": "20a33e72f047e78c02e6348504d6456992767149",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
