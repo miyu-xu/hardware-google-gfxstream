@@ -70,6 +70,24 @@
       "parentUuid": "a2bfe243_9b7c4211",
       "revId": "20a33e72f047e78c02e6348504d6456992767149",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4e417cc_5667571f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-18T15:16:39Z",
+      "side": 1,
+      "message": "Right, I was looking into the \u0027host_log\u0027 files, thanks! So, looks like the GPU is actually supporting the memory type requested (https://vulkan.gpuinfo.org/displayreport.php?id\u003d31119#memory) in it\u0027s heap2, but not sure why it couldn\u0027t find it. I\u0027ll have a better look at how we setup `memoryTypes`.",
+      "parentUuid": "0a1db1cc_8f8dc6c3",
+      "revId": "20a33e72f047e78c02e6348504d6456992767149",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
