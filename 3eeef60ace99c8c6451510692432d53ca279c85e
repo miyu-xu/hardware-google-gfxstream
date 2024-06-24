@@ -16,6 +16,24 @@
       "message": "Not sure I get this - Why don\u0027t we just move the whole allocation here as opposed to splitting it in two?",
       "revId": "3eeef60ace99c8c6451510692432d53ca279c85e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85642e5b_7a56a590",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2139,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-06-24T09:58:53Z",
+      "side": 1,
+      "message": "Meaning:\nmove previous line: 2119 to 2139.\n\nIt\u0027s not like we need anbinfo anywhere else?",
+      "parentUuid": "3593d4c4_da28b691",
+      "revId": "3eeef60ace99c8c6451510692432d53ca279c85e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
