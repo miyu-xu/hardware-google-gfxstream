@@ -52,6 +52,24 @@
       "parentUuid": "3593d4c4_da28b691",
       "revId": "3eeef60ace99c8c6451510692432d53ca279c85e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81d935eb_23ab476f",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2139,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-06-24T10:05:06Z",
+      "side": 1,
+      "message": "That\u0027s fine - I am just pointing out that I don\u0027t think this makes sense:\n\n```\n        2119: std::unique_ptr\u003cAndroidNativeBufferInfo\u003e anbInfo \u003d nullptr;\n        ....\n        \u003clater\u003e\n        ....\n        2139: anbInfo \u003d std::make_unique\u003cAndroidNativeBufferInfo\u003e();\n```\n\nWhen you can just do:\n```\n        2119: \u003cremove\u003e\n        ....\n        \u003clater\u003e\n        ....\n        2139: std::unique_ptr\u003cAndroidNativeBufferInfo\u003e anbInfo \u003d std::make_unique\u003cAndroidNativeBufferInfo\u003e();\n```\n\nIIUC this only aims to avoid allocating a pointer in case we do an early return on lines 2128 and 2133. So moving the allocation to 2139 right before we need would make sense?",
+      "parentUuid": "51a9b143_70b97088",
+      "revId": "3eeef60ace99c8c6451510692432d53ca279c85e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
