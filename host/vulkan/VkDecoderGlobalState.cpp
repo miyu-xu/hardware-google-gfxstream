@@ -4483,8 +4483,9 @@ class VkDecoderGlobalState::Impl {
             } else
 #endif
             if (m_emu->deviceInfo.supportsExternalMemoryImport) {
+                uint32_t outStreamHandle;
                 VK_EXT_MEMORY_HANDLE bufferExtMemoryHandle =
-                    getBufferExtMemoryHandle(importBufferInfoPtr->buffer);
+                    getBufferExtMemoryHandle(importBufferInfoPtr->buffer, &outStreamHandle);
 
                 if (bufferExtMemoryHandle == VK_EXT_MEMORY_HANDLE_INVALID) {
                     fprintf(stderr,
