@@ -70,6 +70,24 @@
       "parentUuid": "51a9b143_70b97088",
       "revId": "3eeef60ace99c8c6451510692432d53ca279c85e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8df0c0c4_bf0f1499",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2139,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-24T10:08:11Z",
+      "side": 1,
+      "message": "`anbInfo` is provided to prepareAndroidNativeBufferImage, so you\u0027ll still need an object to save that information coming from that call, I think it\u0027s better to directly use the allocated object for that.",
+      "parentUuid": "81d935eb_23ab476f",
+      "revId": "3eeef60ace99c8c6451510692432d53ca279c85e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
