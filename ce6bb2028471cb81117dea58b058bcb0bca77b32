@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5bbfa701_3cfabdc7",
+        "filename": "host/vulkan/cereal/common/goldfish_vk_private_defs.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-06-24T10:53:30Z",
+      "side": 1,
+      "message": "Can we add a TODO comment here?\n\nIt will then appear as an item in go/todo so at least we have some level of control over this and not forget about it. Not sure if we can add a date as well and a lint tool to do reminders?",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 1
+      },
+      "revId": "ce6bb2028471cb81117dea58b058bcb0bca77b32",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
