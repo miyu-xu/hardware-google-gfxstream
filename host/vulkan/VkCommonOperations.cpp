@@ -3334,7 +3334,8 @@ bool teardownVkBuffer(uint32_t bufferHandle) {
     return true;
 }
 
-VK_EXT_MEMORY_HANDLE getBufferExtMemoryHandle(uint32_t bufferHandle) {
+VK_EXT_MEMORY_HANDLE getBufferExtMemoryHandle(uint32_t bufferHandle,
+                                              uint32_t* outStreamHandleType) {
     if (!sVkEmulation || !sVkEmulation->live) return VK_EXT_MEMORY_HANDLE_INVALID;
 
     AutoLock lock(sVkEmulationLock);
@@ -3345,6 +3346,7 @@ VK_EXT_MEMORY_HANDLE getBufferExtMemoryHandle(uint32_t bufferHandle) {
         return VK_EXT_MEMORY_HANDLE_INVALID;
     }
 
+    *outStreamHandleType = infoPtr->memory.streamHandleType;
     return infoPtr->memory.externalHandle;
 }
 
