@@ -25,6 +25,7 @@
 #include <sstream>
 #include <unordered_set>
 
+#include "BlobManager.h"
 #include "VkDecoderGlobalState.h"
 #include "VkEmulatedPhysicalDeviceMemory.h"
 #include "VkFormatUtils.h"
@@ -565,6 +566,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         // VK_EXT_metal_objects will be added if host MoltenVK is enabled,
         // otherwise VK_KHR_external_memory_fd will be used
 #else
+        VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
         VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
 #endif
     };
@@ -811,6 +813,11 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
 #if defined(__QNX__)
             // External memory export not supported on QNX
             deviceInfos[i].supportsExternalMemoryExport = false;
+#endif
+
+#if SUPPORT_DMABUF
+            deviceInfos[i].supportsDmaBuf =
+                extensionsSupported(deviceExts, {VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME});
 #endif
             deviceInfos[i].supportsIdProperties =
                 sVkEmulation->getPhysicalDeviceProperties2Func != nullptr;
@@ -1529,6 +1536,9 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
             vk_append_struct(&allocInfoChain, &metalBufferExport);
         }
 #endif
+        if (sVkEmulation->deviceInfo.supportsDmaBuf && actuallyExternal) {
+            exportAi.handleTypes |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+        }
 
         vk_append_struct(&allocInfoChain, &exportAi);
     }
@@ -1613,6 +1623,8 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
         return true;
     }
 
+    VkExternalMemoryHandleTypeFlagBits vkHandleType = VK_EXT_MEMORY_HANDLE_TYPE_BIT;
+    uint32_t streamHandleType = 0;
     VkResult exportRes = VK_SUCCESS;
     bool validHandle = false;
 #ifdef _WIN32
@@ -1620,14 +1632,18 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
         VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR,
         0,
         info->memory,
-        VK_EXT_MEMORY_HANDLE_TYPE_BIT,
+        vkHandleType,
     };
+
     exportRes = sVkEmulation->deviceInfo.getMemoryHandleFunc(
         sVkEmulation->device, &getWin32HandleInfo, &info->externalHandle);
     validHandle = (VK_EXT_MEMORY_HANDLE_INVALID != info->externalHandle);
+    info->streamHandleType = STREAM_MEM_HANDLE_TYPE_OPAQUE_WIN32;
 #elif !defined(__QNX__)
-#ifdef __APPLE__
+    bool opaque_fd = true;
     if (sVkEmulation->instanceSupportsMoltenVK) {
+        opaque_fd = false;
+#if defined(__APPLE__)
         info->externalMetalHandle = getMtlBufferFromVkDeviceMemory(vk, info->memory);
         validHandle = (nullptr != info->externalMetalHandle);
         if (validHandle) {
@@ -1636,14 +1652,21 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
         } else {
             exportRes = VK_ERROR_INVALID_EXTERNAL_HANDLE;
         }
-    } else
 #endif
-    {
+    }
+    if (opaque_fd) {
+        if (sVkEmulation->deviceInfo.supportsDmaBuf) {
+            vkHandleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+            info->streamHandleType = STREAM_MEM_HANDLE_TYPE_DMABUF;
+        } else {
+            info->streamHandleType = STREAM_MEM_HANDLE_TYPE_OPAQUE_FD;
+        }
+
         VkMemoryGetFdInfoKHR getFdInfo = {
             VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR,
             0,
             info->memory,
-            VK_EXT_MEMORY_HANDLE_TYPE_BIT,
+            vkHandleType,
         };
         exportRes = sVkEmulation->deviceInfo.getMemoryHandleFunc(sVkEmulation->device, &getFdInfo,
                                                                  &info->externalHandle);
@@ -2430,6 +2453,7 @@ std::optional<VkColorBufferMemoryExport> exportColorBufferMemory(uint32_t colorB
     return VkColorBufferMemoryExport{
         .descriptor = std::move(descriptor),
         .size = info->memory.size,
+        .streamHandleType = info->memory.streamHandleType,
         .linearTiling = info->imageCreateInfoShallow.tiling == VK_IMAGE_TILING_LINEAR,
         .dedicatedAllocation = info->memory.dedicatedAllocation,
     };
