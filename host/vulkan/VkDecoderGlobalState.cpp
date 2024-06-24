@@ -6774,7 +6774,7 @@ class VkDecoderGlobalState::Impl {
     void set_boxed_non_dispatchable_##type(type boxed, type underlying) {                         \
         DispatchableHandleInfo<uint64_t> item;                                                    \
         item.underlying = (uint64_t)underlying;                                                   \
-        sBoxedHandleManager.update((uint64_t)boxed, item, Tag_##type);                          \
+        sBoxedHandleManager.update((uint64_t)boxed, item, Tag_##type);                            \
     }                                                                                             \
     type unboxed_to_boxed_non_dispatchable_##type(type unboxed) {                                 \
         AutoLock lock(sBoxedHandleManager.lock);                                                  \
@@ -6899,6 +6899,11 @@ class VkDecoderGlobalState::Impl {
             }
             if (hasDeviceExtension(properties, VK_EXT_METAL_OBJECTS_EXTENSION_NAME)) {
                 res.push_back(VK_EXT_METAL_OBJECTS_EXTENSION_NAME);
+            }
+        } else {
+            // Non-MoltenVK path, use memory_fd
+            if (hasDeviceExtension(properties, VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME)) {
+                res.push_back(VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME);
             }
         }
 #endif
