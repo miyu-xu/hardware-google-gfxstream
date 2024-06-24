@@ -14,41 +14,41 @@
 * limitations under the License.
 */
 
-#include <atomic>
-#include <time.h>
 
 #include <assert.h>
+#include <cutils/log.h>
+#include <cutils/properties.h>
+#include <cutils/trace.h>
+#include <poll.h>
+#include <time.h>
+#include <xf86drm.h>
 
+#include <atomic>
+
+#include "EncoderDebug.h"
 #include "HostConnection.h"
+#include "ProcessPipe.h"
 #include "ThreadInfo.h"
+#include "VirtGpu.h"
+#include "aemu/base/Tracing.h"
 #include "aemu/base/threads/AndroidThread.h"
+#include "eglContext.h"
 #include "eglDisplay.h"
 #include "eglSync.h"
 #include "egl_ftable.h"
-#include <cutils/log.h>
-#include <cutils/properties.h>
-#include "goldfish_sync.h"
 #include "gfxstream/guest/GLClientState.h"
 #include "gfxstream/guest/GLSharedGroup.h"
-#include "eglContext.h"
-#include "ClientAPIExts.h"
-#include "EGLImage.h"
-#include "ProcessPipe.h"
-
-#include <qemu_pipe_bp.h>
-
-#include "GLEncoder.h"
-#include "GL2Encoder.h"
-
-#include <GLES3/gl31.h>
-
-#include <xf86drm.h>
-#include <poll.h>
-#include "VirtGpu.h"
+#include "goldfish_sync.h"
+#include "qemu_pipe_bp.h"
 #include "virtgpu_drm.h"
 
-#include "aemu/base/Tracing.h"
-#include <cutils/trace.h>
+// clang-format off
+#include "ClientAPIExts.h"
+#include "EGLImage.h"
+#include "GL2Encoder.h"
+#include "GLEncoder.h"
+#include <GLES3/gl31.h>
+// clang-format on
 
 using gfxstream::guest::GLClientState;
 using gfxstream::guest::getCurrentThreadId;
@@ -1106,6 +1106,8 @@ EGLDisplay eglGetDisplay(EGLNativeDisplayType display_id)
 
 EGLBoolean eglInitialize(EGLDisplay dpy, EGLint *major, EGLint *minor)
 {
+    ENCODER_DEBUG_LOG("eglInitialize(dpy:%p, major:%p, minor:%p)", dpy, major, minor);
+
     VALIDATE_DISPLAY(dpy,EGL_FALSE);
 
     if (!s_display.initialize(&s_eglIface)) {
@@ -1120,6 +1122,8 @@ EGLBoolean eglInitialize(EGLDisplay dpy, EGLint *major, EGLint *minor)
 
 EGLBoolean eglTerminate(EGLDisplay dpy)
 {
+    ENCODER_DEBUG_LOG("eglTerminate(dpy:%p)", dpy);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
 
     s_display.terminate();
@@ -1130,6 +1134,8 @@ EGLBoolean eglTerminate(EGLDisplay dpy)
 
 EGLint eglGetError()
 {
+    ENCODER_DEBUG_LOG("eglGetError()");
+
     EGLint error = getEGLThreadInfo()->eglError;
     getEGLThreadInfo()->eglError = EGL_SUCCESS;
     return error;
@@ -1153,6 +1159,8 @@ __eglMustCastToProperFunctionPointerType eglGetProcAddress(const char *procname)
 
 const char* eglQueryString(EGLDisplay dpy, EGLint name)
 {
+    ENCODER_DEBUG_LOG("eglQueryString(dpy:%p, name:%d)", dpy, name);
+
     // EGL_BAD_DISPLAY is generated if display is not an EGL display connection, unless display is
     // EGL_NO_DISPLAY and name is EGL_EXTENSIONS.
     if (dpy || name != EGL_EXTENSIONS) {
@@ -1164,6 +1172,9 @@ const char* eglQueryString(EGLDisplay dpy, EGLint name)
 
 EGLBoolean eglGetConfigs(EGLDisplay dpy, EGLConfig *configs, EGLint config_size, EGLint *num_config)
 {
+    ENCODER_DEBUG_LOG("eglGetConfigs(dpy:%p, configs:%p, config_size:%d, num_config:%p)", dpy,
+                      configs, config_size, num_config);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
 
     if(!num_config) {
@@ -1186,6 +1197,10 @@ EGLBoolean eglGetConfigs(EGLDisplay dpy, EGLConfig *configs, EGLint config_size,
 
 EGLBoolean eglChooseConfig(EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *configs, EGLint config_size, EGLint *num_config)
 {
+    ENCODER_DEBUG_LOG(
+        "eglChooseConfig(dpy:%p, attrib_list:%p, configs:%p, config_size:%d, num_config:%p)", dpy,
+        attrib_list, configs, config_size, num_config);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
 
     if (!num_config) {
@@ -1236,6 +1251,9 @@ EGLBoolean eglChooseConfig(EGLDisplay dpy, const EGLint *attrib_list, EGLConfig 
 
 EGLBoolean eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value)
 {
+    ENCODER_DEBUG_LOG("eglGetConfigAttrib(dpy:%p, config:%p, attribute:%d, value:%p)", dpy, config,
+                      attribute, value);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     VALIDATE_CONFIG(config, EGL_FALSE);
 
@@ -1252,6 +1270,9 @@ EGLBoolean eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config, EGLint attribute
 
 EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType win, const EGLint *attrib_list)
 {
+    ENCODER_DEBUG_LOG("eglCreateWindowSurface(dpy:%p, config:%p, win:%p, attrib_list:%p)", dpy,
+                      config, win, attrib_list);
+
     (void)attrib_list;
 
     VALIDATE_DISPLAY_INIT(dpy, NULL);
@@ -1282,6 +1303,9 @@ EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config, EGLNativeWin
 
 EGLSurface eglCreatePbufferSurface(EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list)
 {
+    ENCODER_DEBUG_LOG("eglCreatePbufferSurface(dpy:%p, config:%p, attrib_list:%p)", dpy, config,
+                      attrib_list);
+
     VALIDATE_DISPLAY_INIT(dpy, NULL);
     VALIDATE_CONFIG(config, EGL_FALSE);
 
@@ -1349,6 +1373,9 @@ EGLSurface eglCreatePbufferSurface(EGLDisplay dpy, EGLConfig config, const EGLin
 
 EGLSurface eglCreatePixmapSurface(EGLDisplay dpy, EGLConfig config, EGLNativePixmapType pixmap, const EGLint *attrib_list)
 {
+    ENCODER_DEBUG_LOG("eglCreatePixmapSurface(dpy:%p, config:%p, pixmap:%p, attrib_list:%p)", dpy,
+                      config, pixmap, attrib_list);
+
     //XXX: Pixmap not supported. The host cannot render to a pixmap resource
     //     located on host. In order to support Pixmaps we should either punt
     //     to s/w rendering -or- let the host render to a buffer that will be
@@ -1363,6 +1390,8 @@ EGLSurface eglCreatePixmapSurface(EGLDisplay dpy, EGLConfig config, EGLNativePix
 
 EGLBoolean eglDestroySurface(EGLDisplay dpy, EGLSurface eglSurface)
 {
+    ENCODER_DEBUG_LOG("eglDestroySurface(dpy:%p, surface:%p)", dpy, eglSurface);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     VALIDATE_SURFACE_RETURN(eglSurface, EGL_FALSE);
 
@@ -1388,6 +1417,9 @@ static float s_getNativeDpi() {
 
 EGLBoolean eglQuerySurface(EGLDisplay dpy, EGLSurface eglSurface, EGLint attribute, EGLint *value)
 {
+    ENCODER_DEBUG_LOG("eglQuerySurface(dpy:%p, surface:%p, attribute:%d, value:%p)", dpy,
+                      eglSurface, attribute, value);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     VALIDATE_SURFACE_RETURN(eglSurface, EGL_FALSE);
 
@@ -1514,6 +1546,8 @@ EGLBoolean eglQuerySurface(EGLDisplay dpy, EGLSurface eglSurface, EGLint attribu
 
 EGLBoolean eglBindAPI(EGLenum api)
 {
+    ENCODER_DEBUG_LOG("eglBindAPI(api:%d)", api);
+
     if (api != EGL_OPENGL_ES_API)
         setErrorReturn(EGL_BAD_PARAMETER, EGL_FALSE);
     return EGL_TRUE;
@@ -1521,11 +1555,15 @@ EGLBoolean eglBindAPI(EGLenum api)
 
 EGLenum eglQueryAPI()
 {
+    ENCODER_DEBUG_LOG("eglQueryAPI()");
+
     return EGL_OPENGL_ES_API;
 }
 
 EGLBoolean eglWaitClient()
 {
+    ENCODER_DEBUG_LOG("eglWaitClient()");
+
     return eglWaitGL();
 }
 
@@ -1568,11 +1606,18 @@ static EGLBoolean s_eglReleaseThreadImpl(EGLThreadInfo* tInfo) {
 
 EGLBoolean eglReleaseThread()
 {
+    ENCODER_DEBUG_LOG("eglReleaseThread()");
+
     return s_eglReleaseThreadImpl(getEGLThreadInfo());
 }
 
 EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay dpy, EGLenum buftype, EGLClientBuffer buffer, EGLConfig config, const EGLint *attrib_list)
 {
+    ENCODER_DEBUG_LOG(
+        "eglCreatePbufferFromClientBuffer(dpy:%p, buftype:%d, buffer:%p, config:%p, "
+        "attrib_list:%p)",
+        dpy, buftype, buffer, config, attrib_list);
+
     //TODO
     (void)dpy;
     (void)buftype;
@@ -1585,6 +1630,9 @@ EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay dpy, EGLenum buftype, EGL
 
 EGLBoolean eglSurfaceAttrib(EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint value)
 {
+    ENCODER_DEBUG_LOG("eglSurfaceAttrib(dpy:%p, surface:%p, attribute:%d, value:%d)", dpy, surface,
+                      attribute, value);
+
     // Right now we don't do anything when using host GPU.
     // This is purely just to pass the data through
     // without issuing a warning. We may benefit from validating the
@@ -1635,6 +1683,8 @@ EGLBoolean eglSurfaceAttrib(EGLDisplay dpy, EGLSurface surface, EGLint attribute
 
 EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface eglSurface, EGLint buffer)
 {
+    ENCODER_DEBUG_LOG("eglBindTexImage(dpy:%p, eglSurface:%p, buffer:%d)", dpy, eglSurface, buffer);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     VALIDATE_SURFACE_RETURN(eglSurface, EGL_FALSE);
     if (eglSurface == EGL_NO_SURFACE) {
@@ -1666,6 +1716,8 @@ EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface eglSurface, EGLint buffer)
 
 EGLBoolean eglReleaseTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 {
+    ENCODER_DEBUG_LOG("eglReleaseTexImage(dpy:%p, surface:%p, buffer:%d)", dpy, surface, buffer);
+
     //TODO
     (void)dpy;
     (void)surface;
@@ -1676,6 +1728,8 @@ EGLBoolean eglReleaseTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 
 EGLBoolean eglSwapInterval(EGLDisplay dpy, EGLint interval)
 {
+    ENCODER_DEBUG_LOG("eglSwapInterval(dpy:%p, interval:%d)", dpy, interval);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     DEFINE_AND_VALIDATE_HOST_CONNECTION(EGL_FALSE);
 
@@ -1715,6 +1769,9 @@ static EGLConfig chooseDefaultEglConfig(const EGLDisplay& display) {
 
 EGLContext eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_context, const EGLint *attrib_list)
 {
+    ENCODER_DEBUG_LOG("eglCreateContext(dpy:%p, config:%d, share_context:%p, attrib_list:%p)", dpy,
+                      config, share_context, attrib_list);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_NO_CONTEXT);
 
     if (config == EGL_NO_CONFIG_KHR) {
@@ -1877,6 +1934,8 @@ EGLContext eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_c
 
 EGLBoolean eglDestroyContext(EGLDisplay dpy, EGLContext ctx)
 {
+    ENCODER_DEBUG_LOG("eglDestroyContext(dpy:%p, ctx:%p)", dpy, ctx);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     VALIDATE_CONTEXT_RETURN(ctx, EGL_FALSE);
 
@@ -1921,6 +1980,8 @@ static EGLSurface getOrCreateDummySurface(EGLContext_t* context) {
 
 EGLBoolean eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx)
 {
+    ENCODER_DEBUG_LOG("eglMakeCurrent(dpy:%p, draw:%p, read:%p, ctx:%p)", dpy, draw, read, ctx);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     VALIDATE_SURFACE_RETURN(draw, EGL_FALSE);
     VALIDATE_SURFACE_RETURN(read, EGL_FALSE);
@@ -2103,11 +2164,15 @@ EGLBoolean eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLC
 
 EGLContext eglGetCurrentContext()
 {
+    ENCODER_DEBUG_LOG("eglGetCurrentContext()");
+
     return getEGLThreadInfo()->currentContext;
 }
 
 EGLSurface eglGetCurrentSurface(EGLint readdraw)
 {
+    ENCODER_DEBUG_LOG("eglGetCurrentSurface(readdraw:%d)", readdraw);
+
     EGLContext_t * context = getEGLThreadInfo()->currentContext;
     if (!context)
         return EGL_NO_SURFACE; //not an error
@@ -2125,6 +2190,8 @@ EGLSurface eglGetCurrentSurface(EGLint readdraw)
 
 EGLDisplay eglGetCurrentDisplay()
 {
+    ENCODER_DEBUG_LOG("eglGetCurrentDisplay()");
+
     EGLContext_t * context = getEGLThreadInfo()->currentContext;
     if (!context)
         return EGL_NO_DISPLAY; //not an error
@@ -2134,6 +2201,9 @@ EGLDisplay eglGetCurrentDisplay()
 
 EGLBoolean eglQueryContext(EGLDisplay dpy, EGLContext ctx, EGLint attribute, EGLint *value)
 {
+    ENCODER_DEBUG_LOG("eglQueryContext(dpy:%p, ctx:%p, attribute:%d, value:%p)", dpy, ctx,
+                      attribute, value);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     VALIDATE_CONTEXT_RETURN(ctx, EGL_FALSE);
 
@@ -2167,6 +2237,8 @@ EGLBoolean eglQueryContext(EGLDisplay dpy, EGLContext ctx, EGLint attribute, EGL
 
 EGLBoolean eglWaitGL()
 {
+    ENCODER_DEBUG_LOG("eglWaitGL()");
+
     EGLThreadInfo *tInfo = getEGLThreadInfo();
     if (!tInfo || !tInfo->currentContext) {
         return EGL_FALSE;
@@ -2184,12 +2256,16 @@ EGLBoolean eglWaitGL()
 
 EGLBoolean eglWaitNative(EGLint engine)
 {
+    ENCODER_DEBUG_LOG("eglWaitNative(engine:%d)", engine);
+
     (void)engine;
     return EGL_TRUE;
 }
 
 EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface eglSurface)
 {
+    ENCODER_DEBUG_LOG("eglSwapBuffers(dpy:%p, eglSurface:%p)", dpy, eglSurface);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     if (eglSurface == EGL_NO_SURFACE)
         setErrorReturn(EGL_BAD_SURFACE, EGL_FALSE);
@@ -2238,6 +2314,9 @@ EGLBoolean eglUnlockSurfaceKHR(EGLDisplay display, EGLSurface surface)
 
 EGLImageKHR eglCreateImageKHR(EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLint *attrib_list)
 {
+    ENCODER_DEBUG_LOG("eglCreateImageKHR(dpy:%p, ctx:%p, target:%d, buffer:%p, attrib_list:%p)",
+                      dpy, ctx, target, buffer, attrib_list);
+
     (void)attrib_list;
 
     VALIDATE_DISPLAY_INIT(dpy, EGL_NO_IMAGE_KHR);
@@ -2309,6 +2388,8 @@ EGLImageKHR eglCreateImageKHR(EGLDisplay dpy, EGLContext ctx, EGLenum target, EG
 
 EGLBoolean eglDestroyImageKHR(EGLDisplay dpy, EGLImageKHR img)
 {
+    ENCODER_DEBUG_LOG("eglDestroyImageKHR(dpy:%p, img:%p)", dpy, img);
+
     VALIDATE_DISPLAY_INIT(dpy, EGL_FALSE);
     EGLImage_t *image = (EGLImage_t*)img;
 
@@ -2344,6 +2425,8 @@ EGLBoolean eglDestroyImageKHR(EGLDisplay dpy, EGLImageKHR img)
 EGLSyncKHR eglCreateSyncKHR(EGLDisplay dpy, EGLenum type,
         const EGLint *attrib_list)
 {
+    ENCODER_DEBUG_LOG("eglCreateSyncKHR(dpy:%p, type:%p, attrib_list:%p)", dpy, type, attrib_list);
+
     VALIDATE_DISPLAY(dpy, EGL_NO_SYNC_KHR);
     DPRINT("type for eglCreateSyncKHR: 0x%x", type);
 
@@ -2459,6 +2542,8 @@ EGLSyncKHR eglCreateSyncKHR(EGLDisplay dpy, EGLenum type,
 
 EGLBoolean eglDestroySyncKHR(EGLDisplay dpy, EGLSyncKHR eglsync)
 {
+    ENCODER_DEBUG_LOG("eglDestroySyncKHR(dpy:%p, eglsync:%p)", dpy, eglsync);
+
     (void)dpy;
 
     if (!eglsync) {
@@ -2491,6 +2576,9 @@ EGLBoolean eglDestroySyncKHR(EGLDisplay dpy, EGLSyncKHR eglsync)
 EGLint eglClientWaitSyncKHR(EGLDisplay dpy, EGLSyncKHR eglsync, EGLint flags,
         EGLTimeKHR timeout)
 {
+    ENCODER_DEBUG_LOG("eglClientWaitSyncKHR(dpy:%p, eglsync:%p, flags:%d, timeout:%" PRIu64 ")",
+                      dpy, eglsync, flags, timeout);
+
     (void)dpy;
 
     if (!eglsync) {
@@ -2530,6 +2618,9 @@ EGLint eglClientWaitSyncKHR(EGLDisplay dpy, EGLSyncKHR eglsync, EGLint flags,
 EGLBoolean eglGetSyncAttribKHR(EGLDisplay dpy, EGLSyncKHR eglsync,
         EGLint attribute, EGLint *value)
 {
+    ENCODER_DEBUG_LOG("eglGetSyncAttribKHR(dpy:%p, eglsync:%p, attribute:%d, value:%p)", dpy,
+                      eglsync, attribute, value);
+
     (void)dpy;
 
     EGLSync_t* sync = (EGLSync_t*)eglsync;
@@ -2571,6 +2662,8 @@ EGLBoolean eglGetSyncAttribKHR(EGLDisplay dpy, EGLSyncKHR eglsync,
 }
 
 int eglDupNativeFenceFDANDROID(EGLDisplay dpy, EGLSyncKHR eglsync) {
+    ENCODER_DEBUG_LOG("eglDupNativeFenceFDANDROID(dpy:%p, eglsync:%p)", dpy, eglsync);
+
     (void)dpy;
 
     DPRINT("call");
@@ -2585,6 +2678,9 @@ int eglDupNativeFenceFDANDROID(EGLDisplay dpy, EGLSyncKHR eglsync) {
 }
 
 EGLint eglWaitSyncKHR(EGLDisplay dpy, EGLSyncKHR eglsync, EGLint flags) {
+    ENCODER_DEBUG_LOG("eglWaitSyncKHR(dpy:%p, eglsync:%p, flags:%d)", dpy, eglsync,
+                      flags);
+
     (void)dpy;
 
     if (!eglsync) {
