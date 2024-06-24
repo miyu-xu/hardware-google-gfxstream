@@ -106,6 +106,24 @@
       "parentUuid": "f4e417cc_5667571f",
       "revId": "20a33e72f047e78c02e6348504d6456992767149",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af84ae98_22df7cf8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-24T20:55:07Z",
+      "side": 1,
+      "message": "@natsu@google.com, test failures are resolved now, would be great if you can review this again, thanks",
+      "parentUuid": "1cee3d49_885177b8",
+      "revId": "20a33e72f047e78c02e6348504d6456992767149",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
