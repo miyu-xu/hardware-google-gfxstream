@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38e3a758_41a83e98",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-25T17:28:03Z",
+      "side": 1,
+      "message": "Jason do you really want encoder logging here? Encoder logging usually logs the command right before they are serialized and sent to the host. It should be one level lower than egl.cpp (they should be in renderControl_enc.cpp). You could use a different logger function, or just use DPRINT as is defined in this file.",
+      "revId": "6aec190c7f58c070ae869b0a4495a5c9b222c7d5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
