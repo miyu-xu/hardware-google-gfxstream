@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "653591f8_9b9ec085",
+        "filename": "host/GfxStreamAgents.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-06-25T16:16:16Z",
+      "side": 1,
+      "message": "Can this be something more like  `GFXSTREAM_LIBAEMU_HAS_SNAPSHOT`? IIUC, `QAndroidVmOperations` is already from `libaemu` so it\u0027s kind of strange to just guard part of struct with a preprocessor named after the entire struct/lib.",
+      "range": {
+        "startLine": 436,
+        "startChar": 7,
+        "endLine": 436,
+        "endChar": 18
+      },
+      "revId": "3df218224e0787dfc093796d727479e94c6f6c81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
