@@ -22,6 +22,30 @@
       },
       "revId": "cef3e4afc651ef96cb4cbb48a716bfc758868e2e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "deff0cdb_bf410b3e",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2527,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-25T18:42:57Z",
+      "side": 1,
+      "message": "Acknowledged\nWe can\u0027t transition back to that but I didn\u0027t see any usage of it (not sure if it might be useful for QNX, as they were adding fixes to support linear layout color buffers), we can add that later in case we get any vvl errors.",
+      "parentUuid": "a46f40f2_f92a5fe2",
+      "range": {
+        "startLine": 2527,
+        "startChar": 25,
+        "endLine": 2527,
+        "endChar": 50
+      },
+      "revId": "cef3e4afc651ef96cb4cbb48a716bfc758868e2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
