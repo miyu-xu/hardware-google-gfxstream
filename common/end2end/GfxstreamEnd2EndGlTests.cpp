@@ -745,6 +745,90 @@ TEST_P(GfxstreamEnd2EndGlTest, ProgramBinaryWithTexture) {
     mGl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+TEST_P(GfxstreamEnd2EndGlTest, TextureUploadAndReadbackWithAhb) {
+    const uint32_t width = 2;
+    const uint32_t height = 2;
+    const std::vector<uint32_t> redPixels(width * height, 0xFF0000FF);
+    const std::vector<uint32_t> bluePixels(width * height, 0x0000FFFF);
+
+    auto ahb = GL_ASSERT(ScopedAHardwareBuffer::Allocate(*mGralloc, width, height, GFXSTREAM_AHB_FORMAT_R8G8B8A8_UNORM));
+
+    // Initialize AHB with red pixels:
+    {
+        uint8_t* mapped = GL_ASSERT(ahb.Lock());
+        std::memcpy(mapped, redPixels.data(), sizeof(uint32_t) * redPixels.size());
+        ahb.Unlock();
+    }
+
+    // Upload blue pixels to AHB via texture upload:
+    {
+        const EGLint ahbImageAttribs[] = {
+            // clang-format off
+            EGL_IMAGE_PRESERVED_KHR, EGL_TRUE,
+            EGL_NONE,
+            // clang-format on
+        };
+        EGLImageKHR ahbImage = mGl->eglCreateImageKHR(mDisplay, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, ahb, ahbImageAttribs);
+        ASSERT_THAT(ahbImage, Not(Eq(EGL_NO_IMAGE_KHR)));
+
+        ScopedGlTexture ahbTexture(*mGl);
+        mGl->glBindTexture(GL_TEXTURE_2D, ahbTexture);
+        mGl->glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, ahbImage);
+        ASSERT_THAT(mGl->glGetError(), Eq(GL_NO_ERROR));
+
+        mGl->glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, bluePixels.data());
+        ASSERT_THAT(mGl->glGetError(), Eq(GL_NO_ERROR));
+
+        EGLSync uploadFence = mGl->eglCreateSyncKHR(mDisplay, EGL_SYNC_FENCE_KHR, nullptr);
+        ASSERT_THAT(mGl->eglGetError(), Eq(EGL_SUCCESS));
+
+        mGl->glFlush();
+
+        ahbTexture.Reset();
+
+        mGl->eglClientWaitSyncKHR(mDisplay, uploadFence, /*flags=*/0, /*timeout=2 seconds*/2 * 1000 * 1000 * 1000);
+        ASSERT_THAT(mGl->eglGetError(), Eq(EGL_SUCCESS));
+
+        mGl->eglDestroySyncKHR(mDisplay, uploadFence);
+        ASSERT_THAT(mGl->eglGetError(), Eq(EGL_SUCCESS));
+
+        mGl->eglDestroyImageKHR(mDisplay, ahbImage);
+        ASSERT_THAT(mGl->eglGetError(), Eq(EGL_SUCCESS));
+    }
+
+    // Readback and inspect:
+    {
+        const EGLint ahbImageAttribs[] = {
+            // clang-format off
+            EGL_IMAGE_PRESERVED_KHR, EGL_TRUE,
+            EGL_NONE,
+            // clang-format on
+        };
+        EGLImageKHR ahbImage = mGl->eglCreateImageKHR(mDisplay, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, ahb, ahbImageAttribs);
+        ASSERT_THAT(ahbImage, Not(Eq(EGL_NO_IMAGE_KHR)));
+
+        ScopedGlTexture ahbTexture(*mGl);
+        mGl->glBindTexture(GL_TEXTURE_2D, ahbTexture);
+        mGl->glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, ahbImage);
+        ASSERT_THAT(mGl->glGetError(), Eq(GL_NO_ERROR));
+
+        ScopedGlFramebuffer blitFramebuffer(*mGl);
+        mGl->glBindFramebuffer(GL_FRAMEBUFFER, blitFramebuffer);
+        mGl->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ahbTexture, 0);
+        ASSERT_THAT(mGl->glGetError(), Eq(GL_NO_ERROR));
+        ASSERT_THAT(mGl->glCheckFramebufferStatus(GL_FRAMEBUFFER), Eq(GL_FRAMEBUFFER_COMPLETE));
+        ASSERT_THAT(mGl->glGetError(), Eq(GL_NO_ERROR));
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                EXPECT_THAT(GetPixelAt(x, y), IsOkWithRGBA(0, 255, 0, 255));
+            }
+        }
+
+        mGl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+}
+
 INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndGlTest,
                         ::testing::ValuesIn({
                             TestParams{
