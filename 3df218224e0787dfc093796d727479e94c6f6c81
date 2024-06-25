@@ -22,6 +22,30 @@
       },
       "revId": "3df218224e0787dfc093796d727479e94c6f6c81",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11eba140_366eb4bf",
+        "filename": "host/GfxStreamAgents.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-25T17:55:37Z",
+      "side": 1,
+      "message": "Changed it to `GFXSTREAM_ENABLE_HOST_VK_SNAPSHOT`, which already existed in the Soong build.  Added it to the CMake build too.",
+      "parentUuid": "653591f8_9b9ec085",
+      "range": {
+        "startLine": 436,
+        "startChar": 7,
+        "endLine": 436,
+        "endChar": 18
+      },
+      "revId": "3df218224e0787dfc093796d727479e94c6f6c81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
