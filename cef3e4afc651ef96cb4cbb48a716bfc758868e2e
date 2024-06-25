@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a46f40f2_f92a5fe2",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2527,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-06-25T18:26:23Z",
+      "side": 1,
+      "message": "should we also check VK_IMAGE_LAYOUT_PREINITIALIZED? (do we use it at all?)",
+      "range": {
+        "startLine": 2527,
+        "startChar": 25,
+        "endLine": 2527,
+        "endChar": 50
+      },
+      "revId": "cef3e4afc651ef96cb4cbb48a716bfc758868e2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
