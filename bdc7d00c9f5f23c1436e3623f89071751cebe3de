@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07ded361_f1d41ba6",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 1812,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-06-25T16:46:05Z",
+      "side": 1,
+      "message": "optional: maybe rename to something like `getMostCloselyMatchingMemoryTypeIndex()` or `getMinimallyMatchingMemoryTypeIndex()` to reflect the behavior.",
+      "range": {
+        "startLine": 1812,
+        "startChar": 16,
+        "endLine": 1812,
+        "endChar": 39
+      },
+      "revId": "bdc7d00c9f5f23c1436e3623f89071751cebe3de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
