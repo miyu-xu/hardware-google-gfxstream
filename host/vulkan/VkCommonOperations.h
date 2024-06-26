@@ -151,8 +151,6 @@ struct VkEmulation {
 
 #if defined(__APPLE__) && defined(VK_MVK_moltenvk)
     bool instanceSupportsMoltenVK = false;
-    PFN_vkSetMTLTextureMVK setMTLTextureFunc = nullptr;
-    PFN_vkGetMTLTextureMVK getMTLTextureFunc = nullptr;
 #else
     static const bool instanceSupportsMoltenVK = false;
 #endif

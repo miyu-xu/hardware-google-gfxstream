@@ -610,8 +610,9 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         extensionsSupported(instanceExts, externalSemaphoreInstanceExtNames);
     bool surfaceSupported = extensionsSupported(instanceExts, surfaceInstanceExtNames);
 #if defined(__APPLE__) && defined(VK_MVK_moltenvk)
-    bool moltenVKSupported = (vk->vkGetMTLTextureMVK != nullptr) &&
-                             (vk->vkSetMTLTextureMVK != nullptr) &&
+    const std::string vulkanIcd = android::base::getEnvironmentVariable("ANDROID_EMU_VK_ICD");
+    const bool moltenVKEnabled = (vulkanIcd == "moltenvk");
+    bool moltenVKSupported = moltenVKEnabled &&
                              extensionsSupported(instanceExts, moltenVkInstanceExtNames);
 #endif
 
@@ -762,19 +763,6 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
 
 #if defined(__APPLE__) && defined(VK_MVK_moltenvk)
     if (sVkEmulation->instanceSupportsMoltenVK) {
-        // These functions are directly loaded from the shared molten library
-        // and are not available via vkGetInstanceProcAddr
-        sVkEmulation->setMTLTextureFunc = gvk->vkSetMTLTextureMVK;
-        if (!sVkEmulation->setMTLTextureFunc) {
-            VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(ABORT_REASON_OTHER,
-                                                 "Cannot find vkSetMTLTextureMVK.");
-        }
-        sVkEmulation->getMTLTextureFunc = gvk->vkGetMTLTextureMVK;
-        if (!sVkEmulation->getMTLTextureFunc) {
-            VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(ABORT_REASON_OTHER,
-                                                 "Cannot find vkGetMTLTextureMVK.");
-        }
-
         // Using metal_objects extension on MacOS when moltenVK is used.
         externalMemoryDeviceExtNames.push_back(VK_EXT_METAL_OBJECTS_EXTENSION_NAME);
     }

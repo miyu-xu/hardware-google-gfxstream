@@ -25,16 +25,6 @@
 #define VK_MVK_MOLTENVK_SPEC_VERSION 3
 #define VK_MVK_MOLTENVK_EXTENSION_NAME "VK_MVK_moltenvk"
 
-typedef void* MTLTextureRef;
-typedef void* MTLBufferRef;
-
-typedef void(VKAPI_PTR* PFN_vkGetMTLDeviceMVK)(VkPhysicalDevice physicalDevice, void** pMTLDevice);
-typedef VkResult(VKAPI_PTR* PFN_vkSetMTLTextureMVK)(VkImage image, MTLTextureRef mtlTexture);
-typedef void(VKAPI_PTR* PFN_vkGetMTLTextureMVK)(VkImage image, MTLTextureRef* pMTLTexture);
-typedef void(VKAPI_PTR* PFN_vkGetMTLBufferMVK)(VkBuffer buffer, void** pMTLBuffer);
-typedef VkResult(VKAPI_PTR* PFN_vkUseIOSurfaceMVK)(VkImage image, void* ioSurface);
-typedef void(VKAPI_PTR* PFN_vkGetIOSurfaceMVK)(VkImage image, void** pIOSurface);
-
 #endif  // VK_MVK_moltenvk
 
 // These are internally defined MoltenVK flags for external memory usage

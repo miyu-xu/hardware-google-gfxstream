@@ -1008,14 +1008,6 @@ class VkDecoderGlobalState::Impl {
         init_vulkan_dispatch_from_instance(m_vk, *pInstance, dispatch_VkInstance(boxed));
         info.boxed = boxed;
 
-#if defined(__APPLE__) && defined(VK_MVK_moltenvk)
-        if (m_emu->instanceSupportsMoltenVK) {
-            if (!m_vk->vkSetMTLTextureMVK) {
-                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Cannot find vkSetMTLTextureMVK";
-            }
-        }
-#endif
-
         std::string_view engineName = appInfo.pEngineName ? appInfo.pEngineName : "";
         info.isAngle = (engineName == "ANGLE");
 
