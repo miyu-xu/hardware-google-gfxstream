@@ -1,5 +1,40 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06496315_bdd5543f",
+        "filename": "guest/vulkan_enc/goldfish_vk_counting_guest.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 7328,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-06-26T13:36:46Z",
+      "side": 1,
+      "message": "Here we unconditionally dereference `toCount`...",
+      "revId": "91db8869dbc5edb7e59f712901bff4c93f772ea6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a60ffc5d_3b9cd71d",
+        "filename": "guest/vulkan_enc/goldfish_vk_counting_guest.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 7330,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-06-26T13:36:46Z",
+      "side": 1,
+      "message": "...so if `toCount` was NULL, like we\u0027re checking for here, we would have already crashed.\n\nSo either this check is unnecessary, because it\u0027s impossible for `toCount` to be null, or we need to change the logic above to not crash when it is null.",
+      "revId": "91db8869dbc5edb7e59f712901bff4c93f772ea6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
