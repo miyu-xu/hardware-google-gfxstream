@@ -15,6 +15,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "goldfish_vk_private_defs.h"
 #include "vk_android_native_buffer_gfxstream.h"
@@ -135,6 +136,11 @@ REGISTER_VK_STRUCT_ID(VkTimelineSemaphoreSubmitInfo,
 #if defined(LINUX_GUEST_BUILD)
 REGISTER_VK_STRUCT_ID(wsi_image_create_info, VK_STRUCTURE_TYPE_WSI_IMAGE_CREATE_INFO_MESA);
 #endif
+REGISTER_VK_STRUCT_ID(VkImageDrmFormatModifierExplicitCreateInfoEXT,
+                      VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT);
+REGISTER_VK_STRUCT_ID(VkFormatProperties2, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+REGISTER_VK_STRUCT_ID(VkPhysicalDeviceImageDrmFormatModifierInfoEXT,
+                      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT);
 
 #undef REGISTER_VK_STRUCT_ID
 

@@ -46,6 +46,10 @@
 #include "vk_struct_id.h"
 #include "vk_util.h"
 
+#if defined(__linux__)
+#include <drm_fourcc.h>
+#endif
+
 #if defined(__ANDROID__) || defined(__linux__) || defined(__APPLE__)
 
 #include <sys/mman.h>
@@ -1893,6 +1897,9 @@ VkResult ResourceTracker::on_vkEnumerateDeviceExtensionProperties(
 #if !defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(__linux__)
         filteredExts.push_back(VkExtensionProperties{"VK_KHR_external_memory_fd", 1});
         filteredExts.push_back(VkExtensionProperties{"VK_EXT_external_memory_dma_buf", 1});
+        // In case the host doesn't support format modifiers, they are emulated
+        // on guest side.
+        filteredExts.push_back(VkExtensionProperties{"VK_EXT_image_drm_format_modifier", 1});
 #endif
     }
 
@@ -4224,6 +4231,8 @@ VkResult ResourceTracker::on_vkCreateImage(void* context, VkResult, VkDevice dev
 
 #if defined(LINUX_GUEST_BUILD)
     bool isDmaBufImage = false;
+    VkImageDrmFormatModifierExplicitCreateInfoEXT localDrmFormatModifierInfo;
+
     if (extImgCiPtr &&
         (extImgCiPtr->handleTypes & VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT)) {
         const wsi_image_create_info* wsiImageCi =
@@ -4246,6 +4255,26 @@ VkResult ResourceTracker::on_vkCreateImage(void* context, VkResult, VkDevice dev
             // DRM_FORMAT_MOD_LINEAR.
             localCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
         }
+
+        const VkImageDrmFormatModifierExplicitCreateInfoEXT* drmFmtMod =
+            vk_find_struct<VkImageDrmFormatModifierExplicitCreateInfoEXT>(pCreateInfo);
+        if (drmFmtMod) {
+            if (getHostDeviceExtensionIndex(VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME) !=
+                -1) {
+                // host supports DRM format modifiers => forward the struct
+                localDrmFormatModifierInfo = vk_make_orphan_copy(*drmFmtMod);
+                vk_append_struct(&structChainIter, &localDrmFormatModifierInfo);
+            } else {
+                // host doesn't support DRM format modifiers, try emulating
+                if (drmFmtMod->drmFormatModifier == DRM_FORMAT_MOD_LINEAR) {
+                    mesa_logd("emulating DRM_FORMAT_MOD_LINEAR with VK_IMAGE_TILING_LINEAR");
+                    localCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
+                } else {
+                    return VK_ERROR_FORMAT_NOT_SUPPORTED;
+                }
+            }
+        }
+
         isDmaBufImage = true;
     }
 #endif
@@ -6680,6 +6709,8 @@ VkResult ResourceTracker::on_vkGetPhysicalDeviceImageFormatProperties2_common(
     VkEncoder* enc = (VkEncoder*)context;
     (void)input_result;
 
+    VkPhysicalDeviceImageFormatInfo2 localImageFormatInfo = *pImageFormatInfo;
+
     uint32_t supportedHandleType = 0;
     VkExternalImageFormatProperties* ext_img_properties =
         vk_find_struct<VkExternalImageFormatProperties>(pImageFormatProperties);
@@ -6723,14 +6754,37 @@ VkResult ResourceTracker::on_vkGetPhysicalDeviceImageFormatProperties2_common(
         }
     }
 
+#ifdef LINUX_GUEST_BUILD
+    VkImageDrmFormatModifierExplicitCreateInfoEXT localDrmFormatModifierInfo;
+
+    const VkPhysicalDeviceImageDrmFormatModifierInfoEXT* drmFmtMod =
+        vk_find_struct<VkPhysicalDeviceImageDrmFormatModifierInfoEXT>(pImageFormatInfo);
+    if (drmFmtMod) {
+        if (getHostDeviceExtensionIndex(VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME) != -1) {
+            // Host supports DRM format modifiers => leave the input unchanged.
+        } else {
+            // Host doesn't support DRM format modifiers, try emulating.
+            if (drmFmtMod->drmFormatModifier == DRM_FORMAT_MOD_LINEAR) {
+                mesa_logd("emulating DRM_FORMAT_MOD_LINEAR with VK_IMAGE_TILING_LINEAR");
+                localImageFormatInfo.tiling = VK_IMAGE_TILING_LINEAR;
+                pImageFormatInfo = &localImageFormatInfo;
+                // Leave drmFormatMod in the input; it should be ignored when
+                // tiling is not VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT
+            } else {
+                return VK_ERROR_FORMAT_NOT_SUPPORTED;
+            }
+        }
+    }
+#endif  // LINUX_GUEST_BUILD
+
     VkResult hostRes;
 
     if (isKhr) {
         hostRes = enc->vkGetPhysicalDeviceImageFormatProperties2KHR(
-            physicalDevice, pImageFormatInfo, pImageFormatProperties, true /* do lock */);
+            physicalDevice, &localImageFormatInfo, pImageFormatProperties, true /* do lock */);
     } else {
         hostRes = enc->vkGetPhysicalDeviceImageFormatProperties2(
-            physicalDevice, pImageFormatInfo, pImageFormatProperties, true /* do lock */);
+            physicalDevice, &localImageFormatInfo, pImageFormatProperties, true /* do lock */);
     }
 
     if (hostRes != VK_SUCCESS) return hostRes;
