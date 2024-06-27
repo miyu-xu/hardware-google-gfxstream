@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58ed9cc3_cfbee0be",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-27T16:52:54Z",
+      "side": 1,
+      "message": "Can we avoid reverting this part and keep using unified ERR/WARN..etc ?",
+      "revId": "4ee25087270e4e86fceded17437a9d79884549e8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ba94b75_bb0faf58",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2125,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-27T16:52:54Z",
+      "side": 1,
+      "message": "Can\u0027t we define VERBOSE for other build targets instead? Or, I\u0027d prefer having something like `#ifndef VERBOSE` to treat it same as INFO.",
+      "revId": "4ee25087270e4e86fceded17437a9d79884549e8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
