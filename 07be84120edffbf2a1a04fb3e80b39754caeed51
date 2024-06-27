@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1c75dfa_01e5603b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-27T19:07:24Z",
+      "side": 1,
+      "message": "rutabaga_gfx side implementation available here: crrev.com/c/5645904",
+      "revId": "07be84120edffbf2a1a04fb3e80b39754caeed51",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
