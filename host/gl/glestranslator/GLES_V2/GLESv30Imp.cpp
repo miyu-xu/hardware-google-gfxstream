@@ -994,11 +994,13 @@ GL_APICALL void GL_APIENTRY glProgramBinary(GLuint program, GLenum binaryFormat,
 
         ctx->dispatcher().glProgramBinary(globalProgramName, binaryFormat, binary, length);
 
+#if !defined(__QNX__)
         GLint linkStatus = GL_FALSE;
         ctx->dispatcher().glGetProgramiv(globalProgramName, GL_LINK_STATUS, &linkStatus);
 
         programData->setHostLinkStatus(linkStatus);
         programData->setLinkStatus(linkStatus);
+#endif
 
         GLsizei infoLogLength = 0;
         ctx->dispatcher().glGetProgramiv(globalProgramName, GL_INFO_LOG_LENGTH, &infoLogLength);
