@@ -69,6 +69,24 @@
       "parentUuid": "7e63d9ed_05a8d3d7",
       "revId": "090308d260abb064027034181986cdc4101c9be6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "64f45f6e_18dd14ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-06-27T22:17:56Z",
+      "side": 1,
+      "message": "Your patch works! I will discard this review ...",
+      "parentUuid": "7e63d9ed_05a8d3d7",
+      "revId": "090308d260abb064027034181986cdc4101c9be6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
