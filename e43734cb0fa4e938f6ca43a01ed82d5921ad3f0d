@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20943662_6973dad6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-28T15:58:42Z",
+      "side": 1,
+      "message": "LGTM, but if this is a valid reason for a revert, I think meson build should be added into presubmit tests.",
+      "revId": "e43734cb0fa4e938f6ca43a01ed82d5921ad3f0d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
