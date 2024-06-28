@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d03276fc_9f9888b7",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 3842,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-28T16:37:47Z",
+      "side": 1,
+      "message": "Don\u0027t we need to release `bufferBlob`?",
+      "range": {
+        "startLine": 3842,
+        "startChar": 0,
+        "endLine": 3842,
+        "endChar": 59
+      },
+      "revId": "09389e22009328f692444cf69e26d92046daf443",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1766c3f_b140e88c",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 3845,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-28T16:37:47Z",
+      "side": 1,
+      "message": "No need to check the result here?",
+      "range": {
+        "startLine": 3845,
+        "startChar": 0,
+        "endLine": 3845,
+        "endChar": 39
+      },
+      "revId": "09389e22009328f692444cf69e26d92046daf443",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06626e19_66f1bbad",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 3903,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-28T16:37:47Z",
+      "side": 1,
+      "message": "Same as above, no need to release `bufferBlob`?",
+      "range": {
+        "startLine": 3903,
+        "startChar": 1,
+        "endLine": 3903,
+        "endChar": 55
+      },
+      "revId": "09389e22009328f692444cf69e26d92046daf443",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
