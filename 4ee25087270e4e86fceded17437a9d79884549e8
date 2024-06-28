@@ -54,6 +54,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee81f1c6_9a61f01a",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-06-28T10:18:45Z",
+      "side": 1,
+      "message": "We should ideally do some overhaul on logging to make sure all necessary functionality are usable and there is no redundancy, but I don\u0027t think we should stop providing new interfaces because of some dependencies.",
+      "parentUuid": "c3109276_384f8f6c",
+      "revId": "4ee25087270e4e86fceded17437a9d79884549e8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7ba94b75_bb0faf58",
