@@ -67,7 +67,7 @@ objc_library(
 cc_library(
     name = "gfxstream_backend_static",
     srcs = [
-        "BlobManager.cpp",
+        "ExternalObjectManager.cpp",
         "Buffer.cpp",
         "ChannelStream.cpp",
         "ColorBuffer.cpp",
