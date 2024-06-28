@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad8e5ddb_b24ca64f",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1565,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-28T15:57:15Z",
+      "side": 1,
+      "message": "\u003e `gfxstream: host + guest: bump up version of the protocol`\n\nDoes this intentionally stay the same because we just use one of the existing padding words in a backward compatible way?",
+      "range": {
+        "startLine": 1565,
+        "startChar": 16,
+        "endLine": 1565,
+        "endChar": 44
+      },
+      "revId": "5f810791ab041ed77b5e7c3aaec3aa0dcb99ea6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
