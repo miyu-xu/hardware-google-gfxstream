@@ -185,6 +185,7 @@ static constexpr uint32_t kMinVersion = VK_MAKE_VERSION(1, 0, 0);
 static constexpr uint64_t kPageSizeforBlob = 4096;
 static constexpr uint64_t kPageMaskForBlob = ~(0xfff);
 
+static constexpr size_t kNumSyncTypes = 3;
 static uint64_t hostBlobId = 0;
 
 // b/319729462
@@ -1799,6 +1800,13 @@ class VkDecoderGlobalState::Impl {
             AstcCpuDecompressor::get().available();
         deviceInfo.decompPipelines =
             std::make_unique<GpuDecompressionPipelineManager>(m_vk, *pDevice);
+        getSupportedFenceHandleTypes(
+            vk, physicalDevice,
+            reinterpret_cast<uint64_t*>(&deviceInfo.externalFenceInfo.supportedFenceHandleTypes));
+        getSupportedSemaphoreHandleTypes(
+            vk, physicalDevice,
+            reinterpret_cast<uint64_t*>(
+                &deviceInfo.externalFenceInfo.supportedBinarySemaphoreHandleTypes));
 
         INFO("Created VkDevice:%p for application:%s engine:%s ASTC emulation:%s CPU decoding:%s.",
              *pDevice, instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str(),
@@ -7183,6 +7191,10 @@ class VkDecoderGlobalState::Impl {
             res.push_back(VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME);
         }
 
+        if (m_emu->instanceSupportsExternalFenceCapabilities) {
+            res.push_back(VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME);
+        }
+
         if (m_emu->debugUtilsAvailableAndRequested) {
             res.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
@@ -7289,6 +7301,80 @@ class VkDecoderGlobalState::Impl {
         VkPhysicalDeviceFeatures feature;
         vk->vkGetPhysicalDeviceFeatures(physicalDevice, &feature);
         return !feature.textureCompressionASTC_LDR;
+    }
+
+    void getSupportedFenceHandleTypes(VulkanDispatch* vk, VkPhysicalDevice physicalDevice,
+                                      uint64_t* supportedFenceHandleTypes) {
+        if (!m_emu->instanceSupportsExternalFenceCapabilities) {
+            return;
+        }
+
+        VkExternalFenceHandleTypeFlagBits handleTypes[kNumSyncTypes] = {
+            VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR,
+            VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT,
+            VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT,
+        };
+
+        for (size_t i = 0; i < kNumSyncTypes; i++) {
+            VkExternalFenceProperties externalFenceProps;
+            externalFenceProps.sType = VK_STRUCTURE_TYPE_EXTERNAL_FENCE_PROPERTIES;
+            externalFenceProps.pNext = nullptr;
+
+            VkPhysicalDeviceExternalFenceInfo externalFenceInfo = {
+                VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO, nullptr, handleTypes[i]};
+
+            vk->vkGetPhysicalDeviceExternalFenceProperties(physicalDevice, &externalFenceInfo,
+                                                           &externalFenceProps);
+
+            if ((externalFenceProps.externalFenceFeatures &
+                 (VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT)) == 0) {
+                continue;
+            }
+
+            if ((externalFenceProps.externalFenceFeatures &
+                 (VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT)) == 0) {
+                continue;
+            }
+
+            *supportedFenceHandleTypes |= handleTypes[i];
+        }
+    }
+
+    void getSupportedSemaphoreHandleTypes(VulkanDispatch* vk, VkPhysicalDevice physicalDevice,
+                                          uint64_t* supportedBinarySemaphoreHandleTypes) {
+        if (!m_emu->instanceSupportsExternalSemaphoreCapabilities) {
+            return;
+        }
+
+        VkExternalSemaphoreHandleTypeFlagBits handleTypes[kNumSyncTypes] = {
+            VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR,
+            VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT,
+            VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT,
+        };
+
+        for (size_t i = 0; i < kNumSyncTypes; i++) {
+            VkExternalSemaphoreProperties externalSemaphoreProps;
+            externalSemaphoreProps.sType = VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES;
+            externalSemaphoreProps.pNext = nullptr;
+
+            VkPhysicalDeviceExternalSemaphoreInfo externalSemaphoreInfo = {
+                VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO, nullptr, handleTypes[i]};
+
+            vk->vkGetPhysicalDeviceExternalSemaphoreProperties(
+                physicalDevice, &externalSemaphoreInfo, &externalSemaphoreProps);
+
+            if ((externalSemaphoreProps.externalSemaphoreFeatures &
+                 (VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT)) == 0) {
+                continue;
+            }
+
+            if ((externalSemaphoreProps.externalSemaphoreFeatures &
+                 (VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT)) == 0) {
+                continue;
+            }
+
+            *supportedBinarySemaphoreHandleTypes |= handleTypes[i];
+        }
     }
 
     bool supportsSwapchainMaintenance1(VkPhysicalDevice physicalDevice, VulkanDispatch* vk) {
