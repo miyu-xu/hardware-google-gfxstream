@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0959fbfd_8d982c6a",
+        "filename": "host/Buffer.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-28T15:41:11Z",
+      "side": 1,
+      "message": "Nit: `(void)` in an argument list looks kinda strange in C++ code",
+      "range": {
+        "startLine": 61,
+        "startChar": 52,
+        "endLine": 61,
+        "endChar": 56
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "b182fadd_5cddb67a",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/Buffer.h",
+              "range": {
+                "startLine": 61,
+                "startChar": 0,
+                "endLine": 62,
+                "endChar": 0
+              },
+              "replacement": "    std::optional\u003cManagedDescriptorInfo\u003e exportBlob();\n"
+            }
+          ]
+        }
+      ],
+      "revId": "a9bf5877047eb63a36f13dedb2c62d14f0e44dcf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
