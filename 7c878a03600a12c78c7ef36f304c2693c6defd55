@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "394a7d67_d1f0a33d",
+        "filename": "host/vulkan/VkCommonOperations.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-28T10:31:27Z",
+      "side": 1,
+      "message": "Nit: how about `outStreamHandleType`?",
+      "range": {
+        "startLine": 535,
+        "startChar": 79,
+        "endLine": 535,
+        "endChar": 94
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "7c774c0f_9d507022",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkCommonOperations.h",
+              "range": {
+                "startLine": 535,
+                "startChar": 0,
+                "endLine": 536,
+                "endChar": 0
+              },
+              "replacement": "VK_EXT_MEMORY_HANDLE getBufferExtMemoryHandle(uint32_t bufferHandle, uint32_t* outStreamHandleType);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "7c878a03600a12c78c7ef36f304c2693c6defd55",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
