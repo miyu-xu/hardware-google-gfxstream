@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "639ce1ca_7ead365e",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1645,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-06-28T09:50:47Z",
+      "side": 1,
+      "message": "Should there be an `else` block with `getMemoryHandleFunc` call as before? Right now `#elif __APPLE__` branch skips the `exportRes` check after setting it (we end up with `else if (exportRes !\u003d VK_SUCCESS [...])`",
+      "range": {
+        "startLine": 1645,
+        "startChar": 6,
+        "endLine": 1645,
+        "endChar": 10
+      },
+      "revId": "0f9732bf89211dcd13ccb94e0e706dd91cbe6c3f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
