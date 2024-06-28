@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f82b432_aff9316b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-28T17:04:44Z",
+      "side": 1,
+      "message": "breaks `cuttlefish_graphics_vts_angle_tests`",
+      "revId": "82216d7a8b67387d49fdda97ee6d496085f9b11f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4f2c08a1_ada12e67",
