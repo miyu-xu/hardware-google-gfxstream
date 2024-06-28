@@ -16,6 +16,23 @@
       "message": "+kocdemir to make sure this doesn\u0027t break APPLE.",
       "revId": "82216d7a8b67387d49fdda97ee6d496085f9b11f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eac2d774_4d283038",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 2453,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-06-28T15:39:29Z",
+      "side": 1,
+      "message": "Vulkan supports to export multiple different types at the same time. Do we also want to expose such capability?",
+      "revId": "82216d7a8b67387d49fdda97ee6d496085f9b11f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
