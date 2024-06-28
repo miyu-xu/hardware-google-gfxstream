@@ -22,6 +22,30 @@
       },
       "revId": "0f9732bf89211dcd13ccb94e0e706dd91cbe6c3f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba104269_7212dd25",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1645,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-28T15:28:39Z",
+      "side": 1,
+      "message": "Good catch, done.",
+      "parentUuid": "639ce1ca_7ead365e",
+      "range": {
+        "startLine": 1645,
+        "startChar": 6,
+        "endLine": 1645,
+        "endChar": 10
+      },
+      "revId": "0f9732bf89211dcd13ccb94e0e706dd91cbe6c3f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
