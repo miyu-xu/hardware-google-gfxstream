@@ -33,6 +33,42 @@
       "message": "Could you file a bug with the build error and repro steps?",
       "revId": "e43734cb0fa4e938f6ca43a01ed82d5921ad3f0d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "caca9fa9_d9d117f2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-28T21:42:52Z",
+      "side": 1,
+      "message": "I don\u0027t mind fixing the Meson build, but I want to increase knowledgeable about versioned releases and dependency management.  Most devs work on a hermetic Bazel/AOSP build, but anything outside of AOSP versioning is very important.  So I generally won\u0027t revert for Meson build breaks, but since it\u0027s the versioning issue 90% of the time (3 times this week), breaking out the revert hammer just this once could help cut that down ;-)",
+      "parentUuid": "20943662_6973dad6",
+      "revId": "e43734cb0fa4e938f6ca43a01ed82d5921ad3f0d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9470b0e_0be617fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-06-28T21:42:52Z",
+      "side": 1,
+      "message": "b/350087867",
+      "parentUuid": "48172cf9_e235078c",
+      "revId": "e43734cb0fa4e938f6ca43a01ed82d5921ad3f0d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
