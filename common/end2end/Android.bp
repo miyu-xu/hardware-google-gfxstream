@@ -57,7 +57,7 @@ cc_test_host {
         "-Wno-extern-c-compat",
     ],
     local_include_dirs: [
-        "shaders",
+        ".",
     ],
     test_options: {
         // Disabled by default as requires host OpenGL and Vulkan.
