@@ -22,6 +22,30 @@
       },
       "revId": "5f810791ab041ed77b5e7c3aaec3aa0dcb99ea6d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c076388_2ef25573",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1565,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-01T16:54:30Z",
+      "side": 1,
+      "message": "It should be really named `asgProtocolVersion`.  Any change to the capabilities --\u003e including adding new fields, is backwards compatible due to virtio-gpu design.  The guest kernel copies min(guest_caps_size, host_caps_size).  I forgot why there is padding here.",
+      "parentUuid": "ad8e5ddb_b24ca64f",
+      "range": {
+        "startLine": 1565,
+        "startChar": 16,
+        "endLine": 1565,
+        "endChar": 44
+      },
+      "revId": "5f810791ab041ed77b5e7c3aaec3aa0dcb99ea6d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
