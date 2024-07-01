@@ -875,15 +875,21 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
 
         deviceInfos[i].hasSamplerYcbcrConversionExtension =
             extensionsSupported(deviceExts, {VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME});
+
+        deviceInfos[i].hasNvidiaDeviceDiagnosticCheckpointsExtension =
+            extensionsSupported(deviceExts, {VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME});
+
         if (sVkEmulation->getPhysicalDeviceFeatures2Func) {
             VkPhysicalDeviceFeatures2 features2 = {
                 .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
             };
             auto features2Chain = vk_make_chain_iterator(&features2);
+
             VkPhysicalDeviceSamplerYcbcrConversionFeatures samplerYcbcrConversionFeatures = {
                 .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES,
             };
             vk_append_struct(&features2Chain, &samplerYcbcrConversionFeatures);
+
 #if defined(__QNX__)
             VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX extMemScreenBufferFeatures = {
                 .sType =
@@ -891,10 +897,23 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
             };
             vk_append_struct(&features2Chain, &extMemScreenBufferFeatures);
 #endif
+
+            VkPhysicalDeviceDiagnosticsConfigFeaturesNV deviceDiagnosticsConfigFeatures = {
+                .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DIAGNOSTICS_CONFIG_FEATURES_NV,
+                .diagnosticsConfig = VK_FALSE,
+            };
+            if (deviceInfos[i].hasNvidiaDeviceDiagnosticCheckpointsExtension) {
+                vk_append_struct(&features2Chain, &deviceDiagnosticsConfigFeatures);
+            }
+
             sVkEmulation->getPhysicalDeviceFeatures2Func(physdevs[i], &features2);
 
             deviceInfos[i].supportsSamplerYcbcrConversion =
                 samplerYcbcrConversionFeatures.samplerYcbcrConversion == VK_TRUE;
+
+            deviceInfos[i].supportsNvidiaDeviceDiagnosticCheckpoints =
+                deviceDiagnosticsConfigFeatures.diagnosticsConfig == VK_TRUE;
+
 #if defined(__QNX__)
             deviceInfos[i].supportsExternalMemoryImport =
                 extMemScreenBufferFeatures.screenBufferImport == VK_TRUE;
@@ -1109,6 +1128,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
                 });
         vk_append_struct(&deviceCiChain, samplerYcbcrConversionFeatures.get());
     }
+
 #if defined(__QNX__)
     std::unique_ptr<VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX>
         extMemScreenBufferFeaturesQNX = nullptr;
@@ -1123,6 +1143,25 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
         vk_append_struct(&deviceCiChain, extMemScreenBufferFeaturesQNX.get());
     }
 #endif
+
+    const bool commandBufferCheckpointsSupported =
+        sVkEmulation->deviceInfo.supportsNvidiaDeviceDiagnosticCheckpoints;
+    const bool commandBufferCheckpointsRequested =
+        sVkEmulation->features.VulkanCommandBufferCheckpoints.enabled;
+    const bool commandBufferCheckpointsSupportedAndRequested =
+        commandBufferCheckpointsSupported && commandBufferCheckpointsRequested;
+    VkPhysicalDeviceDiagnosticsConfigFeaturesNV deviceDiagnosticsConfigFeatures = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DIAGNOSTICS_CONFIG_FEATURES_NV,
+        .diagnosticsConfig = VK_TRUE,
+    };
+    if (commandBufferCheckpointsSupportedAndRequested) {
+        INFO("Enabling command buffer checkpoints with VK_NV_device_diagnostic_checkpoints.");
+        vk_append_struct(&deviceCiChain, &deviceDiagnosticsConfigFeatures);
+    } else {
+        WARN(
+            "VulkanCommandBufferCheckpoints was requested but the "
+            "VK_NV_device_diagnostic_checkpoints extension is not supported.");
+    }
 
     ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
 
@@ -1330,6 +1369,10 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
                                                      "AEMU_CommandBuffer");
     }
 
+    if (sVkEmulation->deviceInfo.supportsNvidiaDeviceDiagnosticCheckpoints) {
+        sVkEmulation->deviceLostHelper.enableWithNvidiaDeviceDiagnosticCheckpoints();
+    }
+
     VERBOSE("Vulkan global emulation state successfully initialized.");
     sVkEmulation->live = true;
 
@@ -1441,6 +1484,8 @@ void teardownGlobalVkEmulation() {
     delete sVkEmulation;
     sVkEmulation = nullptr;
 }
+
+void onVkDeviceLost() { VkDecoderGlobalState::get()->on_DeviceLost(); }
 
 std::unique_ptr<gfxstream::DisplaySurface> createDisplaySurface(FBNativeWindowType window,
                                                                 uint32_t width, uint32_t height) {

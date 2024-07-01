@@ -182,6 +182,8 @@ size_t goldfish_vk_extension_struct_size_with_stream_features(uint32_t streamFea
 #endif
 #ifdef VK_NV_shader_subgroup_partitioned
 #endif
+#ifdef VK_NV_device_diagnostic_checkpoints
+#endif
 #ifdef VK_EXT_metal_surface
 #endif
 #ifdef VK_EXT_fragment_density_map

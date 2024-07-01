@@ -524,6 +524,10 @@ struct VulkanDispatch {
 #endif
 #ifdef VK_NV_shader_subgroup_partitioned
 #endif
+#ifdef VK_NV_device_diagnostic_checkpoints
+    PFN_vkCmdSetCheckpointNV vkCmdSetCheckpointNV;
+    PFN_vkGetQueueCheckpointDataNV vkGetQueueCheckpointDataNV;
+#endif
 #ifdef VK_EXT_metal_surface
     PFN_vkCreateMetalSurfaceEXT vkCreateMetalSurfaceEXT;
 #endif

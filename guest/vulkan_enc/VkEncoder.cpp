@@ -32918,6 +32918,8 @@ void VkEncoder::vkCmdDrawIndirectByteCountEXT(VkCommandBuffer commandBuffer, uin
 #endif
 #ifdef VK_NV_shader_subgroup_partitioned
 #endif
+#ifdef VK_NV_device_diagnostic_checkpoints
+#endif
 #ifdef VK_EXT_metal_surface
 #endif
 #ifdef VK_EXT_fragment_density_map
