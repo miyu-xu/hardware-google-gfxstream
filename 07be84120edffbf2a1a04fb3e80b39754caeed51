@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "4c285dce_6874614b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-01T17:43:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "059d6d9b_c4100388",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 20
+      },
+      "revId": "07be84120edffbf2a1a04fb3e80b39754caeed51",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "e1c75dfa_01e5603b",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -54,6 +78,24 @@
       "writtenOn": "2024-06-27T20:33:07Z",
       "side": 1,
       "message": "NIIICE!!! Sounds like more linux-on-linux CI testing coming soon? 😊 \n\nMostly just one large comment/discussion on naming and location:\n\nCould these be renamed to `kumquat_\u003cfunction\u003e` and `kumquat_\u003cstruct\u003e` and this subdirectory to `hardware/google/gfxstream/guest/platform/kumquat`? The `rutabaga_` prefix does not help a reader distinguish between these new functions and the existing `rutabaga_` variants. I suppose a prefix of `kumquat_rutabaga_` would also work as this suggested to the reader that the `kumquat` impl forwards things to the `rutabaga` layer but I suppose even that is an implementation detail. The `virtgpu_` part does not really add much detail outside of everything being related to gpu emulation. Similarly, the `drm_` prefix seems unused as these structs are never actually sent across the drm layer.\n\nOn a related note (since the defines are shared there and here), could crrev.com/c/5645904 potentially be restructured to be `rutabaga_gfx/kumquat/server` and `rutabaga_gfx/kumquat/client` with all of the existing `rutabaga_gfx/virtgpu_rutabaga` code moved into the `client` subdirectory?",
+      "revId": "07be84120edffbf2a1a04fb3e80b39754caeed51",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9c2061b_4e1c991b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-01T17:43:55Z",
+      "side": 1,
+      "message": "Mostly done, except kept the `drm_kumquat_*` since it\u0027s meant to be mostly ABI compatible with DRM ioctls, doesn\u0027t necessarily mean it goes through DRM layer.",
+      "parentUuid": "794b910f_7f20c335",
       "revId": "07be84120edffbf2a1a04fb3e80b39754caeed51",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
