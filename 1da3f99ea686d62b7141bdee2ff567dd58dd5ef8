@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5ef202f_18863e91",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 9223,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-01T16:05:06Z",
+      "side": 1,
+      "message": "nit: returning VK_NULL_HANDLE would be better?",
+      "revId": "1da3f99ea686d62b7141bdee2ff567dd58dd5ef8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8edb643_e3239ede",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-01T16:05:06Z",
+      "side": 1,
+      "message": "Maybe for a separate CL, I think adding something like AssertAcquired here would make it less error prone and the dependency more visible.",
+      "revId": "1da3f99ea686d62b7141bdee2ff567dd58dd5ef8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
