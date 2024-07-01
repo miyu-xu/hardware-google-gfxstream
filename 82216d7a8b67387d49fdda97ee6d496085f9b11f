@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44450089_c99fbfbe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-01T16:50:58Z",
+      "side": 1,
+      "message": "Made dma-buf only for Meson build --\u003e should pass tests now hopefully.",
+      "parentUuid": "3f82b432_aff9316b",
+      "revId": "82216d7a8b67387d49fdda97ee6d496085f9b11f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4f2c08a1_ada12e67",
@@ -48,6 +66,24 @@
       "writtenOn": "2024-06-28T16:23:01Z",
       "side": 1,
       "message": "I don\u0027t see we introduce new code using this header, am I missing anything?",
+      "revId": "82216d7a8b67387d49fdda97ee6d496085f9b11f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fefa7e10_a5cb83e2",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-01T16:50:58Z",
+      "side": 1,
+      "message": "Needed for `STREAM_HANDLE__*` types.",
+      "parentUuid": "4f2c08a1_ada12e67",
       "revId": "82216d7a8b67387d49fdda97ee6d496085f9b11f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
