@@ -167,6 +167,8 @@ namespace vk {
 #endif
 #ifdef VK_NV_shader_subgroup_partitioned
 #endif
+#ifdef VK_NV_device_diagnostic_checkpoints
+#endif
 #ifdef VK_EXT_metal_surface
 #endif
 #ifdef VK_EXT_fragment_density_map
@@ -851,6 +853,11 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
         (PFN_vkCmdEndDebugUtilsLabelEXT)dlSymFunc(lib, "vkCmdEndDebugUtilsLabelEXT");
     out->vkCmdInsertDebugUtilsLabelEXT =
         (PFN_vkCmdInsertDebugUtilsLabelEXT)dlSymFunc(lib, "vkCmdInsertDebugUtilsLabelEXT");
+#endif
+#ifdef VK_NV_device_diagnostic_checkpoints
+    out->vkCmdSetCheckpointNV = (PFN_vkCmdSetCheckpointNV)dlSymFunc(lib, "vkCmdSetCheckpointNV");
+    out->vkGetQueueCheckpointDataNV =
+        (PFN_vkGetQueueCheckpointDataNV)dlSymFunc(lib, "vkGetQueueCheckpointDataNV");
 #endif
 #ifdef VK_EXT_tooling_info
     out->vkGetPhysicalDeviceToolPropertiesEXT = (PFN_vkGetPhysicalDeviceToolPropertiesEXT)dlSymFunc(
@@ -1788,6 +1795,12 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
     out->vkCmdInsertDebugUtilsLabelEXT =
         (PFN_vkCmdInsertDebugUtilsLabelEXT)vk->vkGetInstanceProcAddr(
             instance, "vkCmdInsertDebugUtilsLabelEXT");
+#endif
+#ifdef VK_NV_device_diagnostic_checkpoints
+    out->vkCmdSetCheckpointNV =
+        (PFN_vkCmdSetCheckpointNV)vk->vkGetInstanceProcAddr(instance, "vkCmdSetCheckpointNV");
+    out->vkGetQueueCheckpointDataNV = (PFN_vkGetQueueCheckpointDataNV)vk->vkGetInstanceProcAddr(
+        instance, "vkGetQueueCheckpointDataNV");
 #endif
 #ifdef VK_EXT_tooling_info
     out->vkGetPhysicalDeviceToolPropertiesEXT =
@@ -2729,6 +2742,12 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
         device, "vkCmdEndDebugUtilsLabelEXT");
     out->vkCmdInsertDebugUtilsLabelEXT = (PFN_vkCmdInsertDebugUtilsLabelEXT)vk->vkGetDeviceProcAddr(
         device, "vkCmdInsertDebugUtilsLabelEXT");
+#endif
+#ifdef VK_NV_device_diagnostic_checkpoints
+    out->vkCmdSetCheckpointNV =
+        (PFN_vkCmdSetCheckpointNV)vk->vkGetDeviceProcAddr(device, "vkCmdSetCheckpointNV");
+    out->vkGetQueueCheckpointDataNV = (PFN_vkGetQueueCheckpointDataNV)vk->vkGetDeviceProcAddr(
+        device, "vkGetQueueCheckpointDataNV");
 #endif
 #ifdef VK_EXT_tooling_info
     out->vkGetPhysicalDeviceToolPropertiesEXT =
