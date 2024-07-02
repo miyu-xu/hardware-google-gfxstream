@@ -40,6 +40,30 @@
       ],
       "revId": "a9bf5877047eb63a36f13dedb2c62d14f0e44dcf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe1df5e7_42697359",
+        "filename": "host/Buffer.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-02T16:08:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0959fbfd_8d982c6a",
+      "range": {
+        "startLine": 61,
+        "startChar": 52,
+        "endLine": 61,
+        "endChar": 56
+      },
+      "revId": "a9bf5877047eb63a36f13dedb2c62d14f0e44dcf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
