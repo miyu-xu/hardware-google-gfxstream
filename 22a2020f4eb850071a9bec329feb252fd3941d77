@@ -34,6 +34,23 @@
       "parentUuid": "bd910a8e_e28f2a11",
       "revId": "22a2020f4eb850071a9bec329feb252fd3941d77",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4669ba0a_28e1afb6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-07-02T15:15:49Z",
+      "side": 1,
+      "message": "Sorry, had Canadian holiday yesterday :).\n\nUnfortunately, this patch once again breaks client composition, at least on my testing setup (Android13-auto guest in QNX QVM virtual machine).",
+      "revId": "22a2020f4eb850071a9bec329feb252fd3941d77",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
