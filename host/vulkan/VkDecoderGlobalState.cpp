@@ -2845,6 +2845,11 @@ class VkDecoderGlobalState::Impl {
         return result;
     }
 
+    VkResult on_vkGetSemaphoreGOOGLE(android::base::BumpPool* pool, VkDevice boxed_device,
+                                     VkSemaphore semaphore, uint64_t syncId) {
+        return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+    }
+
     void destroySemaphoreLocked(VkDevice device, VulkanDispatch* deviceDispatch,
                                 VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator) {
         auto semaphoreInfoIt = mSemaphoreInfo.find(semaphore);
@@ -8462,6 +8467,12 @@ VkResult VkDecoderGlobalState::on_vkGetSemaphoreFdKHR(android::base::BumpPool* p
                                                       const VkSemaphoreGetFdInfoKHR* pGetFdInfo,
                                                       int* pFd) {
     return mImpl->on_vkGetSemaphoreFdKHR(pool, device, pGetFdInfo, pFd);
+}
+
+VkResult VkDecoderGlobalState::on_vkGetSemaphoreGOOGLE(android::base::BumpPool* pool,
+                                                       VkDevice device, VkSemaphore semaphore,
+                                                       uint64_t syncId) {
+    return mImpl->on_vkGetSemaphoreGOOGLE(pool, device, semaphore, syncId);
 }
 
 void VkDecoderGlobalState::on_vkDestroySemaphore(android::base::BumpPool* pool, VkDevice device,
