@@ -17,8 +17,8 @@
 #include "GfxstreamEnd2EndTestUtils.h"
 #include "GfxstreamEnd2EndTests.h"
 #include "gfxstream/RutabagaLayerTestUtils.h"
-#include "simple_shader_frag.h"
-#include "simple_shader_vert.h"
+#include "shaders/simple_shader_frag.h"
+#include "shaders/simple_shader_vert.h"
 
 namespace gfxstream {
 namespace tests {
@@ -178,12 +178,12 @@ std::unique_ptr<PipelineInfo> GfxstreamEnd2EndVkSnapshotPipelineTest::createPipe
                               .value;
 
     vkhpp::ShaderModuleCreateInfo vertexShaderModuleCreateInfo = {
-        .codeSize = sizeof(kSimpleShaderVert),
-        .pCode = (const uint32_t*)kSimpleShaderVert,
+        .codeSize = kSimpleShaderVert.size() * sizeof(uint32_t),
+        .pCode = kSimpleShaderVert.data(),
     };
     vkhpp::ShaderModuleCreateInfo fragmentShaderModuleCreateInfo = {
-        .codeSize = sizeof(kSimpleShaderFrag),
-        .pCode = (const uint32_t*)kSimpleShaderFrag,
+        .codeSize = kSimpleShaderFrag.size() * sizeof(uint32_t),
+        .pCode = kSimpleShaderFrag.data(),
     };
     res->vertexShaderModule = device.createShaderModuleUnique(vertexShaderModuleCreateInfo).value;
     res->fragmentShaderModule =
