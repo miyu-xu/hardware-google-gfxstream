@@ -16,6 +16,24 @@
       "message": "We never reach this line, since we `return` on the line before this.  We probably want to remove this to avoid confusion, unless we intended something else here.",
       "revId": "e81891a3affd40437c0f39f885b55ef800b57d5c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49378589_50327066",
+        "filename": "guest/platform/kumquat/VirtGpuKumquatDevice.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-03T16:34:06Z",
+      "side": 1,
+      "message": "good catch: https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/3159756",
+      "parentUuid": "ffb5cf3e_7ac07c19",
+      "revId": "e81891a3affd40437c0f39f885b55ef800b57d5c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
