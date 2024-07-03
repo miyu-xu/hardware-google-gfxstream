@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd66c732_3bda88c1",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 5913,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-03T18:24:17Z",
+      "side": 1,
+      "message": "onEndCommandBuffer?\n```suggestion\n        m_emu-\u003edeviceLostHelper.onEndCommandBuffer(commandBuffer, vk);\n```",
+      "range": {
+        "startLine": 5913,
+        "startChar": 32,
+        "endLine": 5913,
+        "endChar": 52
+      },
+      "revId": "01b91c00ed7435a845e87a3284ef8a02fd52e59e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
