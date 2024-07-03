@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffb5cf3e_7ac07c19",
+        "filename": "guest/platform/kumquat/VirtGpuKumquatDevice.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-07-03T12:05:32Z",
+      "side": 1,
+      "message": "We never reach this line, since we `return` on the line before this.  We probably want to remove this to avoid confusion, unless we intended something else here.",
+      "revId": "e81891a3affd40437c0f39f885b55ef800b57d5c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
