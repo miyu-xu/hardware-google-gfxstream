@@ -69,6 +69,24 @@
       "parentUuid": "4669ba0a_28e1afb6",
       "revId": "22a2020f4eb850071a9bec329feb252fd3941d77",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76bf01db_cc1523a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-07-03T17:30:09Z",
+      "side": 1,
+      "message": "From the QNX perspective: We have reference build+VM configurations of Android13/14 all over the place, and backporting guest changes to all these builds is kind of our last resort. Of course, we can manage what we pull in for our new host builds of gfxstream, and I understand we will inevitably become backwards-incompatible. But for now, it\u0027s nice to still have backwards-compatibility when we do a full merge from upstream.",
+      "parentUuid": "c8122214_2e4713d6",
+      "revId": "22a2020f4eb850071a9bec329feb252fd3941d77",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
