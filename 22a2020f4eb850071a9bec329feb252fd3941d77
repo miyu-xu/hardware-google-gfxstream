@@ -51,6 +51,24 @@
       "message": "Sorry, had Canadian holiday yesterday :).\n\nUnfortunately, this patch once again breaks client composition, at least on my testing setup (Android13-auto guest in QNX QVM virtual machine).",
       "revId": "22a2020f4eb850071a9bec329feb252fd3941d77",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8122214_2e4713d6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-03T17:20:46Z",
+      "side": 1,
+      "message": "\u003e Android13-auto guest\n\nAhh, so the Android13-auto guest is not updated with the guest parts of this change?\n\nThis change updates the host to return the actual `GL_LINK_STATUS` for `glProgramBinary()` where previously the host would just always return a failed link  (because it was not being tracked in `host/gl/glestranslator/GLES_V2/GLESv30Imp.cpp`).\n\nIIUC, Skia performing client composition would fallback to recreating shaders with `glCreateShader() + glShaderSource() + glAttachShader()` when `glProgramBinary()` failed to link.\n\nIf you are running with an updated host but an old guest, this change would report the correct link status and Skia would not perform the fallback but then Skia ends up with the pre-existing broken handling of `GL_TEXTURE_EXTERNAL_OES` / `samplerExternalOES` in program binaries.\n\nI guess we need to either backport the guest parts of this change to older branches we care about or introduce a Gfxstream feature to hide the disable the correct behavior by default and update our launchers to only enable the feature when working with a guest with the fix. @yahan@google.com WDYT?",
+      "parentUuid": "4669ba0a_28e1afb6",
+      "revId": "22a2020f4eb850071a9bec329feb252fd3941d77",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
