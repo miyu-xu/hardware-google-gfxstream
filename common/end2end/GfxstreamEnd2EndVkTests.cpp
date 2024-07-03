@@ -2088,6 +2088,10 @@ TEST_P(GfxstreamEnd2EndVkTest, ImportAndBlitFromR8G8B8A8Ahb) {
     VK_ASSERT(DoFillAndRenderFromAhb(GFXSTREAM_AHB_FORMAT_R8G8B8A8_UNORM));
 }
 
+TEST_P(GfxstreamEnd2EndVkTest, ImportAndBlitFromYv12Ahb) {
+    VK_ASSERT(DoFillAndRenderFromAhb(GFXSTREAM_AHB_FORMAT_YV12));
+}
+
 std::vector<TestParams> GenerateTestCases() {
     std::vector<TestParams> cases = {TestParams{
                                          .with_gl = false,

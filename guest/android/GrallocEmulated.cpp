@@ -137,6 +137,13 @@ std::optional<uint32_t> DrmToVirglFormat(uint32_t drmFormat) {
     return std::nullopt;
 }
 
+static constexpr const uint32_t kMaxPlanes = 3;
+
+struct DrmFormatPlaneInfo {
+    uint32_t horizontalSubsampling;
+    uint32_t verticalSubsampling;
+};
+
 }  // namespace
 
 EmulatedAHardwareBuffer::EmulatedAHardwareBuffer(uint32_t width, uint32_t height,
@@ -197,6 +204,28 @@ int EmulatedAHardwareBuffer::lock(uint8_t** ptr) {
 
     *ptr = (*mMapped)->asRawPtr();
     return 0;
+}
+
+int EmulatedAHardwareBuffer::lockPlanes(AHardwareBuffer* ahb, Gralloc::LockedPlanes* ahbPlanes) {
+    uint8_t* data = 0;
+    int ret = lock(&data);
+    if (ret) {
+        return ret;
+    }
+
+    if (DrmIsYuv(mDrmFormat)) {
+
+    } else {
+        ahbPlanes->planeCount = 1;
+        ahbPlanes->planes[0] = Gralloc::LockedPlane{
+            .data = data,
+            .pixelStrideBytes = bbp,
+            .rowStrideBytes = stride,
+        }
+    }
+
+    auto* rahb = reinterpret_cast<EmulatedAHardwareBuffer*>(ahb);
+    return rahb->lock(ahbPlanes);
 }
 
 int EmulatedAHardwareBuffer::unlock() {
@@ -296,6 +325,11 @@ void EmulatedGralloc::release(AHardwareBuffer* ahb) {
 int EmulatedGralloc::lock(AHardwareBuffer* ahb, uint8_t** ptr) {
     auto* rahb = reinterpret_cast<EmulatedAHardwareBuffer*>(ahb);
     return rahb->lock(ptr);
+}
+
+int EmulatedGralloc::lockPlanes(AHardwareBuffer* ahb, LockedPlanes* ahbPlanes) {
+    auto* rahb = reinterpret_cast<EmulatedAHardwareBuffer*>(ahb);
+    return rahb->lock(ahbPlanes);
 }
 
 int EmulatedGralloc::unlock(AHardwareBuffer* ahb) {

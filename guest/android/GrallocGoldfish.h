@@ -31,6 +31,8 @@ class GoldfishGralloc : public Gralloc {
     int lock(AHardwareBuffer* ahb, uint8_t** ptr) override;
     int unlock(AHardwareBuffer* ahb) override;
 
+    int lock(AHardwareBuffer* ahb, uint8_t** ptr) override;
+
     uint32_t getHostHandle(native_handle_t const* handle) override;
     uint32_t getHostHandle(const AHardwareBuffer* handle) override;
 
