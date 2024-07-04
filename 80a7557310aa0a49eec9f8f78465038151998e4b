@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "231508e3_5e6d87d8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-07-04T21:01:48Z",
+      "side": 1,
+      "message": "I\u0027m ... honestly perplexed how this ever worked after I made the change that contained this bug. I\u0027ve been testing on guest builds that contain this bug for a month or two now. I wonder if something in my guest kernel was making the wait fail?\n\nAnyways, I\u0027m seeing the issue now ...",
+      "revId": "80a7557310aa0a49eec9f8f78465038151998e4b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
