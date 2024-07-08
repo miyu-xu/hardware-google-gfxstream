@@ -22,6 +22,30 @@
       },
       "revId": "0b9257fa9d47bfb265cf770d4530e7168e2fae59",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "866f822b_d597f54b",
+        "filename": "guest/mesa/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 873,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-08T15:51:14Z",
+      "side": 1,
+      "message": "I think that\u0027s a good nit, but one meant for Mesa :-)\n\nhttps://gitlab.freedesktop.org/mesa/mesa/-/blob/main/meson.build?ref_type\u003dheads#L935",
+      "parentUuid": "bda1640c_2784cbc4",
+      "range": {
+        "startLine": 873,
+        "startChar": 0,
+        "endLine": 873,
+        "endChar": 7
+      },
+      "revId": "0b9257fa9d47bfb265cf770d4530e7168e2fae59",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
