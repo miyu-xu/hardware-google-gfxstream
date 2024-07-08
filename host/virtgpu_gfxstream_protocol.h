@@ -117,8 +117,7 @@ struct vulkanCapset {
     uint32_t deferredMapping;
     uint32_t blobAlignment;
     uint32_t noRenderControlEnc;
-    uint32_t alwaysBlob;
-    uint32_t padding[13];
+    uint32_t padding[14];
 };
 
 struct magmaCapset {
