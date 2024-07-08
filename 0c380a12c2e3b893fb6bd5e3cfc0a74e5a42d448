@@ -52,6 +52,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13b16650_519e7f2c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1809,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-08T18:04:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc9af40c_48272400",
+      "range": {
+        "startLine": 1803,
+        "startChar": 0,
+        "endLine": 1809,
+        "endChar": 84
+      },
+      "revId": "0c380a12c2e3b893fb6bd5e3cfc0a74e5a42d448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "44f3f04a_226ee2c1",
@@ -75,6 +99,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "edf7b24d_e3b85258",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7318,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-08T18:04:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44f3f04a_226ee2c1",
+      "range": {
+        "startLine": 7317,
+        "startChar": 0,
+        "endLine": 7318,
+        "endChar": 52
+      },
+      "revId": "0c380a12c2e3b893fb6bd5e3cfc0a74e5a42d448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8137add3_a0db9c20",
@@ -88,6 +136,30 @@
       "writtenOn": "2024-07-08T17:17:03Z",
       "side": 1,
       "message": "Nit: other fields here don\u0027t use explicit `struct`\n\n```suggestion\n    ExternalFenceInfo externalFenceInfo;\n```",
+      "range": {
+        "startLine": 202,
+        "startChar": 4,
+        "endLine": 202,
+        "endChar": 11
+      },
+      "revId": "0c380a12c2e3b893fb6bd5e3cfc0a74e5a42d448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5856f14_75a24f43",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-08T18:04:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8137add3_a0db9c20",
       "range": {
         "startLine": 202,
         "startChar": 4,
