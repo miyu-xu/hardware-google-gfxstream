@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bda1640c_2784cbc4",
+        "filename": "guest/mesa/meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 873,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-08T15:05:52Z",
+      "side": 1,
+      "message": "Nit: consider restricting this to `except ImportError`",
+      "range": {
+        "startLine": 873,
+        "startChar": 0,
+        "endLine": 873,
+        "endChar": 7
+      },
+      "revId": "0b9257fa9d47bfb265cf770d4530e7168e2fae59",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
