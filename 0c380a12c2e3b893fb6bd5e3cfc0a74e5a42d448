@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc9af40c_48272400",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1809,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-08T17:17:03Z",
+      "side": 1,
+      "message": "Aren\u0027t `supportedFenceHandleTypes/supportedBinarySemaphoreHandleTypes` likely to be `int`/`int32_t` (due to being defined as `enum`s with maximum value of 0x7FFFFFFF)?\n\nShould we use a temporary `uint64_t` for the call and reassign to the struct field later, to avoid accidentally overwriting other parts of `externalFenceInfo`?",
+      "range": {
+        "startLine": 1803,
+        "startChar": 0,
+        "endLine": 1809,
+        "endChar": 84
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "ec39ce4b_bf16e044",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 1805,
+                "startChar": 0,
+                "endLine": 1806,
+                "endChar": 0
+              },
+              "replacement": "            \u0026deviceInfo.externalFenceInfo.supportedFenceHandleTypes);\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 1808,
+                "startChar": 0,
+                "endLine": 1810,
+                "endChar": 0
+              },
+              "replacement": "            \u0026deviceInfo.externalFenceInfo.supportedBinarySemaphoreHandleTypes);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "0c380a12c2e3b893fb6bd5e3cfc0a74e5a42d448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44f3f04a_226ee2c1",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7318,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-08T17:17:03Z",
+      "side": 1,
+      "message": "Optional: could we use `handleTypes[]` in declaration and range-for here? It could let us avoid the need for a `kNumSyncTypes` completely.",
+      "range": {
+        "startLine": 7317,
+        "startChar": 0,
+        "endLine": 7318,
+        "endChar": 52
+      },
+      "revId": "0c380a12c2e3b893fb6bd5e3cfc0a74e5a42d448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8137add3_a0db9c20",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-08T17:17:03Z",
+      "side": 1,
+      "message": "Nit: other fields here don\u0027t use explicit `struct`\n\n```suggestion\n    ExternalFenceInfo externalFenceInfo;\n```",
+      "range": {
+        "startLine": 202,
+        "startChar": 4,
+        "endLine": 202,
+        "endChar": 11
+      },
+      "revId": "0c380a12c2e3b893fb6bd5e3cfc0a74e5a42d448",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
