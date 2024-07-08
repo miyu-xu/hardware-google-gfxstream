@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78218dea_0d4c75a0",
+        "filename": "guest/platform/kumquat/VirtGpuKumquatDevice.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-08T15:23:15Z",
+      "side": 0,
+      "message": "How did it work before? D:\n\nWas there another version of kumquat that expected a pointer in `get_param.value`?",
+      "range": {
+        "startLine": 79,
+        "startChar": 26,
+        "endLine": 79,
+        "endChar": 41
+      },
+      "revId": "0b9257fa9d47bfb265cf770d4530e7168e2fae59",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
