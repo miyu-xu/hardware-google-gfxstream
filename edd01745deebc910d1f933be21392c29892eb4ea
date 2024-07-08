@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd2bc0dc_21316c9a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-08T17:38:37Z",
+      "side": 1,
+      "message": "Sorry for the test failure, could you provide more details on how to reproduce the failure? Change 3162320 might help depending on the configuration.",
+      "revId": "edd01745deebc910d1f933be21392c29892eb4ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
