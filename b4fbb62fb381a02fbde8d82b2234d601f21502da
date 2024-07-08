@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a5ae3b0_b88fdb9e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-08T10:46:34Z",
+      "side": 1,
+      "message": "@natsu@google.com, I reuploaded this change to ensure the correctness on the memory indices used, and it\u0027s failing on the same test. \n\nI think the test should be updated at this point, as there is no host visible device local memory usable on that device within the requested indices (https://vulkan.gpuinfo.org/displayreport.php?id\u003d19588#memory). I think these tests on that nvidia was also raising some other issues and they were excluded: https://source.corp.google.com/piper///depot/google3/configs/wireless/android/testing/atp/prod/cloud-android-devs/graphics.gcl;l\u003d807?q\u003dFrontBufferGpuToCpu%2F0_glFinish  \n\nWould be great if you can help with fixing the tests, or point out a possible solution for them so I can have a better look.",
+      "revId": "b4fbb62fb381a02fbde8d82b2234d601f21502da",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
