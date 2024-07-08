@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "493dd3e8_0d3c7ff3",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2564,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-08T17:25:03Z",
+      "side": 1,
+      "message": "Nit: Should we zero-init this?\n\nIf `supportedBinarySemaphoreHandleTypes` signals support for anything other than the 3 supported flags, `localExportSemaphoreCi.handleTypes` would be uninitialized.",
+      "range": {
+        "startLine": 2564,
+        "startChar": 61,
+        "endLine": 2564,
+        "endChar": 62
+      },
+      "revId": "add63aa12223c0c6bdbe34a05090db81b95681c8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
