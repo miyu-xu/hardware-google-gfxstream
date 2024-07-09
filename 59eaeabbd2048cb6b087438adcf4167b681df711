@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b118ba65_90eb845b",
+        "filename": "guest/platform/include/VirtGpu.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-09T14:44:36Z",
+      "side": 1,
+      "message": "Is it OK to add this in the middle of an enum?",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 27
+      },
+      "revId": "59eaeabbd2048cb6b087438adcf4167b681df711",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
