@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "174ecff7_599a42e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-09T11:39:18Z",
+      "side": 1,
+      "message": "I\u0027m not too familiar with making changes to gfxstream protocol, which parts of this are manual, and which are generated?",
+      "revId": "1cc5937c0af5fcf8afdeb8e3f1314816f2038bd2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
