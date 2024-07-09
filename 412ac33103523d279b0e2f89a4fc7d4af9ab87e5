@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c43ddb19_c2eebda6",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1188,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-09T00:23:56Z",
+      "side": 0,
+      "message": "Add an #ifdef here keyed on the meson build rather than reverting it, example:\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/host/meson.build#79",
+      "revId": "412ac33103523d279b0e2f89a4fc7d4af9ab87e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
