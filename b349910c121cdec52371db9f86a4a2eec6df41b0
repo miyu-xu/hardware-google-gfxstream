@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0469b14e_38cec465",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-09T16:42:43Z",
+      "side": 1,
+      "message": "gfxstream is complicated and has multiple paths: so code inspection is sometimes the only way.  \n\ngfxstream guest seems to filter out exportInfo for sync fds, and Android is does use sync fds for sync.\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/guest/vulkan_enc/ResourceTracker.cpp#5576",
+      "parentUuid": "35a5431f_d757b9cb",
+      "range": {
+        "startLine": 12,
+        "startChar": 53,
+        "endLine": 13,
+        "endChar": 51
+      },
+      "revId": "b349910c121cdec52371db9f86a4a2eec6df41b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6d4fc6fd_1c8947f5",
@@ -81,6 +105,30 @@
           ]
         }
       ],
+      "revId": "b349910c121cdec52371db9f86a4a2eec6df41b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a705af9_1085a34e",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2554,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-09T16:42:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d4fc6fd_1c8947f5",
+      "range": {
+        "startLine": 2551,
+        "startChar": 0,
+        "endLine": 2554,
+        "endChar": 9
+      },
       "revId": "b349910c121cdec52371db9f86a4a2eec6df41b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
