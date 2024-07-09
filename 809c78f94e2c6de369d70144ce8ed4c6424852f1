@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "337450fc_8d9599bd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-09T16:44:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e77a19f_1b960fe6",
+      "range": {
+        "startLine": 9,
+        "startChar": 29,
+        "endLine": 9,
+        "endChar": 36
+      },
+      "revId": "809c78f94e2c6de369d70144ce8ed4c6424852f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6da7b342_3a48a426",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-07-09T14:22:05Z",
       "side": 1,
       "message": "Nit: add `break;`",
+      "range": {
+        "startLine": 1087,
+        "startChar": 0,
+        "endLine": 1087,
+        "endChar": 13
+      },
+      "revId": "809c78f94e2c6de369d70144ce8ed4c6424852f1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89990ecb_0231b339",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1087,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-09T16:44:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6da7b342_3a48a426",
       "range": {
         "startLine": 1087,
         "startChar": 0,
