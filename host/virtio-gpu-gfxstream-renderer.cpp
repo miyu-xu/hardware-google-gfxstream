@@ -1185,10 +1185,9 @@ class PipeVirglRenderer {
 
         const uint32_t glformat = virgl_format_to_gl(args->format);
         const uint32_t fwkformat = virgl_format_to_fwk_format(args->format);
-        const bool linear = !!(args->bind & VIRGL_BIND_LINEAR);
         gfxstream::FrameBuffer::getFB()->createColorBufferWithHandle(
             args->width, args->height, glformat, (gfxstream::FrameworkFormat)fwkformat,
-            args->handle, linear);
+            args->handle);
         gfxstream::FrameBuffer::getFB()->setGuestManagedColorBufferLifetime(
             true /* guest manages lifetime */);
         gfxstream::FrameBuffer::getFB()->openColorBuffer(args->handle);

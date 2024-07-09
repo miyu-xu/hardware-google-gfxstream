@@ -205,8 +205,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // handle already assigned. This is for use with
     // virtio-gpu's RESOURCE_CREATE ioctl.
     void createColorBufferWithHandle(int p_width, int p_height, GLenum p_internalFormat,
-                                     FrameworkFormat p_frameworkFormat, HandleType handle,
-                                     bool linear = false);
+                                     FrameworkFormat p_frameworkFormat, HandleType handle);
 
     // Create a new data Buffer instance from this display instance.
     // The buffer will be backed by a VkBuffer and VkDeviceMemory (if Vulkan
@@ -709,7 +708,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     }
     HandleType createColorBufferWithHandleLocked(int p_width, int p_height, GLenum p_internalFormat,
                                                  FrameworkFormat p_frameworkFormat,
-                                                 HandleType handle, bool linear = false);
+                                                 HandleType handle);
     HandleType createBufferWithHandleLocked(int p_size, HandleType handle, uint32_t memoryProperty);
 
     void recomputeLayout();

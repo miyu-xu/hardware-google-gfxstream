@@ -559,10 +559,9 @@ static struct AndroidVirtioGpuOps sVirtioGpuOps = {
             FrameBuffer::getFB()->createBufferWithHandle(size, handle);
         },
     .create_color_buffer_with_handle =
-        [](uint32_t width, uint32_t height, uint32_t format, uint32_t fwkFormat, uint32_t handle,
-           bool linear) {
-            FrameBuffer::getFB()->createColorBufferWithHandle(
-                width, height, (GLenum)format, (FrameworkFormat)fwkFormat, handle, linear);
+        [](uint32_t width, uint32_t height, uint32_t format, uint32_t fwkFormat, uint32_t handle) {
+            FrameBuffer::getFB()->createColorBufferWithHandle(width, height, (GLenum)format,
+                                                              (FrameworkFormat)fwkFormat, handle);
         },
     .open_color_buffer = [](uint32_t handle) { FrameBuffer::getFB()->openColorBuffer(handle); },
     .close_buffer = [](uint32_t handle) { FrameBuffer::getFB()->closeBuffer(handle); },
