@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bbda0b0_ae0acb09",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-09T13:39:53Z",
+      "side": 1,
+      "message": "@gurchetansingh@google.com, heads up for using the new VERBOSE macro here. Added ifndef to avoid build errors on other projects, and I\u0027m open to suggestions for putting it on a single, more accessible location if it\u0027s not feasible to update the other projects.",
+      "revId": "307faa4bcc5d5af06b8a5f249181d974c45d89ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
