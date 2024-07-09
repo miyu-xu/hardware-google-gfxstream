@@ -22,6 +22,30 @@
       },
       "revId": "59eaeabbd2048cb6b087438adcf4167b681df711",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd67cb00_1c13cd64",
+        "filename": "guest/platform/include/VirtGpu.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-09T16:46:19Z",
+      "side": 1,
+      "message": "Since we define the implementations of this API, and it\u0027s experimental not upstream, it is okay in this case.",
+      "parentUuid": "b118ba65_90eb845b",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 27
+      },
+      "revId": "59eaeabbd2048cb6b087438adcf4167b681df711",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
