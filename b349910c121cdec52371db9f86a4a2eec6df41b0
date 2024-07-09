@@ -1,0 +1,88 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35a5431f_d757b9cb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-09T11:20:22Z",
+      "side": 1,
+      "message": "How can we check if it really works then? Is there some test coverage for this?",
+      "range": {
+        "startLine": 12,
+        "startChar": 53,
+        "endLine": 13,
+        "endChar": 51
+      },
+      "revId": "b349910c121cdec52371db9f86a4a2eec6df41b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d4fc6fd_1c8947f5",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2554,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-09T11:20:22Z",
+      "side": 1,
+      "message": "Optional: we could as well do `return vk-\u003evkGetSemaphore*(...);` directly",
+      "range": {
+        "startLine": 2551,
+        "startChar": 0,
+        "endLine": 2554,
+        "endChar": 9
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "3e717fa6_c2930a9b",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 2551,
+                "startChar": 0,
+                "endLine": 2555,
+                "endChar": 0
+              },
+              "replacement": "        return vk-\u003evkGetSemaphoreWin32HandleKHR(device, \u0026getWin32, outHandle);\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 2576,
+                "startChar": 0,
+                "endLine": 2580,
+                "endChar": 0
+              },
+              "replacement": "        return vk-\u003evkGetSemaphoreFdKHR(device, \u0026getFd, outHandle);\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 2583,
+                "startChar": 0,
+                "endLine": 2585,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "b349910c121cdec52371db9f86a4a2eec6df41b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
