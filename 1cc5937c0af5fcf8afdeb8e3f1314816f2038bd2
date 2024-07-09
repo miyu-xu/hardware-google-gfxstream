@@ -16,6 +16,24 @@
       "message": "I\u0027m not too familiar with making changes to gfxstream protocol, which parts of this are manual, and which are generated?",
       "revId": "1cc5937c0af5fcf8afdeb8e3f1314816f2038bd2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e40d92b_5516fdc8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-09T16:44:25Z",
+      "side": 1,
+      "message": "Everything besides changes to `VkDecoderGlobalState.{h, cpp}` + `vulkan-docs-next` is auto-generated.  The `VkDecoderGlobalState.{h.cpp}` are needed since codegen introduces new entry points that have to exist in the global decoder.",
+      "parentUuid": "174ecff7_599a42e8",
+      "revId": "1cc5937c0af5fcf8afdeb8e3f1314816f2038bd2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
