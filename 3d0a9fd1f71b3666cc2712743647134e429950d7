@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ab51b2a_ae797989",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2860,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-09T12:19:47Z",
+      "side": 1,
+      "message": "Nit: should we zero-init this, to avoid using uninitialized value in case `supportedBinarySemaphoreHandleTypes` is not one of the values from the if-else chain below?",
+      "range": {
+        "startLine": 2860,
+        "startChar": 54,
+        "endLine": 2860,
+        "endChar": 55
+      },
+      "revId": "3d0a9fd1f71b3666cc2712743647134e429950d7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
