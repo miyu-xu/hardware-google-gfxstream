@@ -33,6 +33,29 @@
       "message": "dextero@+ for second required reviewer.",
       "revId": "80a7557310aa0a49eec9f8f78465038151998e4b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e099fc2_2a45314f",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 3916,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-09T11:03:07Z",
+      "side": 1,
+      "message": "Does this also need an update?",
+      "range": {
+        "startLine": 3916,
+        "startChar": 19,
+        "endLine": 3916,
+        "endChar": 21
+      },
+      "revId": "80a7557310aa0a49eec9f8f78465038151998e4b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
