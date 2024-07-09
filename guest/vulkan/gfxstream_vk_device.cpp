@@ -715,20 +715,23 @@ static std::vector<VkWriteDescriptorSet> transformDescriptorSetList(
 
         bufferInfos.push_back(std::vector<VkDescriptorBufferInfo>());
         bufferInfos[i].reserve(descriptorCount);
-        memset(&bufferInfos[i][0], 0, sizeof(VkDescriptorBufferInfo) * descriptorCount);
+        memset(bufferInfos[i].data(), 0, sizeof(VkDescriptorBufferInfo) * descriptorCount);
+
+        VkDescriptorBufferInfo* pBufferInfo = bufferInfos[i].data();
         for (uint32_t j = 0; j < descriptorCount; ++j) {
             const auto* srcBufferInfo = srcDescriptorSet.pBufferInfo;
             if (srcBufferInfo) {
-                bufferInfos[i][j] = srcBufferInfo[j];
-                bufferInfos[i][j].buffer = VK_NULL_HANDLE;
+                pBufferInfo[j] = srcBufferInfo[j];
+                pBufferInfo[j].buffer = VK_NULL_HANDLE;
                 if (vk_descriptor_type_has_descriptor_buffer(srcDescriptorSet.descriptorType) &&
                     srcBufferInfo[j].buffer) {
                     VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstreamBuffer, srcBufferInfo[j].buffer);
-                    bufferInfos[i][j].buffer = gfxstreamBuffer->internal_object;
+                    pBufferInfo[j].buffer = gfxstreamBuffer->internal_object;
                 }
             }
         }
-        outDescriptorSet.pBufferInfo = bufferInfos[i].data();
+
+        outDescriptorSet.pBufferInfo = pBufferInfo;
     }
     return outDescriptorSets;
 }

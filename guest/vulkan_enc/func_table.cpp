@@ -159,15 +159,15 @@ VkResult gfxstream_vk_QueueSubmit(VkQueue queue, uint32_t submitCount, const VkS
             internal_VkSubmitInfo_pCommandBuffers.push_back(std::vector<VkCommandBuffer>());
             internal_VkSubmitInfo_pCommandBuffers[i].reserve(
                 internal_pSubmits[i].commandBufferCount);
-            memset(&internal_VkSubmitInfo_pCommandBuffers[i][0], 0,
+            memset(internal_VkSubmitInfo_pCommandBuffers[i].data(), 0,
                    sizeof(VkCommandBuffer) * internal_pSubmits[i].commandBufferCount);
+            VkCommandBuffer* pCommandBuffers = internal_VkSubmitInfo_pCommandBuffers[i].data();
             for (uint32_t j = 0; j < internal_pSubmits[i].commandBufferCount; ++j) {
                 VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_pCommandBuffers,
                                internal_pSubmits[i].pCommandBuffers[j]);
-                internal_VkSubmitInfo_pCommandBuffers[i][j] =
-                    gfxstream_pCommandBuffers->internal_object;
+                pCommandBuffers[j] = gfxstream_pCommandBuffers->internal_object;
             }
-            internal_pSubmits[i].pCommandBuffers = internal_VkSubmitInfo_pCommandBuffers[i].data();
+            internal_pSubmits[i].pCommandBuffers = pCommandBuffers;
             /* VkSubmitInfo::pSignalSemaphores */
             internal_VkSubmitInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
             internal_VkSubmitInfo_pSignalSemaphores[i] = transformVkSemaphoreList(
@@ -383,18 +383,17 @@ VkResult gfxstream_vk_QueueBindSparse(VkQueue queue, uint32_t bindInfoCount,
                 std::vector<VkSparseBufferMemoryBindInfo>());
             internal_VkBindSparseInfo_pBufferBinds[i].reserve(
                 internal_pBindInfo[i].bufferBindCount);
-            memset(&internal_VkBindSparseInfo_pBufferBinds[i][0], 0,
+            memset(internal_VkBindSparseInfo_pBufferBinds[i].data(), 0,
                    sizeof(VkSparseBufferMemoryBindInfo) * internal_pBindInfo[i].bufferBindCount);
+            VkSparseBufferMemoryBindInfo* pBufferBinds =
+                internal_VkBindSparseInfo_pBufferBinds[i].data();
             for (uint32_t j = 0; j < internal_pBindInfo[i].bufferBindCount; ++j) {
-                internal_VkBindSparseInfo_pBufferBinds[i][j] =
-                    internal_pBindInfo[i].pBufferBinds[j];
+                pBufferBinds[j] = internal_pBindInfo[i].pBufferBinds[j];
                 /* VkSparseBufferMemoryBindInfo::buffer */
-                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkBindSparseInfo_pBufferBinds[i][j].buffer);
-                internal_VkBindSparseInfo_pBufferBinds[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, pBufferBinds[j].buffer);
+                pBufferBinds[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pBindInfo[i].pBufferBinds = internal_VkBindSparseInfo_pBufferBinds[i].data();
+            internal_pBindInfo[i].pBufferBinds = pBufferBinds;
             /* VkBindSparseInfo::pSignalSemaphores */
             internal_VkBindSparseInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
             internal_VkBindSparseInfo_pSignalSemaphores[i] =
@@ -2354,20 +2353,19 @@ void gfxstream_vk_CmdSetEvent2(VkCommandBuffer commandBuffer, VkEvent event,
                 std::vector<VkBufferMemoryBarrier2>());
             internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
                 internal_pDependencyInfo[i].bufferMemoryBarrierCount);
-            memset(&internal_VkDependencyInfo_pBufferMemoryBarriers[i][0], 0,
+            memset(internal_VkDependencyInfo_pBufferMemoryBarriers[i].data(), 0,
                    sizeof(VkBufferMemoryBarrier2) *
                        internal_pDependencyInfo[i].bufferMemoryBarrierCount);
+            VkBufferMemoryBarrier2* pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
             for (uint32_t j = 0; j < internal_pDependencyInfo[i].bufferMemoryBarrierCount; ++j) {
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
-                    internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
+                pBufferMemoryBarriers[j] = internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
                 /* VkBufferMemoryBarrier2::buffer */
                 VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                               pBufferMemoryBarriers[j].buffer);
+                pBufferMemoryBarriers[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pDependencyInfo[i].pBufferMemoryBarriers =
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            internal_pDependencyInfo[i].pBufferMemoryBarriers = pBufferMemoryBarriers;
         }
         vkEnc->vkCmdSetEvent2(gfxstream_commandBuffer->internal_object, event,
                               internal_pDependencyInfo.data(), true /* do lock */);
@@ -2401,20 +2399,19 @@ void gfxstream_vk_CmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCo
                 std::vector<VkBufferMemoryBarrier2>());
             internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
                 internal_pDependencyInfos[i].bufferMemoryBarrierCount);
-            memset(&internal_VkDependencyInfo_pBufferMemoryBarriers[i][0], 0,
+            memset(internal_VkDependencyInfo_pBufferMemoryBarriers[i].data(), 0,
                    sizeof(VkBufferMemoryBarrier2) *
                        internal_pDependencyInfos[i].bufferMemoryBarrierCount);
+            VkBufferMemoryBarrier2* pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
             for (uint32_t j = 0; j < internal_pDependencyInfos[i].bufferMemoryBarrierCount; ++j) {
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
-                    internal_pDependencyInfos[i].pBufferMemoryBarriers[j];
+                pBufferMemoryBarriers[j] = internal_pDependencyInfos[i].pBufferMemoryBarriers[j];
                 /* VkBufferMemoryBarrier2::buffer */
                 VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                               pBufferMemoryBarriers[j].buffer);
+                pBufferMemoryBarriers[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pDependencyInfos[i].pBufferMemoryBarriers =
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            internal_pDependencyInfos[i].pBufferMemoryBarriers = pBufferMemoryBarriers;
         }
         vkEnc->vkCmdWaitEvents2(gfxstream_commandBuffer->internal_object, eventCount, pEvents,
                                 internal_pDependencyInfos.data(), true /* do lock */);
@@ -2437,20 +2434,19 @@ void gfxstream_vk_CmdPipelineBarrier2(VkCommandBuffer commandBuffer,
                 std::vector<VkBufferMemoryBarrier2>());
             internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
                 internal_pDependencyInfo[i].bufferMemoryBarrierCount);
-            memset(&internal_VkDependencyInfo_pBufferMemoryBarriers[i][0], 0,
+            memset(internal_VkDependencyInfo_pBufferMemoryBarriers[i].data(), 0,
                    sizeof(VkBufferMemoryBarrier2) *
                        internal_pDependencyInfo[i].bufferMemoryBarrierCount);
+            VkBufferMemoryBarrier2* pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
             for (uint32_t j = 0; j < internal_pDependencyInfo[i].bufferMemoryBarrierCount; ++j) {
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
-                    internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
+                pBufferMemoryBarriers[j] = internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
                 /* VkBufferMemoryBarrier2::buffer */
                 VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                               pBufferMemoryBarriers[j].buffer);
+                pBufferMemoryBarriers[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pDependencyInfo[i].pBufferMemoryBarriers =
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            internal_pDependencyInfo[i].pBufferMemoryBarriers = pBufferMemoryBarriers;
         }
         vkEnc->vkCmdPipelineBarrier2(gfxstream_commandBuffer->internal_object,
                                      internal_pDependencyInfo.data(), true /* do lock */);
@@ -2499,19 +2495,18 @@ VkResult gfxstream_vk_QueueSubmit2(VkQueue queue, uint32_t submitCount,
                 std::vector<VkCommandBufferSubmitInfo>());
             internal_VkSubmitInfo2_pCommandBufferInfos[i].reserve(
                 internal_pSubmits[i].commandBufferInfoCount);
-            memset(&internal_VkSubmitInfo2_pCommandBufferInfos[i][0], 0,
+            memset(internal_VkSubmitInfo2_pCommandBufferInfos[i].data(), 0,
                    sizeof(VkCommandBufferSubmitInfo) * internal_pSubmits[i].commandBufferInfoCount);
+            VkCommandBufferSubmitInfo* pCommandBufferInfos =
+                internal_VkSubmitInfo2_pCommandBufferInfos[i].data();
             for (uint32_t j = 0; j < internal_pSubmits[i].commandBufferInfoCount; ++j) {
-                internal_VkSubmitInfo2_pCommandBufferInfos[i][j] =
-                    internal_pSubmits[i].pCommandBufferInfos[j];
+                pCommandBufferInfos[j] = internal_pSubmits[i].pCommandBufferInfos[j];
                 /* VkCommandBufferSubmitInfo::commandBuffer */
                 VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer,
-                               internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer);
-                internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer =
-                    gfxstream_commandBuffer->internal_object;
+                               pCommandBufferInfos[j].commandBuffer);
+                pCommandBufferInfos[j].commandBuffer = gfxstream_commandBuffer->internal_object;
             }
-            internal_pSubmits[i].pCommandBufferInfos =
-                internal_VkSubmitInfo2_pCommandBufferInfos[i].data();
+            internal_pSubmits[i].pCommandBufferInfos = pCommandBufferInfos;
             /* VkSubmitInfo2::pSignalSemaphoreInfos */
             internal_VkSubmitInfo2_pSignalSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
@@ -3499,20 +3494,19 @@ void gfxstream_vk_CmdSetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event,
                 std::vector<VkBufferMemoryBarrier2>());
             internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
                 internal_pDependencyInfo[i].bufferMemoryBarrierCount);
-            memset(&internal_VkDependencyInfo_pBufferMemoryBarriers[i][0], 0,
+            memset(internal_VkDependencyInfo_pBufferMemoryBarriers[i].data(), 0,
                    sizeof(VkBufferMemoryBarrier2) *
                        internal_pDependencyInfo[i].bufferMemoryBarrierCount);
+            VkBufferMemoryBarrier2* pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
             for (uint32_t j = 0; j < internal_pDependencyInfo[i].bufferMemoryBarrierCount; ++j) {
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
-                    internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
+                pBufferMemoryBarriers[j] = internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
                 /* VkBufferMemoryBarrier2::buffer */
                 VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                               pBufferMemoryBarriers[j].buffer);
+                pBufferMemoryBarriers[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pDependencyInfo[i].pBufferMemoryBarriers =
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            internal_pDependencyInfo[i].pBufferMemoryBarriers = pBufferMemoryBarriers;
         }
         vkEnc->vkCmdSetEvent2KHR(gfxstream_commandBuffer->internal_object, event,
                                  internal_pDependencyInfo.data(), true /* do lock */);
@@ -3547,20 +3541,19 @@ void gfxstream_vk_CmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t even
                 std::vector<VkBufferMemoryBarrier2>());
             internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
                 internal_pDependencyInfos[i].bufferMemoryBarrierCount);
-            memset(&internal_VkDependencyInfo_pBufferMemoryBarriers[i][0], 0,
+            memset(internal_VkDependencyInfo_pBufferMemoryBarriers[i].data(), 0,
                    sizeof(VkBufferMemoryBarrier2) *
                        internal_pDependencyInfos[i].bufferMemoryBarrierCount);
+            VkBufferMemoryBarrier2* pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
             for (uint32_t j = 0; j < internal_pDependencyInfos[i].bufferMemoryBarrierCount; ++j) {
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
-                    internal_pDependencyInfos[i].pBufferMemoryBarriers[j];
+                pBufferMemoryBarriers[j] = internal_pDependencyInfos[i].pBufferMemoryBarriers[j];
                 /* VkBufferMemoryBarrier2::buffer */
                 VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                               pBufferMemoryBarriers[j].buffer);
+                pBufferMemoryBarriers[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pDependencyInfos[i].pBufferMemoryBarriers =
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            internal_pDependencyInfos[i].pBufferMemoryBarriers = pBufferMemoryBarriers;
         }
         vkEnc->vkCmdWaitEvents2KHR(gfxstream_commandBuffer->internal_object, eventCount, pEvents,
                                    internal_pDependencyInfos.data(), true /* do lock */);
@@ -3583,20 +3576,19 @@ void gfxstream_vk_CmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer,
                 std::vector<VkBufferMemoryBarrier2>());
             internal_VkDependencyInfo_pBufferMemoryBarriers[i].reserve(
                 internal_pDependencyInfo[i].bufferMemoryBarrierCount);
-            memset(&internal_VkDependencyInfo_pBufferMemoryBarriers[i][0], 0,
+            memset(internal_VkDependencyInfo_pBufferMemoryBarriers[i].data(), 0,
                    sizeof(VkBufferMemoryBarrier2) *
                        internal_pDependencyInfo[i].bufferMemoryBarrierCount);
+            VkBufferMemoryBarrier2* pBufferMemoryBarriers =
+                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
             for (uint32_t j = 0; j < internal_pDependencyInfo[i].bufferMemoryBarrierCount; ++j) {
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j] =
-                    internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
+                pBufferMemoryBarriers[j] = internal_pDependencyInfo[i].pBufferMemoryBarriers[j];
                 /* VkBufferMemoryBarrier2::buffer */
                 VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer);
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                               pBufferMemoryBarriers[j].buffer);
+                pBufferMemoryBarriers[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pDependencyInfo[i].pBufferMemoryBarriers =
-                internal_VkDependencyInfo_pBufferMemoryBarriers[i].data();
+            internal_pDependencyInfo[i].pBufferMemoryBarriers = pBufferMemoryBarriers;
         }
         vkEnc->vkCmdPipelineBarrier2KHR(gfxstream_commandBuffer->internal_object,
                                         internal_pDependencyInfo.data(), true /* do lock */);
@@ -3645,19 +3637,18 @@ VkResult gfxstream_vk_QueueSubmit2KHR(VkQueue queue, uint32_t submitCount,
                 std::vector<VkCommandBufferSubmitInfo>());
             internal_VkSubmitInfo2_pCommandBufferInfos[i].reserve(
                 internal_pSubmits[i].commandBufferInfoCount);
-            memset(&internal_VkSubmitInfo2_pCommandBufferInfos[i][0], 0,
+            memset(internal_VkSubmitInfo2_pCommandBufferInfos[i].data(), 0,
                    sizeof(VkCommandBufferSubmitInfo) * internal_pSubmits[i].commandBufferInfoCount);
+            VkCommandBufferSubmitInfo* pCommandBufferInfos =
+                internal_VkSubmitInfo2_pCommandBufferInfos[i].data();
             for (uint32_t j = 0; j < internal_pSubmits[i].commandBufferInfoCount; ++j) {
-                internal_VkSubmitInfo2_pCommandBufferInfos[i][j] =
-                    internal_pSubmits[i].pCommandBufferInfos[j];
+                pCommandBufferInfos[j] = internal_pSubmits[i].pCommandBufferInfos[j];
                 /* VkCommandBufferSubmitInfo::commandBuffer */
                 VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer,
-                               internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer);
-                internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer =
-                    gfxstream_commandBuffer->internal_object;
+                               pCommandBufferInfos[j].commandBuffer);
+                pCommandBufferInfos[j].commandBuffer = gfxstream_commandBuffer->internal_object;
             }
-            internal_pSubmits[i].pCommandBufferInfos =
-                internal_VkSubmitInfo2_pCommandBufferInfos[i].data();
+            internal_pSubmits[i].pCommandBufferInfos = pCommandBufferInfos;
             /* VkSubmitInfo2::pSignalSemaphoreInfos */
             internal_VkSubmitInfo2_pSignalSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());
@@ -4638,15 +4629,15 @@ void gfxstream_vk_QueueSubmitAsyncGOOGLE(VkQueue queue, uint32_t submitCount,
             internal_VkSubmitInfo_pCommandBuffers.push_back(std::vector<VkCommandBuffer>());
             internal_VkSubmitInfo_pCommandBuffers[i].reserve(
                 internal_pSubmits[i].commandBufferCount);
-            memset(&internal_VkSubmitInfo_pCommandBuffers[i][0], 0,
+            memset(internal_VkSubmitInfo_pCommandBuffers[i].data(), 0,
                    sizeof(VkCommandBuffer) * internal_pSubmits[i].commandBufferCount);
+            VkCommandBuffer* pCommandBuffers = internal_VkSubmitInfo_pCommandBuffers[i].data();
             for (uint32_t j = 0; j < internal_pSubmits[i].commandBufferCount; ++j) {
                 VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_pCommandBuffers,
                                internal_pSubmits[i].pCommandBuffers[j]);
-                internal_VkSubmitInfo_pCommandBuffers[i][j] =
-                    gfxstream_pCommandBuffers->internal_object;
+                pCommandBuffers[j] = gfxstream_pCommandBuffers->internal_object;
             }
-            internal_pSubmits[i].pCommandBuffers = internal_VkSubmitInfo_pCommandBuffers[i].data();
+            internal_pSubmits[i].pCommandBuffers = pCommandBuffers;
             /* VkSubmitInfo::pSignalSemaphores */
             internal_VkSubmitInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
             internal_VkSubmitInfo_pSignalSemaphores[i] = transformVkSemaphoreList(
@@ -4699,18 +4690,17 @@ void gfxstream_vk_QueueBindSparseAsyncGOOGLE(VkQueue queue, uint32_t bindInfoCou
                 std::vector<VkSparseBufferMemoryBindInfo>());
             internal_VkBindSparseInfo_pBufferBinds[i].reserve(
                 internal_pBindInfo[i].bufferBindCount);
-            memset(&internal_VkBindSparseInfo_pBufferBinds[i][0], 0,
+            memset(internal_VkBindSparseInfo_pBufferBinds[i].data(), 0,
                    sizeof(VkSparseBufferMemoryBindInfo) * internal_pBindInfo[i].bufferBindCount);
+            VkSparseBufferMemoryBindInfo* pBufferBinds =
+                internal_VkBindSparseInfo_pBufferBinds[i].data();
             for (uint32_t j = 0; j < internal_pBindInfo[i].bufferBindCount; ++j) {
-                internal_VkBindSparseInfo_pBufferBinds[i][j] =
-                    internal_pBindInfo[i].pBufferBinds[j];
+                pBufferBinds[j] = internal_pBindInfo[i].pBufferBinds[j];
                 /* VkSparseBufferMemoryBindInfo::buffer */
-                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                               internal_VkBindSparseInfo_pBufferBinds[i][j].buffer);
-                internal_VkBindSparseInfo_pBufferBinds[i][j].buffer =
-                    gfxstream_buffer->internal_object;
+                VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer, pBufferBinds[j].buffer);
+                pBufferBinds[j].buffer = gfxstream_buffer->internal_object;
             }
-            internal_pBindInfo[i].pBufferBinds = internal_VkBindSparseInfo_pBufferBinds[i].data();
+            internal_pBindInfo[i].pBufferBinds = pBufferBinds;
             /* VkBindSparseInfo::pSignalSemaphores */
             internal_VkBindSparseInfo_pSignalSemaphores.push_back(std::vector<VkSemaphore>());
             internal_VkBindSparseInfo_pSignalSemaphores[i] =
@@ -4784,24 +4774,23 @@ void gfxstream_vk_QueueCommitDescriptorSetUpdatesGOOGLE(
                 std::vector<VkDescriptorBufferInfo>());
             internal_VkWriteDescriptorSet_pBufferInfo[i].reserve(
                 internal_pPendingDescriptorWrites[i].descriptorCount);
-            memset(&internal_VkWriteDescriptorSet_pBufferInfo[i][0], 0,
+            memset(internal_VkWriteDescriptorSet_pBufferInfo[i].data(), 0,
                    sizeof(VkDescriptorBufferInfo) *
                        internal_pPendingDescriptorWrites[i].descriptorCount);
+            VkDescriptorBufferInfo* pBufferInfo =
+                internal_VkWriteDescriptorSet_pBufferInfo[i].data();
             for (uint32_t j = 0; j < internal_pPendingDescriptorWrites[i].descriptorCount; ++j) {
                 if (internal_pPendingDescriptorWrites[i].pBufferInfo) {
-                    internal_VkWriteDescriptorSet_pBufferInfo[i][j] =
-                        internal_pPendingDescriptorWrites[i].pBufferInfo[j];
+                    pBufferInfo[j] = internal_pPendingDescriptorWrites[i].pBufferInfo[j];
                     /* VkDescriptorBufferInfo::buffer */
-                    if (internal_VkWriteDescriptorSet_pBufferInfo[i][j].buffer) {
+                    if (pBufferInfo[j].buffer) {
                         VK_FROM_HANDLE(gfxstream_vk_buffer, gfxstream_buffer,
-                                       internal_VkWriteDescriptorSet_pBufferInfo[i][j].buffer);
-                        internal_VkWriteDescriptorSet_pBufferInfo[i][j].buffer =
-                            gfxstream_buffer->internal_object;
+                                       pBufferInfo[j].buffer);
+                        pBufferInfo[j].buffer = gfxstream_buffer->internal_object;
                     }
                 }
             }
-            internal_pPendingDescriptorWrites[i].pBufferInfo =
-                internal_VkWriteDescriptorSet_pBufferInfo[i].data();
+            internal_pPendingDescriptorWrites[i].pBufferInfo = pBufferInfo;
         }
         vkEnc->vkQueueCommitDescriptorSetUpdatesGOOGLE(
             gfxstream_queue->internal_object, descriptorPoolCount, pDescriptorPools,
@@ -4929,19 +4918,18 @@ void gfxstream_vk_QueueSubmitAsync2GOOGLE(VkQueue queue, uint32_t submitCount,
                 std::vector<VkCommandBufferSubmitInfo>());
             internal_VkSubmitInfo2_pCommandBufferInfos[i].reserve(
                 internal_pSubmits[i].commandBufferInfoCount);
-            memset(&internal_VkSubmitInfo2_pCommandBufferInfos[i][0], 0,
+            memset(internal_VkSubmitInfo2_pCommandBufferInfos[i].data(), 0,
                    sizeof(VkCommandBufferSubmitInfo) * internal_pSubmits[i].commandBufferInfoCount);
+            VkCommandBufferSubmitInfo* pCommandBufferInfos =
+                internal_VkSubmitInfo2_pCommandBufferInfos[i].data();
             for (uint32_t j = 0; j < internal_pSubmits[i].commandBufferInfoCount; ++j) {
-                internal_VkSubmitInfo2_pCommandBufferInfos[i][j] =
-                    internal_pSubmits[i].pCommandBufferInfos[j];
+                pCommandBufferInfos[j] = internal_pSubmits[i].pCommandBufferInfos[j];
                 /* VkCommandBufferSubmitInfo::commandBuffer */
                 VK_FROM_HANDLE(gfxstream_vk_command_buffer, gfxstream_commandBuffer,
-                               internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer);
-                internal_VkSubmitInfo2_pCommandBufferInfos[i][j].commandBuffer =
-                    gfxstream_commandBuffer->internal_object;
+                               pCommandBufferInfos[j].commandBuffer);
+                pCommandBufferInfos[j].commandBuffer = gfxstream_commandBuffer->internal_object;
             }
-            internal_pSubmits[i].pCommandBufferInfos =
-                internal_VkSubmitInfo2_pCommandBufferInfos[i].data();
+            internal_pSubmits[i].pCommandBufferInfos = pCommandBufferInfos;
             /* VkSubmitInfo2::pSignalSemaphoreInfos */
             internal_VkSubmitInfo2_pSignalSemaphoreInfos.push_back(
                 std::vector<VkSemaphoreSubmitInfo>());

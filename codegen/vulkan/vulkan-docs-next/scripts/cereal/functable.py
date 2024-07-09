@@ -393,11 +393,12 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                     else:
                         # Standard translation
                         cgen.stmt("%s.reserve(%s)" % (nestedOutName, countParamName))
-                        cgen.stmt("memset(&%s[0], 0, sizeof(%s) * %s)" % (nestedOutName, member.typeName, countParamName))
+                        cgen.stmt("memset(%s.data(), 0, sizeof(%s) * %s)" % (nestedOutName, member.typeName, countParamName))
+                        cgen.stmt("%s* %s = %s.data()" % (member.typeName, member.paramName, nestedOutName))
                         if not nextLoopVar:
                             nextLoopVar = getNextLoopVar()
-                        internalArray = genInternalArray(member, countParamName, nestedOutName, inArrayName, nextLoopVar)
-                        cgen.stmt("%s = %s" %(inArrayName, internalArray))
+                        genInternalArrayForNested(member, countParamName, nestedOutName, inArrayName, nextLoopVar)
+                        cgen.stmt("%s = %s" %(inArrayName, member.paramName))
                 elif isCompoundType(member.typeName):
                     memberFullName = "%s.%s" % (outName, member.paramName)
                     if 1 == member.pointerIndirectionLevels:
@@ -438,6 +439,20 @@ class VulkanFuncTable(VulkanWrapperGenerator):
                 if param.isOptional:
                     cgen.endIf()
                 cgen.endFor()
+            return "%s.data()" % outArrayName
+
+        def genInternalArrayForNested(param, countParamName, outArrayName, inArrayName, loopVar):
+            cgen.beginFor("uint32_t %s = 0" % loopVar, "%s < %s" % (loopVar, countParamName), "++%s" % loopVar)
+            if param.isOptional:
+                cgen.beginIf(inArrayName)
+            if isCompoundType(param.typeName):
+                genInternalCompoundType(param, ("%s[%s]" % (param.paramName, loopVar)), "%s[%s]" % (inArrayName, loopVar), loopVar)
+            else:
+                gfxstreamObject = genVkFromHandle(param, "%s[%s]" % (inArrayName, loopVar))
+                cgen.stmt("%s[%s] = %s->%s" % (param.paramName, loopVar, gfxstreamObject, INTERNAL_OBJECT_NAME))
+            if param.isOptional:
+                cgen.endIf()
+            cgen.endFor()
             return "%s.data()" % outArrayName
 
         # Translate params into params needed for gfxstream-internal
