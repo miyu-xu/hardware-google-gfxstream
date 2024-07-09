@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e38ceab6_fbcef972",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-09T11:34:09Z",
+      "side": 1,
+      "message": "Leaving this up to Gurchetan (b/351834887#comment3)",
+      "revId": "6be245a4a71978d7469d4eada568186e3eef6381",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
