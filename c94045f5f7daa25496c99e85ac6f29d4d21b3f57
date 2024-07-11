@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "445f41b4_e33d9cdd",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 2580,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-07-11T14:56:09Z",
+      "side": 1,
+      "message": "It looks like we never reach this line of code.  You have more context on this than I do, but this could be potentially confusing to future readers of the code.",
+      "revId": "c94045f5f7daa25496c99e85ac6f29d4d21b3f57",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
