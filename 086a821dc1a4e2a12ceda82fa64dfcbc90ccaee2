@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "319931ec_eca5742f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-12T13:22:44Z",
+      "side": 1,
+      "message": "Does dma-buf imply host visible memory? I\u0027m mostly wondering if you would eventually run out of that type of memory on amdgpu as well for some configurations.",
+      "revId": "086a821dc1a4e2a12ceda82fa64dfcbc90ccaee2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3d5b02d5_cde09736",
