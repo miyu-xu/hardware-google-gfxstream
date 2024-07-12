@@ -104,13 +104,12 @@ private:
         struct timespec deadlineNs;
         gettimeofday(&deadlineUs, 0);
 
-        auto prevDeadlineUs = deadlineUs.tv_usec;
+        deadlineUs.tv_sec += (relative / 1000000);
+        deadlineUs.tv_usec += (relative % 1000000);
 
-        deadlineUs.tv_usec += relative;
-
-        // Wrap around
-        if (prevDeadlineUs > deadlineUs.tv_usec) {
-            ++deadlineUs.tv_sec;
+        if (deadlineUs.tv_usec > 1000000) {
+            deadlineUs.tv_sec += (deadlineUs.tv_usec / 1000000);
+            deadlineUs.tv_usec = (deadlineUs.tv_usec % 1000000);
         }
 
         deadlineNs.tv_sec = deadlineUs.tv_sec;
