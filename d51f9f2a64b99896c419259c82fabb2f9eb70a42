@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8744cdfd_14856f92",
+        "filename": "guest/platform/kumquat/VirtGpuKumquat.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-12T12:05:26Z",
+      "side": 1,
+      "message": "Optional: might as well clean up this stray ; if we\u0027re cleaning up the other one",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 5
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "11353627_b6b82f72",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "guest/platform/kumquat/VirtGpuKumquat.h",
+              "range": {
+                "startLine": 82,
+                "startChar": 0,
+                "endLine": 83,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "d51f9f2a64b99896c419259c82fabb2f9eb70a42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
