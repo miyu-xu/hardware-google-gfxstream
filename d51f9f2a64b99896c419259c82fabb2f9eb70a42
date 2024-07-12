@@ -40,6 +40,30 @@
       ],
       "revId": "d51f9f2a64b99896c419259c82fabb2f9eb70a42",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a07f366e_59cf94f9",
+        "filename": "guest/platform/kumquat/VirtGpuKumquat.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-12T15:06:36Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "8744cdfd_14856f92",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 5
+      },
+      "revId": "d51f9f2a64b99896c419259c82fabb2f9eb70a42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
