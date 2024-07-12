@@ -39,6 +39,30 @@
       },
       "revId": "086a821dc1a4e2a12ceda82fa64dfcbc90ccaee2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0a6ec23_a225de5b",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 885,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-12T15:05:42Z",
+      "side": 1,
+      "message": "Yeah, it\u0027ll probably need a helper function, since there is already code that checks `vendorID`, but not the form that is useful IMO.  Maybe later in a cleanup.",
+      "parentUuid": "3d5b02d5_cde09736",
+      "range": {
+        "startLine": 885,
+        "startChar": 62,
+        "endLine": 885,
+        "endChar": 87
+      },
+      "revId": "086a821dc1a4e2a12ceda82fa64dfcbc90ccaee2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
