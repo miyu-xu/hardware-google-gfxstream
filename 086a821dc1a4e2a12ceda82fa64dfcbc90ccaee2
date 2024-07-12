@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d5b02d5_cde09736",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 885,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-12T12:16:17Z",
+      "side": 1,
+      "message": "Optional: This string is derived just above, from `driverProps.driverName` + `deviceInfos[i].physdevProps.vendorID`.\n\nWouldn\u0027t it be enough and a bit more robust to check just `deviceInfos[i].physdevProps.vendorID` and not the derived string which seems to have a pretty custom format?",
+      "range": {
+        "startLine": 885,
+        "startChar": 62,
+        "endLine": 885,
+        "endChar": 87
+      },
+      "revId": "086a821dc1a4e2a12ceda82fa64dfcbc90ccaee2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
