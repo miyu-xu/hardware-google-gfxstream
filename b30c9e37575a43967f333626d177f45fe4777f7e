@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b99210aa_bed655c7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-07-12T23:43:52Z",
+      "side": 1,
+      "message": "AI seems to be suggesting a reasonable fix surprisingly.",
+      "revId": "b30c9e37575a43967f333626d177f45fe4777f7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7efb261_6b90ba5b",
+        "filename": "guest/android-emu/aemu/base/threads/AndroidWorkPool.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-07-12T23:43:52Z",
+      "side": 1,
+      "message": "Can we use a named variable for this number so we don\u0027t accidentally uses a number with wrong numbers of 0\u0027s at the end?",
+      "range": {
+        "startLine": 107,
+        "startChar": 41,
+        "endLine": 107,
+        "endChar": 48
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "cd5f555a_a790baf2",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "guest/android-emu/aemu/base/threads/AndroidWorkPool.cpp",
+              "range": {
+                "startLine": 107,
+                "startChar": 0,
+                "endLine": 109,
+                "endChar": 0
+              },
+              "replacement": "        const uint64_t kUsPerSec \u003d 1000000;\n"
+            },
+            {
+              "path": "guest/android-emu/aemu/base/threads/AndroidWorkPool.cpp",
+              "range": {
+                "startLine": 110,
+                "startChar": 0,
+                "endLine": 111,
+                "endChar": 0
+              },
+              "replacement": "        deadlineUs.tv_sec +\u003d (relative / kUsPerSec);\n        deadlineUs.tv_usec +\u003d (relative % kUsPerSec);\n\n        if (deadlineUs.tv_usec \u003e kUsPerSec) {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "b30c9e37575a43967f333626d177f45fe4777f7e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
