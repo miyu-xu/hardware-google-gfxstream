@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7641f65e_4f28dcfd",
+        "filename": "guest/vulkan_enc/func_table.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-12T16:39:53Z",
+      "side": 1,
+      "message": "It makes sense to me that libstdc++ is complaining. We\u0027re using the vector as a buffer without ever setting the size() of the vector to nonzero.\n\nInstead of effectively replacing `vec[i]` with `vec.data()[i]` could we replace `vec.reserve` + `memset` with `vec.resize`? That way the vector size would be initialized, bounds checks would be happy, and default-init would automatically zero out POD structs for us.",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 164,
+        "endChar": 95
+      },
+      "revId": "f336b0c7885d6b521b5fef71247a4a196d7d7a9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
