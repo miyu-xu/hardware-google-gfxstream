@@ -57,7 +57,7 @@ typedef void (*update_yuv_textures_t)(uint32_t type,
  * to update colorbuffer content; on return, textures will have the retired
  * yuv textures that are free to hold new data
  */
-typedef void (*swap_textures_and_update_color_buffer_t)(
+typedef bool (*swap_textures_and_update_color_buffer_t)(
         uint32_t colorbufferhandle,
         int x,
         int y,
@@ -97,7 +97,7 @@ typedef void* (*get_global_egl_context_t)(void);
 typedef void (*wait_for_gpu_t)(uint64_t eglsync);
 typedef void (*wait_for_gpu_vulkan_t)(uint64_t device, uint64_t fence);
 typedef void (*set_guest_managed_color_buffer_lifetime_t)(bool guest_managed);
-typedef void (*update_color_buffer_from_framework_format_t)(uint32_t handle,
+typedef bool (*update_color_buffer_from_framework_format_t)(uint32_t handle,
                                                             int x,
                                                             int y,
                                                             int width,

@@ -654,7 +654,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     void createYUVTextures(uint32_t type, uint32_t count, int width, int height, uint32_t* output);
     void destroyYUVTextures(uint32_t type, uint32_t count, uint32_t* textures);
     void updateYUVTextures(uint32_t type, uint32_t* textures, void* privData, void* func);
-    void swapTexturesAndUpdateColorBuffer(uint32_t colorbufferhandle, int x, int y, int width,
+    bool swapTexturesAndUpdateColorBuffer(uint32_t colorbufferhandle, int x, int y, int width,
                                           int height, uint32_t format, uint32_t type,
                                           uint32_t texture_type, uint32_t* textures);
 

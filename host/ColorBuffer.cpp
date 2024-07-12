@@ -224,9 +224,8 @@ bool ColorBuffer::updateFromBytes(int x, int y, int width, int height,
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (mColorBufferGl) {
-        mColorBufferGl->subUpdateFromFrameworkFormat(x, y, width, height, frameworkFormat,
+        return mColorBufferGl->subUpdateFromFrameworkFormat(x, y, width, height, frameworkFormat,
                                                      pixelsFormat, pixelsType, pixels, metadata);
-        return true;
     }
 #endif
 

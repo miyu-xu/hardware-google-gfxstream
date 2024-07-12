@@ -1662,8 +1662,7 @@ bool FrameBuffer::updateColorBufferFromFrameworkFormat(HandleType p_colorbuffer,
         return false;
     }
 
-    (*c).second.cb->updateFromBytes(x, y, width, height, fwkFormat, format, type, pixels, metadata);
-    return true;
+    return (*c).second.cb->updateFromBytes(x, y, width, height, fwkFormat, format, type, pixels, metadata);
 }
 
 bool FrameBuffer::getColorBufferInfo(
@@ -3837,7 +3836,7 @@ void FrameBuffer::updateYUVTextures(uint32_t type, uint32_t* textures, void* pri
     updater(privData, type, gtextures, pcallerdata);
 }
 
-void FrameBuffer::swapTexturesAndUpdateColorBuffer(uint32_t p_colorbuffer, int x, int y, int width,
+bool FrameBuffer::swapTexturesAndUpdateColorBuffer(uint32_t p_colorbuffer, int x, int y, int width,
                                                    int height, uint32_t format, uint32_t type,
                                                    uint32_t texture_type, uint32_t* textures) {
     {
@@ -3845,11 +3844,12 @@ void FrameBuffer::swapTexturesAndUpdateColorBuffer(uint32_t p_colorbuffer, int x
         ColorBufferPtr colorBuffer = findColorBuffer(p_colorbuffer);
         if (!colorBuffer) {
             // bad colorbuffer handle
-            return;
+            return false;
         }
         colorBuffer->glOpSwapYuvTexturesAndUpdate(
             format, type, static_cast<FrameworkFormat>(texture_type), textures);
     }
+    return true;
 }
 
 bool FrameBuffer::readColorBufferContents(HandleType p_colorbuffer, size_t* numBytes,
