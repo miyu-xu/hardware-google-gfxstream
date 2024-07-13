@@ -22,6 +22,30 @@
       },
       "revId": "f336b0c7885d6b521b5fef71247a4a196d7d7a9a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2afff42_76c194a3",
+        "filename": "guest/vulkan_enc/func_table.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-13T00:49:15Z",
+      "side": 1,
+      "message": "Nice, that is much better, done.",
+      "parentUuid": "7641f65e_4f28dcfd",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 164,
+        "endChar": 95
+      },
+      "revId": "f336b0c7885d6b521b5fef71247a4a196d7d7a9a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
