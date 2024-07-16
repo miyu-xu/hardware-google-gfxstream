@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "298f23b4_3e4ac19e",
+        "filename": "guest/vulkan/gfxstream_vk_cmd.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-16T12:17:08Z",
+      "side": 1,
+      "message": "Nit: what does the extra `{}` do in this case?",
+      "range": {
+        "startLine": 197,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 5
+      },
+      "revId": "e8adf85c8be4f5957e9c9c2b2215ef4effb3dac4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b730592_6d28bd0a",
+        "filename": "guest/vulkan/gfxstream_vk_cmd.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-16T12:17:08Z",
+      "side": 1,
+      "message": "This used to check for `pCounterBuffers !\u003d NULL`. Do we need to keep that check? Docs suggest it may be a valid value with `counterBufferCount !\u003d 0` if `pCounterBufferOffsets` is not null.",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 37
+      },
+      "revId": "e8adf85c8be4f5957e9c9c2b2215ef4effb3dac4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "733b102e_f84dd727",
+        "filename": "guest/vulkan/gfxstream_vk_cmd.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-16T12:17:08Z",
+      "side": 1,
+      "message": "If `pCounterBuffers` is null, we may forward non-null here. Is that expected?",
+      "range": {
+        "startLine": 209,
+        "startChar": 12,
+        "endLine": 209,
+        "endChar": 43
+      },
+      "revId": "e8adf85c8be4f5957e9c9c2b2215ef4effb3dac4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
