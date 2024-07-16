@@ -22,6 +22,30 @@
       },
       "revId": "cd03f77bfc2be363e0fec38d9d6327728b3f2c75",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "adf7ba52_4c0714a5",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6010,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-16T15:07:43Z",
+      "side": 1,
+      "message": "1) We trust the application to use correct behavior.  `pSignalSemaphoreValues` must be sized at-least to `count`.  In practice, `getSignalSemaphoreCount` is always less than `signalSemaphoreValueCount`, since we reduce the size of the user-passed in count due the placeholder semaphores used by Mesa WSI.\n\n2) `transformVkSemaphore` doesn\u0027t change the end of the array.  We\u0027re not changing the array here, `transformVkSemaphore` already does it, we\u0027re just changing the counts on TSSI to match the change.",
+      "parentUuid": "518d95c2_11c86c88",
+      "range": {
+        "startLine": 6008,
+        "startChar": 0,
+        "endLine": 6010,
+        "endChar": 13
+      },
+      "revId": "cd03f77bfc2be363e0fec38d9d6327728b3f2c75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
