@@ -46,6 +46,30 @@
       },
       "revId": "cd03f77bfc2be363e0fec38d9d6327728b3f2c75",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d338b41b_d9b9796d",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6010,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-16T15:16:13Z",
+      "side": 1,
+      "message": "Thanks for the explanation.\n\n\u003e We\u0027re not changing the array here, `transformVkSemaphore` already does it, we\u0027re just changing the counts on TSSI to match the change.\n\nWhy is adjusting the TSSI counts not a responsibility of the code that calls `transformVkSemaphore` then? Is that because it\u0027s too tricky to do in generated code?",
+      "parentUuid": "adf7ba52_4c0714a5",
+      "range": {
+        "startLine": 6008,
+        "startChar": 0,
+        "endLine": 6010,
+        "endChar": 13
+      },
+      "revId": "cd03f77bfc2be363e0fec38d9d6327728b3f2c75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
