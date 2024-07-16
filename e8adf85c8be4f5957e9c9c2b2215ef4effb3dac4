@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "048d0062_73b7144d",
+        "filename": "guest/vulkan/gfxstream_vk_cmd.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-16T15:14:14Z",
+      "side": 1,
+      "message": "Fixed.",
+      "parentUuid": "298f23b4_3e4ac19e",
+      "range": {
+        "startLine": 197,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 5
+      },
+      "revId": "e8adf85c8be4f5957e9c9c2b2215ef4effb3dac4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5b730592_6d28bd0a",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdc2ebc7_34e57fb0",
+        "filename": "guest/vulkan/gfxstream_vk_cmd.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-16T15:14:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b730592_6d28bd0a",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 37
+      },
+      "revId": "e8adf85c8be4f5957e9c9c2b2215ef4effb3dac4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "733b102e_f84dd727",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-07-16T12:17:08Z",
       "side": 1,
       "message": "If `pCounterBuffers` is null, we may forward non-null here. Is that expected?",
+      "range": {
+        "startLine": 209,
+        "startChar": 12,
+        "endLine": 209,
+        "endChar": 43
+      },
+      "revId": "e8adf85c8be4f5957e9c9c2b2215ef4effb3dac4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94f39638_9d05637f",
+        "filename": "guest/vulkan/gfxstream_vk_cmd.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-16T15:14:14Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "733b102e_f84dd727",
       "range": {
         "startLine": 209,
         "startChar": 12,
