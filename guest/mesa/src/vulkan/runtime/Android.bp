@@ -185,12 +185,36 @@ genrule {
         "$(location vk_format_info.c)",
 }
 
+soong_config_module_type {
+    name: "libmesa_vulkan_runtime_gfxstream_linux_guest_config_cc_defaults",
+    module_type: "cc_defaults",
+    config_namespace: "gfxstream",
+    bool_variables: ["gfxstream_linux_guest"],
+    properties: ["target.android.srcs"],
+}
+
+libmesa_vulkan_runtime_gfxstream_linux_guest_config_cc_defaults {
+    name: "libmesa_vulkan_runtime_gfxstream_linux_guest_cc_defaults",
+    soong_config_variables: {
+        gfxstream_linux_guest: {
+            conditions_default: {
+                target: {
+                    android: {
+                        srcs: ["vk_android.c"],
+                    },
+                },
+            },
+        },
+    },
+}
+
 cc_library_static {
     name: "libmesa_vulkan_runtime_gfxstream",
     host_supported: true,
     vendor: true,
     defaults: [
         "mesa_common_defaults_gfxstream",
+        "libmesa_vulkan_runtime_gfxstream_linux_guest_cc_defaults",
     ],
     header_libs: [
         "mesa_common_headers_gfxstream",
@@ -278,9 +302,6 @@ cc_library_static {
             header_libs: [
                 "hwvulkan_headers",
                 "libnativewindow_headers",
-            ],
-            srcs: [
-                "vk_android.c",
             ],
         },
     },
