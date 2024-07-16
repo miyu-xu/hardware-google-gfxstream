@@ -323,7 +323,7 @@ wsi_configure_native_image(const struct wsi_swapchain *chain,
    if (result != VK_SUCCESS)
       return result;
 
-   if (num_modifier_lists == 0) {
+   if (true) {
       /* If we don't have modifiers, fall back to the legacy "scanout" flag */
       info->wsi.scanout = true;
    } else {
