@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "518d95c2_11c86c88",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6010,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-16T12:08:06Z",
+      "side": 1,
+      "message": "How do we know that:\n- `VkTimelineSemaphoreSubmitInfo::pSignalSemaphoreValues` contains at least `count` elements (so changing the count won\u0027t cause out-of-bounds reads), and\n- \"dummy\" semaphores are at the end of the array (and we\u0027re not dropping real semaphores and forwarding the dummy ones)?",
+      "range": {
+        "startLine": 6008,
+        "startChar": 0,
+        "endLine": 6010,
+        "endChar": 13
+      },
+      "revId": "cd03f77bfc2be363e0fec38d9d6327728b3f2c75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
