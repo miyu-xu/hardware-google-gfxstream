@@ -70,6 +70,30 @@
       },
       "revId": "cd03f77bfc2be363e0fec38d9d6327728b3f2c75",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "68db51d2_dceaeebc",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6010,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-17T02:33:40Z",
+      "side": 1,
+      "message": "Exactly.",
+      "parentUuid": "d338b41b_d9b9796d",
+      "range": {
+        "startLine": 6008,
+        "startChar": 0,
+        "endLine": 6010,
+        "endChar": 13
+      },
+      "revId": "cd03f77bfc2be363e0fec38d9d6327728b3f2c75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
