@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2550e73c_56882b6b",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2493,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-17T15:41:15Z",
+      "side": 1,
+      "message": "is that correct, previously it was only rejected for no export but with import support?",
+      "revId": "3738629b113067113894f0b2e4ae85bf43cf1f56",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
