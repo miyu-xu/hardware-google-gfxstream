@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "400f85df_63ddc413",
+        "filename": "guest/mesa/src/vulkan/wsi/wsi_common_drm.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-17T16:06:15Z",
+      "side": 1,
+      "message": "Can we leave a TODO with a bug number?",
+      "range": {
+        "startLine": 326,
+        "startChar": 3,
+        "endLine": 326,
+        "endChar": 14
+      },
+      "revId": "8426e21aad8aca72823b49a451e6787ea98eb9a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
