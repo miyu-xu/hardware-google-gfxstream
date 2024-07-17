@@ -22,6 +22,30 @@
       },
       "revId": "8426e21aad8aca72823b49a451e6787ea98eb9a7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ba6df9f_df185e88",
+        "filename": "guest/mesa/src/vulkan/wsi/wsi_common_drm.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-17T16:15:05Z",
+      "side": 1,
+      "message": "Done via the HACK prefix.",
+      "parentUuid": "400f85df_63ddc413",
+      "range": {
+        "startLine": 326,
+        "startChar": 3,
+        "endLine": 326,
+        "endChar": 14
+      },
+      "revId": "8426e21aad8aca72823b49a451e6787ea98eb9a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
