@@ -133,23 +133,39 @@ void eglSetBlobCacheFuncsANDROID_dispatchLoggingWrapper(EGLDisplay dpy, EGLSetBl
 	EGLDispatch::eglSetBlobCacheFuncsANDROID_underlying(dpy, set, get);
 }
 
+std::atomic_int sNumEglImages{0};
+
 EGLImage eglCreateImage_dispatchLoggingWrapper(EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLAttrib *attrib_list) {
 	DISPATCH_DEBUG_LOG("eglCreateImage(dpy:%p, ctx:%p, target:0x%X, buffer:%p, attrib_list:%p)", dpy, ctx, target, buffer, attrib_list);
-	return EGLDispatch::eglCreateImage_underlying(dpy, ctx, target, buffer, attrib_list);
+	auto ret = EGLDispatch::eglCreateImage_underlying(dpy, ctx, target, buffer, attrib_list);
+	if (ret != EGL_NO_IMAGE_KHR) {
+		DISPATCH_DEBUG_LOG("eglCreateImage() new total image count:%d", ++sNumEglImages);
+	}
+	return ret;
 }
 
 EGLBoolean eglDestroyImage_dispatchLoggingWrapper(EGLDisplay dpy, EGLImage image) {
 	DISPATCH_DEBUG_LOG("eglDestroyImage(dpy:%p, image:%p)", dpy, image);
+	if (image != EGL_NO_IMAGE_KHR) {
+		DISPATCH_DEBUG_LOG("eglDestroyImage() new total image count:%d", --sNumEglImages);
+	}
 	return EGLDispatch::eglDestroyImage_underlying(dpy, image);
 }
 
 EGLImage eglCreateImageKHR_dispatchLoggingWrapper(EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLint *attrib_list) {
 	DISPATCH_DEBUG_LOG("eglCreateImageKHR(dpy:%p, ctx:%p, target:0x%X, buffer:%p, attrib_list:%p)", dpy, ctx, target, buffer, attrib_list);
-	return EGLDispatch::eglCreateImageKHR_underlying(dpy, ctx, target, buffer, attrib_list);
+	auto ret = EGLDispatch::eglCreateImageKHR_underlying(dpy, ctx, target, buffer, attrib_list);
+	if (ret != EGL_NO_IMAGE_KHR) {
+		DISPATCH_DEBUG_LOG("eglCreateImageKHR() new total image count:%d", ++sNumEglImages);
+	}
+	return ret;
 }
 
 EGLBoolean eglDestroyImageKHR_dispatchLoggingWrapper(EGLDisplay dpy, EGLImage image) {
 	DISPATCH_DEBUG_LOG("eglDestroyImageKHR(dpy:%p, image:%p)", dpy, image);
+	if (image != EGL_NO_IMAGE_KHR) {
+		DISPATCH_DEBUG_LOG("eglDestroyImageKHR() new total image count:%d", --sNumEglImages);
+	}
 	return EGLDispatch::eglDestroyImageKHR_underlying(dpy, image);
 }
 

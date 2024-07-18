@@ -101,14 +101,19 @@ void glCullFace_dispatchLoggingWrapper(GLenum mode) {
 	GLDispatch::glCullFace_underlying(mode);
 }
 
+std::atomic_int sNumBuffers{0};
+std::atomic_int sNumTextures{0};
+
 void glDeleteBuffers_dispatchLoggingWrapper(GLsizei n, const GLuint * buffers) {
 	DISPATCH_DEBUG_LOG("glDeleteBuffers(n:%d, buffers:%p)", n, buffers);
 	GLDispatch::glDeleteBuffers_underlying(n, buffers);
+	DISPATCH_DEBUG_LOG("glDeleteBuffers() new buffer count:%d", (sNumBuffers -= n));
 }
 
 void glDeleteTextures_dispatchLoggingWrapper(GLsizei n, const GLuint * textures) {
 	DISPATCH_DEBUG_LOG("glDeleteTextures(n:%d, textures:%p)", n, textures);
 	GLDispatch::glDeleteTextures_underlying(n, textures);
+	DISPATCH_DEBUG_LOG("glDeleteTextures() new texture count:%d", (sNumTextures -= n));
 }
 
 void glDepthFunc_dispatchLoggingWrapper(GLenum func) {
@@ -169,11 +174,14 @@ void glFrontFace_dispatchLoggingWrapper(GLenum mode) {
 void glGenBuffers_dispatchLoggingWrapper(GLsizei n, GLuint * buffers) {
 	DISPATCH_DEBUG_LOG("glGenBuffers(n:%d, buffers:%p)", n, buffers);
 	GLDispatch::glGenBuffers_underlying(n, buffers);
+
+	DISPATCH_DEBUG_LOG("glGenBuffers() new buffer count:%d", (sNumBuffers += n));
 }
 
 void glGenTextures_dispatchLoggingWrapper(GLsizei n, GLuint * textures) {
 	DISPATCH_DEBUG_LOG("glGenTextures(n:%d, textures:%p)", n, textures);
 	GLDispatch::glGenTextures_underlying(n, textures);
+	DISPATCH_DEBUG_LOG("glGenTextures() new texture count:%d", (sNumTextures += n));
 }
 
 void glGetBooleanv_dispatchLoggingWrapper(GLenum pname, GLboolean * params) {

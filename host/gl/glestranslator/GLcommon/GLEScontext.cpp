@@ -2949,6 +2949,13 @@ bool GLEScontext::setupImageBlitForTexture(uint32_t width,
     return true;
 }
 
+void DoErrorCheck(GLDispatch& dispatch, int line) {
+    GLenum err = dispatch.glGetError();
+    if (err != GL_NO_ERROR) {
+        fprintf(stderr, "jasonjason GL error %d at line %d", err, line);
+    }
+}
+
 void GLEScontext::blitFromReadBufferToTextureFlipped(GLuint globalTexObj,
                                                      GLuint width,
                                                      GLuint height,
@@ -2960,22 +2967,30 @@ void GLEScontext::blitFromReadBufferToTextureFlipped(GLuint globalTexObj,
     (void)type;
 
     auto& gl = dispatcher();
+    DoErrorCheck(gl, __LINE__);
+
     GLint prevViewport[4];
     getViewport(prevViewport);
+    DoErrorCheck(gl, __LINE__);
 
     setupImageBlitState();
+    DoErrorCheck(gl, __LINE__);
 
     GLint prevTex2D = 0;
     gl.glGetIntegerv(GL_TEXTURE_BINDING_2D, &prevTex2D);
+    DoErrorCheck(gl, __LINE__);
 
     gl.glBindTexture(GL_TEXTURE_2D, m_blitState.tex);
+    DoErrorCheck(gl, __LINE__);
 
     bool shouldBlit = setupImageBlitForTexture(width, height, internalFormat);
+    DoErrorCheck(gl, __LINE__);
 
     if (!shouldBlit) {
         gl.glBindTexture(GL_TEXTURE_2D, prevTex2D);
         return;
     }
+    DoErrorCheck(gl, __LINE__);
 
 
 
@@ -3022,7 +3037,9 @@ void GLEScontext::blitFromReadBufferToTextureFlipped(GLuint globalTexObj,
     gl.glUniform1i(m_blitState.samplerLoc, m_activeTexture);
 
     gl.glBindVertexArray(m_blitState.vao);
+    DoErrorCheck(gl, __LINE__);
     gl.glDrawArrays(GL_TRIANGLES, 0, 6);
+    DoErrorCheck(gl, __LINE__);
 
     // state restore
     const GLuint globalProgramName = shareGroup()->getGlobalName(
