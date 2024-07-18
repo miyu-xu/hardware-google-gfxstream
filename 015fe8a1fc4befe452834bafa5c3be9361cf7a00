@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08dd3a09_992db89b",
+        "filename": "guest/platform/include/virtgpu_gfxstream_protocol.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-18T22:51:40Z",
+      "side": 1,
+      "message": "I think you should consume the padding here.  I forgot why it was added, so no reason to leave a gap of padding.",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 128,
+        "endChar": 34
+      },
+      "revId": "015fe8a1fc4befe452834bafa5c3be9361cf7a00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
