@@ -2,6 +2,7 @@ set(egl-translator-common-sources
     ClientAPIExts.cpp
     EglConfig.cpp
     EglContext.cpp
+    EglDispatch.cpp
     EglDisplay.cpp
     EglGlobalInfo.cpp
     EglImp.cpp

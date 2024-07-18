@@ -30,6 +30,7 @@ cc_library_static {
         "EglConfig.cpp",
         "EglContext.cpp",
         "EglDisplay.cpp",
+        "EglDispatch.cpp",
         "EglGlobalInfo.cpp",
         "EglImp.cpp",
         "EglPbufferSurface.cpp",
