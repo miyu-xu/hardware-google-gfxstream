@@ -1585,6 +1585,16 @@ class PipeVirglRenderer {
 #if SUPPORT_DMABUF
                 capset->alwaysBlob = 1;
 #endif
+                // Expose all formats until we can detect GPU support
+                memset(capset->supportedFormats, 0xFF, sizeof(capset->supportedFormats));
+                // Disable depth/stencil if GLES passthrough is active
+                if (!mFeatures.GuestVulkanOnly.enabled) {
+                    // 16-23 : Z16_UNORM, Z32_UNORM, Z32_FLOAT, Z24_UNORM_S8_UINT,
+                    //         S8_UINT_Z24_UNORM, Z24X8_UNORM, S8_UINT
+                    capset->supportedFormats[0] &= ~0xFF0000;
+                    // 126 : Z32_FLOAT_S8X24_UINT
+                    capset->supportedFormats[3] &= ~0x40000000;
+                }
                 break;
             }
             case VIRTGPU_CAPSET_GFXSTREAM_MAGMA: {
