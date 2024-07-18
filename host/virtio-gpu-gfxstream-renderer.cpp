@@ -341,6 +341,7 @@ const uint32_t kGlRg8 = 0x822b;
 const uint32_t kGlLuminance = 0x1909;
 const uint32_t kGlLuminanceAlpha = 0x190a;
 const uint32_t kGlUnsignedByte = 0x1401;
+const uint32_t kGlUnsignedShort = 0x1403;
 const uint32_t kGlUnsignedShort565 = 0x8363;
 const uint32_t kGlDepth16 = 0x81A5;
 const uint32_t kGlDepth24 = 0x81A6;
@@ -459,9 +460,55 @@ static inline uint32_t gl_format_to_natural_type(uint32_t format) {
             return kGlUnsignedByte;
         case kGlRgb565:
             return kGlUnsignedShort565;
+        case kGlDepth16:
+            return kGlUnsignedShort;
         default:
             return kGlUnsignedByte;
     }
+}
+
+#ifndef DRM_FORMAT_DEPTH16
+#define DRM_FORMAT_DEPTH16 fourcc_code('D', '1', '6', ' ')
+#define DRM_FORMAT_DEPTH24 fourcc_code('D', '2', '4', 'X')
+#define DRM_FORMAT_DEPTH24_STENCIL8 fourcc_code('D', '2', '4', 'S')
+#define DRM_FORMAT_DEPTH32 fourcc_code('D', '3', '2', 'F')
+#define DRM_FORMAT_DEPTH32_STENCIL8 fourcc_code('D', 'F', 'S', '8')
+#endif
+
+static uint32_t drm_format_to_virgl_format(uint32_t format) {
+    switch (format) {
+        case DRM_FORMAT_DEPTH16:
+            return VIRGL_FORMAT_Z16_UNORM;
+        case DRM_FORMAT_DEPTH24:
+            return VIRGL_FORMAT_Z24X8_UNORM;
+        case DRM_FORMAT_DEPTH24_STENCIL8:
+            return VIRGL_FORMAT_Z24_UNORM_S8_UINT;
+        case DRM_FORMAT_DEPTH32:
+            return VIRGL_FORMAT_Z32_FLOAT;
+        case DRM_FORMAT_DEPTH32_STENCIL8:
+            return VIRGL_FORMAT_Z32_FLOAT_S8X24_UINT;
+        default:
+            stream_renderer_error("Unknown drm format for virgl conversion 0x%x", format);
+            return 0;
+    }
+}
+
+static void set_drm_format_supported(uint32_t* mask, uint32_t drm_format, bool supported) {
+    uint32_t virgl_format = drm_format_to_virgl_format(drm_format);
+    uint32_t index = virgl_format / 32;
+    uint32_t bit_offset = 1 << (virgl_format & 31);
+    if (supported) {
+        mask[index] |= bit_offset;
+    } else {
+        mask[index] &= ~bit_offset;
+    }
+}
+
+static bool is_drm_format_supported(uint32_t* mask, uint32_t drm_format) {
+    uint32_t virgl_format = drm_format_to_virgl_format(drm_format);
+    uint32_t index = virgl_format / 32;
+    uint32_t bit_offset = 1 << (virgl_format & 31);
+    return (mask[index] & bit_offset) ? true : false;
 }
 
 static inline size_t virgl_format_to_linear_base(uint32_t format, uint32_t totalWidth,
@@ -473,6 +520,7 @@ static inline size_t virgl_format_to_linear_base(uint32_t format, uint32_t total
         uint32_t bpp = 4;
         switch (format) {
             case VIRGL_FORMAT_R16G16B16A16_FLOAT:
+            case VIRGL_FORMAT_Z32_FLOAT_S8X24_UINT:
                 bpp = 8;
                 break;
             case VIRGL_FORMAT_B8G8R8X8_UNORM:
@@ -480,11 +528,15 @@ static inline size_t virgl_format_to_linear_base(uint32_t format, uint32_t total
             case VIRGL_FORMAT_R8G8B8X8_UNORM:
             case VIRGL_FORMAT_R8G8B8A8_UNORM:
             case VIRGL_FORMAT_R10G10B10A2_UNORM:
+            case VIRGL_FORMAT_Z24X8_UNORM:
+            case VIRGL_FORMAT_Z24_UNORM_S8_UINT:
+            case VIRGL_FORMAT_Z32_FLOAT:
                 bpp = 4;
                 break;
             case VIRGL_FORMAT_B5G6R5_UNORM:
             case VIRGL_FORMAT_R8G8_UNORM:
             case VIRGL_FORMAT_R16_UNORM:
+            case VIRGL_FORMAT_Z16_UNORM:
                 bpp = 2;
                 break;
             case VIRGL_FORMAT_R8_UNORM:
@@ -548,6 +600,7 @@ static inline size_t virgl_format_to_total_xfer_len(uint32_t format, uint32_t to
         uint32_t bpp = 4;
         switch (format) {
             case VIRGL_FORMAT_R16G16B16A16_FLOAT:
+            case VIRGL_FORMAT_Z32_FLOAT_S8X24_UINT:
                 bpp = 8;
                 break;
             case VIRGL_FORMAT_B8G8R8X8_UNORM:
@@ -555,11 +608,15 @@ static inline size_t virgl_format_to_total_xfer_len(uint32_t format, uint32_t to
             case VIRGL_FORMAT_R8G8B8X8_UNORM:
             case VIRGL_FORMAT_R8G8B8A8_UNORM:
             case VIRGL_FORMAT_R10G10B10A2_UNORM:
+            case VIRGL_FORMAT_Z24X8_UNORM:
+            case VIRGL_FORMAT_Z24_UNORM_S8_UINT:
+            case VIRGL_FORMAT_Z32_FLOAT:
                 bpp = 4;
                 break;
             case VIRGL_FORMAT_B5G6R5_UNORM:
             case VIRGL_FORMAT_R16_UNORM:
             case VIRGL_FORMAT_R8G8_UNORM:
+            case VIRGL_FORMAT_Z16_UNORM:
                 bpp = 2;
                 break;
             case VIRGL_FORMAT_R8_UNORM:
@@ -1643,6 +1700,23 @@ class PipeVirglRenderer {
 #if GFXSTREAM_UNSTABLE_VULKAN_EXTERNAL_SYNC
                 capset->externalSync = 1;
 #endif
+
+                // Expose all formats until we can detect GPU support
+                memset(capset->virglSupportedFormats, 0xFF,
+                       sizeof(capset->virglSupportedFormats));
+                // Disable depth/stencil if GLES passthrough is active
+                if (!mFeatures.GuestVulkanOnly.enabled) {
+                    set_drm_format_supported(capset->virglSupportedFormats,
+                                             DRM_FORMAT_DEPTH16, 0);
+                    set_drm_format_supported(capset->virglSupportedFormats,
+                                             DRM_FORMAT_DEPTH24, 0);
+                    set_drm_format_supported(capset->virglSupportedFormats,
+                                             DRM_FORMAT_DEPTH32, 0);
+                    set_drm_format_supported(capset->virglSupportedFormats,
+                                             DRM_FORMAT_DEPTH24_STENCIL8, 0);
+                    set_drm_format_supported(capset->virglSupportedFormats,
+                                             DRM_FORMAT_DEPTH32_STENCIL8, 0);
+                }
                 break;
             }
             case VIRTGPU_CAPSET_GFXSTREAM_MAGMA: {
