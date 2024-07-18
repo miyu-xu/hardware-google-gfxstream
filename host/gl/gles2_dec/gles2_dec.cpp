@@ -16,6 +16,8 @@
 
 #include <stdio.h>
 
+#define CHECK_GL_ERRORS 1
+
 namespace gfxstream {
 
 typedef unsigned int tsize_t; // Target "size_t", which is 32-bit for now. It may or may not be the same as host's size_t when emugen is compiled.

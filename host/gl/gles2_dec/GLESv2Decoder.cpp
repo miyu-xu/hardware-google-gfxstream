@@ -399,6 +399,12 @@ void GLESv2Decoder::s_glUnmapBufferAEMU(void* self, GLenum target, GLintptr offs
         void* gpu_ptr = ctx->glMapBufferRange(target, offset, length, access);
         if (!gpu_ptr) {
             fprintf(stderr, "%s: could not get host gpu pointer!\n", __FUNCTION__);
+            GLint error = ctx->glGetError();
+			if (error == GL_NO_ERROR) {
+                fprintf(stderr, "glUnmapBufferAEMU GL_NO_ERROR even though mapbufferrange failed...\n");
+            } else {
+                fprintf(stderr, "glUnmapBufferAEMU mapbufferrange failed, error: 0x%X\n", error);
+            }
             return;
         }
         memcpy(gpu_ptr, guest_buffer, length);
