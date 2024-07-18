@@ -533,6 +533,14 @@ VARTYPE_TO_PRINT_FORMAT = {
     'GLsync': '%p',
     'GLuint64': "%lu",
     'GLeglImageOES': '%p',
+    'EGLNativeDisplayType': '%p',
+    'EGLNativeWindowType': '%p',
+    'EGLDisplay': '%p',
+    'EGLint': '%d',
+    'EGLConfig': '%p',
+    'EGLContext': '%p',
+    'EGLSurface': '%p',
+    'EGLenum': '0x%X',
 }
 
 def get_printf_format(var_type, var_name):
@@ -578,7 +586,9 @@ def gen_dispatch_logging_wrappers(entries):
         else:
             optional_return = "return "
 
-        print("\t%sGLDispatch::%s_underlying(%s);" % (optional_return, entry.__name__, ", ".join(print_var_names)))
+        dispatch_name = 'EGLDispatch' if 'egl' in entry.__name__ else 'GLDispatch'
+
+        print("\t%s%s::%s_underlying(%s);" % (optional_return, dispatch_name, entry.__name__, ", ".join(print_var_names)))
         print("}")
         print("")
 

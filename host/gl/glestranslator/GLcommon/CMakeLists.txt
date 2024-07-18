@@ -25,6 +25,8 @@ target_include_directories(
     ${GFXSTREAM_REPO_ROOT}/include
     ${GFXSTREAM_REPO_ROOT}/host
     ${GFXSTREAM_REPO_ROOT}/host/apigen-codec-common
+    ${GFXSTREAM_REPO_ROOT}/host/gl
+    ${GFXSTREAM_REPO_ROOT}/host/gl/OpenGLESDispatch
     ${GFXSTREAM_REPO_ROOT}/host/gl/glestranslator/include)
 target_link_libraries(
     GLcommon PUBLIC
