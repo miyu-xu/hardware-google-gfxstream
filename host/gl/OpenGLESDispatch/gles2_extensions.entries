@@ -24,3 +24,6 @@ void glDebugMessageCallbackKHR(GLDEBUGPROCKHR callback, const void *userParam);
 GLuint glGetDebugMessageLogKHR(GLuint count, GLsizei bufSize, GLenum *sources, GLenum *types, GLuint *ids, GLenum *severities, GLsizei *lengths, GLchar *messageLog);
 void glPushDebugGroupKHR(GLenum source, GLuint id, GLsizei length, const GLchar* message);
 void glPopDebugGroupKHR(void);
+
+void glGetObjectLabelEXT(GLenum type, GLuint object, GLsizei bufSize, GLsizei *length, GLchar *label);
+void glLabelObjectEXT(GLenum type, GLuint object, GLsizei length, const GLchar *label);

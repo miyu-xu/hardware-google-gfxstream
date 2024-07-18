@@ -231,6 +231,8 @@ GL_APICALL GLuint GL_APIENTRY glGetDebugMessageLog(GLuint count, GLsizei size, G
 GL_APICALL void GL_APIENTRY glPushDebugGroup(GLenum source, GLuint id, GLsizei length, const GLchar* message);
 GL_APICALL void GL_APIENTRY glPopDebugGroup(void);
 
+GL_APICALL void GL_APIENTRY glGetObjectLabelEXT(GLenum type, GLuint object, GLsizei bufSize, GLsizei *length, GLchar *label);
+GL_APICALL void GL_APIENTRY glLabelObjectEXT(GLenum type, GLuint object, GLsizei length, const GLchar *label);
 
 } // namespace gles2
 } // namespace translator
@@ -344,6 +346,8 @@ static __translatorMustCastToProperFunctionPointerType getProcAddressGles2(const
         (*s_gles2Extensions)["glGetDebugMessageLog"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glGetDebugMessageLog);
         (*s_gles2Extensions)["glPushDebugGroup"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glPushDebugGroup);
         (*s_gles2Extensions)["glPopDebugGroup"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glPopDebugGroup);
+        (*s_gles2Extensions)["glGetObjectLabelEXT"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glGetObjectLabelEXT);
+        (*s_gles2Extensions)["glLabelObjectEXT"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glLabelObjectEXT);
         (*s_gles2Extensions)["glTexBufferOES"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glTexBufferOES);
         (*s_gles2Extensions)["glTexBufferRangeOES"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glTexBufferRangeOES);
         (*s_gles2Extensions)["glTexBufferEXT"] = (__translatorMustCastToProperFunctionPointerType)GLES2_NAMESPACED(glTexBufferEXT);
@@ -3868,6 +3872,16 @@ GL_APICALL void GL_APIENTRY glPushDebugGroupKHR(GLenum source, GLuint id, GLsize
 GL_APICALL void GL_APIENTRY glPopDebugGroupKHR(void) {
     GET_CTX_V2();
     ctx->dispatcher().glPopDebugGroupKHR();
+}
+
+GL_APICALL void glGetObjectLabelEXT(GLenum type, GLuint object, GLsizei bufSize, GLsizei *length, GLchar *label) {
+    GET_CTX_V2();
+    ctx->dispatcher().glGetObjectLabelEXT(type, object, bufSize, length, label);
+}
+
+GL_APICALL void glLabelObjectEXT(GLenum type, GLuint object, GLsizei length, const GLchar *label) {
+    GET_CTX_V2();
+    ctx->dispatcher().glLabelObjectEXT(type, object, length, label);
 }
 
 GL_APICALL void  GL_APIENTRY glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels){
