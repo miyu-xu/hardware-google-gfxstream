@@ -28,7 +28,18 @@ GLboolean glIsVertexArray_dispatchLoggingWrapper(GLuint array) {
 
 void * glMapBufferRange_dispatchLoggingWrapper(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) {
 	DISPATCH_DEBUG_LOG("glMapBufferRange(target:0x%X, offset:%ld, length:%ld, access:%d)", target, offset, length, access);
-	return GLDispatch::glMapBufferRange_underlying(target, offset, length, access);
+	auto ret = GLDispatch::glMapBufferRange_underlying(target, offset, length, access);
+
+	if (ret == nullptr) {
+		std::lock_guard<std::mutex> lock(sTrackedObjectMutex);
+
+		DISPATCH_DEBUG_LOG("jasonjason dumping tracked objects");
+		for (const auto [key, obj] : sTrackedObjects) {
+			DISPATCH_DEBUG_LOG("tracked object handle:%d type:%s size:%d", key.handle, key.type.c_str(), obj.size);
+		}
+	}
+
+	return ret;
 }
 
 GLboolean glUnmapBuffer_dispatchLoggingWrapper(GLenum target) {

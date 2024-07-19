@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <optional>
 #include <unordered_map>
 
 typedef GlLibrary::GlFunctionPointer GL_FUNC_PTR;

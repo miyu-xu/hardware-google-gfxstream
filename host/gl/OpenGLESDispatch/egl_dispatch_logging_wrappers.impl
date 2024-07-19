@@ -75,8 +75,13 @@ EGLBoolean eglReleaseThread_dispatchLoggingWrapper() {
 
 EGLContext eglCreateContext_dispatchLoggingWrapper(EGLDisplay display, EGLConfig config, EGLContext share_context, const EGLint* attrib_list) {
 	DISPATCH_DEBUG_LOG("eglCreateContext(display:%p, config:%p, share_context:%p, attrib_list:%p)", display, config, share_context, attrib_list);
-	return EGLDispatch::eglCreateContext_underlying(display, config, share_context, attrib_list);
+
+	auto ret = EGLDispatch::eglCreateContext_underlying(display, config, share_context, attrib_list);
+	DISPATCH_DEBUG_LOG("eglCreateContext -> %p", ret);
+	return ret;
 }
+
+
 
 EGLBoolean eglDestroyContext_dispatchLoggingWrapper(EGLDisplay display, EGLContext context) {
 	DISPATCH_DEBUG_LOG("eglDestroyContext(display:%p, context:%p)", display, context);
