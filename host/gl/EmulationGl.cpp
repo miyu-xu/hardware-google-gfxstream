@@ -32,6 +32,8 @@
 #include "host-common/logging.h"
 #include "host-common/opengl/misc.h"
 
+#define ENABLE_GL_LOG 1
+
 namespace gfxstream {
 namespace gl {
 namespace {
@@ -42,7 +44,7 @@ static void EGLAPIENTRY EglDebugCallback(EGLenum error,
                                          EGLLabelKHR threadLabel,
                                          EGLLabelKHR objectLabel,
                                          const char *message) {
-    GL_LOG("command:%s message:%s", command, message);
+    ERR("command:%s message:%s", command, message);
 }
 
 static void GL_APIENTRY GlDebugCallback(GLenum source,
@@ -52,7 +54,7 @@ static void GL_APIENTRY GlDebugCallback(GLenum source,
                                         GLsizei length,
                                         const GLchar *message,
                                         const void *userParam) {
-    GL_LOG("message:%s", message);
+    ERR("message:%s", message);
 }
 
 static const GLint kGles2ContextAttribsESOrGLCompat[] = {
@@ -237,7 +239,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         return nullptr;
     }
 
-    GL_LOG("call eglInitialize");
+    ERR("call eglInitialize");
     if (!s_egl.eglInitialize(emulationGl->mEglDisplay,
                              &emulationGl->mEglVersionMajor,
                              &emulationGl->mEglVersionMinor)) {
@@ -275,12 +277,12 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         };
 
         if (s_egl.eglDebugMessageControlKHR(&EglDebugCallback, controls) == EGL_SUCCESS) {
-            GL_LOG("Successfully set eglDebugMessageControlKHR");
+            ERR("Successfully set eglDebugMessageControlKHR");
         } else {
-            GL_LOG("Failed to eglDebugMessageControlKHR");
+            ERR("Failed to eglDebugMessageControlKHR");
         }
     } else {
-        GL_LOG("eglDebugMessageControlKHR not available");
+        ERR("eglDebugMessageControlKHR not available");
     }
 #endif
 
@@ -414,7 +416,7 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         if (!debugSetup) {
             ERR("Failed to set up glDebugMessageCallback");
         } else {
-            GL_LOG("Successfully set up glDebugMessageCallback");
+            ERR("Successfully set up glDebugMessageCallback");
         }
     }
     if (s_gles2.glDebugMessageCallbackKHR && !debugSetup) {
@@ -435,11 +437,11 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         if (!debugSetup) {
             ERR("Failed to set up glDebugMessageCallbackKHR");
         } else {
-            GL_LOG("Successfully set up glDebugMessageCallbackKHR");
+            ERR("Successfully set up glDebugMessageCallbackKHR");
         }
     }
     if (!debugSetup) {
-        GL_LOG("glDebugMessageCallback and glDebugMessageCallbackKHR not available");
+        ERR("glDebugMessageCallback and glDebugMessageCallbackKHR not available");
     }
 #endif
 
