@@ -49,6 +49,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "40e9810d_77bacac5",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-19T21:48:22Z",
+      "side": 1,
+      "message": "I think we still need to introduce all of the depth formats here and in `virgl_format_to_total_xfer_len` below. cl/654104149 still shows failures with this change and aosp/3185799.",
+      "range": {
+        "startLine": 474,
+        "startChar": 8,
+        "endLine": 474,
+        "endChar": 25
+      },
+      "revId": "015fe8a1fc4befe452834bafa5c3be9361cf7a00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c201862e_1f096552",
         "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
         "patchSetId": 2
