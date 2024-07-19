@@ -218,7 +218,9 @@ std::unique_ptr<HostConnection> HostConnection::connect(enum VirtGpuCapset capse
                 ALOGE("Failed to connect to host (VirtioGpu)\n");
                 return nullptr;
             }
+
             auto rendernodeFd = stream->getRendernodeFd();
+            auto device = VirtGpuDevice::getInstance(capset, descriptor);
             con->m_stream = stream;
             con->m_rendernodeFd = rendernodeFd;
             break;
@@ -315,6 +317,10 @@ void HostConnection::exit() {
     EGLThreadInfo *tinfo = getEGLThreadInfo();
     if (!tinfo) {
         return;
+    }
+
+    if (tinfo->hostConn) {
+        tinfo->hostConn->m_grallocHelper = nullptr;
     }
 
     tinfo->hostConn.reset();

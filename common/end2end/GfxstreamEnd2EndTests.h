@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include <inttypes.h>
+#include <unistd.h>
 
 #include <future>
 #include <memory>
@@ -26,6 +27,8 @@
 #include <thread>
 #include <unordered_set>
 #include <variant>
+
+#include "virtgpu_kumquat_ffi.h"
 
 // clang-format off
 #include <EGL/egl.h>
@@ -145,13 +148,14 @@ struct GuestGlDispatchTable {
 #define DECLARE_GLES_FUNCTION(return_type, function_name, signature, args) \
     return_type(*function_name) signature = nullptr;
 
+    DECLARE_EGL_FUNCTION(EGLint, eglInitializeKumquat, (EGLint))
     LIST_RENDER_EGL_FUNCTIONS(DECLARE_EGL_FUNCTION)
     LIST_RENDER_EGL_EXTENSIONS_FUNCTIONS(DECLARE_EGL_FUNCTION)
     LIST_GLES_FUNCTIONS(DECLARE_GLES_FUNCTION, DECLARE_GLES_FUNCTION)
 };
 
 struct GuestRenderControlDispatchTable {
-    PFN_rcCreateDevice rcCreateDevice = nullptr;
+    PFN_rcCreateDeviceKumquat rcCreateDeviceKumquat = nullptr;
     PFN_rcDestroyDevice rcDestroyDevice = nullptr;
     PFN_rcCompose rcCompose = nullptr;
 };
@@ -160,8 +164,9 @@ class ScopedRenderControlDevice {
    public:
     ScopedRenderControlDevice() {}
 
-    ScopedRenderControlDevice(GuestRenderControlDispatchTable& dispatch) : mDispatch(&dispatch) {
-        mDevice = dispatch.rcCreateDevice();
+    ScopedRenderControlDevice(GuestRenderControlDispatchTable& dispatch, int32_t kumquatId)
+        : mDispatch(&dispatch) {
+        mDevice = dispatch.rcCreateDeviceKumquat(kumquatId);
     }
 
     ScopedRenderControlDevice(const ScopedRenderControlDevice& rhs) = delete;
@@ -513,6 +518,8 @@ struct TypicalVkTestEnvironmentOptions {
     std::optional<const void*> deviceCreateInfoPNext;
 };
 
+typedef VkResult(VKAPI_PTR* PFN_vkInitializeKumquat)(uint32_t KumquatId);
+
 class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
    public:
     std::unique_ptr<GuestGlDispatchTable> SetupGuestGl();
@@ -522,7 +529,6 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     void SetUp() override;
 
     void TearDownGuest();
-    void TearDownHost();
     void TearDown() override;
 
     void SetUpEglContextAndSurface(uint32_t contextVersion,
@@ -576,6 +582,11 @@ class GfxstreamEnd2EndTest : public ::testing::TestWithParam<TestParams> {
     std::unique_ptr<GuestGlDispatchTable> mGl;
     std::unique_ptr<GuestRenderControlDispatchTable> mRc;
     std::unique_ptr<vkhpp::DynamicLoader> mVk;
+
+    PFN_vkInitializeKumquat mVkInitializeKumquat = nullptr;
+    uint32_t mKumquatId = 0;
+    pid_t mKumquatPid = 0;
+    struct virtgpu_kumquat* mVirtGpu = nullptr;
 };
 
 }  // namespace tests

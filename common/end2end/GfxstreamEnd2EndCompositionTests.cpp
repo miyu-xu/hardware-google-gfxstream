@@ -25,7 +25,7 @@ using testing::Eq;
 class GfxstreamEnd2EndCompositionTest : public GfxstreamEnd2EndTest {};
 
 TEST_P(GfxstreamEnd2EndCompositionTest, BasicComposition) {
-    ScopedRenderControlDevice rcDevice(*mRc);
+    ScopedRenderControlDevice rcDevice(*mRc, mKumquatId);
 
     auto layer1Ahb = GFXSTREAM_ASSERT(CreateAHBFromImage("256x256_android.png"));
     auto layer2Ahb = GFXSTREAM_ASSERT(CreateAHBFromImage("256x256_android_with_transparency.png"));
@@ -101,7 +101,7 @@ TEST_P(GfxstreamEnd2EndCompositionTest, BasicComposition) {
 }
 
 TEST_P(GfxstreamEnd2EndCompositionTest, BasicCompositionBGRA) {
-    ScopedRenderControlDevice rcDevice(*mRc);
+    ScopedRenderControlDevice rcDevice(*mRc, mKumquatId);
 
     auto layer1Ahb = GFXSTREAM_ASSERT(CreateAHBFromImage("256x256_android.png"));
     auto layer2Ahb = GFXSTREAM_ASSERT(CreateAHBFromImage("256x256_android_with_transparency.png"));

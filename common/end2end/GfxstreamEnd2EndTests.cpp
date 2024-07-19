@@ -19,17 +19,18 @@
 
 #include <dlfcn.h>
 #include <log/log.h>
+#include <unistd.h>
 
 #include <filesystem>
 
 #include "ProcessPipe.h"
-#include "RutabagaLayer.h"
 #include "aemu/base/Path.h"
 #include "gfxstream/ImageUtils.h"
-#include "gfxstream/RutabagaLayerTestUtils.h"
 #include "gfxstream/Strings.h"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
+
+std::atomic<uint32_t> gKumquatId = 0;
 
 namespace gfxstream {
 namespace tests {
@@ -160,6 +161,8 @@ std::unique_ptr<GuestGlDispatchTable> GfxstreamEnd2EndTest::SetupGuestGl() {
     #define LOAD_EGL_FUNCTION(return_type, function_name, signature) \
         gl-> function_name = reinterpret_cast< return_type (*) signature >(eglGetAddr( #function_name ));
 
+    LOAD_EGL_FUNCTION(EGLint, eglInitializeKumquat, (EGLint))
+
     LIST_RENDER_EGL_FUNCTIONS(LOAD_EGL_FUNCTION)
     LIST_RENDER_EGL_EXTENSIONS_FUNCTIONS(LOAD_EGL_FUNCTION)
 
@@ -196,7 +199,7 @@ std::unique_ptr<GuestRenderControlDispatchTable> GfxstreamEnd2EndTest::SetupGues
         return nullptr;                                           \
     }
 
-    LOAD_RENDERCONTROL_FUNCTION(rcCreateDevice);
+    LOAD_RENDERCONTROL_FUNCTION(rcCreateDeviceKumquat);
     LOAD_RENDERCONTROL_FUNCTION(rcDestroyDevice);
     LOAD_RENDERCONTROL_FUNCTION(rcCompose);
 
@@ -219,6 +222,13 @@ std::unique_ptr<vkhpp::DynamicLoader> GfxstreamEnd2EndTest::SetupGuestVk() {
         return nullptr;
     }
 
+    mVkInitializeKumquat =
+        (PFN_vkInitializeKumquat)getInstanceProcAddr(NULL, "vkInitializeKumquat");
+    if (!mVkInitializeKumquat) {
+        ALOGE("Failed to load initialize kumquat function");
+        return nullptr;
+    }
+
     VULKAN_HPP_DEFAULT_DISPATCHER.init(getInstanceProcAddr);
 
     return dl;
@@ -228,6 +238,15 @@ void GfxstreamEnd2EndTest::SetUp() {
     const TestParams params = GetParam();
 
     const std::string transportValue = GfxstreamTransportToEnvVar(params.with_transport);
+    const std::filesystem::path testDirectory = gfxstream::guest::getProgramDirectory();
+    const std::string kumquatCommand = (testDirectory / "kumquat").string();
+    std::string gpu_socket_cmd = "--gpu-socket-path=";
+    std::string gpu_socket_path = "/tmp/kumquat-gpu-";
+    std::string capset_names = "--capset-names=";
+    std::string renderer_features = "--renderer-features=";
+    std::string pipe_descriptor = "--pipe-descriptor=";
+    int fds[2];
+
     ASSERT_THAT(setenv("GFXSTREAM_TRANSPORT", transportValue.c_str(), /*overwrite=*/1), Eq(0));
 
     ASSERT_THAT(setenv("GFXSTREAM_EMULATED_VIRTIO_GPU_WITH_GL",
@@ -245,6 +264,37 @@ void GfxstreamEnd2EndTest::SetUp() {
                         /*overwrite=*/1),
                 Eq(0));
 
+    renderer_features.append(features);
+    if (params.with_gl) {
+        capset_names.append("gfxstream-gles:");
+    }
+
+    if (params.with_vk) {
+        capset_names.append("gfxstream-vulkan:");
+    }
+
+    pipe(fds);
+
+    mKumquatId = ++gKumquatId;
+    gpu_socket_path.append(std::to_string(mKumquatId));
+
+    gpu_socket_cmd.append(gpu_socket_path);
+    pipe_descriptor.append(std::to_string(fds[1]));
+    pid_t pid = fork();
+    if (pid == 0) {
+        close(fds[0]);
+        execl(kumquatCommand.c_str(), kumquatCommand.c_str(), gpu_socket_cmd.c_str(),
+              capset_names.c_str(), renderer_features.c_str(), pipe_descriptor.c_str(), nullptr);
+        exit(0);
+    } else {
+        close(fds[1]);
+        uint64_t count = 0;
+        ssize_t bytes_read = read(fds[0], &count, sizeof(count));
+        ASSERT_THAT(bytes_read, Eq(8));
+        close(fds[0]);
+        ASSERT_THAT(virtgpu_kumquat_init(&mVirtGpu, gpu_socket_path.c_str()), Eq(0));
+        mKumquatPid = pid;
+    }
 
     if (params.with_gl) {
         mGl = SetupGuestGl();
@@ -259,7 +309,7 @@ void GfxstreamEnd2EndTest::SetUp() {
     ASSERT_THAT(mRc, NotNull());
 
     mAnwHelper.reset(createPlatformANativeWindowHelper());
-    mGralloc.reset(createPlatformGralloc());
+    mGralloc.reset(createPlatformGralloc(mKumquatId));
     mSync.reset(createPlatformSyncHelper());
 }
 
@@ -279,25 +329,17 @@ void GfxstreamEnd2EndTest::TearDownGuest() {
     mAnwHelper.reset();
     mGralloc.reset();
     mSync.reset();
-
-    processPipeRestart();
-}
-
-void GfxstreamEnd2EndTest::TearDownHost() {
-    const uint32_t users = GetNumActiveEmulatedVirtioGpuUsers();
-    if (users != 0) {
-        ALOGE("The EmulationVirtioGpu was found to still be active by %" PRIu32
-              " after the "
-              "end of the test. Please ensure you have fully destroyed all objects created "
-              "during the test (Gralloc allocations, ANW allocations, etc).",
-              users);
-        abort();
-    }
 }
 
 void GfxstreamEnd2EndTest::TearDown() {
     TearDownGuest();
-    TearDownHost();
+    ASSERT_THAT(virtgpu_kumquat_finish(&mVirtGpu), Eq(0));
+    ASSERT_THAT(kill(mKumquatPid, SIGKILL), Eq(0));
+    int status = 0;
+    pid_t pid = waitpid(mKumquatPid, &status, WNOHANG);
+    while (!pid) {
+        pid = waitpid(mKumquatPid, &status, WNOHANG);
+    }
 }
 
 void GfxstreamEnd2EndTest::SetUpEglContextAndSurface(
@@ -310,6 +352,7 @@ void GfxstreamEnd2EndTest::SetUpEglContextAndSurface(
     ASSERT_THAT(contextVersion, AnyOf(Eq(2), Eq(3)))
         << "Invalid context version requested.";
 
+    mGl->eglInitializeKumquat((EGLint)mKumquatId);
     EGLDisplay display = mGl->eglGetDisplay(EGL_DEFAULT_DISPLAY);
     ASSERT_THAT(display, Not(Eq(EGL_NO_DISPLAY)));
 
@@ -513,6 +556,7 @@ Result<ScopedGlProgram> GfxstreamEnd2EndTest::SetUpProgram(
 
 Result<GfxstreamEnd2EndTest::TypicalVkTestEnvironment>
 GfxstreamEnd2EndTest::SetUpTypicalVkTestEnvironment(const TypicalVkTestEnvironmentOptions& opts) {
+    mVkInitializeKumquat(mKumquatId);
     const auto availableInstanceLayers = vkhpp::enumerateInstanceLayerProperties().value;
     ALOGV("Available instance layers:");
     for (const vkhpp::LayerProperties& layer : availableInstanceLayers) {
@@ -626,12 +670,8 @@ GfxstreamEnd2EndTest::SetUpTypicalVkTestEnvironment(const TypicalVkTestEnvironme
 }
 
 void GfxstreamEnd2EndTest::SnapshotSaveAndLoad() {
-    auto directory = testing::TempDir();
-
-    std::shared_ptr<gfxstream::EmulatedVirtioGpu> emulation = gfxstream::EmulatedVirtioGpu::Get();
-
-    emulation->SnapshotSave(directory);
-    emulation->SnapshotRestore(directory);
+    ASSERT_THAT(virtgpu_kumquat_snapshot_save(mVirtGpu), Eq(0));
+    ASSERT_THAT(virtgpu_kumquat_snapshot_restore(mVirtGpu), Eq(0));
 }
 
 Result<Image> GfxstreamEnd2EndTest::LoadImage(const std::string& basename) {
