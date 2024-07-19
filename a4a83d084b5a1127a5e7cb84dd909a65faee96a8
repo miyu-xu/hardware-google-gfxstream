@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a2253740_04f4ae63",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-19T11:47:31Z",
+      "side": 1,
+      "message": "Are we going to get rid of all aemu/base dependencies in guest code? There\u0027s still a couple includes left.",
+      "range": {
+        "startLine": 7,
+        "startChar": 18,
+        "endLine": 7,
+        "endChar": 43
+      },
+      "revId": "a4a83d084b5a1127a5e7cb84dd909a65faee96a8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
