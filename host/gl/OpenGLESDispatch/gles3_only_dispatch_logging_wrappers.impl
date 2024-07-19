@@ -28,7 +28,13 @@ GLboolean glIsVertexArray_dispatchLoggingWrapper(GLuint array) {
 
 void * glMapBufferRange_dispatchLoggingWrapper(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) {
 	DISPATCH_DEBUG_LOG("glMapBufferRange(target:0x%X, offset:%ld, length:%ld, access:%d)", target, offset, length, access);
-	return GLDispatch::glMapBufferRange_underlying(target, offset, length, access);
+	auto ret = GLDispatch::glMapBufferRange_underlying(target, offset, length, access);
+
+	if (ret == nullptr) {
+		PrintTrackedObjects();
+	}
+
+	return ret;
 }
 
 GLboolean glUnmapBuffer_dispatchLoggingWrapper(GLenum target) {
