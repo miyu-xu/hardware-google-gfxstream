@@ -22,6 +22,30 @@
       },
       "revId": "a4a83d084b5a1127a5e7cb84dd909a65faee96a8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2255e5e2_06261111",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-19T15:02:59Z",
+      "side": 1,
+      "message": "Yes, we do want to significantly reduce dependences on `guest/android-emu`.  It duplicates a lot of code from `hardware/google/aemu`.",
+      "parentUuid": "a2253740_04f4ae63",
+      "range": {
+        "startLine": 7,
+        "startChar": 18,
+        "endLine": 7,
+        "endChar": 43
+      },
+      "revId": "a4a83d084b5a1127a5e7cb84dd909a65faee96a8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
