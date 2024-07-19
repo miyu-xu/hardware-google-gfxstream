@@ -529,7 +529,10 @@ EglOsEglDisplay::createContext(EGLint profileMask,
     D("with config %p\n", format->mConfigId);
 
     // Always GLES3
-    std::vector<EGLint> attributes = { EGL_CONTEXT_CLIENT_VERSION, 3 };
+    std::vector<EGLint> attributes = { 
+        EGL_CONTEXT_CLIENT_VERSION, 3,
+        EGL_CONTEXT_OPENGL_DEBUG, EGL_TRUE,
+    };
     auto exts = s_eglDispatch.eglQueryString(mDisplay, EGL_EXTENSIONS);
     auto vendor = s_eglDispatch.eglQueryString(mDisplay, EGL_VENDOR);
 
