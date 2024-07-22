@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63732abd_eddc9f97",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1058860
+      },
+      "writtenOn": "2024-07-22T18:11:41Z",
+      "side": 1,
+      "message": "Btw, clang-r510928 is removed.  Try clang-r522817 or r530567 😊",
+      "revId": "e2d4e6cf6df9f190612fc7b6182c08799759c84a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
