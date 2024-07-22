@@ -35,6 +35,12 @@ if (WIN32)
     add_definitions("-DUNICODE -D_UNICODE -DNOMINMAX -DEMUGL_BUILD -DVK_USE_PLATFORM_WIN32_KHR -DBUILDING_EMUGL_COMMON_SHARED")
 endif()
 
+if (APPLE)
+    add_definitions("-D_LIBCPP_AVAILABILITY_HAS_NO_VERBOSE_ABORT")
+    # Force override abort, see: clang-r530567/include/c++/v1/__verbose_abort
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D'LIBCPP_VERBOSE_ABORT(...)=(decltype(::std::__use(__VA_ARGS__))(), __builtin_abort())'")
+endif()
+
 option(VIRGL_RENDERER_UNSTABLE_APIS "Use unstable virglrenderer APIs" ON)
 if(VIRGL_RENDERER_UNSTABLE_APIS)
     add_definitions(-DVIRGL_RENDERER_UNSTABLE_APIS)
