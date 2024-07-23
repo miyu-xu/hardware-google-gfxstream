@@ -3227,9 +3227,12 @@ void FrameBuffer::destroyEmulatedEglWindowSurface(HandleType p_surface) {
 }
 
 std::vector<HandleType> FrameBuffer::destroyEmulatedEglWindowSurfaceLocked(HandleType p_surface) {
+    return {};
+
     std::vector<HandleType> colorBuffersToCleanUp;
     const auto w = m_windows.find(p_surface);
     if (w != m_windows.end()) {
+        DISPATCH_DEBUG_LOG("destroyEmulatedEglWindowSurfaceLocked() binding main context");
         RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());
         if (!m_guestManagedColorBufferLifetime) {
             if (m_refCountPipeEnabled) {
@@ -3302,11 +3305,20 @@ void FrameBuffer::drainGlRenderThreadResources() {
         return;
     }
 
+    DISPATCH_DEBUG_LOG("drainGlRenderThreadResources() unbinding context");
+
     // Release references to the current thread's context/surfaces if any
     bindContext(0, 0, 0);
 
+    DISPATCH_DEBUG_LOG("drainGlRenderThreadResources() unbinding context - done");
+
+    DISPATCH_DEBUG_LOG("drainGlRenderThreadResources() calling drainGlRenderThreadSurfaces");
     drainGlRenderThreadSurfaces();
+    DISPATCH_DEBUG_LOG("drainGlRenderThreadResources() calling drainGlRenderThreadSurfaces - done");
+
+    DISPATCH_DEBUG_LOG("drainGlRenderThreadResources() calling drainGlRenderThreadContexts");
     drainGlRenderThreadContexts();
+    DISPATCH_DEBUG_LOG("drainGlRenderThreadResources() calling drainGlRenderThreadContexts - done");
 
     if (!s_egl.eglReleaseThread()) {
         ERR("Error: RenderThread @%p failed to eglReleaseThread()", this);
@@ -3326,6 +3338,8 @@ void FrameBuffer::drainGlRenderThreadContexts() {
     if (tinfo->m_contextSet.empty()) {
         return;
     }
+
+    ERR("drainGlRenderThreadContexts() destroying owned contexts");
 
     AutoLock mutex(m_lock);
     android::base::AutoWriteLock contextLock(m_contextStructureLock);
@@ -3350,6 +3364,8 @@ void FrameBuffer::drainGlRenderThreadSurfaces() {
     }
 
     std::vector<HandleType> colorBuffersToCleanup;
+
+    ERR("drainGlRenderThreadSurfaces() destroying owned surfaces using main context helper?");
 
     AutoLock mutex(m_lock);
     RecursiveScopedContextBind bind(getPbufferSurfaceContextHelper());

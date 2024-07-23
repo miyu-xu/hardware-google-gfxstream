@@ -85,7 +85,7 @@ class DisplaySurfaceGlContextHelper : public ContextHelper {
             if (!s_egl.eglMakeCurrent(mDisplay, mSurface, mSurface, mContext)) {
                 // b/284523053
                 // Legacy swiftshader logspam on exit with this line.
-                GL_LOG("Failed to make display surface context current: %d", s_egl.eglGetError());
+                ERR("Failed to make display surface context current: %d", s_egl.eglGetError());
                 // Fall through to allow adding previous context to stack.
             }
         }

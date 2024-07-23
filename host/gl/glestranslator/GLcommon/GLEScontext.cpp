@@ -2290,7 +2290,7 @@ void GLEScontext::initDefaultFBO(
         GLuint* eglSurfaceRBColorId, GLuint* eglSurfaceRBDepthId,
         GLuint readWidth, GLint readHeight, GLint readColorFormat, GLint readDepthStencilFormat, GLint readMultisamples,
         GLuint* eglReadSurfaceRBColorId, GLuint* eglReadSurfaceRBDepthId) {
-    
+
     DISPATCH_DEBUG_LOG("GLEScontext:%p initDefaultFB()", this);
     bool needUpdateDefaultFbo = false;
     if (!m_defaultFBO) {

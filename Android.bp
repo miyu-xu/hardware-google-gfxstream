@@ -120,6 +120,8 @@ cc_defaults {
         // Android build system has some global cflags that we cannot override (e.g.
         // -Werror=return-type), so -Wno-return-type and -Wno-return-type-c-linkage will not work.
         // See build/soong/cc/config/global.go
+        "-g",
+        "-O0",
         "-DUSING_ANDROID_BP",
         "-D_FILE_OFFSET_BITS=64",
         "-DVK_GFXSTREAM_STRUCTURE_TYPE_EXT",

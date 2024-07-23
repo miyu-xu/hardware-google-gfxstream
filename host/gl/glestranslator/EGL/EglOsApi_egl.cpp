@@ -333,7 +333,7 @@ EglOsEglDisplay::EglOsEglDisplay(bool nullEgl) {
 #endif // __linux__
 
     if (clientExts != nullptr && emugl::hasExtension(clientExts, "EGL_ANDROID_blob_cache")) {
-        s_eglDispatch.eglSetBlobCacheFuncsANDROID(mDisplay, SetBlob, GetBlob);
+        //s_eglDispatch.eglSetBlobCacheFuncsANDROID(mDisplay, SetBlob, GetBlob);
     }
 
     mGlesVersion = GlesVersion::ES2;
@@ -529,7 +529,7 @@ EglOsEglDisplay::createContext(EGLint profileMask,
     D("with config %p\n", format->mConfigId);
 
     // Always GLES3
-    std::vector<EGLint> attributes = { 
+    std::vector<EGLint> attributes = {
         EGL_CONTEXT_CLIENT_VERSION, 3,
         EGL_CONTEXT_OPENGL_DEBUG, EGL_TRUE,
     };

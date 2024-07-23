@@ -42,6 +42,7 @@ EmulatedEglWindowSurface::EmulatedEglWindowSurface(EGLDisplay display,
         mHndl(hndl) {}
 
 EmulatedEglWindowSurface::~EmulatedEglWindowSurface() {
+    DISPATCH_DEBUG_LOG("jasonjason ~EmulatedEglWindowSurface()");
     if (mSurface) {
         s_egl.eglDestroySurface(mDisplay, mSurface);
     }

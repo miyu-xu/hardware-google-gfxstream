@@ -18,11 +18,14 @@
 
 #include <stdio.h>
 
+#include "host-common/logging.h"
+
 void ThreadInfo::updateInfo(ContextPtr eglCtx,
                             EglDisplay* dpy,
                             GLEScontext* glesCtx,
                             ShareGroupPtr share,
                             ObjectNameManager* manager) {
+    DISPATCH_DEBUG_LOG("ThreadInfo:%p updating to ctx:%p", this, eglCtx.get());
 
     eglContext  = eglCtx;
     eglDisplay  = dpy;

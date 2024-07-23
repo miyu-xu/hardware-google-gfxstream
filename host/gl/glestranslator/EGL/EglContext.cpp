@@ -23,6 +23,8 @@
 #include <GLcommon/GLEScontext.h>
 #include <memory>
 
+#include "host-common/logging.h"
+
 unsigned int EglContext::s_nextContextHndl = 0;
 
 extern EglGlobalInfo* g_eglInfo; // defined in EglImp.cpp
@@ -100,6 +102,8 @@ EglContext::EglContext(EglDisplay *dpy,
 
 EglContext::~EglContext()
 {
+    DISPATCH_DEBUG_LOG("jasonjason EglContext:%p ~EglContext()", this);
+
     ThreadInfo* thread = getThreadInfo();
     // get the current context
     EglContext* rebindCtx = thread->eglContext.get();
@@ -160,6 +164,8 @@ EglContext::~EglContext()
     } else {
         m_dpy->nativeType()->makeCurrent(nullptr, nullptr, nullptr);
     }
+
+    DISPATCH_DEBUG_LOG("jasonjason EglContext:%p ~EglContext()", this);
 }
 
 void EglContext::setSurfaces(SurfacePtr read,SurfacePtr draw)

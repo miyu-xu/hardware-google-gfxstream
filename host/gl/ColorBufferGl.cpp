@@ -366,12 +366,13 @@ ColorBufferGl::ColorBufferGl(EGLDisplay display, HandleType hndl, GLuint width, 
       mHndl(hndl) {}
 
 ColorBufferGl::~ColorBufferGl() {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::ColorBufferGl()");
     RecursiveScopedContextBind context(m_helper);
 
     // b/284523053
     // Swiftshader logspam on exit. But it doesn't happen with SwANGLE.
     if (!context.isOk()) {
-        GL_LOG("Failed to bind context when releasing color buffers\n");
+        ERR("Failed to bind context when releasing color buffers\n");
         return;
     }
 
@@ -420,6 +421,8 @@ static void convertRgbaToRgbPixels(void* dst, const void* src, uint32_t w, uint3
 
 bool ColorBufferGl::readPixels(int x, int y, int width, int height, GLenum p_format, GLenum p_type,
                                void* pixels) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::readPixels()");
+
     RecursiveScopedContextBind context(m_helper);
     if (!context.isOk()) {
         return false;
@@ -455,6 +458,7 @@ bool ColorBufferGl::readPixels(int x, int y, int width, int height, GLenum p_for
 
 bool ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLenum p_type,
                                      int rotation, Rect rect, void* pixels) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::readPixels()");
     RecursiveScopedContextBind context(m_helper);
     if (!context.isOk()) {
         return false;
@@ -522,6 +526,7 @@ bool ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLe
 
 bool ColorBufferGl::readPixelsYUVCached(int x, int y, int width, int height, void* pixels,
                                         uint32_t pixels_size) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::readPixels()");
     RecursiveScopedContextBind context(m_helper);
     if (!context.isOk()) {
         return false;
@@ -623,6 +628,7 @@ bool ColorBufferGl::subUpdateFromFrameworkFormat(int x, int y, int width, int he
                                                  FrameworkFormat fwkFormat, GLenum p_format,
                                                  GLenum p_type, const void* pixels,
                                                  void* metadata) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::subUpdateFromFrameworkFormat()");
     const GLenum p_unsizedFormat = sGetUnsizedColorBufferFormat(p_format);
     RecursiveScopedContextBind context(m_helper);
     if (!context.isOk()) {
@@ -823,6 +829,7 @@ bool ColorBufferGl::blitFromCurrentReadBuffer() {
             }
         }
 
+        DISPATCH_DEBUG_LOG("ColorBufferGl::blitFromCurrentReadBuffer()");
         RecursiveScopedContextBind context(m_helper);
         if (!context.isOk()) {
             return false;
@@ -934,6 +941,7 @@ bool ColorBufferGl::postViewportScaledWithOverlay(float rotation, float dx, floa
 }
 
 void ColorBufferGl::readback(unsigned char* img, bool readbackBgra) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::readback()");
     RecursiveScopedContextBind context(m_helper);
     if (!context.isOk()) {
         return;
@@ -953,6 +961,7 @@ void ColorBufferGl::readback(unsigned char* img, bool readbackBgra) {
 }
 
 void ColorBufferGl::readbackAsync(GLuint buffer, bool readbackBgra) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::readbackAsync()");
     RecursiveScopedContextBind context(m_helper);
     if (!context.isOk()) {
         return;
@@ -1031,6 +1040,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::onLoad(android::base::Stream* stre
 }
 
 void ColorBufferGl::restore() {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::restore()");
     RecursiveScopedContextBind context(m_helper);
     s_gles2.glGenTextures(1, &m_tex);
     s_gles2.glBindTexture(GL_TEXTURE_2D, m_tex);
@@ -1061,6 +1071,7 @@ void ColorBufferGl::postLayer(const ComposeLayer& l, int frameWidth, int frameHe
 
 bool ColorBufferGl::importMemory(ManagedDescriptor externalDescriptor, uint64_t size,
                                  bool dedicated, bool linearTiling) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::importMemory()");
     RecursiveScopedContextBind context(m_helper);
     s_gles2.glCreateMemoryObjectsEXT(1, &m_memoryObject);
     if (dedicated) {
@@ -1216,6 +1227,7 @@ void ColorBufferGl::restoreEglImage(EGLImageKHR image) {
 }
 
 void ColorBufferGl::rebindEglImage(EGLImageKHR image, bool preserveContent) {
+    DISPATCH_DEBUG_LOG("ColorBufferGl::rebindEglImage");
     RecursiveScopedContextBind context(m_helper);
 
     std::vector<uint8_t> contents;

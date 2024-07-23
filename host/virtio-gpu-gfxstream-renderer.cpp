@@ -2505,6 +2505,8 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
 
     // Flags processing
 
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
     // TODO: hook up "gfxstream egl" to the renderer flags
     // STREAM_RENDERER_FLAGS_USE_EGL_BIT in crosvm
     // as it's specified from launch_cvd.

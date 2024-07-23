@@ -1117,11 +1117,13 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
 
     if(releaseContext) { //releasing current context
        if(prevCtx.get()) {
+           DISPATCH_DEBUG_LOG("eglMakeCurrent(display:%p draw:%p read:%p context:%p) -> thread-local-info:%p calling flush() on previous context", display, draw, read, context, thread);
            g_eglInfo->getIface(prevCtx->version())->flush();
            if(!dpy->nativeType()->makeCurrent(NULL,NULL,NULL)) {
                RETURN_ERROR(EGL_FALSE,EGL_BAD_ACCESS);
            }
            thread->updateInfo(ContextPtr(),dpy,NULL,ShareGroupPtr(),dpy->getManager(prevCtx->version()));
+           DISPATCH_DEBUG_LOG("eglMakeCurrent(display:%p draw:%p read:%p context:%p) -> thread-local-info:%p calling flush() on previous context - done", display, draw, read, context, thread);
        }
     } else { //assining new context
         VALIDATE_CONTEXT(context);
@@ -1166,7 +1168,9 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
         }
 
         if(prevCtx.get()) {
+            DISPATCH_DEBUG_LOG("%d eglMakeCurrent(display:%p draw:%p read:%p context:%p) -> thread-local-info:%p calling flush() on previous context", __LINE__, display, draw, read, context, thread);
             g_eglInfo->getIface(prevCtx->version())->flush();
+            DISPATCH_DEBUG_LOG("%d eglMakeCurrent(display:%p draw:%p read:%p context:%p) -> thread-local-info:%p calling flush() on previous context - done", __LINE__, display, draw, read, context, thread);
         }
 
         {
@@ -1212,6 +1216,8 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
                     &readMultisamples,
                     &readColorFormat, &readDepthStencilFormat);
 
+            DISPATCH_DEBUG_LOG("eglMakeCurrent() -> calling initDefaultFBO()");
+
             newCtx->getGlesContext()->initDefaultFBO(
                     width, height,
                     colorFormat, depthStencilFormat, multisamples,
@@ -1221,6 +1227,8 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
                     readColorFormat, readDepthStencilFormat, readMultisamples,
                     &tmpReadPbSurfacePtr->glRboColor,
                     &tmpReadPbSurfacePtr->glRboDepth);
+
+            DISPATCH_DEBUG_LOG("eglMakeCurrent() -> calling initDefaultFBO() - done");
         }
 
         // Initialize the GLES extension function table used in
