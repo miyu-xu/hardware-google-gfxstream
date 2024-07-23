@@ -1685,6 +1685,20 @@ DEFINE_ALIAS_FUNCTION(reservedmarshal_VkDescriptorPoolInlineUniformBlockCreateIn
                       reservedmarshal_VkDescriptorPoolInlineUniformBlockCreateInfoEXT)
 
 #endif
+#ifdef VK_EXT_external_memory_host
+void reservedmarshal_VkImportMemoryHostPointerInfoEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkImportMemoryHostPointerInfoEXT* forMarshaling, uint8_t** ptr);
+
+void reservedmarshal_VkMemoryHostPointerPropertiesEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkMemoryHostPointerPropertiesEXT* forMarshaling, uint8_t** ptr);
+
+void reservedmarshal_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkPhysicalDeviceExternalMemoryHostPropertiesEXT* forMarshaling, uint8_t** ptr);
+
+#endif
 #ifdef VK_EXT_vertex_attribute_divisor
 void reservedmarshal_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     VulkanStreamGuest* vkStream, VkStructureType rootType,

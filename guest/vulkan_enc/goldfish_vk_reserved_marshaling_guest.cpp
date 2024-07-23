@@ -8041,6 +8041,57 @@ void reservedmarshal_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
 }
 
 #endif
+#ifdef VK_EXT_external_memory_host
+void reservedmarshal_VkImportMemoryHostPointerInfoEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkImportMemoryHostPointerInfoEXT* forMarshaling, uint8_t** ptr) {
+    (void)vkStream;
+    (void)rootType;
+    memcpy(*ptr, (VkStructureType*)&forMarshaling->sType, sizeof(VkStructureType));
+    *ptr += sizeof(VkStructureType);
+    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
+        rootType = forMarshaling->sType;
+    }
+    reservedmarshal_extension_struct(vkStream, rootType, forMarshaling->pNext, ptr);
+    memcpy(*ptr, (VkExternalMemoryHandleTypeFlagBits*)&forMarshaling->handleType,
+           sizeof(VkExternalMemoryHandleTypeFlagBits));
+    *ptr += sizeof(VkExternalMemoryHandleTypeFlagBits);
+    memcpy(*ptr, (void*)forMarshaling->pHostPointer, sizeof(uint8_t));
+    *ptr += sizeof(uint8_t);
+}
+
+void reservedmarshal_VkMemoryHostPointerPropertiesEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkMemoryHostPointerPropertiesEXT* forMarshaling, uint8_t** ptr) {
+    (void)vkStream;
+    (void)rootType;
+    memcpy(*ptr, (VkStructureType*)&forMarshaling->sType, sizeof(VkStructureType));
+    *ptr += sizeof(VkStructureType);
+    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
+        rootType = forMarshaling->sType;
+    }
+    reservedmarshal_extension_struct(vkStream, rootType, forMarshaling->pNext, ptr);
+    memcpy(*ptr, (uint32_t*)&forMarshaling->memoryTypeBits, sizeof(uint32_t));
+    *ptr += sizeof(uint32_t);
+}
+
+void reservedmarshal_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkPhysicalDeviceExternalMemoryHostPropertiesEXT* forMarshaling, uint8_t** ptr) {
+    (void)vkStream;
+    (void)rootType;
+    memcpy(*ptr, (VkStructureType*)&forMarshaling->sType, sizeof(VkStructureType));
+    *ptr += sizeof(VkStructureType);
+    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
+        rootType = forMarshaling->sType;
+    }
+    reservedmarshal_extension_struct(vkStream, rootType, forMarshaling->pNext, ptr);
+    memcpy(*ptr, (VkDeviceSize*)&forMarshaling->minImportedHostPointerAlignment,
+           sizeof(VkDeviceSize));
+    *ptr += sizeof(VkDeviceSize);
+}
+
+#endif
 #ifdef VK_EXT_vertex_attribute_divisor
 void reservedmarshal_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     VulkanStreamGuest* vkStream, VkStructureType rootType,
@@ -9944,6 +9995,22 @@ void reservedmarshal_extension_struct(VulkanStreamGuest* vkStream, VkStructureTy
             reservedmarshal_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
                 vkStream, rootType,
                 reinterpret_cast<const VkPipelineRasterizationDepthClipStateCreateInfoEXT*>(
+                    structExtension),
+                ptr);
+            break;
+        }
+#endif
+#ifdef VK_EXT_external_memory_host
+        case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT: {
+            reservedmarshal_VkImportMemoryHostPointerInfoEXT(
+                vkStream, rootType,
+                reinterpret_cast<const VkImportMemoryHostPointerInfoEXT*>(structExtension), ptr);
+            break;
+        }
+        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT: {
+            reservedmarshal_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+                vkStream, rootType,
+                reinterpret_cast<const VkPhysicalDeviceExternalMemoryHostPropertiesEXT*>(
                     structExtension),
                 ptr);
             break;
