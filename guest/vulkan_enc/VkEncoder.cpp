@@ -47,6 +47,7 @@
 #include "VulkanStreamGuest.h"
 #include "aemu/base/AlignedBuf.h"
 #include "aemu/base/BumpPool.h"
+#include "aemu/base/synchronization/AndroidLock.h"
 #include "gfxstream/guest/IOStream.h"
 #include "goldfish_vk_counting_guest.h"
 #include "goldfish_vk_deepcopy_guest.h"
@@ -32838,6 +32839,122 @@ void VkEncoder::vkCmdDrawIndirectByteCountEXT(VkCommandBuffer commandBuffer, uin
         stream->clearPool();
     }
     if (!queueSubmitWithCommandsEnabled && doLock) this->unlock();
+}
+
+#endif
+#ifdef VK_EXT_external_memory_host
+VkResult VkEncoder::vkGetMemoryHostPointerPropertiesEXT(
+    VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, const void* pHostPointer,
+    VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties, uint32_t doLock) {
+    std::optional<uint32_t> healthMonitorAnnotation_seqno = std::nullopt;
+    std::optional<uint32_t> healthMonitorAnnotation_packetSize = std::nullopt;
+    std::vector<uint8_t> healthMonitorAnnotation_packetContents;
+
+    auto watchdog =
+        WATCHDOG_BUILDER(mHealthMonitor, "vkGetMemoryHostPointerPropertiesEXT in VkEncoder")
+            .setOnHangCallback([&]() {
+                auto annotations = std::make_unique<EventHangMetadata::HangAnnotations>();
+                if (healthMonitorAnnotation_seqno) {
+                    annotations->insert(
+                        {{"seqno", std::to_string(healthMonitorAnnotation_seqno.value())}});
+                }
+                if (healthMonitorAnnotation_packetSize) {
+                    annotations->insert(
+                        {{"packetSize",
+                          std::to_string(healthMonitorAnnotation_packetSize.value())}});
+                }
+                if (!healthMonitorAnnotation_packetContents.empty()) {
+                    annotations->insert(
+                        {{"packetContents",
+                          getPacketContents(&healthMonitorAnnotation_packetContents[0],
+                                            healthMonitorAnnotation_packetContents.size())}});
+                }
+                return std::move(annotations);
+            })
+            .build();
+
+    ENCODER_DEBUG_LOG(
+        "vkGetMemoryHostPointerPropertiesEXT(device:%p, pHostPointer:%p, "
+        "pMemoryHostPointerProperties:%p)",
+        device, pHostPointer, pMemoryHostPointerProperties);
+    (void)doLock;
+    bool queueSubmitWithCommandsEnabled =
+        sFeatureBits & VULKAN_STREAM_FEATURE_QUEUE_SUBMIT_WITH_COMMANDS_BIT;
+    if (!queueSubmitWithCommandsEnabled && doLock) this->lock();
+    auto stream = mImpl->stream();
+    auto pool = mImpl->pool();
+    VkDevice local_device;
+    VkExternalMemoryHandleTypeFlagBits local_handleType;
+    void* local_pHostPointer;
+    local_device = device;
+    local_handleType = handleType;
+    // Avoiding deepcopy for pHostPointer
+    local_pHostPointer = (void*)pHostPointer;
+    size_t count = 0;
+    size_t* countPtr = &count;
+    {
+        uint64_t cgen_var_0;
+        *countPtr += 1 * 8;
+        *countPtr += sizeof(VkExternalMemoryHandleTypeFlagBits);
+        *countPtr += sizeof(uint8_t);
+        count_VkMemoryHostPointerPropertiesEXT(
+            sFeatureBits, VK_STRUCTURE_TYPE_MAX_ENUM,
+            (VkMemoryHostPointerPropertiesEXT*)(pMemoryHostPointerProperties), countPtr);
+    }
+    uint32_t packetSize_vkGetMemoryHostPointerPropertiesEXT =
+        4 + 4 + (queueSubmitWithCommandsEnabled ? 4 : 0) + count;
+    healthMonitorAnnotation_packetSize =
+        std::make_optional(packetSize_vkGetMemoryHostPointerPropertiesEXT);
+    uint8_t* streamPtr = stream->reserve(packetSize_vkGetMemoryHostPointerPropertiesEXT);
+    uint8_t* packetBeginPtr = streamPtr;
+    uint8_t** streamPtrPtr = &streamPtr;
+    uint32_t opcode_vkGetMemoryHostPointerPropertiesEXT = OP_vkGetMemoryHostPointerPropertiesEXT;
+    uint32_t seqno;
+    if (queueSubmitWithCommandsEnabled) seqno = ResourceTracker::nextSeqno();
+    healthMonitorAnnotation_seqno = std::make_optional(seqno);
+    memcpy(streamPtr, &opcode_vkGetMemoryHostPointerPropertiesEXT, sizeof(uint32_t));
+    streamPtr += sizeof(uint32_t);
+    memcpy(streamPtr, &packetSize_vkGetMemoryHostPointerPropertiesEXT, sizeof(uint32_t));
+    streamPtr += sizeof(uint32_t);
+    if (queueSubmitWithCommandsEnabled) {
+        memcpy(streamPtr, &seqno, sizeof(uint32_t));
+        streamPtr += sizeof(uint32_t);
+    }
+    uint64_t cgen_var_0;
+    *&cgen_var_0 = get_host_u64_VkDevice((*&local_device));
+    memcpy(*streamPtrPtr, (uint64_t*)&cgen_var_0, 1 * 8);
+    *streamPtrPtr += 1 * 8;
+    memcpy(*streamPtrPtr, (VkExternalMemoryHandleTypeFlagBits*)&local_handleType,
+           sizeof(VkExternalMemoryHandleTypeFlagBits));
+    *streamPtrPtr += sizeof(VkExternalMemoryHandleTypeFlagBits);
+    memcpy(*streamPtrPtr, (void*)local_pHostPointer, sizeof(uint8_t));
+    *streamPtrPtr += sizeof(uint8_t);
+    reservedmarshal_VkMemoryHostPointerPropertiesEXT(
+        stream, VK_STRUCTURE_TYPE_MAX_ENUM,
+        (VkMemoryHostPointerPropertiesEXT*)(pMemoryHostPointerProperties), streamPtrPtr);
+    if (watchdog) {
+        size_t watchdogBufSize =
+            std::min<size_t>(static_cast<size_t>(packetSize_vkGetMemoryHostPointerPropertiesEXT),
+                             kWatchdogBufferMax);
+        healthMonitorAnnotation_packetContents.resize(watchdogBufSize);
+        memcpy(&healthMonitorAnnotation_packetContents[0], packetBeginPtr, watchdogBufSize);
+    }
+    unmarshal_VkMemoryHostPointerPropertiesEXT(
+        stream, VK_STRUCTURE_TYPE_MAX_ENUM,
+        (VkMemoryHostPointerPropertiesEXT*)(pMemoryHostPointerProperties));
+    if (pMemoryHostPointerProperties) {
+        transform_fromhost_VkMemoryHostPointerPropertiesEXT(
+            sResourceTracker, (VkMemoryHostPointerPropertiesEXT*)(pMemoryHostPointerProperties));
+    }
+    VkResult vkGetMemoryHostPointerPropertiesEXT_VkResult_return = (VkResult)0;
+    stream->read(&vkGetMemoryHostPointerPropertiesEXT_VkResult_return, sizeof(VkResult));
+    ++encodeCount;
+    if (0 == encodeCount % POOL_CLEAR_INTERVAL) {
+        pool->freeAll();
+        stream->clearPool();
+    }
+    if (!queueSubmitWithCommandsEnabled && doLock) this->unlock();
+    return vkGetMemoryHostPointerPropertiesEXT_VkResult_return;
 }
 
 #endif

@@ -3170,6 +3170,33 @@ DEFINE_ALIAS_FUNCTION(unmarshal_VkDescriptorPoolInlineUniformBlockCreateInfo,
                       unmarshal_VkDescriptorPoolInlineUniformBlockCreateInfoEXT)
 
 #endif
+#ifdef VK_EXT_external_memory_host
+void marshal_VkImportMemoryHostPointerInfoEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkImportMemoryHostPointerInfoEXT* forMarshaling);
+
+void unmarshal_VkImportMemoryHostPointerInfoEXT(VulkanStreamGuest* vkStream,
+                                                VkStructureType rootType,
+                                                VkImportMemoryHostPointerInfoEXT* forUnmarshaling);
+
+void marshal_VkMemoryHostPointerPropertiesEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkMemoryHostPointerPropertiesEXT* forMarshaling);
+
+void unmarshal_VkMemoryHostPointerPropertiesEXT(VulkanStreamGuest* vkStream,
+                                                VkStructureType rootType,
+                                                VkMemoryHostPointerPropertiesEXT* forUnmarshaling);
+
+void marshal_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    const VkPhysicalDeviceExternalMemoryHostPropertiesEXT* forMarshaling);
+
+void unmarshal_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+    VulkanStreamGuest* vkStream, VkStructureType rootType,
+    VkPhysicalDeviceExternalMemoryHostPropertiesEXT* forUnmarshaling);
+
+#define OP_vkGetMemoryHostPointerPropertiesEXT 20313
+#endif
 #ifdef VK_EXT_vertex_attribute_divisor
 void marshal_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     VulkanStreamGuest* vkStream, VkStructureType rootType,
