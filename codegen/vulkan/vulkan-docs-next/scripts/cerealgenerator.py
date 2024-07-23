@@ -45,6 +45,7 @@ SUPPORTED_FEATURES = [
     "VK_EXT_debug_report",
     "VK_EXT_validation_features",
     # Device extensions
+    "VK_EXT_external_memory_host",
     "VK_KHR_storage_buffer_storage_class",
     "VK_KHR_vulkan_memory_model",
     "VK_KHR_buffer_device_address",

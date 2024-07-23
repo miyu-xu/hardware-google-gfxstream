@@ -4067,6 +4067,23 @@ VkResult gfxstream_vk_GetMemoryAndroidHardwareBufferANDROID(
     return vkGetMemoryAndroidHardwareBufferANDROID_VkResult_return;
 }
 #endif
+#ifdef VK_EXT_external_memory_host
+VkResult gfxstream_vk_GetMemoryHostPointerPropertiesEXT(
+    VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, const void* pHostPointer,
+    VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties) {
+    AEMU_SCOPED_TRACE("vkGetMemoryHostPointerPropertiesEXT");
+    VkResult vkGetMemoryHostPointerPropertiesEXT_VkResult_return = (VkResult)0;
+    VK_FROM_HANDLE(gfxstream_vk_device, gfxstream_device, device);
+    {
+        auto vkEnc = gfxstream::vk::ResourceTracker::getThreadLocalEncoder();
+        vkGetMemoryHostPointerPropertiesEXT_VkResult_return =
+            vkEnc->vkGetMemoryHostPointerPropertiesEXT(
+                gfxstream_device->internal_object, handleType, pHostPointer,
+                pMemoryHostPointerProperties, true /* do lock */);
+    }
+    return vkGetMemoryHostPointerPropertiesEXT_VkResult_return;
+}
+#endif
 #ifdef VK_EXT_tooling_info
 VkResult gfxstream_vk_GetPhysicalDeviceToolPropertiesEXT(
     VkPhysicalDevice physicalDevice, uint32_t* pToolCount,
