@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afb7ed6f_9e0a1e8e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-23T16:14:42Z",
+      "side": 1,
+      "message": "Would be great to include the added extension\u0027s name in the commit message.",
+      "revId": "16fe861b741b09bf6cc213fe0da990dac29be87a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
