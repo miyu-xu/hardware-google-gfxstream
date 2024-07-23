@@ -1512,6 +1512,20 @@ DEFINE_ALIAS_FUNCTION(count_VkDescriptorPoolInlineUniformBlockCreateInfo,
                       count_VkDescriptorPoolInlineUniformBlockCreateInfoEXT)
 
 #endif
+#ifdef VK_EXT_external_memory_host
+void count_VkImportMemoryHostPointerInfoEXT(uint32_t featureBits, VkStructureType rootType,
+                                            const VkImportMemoryHostPointerInfoEXT* toCount,
+                                            size_t* count);
+
+void count_VkMemoryHostPointerPropertiesEXT(uint32_t featureBits, VkStructureType rootType,
+                                            const VkMemoryHostPointerPropertiesEXT* toCount,
+                                            size_t* count);
+
+void count_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+    uint32_t featureBits, VkStructureType rootType,
+    const VkPhysicalDeviceExternalMemoryHostPropertiesEXT* toCount, size_t* count);
+
+#endif
 #ifdef VK_EXT_vertex_attribute_divisor
 void count_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     uint32_t featureBits, VkStructureType rootType,
