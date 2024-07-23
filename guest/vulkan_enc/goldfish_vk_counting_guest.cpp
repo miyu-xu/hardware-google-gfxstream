@@ -6364,6 +6364,54 @@ void count_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
 }
 
 #endif
+#ifdef VK_EXT_external_memory_host
+void count_VkImportMemoryHostPointerInfoEXT(uint32_t featureBits, VkStructureType rootType,
+                                            const VkImportMemoryHostPointerInfoEXT* toCount,
+                                            size_t* count) {
+    (void)featureBits;
+    (void)rootType;
+    (void)toCount;
+    (void)count;
+    *count += sizeof(VkStructureType);
+    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
+        rootType = toCount->sType;
+    }
+    count_extension_struct(featureBits, rootType, toCount->pNext, count);
+    *count += sizeof(VkExternalMemoryHandleTypeFlagBits);
+    *count += sizeof(uint8_t);
+}
+
+void count_VkMemoryHostPointerPropertiesEXT(uint32_t featureBits, VkStructureType rootType,
+                                            const VkMemoryHostPointerPropertiesEXT* toCount,
+                                            size_t* count) {
+    (void)featureBits;
+    (void)rootType;
+    (void)toCount;
+    (void)count;
+    *count += sizeof(VkStructureType);
+    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
+        rootType = toCount->sType;
+    }
+    count_extension_struct(featureBits, rootType, toCount->pNext, count);
+    *count += sizeof(uint32_t);
+}
+
+void count_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+    uint32_t featureBits, VkStructureType rootType,
+    const VkPhysicalDeviceExternalMemoryHostPropertiesEXT* toCount, size_t* count) {
+    (void)featureBits;
+    (void)rootType;
+    (void)toCount;
+    (void)count;
+    *count += sizeof(VkStructureType);
+    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
+        rootType = toCount->sType;
+    }
+    count_extension_struct(featureBits, rootType, toCount->pNext, count);
+    *count += sizeof(VkDeviceSize);
+}
+
+#endif
 #ifdef VK_EXT_vertex_attribute_divisor
 void count_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     uint32_t featureBits, VkStructureType rootType,
@@ -8182,6 +8230,22 @@ void count_extension_struct(uint32_t featureBits, VkStructureType rootType,
             count_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
                 featureBits, rootType,
                 reinterpret_cast<const VkPipelineRasterizationDepthClipStateCreateInfoEXT*>(
+                    structExtension),
+                count);
+            break;
+        }
+#endif
+#ifdef VK_EXT_external_memory_host
+        case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT: {
+            count_VkImportMemoryHostPointerInfoEXT(
+                featureBits, rootType,
+                reinterpret_cast<const VkImportMemoryHostPointerInfoEXT*>(structExtension), count);
+            break;
+        }
+        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT: {
+            count_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
+                featureBits, rootType,
+                reinterpret_cast<const VkPhysicalDeviceExternalMemoryHostPropertiesEXT*>(
                     structExtension),
                 count);
             break;
