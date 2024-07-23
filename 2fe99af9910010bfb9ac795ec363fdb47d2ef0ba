@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "56fd74c8_44ab75a7",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 4806,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-23T16:35:02Z",
+      "side": 1,
+      "message": "Using VERBOSE() would be better here to avoid many redundant messages in the logs with the general usage.",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "499986b6_9256c755",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 4823,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-23T16:35:02Z",
+      "side": 1,
+      "message": "Long lines, please use formatter. Also, a single verbose log message at the end might be enough for this whole process.",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9272b6f6_bf7c44ed",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 4824,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-23T16:35:02Z",
+      "side": 1,
+      "message": "Lambda with full scope access is making it harder to see what is being used and changed with the function call, would probably be better to not use a lambda here.",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb0dd68d_e2a4fc72",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 5328,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-23T16:35:02Z",
+      "side": 1,
+      "message": "I think `alignedSize` was not being used, and now removing that makes `size` unused. We can remove that as well, or add it them into the ERR message.",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
