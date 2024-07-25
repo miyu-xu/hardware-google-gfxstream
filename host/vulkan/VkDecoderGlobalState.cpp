@@ -4805,10 +4805,16 @@ class VkDecoderGlobalState::Impl {
         VkImportMemoryHostPointerInfoEXT importHostInfoPrivate{};
         if (hostVisible && m_emu->features.VulkanAllocateHostMemory.enabled &&
             localAllocInfo.pNext == nullptr) {
-            VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, kPageSizeforBlob);
+            VkEmulation* sVkEmulation = getGlobalVkEmulation();
+            if (!sVkEmulation || !sVkEmulation->deviceInfo.supportsExternalMemoryHostProps) {
+               return VK_ERROR_INCOMPATIBLE_DRIVER;
+            }
+            VkDeviceSize alignmentSize = sVkEmulation->deviceInfo.externalMemoryHostProps.minImportedHostPointerAlignment;
+            INFO("SERGIUSERGIU - Aligning on memory import with size: % " PRIu64 "\n", (uint64_t)alignmentSize);
+            VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, alignmentSize);
             localAllocInfo.allocationSize = alignedSize;
             privateMemory =
-                std::make_shared<PrivateMemory>(kPageSizeforBlob, localAllocInfo.allocationSize);
+                std::make_shared<PrivateMemory>(alignmentSize, localAllocInfo.allocationSize);
             mappedPtr = privateMemory->getAddr();
             importHostInfoPrivate = {
                 .sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT,
@@ -4821,7 +4827,10 @@ class VkDecoderGlobalState::Impl {
                 .pNext = NULL,
                 .memoryTypeBits = 0,
             };
-            vk->vkGetMemoryHostPointerPropertiesEXT(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT, mappedPtr, &pMemoryHostPointerProperties);
+
+            vk->vkGetMemoryHostPointerPropertiesEXT(
+                device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT, mappedPtr,
+                &pMemoryHostPointerProperties);
 
             if (pMemoryHostPointerProperties.memoryTypeBits == 0) {
                 // Memory import operation not supported by the driver.
@@ -4840,8 +4849,8 @@ class VkDecoderGlobalState::Impl {
                     localAllocInfo.memoryTypeIndex = i;
                     break;
                 }
-                VERBOSE(
-                    "Detected memoryTypeIndex violation on requested host memory import. Switching "
+                INFO(
+                    "SERGIUSERGIU Detected memoryTypeIndex violation on requested host memory import. Switching "
                     "to a supported memory index %d",
                     localAllocInfo.memoryTypeIndex);
             }

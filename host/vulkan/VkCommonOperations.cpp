@@ -826,16 +826,21 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
             deviceInfos[i].supportsDriverProperties =
                 extensionsSupported(deviceExts, {VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME}) ||
                 (deviceInfos[i].physdevProps.apiVersion >= VK_API_VERSION_1_2);
+            deviceInfos[i].supportsExternalMemoryHostProps = extensionsSupported(deviceExts, {VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME});
 
             if (!sVkEmulation->getPhysicalDeviceProperties2Func) {
                 ERR("Warning: device claims to support ID properties "
                     "but vkGetPhysicalDeviceProperties2 could not be found");
             }
         }
-
+        INFO("SERGIUSERGIU before getPhysicalDeviceProperties2Func");
         if (sVkEmulation->getPhysicalDeviceProperties2Func) {
+            VkPhysicalDeviceExternalMemoryHostPropertiesEXT externalMemoryHostProps = {
+                .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT,
+            };
             VkPhysicalDeviceProperties2 deviceProps = {
-                VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR,
+                .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR,
+
             };
             VkPhysicalDeviceIDProperties idProps = {
                 VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR,
@@ -854,9 +859,14 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
                 vk_append_struct(&devicePropsChain, &driverProps);
             }
 
+            if(deviceInfos[i].supportsExternalMemoryHostProps) {
+                vk_append_struct(&devicePropsChain, &externalMemoryHostProps);
+            }
+            INFO("SERGIUSERGIU after supportsExternalMemoryHostProps");
             sVkEmulation->getPhysicalDeviceProperties2Func(physdevs[i], &deviceProps);
-
+            INFO("SERGIUSERGIU after call");
             deviceInfos[i].idProps = vk_make_orphan_copy(idProps);
+            deviceInfos[i].externalMemoryHostProps = externalMemoryHostProps;
 
             std::stringstream driverVendorBuilder;
             driverVendorBuilder << "Vendor " << std::hex << std::setfill('0') << std::showbase
@@ -990,7 +1000,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
     // in use cases that make sense, if/when they come up.
 
     std::vector<uint32_t> deviceScores(physdevCount, 0);
-
+    enum SCORING_PRIORITY : uint32_t {HIGHEST_PRI = 10000, HIGH_PRI = 1000, MEDIUM_PRI = 100, LOW_PRI = 50};
     for (uint32_t i = 0; i < physdevCount; ++i) {
         uint32_t deviceScore = 0;
         if (deviceInfos[i].hasGraphicsQueueFamily) deviceScore += 10000;
@@ -1002,6 +1012,10 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
             deviceScore += 100;
         }
         if (deviceInfos[i].physdevProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) {
+            deviceScore += 50;
+        }
+        if (deviceInfos[i].supportsExternalMemoryHostProps) {
+            INFO("SERGIUSERGIU - supports external memory host props scoring.");
             deviceScore += 50;
         }
         deviceScores[i] = deviceScore;
