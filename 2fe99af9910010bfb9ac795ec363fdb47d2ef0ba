@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6c95eb4_a4cfd3f2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 4806,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-25T11:15:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "56fd74c8_44ab75a7",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "499986b6_9256c755",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-07-23T16:35:02Z",
       "side": 1,
       "message": "Long lines, please use formatter. Also, a single verbose log message at the end might be enough for this whole process.",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d378038e_33a07266",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 4823,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-25T11:15:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "499986b6_9256c755",
       "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "041a1494_f1b68291",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 4824,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-25T11:15:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9272b6f6_bf7c44ed",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cb0dd68d_e2a4fc72",
@@ -65,6 +119,24 @@
       "writtenOn": "2024-07-23T16:35:02Z",
       "side": 1,
       "message": "I think `alignedSize` was not being used, and now removing that makes `size` unused. We can remove that as well, or add it them into the ERR message.",
+      "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf598cad_f8a29383",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 5328,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-25T11:15:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cb0dd68d_e2a4fc72",
       "revId": "2fe99af9910010bfb9ac795ec363fdb47d2ef0ba",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
