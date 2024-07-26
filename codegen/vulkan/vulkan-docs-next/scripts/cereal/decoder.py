@@ -736,6 +736,7 @@ custom_decodes = {
     "vkCreateFence" : emit_global_state_wrapped_decoding,
     "vkResetFences" : emit_global_state_wrapped_decoding,
     "vkDestroyFence" : emit_global_state_wrapped_decoding,
+    "vkGetFenceStatus" : emit_global_state_wrapped_decoding,
 
     # VK_GOOGLE_gfxstream
     "vkFreeMemorySyncGOOGLE" : emit_global_state_wrapped_decoding,
