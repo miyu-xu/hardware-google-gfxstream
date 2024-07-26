@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08c48a8a_1534643a",
+        "filename": "CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1058860
+      },
+      "writtenOn": "2024-07-26T16:35:49Z",
+      "side": 1,
+      "message": "Nit: remove extra newlines",
+      "revId": "d0c6fe7743736bc79d7ae7b24b212310007088ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
