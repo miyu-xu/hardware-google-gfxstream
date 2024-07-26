@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dbe9c1fa_72997734",
+        "filename": "CMakeLists.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1058860
+      },
+      "writtenOn": "2024-07-26T17:59:02Z",
+      "side": 1,
+      "message": "Hmm, according to https://github.com/llvm/llvm-project/issues/87012, it looks like the `HAS_NO_VERBOSE_ABORT` macros no longer work 😞\n\nI don\u0027t have any other ideas now.  Maybe the first thing to figure out how this will be deployed in MacOS where newer XCode has dependency on this function while older systems don\u0027t..",
+      "revId": "358ec6e88db9574e346c8763025bea1b3446e505",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
