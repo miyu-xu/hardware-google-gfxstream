@@ -524,6 +524,7 @@ class VkDecoderGlobalState {
                               const VkFence* pFences);
     void on_vkDestroyFence(android::base::BumpPool* pool, VkDevice device, VkFence fence,
                            const VkAllocationCallbacks* pAllocator);
+    VkResult on_vkGetFenceStatus(android::base::BumpPool* pool, VkDevice device, VkFence fence);
 
     // Descriptor update templates
     VkResult on_vkCreateDescriptorUpdateTemplate(

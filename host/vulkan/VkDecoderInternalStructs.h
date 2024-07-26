@@ -299,6 +299,7 @@ struct FenceInfo {
     State state = State::kNotWaitable;
 
     bool external = false;
+    bool signaledBeforeSnapshot = false;
 
     // If this fence was used in an additional host operation that must be waited
     // upon before destruction (e.g. as part of a vkAcquireImageANDROID() call),

@@ -676,6 +676,20 @@ class VkDecoderGlobalState::Impl {
                 }
             }
         }
+        // Fences
+        std::vector<VkFence> signaledFencesBoxed;
+        for (const auto& fence : mFenceInfo) {
+            const auto& device = fence.second.device;
+            const auto& deviceInfo = android::base::find(mDeviceInfo, device);
+            VulkanDispatch* dvk = dispatch_VkDevice(deviceInfo->boxed);
+            bool signaled = fence.second.signaledBeforeSnapshot;
+            signaled = signaled || VK_SUCCESS == dvk->vkGetFenceStatus(device, fence.first);
+            if (signaled) {
+                signaledFencesBoxed.push_back(fence.second.boxed);
+            }
+        }
+        stream->putBe64(signaledFencesBoxed.size());
+        stream->write(signaledFencesBoxed.data(), signaledFencesBoxed.size() * sizeof(VkFence));
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -864,6 +878,19 @@ class VkDecoderGlobalState::Impl {
         }
 #endif
 
+        // Fences
+        uint64_t fenceCount = stream->getBe64();
+        std::vector<VkFence> signaledFencesBoxed(fenceCount);
+        stream->read(signaledFencesBoxed.data(), fenceCount * sizeof(VkFence));
+        for (VkFence boxedFence : signaledFencesBoxed) {
+            VkFence unboxedFence = unbox_VkFence(boxedFence);
+            auto it = mFenceInfo.find(unboxedFence);
+            if (it == mFenceInfo.end()) {
+                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                    << "Snapshot load failure: unrecognized VkFence";
+            }
+            it->second.signaledBeforeSnapshot = true;
+        }
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -2757,6 +2784,7 @@ class VkDecoderGlobalState::Impl {
                     cleanedFences.push_back(pFences[i]);
                     mFenceInfo[pFences[i]].state = FenceInfo::State::kNotWaitable;
                 }
+                mFenceInfo[pFences[i]].signaledBeforeSnapshot = false;
             }
         }
 
@@ -2995,6 +3023,21 @@ class VkDecoderGlobalState::Impl {
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
         destroyFenceLocked(device, deviceDispatch, fence, pAllocator, true);
+    }
+
+    VkResult on_vkGetFenceStatus(android::base::BumpPool* pool, VkDevice boxed_device,
+                                 VkFence fence) {
+        auto device = unbox_VkDevice(boxed_device);
+        auto deviceDispatch = dispatch_VkDevice(boxed_device);
+
+        if (snapshotsEnabled()) {
+            std::lock_guard<std::recursive_mutex> lock(mLock);
+            auto fenceInfo = android::base::find(mFenceInfo, fence);
+            if (fenceInfo != nullptr && fenceInfo->signaledBeforeSnapshot) {
+                return VK_SUCCESS;
+            }
+        }
+        return deviceDispatch->vkGetFenceStatus(device, fence);
     }
 
     VkResult on_vkCreateDescriptorSetLayout(android::base::BumpPool* pool, VkDevice boxed_device,
@@ -6895,7 +6938,7 @@ class VkDecoderGlobalState::Impl {
             vk = mFenceInfo[fence].vk;
         }
 
-        return vk->vkGetFenceStatus(device, fence);
+        return on_vkGetFenceStatus(nullptr, device, fence);
     }
 
     AsyncResult registerQsriCallback(VkImage boxed_image, VkQsriTimeline::Callback callback) {
@@ -8662,6 +8705,11 @@ void VkDecoderGlobalState::on_vkDestroyFence(android::base::BumpPool* pool, VkDe
                                              VkFence fence,
                                              const VkAllocationCallbacks* pAllocator) {
     return mImpl->on_vkDestroyFence(pool, device, fence, pAllocator);
+}
+
+VkResult VkDecoderGlobalState::on_vkGetFenceStatus(android::base::BumpPool* pool, VkDevice device,
+                                                   VkFence fence) {
+    return mImpl->on_vkGetFenceStatus(pool, device, fence);
 }
 
 VkResult VkDecoderGlobalState::on_vkCreateDescriptorSetLayout(
