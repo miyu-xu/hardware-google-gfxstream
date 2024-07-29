@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e607085b_1f513a2a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-29T12:56:48Z",
+      "side": 1,
+      "message": "Is there some kind of handshaking between host and the guest to reduce any possible sync issues here? E.g. is it possible to get a vkResetFences call from the guest which would cause a race condition on this variable?",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e87a9b3_7b297a4b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 691,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-29T12:56:48Z",
+      "side": 1,
+      "message": "How does the versioning work for snapshot files, ie. with a change like this, I\u0027d expect to see a change in some version number for the stream?",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b4ea9f6_6175cb61",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 887,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-29T12:56:48Z",
+      "side": 1,
+      "message": "Should we add a check like (mFenceInfo.find(unboxedFence) !\u003d mFenceInfo.end()) to report an unexpected condition as an error here?",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1ea89c1_5f002372",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1035,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-29T12:56:48Z",
+      "side": 1,
+      "message": "I think this should be a separate CL, to be able to revert easily if needed.",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98342d54_d83edc82",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 3031,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-29T12:56:48Z",
+      "side": 1,
+      "message": "Would that be possible to create the fences with VK_FENCE_CREATE_SIGNALED_BIT on load time and avoid a manual handling here?",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
