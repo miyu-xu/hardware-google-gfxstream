@@ -194,6 +194,7 @@ static uint64_t hostBlobId = 0;
 static uint32_t kTemporaryContextIdForSnapshotLoading = 1;
 
 static std::unordered_set<std::string> kSnapshotAppAllowList = {"Chromium"};
+static std::unordered_set<std::string> kSnapshotEngineAllowList = {"ANGLE"};
 
 #define DEFINE_BOXED_HANDLE_TYPE_TAG(type) Tag_##type,
 
@@ -1011,7 +1012,9 @@ class VkDecoderGlobalState::Impl {
         // TODO: bug 129484301
         if (!m_emu->features.VulkanSnapshots.enabled
                 || kSnapshotAppAllowList.find(info.applicationName)
-                        == kSnapshotAppAllowList.end()) {
+                        == kSnapshotAppAllowList.end()
+                || kSnapshotEngineAllowList.find(info.engineName)
+                        == kSnapshotEngineAllowList.end()) {
             get_emugl_vm_operations().setSkipSnapshotSave(true);
             get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
         }
