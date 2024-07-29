@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e3ab959_e260bc14",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-29T17:27:07Z",
+      "side": 1,
+      "message": "Guest is supposed to be paused before snapshot operation. So there won\u0027t be guest race here.",
+      "parentUuid": "e607085b_1f513a2a",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8e87a9b3_7b297a4b",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-07-29T12:56:48Z",
       "side": 1,
       "message": "How does the versioning work for snapshot files, ie. with a change like this, I\u0027d expect to see a change in some version number for the stream?",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8609bf7_0975bba4",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 691,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-29T17:27:07Z",
+      "side": 1,
+      "message": "This is an experimental feature, thus we don\u0027t bump version number for it until we start advertising this feature.",
+      "parentUuid": "8e87a9b3_7b297a4b",
       "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "78358f67_ab5d7ea2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 887,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-29T17:27:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b4ea9f6_6175cb61",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d1ea89c1_5f002372",
@@ -69,6 +123,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdca3bce_8b90a412",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1035,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-29T17:27:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1ea89c1_5f002372",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98342d54_d83edc82",
@@ -82,6 +154,24 @@
       "writtenOn": "2024-07-29T12:56:48Z",
       "side": 1,
       "message": "Would that be possible to create the fences with VK_FENCE_CREATE_SIGNALED_BIT on load time and avoid a manual handling here?",
+      "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d3ece7f_c65e6815",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 3031,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-29T17:27:07Z",
+      "side": 1,
+      "message": "That is theoretically possible but implementation-wise difficult. The main reason is we rely on record \u0026 playback for all vkCreate* snapshots, and at the moment we don\u0027t have a good tool to alter parameters in the playback stream.\n\nThere are already a few similar use cases. In future we might consider building a tool for it.",
+      "parentUuid": "98342d54_d83edc82",
       "revId": "3cbac2f458156107f4a92cdb4ababa1a503b0f7a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
