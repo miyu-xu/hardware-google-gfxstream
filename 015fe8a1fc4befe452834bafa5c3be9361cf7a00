@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "666eff07_99db16bf",
+        "filename": "guest/platform/include/virtgpu_gfxstream_protocol.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-29T20:41:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08dd3a09_992db89b",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 128,
+        "endChar": 34
+      },
+      "revId": "015fe8a1fc4befe452834bafa5c3be9361cf7a00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "86b9629a_feb4711c",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-07-19T15:34:32Z",
       "side": 1,
       "message": "Perhaps use `struct virgl_supported_format_mask` directly here or define a similar  `struct gfxstreamVirglFormatsMask` which kind of self documents the intention to be compatible to `virgl_supported_format_mask` and informs reader what type of format (drm, virgl, ahb, etc) is used to look up support.",
+      "range": {
+        "startLine": 130,
+        "startChar": 4,
+        "endLine": 130,
+        "endChar": 34
+      },
+      "revId": "015fe8a1fc4befe452834bafa5c3be9361cf7a00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3b01e4d_719d83d3",
+        "filename": "host/virtgpu_gfxstream_protocol.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-29T20:41:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86b9629a_feb4711c",
       "range": {
         "startLine": 130,
         "startChar": 4,
@@ -70,6 +118,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d291ce7_667d4e3b",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-29T20:41:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "40e9810d_77bacac5",
+      "range": {
+        "startLine": 474,
+        "startChar": 8,
+        "endLine": 474,
+        "endChar": 25
+      },
+      "revId": "015fe8a1fc4befe452834bafa5c3be9361cf7a00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c201862e_1f096552",
@@ -83,6 +155,30 @@
       "writtenOn": "2024-07-19T15:34:32Z",
       "side": 1,
       "message": "Can you add `SetFormatSupported(uint32_t drmFormat, ...)`/`IsFormatSupported(uint32_t drmFormat)` helper functions to make this easier to work with when adding future formats?",
+      "range": {
+        "startLine": 1651,
+        "startChar": 20,
+        "endLine": 1655,
+        "endChar": 63
+      },
+      "revId": "015fe8a1fc4befe452834bafa5c3be9361cf7a00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0880731f_86b9b80b",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1655,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-29T20:41:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c201862e_1f096552",
       "range": {
         "startLine": 1651,
         "startChar": 20,
