@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "126c1669_7f06a7a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-29T18:04:42Z",
+      "side": 1,
+      "message": "I triggered this failure when testing the CL 😞\n\nSnapshot load failure: unrecognized VkFence",
+      "revId": "17fdd13acb86c8bd518b555da01184799819e365",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
