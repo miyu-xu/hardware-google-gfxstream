@@ -558,7 +558,8 @@ void ColorBuffer::glOpSwapYuvTexturesAndUpdate(GLenum format, GLenum type,
     // YUVConverter::drawConvert() with the updated YUV textures.
     mColorBufferGl->subUpdate(0, 0, mWidth, mHeight, format, type, nullptr);
 
-    flushFromGl();
+    //flushFromGl();
+    invalidateForVk();
 }
 
 bool ColorBuffer::glOpReadContents(size_t* outNumBytes, void* outContents) {
