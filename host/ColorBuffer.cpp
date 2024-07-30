@@ -222,36 +222,37 @@ bool ColorBuffer::updateFromBytes(int x, int y, int width, int height,
                                   GLenum pixelsType, const void* pixels, void* metadata) {
     touch();
 
+    bool res = true;
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (mColorBufferGl) {
-        mColorBufferGl->subUpdateFromFrameworkFormat(x, y, width, height, frameworkFormat,
+        res &= mColorBufferGl->subUpdateFromFrameworkFormat(x, y, width, height, frameworkFormat,
                                                      pixelsFormat, pixelsType, pixels, metadata);
     }
 #endif
 
     if (mColorBufferVk) {
-        return mColorBufferVk->updateFromBytes(x, y, width, height, pixels);
+        res &= mColorBufferVk->updateFromBytes(x, y, width, height, pixels);
     }
 
-    return true;
+    return res;
 }
 
 bool ColorBuffer::updateFromBytes(int x, int y, int width, int height, GLenum pixelsFormat,
                                   GLenum pixelsType, const void* pixels) {
     touch();
 
+    bool res = true;
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (mColorBufferGl) {
-        return mColorBufferGl->subUpdate(x, y, width, height, pixelsFormat, pixelsType, pixels);
+        res &=  mColorBufferGl->subUpdate(x, y, width, height, pixelsFormat, pixelsType, pixels);
     }
 #endif
 
     if (mColorBufferVk) {
-        return mColorBufferVk->updateFromBytes(x, y, width, height, pixels);
+        res &=  mColorBufferVk->updateFromBytes(x, y, width, height, pixels);
     }
 
-    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "No ColorBuffer impl?";
-    return false;
+    return res;
 }
 
 bool ColorBuffer::updateGlFromBytes(const void* bytes, std::size_t bytesSize) {
