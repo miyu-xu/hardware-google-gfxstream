@@ -1,0 +1,69 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a3fadb1_c359785e",
+        "filename": "host/ColorBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-30T18:10:58Z",
+      "side": 1,
+      "message": "shouldn\u0027t we \u0027or\u0027 these these?\n\nAnd then on line 225 res\u003dfalse?",
+      "fixSuggestions": [
+        {
+          "fixId": "edcc7ead_bd3b3a08",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/ColorBuffer.cpp",
+              "range": {
+                "startLine": 228,
+                "startChar": 0,
+                "endLine": 230,
+                "endChar": 0
+              },
+              "replacement": "        res |\u003d mColorBufferGl-\u003esubUpdateFromFrameworkFormat(x, y, width, height, frameworkFormat,\n                                                            pixelsFormat, pixelsType, pixels,\n                                                            metadata);\n"
+            },
+            {
+              "path": "host/ColorBuffer.cpp",
+              "range": {
+                "startLine": 234,
+                "startChar": 0,
+                "endLine": 235,
+                "endChar": 0
+              },
+              "replacement": "        res |\u003d mColorBufferVk-\u003eupdateFromBytes(x, y, width, height, pixels);\n"
+            },
+            {
+              "path": "host/ColorBuffer.cpp",
+              "range": {
+                "startLine": 247,
+                "startChar": 0,
+                "endLine": 248,
+                "endChar": 0
+              },
+              "replacement": "        res |\u003d  mColorBufferGl-\u003esubUpdate(x, y, width, height, pixelsFormat, pixelsType, pixels);\n"
+            },
+            {
+              "path": "host/ColorBuffer.cpp",
+              "range": {
+                "startLine": 252,
+                "startChar": 0,
+                "endLine": 253,
+                "endChar": 0
+              },
+              "replacement": "        res |\u003d  mColorBufferVk-\u003eupdateFromBytes(x, y, width, height, pixels);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "0977cad8f02ab5dd218e528385aedb2cb9bdea3b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
