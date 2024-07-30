@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14341a0c_690f1a37",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 869,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-30T13:43:42Z",
+      "side": 1,
+      "message": "You may want to use vk_make_orphan_copy here to avoid copying an invalid pNext pointer.",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26821814_5ea2c26f",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1003,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-30T13:43:42Z",
+      "side": 1,
+      "message": "I don\u0027t think this feature should affect the scoring for the available devices.",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7dd4452_e91603a9",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4808,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-30T13:43:42Z",
+      "side": 1,
+      "message": "You can use m_emu here",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8fcd3985_4d215e13",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4809,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-30T13:43:42Z",
+      "side": 1,
+      "message": "We should probably do this support check earlier when we enable VulkanAllocateHostMemory feature flag, but here giving some an error message like \"VK_EXT_EXTERNAL_MEMORY_HOST is not supported, cannot use VulkanAllocateHostMemory\" should be enough for now.",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de8592fd_9b86bba7",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4825,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-30T13:43:42Z",
+      "side": 1,
+      "message": "Noticed that the p prefix on \u0027pMemoryHostPointerProperties\u0027 is unnecessary and a bit misleading when reading the code.",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "374025d4_303b0ffb",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4837,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-07-30T13:43:42Z",
+      "side": 1,
+      "message": "Maybe we should also add an error message here, to explain it\u0027s failing because of the feature, eg. \"Cannot find suitable memory type for VulkanAllocateHostMemory\".",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
