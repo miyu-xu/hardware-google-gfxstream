@@ -112,7 +112,9 @@ VK_EXT_MEMORY_HANDLE dupExternalMemory(VK_EXT_MEMORY_HANDLE h) {
                     DUPLICATE_SAME_ACCESS /* same access option */);
     return res;
 #else
-    return dup(h);
+    VK_EXT_MEMORY_HANDLE ret = dup(h);
+    printf("info->externalHandle %d dup to %d\n", h, ret);
+    return ret;
 #endif
 }
 #endif
@@ -1826,6 +1828,7 @@ bool importExternalMemory(VulkanDispatch* vk, VkDevice targetDevice,
 #endif
     {
         importInfoFd.fd = dupExternalMemory(info->externalHandle);
+        printf("info->externalHandle %d dup to %d\n", importInfoFd.fd, info->externalHandle);
         importInfoPtr = &importInfoFd;
     }
 #endif
@@ -1894,6 +1897,7 @@ bool importExternalMemoryDedicatedImage(VulkanDispatch* vk, VkDevice targetDevic
 #endif
     {
         importInfoFd.fd = dupExternalMemory(info->externalHandle);
+        printf("info->externalHandle %d dup to %d\n", importInfoFd.fd, info->externalHandle);
         importInfoPtr = &importInfoFd;
     }
 #endif
@@ -2516,6 +2520,8 @@ std::optional<VkColorBufferMemoryExport> exportColorBufferMemory(uint32_t colorB
 
 #if !defined(__QNX__)
     ManagedDescriptor descriptor(dupExternalMemory(info->memory.externalHandle));
+    printf("info->externalHandle %d dup to %d\n",
+            descriptor.get().value_or(0), info->memory.externalHandle);
 
     info->glExported = true;
 
@@ -2908,6 +2914,8 @@ static bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_
         ERR("Failed to update ColorBuffer:%d, no VkImage.", colorBufferHandle);
         return false;
     }
+    printf("updateColorBufferFromBytesLocked cb %d image %p\n",
+            colorBufferHandle, colorBufferInfo->image);
 
     if (x != 0 || y != 0 || w != colorBufferInfo->imageCreateInfoShallow.extent.width ||
         h != colorBufferInfo->imageCreateInfoShallow.extent.height) {
