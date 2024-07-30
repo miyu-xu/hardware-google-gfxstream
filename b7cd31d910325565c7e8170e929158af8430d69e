@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fef68bd0_afdc3483",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 869,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-30T14:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14341a0c_690f1a37",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "26821814_5ea2c26f",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-07-30T13:43:42Z",
       "side": 1,
       "message": "I don\u0027t think this feature should affect the scoring for the available devices.",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e39116fc_e8c1cacc",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1003,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-30T14:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "26821814_5ea2c26f",
       "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bce7692e_43188e1f",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4808,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-30T14:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a7dd4452_e91603a9",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8fcd3985_4d215e13",
@@ -65,6 +119,24 @@
       "writtenOn": "2024-07-30T13:43:42Z",
       "side": 1,
       "message": "We should probably do this support check earlier when we enable VulkanAllocateHostMemory feature flag, but here giving some an error message like \"VK_EXT_EXTERNAL_MEMORY_HOST is not supported, cannot use VulkanAllocateHostMemory\" should be enough for now.",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20abab01_748675ff",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4809,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-30T14:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8fcd3985_4d215e13",
       "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -86,6 +158,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b11735f_6b0f4e68",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4825,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-30T14:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de8592fd_9b86bba7",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "374025d4_303b0ffb",
@@ -99,6 +189,24 @@
       "writtenOn": "2024-07-30T13:43:42Z",
       "side": 1,
       "message": "Maybe we should also add an error message here, to explain it\u0027s failing because of the feature, eg. \"Cannot find suitable memory type for VulkanAllocateHostMemory\".",
+      "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "71a58d5e_2bcf5856",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4837,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-07-30T14:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "374025d4_303b0ffb",
       "revId": "b7cd31d910325565c7e8170e929158af8430d69e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
