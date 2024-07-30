@@ -64,6 +64,24 @@
       ],
       "revId": "0977cad8f02ab5dd218e528385aedb2cb9bdea3b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd683033_677e68a0",
+        "filename": "host/ColorBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-30T20:05:28Z",
+      "side": 1,
+      "message": "I am more thinking about make it return false if any of the update fails. But let\u0027s put this CL on hold and try to find the broken code path first.",
+      "parentUuid": "5a3fadb1_c359785e",
+      "revId": "0977cad8f02ab5dd218e528385aedb2cb9bdea3b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
