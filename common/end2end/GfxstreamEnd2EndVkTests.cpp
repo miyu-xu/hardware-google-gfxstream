@@ -1087,6 +1087,12 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
         const uint32_t width = 1920;
         const uint32_t height = 1080;
         const auto goldenPixel = PixelR8G8B8A8(0, 255, 255, 255);
+        const auto badPixel = PixelR8G8B8A8(0, 0, 0, 255);
+
+        auto ahb0 =
+            GFXSTREAM_ASSERT(ScopedAHardwareBuffer::Allocate(*mGralloc, width, height, ahbFormat));
+
+        GFXSTREAM_ASSERT(FillAhb(ahb0, badPixel));
 
         auto ahb =
             GFXSTREAM_ASSERT(ScopedAHardwareBuffer::Allocate(*mGralloc, width, height, ahbFormat));
@@ -1100,6 +1106,10 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
             .deviceExtensions = {{VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME}},
             .deviceCreateInfoPNext = &deviceFeatures,
         }));
+
+        auto ahbImage0 =
+            GFXSTREAM_ASSERT(CreateImageWithAhb(vk, ahb0, vkhpp::ImageUsageFlagBits::eSampled,
+                                                vkhpp::ImageLayout::eShaderReadOnlyOptimal));
 
         auto ahbImage =
             GFXSTREAM_ASSERT(CreateImageWithAhb(vk, ahb, vkhpp::ImageUsageFlagBits::eSampled,
@@ -1123,9 +1133,9 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
                                 {{
                                     .binding = 0,
                                     .image = {{
-                                        .imageView = *ahbImage.imageView,
+                                        .imageView = *ahbImage0.imageView,
                                         .imageLayout = vkhpp::ImageLayout::eShaderReadOnlyOptimal,
-                                        .imageSampler = *ahbImage.imageSampler,
+                                        .imageSampler = *ahbImage0.imageSampler,
                                     }},
                                 }}));
 
@@ -1136,6 +1146,23 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
                                                     .descriptorSets = {&descriptorSet0},
                                                     .framebuffer = &framebuffer,
                                                 }));
+
+        std::vector<vkhpp::WriteDescriptorSet> descriptorSetWrites;
+        vkhpp::DescriptorImageInfo descriptorImageInfo = {
+            .imageView = *ahbImage.imageView,
+            .imageLayout = vkhpp::ImageLayout::eShaderReadOnlyOptimal,
+            .sampler = *ahbImage.imageSampler,
+        };
+        descriptorSetWrites.emplace_back(vkhpp::WriteDescriptorSet{
+                    .dstSet = *descriptorSet0.ds,
+                    .dstBinding = 0,
+                    .dstArrayElement = 0,
+                    .descriptorCount = 1,
+                    .descriptorType = vkhpp::DescriptorType::eCombinedImageSampler,
+                    .pImageInfo = &descriptorImageInfo,
+                });
+        vk.device->updateDescriptorSets(descriptorSetWrites, {});
+        ahbImage0 = {};
 
         GFXSTREAM_ASSERT(DoCommandsImmediate(vk, [&](vkhpp::UniqueCommandBuffer& cmd) {
             const std::vector<vkhpp::ClearValue> renderPassBeginClearValues = {
