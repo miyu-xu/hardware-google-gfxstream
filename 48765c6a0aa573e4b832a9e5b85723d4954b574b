@@ -22,6 +22,30 @@
       },
       "revId": "48765c6a0aa573e4b832a9e5b85723d4954b574b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90e8cd79_96311687",
+        "filename": "Android.bp",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-31T22:12:04Z",
+      "side": 1,
+      "message": "That\u0027s a great idea, thank you! 😄\n\nI left the android variant as default to not repeat its contents, while allowing the value to not be set in the normal case. Also, slightly renamed the module to make it clearer it\u0027s meant for the guest code.\n\nAnd for some reason `bool_variable` is visible across modules, but the string one isn\u0027t.",
+      "parentUuid": "6e2e0d7b_e149db6b",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 1
+      },
+      "revId": "48765c6a0aa573e4b832a9e5b85723d4954b574b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
