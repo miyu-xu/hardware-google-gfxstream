@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0274f49c_cd5d19a2",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4273,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-31T22:11:37Z",
+      "side": 1,
+      "message": "That\u0027s a good point, thank you. Fixed now 😊",
+      "parentUuid": "62cbb0fc_89a2bae2",
+      "revId": "cc630f6131e9df2ad3ff5286699e6ef215cbd099",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "04a5275d_746924af",
@@ -49,6 +67,24 @@
           ]
         }
       ],
+      "revId": "cc630f6131e9df2ad3ff5286699e6ef215cbd099",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "191c9bc4_93b6fc34",
+        "filename": "guest/vulkan_enc/vk_struct_id.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-07-31T22:11:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "04a5275d_746924af",
       "revId": "cc630f6131e9df2ad3ff5286699e6ef215cbd099",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
