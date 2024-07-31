@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97aaca45_248c12e2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-31T20:38:08Z",
+      "side": 1,
+      "message": "Couple minor nits, otherwise I think this is ready.",
+      "revId": "038b92ac6f1e449b86594d852e2d86a44f146da0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "595411c0_65655560",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 1138,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-31T20:38:08Z",
+      "side": 1,
+      "message": "```suggestion\n\nbool FrameBuffer::isFormatSupported(GLenum format) {\n    bool supported \u003d true;\n    if (m_emulationGl) {\n        supported \u0026\u003d m_emulationGl-\u003eisFormatSupported(format);\n    }\n    if (m_emulationVk) {\n        supported \u0026\u003d vk::isFormatSupported(format);\n    }\n    return supported;\n}\n```\n\nto match style in rest of file",
+      "range": {
+        "startLine": 1129,
+        "startChar": 0,
+        "endLine": 1138,
+        "endChar": 1
+      },
+      "revId": "038b92ac6f1e449b86594d852e2d86a44f146da0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "491b092d_7afe6229",
+        "filename": "host/FrameBuffer.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-31T20:38:08Z",
+      "side": 1,
+      "message": "nit: either `host supports` or `guest device should support`",
+      "range": {
+        "startLine": 192,
+        "startChar": 32,
+        "endLine": 192,
+        "endChar": 38
+      },
+      "revId": "038b92ac6f1e449b86594d852e2d86a44f146da0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6741b23d_97ff9a0e",
+        "filename": "host/gl/EmulationGl.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 643,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-31T20:38:08Z",
+      "side": 1,
+      "message": "```suggestion\n    if (std::find(kUnhandledFormats.begin(), kUnhandledFormats.end(), format) !\u003d\n```",
+      "range": {
+        "startLine": 643,
+        "startChar": 4,
+        "endLine": 643,
+        "endChar": 7
+      },
+      "revId": "038b92ac6f1e449b86594d852e2d86a44f146da0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
