@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c51df33a_b92bae0e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-31T23:01:13Z",
+      "side": 1,
+      "message": "Can you try reverting AOSP/3179764 and running vkcube-wayland on a FOSS Linux setup (typically Intel and AMDGPU)?\n\nYou should be able to verify via the Kumquat Media Server without a VM:\n\nhttps://crosvm.dev/book/appendix/rutabaga_gfx.html#kumquat-media-server",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 37
+      },
+      "revId": "584bbac4e6495abe9d29f16bc66e9cd95520b363",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4e6a077_ea30882f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-07-31T23:01:13Z",
+      "side": 1,
+      "message": "nit: Put \"Test: vk_glow from chromium drm-tests\" after this line.",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 14
+      },
+      "revId": "584bbac4e6495abe9d29f16bc66e9cd95520b363",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
