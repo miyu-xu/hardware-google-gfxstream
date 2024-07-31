@@ -372,6 +372,7 @@ struct DescriptorSetInfo {
     VkDescriptorSetLayout unboxedLayout = 0;
     std::vector<std::vector<DescriptorWrite>> allWrites;
     std::vector<VkDescriptorSetLayoutBinding> bindings;
+    std::unordered_set<uint32_t> boundColorBuffers;
 };
 
 struct ShaderModuleInfo {
