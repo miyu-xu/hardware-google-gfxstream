@@ -3441,6 +3441,8 @@ class VkDecoderGlobalState::Impl {
         std::unique_ptr<bool[]> descriptorWritesNeedDeepCopy(new bool[descriptorWriteCount]);
         for (uint32_t i = 0; i < descriptorWriteCount; i++) {
             const VkWriteDescriptorSet& descriptorWrite = pDescriptorWrites[i];
+            auto descriptorSetInfo = android::base::find(mDescriptorSetInfo,
+                    descriptorWrite.dstSet);
             descriptorWritesNeedDeepCopy[i] = false;
             if (!vk_util::vk_descriptor_type_has_image_view(descriptorWrite.descriptorType)) {
                 continue;
@@ -3451,13 +3453,8 @@ class VkDecoderGlobalState::Impl {
                 if (!imgViewInfo) {
                     continue;
                 }
-                if (imgViewInfo->boundColorBuffer) {
-                    // TODO(igorc): Move this to vkQueueSubmit time.
-                    // Likely can be removed after b/323596143
-                    auto fb = FrameBuffer::getFB();
-                    if (fb) {
-                        fb->invalidateColorBufferForVk(*imgViewInfo->boundColorBuffer);
-                    }
+                if (imgViewInfo->boundColorBuffer && descriptorSetInfo) {
+                    descriptorSetInfo->boundColorBuffers.insert(imgViewInfo->boundColorBuffer.value());
                 }
                 if (descriptorWrite.descriptorType != VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
                     continue;
@@ -4329,11 +4326,11 @@ class VkDecoderGlobalState::Impl {
             // decompress, could we do it once before calling vkCmdDispatch?
             vk->vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
                                   cmdBufferInfo->computePipeline);
-            if (!cmdBufferInfo->descriptorSets.empty()) {
+            if (!cmdBufferInfo->currentDescriptorSets.empty()) {
                 vk->vkCmdBindDescriptorSets(
                     commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, cmdBufferInfo->descriptorLayout,
-                    cmdBufferInfo->firstSet, cmdBufferInfo->descriptorSets.size(),
-                    cmdBufferInfo->descriptorSets.data(), cmdBufferInfo->dynamicOffsets.size(),
+                    cmdBufferInfo->firstSet, cmdBufferInfo->currentDescriptorSets.size(),
+                    cmdBufferInfo->currentDescriptorSets.data(), cmdBufferInfo->dynamicOffsets.size(),
                     cmdBufferInfo->dynamicOffsets.data());
             }
         }
@@ -5613,6 +5610,16 @@ class VkDecoderGlobalState::Impl {
                         if (!cmdBufferInfo) {
                             continue;
                         }
+                        for (auto descriptorSet : cmdBufferInfo->allDescriptorSets) {
+                            auto descriptorSetInfo = android::base::find(mDescriptorSetInfo,
+                                    descriptorSet);
+                            if (!descriptorSetInfo) {
+                                continue;
+                            }
+                            acquiredColorBuffers.insert(descriptorSetInfo->boundColorBuffers.begin(),
+                                    descriptorSetInfo->boundColorBuffers.end());
+                        }
+
                         acquiredColorBuffers.merge(cmdBufferInfo->acquiredColorBuffers);
                         releasedColorBuffers.merge(cmdBufferInfo->releasedColorBuffers);
                         for (const auto& ite : cmdBufferInfo->cbLayouts) {
@@ -6204,19 +6211,18 @@ class VkDecoderGlobalState::Impl {
         vk->vkCmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet,
                                     descriptorSetCount, pDescriptorSets, dynamicOffsetCount,
                                     pDynamicOffsets);
-        if (pipelineBindPoint == VK_PIPELINE_BIND_POINT_COMPUTE) {
+        if (descriptorSetCount) {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto* cmdBufferInfo = android::base::find(mCmdBufferInfo, commandBuffer);
             if (cmdBufferInfo) {
                 cmdBufferInfo->descriptorLayout = layout;
 
-                if (descriptorSetCount) {
-                    cmdBufferInfo->firstSet = firstSet;
-                    cmdBufferInfo->descriptorSets.assign(pDescriptorSets,
-                                                         pDescriptorSets + descriptorSetCount);
-                    cmdBufferInfo->dynamicOffsets.assign(pDynamicOffsets,
-                                                         pDynamicOffsets + dynamicOffsetCount);
-                }
+                cmdBufferInfo->allDescriptorSets.insert(pDescriptorSets, pDescriptorSets + descriptorSetCount);
+                cmdBufferInfo->firstSet = firstSet;
+                cmdBufferInfo->currentDescriptorSets.assign(pDescriptorSets,
+                                                        pDescriptorSets + descriptorSetCount);
+                cmdBufferInfo->dynamicOffsets.assign(pDynamicOffsets,
+                                                        pDynamicOffsets + dynamicOffsetCount);
             }
         }
     }
@@ -7944,7 +7950,8 @@ class VkDecoderGlobalState::Impl {
         VkPipeline computePipeline = VK_NULL_HANDLE;
         uint32_t firstSet = 0;
         VkPipelineLayout descriptorLayout = VK_NULL_HANDLE;
-        std::vector<VkDescriptorSet> descriptorSets;
+        std::vector<VkDescriptorSet> currentDescriptorSets;
+        std::unordered_set<VkDescriptorSet> allDescriptorSets;
         std::vector<uint32_t> dynamicOffsets;
         std::unordered_set<HandleType> acquiredColorBuffers;
         std::unordered_set<HandleType> releasedColorBuffers;
@@ -7958,7 +7965,8 @@ class VkDecoderGlobalState::Impl {
             computePipeline = VK_NULL_HANDLE;
             firstSet = 0;
             descriptorLayout = VK_NULL_HANDLE;
-            descriptorSets.clear();
+            currentDescriptorSets.clear();
+            allDescriptorSets.clear();
             dynamicOffsets.clear();
             acquiredColorBuffers.clear();
             releasedColorBuffers.clear();
