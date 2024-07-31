@@ -1,0 +1,56 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62cbb0fc_89a2bae2",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4273,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-07-31T21:04:47Z",
+      "side": 1,
+      "message": "I think per the spec `VK_ERROR_FORMAT_NOT_SUPPORTED` is not a valid return value for `vkCreateImage`, `VK_ERROR_VALIDATION_FAILED_EXT` may be better, because the user passes in a format that returns `VK_ERROR_FORMAT_NOT_SUPPORTED` on `vkGetPhysicalDeviceImageFormatProperties2`, but I don\u0027t feel strong on it.",
+      "revId": "cc630f6131e9df2ad3ff5286699e6ef215cbd099",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "04a5275d_746924af",
+        "filename": "guest/vulkan_enc/vk_struct_id.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-07-31T21:04:47Z",
+      "side": 1,
+      "message": "`\u003cvulkan/vulkan.h\u003e` should have already included `\u003cvulkan/vulkan_core.h\u003e`",
+      "fixSuggestions": [
+        {
+          "fixId": "137b1769_f693af31",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "guest/vulkan_enc/vk_struct_id.h",
+              "range": {
+                "startLine": 18,
+                "startChar": 0,
+                "endLine": 19,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "cc630f6131e9df2ad3ff5286699e6ef215cbd099",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
