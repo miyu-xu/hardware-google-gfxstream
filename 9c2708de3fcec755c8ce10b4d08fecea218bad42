@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1303c671_6cb03546",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-31T19:54:45Z",
+      "side": 1,
+      "message": "Let me check if I could add a GfxstreamEnd2EndTest to it. We cannot use Test tag at the moment as confidential products are involved.",
+      "parentUuid": "23a3bc6b_501caed5",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "9c2708de3fcec755c8ce10b4d08fecea218bad42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5478f434_f65935dc",
         "filename": "host/ColorBuffer.cpp",
         "patchSetId": 1
@@ -37,6 +61,30 @@
       "writtenOn": "2024-07-31T19:37:11Z",
       "side": 1,
       "message": "Should this be more like:\n\n```suggestion\n    if (!mGlTexDirty) {\n        return true;\n    }\n\n\n#if GFXSTREAM_ENABLE_HOST_GLES\n    std::size_t contentsSize \u003d 0;\n    if (!mColorBufferGl-\u003ereadContents(\u0026contentsSize, nullptr)) {\n        ERR(\"Failed to get GL contents size for ColorBuffer:%d\", mHandle);\n        return false;\n    }\n\n    std::vector\u003cuint8_t\u003e contents(contentsSize, 0);\n\n    if (!mColorBufferGl-\u003ereadContents(\u0026contentsSize, contents.data())) {\n        ERR(\"Failed to get GL contents for ColorBuffer:%d\", mHandle);\n        return false;\n    }\n\n    if (!mColorBufferVk-\u003eupdateFromBytes(contents)) {\n        ERR(\"Failed to set VK contents for ColorBuffer:%d\", mHandle);\n        return false;\n    }\n#endif\n\n    mGlTexDirty \u003d false;\n\n    return true;\n}\n```\n\nand then remove the `invalidateForVkIfDirty()` ? Does it ever make sense to invalidate without checking the dirty bit? Would a user (`FrameBuffer::borrowColorBufferForComposition()` for example) ever want to always do the gl-to-vk copy without checking the dirty bit?",
+      "range": {
+        "startLine": 404,
+        "startChar": 0,
+        "endLine": 433,
+        "endChar": 1
+      },
+      "revId": "9c2708de3fcec755c8ce10b4d08fecea218bad42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8482041_9bff9410",
+        "filename": "host/ColorBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 433,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-31T19:54:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5478f434_f65935dc",
       "range": {
         "startLine": 404,
         "startChar": 0,
