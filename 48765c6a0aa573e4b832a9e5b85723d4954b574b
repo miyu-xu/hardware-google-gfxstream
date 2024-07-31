@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e2e0d7b_e149db6b",
+        "filename": "Android.bp",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-31T21:11:18Z",
+      "side": 1,
+      "message": "Could we do something more like:\n\n```\nsoong_config_string_variable {\n    name: \"gfxstream_platform\",\n    values: [\n      \"android\",\n      \"linux\",\n    ],\n}\n\nsoong_config_module_type {\n    name: \"gfxstream_cc_defaults_for_platform\",\n    module_type: \"cc_defaults\",\n    config_namespace: \"gfxstream\",\n    variables: [\"gfxstream_platform\"],\n    properties: [\"cflags\"],\n}\n\ngfxstream_cc_defaults_for_platform {\n    name: \"gfxstream_cc_defaults_for_platform\",\n    soong_config_variables: {\n        gfxstream_platform: {\n            android: {\n                cflags: [\n                    \"-DVK_USE_PLATFORM_ANDROID_KHR\",\n                ],\n            },\n            linux: {\n                cflags: [\n                    \"-UANDROID\",\n                    \"-U__ANDROID__\",\n                    \"-DLINUX_GUEST_BUILD\",\n                ],\n            },\n        }\n    }\n}\n```\n\nThis way we\u0027re not using a specific platform\u0027s name (`linux`) in the rule name and makes it a little more what the flag\u0027s name is (`gfxstream_platform`).",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 1
+      },
+      "revId": "48765c6a0aa573e4b832a9e5b85723d4954b574b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
