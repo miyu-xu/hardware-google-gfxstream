@@ -16,6 +16,24 @@
       "message": "Breaks `cuttlefish_gfxstream_guest_angle_host_swiftshader_graphics_cts_tests` with https://crrev.com/c/5722608.",
       "revId": "90720f0e9ffff37b72845c7f87c5f4b6ea197c94",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "197aa944_447b24cc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-07-31T14:33:23Z",
+      "side": 1,
+      "message": "resolved by checking for attachment support before allowing allocation",
+      "parentUuid": "e5856928_ac139b1a",
+      "revId": "90720f0e9ffff37b72845c7f87c5f4b6ea197c94",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
