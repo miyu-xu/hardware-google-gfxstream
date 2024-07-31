@@ -10378,6 +10378,8 @@ void reservedmarshal_extension_struct(VulkanStreamGuest* vkStream, VkStructureTy
 #endif
         default: {
             // fatal; the switch is only taken if the extension struct is known
+            fprintf(stderr, " %s, Unhandled Vulkan structure type %s [%d], aborting.\n", __func__,
+                    string_VkStructureType(VkStructureType(structType)), structType);
             abort();
         }
     }
