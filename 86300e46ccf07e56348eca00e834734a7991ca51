@@ -22,6 +22,30 @@
       },
       "revId": "86300e46ccf07e56348eca00e834734a7991ca51",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9114389a_c44a1348",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 3457,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-07-31T20:50:46Z",
+      "side": 1,
+      "message": "Done. Reused the descriptor set book keeping code from vk snapshot.",
+      "parentUuid": "eea0f4b4_8760b10a",
+      "range": {
+        "startLine": 3457,
+        "startChar": 57,
+        "endLine": 3457,
+        "endChar": 63
+      },
+      "revId": "86300e46ccf07e56348eca00e834734a7991ca51",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
