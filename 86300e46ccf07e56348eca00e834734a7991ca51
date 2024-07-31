@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eea0f4b4_8760b10a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 3457,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-31T19:51:40Z",
+      "side": 1,
+      "message": "I think `boundColorBuffers` needs to be a \n\n```\nstruct DescriptorSetBindingElement {\n   uint32_t binding;\n   uint32_t arrayElementIndex;\n};\n\n\u003cdefine hash and eq for DescriptorSetBindingElement\u003e\n\nstd::unordered_map\u003cDescriptorSetBindingElement, HandleType\u003e boundColorBuffers;\n```\n\nIIUC, if an application renders from AHB1 on frame 1, AHB2 on frame 2, ... etc, this current patchset will have `boundColorBuffers` include ColorBuffer1, ColorBuffer2, ... etc and will result in potentially extra GL-\u003eVK copies. I think we need to keep track of which ColorBuffer-ID is for which binding+element, and make it possible to overwrite it the next time the descriptor set is updated.\n\nThis potentially deserves a test. You could allocate ColorBuffer1 and ColorBuffer2, VkWriteDescriptorSet to update a binding to ColorBuffer1, then VkWriteDescriptorSet to update the same binding to ColorBuffer2, then delete ColorBuffer1, and then finally actually use the descriptor set and draw. This shouldn\u0027t have an error when trying to find the already deleted ColorBuffer1.",
+      "range": {
+        "startLine": 3457,
+        "startChar": 57,
+        "endLine": 3457,
+        "endChar": 63
+      },
+      "revId": "86300e46ccf07e56348eca00e834734a7991ca51",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
