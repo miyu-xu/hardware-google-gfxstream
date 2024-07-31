@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0be1136_2c38eaf1",
+        "filename": "host/ColorBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-07-31T21:13:08Z",
+      "side": 1,
+      "message": "Potential mistake in conflict resolution during a rebase? Seems unrelated to VK_EXT_image_drm_format_modifier?",
+      "range": {
+        "startLine": 229,
+        "startChar": 8,
+        "endLine": 229,
+        "endChar": 20
+      },
+      "revId": "ac99fabeab1b0607c28b2e7918df94ef50ea5904",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
