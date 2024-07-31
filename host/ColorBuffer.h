@@ -92,6 +92,7 @@ class ColorBuffer : public android::snapshot::LazySnapshotObj<ColorBuffer> {
     bool flushFromVkBytes(const void* bytes, size_t bytesSize);
     bool invalidateForGl();
     bool invalidateForVk();
+    bool invalidateForVkIfDirty();
     bool importNativeResource(void* nativeResource, uint32_t type, bool preserveContent);
 
     int waitSync();
@@ -136,6 +137,7 @@ class ColorBuffer : public android::snapshot::LazySnapshotObj<ColorBuffer> {
     std::unique_ptr<vk::ColorBufferVk> mColorBufferVk;
 
     bool mGlAndVkAreSharingExternalMemory = false;
+    bool mGlTexDirty = false;
 };
 
 typedef std::shared_ptr<ColorBuffer> ColorBufferPtr;

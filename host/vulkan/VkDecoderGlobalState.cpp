@@ -5633,7 +5633,7 @@ class VkDecoderGlobalState::Impl {
             auto fb = FrameBuffer::getFB();
             if (fb) {
                 for (HandleType cb : acquiredColorBuffers) {
-                    fb->invalidateColorBufferForVk(cb);
+                    fb->invalidateColorBufferForVkIfDirty(cb);
                 }
             }
         }

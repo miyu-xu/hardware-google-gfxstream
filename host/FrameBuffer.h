@@ -498,6 +498,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     bool flushColorBufferFromVkBytes(HandleType colorBufferHandle, const void* bytes,
                                      size_t bytesSize);
     bool invalidateColorBufferForVk(HandleType colorBufferHandle);
+    bool invalidateColorBufferForVkIfDirty(HandleType colorBufferHandle);
 
     int waitSyncColorBuffer(HandleType colorBufferHandle);
     std::optional<BlobDescriptorInfo> exportColorBuffer(HandleType colorBufferHandle);

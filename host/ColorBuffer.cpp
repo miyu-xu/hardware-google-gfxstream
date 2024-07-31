@@ -226,6 +226,7 @@ bool ColorBuffer::updateFromBytes(int x, int y, int width, int height,
     if (mColorBufferGl) {
         mColorBufferGl->subUpdateFromFrameworkFormat(x, y, width, height, frameworkFormat,
                                                      pixelsFormat, pixelsType, pixels, metadata);
+        flushFromGl();
         return true;
     }
 #endif
@@ -244,7 +245,11 @@ bool ColorBuffer::updateFromBytes(int x, int y, int width, int height, GLenum pi
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (mColorBufferGl) {
-        return mColorBufferGl->subUpdate(x, y, width, height, pixelsFormat, pixelsType, pixels);
+        bool res = mColorBufferGl->subUpdate(x, y, width, height, pixelsFormat, pixelsType, pixels);
+        if (res) {
+            flushFromGl();
+        }
+        return res;
     }
 #endif
 
@@ -321,6 +326,7 @@ bool ColorBuffer::flushFromGl() {
 
     // ColorBufferGl is currently considered the "main" backing. If this changes,
     // the "main"  should be updated from the current contents of the GL backing.
+    mGlTexDirty = true;
     return true;
 }
 
@@ -348,7 +354,7 @@ bool ColorBuffer::flushFromVk() {
         return false;
     }
 #endif
-
+    mGlTexDirty = false;
     return true;
 }
 
@@ -369,7 +375,7 @@ bool ColorBuffer::flushFromVkBytes(const void* bytes, size_t bytesSize) {
         }
     }
 #endif
-
+    mGlTexDirty = false;
     return true;
 }
 
@@ -415,7 +421,14 @@ bool ColorBuffer::invalidateForVk() {
         return false;
     }
 #endif
+    mGlTexDirty = false;
+    return true;
+}
 
+bool ColorBuffer::invalidateForVkIfDirty() {
+    if (mGlTexDirty) {
+        return invalidateForVk();
+    }
     return true;
 }
 
