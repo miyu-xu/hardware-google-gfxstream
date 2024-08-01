@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9dab8c85_ad22720e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-01T19:08:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a39f8150_42ac6555",
+      "range": {
+        "startLine": 7,
+        "startChar": 4,
+        "endLine": 7,
+        "endChar": 25
+      },
+      "revId": "efc071d56364ee0434c00cf2661441667c4b251c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "306ad143_fc12f923",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0be48fdd_87107e54",
+        "filename": "Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-01T19:08:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "306ad143_fc12f923",
+      "range": {
+        "startLine": 0,
+        "startChar": 0,
+        "endLine": 0,
+        "endChar": 0
+      },
+      "revId": "efc071d56364ee0434c00cf2661441667c4b251c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8348b1e0_b008deb8",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-08-01T00:09:40Z",
       "side": 1,
       "message": "Change this label to \"android_surfaceless\".  I think we\u0027ll eventually have to add it there so our meson2Soong generator can pick it up. \n\nhttps://gitlab.freedesktop.org/mesa/mesa/-/blob/main/meson_options.txt",
+      "range": {
+        "startLine": 197,
+        "startChar": 12,
+        "endLine": 197,
+        "endChar": 17
+      },
+      "revId": "efc071d56364ee0434c00cf2661441667c4b251c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50a10f3a_f27179eb",
+        "filename": "guest/mesa/src/vulkan/runtime/Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-01T19:08:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8348b1e0_b008deb8",
       "range": {
         "startLine": 197,
         "startChar": 12,
