@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "31f4ece9_441e738b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-01T19:08:40Z",
+      "side": 1,
+      "message": "I tried on gLinux because I don\u0027t have a FOSS Linux box at hand.\n\nIt fails at https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/guest/vulkan_enc/ResourceTracker.cpp;l\u003d4235;drc\u003dd955dd6a527ce4565a137aef84288e9b5fe4787d. I\u0027m trying to chase this down a bit to see what else needs implementing to get it to work.",
+      "parentUuid": "c51df33a_b92bae0e",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 37
+      },
+      "revId": "584bbac4e6495abe9d29f16bc66e9cd95520b363",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d4e6a077_ea30882f",
         "filename": "/COMMIT_MSG",
         "patchSetId": 2
@@ -37,6 +61,30 @@
       "writtenOn": "2024-07-31T23:01:13Z",
       "side": 1,
       "message": "nit: Put \"Test: vk_glow from chromium drm-tests\" after this line.",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 14
+      },
+      "revId": "584bbac4e6495abe9d29f16bc66e9cd95520b363",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b757562a_4869c7cd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-01T19:08:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4e6a077_ea30882f",
       "range": {
         "startLine": 24,
         "startChar": 0,
