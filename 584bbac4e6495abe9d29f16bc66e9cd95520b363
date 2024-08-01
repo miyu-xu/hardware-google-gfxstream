@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d14662ef_5c140f6a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-01T22:10:02Z",
+      "side": 1,
+      "message": "Those patches + revert of aosp/3179764 + disabling [this override](https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/guest/vulkan_enc/ResourceTracker.cpp;l\u003d4247;drc\u003dd955dd6a527ce4565a137aef84288e9b5fe4787d) that forces `VK_IMAGE_TILING_LINEAR` was enough to make vkcube-wayland look nice... on AMD GPU.\n\nOn Intel, I didn\u0027t manage to get it to work so far. When I hacked in [support for `VkDrmFormatModifierPropertiesListEXT`](https://cs.android.com/android/platform/superproject/main/+/main:external/mesa3d/src/vulkan/wsi/wsi_common_drm.c;l\u003d518;drc\u003d0bee32a4c393b7d989ca984101d6f07993b8d3f8), then [`VkImageDrmFormatModifierListCreateInfoEXT`](https://cs.android.com/android/platform/superproject/main/+/main:external/mesa3d/src/vulkan/wsi/wsi_common_drm.c;l\u003d616;drc\u003d0bee32a4c393b7d989ca984101d6f07993b8d3f8), and finally ended up with host-side Vulkan dispatch table not having `vkGetImageDrmFormatModifierPropertiesEXT` (needed from [`wsi_create_native_image_mem`](https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/guest/mesa/src/vulkan/wsi/wsi_common_drm.c;l\u003d521;drc\u003dde9d4474dcdfba692286968aab7ef8c5149ab6b1)) - the driver not supporting it, maybe? OTOH `objdump` shows me there\u0027s a `vk_common_GetImageDrmFormatModifierPropertiesEXT` in the .so.\n\nI can clean up the CLs with the changes and post them tomorrow if they may be useful anyway.",
+      "parentUuid": "31f4ece9_441e738b",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 37
+      },
+      "revId": "584bbac4e6495abe9d29f16bc66e9cd95520b363",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d4e6a077_ea30882f",
