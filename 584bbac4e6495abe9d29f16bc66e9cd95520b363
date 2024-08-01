@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "81f4b5e5_b883761f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-01T23:05:06Z",
+      "side": 1,
+      "message": "Suggest building Mesa from source:\n\n`git clone https://gitlab.freedesktop.org/mesa/mesa.git`\n\n`meson setup amd64-build/ -Dvulkan-drivers\u003d\"intel\" -Dgallium-drivers\u003d\"\" -Dopengl\u003dfalse`\n\nThen point `VK_ICD_FILENAMES` to the Intel dev ICD.\n\nAnother way to test: is `vkGetImageDrmFormatModifierPropertiesEXT` called by the amdgpu path?  That\u0027ll confirm if it\u0027s an Intel specific bug or not.",
+      "parentUuid": "d14662ef_5c140f6a",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 37
+      },
+      "revId": "584bbac4e6495abe9d29f16bc66e9cd95520b363",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d4e6a077_ea30882f",
         "filename": "/COMMIT_MSG",
         "patchSetId": 2
