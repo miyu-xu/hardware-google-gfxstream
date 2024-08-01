@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbb6f4d6_e42683be",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1092,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-08-01T21:02:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "75c869db_40b7664b",
+      "range": {
+        "startLine": 1092,
+        "startChar": 8,
+        "endLine": 1092,
+        "endChar": 19
+      },
+      "revId": "049f9e313b8b22d91366b4a1c7cb0d8d1b6075de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "821f588e_2174e916",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "41f985e9_489c5ae7",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1110,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-08-01T21:02:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "821f588e_2174e916",
+      "range": {
+        "startLine": 1110,
+        "startChar": 8,
+        "endLine": 1110,
+        "endChar": 24
+      },
+      "revId": "049f9e313b8b22d91366b4a1c7cb0d8d1b6075de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5c4e3ae1_46b226b2",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-08-01T20:31:54Z",
       "side": 1,
       "message": "```suggestion\n\n        // Delete the additional AHB to ensure descriptor set handling updates\n        // references.\n        deletedAhbImage \u003d {};\n```",
+      "range": {
+        "startLine": 1165,
+        "startChar": 8,
+        "endLine": 1165,
+        "endChar": 23
+      },
+      "revId": "049f9e313b8b22d91366b4a1c7cb0d8d1b6075de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e70b1ea_723c8380",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1165,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-08-01T21:02:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c4e3ae1_46b226b2",
       "range": {
         "startLine": 1165,
         "startChar": 8,
