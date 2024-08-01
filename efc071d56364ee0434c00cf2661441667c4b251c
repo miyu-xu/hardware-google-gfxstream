@@ -45,6 +45,29 @@
       },
       "revId": "efc071d56364ee0434c00cf2661441667c4b251c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8348b1e0_b008deb8",
+        "filename": "guest/mesa/src/vulkan/runtime/Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-01T00:09:40Z",
+      "side": 1,
+      "message": "Change this label to \"android_surfaceless\".  I think we\u0027ll eventually have to add it there so our meson2Soong generator can pick it up. \n\nhttps://gitlab.freedesktop.org/mesa/mesa/-/blob/main/meson_options.txt",
+      "range": {
+        "startLine": 197,
+        "startChar": 12,
+        "endLine": 197,
+        "endChar": 17
+      },
+      "revId": "efc071d56364ee0434c00cf2661441667c4b251c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
