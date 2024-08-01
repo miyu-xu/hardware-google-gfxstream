@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "80a0e265_16db63dc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-08-01T22:39:33Z",
+      "side": 1,
+      "message": "Since this is a performance optimization, verifying no regression with existing AHB tests should be sufficient.",
+      "parentUuid": "1303c671_6cb03546",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "9c2708de3fcec755c8ce10b4d08fecea218bad42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5478f434_f65935dc",
