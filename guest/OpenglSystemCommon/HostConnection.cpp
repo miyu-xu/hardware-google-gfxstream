@@ -209,7 +209,7 @@ std::unique_ptr<HostConnection> HostConnection::connect(enum VirtGpuCapset capse
         }
 #endif
         case HOST_CONNECTION_VIRTIO_GPU_PIPE: {
-            auto stream = new VirtioGpuPipeStream(STREAM_BUFFER_SIZE);
+            auto stream = new VirtioGpuPipeStream(STREAM_BUFFER_SIZE, -1);
             if (!stream) {
                 ALOGE("Failed to create VirtioGpu for host connection\n");
                 return nullptr;
@@ -242,7 +242,9 @@ std::unique_ptr<HostConnection> HostConnection::connect(enum VirtGpuCapset capse
     }
 
 #if defined(ANDROID)
-    con->m_grallocHelper.reset(gfxstream::createPlatformGralloc(con->m_rendernodeFd));
+    descriptor = (con->m_rendernodeFd >= 0) ? con->m_rendernodeFd : descriptor;
+    ALOGE("--- descriptor is %d ---", descriptor);
+    con->m_grallocHelper.reset(gfxstream::createPlatformGralloc(descriptor));
     if (!con->m_grallocHelper) {
         ALOGE("Failed to create platform Gralloc!");
         abort();
