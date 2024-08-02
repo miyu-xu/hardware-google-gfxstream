@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9c4482b_755ae547",
+        "filename": "host/ColorBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-02T16:49:36Z",
+      "side": 1,
+      "message": "For completeness, should this be\n```suggestion\n        bool success \u003d mColorBufferVk-\u003eupdateFromBytes(x, y, width, height, pixels);\n        if (!success) return success;\n        flushFromVk();\n        return true;\n```",
+      "range": {
+        "startLine": 235,
+        "startChar": 8,
+        "endLine": 235,
+        "endChar": 76
+      },
+      "revId": "21dfaf13134c13c2be8fafdc1b63263f14d1b7df",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "451ab33c_296e5542",
+        "filename": "host/ColorBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-02T16:49:36Z",
+      "side": 1,
+      "message": "nit: keep the dirty check condition at the end so that it is near the code that handles flushing/reseting the dirty bit.\n\n```suggestion\n    if (!(mColorBufferGl \u0026\u0026 mColorBufferVk)) {\n        return true;\n    }\n\n    if (mGlAndVkAreSharingExternalMemory) {\n        return true;\n    }\n\n    if (!mGlTexDirty) {\n        return true;\n    }\n```",
+      "range": {
+        "startLine": 397,
+        "startChar": 4,
+        "endLine": 406,
+        "endChar": 5
+      },
+      "revId": "21dfaf13134c13c2be8fafdc1b63263f14d1b7df",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
