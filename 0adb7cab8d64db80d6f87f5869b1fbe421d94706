@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6dc83b6a_5df6e2db",
+        "filename": "guest/mesa/src/vulkan/runtime/Android.bp",
+        "patchSetId": 4
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-02T17:21:42Z",
+      "side": 1,
+      "message": "Can you replace this with a `select`?\n\nhttps://buganizer.corp.google.com/issues/342006386\n\n\nhttps://android-review.git.corp.google.com/c/platform/system/sepolicy/+/3132859/3/Android.bp",
+      "range": {
+        "startLine": 195,
+        "startChar": 4,
+        "endLine": 195,
+        "endChar": 26
+      },
+      "revId": "0adb7cab8d64db80d6f87f5869b1fbe421d94706",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45f7a08d_ec2e4038",
+        "filename": "guest/mesa/src/vulkan/runtime/Android.bp",
+        "patchSetId": 4
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-02T17:21:42Z",
+      "side": 1,
+      "message": "Second thought, change this to `mesa3d_platforms` and `android_surfaceless` to `none`.  Rationale:\n\n1) We eventually want gfxstream to be in Mesa\n2) We have to conditionally compile Mesa anyways (b/357080225)\n3) Fuchsia team wants to add `platforms\u003dnone` (https://android-review.git.corp.google.com/c/platform/external/mesa3d/+/3191037)",
+      "range": {
+        "startLine": 196,
+        "startChar": 8,
+        "endLine": 196,
+        "endChar": 26
+      },
+      "revId": "0adb7cab8d64db80d6f87f5869b1fbe421d94706",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
