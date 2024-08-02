@@ -209,7 +209,7 @@ std::unique_ptr<HostConnection> HostConnection::connect(enum VirtGpuCapset capse
         }
 #endif
         case HOST_CONNECTION_VIRTIO_GPU_PIPE: {
-            auto stream = new VirtioGpuPipeStream(STREAM_BUFFER_SIZE);
+            auto stream = new VirtioGpuPipeStream(STREAM_BUFFER_SIZE, -1);
             if (!stream) {
                 ALOGE("Failed to create VirtioGpu for host connection\n");
                 return nullptr;
