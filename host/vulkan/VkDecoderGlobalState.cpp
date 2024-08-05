@@ -5025,7 +5025,10 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
-        if (info->needUnmap && info->ptr) {
+        // b/357693938
+        // vkUnmapMemory on exit might cause some Windows + AMD GPU to freeze.
+        // So let's just skip it if it is on exit (FrameBuffer == null).
+        if (info->needUnmap && info->ptr && FrameBuffer::getFB()) {
             vk->vkUnmapMemory(device, memory);
         }
 
