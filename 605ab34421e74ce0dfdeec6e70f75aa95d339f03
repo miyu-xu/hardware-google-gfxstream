@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0e93b3f_359c625a",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4273,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-07T21:53:31Z",
+      "side": 1,
+      "message": "Remember to run `git clang-format HEAD~1` on every CL in the chain.  You can download `git clang-format` and the clang-format used by used by gfxstream here.\n\nhttps://chromium.googlesource.com/chromium/src/buildtools",
+      "range": {
+        "startLine": 4269,
+        "startChar": 0,
+        "endLine": 4273,
+        "endChar": 0
+      },
+      "revId": "605ab34421e74ce0dfdeec6e70f75aa95d339f03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
