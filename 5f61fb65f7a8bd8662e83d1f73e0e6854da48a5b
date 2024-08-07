@@ -16,6 +16,24 @@
       "message": "other functions use helper snapshotsEnabled(), change for consistency?",
       "revId": "5f61fb65f7a8bd8662e83d1f73e0e6854da48a5b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7e4be81_637c489c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 5341,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-07T18:22:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce9698c1_32bd8923",
+      "revId": "5f61fb65f7a8bd8662e83d1f73e0e6854da48a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
