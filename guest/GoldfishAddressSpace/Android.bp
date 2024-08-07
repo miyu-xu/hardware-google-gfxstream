@@ -5,8 +5,9 @@ package {
 
 cc_library_static {
     name: "libGoldfishAddressSpace",
-    host_supported: true,
-    vendor: true,
+    defaults: [
+        "libgfxstream_guest_cc_defaults",
+    ],
     srcs: [
         "AddressSpaceStream.cpp",
         "VirtioGpuAddressSpaceStream.cpp",

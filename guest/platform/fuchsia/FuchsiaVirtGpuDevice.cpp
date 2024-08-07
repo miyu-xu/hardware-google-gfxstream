@@ -95,7 +95,7 @@ int FuchsiaVirtGpuDevice::execBuffer(struct VirtGpuExecBuffer& execbuffer,
 
 struct VirtGpuCaps FuchsiaVirtGpuDevice::getCaps(void) { return {}; }
 
-VirtGpuDevice* createPlatformVirtGpuDevice(enum VirtGpuCapset capset, int32_t descriptor) {
+VirtGpuDevice* osCreateVirtGpuDevice(enum VirtGpuCapset capset, int32_t descriptor) {
     // We don't handle the VirtioGpuPipeStream case.
     if (descriptor >= 0) {
         ALOGE("Fuchsia: fd not handled");
