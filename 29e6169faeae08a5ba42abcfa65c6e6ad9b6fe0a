@@ -1,0 +1,39 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f9a2b5e_3c8ff1b2",
+        "filename": "guest/OpenglSystemCommon/HostConnection.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-08-07T18:02:35Z",
+      "side": 1,
+      "message": "I guess \u003e\u003d would be the proper test",
+      "fixSuggestions": [
+        {
+          "fixId": "f7999011_d199d595",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "guest/OpenglSystemCommon/HostConnection.cpp",
+              "range": {
+                "startLine": 245,
+                "startChar": 0,
+                "endLine": 246,
+                "endChar": 0
+              },
+              "replacement": "    descriptor \u003d (con-\u003em_rendernodeFd \u003e\u003d 0) ? con-\u003em_rendernodeFd : descriptor;\n"
+            }
+          ]
+        }
+      ],
+      "revId": "29e6169faeae08a5ba42abcfa65c6e6ad9b6fe0a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
