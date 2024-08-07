@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce9698c1_32bd8923",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 5341,
+      "author": {
+        "id": 2054166
+      },
+      "writtenOn": "2024-08-07T17:59:30Z",
+      "side": 1,
+      "message": "other functions use helper snapshotsEnabled(), change for consistency?",
+      "revId": "5f61fb65f7a8bd8662e83d1f73e0e6854da48a5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
