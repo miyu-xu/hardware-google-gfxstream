@@ -16,6 +16,24 @@
       "message": "I think you want this host-side:\n\nhttps://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/host/vulkan/VkDecoderGlobalState.cpp#5351\n\nI think the issue is:\n\n1) Guest-side, the extension is always enabled (since emulation is available)\n2) Then host side, we need to enable it too when it\u0027s available",
       "revId": "316b21e3e375ad18d52a057cf3a09b2647f26455",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20d77d20_916094b5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-07T22:08:12Z",
+      "side": 1,
+      "message": "Thanks. Moved to host-side and checked for the extension support first.",
+      "parentUuid": "12ad8806_857686f8",
+      "revId": "316b21e3e375ad18d52a057cf3a09b2647f26455",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
