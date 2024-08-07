@@ -22,6 +22,30 @@
       },
       "revId": "605ab34421e74ce0dfdeec6e70f75aa95d339f03",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c6a17f6_584bef1e",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4273,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-07T22:08:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0e93b3f_359c625a",
+      "range": {
+        "startLine": 4269,
+        "startChar": 0,
+        "endLine": 4273,
+        "endChar": 0
+      },
+      "revId": "605ab34421e74ce0dfdeec6e70f75aa95d339f03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
