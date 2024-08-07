@@ -96,6 +96,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "28e702d6_b26df47a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-07T21:24:39Z",
+      "side": 1,
+      "message": "I managed to get vkcube-wayland + kumquat to run on Intel and AMD, but it took quite a few more patches (see the rest in the chain).\n\nhttps://screenshot.googleplex.com/7X5DNPPou5XtWet",
+      "parentUuid": "81f4b5e5_b883761f",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 37
+      },
+      "revId": "584bbac4e6495abe9d29f16bc66e9cd95520b363",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d4e6a077_ea30882f",
