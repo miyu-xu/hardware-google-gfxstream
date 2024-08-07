@@ -21,7 +21,9 @@ package {
 
 cc_library_static {
     name: "libmagma_android",
-    vendor: true,
+    defaults: [
+        "libgfxstream_guest_cc_defaults",
+    ],
     header_libs: [
         "libmagma_enc_headers",
         "libmagma_headers",

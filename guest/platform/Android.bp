@@ -21,14 +21,22 @@ package {
 
 cc_library_static {
     name: "libplatform",
-    host_supported: true,
-    vendor: true,
+    defaults: [
+        "libgfxstream_guest_cc_defaults",
+    ],
+    header_libs: [
+        "virtgpu_kumquat_ffi_headers",
+    ],
     srcs: [
         "VirtGpu.cpp",
         "linux/LinuxVirtGpuBlob.cpp",
         "linux/LinuxVirtGpuBlobMapping.cpp",
         "linux/LinuxVirtGpuDevice.cpp",
         "linux/LinuxSync.cpp",
+        "kumquat/VirtGpuKumquatBlob.cpp",
+        "kumquat/VirtGpuKumquatBlobMapping.cpp",
+        "kumquat/VirtGpuKumquatDevice.cpp",
+        "kumquat/VirtGpuKumquatSync.cpp",
     ],
     shared_libs: [
         "libcutils",
@@ -56,45 +64,6 @@ cc_library_static {
             shared_libs: [
                 "libsync",
             ],
-        },
-    },
-}
-
-cc_library_static {
-    name: "libgfxstream_platform_kumquat",
-    host_supported: true,
-    vendor_available: true,
-    srcs: [
-        "VirtGpu.cpp",
-        "kumquat/VirtGpuKumquatBlob.cpp",
-        "kumquat/VirtGpuKumquatBlobMapping.cpp",
-        "kumquat/VirtGpuKumquatDevice.cpp",
-        "kumquat/VirtGpuKumquatSync.cpp",
-    ],
-    header_libs: [
-        "virtgpu_kumquat_ffi_headers",
-    ],
-    shared_libs: [
-        "libcutils",
-        "liblog",
-        "libutils",
-        "libvirtgpu_kumquat_ffi",
-    ],
-    export_include_dirs: [
-        "include",
-    ],
-    cflags: [
-        "-DLOG_TAG=\"platform\"",
-        "-Wno-missing-field-initializers",
-        "-fvisibility=default",
-        "-fstrict-aliasing",
-    ],
-    target: {
-        host: {
-            compile_multilib: "64",
-        },
-        android: {
-            compile_multilib: "64",
         },
     },
 }
