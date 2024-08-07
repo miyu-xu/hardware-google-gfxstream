@@ -206,6 +206,7 @@ struct VkEmulation {
         bool supportsExternalMemoryImport = false;
         bool supportsExternalMemoryExport = false;
         bool supportsDmaBuf = false;
+        bool supportsDrmFormatModifiers = false;
         bool supportsDriverProperties = false;
         bool supportsExternalMemoryHostProps = false;
         bool hasSamplerYcbcrConversionExtension = false;
