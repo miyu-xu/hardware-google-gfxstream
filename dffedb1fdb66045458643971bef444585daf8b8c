@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00719b53_afc0b42c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1717,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-07T23:21:58Z",
+      "side": 1,
+      "message": "I think you want to move this logic to `filteredDeviceExtensionNames`:\n\n1) Add `VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME` to `kEmulatedDeviceExtensions`.  This is because IIUC we always pretend the extension exists guest-side.\n\n2) After the filtering:\n\n```\n        if (hasDeviceExtension(properties, VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME)) {\n            res.push_back(VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);\n        }\n```\n\nI would delete `VkCommonOperations.{h, cpp}` for now..",
+      "range": {
+        "startLine": 1700,
+        "startChar": 0,
+        "endLine": 1717,
+        "endChar": 0
+      },
+      "revId": "dffedb1fdb66045458643971bef444585daf8b8c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
