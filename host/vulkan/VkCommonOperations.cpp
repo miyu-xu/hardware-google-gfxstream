@@ -1060,6 +1060,9 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk, gfxstream::host::Featur
             extensionsSupported(deviceExts, {VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME}) &&
             !dmaBufBlockList;
 
+        deviceInfos[i].supportsDrmFormatModifiers =
+            extensionsSupported(deviceExts, {VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME});
+
         deviceInfos[i].hasSamplerYcbcrConversionExtension =
             extensionsSupported(deviceExts, {VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME});
 

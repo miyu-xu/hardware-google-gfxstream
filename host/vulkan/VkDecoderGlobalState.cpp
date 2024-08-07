@@ -1696,6 +1696,24 @@ class VkDecoderGlobalState::Impl {
                                          pCreateInfo->ppEnabledExtensionNames);
 
         m_emu->deviceLostHelper.addNeededDeviceExtensions(&updatedDeviceExtensions);
+
+        if (m_emu->deviceInfo.supportsDrmFormatModifiers) {
+            // Mesa Vulkan Wayland WSI needs vkGetImageDrmFormatModifierPropertiesEXT. On some Intel
+            // GPUs, this extension is exposed by the driver only if
+            // VK_EXT_image_drm_format_modifier extension is requested via
+            // VkDeviceCreateInfo::ppEnabledExtensionNames. vkcube-wayland does not request it,
+            // which makes the host attempt to call a null function pointer unless we force-enable
+            // it regardless of the client's wishes.
+            if (!std::any_of(updatedDeviceExtensions.begin(), updatedDeviceExtensions.end(),
+                             [](const char* ext) {
+                                 static constexpr std::string_view DRM_FORMAT_MODIFIER_EXT =
+                                     VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME;
+                                 return ext == DRM_FORMAT_MODIFIER_EXT;
+                             })) {
+                updatedDeviceExtensions.push_back(VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);
+            }
+        }
+
         uint32_t supportedFenceHandleTypes = 0;
         uint32_t supportedBinarySemaphoreHandleTypes = 0;
         // Run the underlying API call, filtering extensions.
