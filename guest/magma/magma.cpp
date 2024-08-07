@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <lib/magma/magma_common_defs.h>
+#include <log/log.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
