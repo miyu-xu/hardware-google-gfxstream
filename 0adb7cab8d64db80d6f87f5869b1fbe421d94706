@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b7899d3_0facfe89",
+        "filename": "guest/mesa/src/vulkan/runtime/Android.bp",
+        "patchSetId": 4
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-08T11:20:54Z",
+      "side": 1,
+      "message": "`select` doesn\u0027t seem to be allowed for `srcs`:\n```\nerror: hardware/google/gfxstream/guest/mesa/src/vulkan/runtime/Android.bp:283:19: can\u0027t assign select statement to non-configurable property \"srcs\". This requires a small soong change to enable in most cases, please file a go/soong-bug if you\u0027d like to use a select statement here\n```",
+      "parentUuid": "6dc83b6a_5df6e2db",
+      "range": {
+        "startLine": 195,
+        "startChar": 4,
+        "endLine": 195,
+        "endChar": 26
+      },
+      "revId": "0adb7cab8d64db80d6f87f5869b1fbe421d94706",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "45f7a08d_ec2e4038",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-08-02T17:21:42Z",
       "side": 1,
       "message": "Second thought, change this to `mesa3d_platforms` and `android_surfaceless` to `none`.  Rationale:\n\n1) We eventually want gfxstream to be in Mesa\n2) We have to conditionally compile Mesa anyways (b/357080225)\n3) Fuchsia team wants to add `platforms\u003dnone` (https://android-review.git.corp.google.com/c/platform/external/mesa3d/+/3191037)",
+      "range": {
+        "startLine": 196,
+        "startChar": 8,
+        "endLine": 196,
+        "endChar": 26
+      },
+      "revId": "0adb7cab8d64db80d6f87f5869b1fbe421d94706",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f11dd695_9b940691",
+        "filename": "guest/mesa/src/vulkan/runtime/Android.bp",
+        "patchSetId": 4
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-08T11:20:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45f7a08d_ec2e4038",
       "range": {
         "startLine": 196,
         "startChar": 8,
