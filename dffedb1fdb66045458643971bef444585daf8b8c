@@ -22,6 +22,30 @@
       },
       "revId": "dffedb1fdb66045458643971bef444585daf8b8c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0fe0d38_48481230",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1717,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-08T08:27:26Z",
+      "side": 1,
+      "message": "Thanks, done.\n\nWhat\u0027s the difference between the feature detection done in `createGlobalVkEmulation` (`VkCommonOperations`) and in `on_vkCreateDevice` through `filteredDeviceExtensionNames`?",
+      "parentUuid": "00719b53_afc0b42c",
+      "range": {
+        "startLine": 1700,
+        "startChar": 0,
+        "endLine": 1717,
+        "endChar": 0
+      },
+      "revId": "dffedb1fdb66045458643971bef444585daf8b8c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
