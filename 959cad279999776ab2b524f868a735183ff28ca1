@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "593b6af5_35e82067",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-08T22:41:36Z",
+      "side": 1,
+      "message": "I\u0027m confused about this and the need for `eglInitializeKumquat`/`vkInitializeKumquat`. GoogleTest does not run tests in parallel and you have `SetUp()` and `TearDown()` starting/stopping the kumquat instance so there should only ever be a single instance. I also think that requiring the extra `eglInitializeKumquat`/`vkInitializeKumquat` is quite brittle and would be easily missed by test writers.\n\nCould we instead copy a little bit of the pattern used in the existing `RutabagaLayer`? Could we have a `class KumaquatServer`/`class KumaquatLayer` which replicates `RutabagaLayer` with\n\n```\nnamespace {\n\nstatic std::mutex sInstanceMutex;\nstatic std::weak_ptr\u003cKumaquatServer\u003e sInstance;\n\n}  // namespace\n\n/*static*/\nstd::shared_ptr\u003cKumaquatServer\u003e KumaquatServer::Get() {\n    std::lock_guard\u003cstd::mutex\u003e lock(sInstanceMutex);\n\n    std::shared_ptr\u003cKumaquatServer\u003e instance \u003d sInstance.lock();\n    if (instance !\u003d nullptr) {\n        return instance;\n    }\n    \n    instance \u003d std::shared_ptr\u003cKumaquatServer\u003e(new KumaquatServer());\n\n    if (!instance-\u003eForkAndInit()) {\n      ALOGE(\"Failed to initialize KumaquatServer.\");\n      return nullptr;\n    }\n\n    ALOGE(\"Successfully initialized KumaquatServer.\");\n    sInstance \u003d instance;\n    return instance;\n```\n\nwhere the `ForkAndInit()` takes care of the `pipe()`/`fork()`. Then have `VirtGpuKumquatDevice` keep the `std::shared_ptr\u003cKumaquatServer\u003e` as a member. Whenever all of the `VirtGpuKumquatDevice`\u0027s go out of scope, then `~KumaquatServer()` destructor does the `kill()`/`waitpid()`.\n\nI think keeping the\n\n```\nuint32_t KumaquatServer::GetNumActiveUsers() {\n    std::lock_guard\u003cstd::mutex\u003e lock(sInstanceMutex);\n    std::shared_ptr\u003cKumaquatServer\u003e instance \u003d sInstance.lock();\n    return instance.use_count();\n}\n```\n\nalso helps us catch bad tests.",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "959cad279999776ab2b524f868a735183ff28ca1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "25038865_caefb54e",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
