@@ -22,6 +22,30 @@
       },
       "revId": "959cad279999776ab2b524f868a735183ff28ca1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "907becc1_b441fc45",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-08T21:55:34Z",
+      "side": 1,
+      "message": "I have a weird V-100 Nvidia cloudtop setup.  The CI uses a different Nvidia variant, and this should pass there.\n\nBut for reference, here are the failing tests:\n\n```\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n```",
+      "parentUuid": "25038865_caefb54e",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 21
+      },
+      "revId": "959cad279999776ab2b524f868a735183ff28ca1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
