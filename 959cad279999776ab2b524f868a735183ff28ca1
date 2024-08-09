@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a2b93680_f961b778",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-09T15:54:20Z",
+      "side": 1,
+      "message": "\u003e GoogleTest does not run tests in parallel and you have SetUp() and TearDown() starting/stopping the kumquat instance so there should only ever be a single instance. \n\nNuked `eglInitializeKumquat` + `vkInitializeKumquat` in the latest patch, since it was based on the assumption GoogleTest was multi-threaded, which isn\u0027t correct.\n\n\u003e Then have VirtGpuKumquatDevice keep the `std::shared_ptr\u003cKumaquatServer\u003e` as a member. \n\nI added a `KumquatInstance` wrapper in `common/end2end`.  `VirtGpuKumquatDevice` is envisioned as a gfxstream guest internal, and should be only connecting and sending requiests to Kumquat, not managing it.  \n\nI do agree that launching a `KumquatInstance` for every test is unnecessary.  We probably only need a `KumquatInstance` for every test suite (since a test-suite can change the arguments to gfxstream, and hence test behavior).  That is left for a future refactor, since the prior behavior was to call `rutabaga_init` for every test, which is also unnecessary.",
+      "parentUuid": "593b6af5_35e82067",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "959cad279999776ab2b524f868a735183ff28ca1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "25038865_caefb54e",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -61,6 +85,30 @@
       "side": 1,
       "message": "I have a weird V-100 Nvidia cloudtop setup.  The CI uses a different Nvidia variant, and this should pass there.\n\nBut for reference, here are the failing tests:\n\n```\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuAsg, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuAsg\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithoutGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n[  FAILED  ] GfxstreamEnd2EndTests/GfxstreamEnd2EndVkTest.ImportAndBlitFromR8G8B8A8Ahb/WithGlWithVkSampleCount1WithFeatures_VulkanUseDedicatedAhbMemoryType_VulkanSnapshots_OverVirtioGpuPipe, where GetParam() \u003d WithGlWithVkSampleCount1WithFeatures_VulkanSnapshots_VulkanUseDedicatedAhbMemoryType_OverVirtioGpuPipe\n```",
       "parentUuid": "25038865_caefb54e",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 21
+      },
+      "revId": "959cad279999776ab2b524f868a735183ff28ca1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad586e48_0dad2dfe",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-09T15:54:20Z",
+      "side": 1,
+      "message": "Looking a bit closer, it looks like every pixel comparison fails.  The tests are expected to be white, while the image is black.  Likely AHB import failing on V-100.",
+      "parentUuid": "907becc1_b441fc45",
       "range": {
         "startLine": 64,
         "startChar": 0,
