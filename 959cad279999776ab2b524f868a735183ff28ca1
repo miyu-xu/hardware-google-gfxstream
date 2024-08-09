@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "87f62ca8_ef44ab3d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-09T17:23:56Z",
+      "side": 1,
+      "message": "\u003e I do agree that launching a KumquatInstance for every test is unnecessary\n\nErr, I think launching a `KumquatInstance` is the correct way to go so that each test gets a clean state and previous tests can not affect the current test.\n\nThis was just about potentially not having to manually do the `mKumquatInstance.reset();` inside of `TearDown()` because it would happen naturally as a part each `VirtGpuKumquatDevice` being destructed.\n\nI think what this change has now is a good middle ground considering you want `VirtGpuKumquatDevice`/\"the guest\" to not manage the kumaquat server which seems reasonable.",
+      "parentUuid": "a2b93680_f961b778",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "959cad279999776ab2b524f868a735183ff28ca1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "25038865_caefb54e",
@@ -109,6 +133,30 @@
       "side": 1,
       "message": "Looking a bit closer, it looks like every pixel comparison fails.  The tests are expected to be white, while the image is black.  Likely AHB import failing on V-100.",
       "parentUuid": "907becc1_b441fc45",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 21
+      },
+      "revId": "959cad279999776ab2b524f868a735183ff28ca1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d62d6960_84ad3617",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-09T17:23:56Z",
+      "side": 1,
+      "message": "Ack, please file a bug to follow up since you mentioned that this was already failing outside of this change.",
+      "parentUuid": "ad586e48_0dad2dfe",
       "range": {
         "startLine": 64,
         "startChar": 0,
