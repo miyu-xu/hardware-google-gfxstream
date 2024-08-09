@@ -72,6 +72,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3d8eeffd_84111bfa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-09T17:44:21Z",
+      "side": 1,
+      "message": "I still left the comment about `SetUpTestSuite` + `TearDownTestSuite`, since *in theory* each test in suite should create/teardown a new virtio-gpu context and associated resources.  If a prior run leaves state, that\u0027s probably a bug in gfxstream.  \n\nI  think the main benefit of `SetUpTestSuite` + `TearDownTestSuite`.  Right now, the tests take ~7 minutes.  It could be faster if expensive calls (`stream_renderer_init` + `stream_renderer_teardown`) aren\u0027t always made.  But that said, I have no intention of personally doing that optimization.",
+      "parentUuid": "87f62ca8_ef44ab3d",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "959cad279999776ab2b524f868a735183ff28ca1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "25038865_caefb54e",
