@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2b5e490_bb22f774",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-09T17:37:29Z",
+      "side": 1,
+      "message": "Yeah, the build failures should be easy to fix.",
+      "parentUuid": "2b3dbac9_683db5af",
+      "revId": "5ebb4f4e42e84dfed6dbb59608c4459740b24377",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "78e10813_abcdfd66",
@@ -59,6 +77,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "17b583d4_704a94bc",
+        "filename": "common/end2end/GfxstreamEnd2EndTests.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-09T17:37:29Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "78e10813_abcdfd66",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 19
+      },
+      "revId": "5ebb4f4e42e84dfed6dbb59608c4459740b24377",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b830ce67_4c96dd3d",
@@ -72,6 +114,30 @@
       "writtenOn": "2024-08-09T17:23:56Z",
       "side": 1,
       "message": "nit\n\n```suggestion\n    const std::string renderer_features \u003d \"--renderer-features\u003d\" + features;\n\n    std::string capset_names \u003d \"--capset-names\u003d\";\n    if (withGl) {\n        capset_names.append(\"gfxstream-gles:\");\n    }\n    if (withVk) {\n        capset_names.append(\"gfxstream-vulkan:\");\n    }\n\n    int fds[2];\n    ASSERT_THAT(pipe(fds), Eq(0));\n\n    // VirtGpuKumquatDevice.cpp by default connects to \"/tmp/kumquat-gpu-0\".  If this changes,\n    // the correct socket path must be plumbed through to VirtGpuKumquatDevice.cpp\n    const std::string gpu_socket_path \u003d \"/tmp/kumquat-gpu-\" + std::to_string(0);\n\n    const std::string gpu_socket_cmd \u003d \"--gpu-socket-path\u003d\" + gpu_socket_path;\n\n    const std::string pipe_descriptor \u003d \"--pipe-descriptor\u003d\" + std::to_string(fds[1]);\n```\n\njust to keep the variable decl plus init all in one spot instead of spread out.",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 51
+      },
+      "revId": "5ebb4f4e42e84dfed6dbb59608c4459740b24377",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e3d855a_d70a4d42",
+        "filename": "common/end2end/KumquatInstance.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-09T17:37:29Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "b830ce67_4c96dd3d",
       "range": {
         "startLine": 36,
         "startChar": 0,
