@@ -28,14 +28,18 @@ const uint32_t CB_HANDLE_MAGIC_BASE = 0xABFABFA0;
 
 struct cb_handle_t : public native_handle_t {
     cb_handle_t(uint32_t p_magic,
+                int p_bufferFd,
+                int p_hostHandleRefcountFd,
                 uint32_t p_hostHandle,
                 int32_t p_format,
-                uint64_t p_usage,
                 uint32_t p_drmformat,
+                uint64_t p_usage,
                 uint32_t p_stride,
                 uint32_t p_bufSize,
                 uint64_t p_mmapedOffset)
-        : usage(p_usage),
+        : bufferFd(p_bufferFd),
+          hostHandleRefcountFd(p_hostHandleRefcountFd),
+          usage(p_usage),
           mmapedOffset(p_mmapedOffset),
           magic(p_magic),
           hostHandle(p_hostHandle),
@@ -73,7 +77,8 @@ struct cb_handle_t : public native_handle_t {
         return from(const_cast<void*>(p));
     }
 
-    int32_t fds[2];
+    const int32_t bufferFd;       // always allocated
+    const int32_t hostHandleRefcountFd;  // optional
 
     // ints
     const uint64_t usage;         // allocation usage
