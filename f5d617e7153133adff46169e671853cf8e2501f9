@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db3c644b_f269ae51",
+        "filename": "guest/android/GrallocEmulated.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-12T17:51:23Z",
+      "side": 1,
+      "message": "Nit: it looks like `EmulatedGralloc` takes ownership of `mDevice`, could we wrap it into a `unique_ptr` to not need raw `delete`?",
+      "range": {
+        "startLine": 414,
+        "startChar": 4,
+        "endLine": 414,
+        "endChar": 19
+      },
+      "revId": "f5d617e7153133adff46169e671853cf8e2501f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
