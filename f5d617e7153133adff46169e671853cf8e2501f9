@@ -22,6 +22,30 @@
       },
       "revId": "f5d617e7153133adff46169e671853cf8e2501f9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e919e247_c770a673",
+        "filename": "guest/android/GrallocEmulated.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-12T21:26:37Z",
+      "side": 1,
+      "message": "Will do in a subsequent commit, this probably needs other refactorings too.",
+      "parentUuid": "db3c644b_f269ae51",
+      "range": {
+        "startLine": 414,
+        "startChar": 4,
+        "endLine": 414,
+        "endChar": 19
+      },
+      "revId": "f5d617e7153133adff46169e671853cf8e2501f9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
