@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bdc3d8d7_e62b01be",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-13T17:55:28Z",
+      "side": 1,
+      "message": "Yes, of course.",
+      "parentUuid": "0b6476ba_f8fe59ee",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 5
+      },
+      "revId": "60afdafa68259efc8e6e1c434fab86c48001e942",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd91bd49_76ff44f1",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-08-13T17:50:25Z",
       "side": 1,
       "message": "Can probably drop this too",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 6
+      },
+      "revId": "60afdafa68259efc8e6e1c434fab86c48001e942",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8720319_b99a8906",
+        "filename": "guest/android-emu/aemu/base/Tracing.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-13T17:55:28Z",
+      "side": 1,
+      "message": "I\u0027d be in favor of just nuking the entire file eventually ;-)",
+      "parentUuid": "fd91bd49_76ff44f1",
       "range": {
         "startLine": 17,
         "startChar": 0,
