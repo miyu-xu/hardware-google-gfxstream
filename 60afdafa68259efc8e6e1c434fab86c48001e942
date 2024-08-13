@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b6476ba_f8fe59ee",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-13T17:50:25Z",
+      "side": 1,
+      "message": "Q: do we expect to reintroduce tracing for Android builds?",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 5
+      },
+      "revId": "60afdafa68259efc8e6e1c434fab86c48001e942",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd91bd49_76ff44f1",
+        "filename": "guest/android-emu/aemu/base/Tracing.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-13T17:50:25Z",
+      "side": 1,
+      "message": "Can probably drop this too",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 6
+      },
+      "revId": "60afdafa68259efc8e6e1c434fab86c48001e942",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
