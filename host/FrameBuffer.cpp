@@ -230,7 +230,7 @@ void MaybeIncreaseFileDescriptorSoftLimit() {
     const auto softLimit = nofileLimits.rlim_cur;
     const auto hardLimit = nofileLimits.rlim_max;
 
-    constexpr const rlim_t kDesiredNofileSoftLimit = 4096;
+    constexpr const rlim_t kDesiredNofileSoftLimit = 32768;
 
     if (softLimit < kDesiredNofileSoftLimit) {
         if (softLimit == hardLimit) {
