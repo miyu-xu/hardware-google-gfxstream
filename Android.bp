@@ -142,6 +142,22 @@ gfxstream_cc_defaults_config_for_platform {
     },
 }
 
+gfxstream_cc_defaults_config_for_platform {
+    name: "gfxstream_host_cc_defaults_for_platform",
+    soong_config_variables: {
+        mesa3d_platforms: {
+            // Android surfaceless build
+            none: {
+                cflags: [
+                    "-DGFXSTREAM_ENABLE_GUEST_VIRTIO_RESOURCE_TILING_CONTROL=1",
+                ],
+            },
+            // The default when variable is not set is Android
+            conditions_default: {},
+        },
+    },
+}
+
 cc_defaults {
     name: "gfxstream_guest_cc_defaults",
     defaults: [
@@ -154,6 +170,7 @@ cc_defaults {
     name: "gfxstream_host_cc_defaults",
     defaults: [
         "gfxstream_cc_defaults",
+        "gfxstream_host_cc_defaults_for_platform",
     ],
 }
 
