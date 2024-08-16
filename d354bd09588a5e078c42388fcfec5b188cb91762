@@ -22,6 +22,30 @@
       },
       "revId": "d354bd09588a5e078c42388fcfec5b188cb91762",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77cf29c4_82c89e58",
+        "filename": "guest/OpenglSystemCommon/HostConnection.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-16T17:27:16Z",
+      "side": 1,
+      "message": "yeah, I may fix that later, but host connection will be removed from the VK path anyways.",
+      "parentUuid": "25b966c1_180122ae",
+      "range": {
+        "startLine": 93,
+        "startChar": 23,
+        "endLine": 93,
+        "endChar": 30
+      },
+      "revId": "d354bd09588a5e078c42388fcfec5b188cb91762",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
