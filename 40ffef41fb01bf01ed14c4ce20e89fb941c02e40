@@ -69,6 +69,30 @@
       },
       "revId": "40ffef41fb01bf01ed14c4ce20e89fb941c02e40",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b1ad9bb_303aa190",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6204,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-19T15:54:19Z",
+      "side": 1,
+      "message": "`git clang-format HEAD~1` does not complain.",
+      "parentUuid": "e064e07b_7ba8e869",
+      "range": {
+        "startLine": 6183,
+        "startChar": 0,
+        "endLine": 6204,
+        "endChar": 13
+      },
+      "revId": "40ffef41fb01bf01ed14c4ce20e89fb941c02e40",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
