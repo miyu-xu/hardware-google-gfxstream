@@ -48,6 +48,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "55a1726c_82f08fe1",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4948,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-19T15:55:58Z",
+      "side": 1,
+      "message": "Welp, I missed the obvious `mWorkPool.wait*` below 😄",
+      "parentUuid": "bd3ed197_743bac24",
+      "range": {
+        "startLine": 4946,
+        "startChar": 12,
+        "endLine": 4948,
+        "endChar": 66
+      },
+      "revId": "40ffef41fb01bf01ed14c4ce20e89fb941c02e40",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e064e07b_7ba8e869",
