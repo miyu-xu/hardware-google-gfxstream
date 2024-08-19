@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91e501dd_15ff491f",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4948,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-19T15:29:28Z",
+      "side": 1,
+      "message": "We\u0027re not worried about timeouts anymore?",
+      "range": {
+        "startLine": 4946,
+        "startChar": 12,
+        "endLine": 4948,
+        "endChar": 66
+      },
+      "revId": "40ffef41fb01bf01ed14c4ce20e89fb941c02e40",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e064e07b_7ba8e869",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6204,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-19T15:29:28Z",
+      "side": 1,
+      "message": "Huh, doesn\u0027t clang-format complain about intending here?",
+      "range": {
+        "startLine": 6183,
+        "startChar": 0,
+        "endLine": 6204,
+        "endChar": 13
+      },
+      "revId": "40ffef41fb01bf01ed14c4ce20e89fb941c02e40",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
