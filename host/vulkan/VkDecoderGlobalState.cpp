@@ -4387,7 +4387,8 @@ class VkDecoderGlobalState::Impl {
 
         info->guestPhysAddr = physAddr;
 
-        constexpr size_t kPageBits = 12;
+        // Android is moving to 16k page size.
+        constexpr size_t kPageBits = 14;
         constexpr size_t kPageSize = 1u << kPageBits;
         constexpr size_t kPageOffsetMask = kPageSize - 1;
 
