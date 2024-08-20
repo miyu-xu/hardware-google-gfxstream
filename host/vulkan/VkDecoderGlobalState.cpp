@@ -5260,7 +5260,7 @@ class VkDecoderGlobalState::Impl {
                                         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         }
 
-        return syncImageToColorBuffer(vk, queueInfo->queueFamilyIndex, queue, queueInfo->lock,
+        return syncImageToColorBuffer(m_emu->callbacks, vk, queueInfo->queueFamilyIndex, queue, queueInfo->lock,
                                       waitSemaphoreCount, pWaitSemaphores, pNativeFenceFd, anbInfo);
     }
 

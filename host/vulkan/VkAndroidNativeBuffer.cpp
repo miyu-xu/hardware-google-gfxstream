@@ -16,16 +16,16 @@
 
 #include <future>
 
+#include "FrameBuffer.h"
 #include "GrallocDefs.h"
 #include "SyncThread.h"
 #include "VkCommonOperations.h"
 #include "VulkanDispatch.h"
 #include "cereal/common/goldfish_vk_deepcopy.h"
 #include "cereal/common/goldfish_vk_extension_structs.h"
-
 #include "goldfish_vk_private_defs.h"
+#include "gfxstream/host/BackendCallbacks.h"
 #include "host-common/GfxstreamFatalError.h"
-#include "FrameBuffer.h"
 #include "vulkan/vk_enum_string_helper.h"
 
 namespace gfxstream {
@@ -526,7 +526,6 @@ VkResult setAndroidNativeImageSemaphoreSignaled(VulkanDispatch* vk, VkDevice dev
                                                 uint32_t defaultQueueFamilyIndex,
                                                 Lock* defaultQueueLock, VkSemaphore semaphore,
                                                 VkFence fence, AndroidNativeBufferInfo* anbInfo) {
-    auto fb = FrameBuffer::getFB();
     auto emu = getGlobalVkEmulation();
 
     bool firstTimeSetup = !anbInfo->everSynced && !anbInfo->everAcquired;
@@ -640,7 +639,8 @@ VkResult setAndroidNativeImageSemaphoreSignaled(VulkanDispatch* vk, VkDevice dev
 
 static constexpr uint64_t kTimeoutNs = 3ULL * 1000000000ULL;
 
-VkResult syncImageToColorBuffer(VulkanDispatch* vk, uint32_t queueFamilyIndex, VkQueue queue,
+VkResult syncImageToColorBuffer(gfxstream::host::BackendCallbacks& callbacks,
+                                VulkanDispatch* vk, uint32_t queueFamilyIndex, VkQueue queue,
                                 Lock* queueLock, uint32_t waitSemaphoreCount,
                                 const VkSemaphore* pWaitSemaphores, int* pNativeFenceFd,
                                 std::shared_ptr<AndroidNativeBufferInfo> anbInfo) {
@@ -860,10 +860,10 @@ VkResult syncImageToColorBuffer(VulkanDispatch* vk, uint32_t queueFamilyIndex, V
                 bpp = 4;
                 break;
         }
+        const void* bytes = anbInfo->mappedStagingPtr;
+        const size_t bytesSize = bpp * anbInfo->extent.width * anbInfo->extent.height;
+        callbacks.flushColorBufferFromBytes(colorBufferHandle, bytes, bytesSize);
 
-        FrameBuffer::getFB()->flushColorBufferFromVkBytes(
-            colorBufferHandle, anbInfo->mappedStagingPtr,
-            bpp * anbInfo->extent.width * anbInfo->extent.height);
         anbInfo->qsriTimeline->signalNextPresentAndPoll();
     }
 
