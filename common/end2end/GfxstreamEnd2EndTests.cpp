@@ -128,8 +128,8 @@ std::vector<TestParams> WithAndWithoutFeatures(const std::vector<TestParams>& pa
 
 std::unique_ptr<GuestGlDispatchTable> GfxstreamEnd2EndTest::SetupGuestGl() {
     const std::filesystem::path testDirectory = gfxstream::guest::getProgramDirectory();
-    const std::string eglLibPath = (testDirectory / "libEGL_emulation.so").string();
-    const std::string gles2LibPath = (testDirectory / "libGLESv2_emulation.so").string();
+    const std::string eglLibPath = (testDirectory / "libEGL_emulation_with_host.so").string();
+    const std::string gles2LibPath = (testDirectory / "libGLESv2_emulation_with_host.so").string();
 
     void* eglLib = dlopen(eglLibPath.c_str(), RTLD_NOW | RTLD_LOCAL);
     if (!eglLib) {
@@ -175,7 +175,8 @@ std::unique_ptr<GuestGlDispatchTable> GfxstreamEnd2EndTest::SetupGuestGl() {
 
 std::unique_ptr<GuestRenderControlDispatchTable> GfxstreamEnd2EndTest::SetupGuestRc() {
     const std::filesystem::path testDirectory = gfxstream::guest::getProgramDirectory();
-    const std::string rcLibPath = (testDirectory / "libgfxstream_guest_rendercontrol.so").string();
+    const std::string rcLibPath =
+        (testDirectory / "libgfxstream_guest_rendercontrol_with_host.so").string();
 
     void* rcLib = dlopen(rcLibPath.c_str(), RTLD_NOW | RTLD_LOCAL);
     if (!rcLib) {
@@ -201,7 +202,7 @@ std::unique_ptr<GuestRenderControlDispatchTable> GfxstreamEnd2EndTest::SetupGues
 
 std::unique_ptr<vkhpp::DynamicLoader> GfxstreamEnd2EndTest::SetupGuestVk() {
     const std::filesystem::path testDirectory = gfxstream::guest::getProgramDirectory();
-    const std::string vkLibPath = (testDirectory / "vulkan.ranchu.so").string();
+    const std::string vkLibPath = (testDirectory / "libgfxstream_guest_vulkan_with_host.so").string();
 
     auto dl = std::make_unique<vkhpp::DynamicLoader>(vkLibPath);
     if (!dl->success()) {
@@ -230,7 +231,6 @@ void GfxstreamEnd2EndTest::SetUp() {
 
     ASSERT_THAT(setenv("GFXSTREAM_TRANSPORT", transportValue.c_str(), /*overwrite=*/1), Eq(0));
 
-    ASSERT_THAT(setenv("VIRTGPU_KUMQUAT", "1", /*overwrite=*/1), Eq(0));
     const std::string features = Join(featureEnables, ",");
 
     // We probably don't need to create a Kumquat Server instance for every test.  GTest provides
