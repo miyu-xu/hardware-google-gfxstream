@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f58f8061_502ef963",
+        "filename": "guest/vulkan/gfxstream_vk_device.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-20T11:24:28Z",
+      "side": 1,
+      "message": "Is it only used from one thread? The previous variant was not synchronized so I assume that\u0027s the case?",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 20
+      },
+      "revId": "52a90340f3c21720bf2f52e0bbc4f1d94458f1e2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
