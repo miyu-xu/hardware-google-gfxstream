@@ -22,6 +22,30 @@
       },
       "revId": "8177e0c323a810a1f85747b4cff0594121b6f4c1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "945913ee_ab4a6036",
+        "filename": "guest/mesa/src/vulkan/runtime/vk_command_pool.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-20T15:57:14Z",
+      "side": 1,
+      "message": "Fixed.",
+      "parentUuid": "2388f6b1_08bb1d06",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 3
+      },
+      "revId": "8177e0c323a810a1f85747b4cff0594121b6f4c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
