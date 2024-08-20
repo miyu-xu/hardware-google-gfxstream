@@ -21,9 +21,7 @@ package {
 
 cc_library_headers {
     name: "libmagma_enc_headers",
-    defaults: [
-        "libgfxstream_guest_cc_defaults",
-    ],
+    vendor: true,
     export_include_dirs: [
         ".",
     ],
