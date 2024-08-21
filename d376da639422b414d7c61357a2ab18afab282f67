@@ -16,6 +16,24 @@
       "message": "Can we use select now?\n\nhttps://buganizer.corp.google.com/issues/358377461",
       "revId": "d376da639422b414d7c61357a2ab18afab282f67",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9209d4dc_b0b91b79",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-21T18:18:31Z",
+      "side": 1,
+      "message": "Nice!\n\nI changed this one to use `select` and migrated the rest of uses in aosp/3236237.",
+      "parentUuid": "bea27570_95fa3e62",
+      "revId": "d376da639422b414d7c61357a2ab18afab282f67",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
