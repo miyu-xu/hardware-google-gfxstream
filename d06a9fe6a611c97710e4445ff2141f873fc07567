@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e36a9df_9a6c4f14",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-21T18:20:35Z",
+      "side": 1,
+      "message": "FYI brandonnyugen@ on same build supporting multiple platforms.",
+      "revId": "d06a9fe6a611c97710e4445ff2141f873fc07567",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
