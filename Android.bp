@@ -179,6 +179,9 @@ cc_defaults {
         "-Wno-implicit-fallthrough",
         "-Wno-unused-private-field",
         "-Wno-macro-redefined",
+        "-UNDEBUG",
+        "-g",
+        "-O0",
     ],
     header_libs: [
         "gfxstream_headers",
