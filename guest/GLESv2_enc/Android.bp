@@ -21,9 +21,8 @@ package {
 
 cc_library {
     name: "libgfxstream_gles2_encoder_program_binary_proto",
-    defaults: [
-        "libgfxstream_guest_cc_defaults",
-    ],
+    host_supported: true,
+    vendor: true,
     proto: {
         canonical_path_from_root: false,
         export_proto_headers: true,
@@ -36,6 +35,8 @@ cc_library {
 
 cc_library_shared {
     name: "libGLESv2_enc",
+    host_supported: true,
+    vendor: true,
     defaults: [
         "libgfxstream_guest_cc_defaults",
     ],
