@@ -47,6 +47,6 @@ int VirtGpuKumquatSyncHelper::dup(int syncFd) { return ::dup(syncFd); }
 
 int VirtGpuKumquatSyncHelper::close(int syncFd) { return ::close(syncFd); }
 
-SyncHelper* kumquatCreateSyncHelper() { return new VirtGpuKumquatSyncHelper(); }
+SyncHelper* createPlatformSyncHelper() { return new VirtGpuKumquatSyncHelper(); }
 
 }  // namespace gfxstream
