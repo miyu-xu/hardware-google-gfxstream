@@ -92,25 +92,7 @@ typedef uint64_t zx_koid_t;
 #include "../egl/goldfish_sync.h"
 #endif
 
-// This should be ABI identical with the variant in ResourceTracker.h
-struct GfxStreamVkFeatureInfo {
-    bool hasDirectMem;
-    bool hasVulkan;
-    bool hasDeferredVulkanCommands;
-    bool hasVulkanNullOptionalStrings;
-    bool hasVulkanCreateResourcesWithRequirements;
-    bool hasVulkanIgnoredHandles;
-    bool hasVirtioGpuNext;
-    bool hasVulkanFreeMemorySync;
-    bool hasVirtioGpuNativeSync;
-    bool hasVulkanShaderFloat16Int8;
-    bool hasVulkanAsyncQueueSubmit;
-    bool hasVulkanQueueSubmitWithCommands;
-    bool hasVulkanBatchedDescriptorSetUpdate;
-    bool hasVulkanAsyncQsri;
-    bool hasVulkanAuxCommandMemory;
-    bool setupComplete;
-};
+struct EmulatorFeatureInfo;
 
 class HostConnection;
 
@@ -548,7 +530,7 @@ class ResourceTracker {
     VkDeviceSize getNonCoherentExtendedSize(VkDevice device, VkDeviceSize basicSize) const;
     bool isValidMemoryRange(const VkMappedMemoryRange& range);
 
-    void setupFeatures(const struct GfxStreamVkFeatureInfo* features);
+    void setupFeatures(const EmulatorFeatureInfo* features);
     void setupCaps(uint32_t& noRenderControlEnc);
 
     void setThreadingCallbacks(const ThreadingCallbacks& callbacks);
@@ -895,9 +877,7 @@ class ResourceTracker {
     std::recursive_mutex mLock;
 
     std::optional<const VkPhysicalDeviceMemoryProperties> mCachedPhysicalDeviceMemoryProps;
-
-    struct GfxStreamVkFeatureInfo mFeatureInfo = {};
-
+    std::unique_ptr<EmulatorFeatureInfo> mFeatureInfo;
 #if defined(__ANDROID__)
     std::unique_ptr<GoldfishAddressSpaceBlockProvider> mGoldfishAddressSpaceBlockProvider;
 #endif  // defined(__ANDROID__)

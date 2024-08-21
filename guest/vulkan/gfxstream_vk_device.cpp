@@ -82,9 +82,7 @@ static VkResult SetupInstanceForProcess(void) {
             return VK_ERROR_DEVICE_LOST;
         }
 
-        struct GfxStreamVkFeatureInfo features = {};
-        hostCon->setVulkanFeatureInfo(&features);
-        gfxstream::vk::ResourceTracker::get()->setupFeatures(&features);
+        gfxstream::vk::ResourceTracker::get()->setupFeatures(rcEnc->featureInfo_const());
     }
 
     gfxstream::vk::ResourceTracker::get()->setThreadingCallbacks({

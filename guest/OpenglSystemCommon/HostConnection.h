@@ -158,9 +158,7 @@ public:
 #pragma clang diagnostic pop
 #endif
 
-    void setVulkanFeatureInfo(void* info);
-
-   private:
+private:
     // If the connection failed, |conn| is deleted.
     // Returns NULL if connection failed.
  static std::unique_ptr<HostConnection> connect(enum VirtGpuCapset capset);
