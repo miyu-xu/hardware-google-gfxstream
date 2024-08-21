@@ -22,10 +22,11 @@
 #include <unistd.h>
 
 #include "VirtGpu.h"
+#include "aemu/base/Tracing.h"
 #include "util.h"
-#include "util/log.h"
-#include "util/perf/cpu_trace.h"
 #include "virtgpu_gfxstream_protocol.h"
+
+#include <cutils/log.h>
 
 static const size_t kReadSize = 512 * 1024;
 static const size_t kWriteOffset = kReadSize;
@@ -86,7 +87,7 @@ size_t AddressSpaceStream::idealAllocSize(size_t len) {
 }
 
 void* AddressSpaceStream::allocBuffer(size_t minSize) {
-    MESA_TRACE_SCOPE("allocBuffer");
+    AEMU_SCOPED_TRACE("allocBuffer");
     ensureType3Finished();
 
     if (!m_readBuf) {
@@ -148,11 +149,8 @@ const unsigned char *AddressSpaceStream::readFully(void *ptr, size_t totalReadSi
 
     if (!userReadBuf) {
         if (totalReadSize > 0) {
-            mesa_loge(
-                "AddressSpaceStream::commitBufferAndReadFully failed, userReadBuf=NULL, "
-                "totalReadSize %zu, lethal"
-                " error, exiting.",
-                totalReadSize);
+            ALOGE("AddressSpaceStream::commitBufferAndReadFully failed, userReadBuf=NULL, totalReadSize %zu, lethal"
+                    " error, exiting.", totalReadSize);
             abort();
         }
         return nullptr;
@@ -186,7 +184,7 @@ const unsigned char *AddressSpaceStream::readFully(void *ptr, size_t totalReadSi
         }
 
         if (actual == 0) {
-            mesa_logd("%s: end of pipe", __FUNCTION__);
+            ALOGD("%s: end of pipe", __FUNCTION__);
             return NULL;
         }
     }
@@ -206,7 +204,7 @@ const unsigned char *AddressSpaceStream::readFully(void *ptr, size_t totalReadSi
         actual = speculativeRead(m_readBuf, kReadSize);
 
         if (actual == 0) {
-            mesa_logd("%s: Failed reading from pipe: %d", __FUNCTION__, errno);
+            ALOGD("%s: Failed reading from pipe: %d", __FUNCTION__,  errno);
             return NULL;
         }
 
@@ -235,7 +233,7 @@ const unsigned char *AddressSpaceStream::read(void *buf, size_t *inout_len) {
 }
 
 int AddressSpaceStream::writeFully(const void* buf, size_t size) {
-    MESA_TRACE_SCOPE("writeFully");
+    AEMU_SCOPED_TRACE("writeFully");
     ensureType3Finished();
     ensureType1Finished();
 
@@ -290,8 +288,8 @@ int AddressSpaceStream::writeFully(const void* buf, size_t size) {
 
     float mb = (float)m_written / 1048576.0f;
     if (mb > 100.0f) {
-        mesa_logd("%s: %f mb in %d notifs. %f mb/notif\n", __func__, mb, m_notifs,
-                  m_notifs ? mb / (float)m_notifs : 0.0f);
+        ALOGD("%s: %f mb in %d notifs. %f mb/notif\n", __func__,
+              mb, m_notifs, m_notifs ? mb / (float)m_notifs : 0.0f);
         m_notifs = 0;
         m_written = 0;
     }
@@ -299,7 +297,7 @@ int AddressSpaceStream::writeFully(const void* buf, size_t size) {
 }
 
 int AddressSpaceStream::writeFullyAsync(const void* buf, size_t size) {
-    MESA_TRACE_SCOPE("writeFullyAsync");
+    AEMU_SCOPED_TRACE("writeFullyAsync");
     ensureType3Finished();
     ensureType1Finished();
 
@@ -357,8 +355,8 @@ int AddressSpaceStream::writeFullyAsync(const void* buf, size_t size) {
 
     float mb = (float)m_written / 1048576.0f;
     if (mb > 100.0f) {
-        mesa_logd("%s: %f mb in %d notifs. %f mb/notif\n", __func__, mb, m_notifs,
-                  m_notifs ? mb / (float)m_notifs : 0.0f);
+        ALOGD("%s: %f mb in %d notifs. %f mb/notif\n", __func__,
+              mb, m_notifs, m_notifs ? mb / (float)m_notifs : 0.0f);
         m_notifs = 0;
         m_written = 0;
     }
@@ -420,7 +418,7 @@ ssize_t AddressSpaceStream::speculativeRead(unsigned char* readBuffer, size_t tr
 }
 
 void AddressSpaceStream::notifyAvailable() {
-    MESA_TRACE_SCOPE("PING");
+    AEMU_SCOPED_TRACE("PING");
     struct address_space_ping request;
     request.metadata = ASG_NOTIFY_AVAILABLE;
     request.resourceId = m_resourceId;
@@ -462,7 +460,7 @@ void AddressSpaceStream::ensureConsumerFinishing() {
 }
 
 void AddressSpaceStream::ensureType1Finished() {
-    MESA_TRACE_SCOPE("ensureType1Finished");
+    AEMU_SCOPED_TRACE("ensureType1Finished");
 
     uint32_t currAvailRead =
         ring_buffer_available_read(m_context.to_host, 0);
@@ -478,7 +476,7 @@ void AddressSpaceStream::ensureType1Finished() {
 }
 
 void AddressSpaceStream::ensureType3Finished() {
-    MESA_TRACE_SCOPE("ensureType3Finished");
+    AEMU_SCOPED_TRACE("ensureType3Finished");
     uint32_t availReadLarge =
         ring_buffer_available_read(
             m_context.to_host_large_xfer.ring,
@@ -501,7 +499,7 @@ void AddressSpaceStream::ensureType3Finished() {
 }
 
 int AddressSpaceStream::type1Write(uint32_t bufferOffset, size_t size) {
-    MESA_TRACE_SCOPE("type1Write");
+    AEMU_SCOPED_TRACE("type1Write");
 
     ensureType3Finished();
 
@@ -564,8 +562,8 @@ int AddressSpaceStream::type1Write(uint32_t bufferOffset, size_t size) {
 
     float mb = (float)m_written / 1048576.0f;
     if (mb > 100.0f) {
-        mesa_logd("%s: %f mb in %d notifs. %f mb/notif\n", __func__, mb, m_notifs,
-                  m_notifs ? mb / (float)m_notifs : 0.0f);
+        ALOGD("%s: %f mb in %d notifs. %f mb/notif\n", __func__,
+              mb, m_notifs, m_notifs ? mb / (float)m_notifs : 0.0f);
         m_notifs = 0;
         m_written = 0;
     }

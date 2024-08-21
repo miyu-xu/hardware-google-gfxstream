@@ -14,10 +14,10 @@
 
 #include "VirtioGpuAddressSpaceStream.h"
 
+#include <cutils/log.h>
 #include <errno.h>
 
-#include "util/log.h"
-#include "util/u_math.h"
+#include "util.h"
 
 static bool GetRingParamsFromCapset(enum VirtGpuCapset capset, const VirtGpuCaps& caps,
                                     uint32_t& ringSize, uint32_t& bufferSize,
@@ -95,7 +95,7 @@ AddressSpaceStream* createVirtioGpuAddressSpaceStream(enum VirtGpuCapset capset)
     auto caps = instance->getCaps();
 
     if (!GetRingParamsFromCapset(capset, caps, ringSize, bufferSize, blobAlignment)) {
-        mesa_loge("Failed to get ring parameters");
+        ALOGE("Failed to get ring parameters");
         return nullptr;
     }
 
