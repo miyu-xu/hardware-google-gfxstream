@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5f48fa1_49cc4e4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-08-22T16:41:09Z",
+      "side": 1,
+      "message": "Would this not be easier solved by adding GraphicsObjectCounter.cpp in the meson.build file?",
+      "revId": "5024b8b6a9dcbc1acc5bd9ea77b1f5e75a2f4601",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
