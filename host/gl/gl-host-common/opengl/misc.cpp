@@ -15,15 +15,20 @@
 #include "host-common/opengl/misc.h"
 
 #include "aemu/base/GLObjectCounter.h"
+
+#ifdef CONFIG_AEMU
 #include "aemu/base/GraphicsObjectCounter.h"
+#endif
 
 #include <cstring>
 
 static int s_glesMajorVersion = 2;
 static int s_glesMinorVersion = 0;
 
+#ifdef CONFIG_AEMU
 android::base::GraphicsObjectCounter* s_default_graphics_object_counter = nullptr;
 android::base::GraphicsObjectCounter* s_graphics_object_counter = nullptr;
+#endif
 
 android::base::GLObjectCounter* s_default_gl_object_counter = nullptr;
 android::base::GLObjectCounter* s_gl_object_counter = nullptr;
@@ -68,6 +73,7 @@ void emugl::setGLObjectCounter(android::base::GLObjectCounter* counter) {
     s_gl_object_counter = counter;
 }
 
+#ifdef CONFIG_AEMU
 void emugl::setGraphicsObjectCounter(android::base::GraphicsObjectCounter* counter) {
     s_graphics_object_counter = counter;
 }
@@ -81,6 +87,7 @@ android::base::GraphicsObjectCounter* emugl::getGraphicsObjectCounter() {
     }
     return s_graphics_object_counter;
 }
+#endif
 
 android::base::GLObjectCounter* emugl::getGLObjectCounter() {
     if (!s_gl_object_counter) {
