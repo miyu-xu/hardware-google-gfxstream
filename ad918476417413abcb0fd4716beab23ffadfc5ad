@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83cbc99c_bc5281e1",
+        "filename": "guest/vulkan_enc/vk_format_info.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-08-22T15:33:41Z",
+      "side": 1,
+      "message": "cc @joshuaduong@google.com",
+      "revId": "ad918476417413abcb0fd4716beab23ffadfc5ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
