@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "aemu/base/files/PathUtils.h"
-#include "aemu/base/files/StdioStream.h"
-#include "aemu/base/GLObjectCounter.h"
-#include "aemu/base/GraphicsObjectCounter.h"
-#include "aemu/base/system/System.h"
-#include "aemu/base/testing/TestSystem.h"
-#include "host-common/GraphicsAgentFactory.h"
-#include "host-common/multi_display_agent.h"
-#include "host-common/testing/MockGraphicsAgentFactory.h"
-#include "host-common/window_agent.h"
-#include "host-common/MultiDisplay.h"
-#include "host-common/opengl/misc.h"
-#include "snapshot/TextureLoader.h"
-#include "snapshot/TextureSaver.h"
+#include <gtest/gtest.h>
+
+#include <memory>
 
 #include "GLSnapshotTesting.h"
 #include "GLTestUtils.h"
 #include "Standalone.h"
-
-#include <gtest/gtest.h>
-#include <memory>
+#include "aemu/base/GLObjectCounter.h"
+#include "aemu/base/GraphicsObjectCounter.h"
+#include "aemu/base/files/PathUtils.h"
+#include "aemu/base/files/StdioStream.h"
+#include "aemu/base/system/System.h"
+#include "aemu/base/testing/TestSystem.h"
+#include "host-common/GraphicsAgentFactory.h"
+#include "host-common/MultiDisplay.h"
+#include "host-common/multi_display_agent.h"
+#include "host-common/opengl/misc.h"
+#include "host-common/testing/MockGraphicsAgentFactory.h"
+#include "host-common/window_agent.h"
+#include "snapshot/TextureLoader.h"
+#include "snapshot/TextureSaver.h"
 
 #ifdef _MSC_VER
 #include "aemu/base/msvc.h"
