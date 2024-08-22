@@ -14,10 +14,15 @@
 
 #include <gtest/gtest.h>
 
+#include <vulkan/vulkan.h>
+
+#include <sstream>
+#include <string>
+
 #include "FrameBuffer.h"
+#include "Standalone.h"
 #include "VkCommonOperations.h"
 #include "VulkanDispatch.h"
-
 #include "aemu/base/ArraySize.h"
 #include "aemu/base/GLObjectCounter.h"
 #include "aemu/base/GraphicsObjectCounter.h"
@@ -28,12 +33,6 @@
 #include "host-common/opengl/misc.h"
 #include "host-common/testing/MockGraphicsAgentFactory.h"
 #include "tests/VkTestUtils.h"
-
-#include "Standalone.h"
-
-#include <sstream>
-#include <string>
-#include <vulkan/vulkan.h>
 
 #ifdef _WIN32
 #include <windows.h>

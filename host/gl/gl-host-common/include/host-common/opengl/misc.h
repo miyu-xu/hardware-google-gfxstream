@@ -46,8 +46,7 @@ namespace emugl {
     EMUGL_COMMON_API SelectedRenderer getRenderer();
 
     // Extension string query
-    EMUGL_COMMON_API bool hasExtension(const char* extensionsStr,
-                      const char* wantedExtension);
+    EMUGL_COMMON_API bool hasExtension(const char* extensionsStr, const char* wantedExtension);
     // GL object counter get/set
     EMUGL_COMMON_API void setGLObjectCounter(
             android::base::GLObjectCounter* counter);
