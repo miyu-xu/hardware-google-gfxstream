@@ -16,6 +16,24 @@
       "message": "Would this not be easier solved by adding GraphicsObjectCounter.cpp in the meson.build file?",
       "revId": "5024b8b6a9dcbc1acc5bd9ea77b1f5e75a2f4601",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ac4ff84_92d26f73",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-22T16:53:25Z",
+      "side": 1,
+      "message": "For linux-distro style builds, one would need to explicitly version new APIs and check for new interfaces\n\nhttps://bugzilla.redhat.com/show_bug.cgi?id\u003d2241701\n\nWe get around this for Linux distro builds simply by not using libaemu functions greater than v0.1.2, since they are mostly qemu 2.12 emulator specific",
+      "parentUuid": "e5f48fa1_49cc4e4d",
+      "revId": "5024b8b6a9dcbc1acc5bd9ea77b1f5e75a2f4601",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
