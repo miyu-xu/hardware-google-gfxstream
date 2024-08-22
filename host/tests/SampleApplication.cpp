@@ -14,22 +14,22 @@
 
 #include "SampleApplication.h"
 
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <GLES3/gl3.h>
+
+#include "Standalone.h"
 #include "aemu/base/GLObjectCounter.h"
 #include "aemu/base/GraphicsObjectCounter.h"
 #include "aemu/base/synchronization/ConditionVariable.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/system/System.h"
-#include "aemu/base/threads/FunctorThread.h"
 #include "aemu/base/testing/TestSystem.h"
+#include "aemu/base/threads/FunctorThread.h"
 #include "host-common/GraphicsAgentFactory.h"
-#include "host-common/multi_display_agent.h"
 #include "host-common/MultiDisplay.h"
+#include "host-common/multi_display_agent.h"
 #include "host-common/opengl/misc.h"
-#include "Standalone.h"
-
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <GLES3/gl3.h>
 
 namespace gfxstream {
 
@@ -243,7 +243,11 @@ SampleApplication::SampleApplication(int windowWidth, int windowHeight, int refr
 
     // setupStandaloneLibrarySearchPaths();
     emugl::setGLObjectCounter(android::base::GLObjectCounter::get());
+
+#ifdef CONFIG_AEMU
     emugl::setGraphicsObjectCounter(android::base::GraphicsObjectCounter::get());
+#endif
+
     emugl::set_emugl_window_operations(*getGraphicsAgents()->emu);;
     emugl::set_emugl_multi_display_operations(*getGraphicsAgents()->multi_display);
     gl::LazyLoadedEGLDispatch::get();
