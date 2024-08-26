@@ -162,10 +162,7 @@ android_startOpenglesRenderer(int width, int height,
             goldfish_sync_register_trigger_wait,
             goldfish_sync_device_exists);
 
-    emugl_logger_struct logfuncs;
-    logfuncs.coarse = android_opengl_logger_write;
-    logfuncs.fine = android_opengl_cxt_logger_write;
-    sRenderLib->setLogger(logfuncs);
+    sRenderLib->setLogger(android_opengl_logger_write);
     sRenderLib->setGLObjectCounter(android::base::GLObjectCounter::get());
     emugl_dma_ops dma_ops;
     dma_ops.get_host_addr = android_goldfish_dma_ops.get_host_addr;
