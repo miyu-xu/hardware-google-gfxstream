@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef7ad8ca_5c923b72",
+        "filename": "guest/OpenglSystemCommon/QemuPipeStream.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-26T16:04:26Z",
+      "side": 1,
+      "message": "Is it OK to leak this handle after this returns?",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 71,
+        "endChar": 32
+      },
+      "revId": "c9e3de267fead8ea25ca012e410d4b54a2def882",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f2a47c5_f678f8b0",
+        "filename": "guest/iostream/include/gfxstream/guest/IOStream.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-26T16:04:26Z",
+      "side": 1,
+      "message": "Nit: all other functions use `virtual T` rather than `T virtual`",
+      "range": {
+        "startLine": 53,
+        "startChar": 4,
+        "endLine": 55,
+        "endChar": 52
+      },
+      "revId": "c9e3de267fead8ea25ca012e410d4b54a2def882",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
