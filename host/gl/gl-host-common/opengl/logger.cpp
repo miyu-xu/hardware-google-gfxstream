@@ -92,18 +92,7 @@ OpenGLLogger* OpenGLLogger::get() {
 }
 
 OpenGLLogger::OpenGLLogger() {
-// #ifdef AEMU_MIN
     return;
-// #else
-//     const std::string& data_dir =
-//         CrashReporter::get()->getDataExchangeDir();
-//     mFileName = PathUtils::join(data_dir,
-//                                 "opengl_log.txt");
-//     mFileHandle.open(mFileName, std::ios::app);
-//     mFineLogFileName = PathUtils::join(data_dir,
-//                                        "opengl_cxt_log.txt");
-//     mFineLogFileHandle.open(mFineLogFileName, std::ios::app);
-// #endif
 }
 
 OpenGLLogger::OpenGLLogger(const char* filename) :
