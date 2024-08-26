@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c852c8d_9b3d7dba",
+        "filename": "guest/OpenglSystemCommon/QemuPipeStream.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-26T16:48:45Z",
+      "side": 1,
+      "message": "Don\u0027t know actually, but it was prior behavior not to close processPipe, so I kept it.  Maybe it auto-closes on the process shutdown --\u003e that is the case for virtio-gpu pipe streams.",
+      "parentUuid": "ef7ad8ca_5c923b72",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 71,
+        "endChar": 32
+      },
+      "revId": "c9e3de267fead8ea25ca012e410d4b54a2def882",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1f2a47c5_f678f8b0",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-08-26T16:04:26Z",
       "side": 1,
       "message": "Nit: all other functions use `virtual T` rather than `T virtual`",
+      "range": {
+        "startLine": 53,
+        "startChar": 4,
+        "endLine": 55,
+        "endChar": 52
+      },
+      "revId": "c9e3de267fead8ea25ca012e410d4b54a2def882",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "472ed6f8_584af179",
+        "filename": "guest/iostream/include/gfxstream/guest/IOStream.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-26T16:48:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f2a47c5_f678f8b0",
       "range": {
         "startLine": 53,
         "startChar": 4,
