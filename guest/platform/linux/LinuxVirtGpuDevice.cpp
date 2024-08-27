@@ -28,7 +28,7 @@
 
 #include "LinuxVirtGpu.h"
 #include "util/log.h"
-#include "virtgpu_drm.h"
+#include "drm-uapi/virtgpu_drm.h"
 #include "virtgpu_gfxstream_protocol.h"
 
 #define VIRTGPU_PARAM_CREATE_FENCE_PASSING 9  /* Fence passing */

@@ -45,7 +45,6 @@
 #include <xf86drm.h>
 #include <poll.h>
 #include "VirtGpu.h"
-#include "virtgpu_drm.h"
 
 #include "aemu/base/Tracing.h"
 #include <cutils/trace.h>
