@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7657f154_e2bd947a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-27T16:21:10Z",
+      "side": 1,
+      "message": "quick question for the reland, are you referring to this line?\n\n  \n```\nreturn vkEncoder-\u003evkWaitForFences(device, fencesNonExternal.size(),\n                                  fencesNonExternal.data(),waitAll, \n                                  timeout, true /* do lock */);                                              \n```\n                                              \nIIRC, isn\u0027t that for `fencesNonExternal`?  It seems we call `sync_wait(..)` for external fds, but vkWaitForFences for `fencesNonExternal`.  Plus, timeout seems respected even in that case?",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 97
+      },
+      "revId": "5683bde79cb45dd36b332c1e108ca763add685eb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
