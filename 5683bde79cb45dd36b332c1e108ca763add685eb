@@ -22,6 +22,53 @@
       },
       "revId": "5683bde79cb45dd36b332c1e108ca763add685eb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a772ee5_c6aba50f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-27T16:35:00Z",
+      "side": 1,
+      "message": "See other comments for code pointers.",
+      "parentUuid": "7657f154_e2bd947a",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 97
+      },
+      "revId": "5683bde79cb45dd36b332c1e108ca763add685eb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79ad431f_dd3e2300",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4966,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-27T16:35:00Z",
+      "side": 1,
+      "message": "The magic is that the external waits and the non-external waits were each run in parallel asynchronously and then this function could wait on the combination of all of the tasks with the user supplied timeout.",
+      "range": {
+        "startLine": 4962,
+        "startChar": 8,
+        "endLine": 4966,
+        "endChar": 9
+      },
+      "revId": "5683bde79cb45dd36b332c1e108ca763add685eb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

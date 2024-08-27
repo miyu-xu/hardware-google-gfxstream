@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3a7ffb7_6921aa78",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4938,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-27T16:35:00Z",
+      "side": 0,
+      "message": "As is, this **sequentially** waits for each externally backed fence for up to 3 seconds per fence (2 externally backed fences could wait up to 6 seconds, 3 externally backed fences could wait up to 9 seconds, ...).",
+      "range": {
+        "startLine": 4938,
+        "startChar": 12,
+        "endLine": 4938,
+        "endChar": 39
+      },
+      "revId": "40ffef41fb01bf01ed14c4ce20e89fb941c02e40",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "564b6e67_5b3619f8",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4949,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-27T16:35:00Z",
+      "side": 0,
+      "message": "As is, this block happens **sequentially after** waiting for the externally backed fences. So a `vkWaitForFences(fences\u003d{externally-backed-fence1, non-externally-backed-fence2})` could wait for 3 seconds + `timeout`",
+      "range": {
+        "startLine": 4942,
+        "startChar": 8,
+        "endLine": 4949,
+        "endChar": 9
+      },
+      "revId": "40ffef41fb01bf01ed14c4ce20e89fb941c02e40",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
