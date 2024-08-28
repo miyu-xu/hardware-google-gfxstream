@@ -200,6 +200,11 @@ struct FeatureSet {
         "implementation.",
         &map,
     };
+    FeatureInfo Tracing = {
+        "Tracing",
+        "If enabled, the host backend will emit trace events that to Perfetto.",
+        &map,
+    };
     FeatureInfo VirtioGpuFenceContexts = {
         "VirtioGpuFenceContexts",
         "If enabled, the host will support multiple virtio gpu fence timelines.",
