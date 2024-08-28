@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7178fc6c_064d1f87",
+        "filename": "guest/android/GrallocMinigbm.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-28T15:50:29Z",
+      "side": 1,
+      "message": "Doesn\u0027t the handle get invalidated once `resource` goes out of scope?",
+      "range": {
+        "startLine": 113,
+        "startChar": 0,
+        "endLine": 113,
+        "endChar": 41
+      },
+      "revId": "674ded4517f98d87831418c889e15179095e527e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb21a0ac_875f5049",
+        "filename": "guest/platform/include/VirtGpu.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-28T15:50:29Z",
+      "side": 1,
+      "message": "Optional: would it make sense for this to return the handle(s) it releases?\n\nAlso optional: similar operation on `unique_ptr` is called `release`, maybe that would fit here too?",
+      "revId": "674ded4517f98d87831418c889e15179095e527e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
