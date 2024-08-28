@@ -41,6 +41,7 @@ target_link_libraries(gfxstream-vulkan-server PUBLIC
         apigen-codec-common
         aemu-base.headers
         gfxstream_features
+        gfxstream_host_tracing
         gfxstream-snapshot.headers
         gfxstream_utils
         gfxstream_vulkan_headers

@@ -113,6 +113,7 @@ cc_library(
         "//hardware/google/gfxstream/common/vulkan:gfxstream_vulkan_headers",
         "//hardware/google/gfxstream/host:gfxstream_host_headers",
         "//hardware/google/gfxstream/host/features:gfxstream_features",
+        "//hardware/google/gfxstream/host/tracing:gfxstream_host_features",
         "//hardware/google/gfxstream/utils:gfxstream_utils",
     ],
 )
