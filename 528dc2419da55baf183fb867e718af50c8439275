@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "08331a46_98fae360",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-28T18:44:54Z",
+      "side": 1,
+      "message": "For posterity:\n\nThe external fences were each waited upon in an async task in a worker pool (being removed in aosp/3246745). The non-external fences were also waited upon in an async task. The timeout was respected and enforced when waiting upon the async tasks.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 24
+      },
+      "revId": "528dc2419da55baf183fb867e718af50c8439275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cded7a00_4701a543",
@@ -14,6 +37,24 @@
       "writtenOn": "2024-08-28T00:12:42Z",
       "side": 1,
       "message": "Does this fix the problems associated with b/362313516?",
+      "revId": "528dc2419da55baf183fb867e718af50c8439275",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55731ad7_8c9e2c41",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-08-28T18:44:54Z",
+      "side": 1,
+      "message": "This wasn\u0027t the cause of b/362313516 but does fix the confusion caused when looking at tracing/logs.",
+      "parentUuid": "cded7a00_4701a543",
       "revId": "528dc2419da55baf183fb867e718af50c8439275",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
