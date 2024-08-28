@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8673ee9e_fa217712",
+        "filename": "guest/android/GrallocMinigbm.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-28T16:56:57Z",
+      "side": 1,
+      "message": "`ResourceHandle`, no --\u003e it\u0027s global across virtgpu DRM instances.  `BlobHandle`, yes.",
+      "parentUuid": "7178fc6c_064d1f87",
+      "range": {
+        "startLine": 113,
+        "startChar": 0,
+        "endLine": 113,
+        "endChar": 41
+      },
+      "revId": "674ded4517f98d87831418c889e15179095e527e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eb21a0ac_875f5049",
@@ -37,6 +61,24 @@
       "writtenOn": "2024-08-28T15:50:29Z",
       "side": 1,
       "message": "Optional: would it make sense for this to return the handle(s) it releases?\n\nAlso optional: similar operation on `unique_ptr` is called `release`, maybe that would fit here too?",
+      "revId": "674ded4517f98d87831418c889e15179095e527e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e35f626f_ca189f38",
+        "filename": "guest/platform/include/VirtGpu.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-28T16:56:57Z",
+      "side": 1,
+      "message": "Yeah, I think the cleanest solution would be a create resource also returning an `unique_ptr` as another API, and then calling release on that [since `shared_ptr` release doesn\u0027t exist].  Maybe as part of another cleanup, `intoRaw()` isn\u0027t too bad either.",
+      "parentUuid": "eb21a0ac_875f5049",
       "revId": "674ded4517f98d87831418c889e15179095e527e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
