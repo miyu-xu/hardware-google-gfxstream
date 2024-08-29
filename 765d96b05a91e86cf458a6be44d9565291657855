@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb978da1_680ba5de",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 707,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-29T09:43:32Z",
+      "side": 1,
+      "message": "Optional: most other places guard the declaration/use of `mGralloc` with `defined(VK_USE_PLATFORM_ANDROID_KHR)` but here it\u0027s `defined(ANDROID)`. It may not matter if `-DANDROID` implies `VK_USE_PLATFORM_ANDROID_KHR` but looks like a slight inconsistency.",
+      "range": {
+        "startLine": 707,
+        "startChar": 0,
+        "endLine": 707,
+        "endChar": 20
+      },
+      "revId": "765d96b05a91e86cf458a6be44d9565291657855",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0cadb175_15013eb4",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6796,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2024-08-29T09:43:32Z",
+      "side": 1,
+      "message": "Optional: another use of `mGralloc` guarded by `defined(ANDROID)` and not `VK_USE_PLATFORM_ANDROID_KHR`",
+      "range": {
+        "startLine": 6796,
+        "startChar": 0,
+        "endLine": 6796,
+        "endChar": 20
+      },
+      "revId": "765d96b05a91e86cf458a6be44d9565291657855",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
