@@ -24,6 +24,54 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea6c3014_1343fc99",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 707,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-29T14:54:41Z",
+      "side": 1,
+      "message": "Good catch!  I think we should be using `DETECT_OS_ANDROID` in places.  I\u0027ll leave this for future cleanups.",
+      "parentUuid": "fb978da1_680ba5de",
+      "range": {
+        "startLine": 707,
+        "startChar": 0,
+        "endLine": 707,
+        "endChar": 20
+      },
+      "revId": "765d96b05a91e86cf458a6be44d9565291657855",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e30e0e65_edcdb070",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 707,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-29T14:54:41Z",
+      "side": 1,
+      "message": "Good catch!  I think `DETECT_OS_ANDROID` should be used as well.  I\u0027ll leave that for future cleanups.",
+      "parentUuid": "fb978da1_680ba5de",
+      "range": {
+        "startLine": 707,
+        "startChar": 0,
+        "endLine": 707,
+        "endChar": 20
+      },
+      "revId": "765d96b05a91e86cf458a6be44d9565291657855",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0cadb175_15013eb4",
@@ -37,6 +85,30 @@
       "writtenOn": "2024-08-29T09:43:32Z",
       "side": 1,
       "message": "Optional: another use of `mGralloc` guarded by `defined(ANDROID)` and not `VK_USE_PLATFORM_ANDROID_KHR`",
+      "range": {
+        "startLine": 6796,
+        "startChar": 0,
+        "endLine": 6796,
+        "endChar": 20
+      },
+      "revId": "765d96b05a91e86cf458a6be44d9565291657855",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bb3ff20_845e1573",
+        "filename": "guest/vulkan_enc/ResourceTracker.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6796,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-08-29T14:54:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0cadb175_15013eb4",
       "range": {
         "startLine": 6796,
         "startChar": 0,
