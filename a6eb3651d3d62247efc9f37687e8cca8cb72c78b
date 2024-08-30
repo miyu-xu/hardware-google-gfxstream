@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1936b456_7abe8a65",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-08-30T19:37:14Z",
+      "side": 1,
+      "message": "Hi Ken and Matt, FYI CTS will run on GLES 3.1 after this CL is merged. If there is a big regression next week, this might be the culprit.",
+      "revId": "a6eb3651d3d62247efc9f37687e8cca8cb72c78b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
