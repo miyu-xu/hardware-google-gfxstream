@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76714e20_ca0b02fd",
+        "filename": "guest/vulkan/gfxstream_vk_device.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 3486280
+      },
+      "writtenOn": "2024-09-03T22:26:44Z",
+      "side": 1,
+      "message": "NIT: auto*\n```suggestion\n    auto* mgr \u003d getConnectionManager();\n```",
+      "range": {
+        "startLine": 96,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 8
+      },
+      "revId": "f26bd83a98f13a1fd8d4127bc7138c872bc79888",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
