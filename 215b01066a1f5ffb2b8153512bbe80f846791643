@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "499b1cd3_134d1320",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-03T13:18:24Z",
+      "side": 1,
+      "message": "(Looks like b/363849521 was attributed to aosp/3253151)",
+      "revId": "215b01066a1f5ffb2b8153512bbe80f846791643",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
