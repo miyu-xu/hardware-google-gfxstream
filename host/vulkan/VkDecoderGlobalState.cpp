@@ -18,11 +18,13 @@
 #include <list>
 #include <memory>
 #include <mutex>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
 #include "ExternalObjectManager.h"
 #include "RenderThreadInfoVk.h"
+#include "SyncThread.h"
 #include "VkAndroidNativeBuffer.h"
 #include "VkCommonOperations.h"
 #include "VkDecoderContext.h"
@@ -5589,6 +5591,58 @@ class VkDecoderGlobalState::Impl {
         return pSubmit.pSignalSemaphoreInfos[i].semaphore;
     }
 
+    void on_vkQueueSubmitAsync(android::base::BumpPool* pool, VkQueue boxed_queue,
+                              uint32_t submitCount, const VkSubmitInfo* pSubmits,
+                              VkFence fence) {
+        if (m_emu->features.GuestVulkanOnly.enabled) {
+            on_vkQueueSubmit(pool, boxed_queue, submitCount, pSubmits, fence);
+            return;
+        }
+        auto localPool = new android::base::BumpPool();
+        std::vector<VkSubmitInfo> submitInfos(submitCount);
+        for (uint32_t i = 0; i < submitCount; i++) {
+            deepcopy_VkSubmitInfo(localPool, VK_STRUCTURE_TYPE_SUBMIT_INFO, pSubmits + i, &submitInfos[i]);
+        }
+        printf("boxed queue %p in caller\n", boxed_queue);
+        /*SyncThread::get()->triggerGeneral([localPool, submitInfos = std::move(submitInfos), boxed_queue, fence, this]() {
+            printf("boxed queue %p in callee\n", boxed_queue);
+            on_vkQueueSubmit(localPool, boxed_queue, submitInfos.size(), submitInfos.data(), fence);
+            delete localPool;
+        },
+        "Sync up GL<->Vk color buffers and submit");*/
+        std::thread thread([localPool, submitInfos = std::move(submitInfos), boxed_queue, fence, this]() {
+            printf("boxed queue %p in callee\n", boxed_queue);
+            on_vkQueueSubmit(localPool, boxed_queue, submitInfos.size(), submitInfos.data(), fence);
+            delete localPool;
+        });
+        thread.detach();
+    }
+
+    void on_vkQueueSubmitAsync2(android::base::BumpPool* pool, VkQueue boxed_queue,
+                              uint32_t submitCount, const VkSubmitInfo2* pSubmits,
+                              VkFence fence) {
+        if (m_emu->features.GuestVulkanOnly.enabled) {
+            on_vkQueueSubmit(pool, boxed_queue, submitCount, pSubmits, fence);
+            return;
+        }
+        auto localPool = new android::base::BumpPool();
+        std::vector<VkSubmitInfo2> submitInfos(submitCount);
+        for (uint32_t i = 0; i < submitCount; i++) {
+            deepcopy_VkSubmitInfo2(localPool, VK_STRUCTURE_TYPE_SUBMIT_INFO_2, pSubmits + i, &submitInfos[i]);
+        }
+        /*SyncThread::get()->triggerGeneral([localPool, submitInfos = std::move(submitInfos), boxed_queue, fence, this]() {
+            on_vkQueueSubmit(localPool, boxed_queue, submitInfos.size(), submitInfos.data(), fence);
+            delete localPool;
+        },
+        "Sync up GL<->Vk color buffers and submit");*/
+        std::thread thread([localPool, submitInfos = std::move(submitInfos), boxed_queue, fence, this]() {
+            printf("boxed queue %p in callee\n", boxed_queue);
+            on_vkQueueSubmit(localPool, boxed_queue, submitInfos.size(), submitInfos.data(), fence);
+            delete localPool;
+        });
+        thread.detach();
+    }
+
     template <typename VkSubmitInfoType>
     VkResult on_vkQueueSubmit(android::base::BumpPool* pool, VkQueue boxed_queue,
                               uint32_t submitCount, const VkSubmitInfoType* pSubmits,
@@ -9362,14 +9416,14 @@ void VkDecoderGlobalState::on_vkQueueSubmitAsyncGOOGLE(android::base::BumpPool* 
                                                        uint32_t submitCount,
                                                        const VkSubmitInfo* pSubmits,
                                                        VkFence fence) {
-    mImpl->on_vkQueueSubmit(pool, queue, submitCount, pSubmits, fence);
+    mImpl->on_vkQueueSubmitAsync(pool, queue, submitCount, pSubmits, fence);
 }
 
 void VkDecoderGlobalState::on_vkQueueSubmitAsync2GOOGLE(android::base::BumpPool* pool,
                                                         VkQueue queue, uint32_t submitCount,
                                                         const VkSubmitInfo2* pSubmits,
                                                         VkFence fence) {
-    mImpl->on_vkQueueSubmit(pool, queue, submitCount, pSubmits, fence);
+    mImpl->on_vkQueueSubmitAsync2(pool, queue, submitCount, pSubmits, fence);
 }
 
 void VkDecoderGlobalState::on_vkQueueWaitIdleAsyncGOOGLE(android::base::BumpPool* pool,
