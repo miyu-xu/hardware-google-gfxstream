@@ -156,7 +156,6 @@ subdir('features')
 
 subdir('apigen-codec-common')
 subdir('gl/gl-host-common')
-subdir('backend')
 
 inc_gfxstream_backend = [inc_root, inc_gfxstream_include, inc_include, inc_apigen_codec, inc_utils,
                          inc_gl_host_common, inc_host_include, inc_common_utils, inc_host_backend, inc_host_features]
