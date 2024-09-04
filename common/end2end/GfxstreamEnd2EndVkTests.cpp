@@ -2164,6 +2164,7 @@ TEST_P(GfxstreamEnd2EndVkTest, MultiThreadedResetCommandBuffer) {
                 }
                 auto waitResult = device->waitForFences(*transferFence, VK_TRUE, AsVkTimeout(3s));
                 ASSERT_THAT(waitResult, IsVkSuccess());
+                device->resetFences(*transferFence);
             }
         });
     }
