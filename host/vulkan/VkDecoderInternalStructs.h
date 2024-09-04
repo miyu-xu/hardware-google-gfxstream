@@ -16,6 +16,8 @@
 
 #include <vulkan/vulkan.h>
 
+#include <future>
+
 #ifdef _WIN32
 #include <malloc.h>
 #endif
@@ -288,15 +290,8 @@ struct FenceInfo {
     VkFence boxed = VK_NULL_HANDLE;
     VulkanDispatch* vk = nullptr;
 
-    android::base::StaticLock lock;
-    android::base::ConditionVariable cv;
-
-    enum class State {
-        kWaitable,
-        kNotWaitable,
-        kWaiting,
-    };
-    State state = State::kNotWaitable;
+    std::shared_ptr<std::promise<void>> emulatedSignalPromise;
+    std::shared_future<void> emulatedSignal;
 
     bool external = false;
 
