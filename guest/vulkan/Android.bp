@@ -99,6 +99,7 @@ cc_library_shared {
             shared_libs: [
                 "libnativewindow",
                 "libsync",
+                "libfdtrack_vendor",
             ],
             srcs: [
                 "gfxstream_vk_android.cpp",

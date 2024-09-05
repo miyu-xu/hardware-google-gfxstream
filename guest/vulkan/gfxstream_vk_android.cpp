@@ -3,9 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <dlfcn.h>
 #include <errno.h>
 #include <hardware/hardware.h>
 #include <hardware/hwvulkan.h>
+#include <log/log.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,6 +46,13 @@ static int gfxstream_vk_hal_open(const struct hw_module_t* mod, const char* id,
 
     hwvulkan_device_t* hal_dev = (hwvulkan_device_t*)calloc(1, sizeof(*hal_dev));
     if (!hal_dev) return -1;
+
+    auto libfdtrack = dlopen("libfdtrack_vendor.so", RTLD_GLOBAL);
+    if (libfdtrack == nullptr) {
+        ALOGE("jasonjason failed to open libfdtrack_vendor in gfxstream");
+    } else {
+        ALOGE("jasonjason opened libfdtrack_vendor in gfxstream");
+    }
 
     *hal_dev = (hwvulkan_device_t){
         .common =
