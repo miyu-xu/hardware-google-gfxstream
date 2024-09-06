@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d0e08307_ceb1f650",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 5797,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-06T16:19:39Z",
+      "side": 1,
+      "message": "Looks like capturing queueCompletedWaitable is not necessary here?",
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "aa0a1564_7298ef2b",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 5
@@ -31,6 +48,30 @@
       "writtenOn": "2024-09-06T00:05:51Z",
       "side": 1,
       "message": "IIUC, you were able to combine the \"has been submitted\" and \"has emulated signal\" into a single waitable `std::shared_future`? \n\nI think this is okay but still thinking through it and wanted to check in first.\n\nIf so, I think we should rename these to encapsulate that this is covering both the \"has been submitted\" and \"has emulated signal\" into something that covers both (maybe just `isWaitable`?) and document here with something like\n\n```\n// 1. Handles races between the main virtio gpu channel and RenderThread/ASG\n// channels by ensuring that the host does not do a `vkWaitForFences()` before \n// the fence is used in a `VkQueueSubmit`.\n//\n// 2. Allows the host to insert additional operations and artificially delay when\n// the fence will be marked as signaled (e.g. inserting VK-\u003eGL ColorBuffer syncs\n// after vkQueueSubmit() operations).\n```",
+      "range": {
+        "startLine": 293,
+        "startChar": 4,
+        "endLine": 294,
+        "endChar": 44
+      },
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d25fa4f2_85b51f68",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-06T16:19:39Z",
+      "side": 1,
+      "message": "I was going to suggest if we could make them optional and allocate them on demand, just before the submission that\u0027d require an emulated signal operation, but I understand Vulkan\u0027s \u0027externally synchronized\u0027 requirement for the fences on submissions is established manually with these objects when used over virtio. That could make things more performant, and also could be easier to track when any emulation/delay is actually needed.",
+      "parentUuid": "636699ec_aed555d2",
       "range": {
         "startLine": 293,
         "startChar": 4,
