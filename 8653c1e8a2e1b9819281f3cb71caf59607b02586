@@ -80,6 +80,30 @@
       },
       "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ac5de82_36bdc7e9",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-06T18:46:46Z",
+      "side": 1,
+      "message": "To Jason:\n\nThat was the intention. I will document it in the code.\n\nTo Serdar:\n\nI was thinking about if we could do \"lazy initialization\" but later I am confused with the word \"externally synchronized\". Is it allowed to \"vkWaitForFences\" on thread A first and later submit and signal the fence on thread B?\n\nI could not confirm the answer, so I decided to do it in the safe way. But let me know if you know for sure this is not allowed, then we can do the lazy init.",
+      "parentUuid": "d25fa4f2_85b51f68",
+      "range": {
+        "startLine": 293,
+        "startChar": 4,
+        "endLine": 294,
+        "endChar": 44
+      },
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
