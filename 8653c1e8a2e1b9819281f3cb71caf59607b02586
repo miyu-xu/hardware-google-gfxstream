@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "645d2926_8ba6da58",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-06T19:44:50Z",
+      "side": 1,
+      "message": "For the rebase/reland with aosp/3255957\n\nChecks tab shows:\n\n```\nI0906 00:21:23.288161  101299 VkDecoderGlobalState.cpp:1862] Created VkDevice:0x7fc15031e530 for application:MultiThreadedResetCommandBuffer/WithoutGlWithVkSampleCount1OverVirtioGpuAsg engine:Gfxstream Testing Engine ASTC emulation:on CPU decoding:off.\nlibc++abi: terminating due to uncaught exception of type std::__1::future_error: The state of the promise has already been set.\n```",
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d0e08307_ceb1f650",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 5
