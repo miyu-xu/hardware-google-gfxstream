@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "636699ec_aed555d2",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-06T00:05:51Z",
+      "side": 1,
+      "message": "IIUC, you were able to combine the \"has been submitted\" and \"has emulated signal\" into a single waitable `std::shared_future`? \n\nI think this is okay but still thinking through it and wanted to check in first.\n\nIf so, I think we should rename these to encapsulate that this is covering both the \"has been submitted\" and \"has emulated signal\" into something that covers both (maybe just `isWaitable`?) and document here with something like\n\n```\n// 1. Handles races between the main virtio gpu channel and RenderThread/ASG\n// channels by ensuring that the host does not do a `vkWaitForFences()` before \n// the fence is used in a `VkQueueSubmit`.\n//\n// 2. Allows the host to insert additional operations and artificially delay when\n// the fence will be marked as signaled (e.g. inserting VK-\u003eGL ColorBuffer syncs\n// after vkQueueSubmit() operations).\n```",
+      "range": {
+        "startLine": 293,
+        "startChar": 4,
+        "endLine": 294,
+        "endChar": 44
+      },
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
