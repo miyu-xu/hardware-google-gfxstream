@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b94341a_4385cf86",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 6973,
+      "author": {
+        "id": 2063756
+      },
+      "writtenOn": "2024-09-06T22:46:14Z",
+      "side": 1,
+      "message": "Hmm, can you not timestamp before and after the wait, the subtract the duration from the timeout provided?",
+      "range": {
+        "startLine": 6973,
+        "startChar": 8,
+        "endLine": 6973,
+        "endChar": 45
+      },
+      "revId": "518227d9574f2d573fe9c0e70d1ee909051edfb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
