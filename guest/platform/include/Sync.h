@@ -31,8 +31,6 @@ class SyncHelper {
     virtual int close(int syncFd) = 0;
 };
 
-SyncHelper* osCreateSyncHelper();
-SyncHelper* kumquatCreateSyncHelper();
 SyncHelper* createPlatformSyncHelper();
 
 }  // namespace gfxstream
