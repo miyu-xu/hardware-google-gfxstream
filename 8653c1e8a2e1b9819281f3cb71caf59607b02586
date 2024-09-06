@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "aa0a1564_7298ef2b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 5807,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-06T15:00:00Z",
+      "side": 1,
+      "message": "This part should also check emulatedSignalPromise.get()?",
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "636699ec_aed555d2",
         "filename": "host/vulkan/VkDecoderInternalStructs.h",
         "patchSetId": 5
