@@ -16,6 +16,24 @@
       "message": "Is there going to be any performance concern to add it in decoder?",
       "revId": "9bc12d915ec1f73223a73c1a59d13bdb9c4901f4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a92e3085_1857bffb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-06T22:12:49Z",
+      "side": 1,
+      "message": "I did not run any benchmarks to confirm these but https://perfetto.dev/docs/instrumentation/track-events#performance claims extremely minimal overhead both when enabled and disabled.",
+      "parentUuid": "b92378c9_2f3386fd",
+      "revId": "9bc12d915ec1f73223a73c1a59d13bdb9c4901f4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
