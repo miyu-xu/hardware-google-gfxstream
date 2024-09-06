@@ -22,6 +22,30 @@
       },
       "revId": "518227d9574f2d573fe9c0e70d1ee909051edfb7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "67676dd3_2ed7fa5a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 6973,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-06T22:57:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b94341a_4385cf86",
+      "range": {
+        "startLine": 6973,
+        "startChar": 8,
+        "endLine": 6973,
+        "endChar": 45
+      },
+      "revId": "518227d9574f2d573fe9c0e70d1ee909051edfb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
