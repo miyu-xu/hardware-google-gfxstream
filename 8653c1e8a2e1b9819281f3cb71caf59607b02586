@@ -193,6 +193,30 @@
       },
       "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f4e9327_04dcabe1",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-06T23:00:05Z",
+      "side": 1,
+      "message": "\u003e I was thinking about if we could do \"lazy initialization\" but later I am confused with the word \"externally synchronized\". Is it allowed to \"vkWaitForFences\" on thread A first and later submit and signal the fence on thread B?\n\nRe-reading this some more, IIUC, there actually is not an issue with \"`vkWaitForFences( \u003cfence1\u003e )` **before** `vkQueueSubmit( \u003cfence1\u003e )`\".\n\nThe problem is just you are not allowed to \"`vkQueueSubmit( \u003cfence1\u003e )` **simultaneously** during a `vkWaitForFences( \u003cfence1\u003e )`\".\n\nTo avoid that, an app would have to have like a mutex associated with their fence and then the `vkWaitForFences()` would effectively block the `vkQueueSubmit()` from progressing. So in general, it doesn\u0027t make too much sense to `vkWaitForFences()` before a `vkQueueSubmit()`.\n\nIt\u0027s just that in our case, the guest is doing the correct thing (`vkWaitForFences()` after `vkQueueSubmit()`) but they could end up out of order due to the race between the 2 guest-\u003ehost channels which would result in the disallowed simultaneous behavior.",
+      "parentUuid": "0ac5de82_36bdc7e9",
+      "range": {
+        "startLine": 293,
+        "startChar": 4,
+        "endLine": 294,
+        "endChar": 44
+      },
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

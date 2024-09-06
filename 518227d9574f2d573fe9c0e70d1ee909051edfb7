@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3e056561_0a010094",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 2779,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-06T23:00:05Z",
+      "side": 1,
+      "message": "I think we need to also check for the `VK_FENCE_CREATE_SIGNALED_BIT` bit and \n\n```\nfenceInfo.isWaitablePromise().set_value();\n```\n\nimmediately.\n\nCould you add an end2end test that checks this as well?\n\n```\nVkFence fence \u003d vkCreateFence( ... VK_FENCE_CREATE_SIGNALED_BIT ...);\nvkWaitForFences( fence );\n```\n\nshould not be stuck.",
+      "range": {
+        "startLine": 2779,
+        "startChar": 12,
+        "endLine": 2779,
+        "endChar": 39
+      },
+      "revId": "518227d9574f2d573fe9c0e70d1ee909051edfb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1b94341a_4385cf86",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 9
