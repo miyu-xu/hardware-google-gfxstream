@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d10f3eeb_8a985147",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-06T14:49:39Z",
+      "side": 1,
+      "message": "I think we can submit this one to avoid the crashes, until we find all the issues with the CL and get aosp/3255404 ready to merge.",
+      "revId": "35b5061ac8cf65ec13851d46357461a5d9b11eee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
