@@ -4,7 +4,7 @@
 
 #include <assert.h>
 #include <lib/syslog/structured_backend/cpp/fuchsia_syslog.h>
-#include <log/log.h>
+#include <fuchsia_log.h>
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -14,7 +14,7 @@
 
 #if defined(__Fuchsia__)
 #include <lib/syslog/structured_backend/cpp/fuchsia_syslog.h>
-#include <log/log.h>
+#include <fuchsia_log.h>
 #else
 #include <libgen.h>
 #endif
@@ -56,12 +56,14 @@ static constexpr bool include_debug_logging() {
 #endif
 }
 
-int __android_log_print(int priority, const char* tag, const char* file, int line,
-                        const char* format, ...) {
+int __android_log_print(int priority, const char* tag, const char* format, ...) {
     const char* local_tag = tag;
     if (!local_tag) {
         local_tag = "<NO_TAG>";
     }
+
+    const char* file = "unknown";
+    const int line = 0;
 
     va_list ap;
     va_start(ap, format);
@@ -99,12 +101,14 @@ int __android_log_print(int priority, const char* tag, const char* file, int lin
     return 1;
 }
 
-void __android_log_assert(const char* condition, const char* tag, const char* file, int line,
-                          const char* format, ...) {
+void __android_log_assert(const char* condition, const char* tag, const char* format, ...) {
     const char* local_tag = tag;
     if (!local_tag) {
         local_tag = "<NO_TAG>";
     }
+    const char* file = "unknown";
+    const int line = 0;
+
     va_list ap;
     va_start(ap, format);
 #if defined(__Fuchsia__)

@@ -33,6 +33,7 @@ config("common_config") {
     "../common/opengl/include",
     "../common/vulkan/include",
     "android-emu",
+    "connection-manager",
     "GoldfishAddressSpace/include",
     "iostream/include",
     "gralloc_cb/include",
@@ -44,7 +45,9 @@ config("common_config") {
     "renderControl_enc",
     "vulkan_enc",
     "$mesa_source_root/include",
+    "$mesa_source_root/include/android_stub",
     "platform/include",
+    "../../aemu/src/base/include",
   ]
 
   if (target_os == "fuchsia") {
@@ -171,11 +174,6 @@ loadable_module("libvulkan_gfxstream") {
     "android-emu/aemu/base/AlignedBuf.cpp",
     "android-emu/aemu/base/AlignedBuf.h",
     "android-emu/aemu/base/Allocator.h",
-    "android-emu/aemu/base/AndroidHealthMonitor.cpp",
-    "android-emu/aemu/base/AndroidHealthMonitor.h",
-    "android-emu/aemu/base/AndroidHealthMonitorConsumer.h",
-    "android-emu/aemu/base/AndroidHealthMonitorConsumerBasic.cpp",
-    "android-emu/aemu/base/AndroidHealthMonitorConsumerBasic.h",
     "android-emu/aemu/base/Process.cpp",
     "android-emu/aemu/base/Process.h",
     "android-emu/aemu/base/Tracing.cpp",
