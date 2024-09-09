@@ -16,6 +16,24 @@
       "message": "Trying to understand the bug: does the crash happens whenever the guest calls vkDestroyDevice/vkDestroyInstance, or does the crash happens only when the host crosvm(or whatever emulator is used) process exits, when we teardown SyncThread?",
       "revId": "d1b2f08f7a9048ea4e0c3ac3c4fd55ddbe9878d5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eef592cb_4128225e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-09T20:59:55Z",
+      "side": 1,
+      "message": "b/360379616 is specifically about the latter.\n\nI believe the former should not be encountered under \"normal\" circumstances as the guest app should be waiting for outstanding work to complete before shutting down cleanly (the app should wait on outstanding present fences before calling `vkDestroy[Device|Instance]()`).\n\nHowever, I suppose the former theoretically could still be encountered with an unclean exit (guest process crashes or is killed). If `SyncThread` is really backed up, the process cleanup callback may still execute before the `waitForQsriFenceTask` task occurs.",
+      "parentUuid": "e27524ad_deed4f88",
+      "revId": "d1b2f08f7a9048ea4e0c3ac3c4fd55ddbe9878d5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
