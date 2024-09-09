@@ -217,6 +217,30 @@
       },
       "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "776130f3_55319f86",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-09T08:09:25Z",
+      "side": 1,
+      "message": "Right, it\u0027s valid to call vkGetFenceStatus/vkWaitForFences before the submission (eg. with a timeout, or in create_signaled case), but it should not be actively waiting on it when doing a submit/reset call from another thread. I\u0027m not sure how the virtio races happen here and if the threading behavior change could be avoided more systematically; it sounds like we should be using extra sync primitives for all externally synced parameters, but that\u0027s a different discussion.",
+      "parentUuid": "0ac5de82_36bdc7e9",
+      "range": {
+        "startLine": 293,
+        "startChar": 4,
+        "endLine": 294,
+        "endChar": 44
+      },
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
