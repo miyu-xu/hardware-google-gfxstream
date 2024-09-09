@@ -241,6 +241,30 @@
       },
       "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa193766_d55abc00",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-09T21:06:46Z",
+      "side": 1,
+      "message": "Let\u0027s keep it as it is then. Because it looks like \"lazy create\" might introduce more corner cases while its performance improvement is very limited.",
+      "parentUuid": "776130f3_55319f86",
+      "range": {
+        "startLine": 293,
+        "startChar": 4,
+        "endLine": 294,
+        "endChar": 44
+      },
+      "revId": "8653c1e8a2e1b9819281f3cb71caf59607b02586",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
