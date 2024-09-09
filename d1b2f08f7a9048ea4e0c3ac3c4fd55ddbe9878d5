@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e27524ad_deed4f88",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2024-09-09T20:29:19Z",
+      "side": 1,
+      "message": "Trying to understand the bug: does the crash happens whenever the guest calls vkDestroyDevice/vkDestroyInstance, or does the crash happens only when the host crosvm(or whatever emulator is used) process exits, when we teardown SyncThread?",
+      "revId": "d1b2f08f7a9048ea4e0c3ac3c4fd55ddbe9878d5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
