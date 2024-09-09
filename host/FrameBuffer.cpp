@@ -3815,7 +3815,7 @@ void FrameBuffer::updateYUVTextures(uint32_t type, uint32_t* textures, void* pri
 
     yuv_updater_t updater = (yuv_updater_t)func;
     uint32_t gtextures[3] = {0, 0, 0};
-
+    GL_LOG("Updating YUV textures with framework type %d", type);
     if (type == FRAMEWORK_FORMAT_NV12) {
         gtextures[0] = s_gles2.glGetGlobalTexName(textures[0]);
         gtextures[1] = s_gles2.glGetGlobalTexName(textures[1]);
@@ -3823,6 +3823,9 @@ void FrameBuffer::updateYUVTextures(uint32_t type, uint32_t* textures, void* pri
         gtextures[0] = s_gles2.glGetGlobalTexName(textures[0]);
         gtextures[1] = s_gles2.glGetGlobalTexName(textures[1]);
         gtextures[2] = s_gles2.glGetGlobalTexName(textures[2]);
+    } else {
+        ERR("Unrecognized framework type for updating YUV. Aborting updateYUVTextures..");
+        return;
     }
 
 #ifdef __APPLE__
