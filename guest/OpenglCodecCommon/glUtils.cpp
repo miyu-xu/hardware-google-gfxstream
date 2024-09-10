@@ -1202,6 +1202,7 @@ bool stencilRenderableFormat(GLint internalformat) {
         case GL_STENCIL_INDEX8:
         case GL_DEPTH24_STENCIL8:
         case GL_DEPTH32F_STENCIL8:
+        case GL_STENCIL_INDEX8:
             return true;
         default:
             return false;
