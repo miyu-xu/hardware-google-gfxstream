@@ -16,6 +16,24 @@
       "message": "Just noticed on_vkAcquireImageANDROID is doing calls to queue submit too, via setAndroidNativeImageSemaphoreSignaled, do you think that requires setting the value for the fence promise too?",
       "revId": "695e2e8b0763487544486913a115cab8ae2785eb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "67120a99_7e6d8c4a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 5738,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-10T17:12:52Z",
+      "side": 1,
+      "message": "Good catch.",
+      "parentUuid": "2bce10db_afce4da7",
+      "revId": "695e2e8b0763487544486913a115cab8ae2785eb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
