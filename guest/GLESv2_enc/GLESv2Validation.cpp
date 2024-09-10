@@ -74,6 +74,7 @@
     f(GL_DEPTH_COMPONENT32F) \
     f(GL_DEPTH24_STENCIL8) \
     f(GL_DEPTH32F_STENCIL8) \
+    f(GL_STENCIL_INDEX8) \
     f(GL_ETC1_RGB8_OES) \
     f(GL_COMPRESSED_R11_EAC) \
     f(GL_COMPRESSED_SIGNED_R11_EAC) \
@@ -263,6 +264,7 @@
     f(GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT) \
     f(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8) \
     f(GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV) \
+    f(GL_STENCIL_INDEX8, GL_STENCIL, GL_UNSIGNED_BYTE) \
     f(GL_COMPRESSED_R11_EAC, GL_RED, GL_FLOAT) \
     f(GL_COMPRESSED_SIGNED_R11_EAC, GL_RED, GL_FLOAT) \
     f(GL_COMPRESSED_RG11_EAC, GL_RG, GL_FLOAT) \
@@ -499,6 +501,8 @@ bool rboFormat(GL2Encoder* ctx, GLenum internalformat) {
     case GL_DEPTH24_STENCIL8_OES:
         return true;
         break;
+    case GL_STENCIL_INDEX8:
+        return glesMajorVersion >= 3 && ctx->hasExtension("GL_OES_texture_stencil8");
         // Everything else: still not OK,
         // and they need the GL_INVALID_ENUM
     }
@@ -1080,6 +1084,7 @@ bool stencilRenderableFormat(GL2Encoder*, GLenum internalformat) {
     case GL_STENCIL_INDEX8:
     case GL_DEPTH24_STENCIL8:
     case GL_DEPTH32F_STENCIL8:
+    case GL_STENCIL_INDEX8:
         return true;
     }
     return false;
