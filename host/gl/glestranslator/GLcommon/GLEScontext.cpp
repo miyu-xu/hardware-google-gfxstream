@@ -2011,6 +2011,28 @@ void GLEScontext::initCapsLocked(const GLubyte * extensionString, bool nativeTex
     if (strstr(cstring, "GL_EXT_texture_compression_rgtc") != NULL) {
         glSupport.hasRgtcSupport = true;
     }
+
+    if (strstr(cstring,"GL_EXT_texture_sRGB_decode")!=NULL) {
+        glSupport.ext_GL_EXT_texture_sRGB_decode = true;
+    }
+
+    // TODO(b/370822572): add GL_KHR_blend_equation_advanced
+    //if (strstr(cstring,"GL_KHR_blend_equation_advanced")!=NULL) {
+    //    glSupport.ext_GL_KHR_blend_equation_advanced = true;
+    //}
+
+    if (strstr(cstring,"GL_KHR_debug")!=NULL) {
+        glSupport.ext_GL_KHR_debug = true;
+    }
+
+    // TODO(b/370822572): add GL_OES_texture_stencil8
+    //if (strstr(cstring,"GL_OES_texture_stencil8")!=NULL || ::isCoreProfile()) {
+    //    glSupport.ext_GL_OES_texture_stencil8 = true;
+    //}
+
+    if (strstr(cstring,"GL_OES_texture_storage_multisample_2d_array")!=NULL || ::isCoreProfile()) {
+        glSupport.ext_GL_OES_texture_storage_multisample_2d_array = true;
+    }
 }
 
 void GLEScontext::buildStrings(int major, int minor, const char* baseVendor,
