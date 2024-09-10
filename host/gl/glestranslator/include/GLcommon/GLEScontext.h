@@ -116,6 +116,13 @@ struct GLSupport {
 
     bool ext_GL_KHR_texture_compression_astc_ldr = false;
 
+    // Android V CTS requirements
+    bool ext_GL_EXT_texture_sRGB_decode = false;
+    bool ext_GL_KHR_blend_equation_advanced = false;
+    bool ext_GL_KHR_debug = false;
+    bool ext_GL_OES_texture_stencil8 = false;
+    bool ext_GL_OES_texture_storage_multisample_2d_array = false;
+
     bool textureBufferAny() const { return ext_GL_OES_texture_buffer || ext_GL_EXT_texture_buffer; }
 
     bool hasEtc2Support = false;
