@@ -797,6 +797,23 @@ void InitExtensionString(GLSupport& glSupport, std::string& ext) {
     if (glSupport.ext_GL_EXT_clip_cull_distance) {
         ext += "GL_EXT_clip_cull_distance ";
     }
+    if (glSupport.ext_GL_EXT_texture_sRGB_decode) {
+        ext += "GL_EXT_texture_sRGB_decode ";
+    }
+    if (glSupport.ext_GL_KHR_blend_equation_advanced) {
+        ext += "GL_KHR_blend_equation_advanced ";
+    }
+    if (glSupport.ext_GL_KHR_debug) {
+        ext += "GL_KHR_debug ";
+    }
+    if (glSupport.ext_GL_OES_texture_stencil8) {
+        ext += "GL_OES_texture_stencil8 ";
+    }
+    if (glSupport.ext_GL_OES_texture_storage_multisample_2d_array) {
+        ext += "GL_OES_texture_storage_multisample_2d_array ";
+    }
+    // TODO: Check ANGLE shader parser support
+    ext += "GL_OES_shader_image_atomic ";
 }
 
 void GLESv2Context::initExtensionString() {
