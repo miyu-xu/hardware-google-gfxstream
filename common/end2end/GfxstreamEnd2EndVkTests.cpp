@@ -129,6 +129,20 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
         const std::function<Result<Ok>(vkhpp::UniqueCommandBuffer&)>& func,
         const std::vector<vkhpp::UniqueSemaphore>& semaphores_wait = {},
         const std::vector<vkhpp::UniqueSemaphore>& semaphores_signal = {}) {
+        auto res = DoCommandsImmediateNoWait(vk, func, semaphores_wait, semaphores_signal, nullptr);
+        if (!res.ok()) {
+            return res;
+        }
+        vk.queue.waitIdle();
+        return res;
+    }
+
+    Result<Ok> DoCommandsImmediateNoWait(
+        TypicalVkTestEnvironment& vk,
+        const std::function<Result<Ok>(vkhpp::UniqueCommandBuffer&)>& func,
+        const std::vector<vkhpp::UniqueSemaphore>& semaphores_wait = {},
+        const std::vector<vkhpp::UniqueSemaphore>& semaphores_signal = {}
+        vkhpp::Fence fence) {
         const vkhpp::CommandPoolCreateInfo commandPoolCreateInfo = {
             .queueFamilyIndex = vk.queueFamilyIndex,
         };
@@ -178,8 +192,7 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
             submitInfo.signalSemaphoreCount = static_cast<uint32_t>(semaphoreHandlesSignal.size());
             submitInfo.pSignalSemaphores = semaphoreHandlesSignal.data();
         }
-        vk.queue.submit(submitInfo);
-        vk.queue.waitIdle();
+        vk.queue.submit(submitInfo, fence);
         return Ok{};
     }
 
@@ -568,15 +581,26 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
     Result<FramebufferWithAttachments> CreateFramebuffer(
         TypicalVkTestEnvironment& vk, uint32_t width, uint32_t height,
         vkhpp::Format colorAttachmentFormat = vkhpp::Format::eUndefined,
-        vkhpp::Format depthAttachmentFormat = vkhpp::Format::eUndefined) {
+        vkhpp::Format depthAttachmentFormat = vkhpp::Format::eUndefined,
+        const ScopedAHardwareBuffer* colorAttachmentAhb = nullptr) {
         std::optional<ImageWithMemory> colorAttachment;
         if (colorAttachmentFormat != vkhpp::Format::eUndefined) {
-            colorAttachment =
-                GFXSTREAM_EXPECT(CreateImage(vk, width, height, colorAttachmentFormat,
-                                             vkhpp::ImageUsageFlagBits::eColorAttachment |
-                                                 vkhpp::ImageUsageFlagBits::eTransferSrc,
-                                             vkhpp::MemoryPropertyFlagBits::eDeviceLocal,
-                                             vkhpp::ImageLayout::eColorAttachmentOptimal));
+            if (colorAttachmentAhb) {
+                colorAttachment =
+                    GFXSTREAM_EXPECT(CreateImageWithAhb(vk, *colorAttachmentAhb,
+                                                 vkhpp::ImageUsageFlagBits::eColorAttachment |
+                                                     vkhpp::ImageUsageFlagBits::eTransferSrc,
+                                                 vkhpp::MemoryPropertyFlagBits::eDeviceLocal,
+                                                 vkhpp::ImageLayout::eColorAttachmentOptimal));
+
+            } else {
+                colorAttachment =
+                    GFXSTREAM_EXPECT(CreateImage(vk, width, height, colorAttachmentFormat,
+                                                 vkhpp::ImageUsageFlagBits::eColorAttachment |
+                                                     vkhpp::ImageUsageFlagBits::eTransferSrc,
+                                                 vkhpp::MemoryPropertyFlagBits::eDeviceLocal,
+                                                 vkhpp::ImageLayout::eColorAttachmentOptimal));
+            }
         }
 
         std::optional<ImageWithMemory> depthAttachment;
@@ -1240,6 +1264,152 @@ class GfxstreamEnd2EndVkTest : public GfxstreamEnd2EndTest {
 
         const auto expectedImage = ImageFromColor(width, height, goldenPixel);
         EXPECT_THAT(AreImagesSimilar(expectedImage, actualImage), IsTrue());
+    }
+
+
+    void FenceOperationAfterSubmit(uint32_t ahbFormat) {
+        const uint32_t width = 1920;
+        const uint32_t height = 1080;
+        const auto goldenPixel = PixelR8G8B8A8(0, 255, 255, 255);
+        const auto badPixel = PixelR8G8B8A8(0, 0, 0, 255);
+
+        auto ahb =
+            GFXSTREAM_ASSERT(ScopedAHardwareBuffer::Allocate(*mGralloc, width, height, ahbFormat));
+
+        ScopedAHardwareBuffer dstAhb;
+        dstAhb = GFXSTREAM_ASSERT(ScopedAHardwareBuffer::Allocate(*mGralloc, width, height, ahbFormat));
+
+        GFXSTREAM_ASSERT(FillAhb(ahb, goldenPixel));
+
+        const vkhpp::PhysicalDeviceVulkan11Features deviceFeatures = {
+            .samplerYcbcrConversion = VK_TRUE,
+        };
+        auto vk = GFXSTREAM_ASSERT(SetUpTypicalVkTestEnvironment({
+            .deviceExtensions = {{VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME}},
+            .deviceCreateInfoPNext = &deviceFeatures,
+        }));
+
+        auto ahbImage =
+            GFXSTREAM_ASSERT(CreateImageWithAhb(vk, ahb, vkhpp::ImageUsageFlagBits::eSampled,
+                                                vkhpp::ImageLayout::eShaderReadOnlyOptimal));
+
+        auto framebuffer = GFXSTREAM_ASSERT(CreateFramebuffer(
+            vk, width, height, /*colorAttachmentFormat=*/vkhpp::Format::eR8G8B8A8Unorm));
+
+        const vkhpp::Sampler ahbSamplerHandle = *ahbImage.imageSampler;
+        auto descriptorSet0 = GFXSTREAM_ASSERT(
+            CreateDescriptorSet(vk,
+                                /*bindings=*/
+                                {{
+                                    .binding = 0,
+                                    .descriptorType = vkhpp::DescriptorType::eCombinedImageSampler,
+                                    .descriptorCount = 1,
+                                    .stageFlags = vkhpp::ShaderStageFlagBits::eFragment,
+                                    .pImmutableSamplers = &ahbSamplerHandle,
+                                }},
+                                /*writes=*/
+                                {{
+                                    .binding = 0,
+                                    .image = {{
+                                        .imageView = *ahbImage.imageView,
+                                        .imageLayout = vkhpp::ImageLayout::eShaderReadOnlyOptimal,
+                                        .imageSampler = *ahbImage.imageSampler,
+                                    }},
+                                }}));
+
+        auto pipeline =
+            GFXSTREAM_ASSERT(CreatePipeline(vk, {
+                                                    .vert = kFullscreenTriangleWithUVVert,
+                                                    .frag = kBlitSampler2dFrag,
+                                                    .descriptorSets = {&descriptorSet0},
+                                                    .framebuffer = &framebuffer,
+                                                }));
+
+        std::vector<vkhpp::WriteDescriptorSet> descriptorSetWrites;
+        vkhpp::DescriptorImageInfo descriptorImageInfo = {
+            .imageView = *ahbImage.imageView,
+            .imageLayout = vkhpp::ImageLayout::eShaderReadOnlyOptimal,
+            .sampler = *ahbImage.imageSampler,
+        };
+        descriptorSetWrites.emplace_back(vkhpp::WriteDescriptorSet{
+            .dstSet = *descriptorSet0.ds,
+            .dstBinding = 0,
+            .dstArrayElement = 0,
+            .descriptorCount = 1,
+            .descriptorType = vkhpp::DescriptorType::eCombinedImageSampler,
+            .pImageInfo = &descriptorImageInfo,
+        });
+        vk.device->updateDescriptorSets(descriptorSetWrites, {});
+
+        auto fence = device->createFenceUnique(vkhpp::FenceCreateInfo()).value;
+        GFXSTREAM_ASSERT(DoCommandsImmediateNoWait(vk, [&](vkhpp::UniqueCommandBuffer& cmd) {
+            const std::vector<vkhpp::ClearValue> renderPassBeginClearValues = {
+                vkhpp::ClearValue{
+                    .color =
+                        {
+                            .float32 = {{
+                                1.0f,
+                                0.0f,
+                                0.0f,
+                                1.0f,
+                            }},
+                        },
+                },
+            };
+            const vkhpp::RenderPassBeginInfo renderPassBeginInfo = {
+                .renderPass = *framebuffer.renderpass,
+                .framebuffer = *framebuffer.framebuffer,
+                .renderArea =
+                    {
+                        .offset =
+                            {
+                                .x = 0,
+                                .y = 0,
+                            },
+                        .extent =
+                            {
+                                .width = width,
+                                .height = height,
+                            },
+                    },
+                .clearValueCount = static_cast<uint32_t>(renderPassBeginClearValues.size()),
+                .pClearValues = renderPassBeginClearValues.data(),
+            };
+            cmd->beginRenderPass(renderPassBeginInfo, vkhpp::SubpassContents::eInline);
+            cmd->bindPipeline(vkhpp::PipelineBindPoint::eGraphics, *pipeline.pipeline);
+            cmd->bindDescriptorSets(vkhpp::PipelineBindPoint::eGraphics, *pipeline.pipelineLayout,
+                                    /*firstSet=*/0, {*descriptorSet0.ds},
+                                    /*dynamicOffsets=*/{});
+            const vkhpp::Viewport viewport = {
+                .x = 0.0f,
+                .y = 0.0f,
+                .width = static_cast<float>(width),
+                .height = static_cast<float>(height),
+                .minDepth = 0.0f,
+                .maxDepth = 1.0f,
+            };
+            cmd->setViewport(0, {viewport});
+            const vkhpp::Rect2D scissor = {
+                .offset =
+                    {
+                        .x = 0,
+                        .y = 0,
+                    },
+                .extent =
+                    {
+                        .width = width,
+                        .height = height,
+                    },
+            };
+            cmd->setScissor(0, {scissor});
+            cmd->draw(3, 1, 0, 0);
+            cmd->endRenderPass();
+            return Ok{};
+        },
+        {}, {}, *fence));
+        // Validate that the async implementation of queue submit should
+        // not crash if fence resets immediately without waiting.
+        fence.reset();
     }
 };
 
@@ -2184,6 +2354,10 @@ TEST_P(GfxstreamEnd2EndVkTest, ImportAndBlitFromYCbCr888420Ahb) {
 
 TEST_P(GfxstreamEnd2EndVkTest, ImportAndBlitFromYv12Ahb) {
     DoFillAndRenderFromAhb(GFXSTREAM_AHB_FORMAT_YV12);
+}
+
+TEST_P(GfxstreamEnd2EndVkTest, ResetFenceAfterSubmit) {
+    FenceOperationAfterSubmit(GFXSTREAM_AHB_FORMAT_R8G8B8A8_UNORM);
 }
 
 std::vector<TestParams> GenerateTestCases() {
