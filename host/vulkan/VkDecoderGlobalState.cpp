@@ -14,6 +14,7 @@
 #include "VkDecoderGlobalState.h"
 
 #include <algorithm>
+#include <iostream>
 #include <functional>
 #include <list>
 #include <memory>
@@ -5675,6 +5676,7 @@ class VkDecoderGlobalState::Impl {
         VkDevice device = VK_NULL_HANDLE;
         Lock* ql;
         std::shared_ptr<std::promise<void>> isWaitablePromise;
+        std::shared_future<void> isWaitable;
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
 
@@ -5702,8 +5704,13 @@ class VkDecoderGlobalState::Impl {
                 auto* fenceInfo = android::base::find(mFenceInfo, fence);
                 if (fenceInfo) {
                     isWaitablePromise = fenceInfo->isWaitablePromise;
+                    isWaitable = fenceInfo->isWaitable;
                 }
             }
+        }
+        if (isWaitablePromise == nullptr) {
+            isWaitablePromise.reset(new std::promise<void>());
+            isWaitable = isWaitablePromise->get_future().share();
         }
 
         VkFence usedFence = fence;
@@ -5720,8 +5727,14 @@ class VkDecoderGlobalState::Impl {
                 usedFence = builder.CreateFenceForOp();
             }
             queueCompletedWaitable = builder.OnQueueSubmittedWithFence(usedFence);
-
             deviceInfo->deviceOpTracker->PollAndProcessGarbage();
+            // If releasedColorBuffers is empty, the color buffers are good for use
+            // right after the GPU fence is signaled.
+            // Otherwise, it will perform VK->GL copy after GPU fence and we need
+            // to wait for it.
+            if (!releasedColorBuffers.empty()) {
+                queueCompletedWaitable = isWaitable;
+            }
         }
 
         {
@@ -5809,7 +5822,7 @@ class VkDecoderGlobalState::Impl {
         } else {
             SyncThread::get()->triggerGeneral(
                 [flushColorBuffer = m_emu->callbacks.flushColorBuffer, releasedColorBuffers,
-                 usedFence, isWaitablePromise, vk, device]() {
+                 usedFence, isWaitablePromise = std::move(isWaitablePromise), vk, device]() {
                     vk->vkWaitForFences(device, 1, &usedFence, true,
                                         10ULL * 1000ULL * 1000ULL * 1000ULL);
                     for (HandleType cb : releasedColorBuffers) {
