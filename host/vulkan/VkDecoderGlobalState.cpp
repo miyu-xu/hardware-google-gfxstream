@@ -5665,6 +5665,7 @@ class VkDecoderGlobalState::Impl {
         VkDevice device = VK_NULL_HANDLE;
         Lock* ql;
         std::shared_ptr<std::promise<void>> isWaitablePromise;
+        std::shared_future<void> isWaitable;
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
 
@@ -5692,6 +5693,7 @@ class VkDecoderGlobalState::Impl {
                 auto* fenceInfo = android::base::find(mFenceInfo, fence);
                 if (fenceInfo) {
                     isWaitablePromise = fenceInfo->isWaitablePromise;
+                    isWaitable = fenceInfo->isWaitable;
                 }
             }
         }
@@ -5702,15 +5704,16 @@ class VkDecoderGlobalState::Impl {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto* deviceInfo = android::base::find(mDeviceInfo, device);
             if (!deviceInfo) return VK_ERROR_INITIALIZATION_FAILED;
-            DeviceOpBuilder builder(*deviceInfo->deviceOpTracker);
             if (VK_NULL_HANDLE == usedFence) {
                 // Note: This fence will be managed by the DeviceOpTracker after the
                 // OnQueueSubmittedWithFence call, so it does not need to be destroyed in the scope
                 // of this queueSubmit
+                DeviceOpBuilder builder(*deviceInfo->deviceOpTracker);
                 usedFence = builder.CreateFenceForOp();
+                queueCompletedWaitable = builder.OnQueueSubmittedWithFence(usedFence);
+            } else {
+                queueCompletedWaitable = isWaitable;
             }
-            queueCompletedWaitable = builder.OnQueueSubmittedWithFence(usedFence);
-
             deviceInfo->deviceOpTracker->PollAndProcessGarbage();
         }
 
@@ -6976,10 +6979,12 @@ class VkDecoderGlobalState::Impl {
                 return VK_TIMEOUT;
             }
         }
-        return vk->vkWaitForFences(device, fenceCount, pFences, waitAll,
-                                   std::chrono::duration<uint64_t, std::nano>(
-                                       timeoutStamp - std::chrono::system_clock::now())
-                                       .count());
+        auto now = std::chrono::system_clock::now();
+        uint64_t waitTime = timeoutStamp > now ? std::chrono::duration<uint64_t, std::nano>(
+                                       timeoutStamp - now)
+                                       .count()
+                                       : 0;
+        return vk->vkWaitForFences(device, fenceCount, pFences, waitAll, waitTime);
     }
 
     VkResult getFenceStatus(VkFence fence) {
