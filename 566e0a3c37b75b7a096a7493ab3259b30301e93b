@@ -33,6 +33,24 @@
       "message": "...so if `m_emu` was really nullptr, like we\u0027re checking for here, we would have already crashed.\n\nI\u0027m guessing we don\u0027t expect `m_emu` can be null, so this is just an unnecessary and mildly confusing check, and it can be removed to help code clarity.  But if it\u0027s possible `m_emu` can be null, we need to be checking it earlier in the function to avoid crashing from a null dereference.",
       "revId": "566e0a3c37b75b7a096a7493ab3259b30301e93b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "92c94aba_ca6bc992",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4845,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-16T15:52:01Z",
+      "side": 1,
+      "message": "Right, `m_emu` should not be null at this point, it\u0027s actually assigned at the constructor level and immediately used afterwards without a check. It\u0027s from an earlier CL though. @sergiuferentz@google.com, fyi.",
+      "parentUuid": "c7f4ade1_0d994880",
+      "revId": "566e0a3c37b75b7a096a7493ab3259b30301e93b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
