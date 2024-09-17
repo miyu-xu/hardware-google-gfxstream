@@ -480,34 +480,11 @@ EGLBoolean egl_window_surface_t::init()
         anwHelper->setUsage(nativeWindow, consumerUsage | producerUsage);
     }
 
-    int acquireFenceFd = -1;
-    if (anwHelper->dequeueBuffer(nativeWindow, &buffer, &acquireFenceFd) != 0) {
-        setErrorReturn(EGL_BAD_ALLOC, EGL_FALSE);
-    }
-    if (acquireFenceFd >= 0) {
-        auto* syncHelper = hostCon->syncHelper();
-
-        int waitRet = syncHelper->wait(acquireFenceFd, /* wait forever */-1);
-        if (waitRet < 0) {
-            ALOGE("Failed to wait for window surface's dequeued buffer.");
-            anwHelper->cancelBuffer(nativeWindow, buffer);
-        }
-
-        syncHelper->close(acquireFenceFd);
-
-        if (waitRet < 0) {
-            setErrorReturn(EGL_BAD_ALLOC, EGL_FALSE);
-        }
-    }
-
-    int bufferWidth = anwHelper->getWidth(buffer);
-    int bufferHeight = anwHelper->getHeight(buffer);
-
-    setWidth(bufferWidth);
-    setHeight(bufferHeight);
-
     int nativeWidth = anwHelper->getWidth(nativeWindow);
     int nativeHeight = anwHelper->getHeight(nativeWindow);
+
+    setWidth(nativeWidth);
+    setHeight(nativeHeight);
 
     setNativeWidth(nativeWidth);
     setNativeHeight(nativeHeight);
@@ -519,9 +496,6 @@ EGLBoolean egl_window_surface_t::init()
         ALOGE("rcCreateWindowSurface returned 0");
         return EGL_FALSE;
     }
-
-    const int hostHandle = anwHelper->getHostHandle(buffer, grallocHelper);
-    rcEnc->rcSetWindowColorBuffer(rcEnc, rcSurface, hostHandle);
 
     return EGL_TRUE;
 }
@@ -741,6 +715,38 @@ EGLBoolean egl_window_surface_t::swapBuffers()
 
     DEFINE_AND_VALIDATE_HOST_CONNECTION(EGL_FALSE);
 
+
+    int acquireFenceFd = -1;
+    if (anwHelper->dequeueBuffer(nativeWindow, &buffer, &acquireFenceFd)) {
+        buffer = NULL;
+        setErrorReturn(EGL_BAD_SURFACE, EGL_FALSE);
+    }
+    if (acquireFenceFd > 0) {
+        auto* syncHelper = hostCon->syncHelper();
+
+        int waitRet = syncHelper->wait(acquireFenceFd, /* wait forever */-1);
+        if (waitRet < 0) {
+            ALOGE("Failed to wait for window surface's dequeued buffer.");
+            anwHelper->cancelBuffer(nativeWindow, buffer);
+        }
+
+        syncHelper->close(acquireFenceFd);
+
+        if (waitRet < 0) {
+            setErrorReturn(EGL_BAD_SURFACE, EGL_FALSE);
+        }
+    }
+    if (buffer == NULL) {
+        ALOGE("egl_window_surface_t::swapBuffers called with NULL buffer");
+        setErrorReturn(EGL_BAD_SURFACE, EGL_FALSE);
+    }
+
+    const int hostHandle = anwHelper->getHostHandle(buffer, grallocHelper);
+    rcEnc->rcSetWindowColorBuffer(rcEnc, rcSurface, hostHandle);
+
+    setWidth(anwHelper->getWidth(buffer));
+    setHeight(anwHelper->getHeight(buffer));
+
     // Follow up flushWindowColorBuffer with a fence command.
     // When the fence command finishes,
     // we're sure that the buffer on the host
@@ -758,12 +764,6 @@ EGLBoolean egl_window_surface_t::swapBuffers()
     // resulting in out of order frames.
 
     int presentFenceFd = -1;
-
-    if (buffer == NULL) {
-        ALOGE("egl_window_surface_t::swapBuffers called with NULL buffer");
-        setErrorReturn(EGL_BAD_SURFACE, EGL_FALSE);
-    }
-
     sFlushBufferAndCreateFence(
         hostCon, rcEnc, rcSurface,
         sFrameTracingState.frameNumber, &presentFenceFd);
@@ -772,28 +772,6 @@ EGLBoolean egl_window_surface_t::swapBuffers()
     anwHelper->queueBuffer(nativeWindow, buffer, presentFenceFd);
 
     appTimeMetric.onQueueBufferReturn();
-
-    DPRINT("calling dequeueBuffer...");
-
-    int acquireFenceFd = -1;
-    if (anwHelper->dequeueBuffer(nativeWindow, &buffer, &acquireFenceFd)) {
-        buffer = NULL;
-        setErrorReturn(EGL_BAD_SURFACE, EGL_FALSE);
-    }
-
-    DPRINT("dequeueBuffer with fence %d", acquireFenceFd);
-
-    if (acquireFenceFd > 0) {
-        auto* syncHelper = hostCon->syncHelper();
-        syncHelper->close(acquireFenceFd);
-    }
-
-    const int hostHandle = anwHelper->getHostHandle(buffer, grallocHelper);
-    rcEnc->rcSetWindowColorBuffer(rcEnc, rcSurface, hostHandle);
-
-    setWidth(anwHelper->getWidth(buffer));
-    setHeight(anwHelper->getHeight(buffer));
-
     sFrameTracingState.onSwapBuffersSuccesful(rcEnc);
     appTimeMetric.onSwapBuffersReturn();
 
