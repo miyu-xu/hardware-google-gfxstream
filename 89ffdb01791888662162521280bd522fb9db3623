@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3fd60dfb_d160e5c9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-09-17T16:33:33Z",
+      "side": 1,
+      "message": "To answer the question, keeping this in sync with the Khronos generator is no longer a goal.",
+      "parentUuid": "3dc53998_909650dc",
+      "revId": "89ffdb01791888662162521280bd522fb9db3623",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "13eba959_7603cb42",
