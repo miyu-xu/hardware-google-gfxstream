@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9cc53d1f_58fad21e",
+        "filename": "common/detector/DetectGraphics.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-17T12:27:57Z",
+      "side": 1,
+      "message": "Did we want to take these arguments by const reference?  We have the `const`, but not the `\u0026`, so right now we\u0027re making copies of these strings.  Perhaps we\u0027d prefer:\n\n```\nbool WriteToFile(const std::string\u0026 filename, const std::string\u0026 contents) {\n```\n\nto avoid extra string copies.",
+      "revId": "1af6f6bbaa4bbca44e403963aac5381cfeb7bd93",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
