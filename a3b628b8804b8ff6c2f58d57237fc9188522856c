@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58ca75bb_f7ded2e6",
+        "filename": "codegen/vulkan/vulkan-docs-next/xml/vk.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-17T22:39:27Z",
+      "side": 1,
+      "message": "Will this (or in general any change in this file) merge into upstream Vulkan doc?",
+      "range": {
+        "startLine": 268,
+        "startChar": 0,
+        "endLine": 273,
+        "endChar": 13
+      },
+      "revId": "a3b628b8804b8ff6c2f58d57237fc9188522856c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
