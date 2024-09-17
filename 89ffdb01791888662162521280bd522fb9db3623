@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3dc53998_909650dc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-09-17T16:14:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e03f034a_846386ba",
+      "revId": "89ffdb01791888662162521280bd522fb9db3623",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "13eba959_7603cb42",
@@ -41,6 +59,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "637fcc9b_7631e944",
+        "filename": "codegen/vulkan/vulkan-docs-next/scripts/cgenerator.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-09-17T16:14:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "13eba959_7603cb42",
+      "range": {
+        "startLine": 114,
+        "startChar": 75,
+        "endLine": 114,
+        "endChar": 94
+      },
+      "revId": "89ffdb01791888662162521280bd522fb9db3623",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5cbfdc49_26c3b33e",
@@ -54,6 +96,30 @@
       "writtenOn": "2024-09-17T15:20:53Z",
       "side": 1,
       "message": "Shouldn\u0027t there be a matching `#endif` somewhere?",
+      "range": {
+        "startLine": 121,
+        "startChar": 26,
+        "endLine": 121,
+        "endChar": 33
+      },
+      "revId": "89ffdb01791888662162521280bd522fb9db3623",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94567f00_43f8b05b",
+        "filename": "codegen/vulkan/vulkan-docs-next/scripts/cgenerator.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-09-17T16:14:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5cbfdc49_26c3b33e",
       "range": {
         "startLine": 121,
         "startChar": 26,
