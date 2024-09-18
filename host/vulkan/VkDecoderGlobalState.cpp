@@ -886,6 +886,7 @@ class VkDecoderGlobalState::Impl {
                 GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
                     << "Snapshot load failure: unrecognized VkFence";
             }
+            it->second.isWaitable = {};
             it->second.isWaitablePromise.reset(new std::promise<void>());
             it->second.isWaitable = it->second.isWaitablePromise->get_future().share();
             const auto& device = it->second.device;
@@ -2830,6 +2831,8 @@ class VkDecoderGlobalState::Impl {
                 } else {
                     // Reset all fences' states to kNotWaitable.
                     cleanedFences.push_back(pFences[i]);
+                    // Delete promise and future in the reversed order.
+                    fenceInfo->isWaitable = {};
                     fenceInfo->isWaitablePromise.reset(new std::promise<void>());
                     fenceInfo->isWaitable = fenceInfo->isWaitablePromise->get_future().share();
                 }
@@ -2862,6 +2865,7 @@ class VkDecoderGlobalState::Impl {
                 auto& fenceInfo = mFenceInfo[replacement];
                 fenceInfo.device = device;
                 fenceInfo.vk = vk;
+                fenceInfo.isWaitable = {};
                 fenceInfo.isWaitablePromise.reset(new std::promise<void>());
                 fenceInfo.isWaitable = fenceInfo.isWaitablePromise->get_future().share();
                 fenceInfo.boxed = boxed_fence;
