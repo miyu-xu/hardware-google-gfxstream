@@ -1,5 +1,6 @@
-# Copyright 2023 Google LLC
-# SPDX-License-Identifier: MIT
+# Copyright 2013-2018 The Khronos Group Inc.
+# Copyright 2018-2024 Google LLC
+# SPDX-License-Identifier: Apache-2.0
 
 import os, re, sys
 from generator import *
