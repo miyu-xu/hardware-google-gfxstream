@@ -22,6 +22,30 @@
       },
       "revId": "a3b628b8804b8ff6c2f58d57237fc9188522856c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20ac485e_21f5da0e",
+        "filename": "codegen/vulkan/vulkan-docs-next/xml/vk.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-18T10:39:39Z",
+      "side": 1,
+      "message": "Yes, Vulkan spec has already been updated on the Khronos side for this extension with: https://gitlab.khronos.org/vulkan/vulkan/-/merge_requests/6800 \nHeaders are updated at https://github.com/KhronosGroup/Vulkan-Headers/commit/20c2e4fc5722e4ba9f95669448a62860c2a7fbd0 and will be merged into main soon.",
+      "parentUuid": "58ca75bb_f7ded2e6",
+      "range": {
+        "startLine": 268,
+        "startChar": 0,
+        "endLine": 273,
+        "endChar": 13
+      },
+      "revId": "a3b628b8804b8ff6c2f58d57237fc9188522856c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
