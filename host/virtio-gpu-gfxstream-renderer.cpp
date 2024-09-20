@@ -46,6 +46,7 @@
 #include "host-common/opengles.h"
 #include "host-common/refcount-pipe.h"
 #include "host-common/vm_operations.h"
+#include "host-common/logging.h"
 #include "virgl_hw.h"
 #include "virtgpu_gfxstream_protocol.h"
 #include "vk_util.h"
@@ -75,60 +76,102 @@ struct iovec {
 
 void* globalUserData = nullptr;
 stream_renderer_debug_callback globalDebugCallback = nullptr;
+bool globalFormatFully = true;
 
-void stream_renderer_log(uint32_t type, const char* format, ...) {
-    char buf[MAX_DEBUG_BUFFER_SIZE];
+
+void stream_renderer_log(uint32_t type, const char* file, int line, const char* pretty_function,
+                         const char* format, ...) {
+
+    static gfxstream_logger_t gfx_logger = get_gfx_stream_logger();
+    char printbuf[MAX_DEBUG_BUFFER_SIZE];
+    char* buf = printbuf;
+    int size = MAX_DEBUG_BUFFER_SIZE;
+    int offset = 0;
+
+    // Add the existing logging prefix.. Otherwise previous users might be puzzled.
+    if (!gfx_logger) {
+       offset = snprintf(buf, size, "[%s(%d)] %s ", file, line, pretty_function);
+       if (offset > size) {
+        size = 0;
+       } else {
+        buf += offset;
+        size -= offset;
+       }
+    }
+
     va_list args;
     va_start(args, format);
-    vsnprintf(buf, MAX_DEBUG_BUFFER_SIZE, format, args);
+    vsnprintf(buf, size, format, args);
     va_end(args);
+
+    if (gfx_logger) {
+        char sev;
+        switch (type) {
+            case STREAM_RENDERER_DEBUG_ERROR:
+                sev = 'E';
+                break;
+            case STREAM_RENDERER_DEBUG_WARN:
+                sev = 'W';
+                break;
+            case STREAM_RENDERER_DEBUG_INFO:
+                sev = 'I';
+                break;
+            case STREAM_RENDERER_DEBUG_DEBUG:
+                sev = 'D';
+                break;
+            default:
+                sev = 'D';
+                break;
+        }
+        gfx_logger(sev, file, line, 0, buf);
+        return;
+    }
 
     if (globalUserData && globalDebugCallback) {
         struct stream_renderer_debug debug = {0};
         debug.debug_type = type;
-        debug.message = &buf[0];
-
+        debug.message = &printbuf[0];
         globalDebugCallback(globalUserData, &debug);
     } else {
-        fprintf(stderr, "%s\n", buf);
+        fprintf(stderr, "%s\n", printbuf);
     }
 }
 
 #if STREAM_RENDERER_LOG_LEVEL >= STREAM_RENDERER_DEBUG_ERROR
-#define stream_renderer_error(format, ...)                                                \
-    do {                                                                                  \
-        stream_renderer_log(STREAM_RENDERER_DEBUG_ERROR, "[%s(%d)] %s " format, __FILE__, \
-                            __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__);                \
+#define stream_renderer_error(format, ...)                                                        \
+    do {                                                                                          \
+        stream_renderer_log(STREAM_RENDERER_DEBUG_ERROR, __FILE__, __LINE__, __PRETTY_FUNCTION__, \
+                            format, ##__VA_ARGS__);                                               \
     } while (0)
 #else
 #define stream_renderer_error(format, ...)
 #endif
 
 #if STREAM_RENDERER_LOG_LEVEL >= STREAM_RENDERER_DEBUG_WARN
-#define stream_renderer_warn(format, ...)                                                          \
-    do {                                                                                           \
-        stream_renderer_log(STREAM_RENDERER_DEBUG_WARN, "[%s(%d)] %s " format, __FILE__, __LINE__, \
-                            __PRETTY_FUNCTION__, ##__VA_ARGS__);                                   \
+#define stream_renderer_warn(format, ...)                                                        \
+    do {                                                                                         \
+        stream_renderer_log(STREAM_RENDERER_DEBUG_WARN, __FILE__, __LINE__, __PRETTY_FUNCTION__, \
+                            format, ##__VA_ARGS__);                                              \
     } while (0)
 #else
 #define stream_renderer_warn(format, ...)
 #endif
 
 #if STREAM_RENDERER_LOG_LEVEL >= STREAM_RENDERER_DEBUG_INFO
-#define stream_renderer_info(format, ...)                                                          \
-    do {                                                                                           \
-        stream_renderer_log(STREAM_RENDERER_DEBUG_INFO, "[%s(%d)] %s " format, __FILE__, __LINE__, \
-                            __FUNCTION__, ##__VA_ARGS__);                                          \
+#define stream_renderer_info(format, ...)                                                         \
+    do {                                                                                          \
+        stream_renderer_log(STREAM_RENDERER_DEBUG_INFO, __FILE__, __LINE__, __FUNCTION__, format, \
+                            ##__VA_ARGS__);                                                       \
     } while (0)
 #else
 #define stream_renderer_info(format, ...)
 #endif
 
 #if STREAM_RENDERER_LOG_LEVEL >= STREAM_RENDERER_DEBUG_DEBUG
-#define stream_renderer_debug(format, ...)                                                \
-    do {                                                                                  \
-        stream_renderer_log(STREAM_RENDERER_DEBUG_DEBUG, "[%s(%d)] %s " format, __FILE__, \
-                            __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__);                \
+#define stream_renderer_debug(format, ...)                                                        \
+    do {                                                                                          \
+        stream_renderer_log(STREAM_RENDERER_DEBUG_DEBUG, __FILE__, __LINE__, __PRETTY_FUNCTION__, \
+                            format, ##__VA_ARGS__);                                               \
     } while (0)
 #else
 #define stream_renderer_debug(format, ...)
