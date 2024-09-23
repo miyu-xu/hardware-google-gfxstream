@@ -22,6 +22,30 @@
       },
       "revId": "becf3f96a1ea1030fad3bed33a2eee476aefb2e6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97b19ddf_4e07aad0",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1976,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-09-23T22:38:08Z",
+      "side": 0,
+      "message": "yeah for that, I recommend @kocdemir make a change in Mesa to modify codegen.  that\u0027ll also help people ramp up on the new workflow.  It doesn\u0027t seem this affects anything right now, since the private slot feature is unfinish IIRC.",
+      "parentUuid": "87cdf24e_04652827",
+      "range": {
+        "startLine": 1963,
+        "startChar": 0,
+        "endLine": 1976,
+        "endChar": 5
+      },
+      "revId": "becf3f96a1ea1030fad3bed33a2eee476aefb2e6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
