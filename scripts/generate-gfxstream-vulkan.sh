@@ -15,13 +15,14 @@
 # limitations under the License.
 
 export GFXSTREAM_DIR=$(pwd)
-
 if [ -z "$1" ];
 then
-    export GFXSTREAM_GUEST_DIR=$GFXSTREAM_DIR/guest
+    export MESA_DIR=$(pwd)/../../../external/mesa3d
 else
-    export GFXSTREAM_GUEST_DIR=$1
+    export MESA_DIR=$1
 fi
+
+export GFXSTREAM_GUEST_DIR=$MESA_DIR/src/gfxstream
 
 # Detect clang-format
 #if ! $WHICH clang-format > /dev/null; then
@@ -29,14 +30,18 @@ fi
 #    exit 1
 #fi
 
-export GFXSTREAM_GUEST_ENCODER_DIR=$GFXSTREAM_GUEST_DIR/vulkan_enc
+export GFXSTREAM_GUEST_ENCODER_DIR=$GFXSTREAM_GUEST_DIR/guest/vulkan_enc
 export GFXSTREAM_HOST_DECODER_DIR=$GFXSTREAM_DIR/host/vulkan
 export GFXSTREAM_OUTPUT_DIR=$GFXSTREAM_HOST_DECODER_DIR/cereal
 export GFXSTREAM_SCRIPTS_DIR=$GFXSTREAM_DIR/scripts
 
-export GEN_VK=$GFXSTREAM_DIR/codegen/vulkan/vulkan-docs-next/scripts/genvk.py
+export GEN_VK=$GFXSTREAM_GUEST_DIR/codegen/scripts/genvk.py
+
+# We should use this eventually
+# export VK_XML=$MESA_DIR/src/vulkan/registry/vk.xml
 export VK_XML=$GFXSTREAM_DIR/codegen/vulkan/vulkan-docs-next/xml/vk.xml
-export CUSTOM_XML=$GFXSTREAM_DIR/codegen/vulkan/vulkan-docs-next/xml/vk_gfxstream.xml
+
+export CUSTOM_XML=$GFXSTREAM_GUEST_DIR/codegen/xml/vk_gfxstream.xml
 
 python3 $GEN_VK -registry $VK_XML -registryGfxstream $CUSTOM_XML cereal -o $GFXSTREAM_OUTPUT_DIR
 
