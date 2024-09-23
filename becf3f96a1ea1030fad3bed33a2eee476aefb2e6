@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87cdf24e_04652827",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1976,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-23T22:34:48Z",
+      "side": 0,
+      "message": "aosp/3271678 seems missing, please cp it as well",
+      "range": {
+        "startLine": 1963,
+        "startChar": 0,
+        "endLine": 1976,
+        "endChar": 5
+      },
+      "revId": "becf3f96a1ea1030fad3bed33a2eee476aefb2e6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
