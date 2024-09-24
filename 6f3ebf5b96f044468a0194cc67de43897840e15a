@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1c5c5f0_af7f42e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-24T12:58:25Z",
+      "side": 1,
+      "message": "This actually requires addition of external/mesa3d into the emulator repo manifest, which I believe has not been done yet?",
+      "revId": "6f3ebf5b96f044468a0194cc67de43897840e15a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
