@@ -46,24 +46,24 @@ cc_defaults {
     name: "libOpenglSystemCommonDefaults",
     defaults: [
         "libgfxstream_guest_cc_defaults",
-        "mesa_platform_virtgpu_defaults",
+        "libplatform_virtgpu_defaults",
     ],
     header_libs: [
         "libgfxstream_vulkan_headers",
         "libgfxstream_guest_graphics_headers",
-        "mesa_gfxstream_guest_iostream",
+        "libgfxstream_guest_iostream",
         "libhardware_headers",
         "libnativebase_headers",
     ],
     export_header_lib_headers: [
         "libgfxstream_guest_graphics_headers",
-        "mesa_gfxstream_guest_iostream",
+        "libgfxstream_guest_iostream",
         "libhardware_headers",
         "libnativebase_headers",
     ],
     export_static_lib_headers: [
-        "mesa_gfxstream_guest_android",
-        "mesa_platform_virtgpu",
+        "libgfxstream_guest_android",
+        "libplatform_virtgpu",
     ],
     shared_libs: [
         "lib_renderControl_enc",
@@ -80,7 +80,7 @@ cc_defaults {
         "libGLESv2_enc",
     ],
     static_libs: [
-        "mesa_goldfish_address_space",
+        "libGoldfishAddressSpace",
         "libringbuffer",
         "libqemupipe.ranchu",
     ],
@@ -121,9 +121,9 @@ cc_library_shared {
     ],
     static_libs: [
         "libgfxstream_androidemu_static",
-        "mesa_gfxstream_guest_android",
-        "mesa_util",
-        "mesa_util_c11",
+        "libgfxstream_guest_android",
+        "libmesa_util_gfxstream",
+        "libmesa_util_c11_gfxstream",
     ],
     target: {
         android: {
@@ -143,7 +143,7 @@ cc_library_static {
     static_libs: [
         "libgfxstream_androidemu_static",
         "libgfxstream_androidemu_static",
-        "mesa_gfxstream_guest_android",
+        "libgfxstream_guest_android",
         "libOpenglCodecCommon_static",
     ],
     target: {
