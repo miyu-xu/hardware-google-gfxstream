@@ -70,6 +70,24 @@
       "parentUuid": "b46fccd3_09a41d5f",
       "revId": "6f3ebf5b96f044468a0194cc67de43897840e15a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c62b249_be2ea8d5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-24T16:01:16Z",
+      "side": 1,
+      "message": "Right, ideally it should be in the presubmit to ensure it\u0027s working as expected, but absence of that test should not be reason to submit breaking changes for its users.\n\nI\u0027ll update my mesa checkout to avoid being a blocker here, but I have concern over those changes as this script is affecting host side code as well and currently there is no good version controlling over the mesa header usages, we\u0027ll probably need to create release branches on mesa3d for the emulator later on.",
+      "parentUuid": "6d0fb7cd_0c52979d",
+      "revId": "6f3ebf5b96f044468a0194cc67de43897840e15a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
