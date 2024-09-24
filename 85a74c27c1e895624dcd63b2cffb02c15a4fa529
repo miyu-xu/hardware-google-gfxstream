@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a62be4b3_8d846136",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 11
+      },
+      "lineNbr": 5923,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-24T12:57:56Z",
+      "side": 1,
+      "message": "nit: maybe `releasedColorBuffers.empty()` checks should be put into a variable like `requiresFlushCB` to better indicate the dependency with the code section below, it can also use different conditions such as VulkanOnly later on to avoid the flushes and async waits.",
+      "revId": "85a74c27c1e895624dcd63b2cffb02c15a4fa529",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
