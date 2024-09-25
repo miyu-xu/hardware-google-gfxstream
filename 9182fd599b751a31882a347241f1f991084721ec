@@ -1,5 +1,165 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb8014c2_f39f49b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "It looks like this is auto-generated code.  So maybe \"bugs\" like this are kind of expected and not actually issues?  But I figured I\u0027d double check them since they were noticed in static analysis.  Thanks!",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3e19c98_c108a4d1",
+        "filename": "guest/vulkan_enc/VkEncoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24609,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "We initialize `local_pAllocator` to null...",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e496050e_fbb60625",
+        "filename": "guest/vulkan_enc/VkEncoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24611,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "...under some conditions we assign it a value and use it immediately....",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98ddd5b5_9299716f",
+        "filename": "guest/vulkan_enc/VkEncoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24616,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "...but then under all conditions we set it back to null here...",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ba30694_a9c6747a",
+        "filename": "guest/vulkan_enc/VkEncoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24625,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "...but we don\u0027t appear to have any logic, under any conditions, to give it a new value before this line.  So this check is always `false`, and the code within it appears to be dead.\n\nWe have this same pattern several times in this file.",
+      "range": {
+        "startLine": 24622,
+        "startChar": 0,
+        "endLine": 24625,
+        "endChar": 5
+      },
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a03dcce_f2e7d5ef",
+        "filename": "guest/vulkan_enc/goldfish_vk_counting_guest.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7366,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "Here we unconditionally dereference `toCount`...",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bd05ca5_976e1b91",
+        "filename": "guest/vulkan_enc/goldfish_vk_counting_guest.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 7368,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "...so if `toCount` is null, as this check expects is possible, we\u0027ll have already crashed.",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f690b913_ff0573c5",
+        "filename": "guest/vulkan_enc/goldfish_vk_reserved_marshaling_guest.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 9240,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "We use `structExtension` in a function requiring a non-null pointer...",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5d99cae_8d9ee6a9",
+        "filename": "guest/vulkan_enc/goldfish_vk_reserved_marshaling_guest.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 9242,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-09-25T19:41:29Z",
+      "side": 1,
+      "message": "...so if `structExtension` is null, as this check suggests is possible, we\u0027ll likely have already crashed in our `memcpy` call.",
+      "revId": "9182fd599b751a31882a347241f1f991084721ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
