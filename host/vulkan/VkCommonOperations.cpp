@@ -2452,11 +2452,12 @@ bool initializeVkColorBufferLocked(
         getValidMemoryTypeIndex(infoPtr->memReqs.memoryTypeBits, infoPtr->memoryProperty);
 
     VERBOSE(
-        "ColorBuffer %d, "
+        "ColorBuffer %d, dimensions:%dx%d, "
         "allocation size and type index: %lu, %d, "
         "allocated memory property: %d, "
         "requested memory property: %d",
-        colorBufferHandle, infoPtr->memory.size, infoPtr->memory.typeIndex,
+        colorBufferHandle, infoPtr->width, infoPtr->height,
+        infoPtr->memory.size, infoPtr->memory.typeIndex,
         sVkEmulation->deviceInfo.memProps.memoryTypes[infoPtr->memory.typeIndex].propertyFlags,
         infoPtr->memoryProperty);
 
