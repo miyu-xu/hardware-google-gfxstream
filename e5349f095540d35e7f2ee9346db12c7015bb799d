@@ -16,6 +16,24 @@
       "message": "Please check-in auto-generated files",
       "revId": "e5349f095540d35e7f2ee9346db12c7015bb799d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e625d35_e74c5ba4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-25T12:41:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b4c341c8_fca8ea77",
+      "revId": "e5349f095540d35e7f2ee9346db12c7015bb799d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
