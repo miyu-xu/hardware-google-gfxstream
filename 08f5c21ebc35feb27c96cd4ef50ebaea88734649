@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7aeffbd1_ed77085a",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 11450,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-25T16:04:07Z",
+      "side": 1,
+      "message": "If it builds fine, lgtm, but the removal of these VkPrivateDataSlot changes may actually require removal from host/vulkan/VulkanHandles.h and guest/vulkan_enc/VulkanHandles.h as well (ie. proper revert of aosp/3271678)",
+      "revId": "08f5c21ebc35feb27c96cd4ef50ebaea88734649",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
