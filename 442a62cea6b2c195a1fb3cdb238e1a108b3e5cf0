@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca6a84fc_49265cc6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-25T15:02:40Z",
+      "side": 1,
+      "message": "Currently, the generation adds relative paths of py and xml files into the generated h/cpp code, if everyone uses different directories, this may cause issues (my local build had 4 \u0027../\u0027 instead of 3). Probably something to fix with the generator code though.",
+      "revId": "442a62cea6b2c195a1fb3cdb238e1a108b3e5cf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9f907de0_284bc10b",
