@@ -16,6 +16,29 @@
       "message": "removed the decoder.py, as it is moved to else where",
       "revId": "5252eeb4bed6ffd35937fd405dda301af30e8ccd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3bda4f50_bb4f28c6",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 7633,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-09-26T22:56:18Z",
+      "side": 1,
+      "message": "can we simply remove this fatal abort and still use the unbox_ ?",
+      "range": {
+        "startLine": 7631,
+        "startChar": 2,
+        "endLine": 7633,
+        "endChar": 70
+      },
+      "revId": "5252eeb4bed6ffd35937fd405dda301af30e8ccd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
