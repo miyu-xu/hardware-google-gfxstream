@@ -46,6 +46,30 @@
       },
       "revId": "82b54fc03d5e8253e66c596853070d4dd768f3c4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ac6fc63_6104f2a4",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6012,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-26T23:17:05Z",
+      "side": 1,
+      "message": "Discussed over chat. I was confused about the variables. `colorBufferLatestUse` is actually either \"when the original fence signals\" in the case of no colorbuffers GL-\u003eVK syncs or \"when the GL-\u003eVK syncs finished\" because of the \n\n```\nif (releasedColorBuffers.empty()) {\n   colorBufferLatestUse \u003d queueCompletedWaitable;\n} else {\n   colorBufferLatestUse \u003d isFenceWaitable;\n}\n```\n\nblock avove so this is change seems correct. \n\n\nI think we want more change after this one to re-organize a little:\n\n```\n\u003cdevice op builder setup\u003e\n\n\u003cqueue submit and error check\u003e\n\nstd::shared_future\u003cvoid\u003e originalSubmitCompleted \u003d builder.OnQueueSubmittedWithFence(usedFence);\n\nstd::shared_future\u003cvoid\u003e allWorkCompletedWaitable \u003d originalSubmitCompletedWaitable;\n\nif (!releasedColorBuffers) {\n  allWorkCompletedWaitable \u003d scheduleAsyncWork(); \n}\n\n\u003cupdate setColorBufferLatestUse\u003e\n\u003cupdate image layouts\u003e\n\u003cupdate semaphore info\u003e\n\u003cupdate fence info\u003e\n```\n\nto \n\n1) Ensure `OnQueueSubmittedWithFence()` is actually called after the submit\n\n2) Rename a couple variables and make the flow a little easier to follow (not obvious that `isFenceWaitable` actual is \"all host operations completed\"\n\n3) Update the waitable to be a `CancelableFuture` to handle problems with shutdown similar to aosp/3237181 where `SyncThread` might shutdown before the callback happens so the waitable is never triggered.",
+      "parentUuid": "a3de132a_ef7ffa90",
+      "range": {
+        "startLine": 6012,
+        "startChar": 39,
+        "endLine": 6012,
+        "endChar": 61
+      },
+      "revId": "82b54fc03d5e8253e66c596853070d4dd768f3c4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
