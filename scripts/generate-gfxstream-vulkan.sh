@@ -32,7 +32,11 @@ export GFXSTREAM_GUEST_ENCODER_DIR=/tmp/
 export GFXSTREAM_HOST_DECODER_DIR=$GFXSTREAM_DIR/host/vulkan
 export GFXSTREAM_OUTPUT_DIR=$GFXSTREAM_HOST_DECODER_DIR/cereal
 export GFXSTREAM_SCRIPTS_DIR=$GFXSTREAM_DIR/scripts
-export GEN_VK=$GFXSTREAM_GUEST_DIR/codegen/scripts/genvk.py
+
+export GEN_VK=$GFXSTREAM_DIR/src/gfxstream/codegen/scripts/genvk.py
+
+# For testing Mesa codegen copy only
+# export GEN_VK=$GFXSTREAM_GUEST_DIR/codegen/scripts/genvk.py
 
 python3 $GEN_VK -registry $VK_XML -registryGfxstream $CUSTOM_XML cereal -o $GFXSTREAM_OUTPUT_DIR
 
