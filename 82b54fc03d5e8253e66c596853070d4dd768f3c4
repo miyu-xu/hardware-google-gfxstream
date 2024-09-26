@@ -22,6 +22,30 @@
       },
       "revId": "82b54fc03d5e8253e66c596853070d4dd768f3c4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d72fea28_261c3708",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6012,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-26T23:04:28Z",
+      "side": 1,
+      "message": "The CL works under the assumption that the guest always \"waitForFences\" before \"destroyFence\".\n\nSync\u0027ed up with Jason offline, it would work better than not having it. But there might be a corner case where the guest \"kill -9\" and it might break. Let\u0027s merge it first then investigate the corner case later.",
+      "parentUuid": "a3de132a_ef7ffa90",
+      "range": {
+        "startLine": 6012,
+        "startChar": 39,
+        "endLine": 6012,
+        "endChar": 61
+      },
+      "revId": "82b54fc03d5e8253e66c596853070d4dd768f3c4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
