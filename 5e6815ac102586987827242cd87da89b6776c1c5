@@ -16,6 +16,23 @@
       "message": "@yahan@google.com, LGTM, but this enables some new tests and the failures look legit. Maybe 2 separate CLs can be created for GL_KHR_blend_equation_advanced and GL_OES_texture_stencil8 cases to solve them individually.",
       "revId": "5e6815ac102586987827242cd87da89b6776c1c5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "959a02cb_fb6600a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-26T23:45:02Z",
+      "side": 1,
+      "message": "Presubmit caught a CTS failure before merging:\n\n09-26 16:40:49.885 10209  5734  5746 W emuglGLESv2_enc: error internal format: 0x8d48 is invalid\n09-26 16:40:49.885 10209  5734  5746 E emuglGLESv2_enc: hardware/google/gfxstream/guest/GLESv2_enc/GL2Encoder.cpp:s_glTexStorage2D:4289 GL error 0x500 condition [!GLESv2Validation::pixelInternalFormat(internalformat)]\n09-26 16:40:49.892 10209  5734  5746 E TestRunner: failed: SingleLayer_StencilTest_StencilTexture_GL_STENCIL_INDEX8(android.hardware.nativehardware.cts.AHardwareBufferNativeTests)",
+      "revId": "5e6815ac102586987827242cd87da89b6776c1c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
