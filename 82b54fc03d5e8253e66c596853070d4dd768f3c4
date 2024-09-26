@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3de132a_ef7ffa90",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6012,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-09-26T22:17:19Z",
+      "side": 1,
+      "message": "I believe this is incorrect because the fence is used in the `SyncThread` callback below and then this could result in the guest trying to delete a fence which is still in use by `SyncThread`. I think what might need to happen is that we need to add a \n\n```\nstd::shared_future\u003cvoid\u003e fenceLatestUse \u003d queueCompletedWaitable;\n```\n\nright after the queue submit and error check (between line 5964 and line 5965). Then, I think the entire\n\n```\nif (releasedColorBuffers.empty()) {\n   ..\n} else {\n  SyncThread::get()-\u003etriggerGeneral();\n}\n```\n\nblock (from line 6015 to 6061) needs to move before the info struct updating block (line 5965 to 6014).\n\nThen, I think the else block should update the `fenceLatestUse` to be `isFenceWaitable` after the `SyncThread::get()-\u003etriggerGeneral()` so that we know the fence\u0027s latest use is after SyncThread finishes.\n\nWDYT?",
+      "range": {
+        "startLine": 6012,
+        "startChar": 39,
+        "endLine": 6012,
+        "endChar": 61
+      },
+      "revId": "82b54fc03d5e8253e66c596853070d4dd768f3c4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
