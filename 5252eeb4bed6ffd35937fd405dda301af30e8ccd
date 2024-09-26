@@ -39,6 +39,30 @@
       },
       "revId": "5252eeb4bed6ffd35937fd405dda301af30e8ccd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58b6ba9f_bfdec614",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 7633,
+      "author": {
+        "id": 1087303
+      },
+      "writtenOn": "2024-09-26T23:25:14Z",
+      "side": 1,
+      "message": "I don\u0027t think it was designed to handle VK_NULL_HANDLE properly in all the places. (vkDestroy* are no-op with VK_NULL_HANDLE so they all work fine.) You could try to remove fatal. The main concern would be instead of having fatal error in one place, we might end up having random crashes in random places.",
+      "parentUuid": "3bda4f50_bb4f28c6",
+      "range": {
+        "startLine": 7631,
+        "startChar": 2,
+        "endLine": 7633,
+        "endChar": 70
+      },
+      "revId": "5252eeb4bed6ffd35937fd405dda301af30e8ccd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
