@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "961d0567_663a43e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-09-26T15:52:56Z",
+      "side": 1,
+      "message": "removed the decoder.py, as it is moved to else where",
+      "revId": "5252eeb4bed6ffd35937fd405dda301af30e8ccd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
