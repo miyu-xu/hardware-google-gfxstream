@@ -1046,9 +1046,14 @@ class VkDecoderGlobalState::Impl {
         if (!m_emu->features.VulkanSnapshots.enabled ||
             (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
              kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
-            get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+                RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+                if (tInfo) {
+                    tInfo->setSnapshotCorrupted();
+                    INFO("Vk snapshot for VkInstance:%p for application:%s is not supported.",
+                            *pInstance, info.applicationName.c_str());
+                }
         }
+
 #endif
         // Box it up
         VkInstance boxed = new_boxed_VkInstance(*pInstance, nullptr, true /* own dispatch */);
