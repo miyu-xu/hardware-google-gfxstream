@@ -16,6 +16,7 @@
 
 #include <optional>
 #include <string>
+#include "aemu/base/files/Stream.h"
 
 #include "VkDecoder.h"
 
@@ -34,7 +35,16 @@ struct RenderThreadInfoVk {
     // Return the current thread's instance, if any, or NULL.
     static RenderThreadInfoVk* get();
 
+        // Functions to save / load a snapshot
+    // They must be called after Framebuffer snapshot
+    void onSave(android::base::Stream* stream);
+    bool onLoad(android::base::Stream* stream);
+
+    void setSnapshotCorrupted();
+    bool isSnapshotCorrupted() const;
+
     uint32_t ctx_id;
+    bool m_snapshotCorrupted {false};
     VkDecoder m_vkDec;
 };
 

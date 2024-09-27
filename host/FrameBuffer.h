@@ -36,6 +36,7 @@
 #include "PostCommands.h"
 #include "PostWorker.h"
 #include "ProcessResources.h"
+#include "ProcessVkSnapshotInfo.h"
 #include "ReadbackWorker.h"
 #include "VsyncThread.h"
 #include "aemu/base/AsyncResult.h"
@@ -112,6 +113,7 @@ typedef std::unordered_map<uint64_t, gl::EmulatedEglImageSet> ProcOwnedEmulatedE
 #endif
 
 typedef std::unordered_map<uint64_t, ColorBufferSet> ProcOwnedColorBuffers;
+typedef std::unordered_map<uint64_t, std::unique_ptr<ProcessVkSnapshotInfo>> ProcOwnedVkSnapshotInfo;
 
 typedef std::unordered_map<HandleType, BufferRef> BufferMap;
 typedef std::unordered_multiset<HandleType> BufferSet;
@@ -436,6 +438,10 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     void unregisterProcessCleanupCallback(void* key);
 
     const ProcessResources* getProcessResources(uint64_t puid);
+
+    ProcessVkSnapshotInfo* createProcessVkSnapshotInfo();
+
+    ProcessVkSnapshotInfo* getProcessVkSnapshotInfo();
 
     int createDisplay(uint32_t *displayId);
     int createDisplay(uint32_t displayId);
@@ -909,6 +915,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // cleanup. Guest processes are identified with a host generated unique ID.
     // TODO(kaiyili): move all those resources to the ProcessResources struct.
     ProcOwnedColorBuffers m_procOwnedColorBuffers;
+    ProcOwnedVkSnapshotInfo m_procOwnedVkSnapshotInfo;
     ProcOwnedCleanupCallbacks m_procOwnedCleanupCallbacks;
 
 #if GFXSTREAM_ENABLE_HOST_GLES
