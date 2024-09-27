@@ -18,6 +18,7 @@
 
 namespace gfxstream {
 namespace vk {
+using android::base::Stream;
 
 static thread_local RenderThreadInfoVk* tlThreadInfo = nullptr;
 
@@ -32,6 +33,15 @@ RenderThreadInfoVk::RenderThreadInfoVk() {
 RenderThreadInfoVk::~RenderThreadInfoVk() { tlThreadInfo = nullptr; }
 
 RenderThreadInfoVk* RenderThreadInfoVk::get() { return tlThreadInfo; }
+
+void RenderThreadInfoVk::onSave(Stream* stream) {
+     stream->putBe32(m_skipSnapshot);
+}
+
+bool RenderThreadInfoVk::onLoad(Stream* stream) {
+    m_skipSnapshot = stream->getBe32();
+    return false;
+}
 
 }  // namespace vk
 }  // namespace gfxstream
