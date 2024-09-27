@@ -2718,6 +2718,18 @@ void FrameBuffer::unregisterProcessCleanupCallback(void* key) {
     callbackMap.erase(key);
 }
 
+ProcessVkSnapshotInfo* FrameBuffer::getProcessVkSnapshotInfo() {
+    AutoLock mutex(m_lock);
+    RenderThreadInfo* tinfo = RenderThreadInfo::get();
+    uint64_t puid = tinfo->m_puid;
+    auto i = m_procOwnedVkSnapshotInfo.find(puid);
+    if (i == m_procOwnedVkSnapshotInfo.end()) {
+        ERR("Failed to find process owned vk snapshot info for puid %" PRIu64 ".", puid);
+        return nullptr;
+    }
+    return i->second.get();
+}
+
 const ProcessResources* FrameBuffer::getProcessResources(uint64_t puid) {
     AutoLock mutex(m_lock);
     auto i = m_procOwnedResources.find(puid);
