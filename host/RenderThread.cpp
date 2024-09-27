@@ -55,9 +55,11 @@ using android::base::EventHangMetadata;
 using android::base::MessageChannel;
 using emugl::GfxApiLogger;
 using vk::VkDecoderContext;
+using vk::RenderThreadInfoVk;
 
 struct RenderThread::SnapshotObjects {
     RenderThreadInfo* threadInfo;
+    RenderThreadInfoVk* threadInfoVk;
     ChecksumCalculator* checksumCalc;
     ChannelStream* channelStream;
     RingStream* ringStream;
@@ -214,6 +216,7 @@ void RenderThread::loadImpl(AutoLock* lock, const SnapshotObjects& objects) {
         if (objects.ringStream) objects.ringStream->load(&*mStream);
         objects.checksumCalc->load(&*mStream);
         objects.threadInfo->onLoad(&*mStream);
+        objects.threadInfoVk->onLoad(&*mStream);
     });
 }
 
@@ -224,6 +227,7 @@ void RenderThread::saveImpl(AutoLock* lock, const SnapshotObjects& objects) {
         if (objects.ringStream) objects.ringStream->save(&*mStream);
         objects.checksumCalc->save(&*mStream);
         objects.threadInfo->onSave(&*mStream);
+        objects.threadInfoVk->onSave(&*mStream);
     });
 }
 
@@ -269,6 +273,7 @@ intptr_t RenderThread::main() {
     ChecksumCalculatorThreadInfo tChecksumInfo;
     ChecksumCalculator& checksumCalc = tChecksumInfo.get();
     bool needRestoreFromSnapshot = false;
+    bool loadedFromSnapshot = false;
 
     //
     // initialize decoders
@@ -295,9 +300,6 @@ intptr_t RenderThread::main() {
         readBuf.setNeededFreeTailSize(0);
     }
 
-    const SnapshotObjects snapshotObjects = {
-        &tInfo, &checksumCalc, &stream, mRingStream.get(), &readBuf,
-    };
 
     // Framebuffer initialization is asynchronous, so we need to make sure
     // it's completely initialized before running any GL commands.
@@ -306,6 +308,12 @@ intptr_t RenderThread::main() {
         tInfo.m_vkInfo.emplace();
     }
 
+    RenderThreadInfoVk *tInfoVkPtr = RenderThreadInfoVk::get();
+    fprintf(stderr, "%s %d tInfoVkPtr is %p\n", __func__, __LINE__, tInfoVkPtr);
+    
+    const SnapshotObjects snapshotObjects = {
+        &tInfo, tInfoVkPtr, &checksumCalc, &stream, mRingStream.get(), &readBuf,
+    };
 #if GFXSTREAM_ENABLE_HOST_MAGMA
     tInfo.m_magmaInfo.emplace(mContextId);
 #endif
@@ -316,6 +324,12 @@ intptr_t RenderThread::main() {
     if (doSnapshotOperation(snapshotObjects, SnapshotState::StartLoading)) {
         GL_LOG("Loaded RenderThread @%p from snapshot", this);
         needRestoreFromSnapshot = true;
+        if (tInfoVkPtr->isSnapshotCorrupted()) {
+            fprintf(stderr, "%s %d skip snapshot for this one\n", __func__, __LINE__);
+            loadedFromSnapshot = true;
+            setFinished();
+            return 0;
+        }
     } else {
         // Not loading from a snapshot: continue regular startup, read
         // the |flags|.
@@ -483,6 +497,11 @@ intptr_t RenderThread::main() {
             // Note: It's risky to limit Vulkan decoding to one thread,
             // so we do it outside the limiter
             if (tInfo.m_vkInfo) {
+                if (loadedFromSnapshot) {
+                    fprintf(stderr, "%s %d this is loaded from snapshot, break this thread\n",
+                            __func__, __LINE__);
+                    break;
+                }
                 tInfo.m_vkInfo->ctx_id = mContextId;
                 VkDecoderContext context = {
                     .processName = contextName,
@@ -490,6 +509,10 @@ intptr_t RenderThread::main() {
                     .healthMonitor = FrameBuffer::getFB()->getHealthMonitor(),
                     .metricsLogger = &metricsLogger,
                 };
+                // we can try to query the vulkan-global-state whether the app is broken
+                // and exit this render thread if that is the case.
+                // how do we know the pid name of this process in the guest and its name 
+                // need to ask yahan
                 last = tInfo.m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(), ioStream,
                                                       processResources, context);
                 if (last > 0) {
@@ -602,6 +625,7 @@ intptr_t RenderThread::main() {
 
     setFinished();
 
+    fprintf(stderr, "%s %d Exited a RenderThread @%p\n", __func__, __LINE__, this);
     GL_LOG("Exited a RenderThread @%p", this);
     return 0;
 }
