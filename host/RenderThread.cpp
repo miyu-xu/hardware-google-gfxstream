@@ -31,6 +31,7 @@
 #include "apigen-codec-common/ChecksumCalculatorThreadInfo.h"
 #include "host-common/logging.h"
 #include "vulkan/VkCommonOperations.h"
+#include "vulkan/VkDecoderGlobalState.h"
 
 #if GFXSTREAM_ENABLE_HOST_GLES
 #include "RenderControl.h"
@@ -55,9 +56,11 @@ using android::base::EventHangMetadata;
 using android::base::MessageChannel;
 using emugl::GfxApiLogger;
 using vk::VkDecoderContext;
+using vk::RenderThreadInfoVk;
 
 struct RenderThread::SnapshotObjects {
     RenderThreadInfo* threadInfo;
+    RenderThreadInfoVk* threadInfoVk;
     ChecksumCalculator* checksumCalc;
     ChannelStream* channelStream;
     RingStream* ringStream;
@@ -214,6 +217,10 @@ void RenderThread::loadImpl(AutoLock* lock, const SnapshotObjects& objects) {
         if (objects.ringStream) objects.ringStream->load(&*mStream);
         objects.checksumCalc->load(&*mStream);
         objects.threadInfo->onLoad(&*mStream);
+        if (FrameBuffer::getFB()->getFeatures().VulkanSnapshots.enabled &&
+                vk::VkDecoderGlobalState::get()) {
+            objects.threadInfoVk->onLoad(&*mStream);
+        }
     });
 }
 
@@ -224,6 +231,10 @@ void RenderThread::saveImpl(AutoLock* lock, const SnapshotObjects& objects) {
         if (objects.ringStream) objects.ringStream->save(&*mStream);
         objects.checksumCalc->save(&*mStream);
         objects.threadInfo->onSave(&*mStream);
+        if (FrameBuffer::getFB()->getFeatures().VulkanSnapshots.enabled
+                && vk::VkDecoderGlobalState::get()) {
+            objects.threadInfoVk->onSave(&*mStream);
+        }
     });
 }
 
@@ -295,9 +306,6 @@ intptr_t RenderThread::main() {
         readBuf.setNeededFreeTailSize(0);
     }
 
-    const SnapshotObjects snapshotObjects = {
-        &tInfo, &checksumCalc, &stream, mRingStream.get(), &readBuf,
-    };
 
     // Framebuffer initialization is asynchronous, so we need to make sure
     // it's completely initialized before running any GL commands.
@@ -306,6 +314,11 @@ intptr_t RenderThread::main() {
         tInfo.m_vkInfo.emplace();
     }
 
+    RenderThreadInfoVk *tInfoVkPtr = RenderThreadInfoVk::get();
+    
+    const SnapshotObjects snapshotObjects = {
+        &tInfo, tInfoVkPtr, &checksumCalc, &stream, mRingStream.get(), &readBuf,
+    };
 #if GFXSTREAM_ENABLE_HOST_MAGMA
     tInfo.m_magmaInfo.emplace(mContextId);
 #endif
@@ -316,6 +329,10 @@ intptr_t RenderThread::main() {
     if (doSnapshotOperation(snapshotObjects, SnapshotState::StartLoading)) {
         GL_LOG("Loaded RenderThread @%p from snapshot", this);
         needRestoreFromSnapshot = true;
+        if (tInfoVkPtr->isSnapshotCorrupted()) {
+            setFinished();
+            return 0;
+        }
     } else {
         // Not loading from a snapshot: continue regular startup, read
         // the |flags|.
