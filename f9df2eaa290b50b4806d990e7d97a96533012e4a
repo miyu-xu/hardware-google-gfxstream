@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78d8d3ef_c7c9cc64",
+        "filename": "scripts/generate-gfxstream-vulkan.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-27T08:52:33Z",
+      "side": 1,
+      "message": "For the same reasons, please add xml files as well, remove references to mesa from this file altogether and add regenerated the code in case it\u0027s changed.",
+      "revId": "f9df2eaa290b50b4806d990e7d97a96533012e4a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
