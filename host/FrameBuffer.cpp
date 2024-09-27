@@ -2718,6 +2718,36 @@ void FrameBuffer::unregisterProcessCleanupCallback(void* key) {
     callbackMap.erase(key);
 }
 
+ProcessVkSnapshotInfo* FrameBuffer::createProcessVkSnapshotInfo() {
+    AutoLock mutex(m_lock);
+    RenderThreadInfo* tinfo = RenderThreadInfo::get();
+    uint64_t puid = tinfo->m_puid;
+    if (puid == 0) {
+        // at this stage, the m_puid is not ready yet
+        return nullptr;
+    }
+    auto i = m_procOwnedVkSnapshotInfo.find(puid);
+    if (i != m_procOwnedVkSnapshotInfo.end()) {
+        // already exist, return it
+        return i->second.get();
+    } else {
+        m_procOwnedVkSnapshotInfo[puid].reset(new ProcessVkSnapshotInfo());
+        return m_procOwnedVkSnapshotInfo[puid].get();
+    }
+}
+
+ProcessVkSnapshotInfo* FrameBuffer::getProcessVkSnapshotInfo() {
+    AutoLock mutex(m_lock);
+    RenderThreadInfo* tinfo = RenderThreadInfo::get();
+    uint64_t puid = tinfo->m_puid;
+    auto i = m_procOwnedVkSnapshotInfo.find(puid);
+    if (i == m_procOwnedVkSnapshotInfo.end()) {
+        return nullptr;
+    } else {
+        return i->second.get();
+    }
+}
+
 const ProcessResources* FrameBuffer::getProcessResources(uint64_t puid) {
     AutoLock mutex(m_lock);
     auto i = m_procOwnedResources.find(puid);
