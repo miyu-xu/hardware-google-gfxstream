@@ -1046,9 +1046,19 @@ class VkDecoderGlobalState::Impl {
         if (!m_emu->features.VulkanSnapshots.enabled ||
             (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
              kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
-            get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+                RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+                tInfo->setSnapshotCorrupted();
+                INFO("skip snapshot for VkInstance:%p for application:%s.",
+                        *pInstance, info.applicationName.c_str());
+            //get_emugl_vm_operations().setSkipSnapshotSave(true);
+            //get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+            if (mSnapshotState == SnapshotState::Loading) {
+                // this app is not in the whitelist, mark it as bad
+                // TODO:
+                // return 0;
+            }
         }
+
 #endif
         // Box it up
         VkInstance boxed = new_boxed_VkInstance(*pInstance, nullptr, true /* own dispatch */);
@@ -7625,10 +7635,6 @@ class VkDecoderGlobalState::Impl {
         AutoLock lock(sBoxedHandleManager.lock);                                                  \
         auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
         if (!elt) {                                                                               \
-            if constexpr (!std::is_same_v<type, VkFence>) {                                       \
-                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))                                   \
-                    << "Unbox " << boxed << " failed, not found.";                                \
-            }                                                                                     \
             return VK_NULL_HANDLE;                                                                \
         }                                                                                         \
         return (type)elt->underlying;                                                             \

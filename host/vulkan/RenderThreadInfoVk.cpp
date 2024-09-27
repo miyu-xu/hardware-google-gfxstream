@@ -14,10 +14,12 @@
 
 #include "RenderThreadInfoVk.h"
 
+#include "FrameBuffer.h"
 #include "host-common/GfxstreamFatalError.h"
 
 namespace gfxstream {
 namespace vk {
+using android::base::Stream;
 
 static thread_local RenderThreadInfoVk* tlThreadInfo = nullptr;
 
@@ -32,6 +34,47 @@ RenderThreadInfoVk::RenderThreadInfoVk() {
 RenderThreadInfoVk::~RenderThreadInfoVk() { tlThreadInfo = nullptr; }
 
 RenderThreadInfoVk* RenderThreadInfoVk::get() { return tlThreadInfo; }
+
+void RenderThreadInfoVk::onSave(Stream* stream) {
+    if (isSnapshotCorrupted()) {
+        fprintf(stderr, "%s %d corrupted %p\n", __func__, __LINE__, this);
+        stream->putByte(1);
+    } else {
+        stream->putByte(0);
+    }
+}
+
+bool RenderThreadInfoVk::onLoad(Stream* stream) {
+    if(stream->getByte()) {
+        m_snapshotCorrupted = true;
+        fprintf(stderr, "%s %d corrupted %p\n", __func__, __LINE__, this);
+    }
+    return false;
+}
+
+void RenderThreadInfoVk::setSnapshotCorrupted() {
+    m_snapshotCorrupted = true;
+
+    // also set the per process snapshot Info to be corrupted as well
+    auto* ptr = FrameBuffer::getFB()->getProcessVkSnapshotInfo();
+    ptr->snapshotCorrupted = true;
+}
+
+bool RenderThreadInfoVk::isSnapshotCorrupted() const {
+    if(m_snapshotCorrupted) {
+        fprintf(stderr, "%s %d corrupted %p\n", __func__, __LINE__, this);
+        return true;
+    }
+
+    // check per process snapshot info is corrupted
+    auto* ptr = FrameBuffer::getFB()->getProcessVkSnapshotInfo();
+    if (ptr->snapshotCorrupted) {
+        fprintf(stderr, "%s %d corrupted %p\n", __func__, __LINE__, this);
+    } else {
+        fprintf(stderr, "%s %d is not corrupted %p\n", __func__, __LINE__, this);
+    }
+    return ptr->snapshotCorrupted;
+}
 
 }  // namespace vk
 }  // namespace gfxstream
