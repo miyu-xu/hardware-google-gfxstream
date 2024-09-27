@@ -16,6 +16,24 @@
       "message": "For the same reasons, please add xml files as well, remove references to mesa from this file altogether and add regenerated the code in case it\u0027s changed.",
       "revId": "f9df2eaa290b50b4806d990e7d97a96533012e4a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "809fb5e2_8bf0e010",
+        "filename": "scripts/generate-gfxstream-vulkan.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-09-27T16:56:25Z",
+      "side": 1,
+      "message": "I re-added `vk_gfxstream.xml`, but kept some references to Mesa\u0027s `vk.xml`, since it\u0027s already in the emulator/AOSP tree and it shows how codegen put the guest actually uses.",
+      "parentUuid": "78d8d3ef_c7c9cc64",
+      "revId": "f9df2eaa290b50b4806d990e7d97a96533012e4a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
