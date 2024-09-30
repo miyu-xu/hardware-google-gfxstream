@@ -88,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3db25e2_97d541e9",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2564,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-30T10:06:01Z",
+      "side": 1,
+      "message": "These parameters should be defined based on the usage of the image view, not directly related to the format.",
+      "parentUuid": "2cb8dcaa_e19b8745",
+      "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f754f34e_1c45b805",
@@ -101,6 +119,24 @@
       "writtenOn": "2024-09-30T10:01:17Z",
       "side": 1,
       "message": "same here",
+      "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c8aafba_e1b98e38",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2565,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-30T10:06:01Z",
+      "side": 1,
+      "message": "This is the default image view we can use on the host side, the parameters are not directly related to the format, but the usage of the image for the composition.",
+      "parentUuid": "f754f34e_1c45b805",
       "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
