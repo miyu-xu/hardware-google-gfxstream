@@ -1155,7 +1155,7 @@ class VkDecoderGlobalState::Impl {
 
     void FilterPhysicalDevicesLocked(VkInstance instance, VulkanDispatch* vk,
                                      std::vector<VkPhysicalDevice>& toFilterPhysicalDevices) {
-        if (m_emu->instanceSupportsGetPhysicalDeviceProperties2) {
+        if (m_emu->instanceSupportsExternalMemoryCapabilities) {
             PFN_vkGetPhysicalDeviceProperties2KHR getPhysdevProps2Func =
                 vk_util::getVkInstanceProcAddrWithFallback<
                     vk_util::vk_fn_info::GetPhysicalDeviceProperties2>(
@@ -1306,7 +1306,7 @@ class VkDecoderGlobalState::Impl {
                 fprintf(stderr,
                         "%s: Warning: Trying to use extension struct in "
                         "VkPhysicalDeviceFeatures2 without having enabled "
-                        "the extension!\n",
+                        "the extension!!!!11111\n",
                         __func__);
             }
             *pFeatures = {
