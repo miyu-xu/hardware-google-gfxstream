@@ -53,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b740146a_bc46a99d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-30T10:03:50Z",
+      "side": 1,
+      "message": "We probably need a separate class and files to hold format related routines to get a cleaner code, but the list here is coming from the spec, and it exists the same way in VVL. Auto-generating it is not really necessary.",
+      "parentUuid": "d30d4d15_3eca546b",
+      "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2cb8dcaa_e19b8745",
