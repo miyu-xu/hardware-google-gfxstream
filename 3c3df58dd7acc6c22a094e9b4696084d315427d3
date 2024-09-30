@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d30d4d15_3eca546b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-09-30T10:00:06Z",
+      "side": 1,
+      "message": "Only thought is that I am not sure whether these can be hardcoded or if different formats require different parameters here?",
+      "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
