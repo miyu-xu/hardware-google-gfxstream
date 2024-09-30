@@ -16,6 +16,57 @@
       "message": "Only thought is that I am not sure whether these can be hardcoded or if different formats require different parameters here?",
       "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9321826c_be0c61c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-09-30T10:01:17Z",
+      "side": 1,
+      "message": "I am not sure whether thissame",
+      "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cb8dcaa_e19b8745",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2564,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-09-30T10:01:17Z",
+      "side": 1,
+      "message": "Not sure whether we wouldn\u0027t need different parameters here based on the image format?",
+      "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f754f34e_1c45b805",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2565,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-09-30T10:01:17Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "3c3df58dd7acc6c22a094e9b4696084d315427d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
