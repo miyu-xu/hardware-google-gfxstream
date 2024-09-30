@@ -18,6 +18,7 @@
 #include "aemu/base/files/PathUtils.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/system/System.h"
+#include "host-common/opengl/emugl_config.h"
 #include "host-common/misc.h"
 
 using android::base::AutoLock;
@@ -184,6 +185,7 @@ class VulkanDispatchImpl {
     void initialize(bool forTesting);
 
     static std::vector<std::string> getPossibleLoaderPathBasenames() {
+        //TODO(b/370523649) integrate this into emuglConfig_get_vulkan_runtime_path()
 #if defined(__APPLE__)
         return std::vector<std::string>{"libvulkan.dylib"};
 #elif defined(__linux__)
