@@ -619,6 +619,89 @@ bool ColorBufferGl::subUpdate(int x, int y, int width, int height, GLenum p_form
                                         pixels, metadata);
 }
 
+
+bool savebmp(const char* fn, uint32_t nChannels, uint32_t w, uint32_t h,
+             const void* pixels) {
+    if (nChannels != 1 && nChannels != 3 && nChannels != 4) {
+        ERR("savebmp only support 1, 3 or 4 channel images");
+        return false;
+    }
+
+    FILE* fp = fopen(fn, "wb");
+    if (!fp) {
+        ERR("Unable to write to file %s.\n", fn);
+        return false;
+    }
+
+    auto putUint32_t = [](uint8_t* dst, uint32_t data) {
+        dst[0] = (uint8_t)data;
+        dst[1] = (uint8_t)(data >> 8);
+        dst[2] = (uint8_t)(data >> 16);
+        dst[3] = (uint8_t)(data >> 24);
+    };
+
+    auto putUint16_t = [](uint8_t* dst, uint16_t data) {
+        dst[0] = (uint8_t)data;
+        dst[1] = (uint8_t)(data >> 8);
+    };
+
+    const uint32_t dibHeaderSize = 40;
+    const uint32_t offset = 14 + dibHeaderSize;
+    uint32_t imgSize = nChannels * w * h;
+    uint32_t fileSize = offset + imgSize;
+    uint16_t nClrPln = 1;
+    uint16_t nBpp = (uint16_t)nChannels * 8;
+    uint32_t comp = 0;
+    uint32_t reso = 0;
+    uint32_t nClrPalette = 0;
+    uint32_t nImptClr = 0;
+    uint8_t header[offset] = {};
+    header[0] = 'B';
+    header[1] = 'M';
+    putUint32_t(header + 2, fileSize);
+    // bit 6~10 are reserved
+    putUint32_t(header + 10, offset);
+    // bitmap information header
+    putUint32_t(header + 14, dibHeaderSize);
+    putUint32_t(header + 18, w);
+    putUint32_t(header + 22, h);
+    putUint16_t(header + 26, nClrPln);
+    putUint16_t(header + 28, nBpp);
+    putUint32_t(header + 30, comp);
+    putUint32_t(header + 34, imgSize);
+    putUint32_t(header + 38, reso);
+    putUint32_t(header + 42, reso);
+    putUint32_t(header + 46, nClrPalette);
+    putUint32_t(header + 50, nImptClr);
+    fwrite(header, 1, offset, fp);
+    const uint8_t* src = static_cast<const uint8_t*>(pixels) + nChannels * w * (h - 1);
+    uint8_t padding[3] = {0, 0, 0};
+    uint8_t* lineData = new uint8_t[nChannels * w];
+    int paddingBytes = (4 - nChannels * w % 4) % 4;
+    int r = 0;
+    int c = 0;
+    for (r = 0; r < h; r++) {
+        if (nChannels == 1) {
+            fwrite(src, 1, w, fp);
+        } else {
+            for (c = 0; c < w; c++) {  // flip rgb
+                lineData[c * nChannels + 0] = src[c * nChannels + 2];
+                lineData[c * nChannels + 1] = src[c * nChannels + 1];
+                lineData[c * nChannels + 2] = src[c * nChannels + 0];
+                if (nChannels == 4) {
+                    lineData[c * nChannels + 3] = src[c * nChannels + 3];
+                }
+            }
+            fwrite(lineData, 1, w * nChannels, fp);
+        }
+        fwrite(padding, 1, paddingBytes, fp);
+        src -= w * nChannels;
+    }
+    free(lineData);
+    fclose(fp);
+    return true;
+}
+
 bool ColorBufferGl::subUpdateFromFrameworkFormat(int x, int y, int width, int height,
                                                  FrameworkFormat fwkFormat, GLenum p_format,
                                                  GLenum p_type, const void* pixels,
@@ -657,6 +740,14 @@ bool ColorBufferGl::subUpdateFromFrameworkFormat(int x, int y, int width, int he
 
         s_gles2.glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, p_unsizedFormat,
                                 p_type, pixels);
+
+#if 1
+        if (p_unsizedFormat == GL_RGBA && p_type == GL_UNSIGNED_BYTE) {
+            char filename[256];
+            sprintf(filename, "temp_h%d_t%d.bmp", mHndl, m_tex);
+            savebmp(filename, 4, width, height, pixels);
+        }
+#endif
     }
 
     if (m_fastBlitSupported) {
