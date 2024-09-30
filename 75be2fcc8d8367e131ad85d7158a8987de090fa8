@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86805036_8522e989",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-30T10:37:20Z",
+      "side": 1,
+      "message": "We\u0027ll be losing history of the files with this change, @gurchetansingh@google.com do you think it\u0027d be better to revert the old removal CL instead?",
+      "revId": "75be2fcc8d8367e131ad85d7158a8987de090fa8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
