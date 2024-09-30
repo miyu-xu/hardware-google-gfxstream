@@ -16,6 +16,58 @@
       "message": "on a second thought, I am wondering whether it is possible to purge the snapshots for apps that are not in the allowlist, so we dont even save their states",
       "revId": "c6165ea387865be6c2ddc7dbda3b81c4a18f6f5d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72d31365_8eba3a8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-30T18:41:14Z",
+      "side": 1,
+      "message": "This is similar to what I wanted to do, thanks very much for the CL!",
+      "parentUuid": "b499cf19_55e6ec05",
+      "revId": "c6165ea387865be6c2ddc7dbda3b81c4a18f6f5d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb62bfbc_c1cc37fa",
+        "filename": "host/FrameBuffer.h",
+        "patchSetId": 15
+      },
+      "lineNbr": 916,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-30T18:41:14Z",
+      "side": 1,
+      "message": "Can we directly put the new data into ProcessResources instead?",
+      "revId": "c6165ea387865be6c2ddc7dbda3b81c4a18f6f5d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32d54fa8_791bbbcc",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 15
+      },
+      "lineNbr": 1046,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-09-30T18:41:14Z",
+      "side": 1,
+      "message": "I think it would be safer if we can reverse the conditions here and only mark the app as \u0027not-corrupted / snapshotable\u0027 when it\u0027s in the allow list. Also this part can be reformatted to remove the unnecessary tabs.",
+      "revId": "c6165ea387865be6c2ddc7dbda3b81c4a18f6f5d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
