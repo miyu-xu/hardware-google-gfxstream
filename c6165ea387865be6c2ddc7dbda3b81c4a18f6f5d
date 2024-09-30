@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b499cf19_55e6ec05",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-09-30T16:00:20Z",
+      "side": 1,
+      "message": "on a second thought, I am wondering whether it is possible to purge the snapshots for apps that are not in the allowlist, so we dont even save their states",
+      "revId": "c6165ea387865be6c2ddc7dbda3b81c4a18f6f5d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
