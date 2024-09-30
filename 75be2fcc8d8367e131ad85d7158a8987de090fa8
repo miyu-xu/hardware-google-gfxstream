@@ -16,6 +16,24 @@
       "message": "We\u0027ll be losing history of the files with this change, @gurchetansingh@google.com do you think it\u0027d be better to revert the old removal CL instead?",
       "revId": "75be2fcc8d8367e131ad85d7158a8987de090fa8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c70068c4_b2f466ae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-09-30T17:41:03Z",
+      "side": 1,
+      "message": "I did change the location of codegen to `src/gfxstream/codegen/`, so one can just do `git format-patch HEAD~{n}` to generate patches that can be easily applied to the Mesa copy.\n\nAs for history preservation, we\u0027ve used non-history preserving methods in the past (aosp/2824967) and it really didn\u0027t make much difference.\n\nIf we want to move the `src/gfxstream/codegen`, one would have to do `git log --follow src/gfxstream/codegen/xml/vk_gfxstream.xml`, but that\u0027s not too different from `git log -- codegen/vulkan/vulkan-docs-next/xml/vk_gfxstream.xml` (`git blame` would not be preserved across directory moves).  Plus, the Mesa move itself used a history preserving method, though here it would result in 90 commits.\n\nIf we really need to find something in the history, between Gerrit, branches, and the repositories own history -- the means do exist.  So \"meh\" on the history preservation.",
+      "parentUuid": "86805036_8522e989",
+      "revId": "75be2fcc8d8367e131ad85d7158a8987de090fa8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
