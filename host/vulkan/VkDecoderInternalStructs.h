@@ -172,6 +172,8 @@ struct MemoryInfo {
     std::optional<HandleType> boundBuffer;
     // ColorBuffer, provided via vkAllocateMemory().
     std::optional<HandleType> boundColorBuffer;
+
+    bool corrupted = false;
 };
 
 struct InstanceInfo {
@@ -181,6 +183,7 @@ struct InstanceInfo {
     bool isAngle = false;
     std::string applicationName;
     std::string engineName;
+    bool corrupted = false;
 };
 
 struct PhysicalDeviceInfo {
@@ -189,11 +192,13 @@ struct PhysicalDeviceInfo {
     std::unique_ptr<EmulatedPhysicalDeviceMemoryProperties> memoryPropertiesHelper;
     std::vector<VkQueueFamilyProperties> queueFamilyProperties;
     VkPhysicalDevice boxed = nullptr;
+    bool corrupted = false;
 };
 
 struct ExternalFenceInfo {
     VkExternalSemaphoreHandleTypeFlagBits supportedBinarySemaphoreHandleTypes;
     VkExternalFenceHandleTypeFlagBits supportedFenceHandleTypes;
+    bool corrupted = false;
 };
 
 struct DeviceInfo {
@@ -212,6 +217,7 @@ struct DeviceInfo {
     std::unique_ptr<GpuDecompressionPipelineManager> decompPipelines = nullptr;
     DeviceOpTrackerPtr deviceOpTracker = nullptr;
 
+    bool corrupted = false;
     // True if this is a compressed image that needs to be decompressed on the GPU (with our
     // compute shader)
     bool needGpuDecompression(const CompressedImageInfo& cmpInfo) {
@@ -234,6 +240,7 @@ struct QueueInfo {
     uint32_t queueFamilyIndex;
     VkQueue boxed = nullptr;
     uint32_t sequenceNumber = 0;
+    bool corrupted = false;
 };
 
 struct BufferInfo {
@@ -243,6 +250,7 @@ struct BufferInfo {
     VkDeviceSize memoryOffset = 0;
     VkDeviceSize size;
     std::shared_ptr<bool> alive{new bool(true)};
+    bool corrupted = false;
 };
 
 struct ImageInfo {
@@ -255,6 +263,7 @@ struct ImageInfo {
     // TODO: might need to use an array of layouts to represent each sub resource
     VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
     VkDeviceMemory memory = VK_NULL_HANDLE;
+    bool corrupted = false;
 };
 
 struct ImageViewInfo {
@@ -308,6 +317,7 @@ struct FenceInfo {
     // upon before destruction (e.g. as part of a vkAcquireImageANDROID() call),
     // the waitable that tracking that host operation.
     std::optional<DeviceOpWaitable> latestUse;
+    bool corrupted = false;
 };
 
 struct SemaphoreInfo {
@@ -342,6 +352,7 @@ struct DescriptorPoolInfo {
 
     std::unordered_map<VkDescriptorSet, VkDescriptorSet> allocedSetsToBoxed;
     std::vector<uint64_t> poolIds;
+    bool corrupted = false;
 };
 
 struct DescriptorSetInfo {

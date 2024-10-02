@@ -18,6 +18,7 @@
 #include <unordered_map>
 
 #include "FrameBuffer.h"
+#include "RenderThreadInfoVk.h"
 #include "render-utils/IOStream.h"
 #include "VkDecoder.h"
 #include "aemu/base/containers/EntityManager.h"
@@ -25,7 +26,7 @@
 namespace gfxstream {
 namespace vk {
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -72,6 +73,9 @@ void VkReconstruction::save(android::base::Stream* stream) {
         [&totalParents, &next](bool live, uint64_t componentHandle, uint64_t entityHandle,
                                const HandleWithStateReconstruction& item) {
             for (int state = BEGIN; state < HANDLE_STATE_COUNT; state++) {
+                if (item.corrupted) {
+                    continue;
+                }
                 const auto& parents = item.states[state].parentHandles;
                 HandleWithState handleWithState = {entityHandle, static_cast<HandleState>(state)};
                 totalParents[handleWithState] = parents.size();
@@ -88,6 +92,10 @@ void VkReconstruction::save(android::base::Stream* stream) {
         handlesByTopoOrder.push_back(std::move(next));
         const std::vector<HandleWithState>& current = handlesByTopoOrder.back();
         for (const auto& handle : current) {
+            auto item0 = mHandleReconstructions.get(handle.first);
+            if (item0 && item0->corrupted) {
+                continue;
+            }
             const auto& item = mHandleReconstructions.get(handle.first)->states[handle.second];
             for (const auto& childHandle : item.childHandles) {
                 if (--totalParents[childHandle] == 0) {
@@ -102,6 +110,10 @@ void VkReconstruction::save(android::base::Stream* stream) {
     for (const auto& handles : handlesByTopoOrder) {
         std::vector<uint64_t> nextApis;
         for (const auto& handle : handles) {
+            auto item0 = mHandleReconstructions.get(handle.first);
+            if (item0 && item0->corrupted) {
+                continue;
+            }
             auto item = mHandleReconstructions.get(handle.first)->states[handle.second];
             for (uint64_t apiRef : item.apiRefs) {
 #if DEBUG_RECONSTRUCTION
@@ -230,6 +242,11 @@ void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& 
     DEBUG_RECON("created handle buffer size: %zu trace: %zu", createdHandleBuffer.size(),
                 apiTraceBuffer.size());
 
+    if (createdHandleBuffer.size() == 0 || apiTraceBuffer.size() == 0) {
+        DEBUG_RECON("empty trace, nothing to load");
+        return;
+    }
+
     uint32_t createdHandleBufferSize = createdHandleBuffer.size();
 
     mLoadedTrace.resize(4 + createdHandleBufferSize + apiTraceBuffer.size());
@@ -340,10 +357,16 @@ void VkReconstruction::dump() {
 
 void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
     if (!toAdd) return;
+    RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+    const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
 
     for (uint32_t i = 0; i < count; ++i) {
         DEBUG_RECON("add 0x%llx", (unsigned long long)toAdd[i]);
         mHandleReconstructions.add(toAdd[i], HandleWithStateReconstruction());
+        auto item = mHandleReconstructions.get(toAdd[i]);
+        if (item) {
+            item->corrupted = isCorrupted;
+        }
     }
 }
 
@@ -491,12 +514,16 @@ void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint
                                                  uint64_t apiHandle) {
     if (!toProcess) return;
 
+    RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+    const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
     for (uint32_t i = 0; i < count; ++i) {
         mHandleModifications.add(toProcess[i], HandleModification());
 
         auto item = mHandleModifications.get(toProcess[i]);
 
         if (!item) continue;
+
+        item->corrupted = isCorrupted;
 
         item->apiRefs.push_back(apiHandle);
     }
@@ -522,7 +549,9 @@ std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() const {
     // Now add all handle modifications to the trace, ordered by the .order field.
     mHandleModifications.forEachLiveComponent_const(
         [&orderedModifies](bool live, uint64_t componentHandle, uint64_t entityHandle,
-                           const HandleModification& mod) { orderedModifies.push_back(mod); });
+                           const HandleModification& mod) { 
+        if (!mod.corrupted) {
+            orderedModifies.push_back(mod);} });
 
     // Sort by the |order| field for each modify API
     // since it may be important to apply modifies in a particular

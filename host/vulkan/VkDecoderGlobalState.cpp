@@ -481,12 +481,18 @@ class VkDecoderGlobalState::Impl {
         // Save mapped memory
         uint32_t memoryCount = 0;
         for (const auto& it : mMemoryInfo) {
+            if (it.second.corrupted) {
+                continue;
+            }
             if (it.second.ptr) {
                 memoryCount++;
             }
         }
         stream->putBe32(memoryCount);
         for (const auto& it : mMemoryInfo) {
+            if (it.second.corrupted) {
+                continue;
+            }
             if (!it.second.ptr) {
                 continue;
             }
@@ -501,6 +507,7 @@ class VkDecoderGlobalState::Impl {
 
         std::vector<VkImage> sortedBoxedImages;
         for (const auto& imageIte : mImageInfo) {
+            if (imageIte.second.corrupted) { continue; }
             sortedBoxedImages.push_back(unboxed_to_boxed_non_dispatchable_VkImage(imageIte.first));
         }
         // Image contents need to be saved and loaded in the same order.
@@ -524,6 +531,7 @@ class VkDecoderGlobalState::Impl {
         // snapshot buffers
         std::vector<VkBuffer> sortedBoxedBuffers;
         for (const auto& bufferIte : mBufferInfo) {
+            if (bufferIte.second.corrupted) { continue; }
             sortedBoxedBuffers.push_back(
                 unboxed_to_boxed_non_dispatchable_VkBuffer(bufferIte.first));
         }
@@ -545,6 +553,7 @@ class VkDecoderGlobalState::Impl {
         // snapshot descriptors
         std::vector<VkDescriptorPool> sortedBoxedDescriptorPools;
         for (const auto& descriptorPoolIte : mDescriptorPoolInfo) {
+            if (descriptorPoolIte.second.corrupted) { continue; }
             auto boxed =
                 unboxed_to_boxed_non_dispatchable_VkDescriptorPool(descriptorPoolIte.first);
             sortedBoxedDescriptorPools.push_back(boxed);
@@ -681,6 +690,9 @@ class VkDecoderGlobalState::Impl {
         // Fences
         std::vector<VkFence> unsignaledFencesBoxed;
         for (const auto& fence : mFenceInfo) {
+            if (fence.second.corrupted) {
+                continue;
+            }
             if (!fence.second.boxed) {
                 continue;
             }
@@ -1851,6 +1863,11 @@ class VkDecoderGlobalState::Impl {
 
         // Fill out information about the logical device here.
         auto& deviceInfo = mDeviceInfo[*pDevice];
+        
+        RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+        const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
+        deviceInfo.corrupted = isCorrupted;
+
         deviceInfo.physicalDevice = physicalDevice;
         deviceInfo.emulateTextureEtc2 = emulateTextureEtc2;
         deviceInfo.emulateTextureAstc = emulateTextureAstc;
@@ -2108,6 +2125,9 @@ class VkDecoderGlobalState::Impl {
         if (result == VK_SUCCESS) {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto& bufInfo = mBufferInfo[*pBuffer];
+            RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+            const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
+            bufInfo.corrupted = isCorrupted;
             bufInfo.device = device;
             bufInfo.usage = pCreateInfo->usage;
             bufInfo.size = pCreateInfo->size;
@@ -2312,8 +2332,11 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
+        RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+        const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
         auto& imageInfo = mImageInfo[*pImage];
         imageInfo.device = device;
+        imageInfo.corrupted = isCorrupted;
         imageInfo.cmpInfo = std::move(cmpInfo);
         imageInfo.imageCreateInfoShallow = vk_make_orphan_copy(*pCreateInfo);
         imageInfo.layout = pCreateInfo->initialLayout;
@@ -2852,6 +2875,9 @@ class VkDecoderGlobalState::Impl {
             DCHECK(fenceReused || mFenceInfo.find(*pFence) == mFenceInfo.end());
             // Create FenceInfo for *pFence.
             auto& fenceInfo = mFenceInfo[*pFence];
+            RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+            const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
+            fenceInfo.corrupted = isCorrupted;
             fenceInfo.device = device;
             fenceInfo.vk = vk;
             fenceInfo.isWaitablePromise.reset(new std::promise<void>());
@@ -3229,6 +3255,9 @@ class VkDecoderGlobalState::Impl {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto& info = mDescriptorPoolInfo[*pDescriptorPool];
             info.device = device;
+            RenderThreadInfoVk* tInfo = RenderThreadInfoVk::get();
+            const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
+            info.corrupted = isCorrupted;
             *pDescriptorPool = new_boxed_non_dispatchable_VkDescriptorPool(*pDescriptorPool);
             info.boxed = *pDescriptorPool;
             info.createInfo = *pCreateInfo;
@@ -5124,6 +5153,10 @@ class VkDecoderGlobalState::Impl {
         memoryInfo.size = localAllocInfo.allocationSize;
         memoryInfo.device = device;
         memoryInfo.memoryIndex = localAllocInfo.memoryTypeIndex;
+
+        const bool isCorrupted = tInfo && tInfo->isSnapshotCorrupted();
+        memoryInfo.corrupted = isCorrupted;
+
 
         if (importCbInfoPtr) {
             memoryInfo.boundColorBuffer = importCbInfoPtr->colorBuffer;
@@ -7630,10 +7663,6 @@ class VkDecoderGlobalState::Impl {
         AutoLock lock(sBoxedHandleManager.lock);                                                  \
         auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
         if (!elt) {                                                                               \
-            if constexpr (!std::is_same_v<type, VkFence>) {                                       \
-                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))                                   \
-                    << "Unbox " << boxed << " failed, not found.";                                \
-            }                                                                                     \
             return VK_NULL_HANDLE;                                                                \
         }                                                                                         \
         return (type)elt->underlying;                                                             \
