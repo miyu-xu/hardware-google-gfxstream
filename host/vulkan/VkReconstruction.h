@@ -67,6 +67,7 @@ class VkReconstruction {
             std::vector<HandleReconstruction>(HANDLE_STATE_COUNT);
         bool delayed_destroy = false;
         bool destroying = false;
+        bool corrupted = false;
     };
 
     using HandleWithStateReconstructions =
@@ -75,6 +76,7 @@ class VkReconstruction {
     struct HandleModification {
         std::vector<ApiHandle> apiRefs;
         uint32_t order = 0;
+        bool corrupted = false;
     };
 
     using HandleModifications =
