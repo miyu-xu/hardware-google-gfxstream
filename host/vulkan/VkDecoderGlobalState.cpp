@@ -1046,8 +1046,8 @@ class VkDecoderGlobalState::Impl {
         if (!m_emu->features.VulkanSnapshots.enabled ||
             (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
              kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
-            get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+            //get_emugl_vm_operations().setSkipSnapshotSave(true);
+            //get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
         }
 #endif
         // Box it up
@@ -5749,6 +5749,11 @@ class VkDecoderGlobalState::Impl {
 
     VkResult dispatchVkQueueSubmit(VulkanDispatch* vk, VkQueue unboxed_queue, uint32_t submitCount,
                                    const VkSubmitInfo* pSubmits, VkFence fence) {
+            if (unboxed_queue == 0x0) {
+                VkResult result = VK_INCOMPLETE;
+                WARN("dispatchVkQueueSubmit failed empty queue: %s [%d]", string_VkResult(result), result);
+                return result;
+            }
         return vk->vkQueueSubmit(unboxed_queue, submitCount, pSubmits, fence);
     }
 
@@ -5804,6 +5809,7 @@ class VkDecoderGlobalState::Impl {
                               uint32_t submitCount, const VkSubmitInfoType* pSubmits,
                               VkFence fence) {
         auto queue = unbox_VkQueue(boxed_queue);
+        if (!queue) return VK_SUCCESS;
         auto vk = dispatch_VkQueue(boxed_queue);
 
         std::unordered_set<HandleType> acquiredColorBuffers;
@@ -5956,6 +5962,11 @@ class VkDecoderGlobalState::Impl {
         VkResult result;
         {
             AutoLock qlock(*ql);
+            if (queue == 0x0) {
+                result = VK_INCOMPLETE;
+                WARN("dispatchVkQueueSubmit failed empty queue: %s [%d]", string_VkResult(result), result);
+                return result;
+            }
             result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
         }
         if (result != VK_SUCCESS) {
@@ -6411,6 +6422,7 @@ class VkDecoderGlobalState::Impl {
                                      const VkCommandBufferBeginInfo* pBeginInfo,
                                      const VkDecoderContext& context) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
+        fprintf(stderr, "%s %d boxed commdna dbuffer %p unboxed %p\n", __func__, __LINE__, boxed_commandBuffer, commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
         VkResult result = vk->vkBeginCommandBuffer(commandBuffer, pBeginInfo);
 

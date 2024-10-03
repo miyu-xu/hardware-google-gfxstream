@@ -1286,6 +1286,21 @@ INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests,
                         }),
                         &GetTestName);
 
+INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkSnapshotPipelineTest,
+                        ::testing::ValuesIn({
+                            TestParams{
+                                .with_gl = false,
+                                .with_vk = true,
+                                .with_features = {"VulkanSnapshots"},
+                            },
+                            TestParams{
+                                .with_gl = false,
+                                .with_vk = true,
+                                .with_features = {"VulkanSnapshots"},
+                            },
+                        }),
+                        &GetTestName);
+
 }  // namespace
 }  // namespace tests
 }  // namespace gfxstream
