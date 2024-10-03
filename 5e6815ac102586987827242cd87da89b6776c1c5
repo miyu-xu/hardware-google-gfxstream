@@ -51,6 +51,24 @@
       "parentUuid": "959a02cb_fb6600a6",
       "revId": "5e6815ac102586987827242cd87da89b6776c1c5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c562860c_df22b256",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-03T14:37:54Z",
+      "side": 1,
+      "message": "I\u0027ve adjusted the CL and bug ticket for GL_KHR_blend_equation_advanced. @joshuaduong@google.com, fyi.",
+      "parentUuid": "72a838d4_6c36e5ce",
+      "revId": "5e6815ac102586987827242cd87da89b6776c1c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
