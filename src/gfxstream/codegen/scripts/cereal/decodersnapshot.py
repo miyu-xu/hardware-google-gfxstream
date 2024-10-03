@@ -226,6 +226,7 @@ apiSpecialImplementation = {
 
 apiModifies = {
     "vkMapMemoryIntoAddressSpaceGOOGLE" : ["memory"],
+    "vkQueueFlushCommandsGOOGLE" : ["commandBuffer"],
     "vkGetBlobGOOGLE" : ["memory"],
     "vkBeginCommandBuffer" : ["commandBuffer"],
     "vkEndCommandBuffer" : ["commandBuffer"],
