@@ -59,7 +59,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
         switch (opcode) {
 #ifdef VK_VERSION_1_0
             case OP_vkBeginCommandBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkBeginCommandBuffer");
                 const VkCommandBufferBeginInfo* pBeginInfo;
                 VkCommandBufferBeginInfo stack_pBeginInfo[1];
@@ -80,7 +80,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkEndCommandBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkEndCommandBuffer");
                 VkResult vkEndCommandBuffer_VkResult_return = (VkResult)0;
                 vkEndCommandBuffer_VkResult_return = this->on_vkEndCommandBuffer(
@@ -91,7 +91,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkResetCommandBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkResetCommandBuffer");
                 VkCommandBufferResetFlags flags;
                 memcpy((VkCommandBufferResetFlags*)&flags, *readStreamPtrPtr,
@@ -106,7 +106,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBindPipeline: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindPipeline");
                 VkPipelineBindPoint pipelineBindPoint;
                 VkPipeline pipeline;
@@ -122,7 +122,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetViewport: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetViewport");
                 uint32_t firstViewport;
                 uint32_t viewportCount;
@@ -152,7 +152,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetScissor: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetScissor");
                 uint32_t firstScissor;
                 uint32_t scissorCount;
@@ -182,7 +182,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetLineWidth: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetLineWidth");
                 float lineWidth;
                 memcpy((float*)&lineWidth, *readStreamPtrPtr, sizeof(float));
@@ -191,7 +191,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthBias: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthBias");
                 float depthBiasConstantFactor;
                 float depthBiasClamp;
@@ -207,7 +207,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetBlendConstants: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetBlendConstants");
                 float blendConstants[4];
                 memcpy((float*)blendConstants, *readStreamPtrPtr, 4 * sizeof(const float));
@@ -216,7 +216,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthBounds: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthBounds");
                 float minDepthBounds;
                 float maxDepthBounds;
@@ -229,7 +229,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetStencilCompareMask: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetStencilCompareMask");
                 VkStencilFaceFlags faceMask;
                 uint32_t compareMask;
@@ -243,7 +243,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetStencilWriteMask: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetStencilWriteMask");
                 VkStencilFaceFlags faceMask;
                 uint32_t writeMask;
@@ -256,7 +256,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetStencilReference: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetStencilReference");
                 VkStencilFaceFlags faceMask;
                 uint32_t reference;
@@ -269,7 +269,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBindDescriptorSets: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindDescriptorSets");
                 VkPipelineBindPoint pipelineBindPoint;
                 VkPipelineLayout layout;
@@ -327,7 +327,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBindIndexBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindIndexBuffer");
                 VkBuffer buffer;
                 VkDeviceSize offset;
@@ -345,7 +345,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBindVertexBuffers: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindVertexBuffers");
                 uint32_t firstBinding;
                 uint32_t bindingCount;
@@ -386,7 +386,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDraw: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY, "VkSubDecoder vkCmdDraw");
+                fprintf(stderr, "VkSubDecoder vkCmdDraw");
                 uint32_t vertexCount;
                 uint32_t instanceCount;
                 uint32_t firstVertex;
@@ -404,7 +404,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDrawIndexed: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDrawIndexed");
                 uint32_t indexCount;
                 uint32_t instanceCount;
@@ -426,7 +426,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDrawIndirect: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDrawIndirect");
                 VkBuffer buffer;
                 VkDeviceSize offset;
@@ -447,7 +447,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDrawIndexedIndirect: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDrawIndexedIndirect");
                 VkBuffer buffer;
                 VkDeviceSize offset;
@@ -468,7 +468,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDispatch: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDispatch");
                 uint32_t groupCountX;
                 uint32_t groupCountY;
@@ -484,7 +484,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDispatchIndirect: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDispatchIndirect");
                 VkBuffer buffer;
                 VkDeviceSize offset;
@@ -498,7 +498,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyBuffer");
                 VkBuffer srcBuffer;
                 VkBuffer dstBuffer;
@@ -535,7 +535,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyImage: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyImage");
                 VkImage srcImage;
                 VkImageLayout srcImageLayout;
@@ -579,7 +579,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBlitImage: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBlitImage");
                 VkImage srcImage;
                 VkImageLayout srcImageLayout;
@@ -625,7 +625,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyBufferToImage: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyBufferToImage");
                 VkBuffer srcBuffer;
                 VkImage dstImage;
@@ -668,7 +668,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyImageToBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyImageToBuffer");
                 VkImage srcImage;
                 VkImageLayout srcImageLayout;
@@ -711,7 +711,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdUpdateBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdUpdateBuffer");
                 VkBuffer dstBuffer;
                 VkDeviceSize dstOffset;
@@ -738,7 +738,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdFillBuffer: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdFillBuffer");
                 VkBuffer dstBuffer;
                 VkDeviceSize dstOffset;
@@ -759,7 +759,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdClearColorImage: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdClearColorImage");
                 VkImage image;
                 VkImageLayout imageLayout;
@@ -804,7 +804,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdClearDepthStencilImage: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdClearDepthStencilImage");
                 VkImage image;
                 VkImageLayout imageLayout;
@@ -851,7 +851,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdClearAttachments: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdClearAttachments");
                 uint32_t attachmentCount;
                 const VkClearAttachment* pAttachments;
@@ -899,7 +899,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdResolveImage: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdResolveImage");
                 VkImage srcImage;
                 VkImageLayout srcImageLayout;
@@ -944,7 +944,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetEvent: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetEvent");
                 VkEvent event;
                 VkPipelineStageFlags stageMask;
@@ -959,7 +959,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdResetEvent: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdResetEvent");
                 VkEvent event;
                 VkPipelineStageFlags stageMask;
@@ -974,7 +974,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdWaitEvents: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdWaitEvents");
                 uint32_t eventCount;
                 const VkEvent* pEvents;
@@ -1079,7 +1079,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdPipelineBarrier: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdPipelineBarrier");
                 VkPipelineStageFlags srcStageMask;
                 VkPipelineStageFlags dstStageMask;
@@ -1168,7 +1168,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBeginQuery: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginQuery");
                 VkQueryPool queryPool;
                 uint32_t query;
@@ -1187,7 +1187,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndQuery: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndQuery");
                 VkQueryPool queryPool;
                 uint32_t query;
@@ -1202,7 +1202,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdResetQueryPool: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdResetQueryPool");
                 VkQueryPool queryPool;
                 uint32_t firstQuery;
@@ -1221,7 +1221,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdWriteTimestamp: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdWriteTimestamp");
                 VkPipelineStageFlagBits pipelineStage;
                 VkQueryPool queryPool;
@@ -1241,7 +1241,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyQueryPoolResults: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyQueryPoolResults");
                 VkQueryPool queryPool;
                 uint32_t firstQuery;
@@ -1275,7 +1275,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdPushConstants: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdPushConstants");
                 VkPipelineLayout layout;
                 VkShaderStageFlags stageFlags;
@@ -1307,7 +1307,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBeginRenderPass: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginRenderPass");
                 const VkRenderPassBeginInfo* pRenderPassBegin;
                 VkRenderPassBeginInfo stack_pRenderPassBegin[1];
@@ -1327,7 +1327,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdNextSubpass: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdNextSubpass");
                 VkSubpassContents contents;
                 memcpy((VkSubpassContents*)&contents, *readStreamPtrPtr, sizeof(VkSubpassContents));
@@ -1336,13 +1336,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndRenderPass: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndRenderPass");
                 vk->vkCmdEndRenderPass((VkCommandBuffer)dispatchHandle);
                 break;
             }
             case OP_vkCmdExecuteCommands: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdExecuteCommands");
                 uint32_t commandBufferCount;
                 const VkCommandBuffer* pCommandBuffers;
@@ -1373,7 +1373,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_VERSION_1_1
             case OP_vkCmdSetDeviceMask: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDeviceMask");
                 uint32_t deviceMask;
                 memcpy((uint32_t*)&deviceMask, *readStreamPtrPtr, sizeof(uint32_t));
@@ -1382,7 +1382,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDispatchBase: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDispatchBase");
                 uint32_t baseGroupX;
                 uint32_t baseGroupY;
@@ -1409,7 +1409,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_VERSION_1_2
             case OP_vkCmdDrawIndirectCount: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDrawIndirectCount");
                 VkBuffer buffer;
                 VkDeviceSize offset;
@@ -1438,7 +1438,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDrawIndexedIndirectCount: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDrawIndexedIndirectCount");
                 VkBuffer buffer;
                 VkDeviceSize offset;
@@ -1468,7 +1468,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBeginRenderPass2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginRenderPass2");
                 const VkRenderPassBeginInfo* pRenderPassBegin;
                 VkRenderPassBeginInfo stack_pRenderPassBegin[1];
@@ -1495,7 +1495,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdNextSubpass2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdNextSubpass2");
                 const VkSubpassBeginInfo* pSubpassBeginInfo;
                 VkSubpassBeginInfo stack_pSubpassBeginInfo[1];
@@ -1522,7 +1522,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndRenderPass2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndRenderPass2");
                 const VkSubpassEndInfo* pSubpassEndInfo;
                 VkSubpassEndInfo stack_pSubpassEndInfo[1];
@@ -1540,7 +1540,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_VERSION_1_3
             case OP_vkCmdSetEvent2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetEvent2");
                 VkEvent event;
                 const VkDependencyInfo* pDependencyInfo;
@@ -1561,7 +1561,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdResetEvent2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdResetEvent2");
                 VkEvent event;
                 VkPipelineStageFlags2 stageMask;
@@ -1576,7 +1576,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdWaitEvents2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdWaitEvents2");
                 uint32_t eventCount;
                 const VkEvent* pEvents;
@@ -1622,7 +1622,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdPipelineBarrier2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdPipelineBarrier2");
                 const VkDependencyInfo* pDependencyInfo;
                 VkDependencyInfo stack_pDependencyInfo[1];
@@ -1639,7 +1639,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdWriteTimestamp2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdWriteTimestamp2");
                 VkPipelineStageFlags2 stage;
                 VkQueryPool queryPool;
@@ -1658,7 +1658,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyBuffer2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyBuffer2");
                 const VkCopyBufferInfo2* pCopyBufferInfo;
                 VkCopyBufferInfo2 stack_pCopyBufferInfo[1];
@@ -1674,7 +1674,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyImage2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyImage2");
                 const VkCopyImageInfo2* pCopyImageInfo;
                 VkCopyImageInfo2 stack_pCopyImageInfo[1];
@@ -1691,7 +1691,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyBufferToImage2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyBufferToImage2");
                 const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo;
                 VkCopyBufferToImageInfo2 stack_pCopyBufferToImageInfo[1];
@@ -1708,7 +1708,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyImageToBuffer2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyImageToBuffer2");
                 const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo;
                 VkCopyImageToBufferInfo2 stack_pCopyImageToBufferInfo[1];
@@ -1725,7 +1725,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBlitImage2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBlitImage2");
                 const VkBlitImageInfo2* pBlitImageInfo;
                 VkBlitImageInfo2 stack_pBlitImageInfo[1];
@@ -1741,7 +1741,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdResolveImage2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdResolveImage2");
                 const VkResolveImageInfo2* pResolveImageInfo;
                 VkResolveImageInfo2 stack_pResolveImageInfo[1];
@@ -1757,7 +1757,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBeginRendering: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginRendering");
                 const VkRenderingInfo* pRenderingInfo;
                 VkRenderingInfo stack_pRenderingInfo[1];
@@ -1773,13 +1773,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndRendering: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndRendering");
                 vk->vkCmdEndRendering((VkCommandBuffer)dispatchHandle);
                 break;
             }
             case OP_vkCmdSetCullMode: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetCullMode");
                 VkCullModeFlags cullMode;
                 memcpy((VkCullModeFlags*)&cullMode, *readStreamPtrPtr, sizeof(VkCullModeFlags));
@@ -1788,7 +1788,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetFrontFace: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetFrontFace");
                 VkFrontFace frontFace;
                 memcpy((VkFrontFace*)&frontFace, *readStreamPtrPtr, sizeof(VkFrontFace));
@@ -1797,7 +1797,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetPrimitiveTopology: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetPrimitiveTopology");
                 VkPrimitiveTopology primitiveTopology;
                 memcpy((VkPrimitiveTopology*)&primitiveTopology, *readStreamPtrPtr,
@@ -1807,7 +1807,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetViewportWithCount: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetViewportWithCount");
                 uint32_t viewportCount;
                 const VkViewport* pViewports;
@@ -1834,7 +1834,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetScissorWithCount: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetScissorWithCount");
                 uint32_t scissorCount;
                 const VkRect2D* pScissors;
@@ -1861,7 +1861,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBindVertexBuffers2: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindVertexBuffers2");
                 uint32_t firstBinding;
                 uint32_t bindingCount;
@@ -1944,7 +1944,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthTestEnable: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthTestEnable");
                 VkBool32 depthTestEnable;
                 memcpy((VkBool32*)&depthTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -1953,7 +1953,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthWriteEnable: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthWriteEnable");
                 VkBool32 depthWriteEnable;
                 memcpy((VkBool32*)&depthWriteEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -1962,7 +1962,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthCompareOp: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthCompareOp");
                 VkCompareOp depthCompareOp;
                 memcpy((VkCompareOp*)&depthCompareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
@@ -1971,7 +1971,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthBoundsTestEnable: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthBoundsTestEnable");
                 VkBool32 depthBoundsTestEnable;
                 memcpy((VkBool32*)&depthBoundsTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -1981,7 +1981,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetStencilTestEnable: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetStencilTestEnable");
                 VkBool32 stencilTestEnable;
                 memcpy((VkBool32*)&stencilTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -1990,7 +1990,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetStencilOp: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetStencilOp");
                 VkStencilFaceFlags faceMask;
                 VkStencilOp failOp;
@@ -2013,7 +2013,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetRasterizerDiscardEnable: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetRasterizerDiscardEnable");
                 VkBool32 rasterizerDiscardEnable;
                 memcpy((VkBool32*)&rasterizerDiscardEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2023,7 +2023,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthBiasEnable: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthBiasEnable");
                 VkBool32 depthBiasEnable;
                 memcpy((VkBool32*)&depthBiasEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2032,7 +2032,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetPrimitiveRestartEnable: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetPrimitiveRestartEnable");
                 VkBool32 primitiveRestartEnable;
                 memcpy((VkBool32*)&primitiveRestartEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2044,7 +2044,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_KHR_dynamic_rendering
             case OP_vkCmdBeginRenderingKHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginRenderingKHR");
                 const VkRenderingInfo* pRenderingInfo;
                 VkRenderingInfo stack_pRenderingInfo[1];
@@ -2060,7 +2060,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndRenderingKHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndRenderingKHR");
                 vk->vkCmdEndRenderingKHR((VkCommandBuffer)dispatchHandle);
                 break;
@@ -2068,7 +2068,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_KHR_create_renderpass2
             case OP_vkCmdBeginRenderPass2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginRenderPass2KHR");
                 const VkRenderPassBeginInfo* pRenderPassBegin;
                 VkRenderPassBeginInfo stack_pRenderPassBegin[1];
@@ -2095,7 +2095,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdNextSubpass2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdNextSubpass2KHR");
                 const VkSubpassBeginInfo* pSubpassBeginInfo;
                 VkSubpassBeginInfo stack_pSubpassBeginInfo[1];
@@ -2122,7 +2122,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndRenderPass2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndRenderPass2KHR");
                 const VkSubpassEndInfo* pSubpassEndInfo;
                 VkSubpassEndInfo stack_pSubpassEndInfo[1];
@@ -2140,7 +2140,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_KHR_synchronization2
             case OP_vkCmdSetEvent2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetEvent2KHR");
                 VkEvent event;
                 const VkDependencyInfo* pDependencyInfo;
@@ -2161,7 +2161,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdResetEvent2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdResetEvent2KHR");
                 VkEvent event;
                 VkPipelineStageFlags2 stageMask;
@@ -2176,7 +2176,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdWaitEvents2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdWaitEvents2KHR");
                 uint32_t eventCount;
                 const VkEvent* pEvents;
@@ -2222,7 +2222,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdPipelineBarrier2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdPipelineBarrier2KHR");
                 const VkDependencyInfo* pDependencyInfo;
                 VkDependencyInfo stack_pDependencyInfo[1];
@@ -2238,7 +2238,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdWriteTimestamp2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdWriteTimestamp2KHR");
                 VkPipelineStageFlags2 stage;
                 VkQueryPool queryPool;
@@ -2258,7 +2258,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdWriteBufferMarker2AMD: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdWriteBufferMarker2AMD");
                 VkPipelineStageFlags2 stage;
                 VkBuffer dstBuffer;
@@ -2282,7 +2282,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_KHR_copy_commands2
             case OP_vkCmdCopyBuffer2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyBuffer2KHR");
                 const VkCopyBufferInfo2* pCopyBufferInfo;
                 VkCopyBufferInfo2 stack_pCopyBufferInfo[1];
@@ -2298,7 +2298,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyImage2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyImage2KHR");
                 const VkCopyImageInfo2* pCopyImageInfo;
                 VkCopyImageInfo2 stack_pCopyImageInfo[1];
@@ -2315,7 +2315,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyBufferToImage2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyBufferToImage2KHR");
                 const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo;
                 VkCopyBufferToImageInfo2 stack_pCopyBufferToImageInfo[1];
@@ -2332,7 +2332,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdCopyImageToBuffer2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdCopyImageToBuffer2KHR");
                 const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo;
                 VkCopyImageToBufferInfo2 stack_pCopyImageToBufferInfo[1];
@@ -2349,7 +2349,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBlitImage2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBlitImage2KHR");
                 const VkBlitImageInfo2* pBlitImageInfo;
                 VkBlitImageInfo2 stack_pBlitImageInfo[1];
@@ -2365,7 +2365,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdResolveImage2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdResolveImage2KHR");
                 const VkResolveImageInfo2* pResolveImageInfo;
                 VkResolveImageInfo2 stack_pResolveImageInfo[1];
@@ -2383,7 +2383,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_KHR_maintenance5
             case OP_vkCmdBindIndexBuffer2KHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindIndexBuffer2KHR");
                 VkBuffer buffer;
                 VkDeviceSize offset;
@@ -2406,7 +2406,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_EXT_transform_feedback
             case OP_vkCmdBindTransformFeedbackBuffersEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindTransformFeedbackBuffersEXT");
                 uint32_t firstBinding;
                 uint32_t bindingCount;
@@ -2465,7 +2465,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBeginTransformFeedbackEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginTransformFeedbackEXT");
                 uint32_t firstCounterBuffer;
                 uint32_t counterBufferCount;
@@ -2521,7 +2521,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndTransformFeedbackEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndTransformFeedbackEXT");
                 uint32_t firstCounterBuffer;
                 uint32_t counterBufferCount;
@@ -2577,7 +2577,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBeginQueryIndexedEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginQueryIndexedEXT");
                 VkQueryPool queryPool;
                 uint32_t query;
@@ -2600,7 +2600,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndQueryIndexedEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndQueryIndexedEXT");
                 VkQueryPool queryPool;
                 uint32_t query;
@@ -2619,7 +2619,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdDrawIndirectByteCountEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdDrawIndirectByteCountEXT");
                 uint32_t instanceCount;
                 uint32_t firstInstance;
@@ -2650,7 +2650,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_EXT_debug_utils
             case OP_vkCmdBeginDebugUtilsLabelEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBeginDebugUtilsLabelEXT");
                 const VkDebugUtilsLabelEXT* pLabelInfo;
                 VkDebugUtilsLabelEXT stack_pLabelInfo[1];
@@ -2666,13 +2666,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdEndDebugUtilsLabelEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdEndDebugUtilsLabelEXT");
                 vk->vkCmdEndDebugUtilsLabelEXT((VkCommandBuffer)dispatchHandle);
                 break;
             }
             case OP_vkCmdInsertDebugUtilsLabelEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdInsertDebugUtilsLabelEXT");
                 const VkDebugUtilsLabelEXT* pLabelInfo;
                 VkDebugUtilsLabelEXT stack_pLabelInfo[1];
@@ -2690,7 +2690,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_EXT_line_rasterization
             case OP_vkCmdSetLineStippleEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetLineStippleEXT");
                 uint32_t lineStippleFactor;
                 uint16_t lineStipplePattern;
@@ -2705,7 +2705,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_EXT_extended_dynamic_state
             case OP_vkCmdSetCullModeEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetCullModeEXT");
                 VkCullModeFlags cullMode;
                 memcpy((VkCullModeFlags*)&cullMode, *readStreamPtrPtr, sizeof(VkCullModeFlags));
@@ -2714,7 +2714,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetFrontFaceEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetFrontFaceEXT");
                 VkFrontFace frontFace;
                 memcpy((VkFrontFace*)&frontFace, *readStreamPtrPtr, sizeof(VkFrontFace));
@@ -2723,7 +2723,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetPrimitiveTopologyEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetPrimitiveTopologyEXT");
                 VkPrimitiveTopology primitiveTopology;
                 memcpy((VkPrimitiveTopology*)&primitiveTopology, *readStreamPtrPtr,
@@ -2734,7 +2734,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetViewportWithCountEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetViewportWithCountEXT");
                 uint32_t viewportCount;
                 const VkViewport* pViewports;
@@ -2761,7 +2761,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetScissorWithCountEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetScissorWithCountEXT");
                 uint32_t scissorCount;
                 const VkRect2D* pScissors;
@@ -2788,7 +2788,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdBindVertexBuffers2EXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdBindVertexBuffers2EXT");
                 uint32_t firstBinding;
                 uint32_t bindingCount;
@@ -2871,7 +2871,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthTestEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthTestEnableEXT");
                 VkBool32 depthTestEnable;
                 memcpy((VkBool32*)&depthTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2880,7 +2880,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthWriteEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthWriteEnableEXT");
                 VkBool32 depthWriteEnable;
                 memcpy((VkBool32*)&depthWriteEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2889,7 +2889,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthCompareOpEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthCompareOpEXT");
                 VkCompareOp depthCompareOp;
                 memcpy((VkCompareOp*)&depthCompareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
@@ -2898,7 +2898,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthBoundsTestEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthBoundsTestEnableEXT");
                 VkBool32 depthBoundsTestEnable;
                 memcpy((VkBool32*)&depthBoundsTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2908,7 +2908,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetStencilTestEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetStencilTestEnableEXT");
                 VkBool32 stencilTestEnable;
                 memcpy((VkBool32*)&stencilTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2918,7 +2918,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetStencilOpEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetStencilOpEXT");
                 VkStencilFaceFlags faceMask;
                 VkStencilOp failOp;
@@ -2943,7 +2943,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_EXT_extended_dynamic_state2
             case OP_vkCmdSetPatchControlPointsEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetPatchControlPointsEXT");
                 uint32_t patchControlPoints;
                 memcpy((uint32_t*)&patchControlPoints, *readStreamPtrPtr, sizeof(uint32_t));
@@ -2953,7 +2953,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetRasterizerDiscardEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetRasterizerDiscardEnableEXT");
                 VkBool32 rasterizerDiscardEnable;
                 memcpy((VkBool32*)&rasterizerDiscardEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2963,7 +2963,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetDepthBiasEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetDepthBiasEnableEXT");
                 VkBool32 depthBiasEnable;
                 memcpy((VkBool32*)&depthBiasEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2972,7 +2972,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetLogicOpEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetLogicOpEXT");
                 VkLogicOp logicOp;
                 memcpy((VkLogicOp*)&logicOp, *readStreamPtrPtr, sizeof(VkLogicOp));
@@ -2981,7 +2981,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetPrimitiveRestartEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetPrimitiveRestartEnableEXT");
                 VkBool32 primitiveRestartEnable;
                 memcpy((VkBool32*)&primitiveRestartEnable, *readStreamPtrPtr, sizeof(VkBool32));
@@ -2993,7 +2993,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_EXT_color_write_enable
             case OP_vkCmdSetColorWriteEnableEXT: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetColorWriteEnableEXT");
                 uint32_t attachmentCount;
                 const VkBool32* pColorWriteEnables;
@@ -3016,7 +3016,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_GOOGLE_gfxstream
             case OP_vkBeginCommandBufferAsyncGOOGLE: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkBeginCommandBufferAsyncGOOGLE");
                 const VkCommandBufferBeginInfo* pBeginInfo;
                 VkCommandBufferBeginInfo stack_pBeginInfo[1];
@@ -3033,14 +3033,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkEndCommandBufferAsyncGOOGLE: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkEndCommandBufferAsyncGOOGLE");
                 this->on_vkEndCommandBufferAsyncGOOGLE(
                     pool, (VkCommandBuffer)(boxed_dispatchHandle), context);
                 break;
             }
             case OP_vkResetCommandBufferAsyncGOOGLE: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkResetCommandBufferAsyncGOOGLE");
                 VkCommandBufferResetFlags flags;
                 memcpy((VkCommandBufferResetFlags*)&flags, *readStreamPtrPtr,
@@ -3051,7 +3051,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCommandBufferHostSyncGOOGLE: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCommandBufferHostSyncGOOGLE");
                 uint32_t needHostSync;
                 uint32_t sequenceNumber;
@@ -3066,7 +3066,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
             case OP_vkCmdTraceRaysKHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdTraceRaysKHR");
                 const VkStridedDeviceAddressRegionKHR* pRaygenShaderBindingTable;
                 VkStridedDeviceAddressRegionKHR stack_pRaygenShaderBindingTable[1];
@@ -3130,7 +3130,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdTraceRaysIndirectKHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdTraceRaysIndirectKHR");
                 const VkStridedDeviceAddressRegionKHR* pRaygenShaderBindingTable;
                 VkStridedDeviceAddressRegionKHR stack_pRaygenShaderBindingTable[1];
@@ -3190,7 +3190,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 break;
             }
             case OP_vkCmdSetRayTracingPipelineStackSizeKHR: {
-                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                fprintf(stderr,
                                       "VkSubDecoder vkCmdSetRayTracingPipelineStackSizeKHR");
                 uint32_t pipelineStackSize;
                 memcpy((uint32_t*)&pipelineStackSize, *readStreamPtrPtr, sizeof(uint32_t));

@@ -3726,8 +3726,8 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.setApiTrace(apiInfo, OP_vkQueueFlushCommandsGOOGLE, snapshotTraceBegin,
                                     snapshotTraceBytes);
         for (uint32_t i = 0; i < 1; ++i) {
-            VkCommandBuffer boxed = unboxed_to_boxed_VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
+            //VkCommandBuffer boxed = unboxed_to_boxed_VkCommandBuffer((&commandBuffer)[i]);
+            mReconstruction.forEachHandleAddModifyApi((const uint64_t *)(&commandBuffer), 1, apiHandle);
         }
     }
     void vkQueueCommitDescriptorSetUpdatesGOOGLE(
