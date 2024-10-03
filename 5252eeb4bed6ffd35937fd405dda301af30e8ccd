@@ -80,6 +80,30 @@
       },
       "revId": "5252eeb4bed6ffd35937fd405dda301af30e8ccd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "943c659d_4780fb04",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 7633,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-03T08:39:37Z",
+      "side": 1,
+      "message": "Agreed, I think this way is better for now. \nAvoiding crashes of the whole emulator due to invalid vulkan usage may still require a better handling in the future though.",
+      "parentUuid": "58b6ba9f_bfdec614",
+      "range": {
+        "startLine": 7631,
+        "startChar": 2,
+        "endLine": 7633,
+        "endChar": 70
+      },
+      "revId": "5252eeb4bed6ffd35937fd405dda301af30e8ccd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

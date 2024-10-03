@@ -16,6 +16,24 @@
       "message": "Note: this is the public repository.\n\nThis CL is needed for snapshotting b/333460261. If you want to test b/333460261 please cp this locally. Please report crashes to me if there is any.\n\nI am writing unittests for this CL but if I cannot finish them on time, I will merge this as it is.",
       "revId": "faf3d215779dfb44d5f2269dcc85926dd344c36a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4d23394_b79674ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-03T08:39:37Z",
+      "side": 1,
+      "message": "decoder.py is re-added with aosp/3284505, can you add the changes on that and any generated code into this CL as well?",
+      "parentUuid": "774bf287_295883ad",
+      "revId": "faf3d215779dfb44d5f2269dcc85926dd344c36a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
