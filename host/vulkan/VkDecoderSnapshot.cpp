@@ -3718,7 +3718,18 @@ class VkDecoderSnapshot::Impl {
     void vkQueueFlushCommandsGOOGLE(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkQueue queue,
                                     VkCommandBuffer commandBuffer, VkDeviceSize dataSize,
-                                    const void* pData) {}
+                                    const void* pData) {
+        android::base::AutoLock lock(mLock);
+        // commandBuffer modify
+        auto apiHandle = mReconstruction.createApiInfo();
+        auto apiInfo = mReconstruction.getApiInfo(apiHandle);
+        mReconstruction.setApiTrace(apiInfo, OP_vkQueueFlushCommandsGOOGLE, snapshotTraceBegin,
+                                    snapshotTraceBytes);
+        for (uint32_t i = 0; i < 1; ++i) {
+            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
+            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
+        }
+    }
     void vkQueueCommitDescriptorSetUpdatesGOOGLE(
         const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes, android::base::BumpPool* pool,
         VkQueue queue, uint32_t descriptorPoolCount, const VkDescriptorPool* pDescriptorPools,

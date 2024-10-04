@@ -227,6 +227,7 @@ apiSpecialImplementation = {
 apiModifies = {
     "vkMapMemoryIntoAddressSpaceGOOGLE" : ["memory"],
     "vkGetBlobGOOGLE" : ["memory"],
+    "vkQueueFlushCommandsGOOGLE" : ["commandBuffer"],
     "vkBeginCommandBuffer" : ["commandBuffer"],
     "vkEndCommandBuffer" : ["commandBuffer"],
 }
@@ -350,13 +351,17 @@ def emit_impl(typeInfo, api, cgen):
             cgen.stmt("auto apiHandle = mReconstruction.createApiInfo()")
             cgen.stmt("auto apiInfo = mReconstruction.getApiInfo(apiHandle)")
             cgen.stmt("mReconstruction.setApiTrace(apiInfo, OP_%s, snapshotTraceBegin, snapshotTraceBytes)" % api.name)
+            noUnbox = api.name in ["vkQueueFlushCommandsGOOGLE"]
             if lenAccessGuard is not None:
                 cgen.beginIf(lenAccessGuard)
             cgen.beginFor("uint32_t i = 0", "i < %s" % lenExpr, "++i")
-            if p.isNonDispatchableHandleType():
-                cgen.stmt("%s boxed = unboxed_to_boxed_non_dispatchable_%s(%s[i])" % (p.typeName, p.typeName, access))
+            if noUnbox:
+                cgen.stmt("%s boxed = %s(%s[i])" % (p.typeName, p.typeName, access))
             else:
-                cgen.stmt("%s boxed = unboxed_to_boxed_%s(%s[i])" % (p.typeName, p.typeName, access))
+                if p.isNonDispatchableHandleType():
+                    cgen.stmt("%s boxed = unboxed_to_boxed_non_dispatchable_%s(%s[i])" % (p.typeName, p.typeName, access))
+                else:
+                    cgen.stmt("%s boxed = unboxed_to_boxed_%s(%s[i])" % (p.typeName, p.typeName, access))
             if is_modify_operation(api, p):
                 cgen.stmt("mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle)")
             else: # is clear modifier operation
