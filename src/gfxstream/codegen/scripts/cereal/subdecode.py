@@ -68,7 +68,7 @@ def emit_unmarshal(typeInfo, param, cgen, output=False, destroy=False, noUnbox=F
         if None == lenAccess or "1" == lenAccess:
             cgen.stmt("boxed_%s_preserve = %s" %
                       (param.paramName, param.paramName))
-            cgen.stmt("%s = unbox_%s(%s)" %
+            cgen.stmt("%s = try_unbox_%s(%s)" %
                       (param.paramName, param.typeName, param.paramName))
         else:
             if lenAccessGuard is not None:
@@ -76,7 +76,7 @@ def emit_unmarshal(typeInfo, param, cgen, output=False, destroy=False, noUnbox=F
             cgen.beginFor("uint32_t i = 0", "i < %s" % lenAccess, "++i")
             cgen.stmt("boxed_%s_preserve[i] = %s[i]" %
                       (param.paramName, param.paramName))
-            cgen.stmt("((%s*)(%s))[i] = unbox_%s(%s[i])" % (param.typeName,
+            cgen.stmt("((%s*)(%s))[i] = try_unbox_%s(%s[i])" % (param.typeName,
                                                             param.paramName, param.typeName, param.paramName))
             cgen.endFor()
             if lenAccessGuard is not None:
@@ -98,7 +98,7 @@ def emit_unmarshal(typeInfo, param, cgen, output=False, destroy=False, noUnbox=F
             param.paramName,
             "readStreamPtrPtr",
             API_PREFIX_RESERVEDUNMARSHAL,
-            "" if (output or noUnbox) else "unbox_",
+            "" if (output or noUnbox) else "try_unbox_",
             direction="read",
             dynAlloc=True,
             stackVar="stack_%s" % param.paramName,
@@ -135,7 +135,7 @@ def emit_dispatch_unmarshal(typeInfo, param, cgen, globalWrapped):
             "",
             direction="read",
             dynAlloc=True))
-        cgen.stmt("auto unboxed_%s = unbox_%s(%s)" %
+        cgen.stmt("auto unboxed_%s = try_unbox_%s(%s)" %
                   (param.paramName, param.typeName, param.paramName))
         cgen.stmt("auto vk = dispatch_%s(%s)" %
                   (param.typeName, param.paramName))
