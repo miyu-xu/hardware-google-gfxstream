@@ -34,6 +34,24 @@
       "parentUuid": "86d601f0_2bf06683",
       "revId": "a0534feac7784a302ab47b9b3e8d083903eea23d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff0ef762_5a01b5fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-10-07T20:41:35Z",
+      "side": 1,
+      "message": "Running with GuestAngle does not have these tests crashes, and it looks like, from CtsOpenglTestCases, that it is advertising the required extensions.",
+      "parentUuid": "6f5de249_9429c5b3",
+      "revId": "a0534feac7784a302ab47b9b3e8d083903eea23d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
