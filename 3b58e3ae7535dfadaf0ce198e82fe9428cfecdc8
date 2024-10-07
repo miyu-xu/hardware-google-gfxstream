@@ -34,6 +34,24 @@
       "parentUuid": "19c741b8_aebd73fd",
       "revId": "3b58e3ae7535dfadaf0ce198e82fe9428cfecdc8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11dd0f08_4b20f9f7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-07T17:14:41Z",
+      "side": 1,
+      "message": "Can you point me to the test code please, I understand the test is binding an invalid buffer? That might be ok in terms of spec with some vulkan calls, but this CL would avoid crashes with all unboxes on various case, which might create bigger and harder-to-find issues/crashes later on. \nIdeally we should fix those issues during the recording or saving time, and limit the try_ methods to the use specific cases.",
+      "parentUuid": "076df809_e1d20ed8",
+      "revId": "3b58e3ae7535dfadaf0ce198e82fe9428cfecdc8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
