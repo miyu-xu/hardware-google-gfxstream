@@ -16,6 +16,24 @@
       "message": "Previous CL was doing try_unbox based on the fact that vkdestroy* calls can be made after the root object is actually removed. e.g. vkDestroyImageView can be called after the corresponding image is removed. Is there a similar reasoning with this CL? I think if we add try_unbox* for command operations, they should be done in the very beginning, ie. don\u0027t record/submit any command buffers that has invalid/destroyed/un-unboxable objects.",
       "revId": "3b58e3ae7535dfadaf0ce198e82fe9428cfecdc8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "076df809_e1d20ed8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-10-07T16:26:46Z",
+      "side": 1,
+      "message": "serdar, this is to get the test failure pass that is caused by the snapshot\nsupport of vkqueueflushcommandsgoogle. there is lots of dependecy  of flushcommandgoogle on buffer, and during the test, the buffer was first destroyed; but then flushcommandgoogle still refers to it and caused crash of the test.\n\nso this cl will just return nullhandle if the buffer is destroied.\n\nideally, the buffer should not have been destroyed but it seems the dependency\nis getting very hard to detect based on current framework.",
+      "parentUuid": "19c741b8_aebd73fd",
+      "revId": "3b58e3ae7535dfadaf0ce198e82fe9428cfecdc8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
