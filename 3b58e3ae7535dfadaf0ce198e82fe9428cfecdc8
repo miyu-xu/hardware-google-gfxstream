@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19c741b8_aebd73fd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-07T15:39:34Z",
+      "side": 1,
+      "message": "Previous CL was doing try_unbox based on the fact that vkdestroy* calls can be made after the root object is actually removed. e.g. vkDestroyImageView can be called after the corresponding image is removed. Is there a similar reasoning with this CL? I think if we add try_unbox* for command operations, they should be done in the very beginning, ie. don\u0027t record/submit any command buffers that has invalid/destroyed/un-unboxable objects.",
+      "revId": "3b58e3ae7535dfadaf0ce198e82fe9428cfecdc8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
