@@ -16,6 +16,24 @@
       "message": "Trying this CL locally, it\u0027s making every dEQP-GLES* test crash at the end, which makes each test take ~10 seconds to run. This will cause our emutf deqp runs to timeout.",
       "revId": "a0534feac7784a302ab47b9b3e8d083903eea23d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f5de249_9429c5b3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-07T08:49:18Z",
+      "side": 1,
+      "message": "Do these tests work fine with GuestAngle? Maybe we should only advertise 3.1 support when GuestAngle is in use.",
+      "parentUuid": "86d601f0_2bf06683",
+      "revId": "a0534feac7784a302ab47b9b3e8d083903eea23d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
