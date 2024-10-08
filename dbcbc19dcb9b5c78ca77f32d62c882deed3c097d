@@ -50,6 +50,24 @@
       "message": "https://ci.android.com/builds/pending/P82343890/emulator-linux_aarch64/latest/view/logs%2Fbuild_error.log\n\nHmm, I was going off the assumption that all things QEMU-related were going through Rutabaga.\n\nCan somebody tell me about this \"qemu glue\"? Can we modify it to also remove these interfaces?",
       "revId": "dbcbc19dcb9b5c78ca77f32d62c882deed3c097d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "488cba8e_0984138e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-10-08T23:26:21Z",
+      "side": 1,
+      "message": "Upstream QEMU uses rutabaga.  The emulator actually uses a heavily forked version of QEMU 2.12.  But it seems the QEMU2.12 relies on this interface now, so I think we\u0027ll have to keep it around...",
+      "parentUuid": "4e121dee_77de71e5",
+      "revId": "dbcbc19dcb9b5c78ca77f32d62c882deed3c097d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
