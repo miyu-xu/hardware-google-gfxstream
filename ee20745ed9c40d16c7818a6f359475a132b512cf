@@ -16,6 +16,24 @@
       "message": "How about `BypassVulkanDeviceFeatureOverrides` for the name?",
       "revId": "ee20745ed9c40d16c7818a6f359475a132b512cf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "68dcaa5e_fc26f82c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1306,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-08T15:50:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dab194cd_eade0616",
+      "revId": "ee20745ed9c40d16c7818a6f359475a132b512cf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
