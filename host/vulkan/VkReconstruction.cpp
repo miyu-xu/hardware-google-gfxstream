@@ -65,6 +65,12 @@ void VkReconstruction::save(android::base::Stream* stream) {
     dump();
 #endif
 
+    mApiTrace.forEachLiveEntry([](bool live, uint64_t handle, ApiInfo& info) {
+        if (live) {
+            info.saved = false;
+        }
+    });
+
     std::unordered_map<HandleWithState, int, HandleWithStateHash> totalParents;
     std::vector<HandleWithState> next;
 
@@ -104,8 +110,11 @@ void VkReconstruction::save(android::base::Stream* stream) {
         for (const auto& handle : handles) {
             auto item = mHandleReconstructions.get(handle.first)->states[handle.second];
             for (uint64_t apiRef : item.apiRefs) {
-#if DEBUG_RECONSTRUCTION
                 auto apiItem = mApiTrace.get(apiRef);
+                if (!apiItem) continue;
+                if (apiItem->saved) continue;
+                apiItem->saved = true;
+#if DEBUG_RECONSTRUCTION
                 DEBUG_RECON("adding handle 0x%lx API 0x%lx op code %d\n", handle.first, apiRef,
                             apiItem->opCode);
 #endif
@@ -267,10 +276,28 @@ VkReconstruction::ApiHandle VkReconstruction::createApiInfo() {
     return handle;
 }
 
+void VkReconstruction::removeHandleFromApiInfo(VkReconstruction::ApiHandle h, uint64_t toRemove) {
+    auto vk_item = mHandleReconstructions.get(toRemove);
+    if (!vk_item) return;
+    auto apiInfo = mApiTrace.get(h);
+    if (!apiInfo) return;
+
+    auto& handles = apiInfo->createdHandles;
+    auto it = std::find(handles.begin(), handles.end(), toRemove);
+
+    if (it != handles.end()) {
+        handles.erase(it);
+    }
+    DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
+                (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
+}
+
 void VkReconstruction::destroyApiInfo(VkReconstruction::ApiHandle h) {
     auto item = mApiTrace.get(h);
 
     if (!item) return;
+
+    if (!item->createdHandles.empty()) return;
 
     item->traceBytes = 0;
     item->createdHandles.clear();
@@ -428,6 +455,7 @@ void VkReconstruction::forEachHandleDeleteApi(const uint64_t* toProcess, uint32_
 
         for (auto& state : item->states) {
             for (auto handle : state.apiRefs) {
+                removeHandleFromApiInfo(handle, toProcess[i]);
                 destroyApiInfo(handle);
             }
             state.apiRefs.clear();
