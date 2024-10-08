@@ -178,7 +178,6 @@ TEST_F(GfxStreamBackendTest, DISABLED_ApiCallLinkTest) {
     stream_renderer_create_fence(NULL);
     stream_renderer_ctx_attach_resource(0, 0);
     stream_renderer_ctx_detach_resource(0, 0);
-    stream_renderer_resource_get_info(0, 0);
 }
 
 TEST_F(GfxStreamBackendTest, MinimumRequiredParameters) {

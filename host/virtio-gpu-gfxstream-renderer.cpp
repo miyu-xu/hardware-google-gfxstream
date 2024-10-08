@@ -1957,52 +1957,6 @@ class PipeVirglRenderer {
         detachResourceLocked(ctxId, toUnrefId);
     }
 
-    int getResourceInfo(uint32_t resId, struct stream_renderer_resource_info* info) {
-        stream_renderer_debug("resid: %u", resId);
-        if (!info) return EINVAL;
-
-        auto it = mResources.find(resId);
-        if (it == mResources.end()) return ENOENT;
-
-        auto& entry = it->second;
-
-        uint32_t bpp = 4U;
-        switch (entry.args.format) {
-            case VIRGL_FORMAT_B8G8R8A8_UNORM:
-                info->drm_fourcc = DRM_FORMAT_ARGB8888;
-                break;
-            case VIRGL_FORMAT_B8G8R8X8_UNORM:
-                info->drm_fourcc = DRM_FORMAT_XRGB8888;
-                break;
-            case VIRGL_FORMAT_B5G6R5_UNORM:
-                info->drm_fourcc = DRM_FORMAT_RGB565;
-                bpp = 2U;
-                break;
-            case VIRGL_FORMAT_R8G8B8A8_UNORM:
-                info->drm_fourcc = DRM_FORMAT_ABGR8888;
-                break;
-            case VIRGL_FORMAT_R8G8B8X8_UNORM:
-                info->drm_fourcc = DRM_FORMAT_XBGR8888;
-                break;
-            case VIRGL_FORMAT_R8_UNORM:
-                info->drm_fourcc = DRM_FORMAT_R8;
-                bpp = 1U;
-                break;
-            default:
-                return EINVAL;
-        }
-
-        info->stride = align_up(entry.args.width * bpp, 16U);
-        info->virgl_format = entry.args.format;
-        info->handle = entry.args.handle;
-        info->height = entry.args.height;
-        info->width = entry.args.width;
-        info->depth = entry.args.depth;
-        info->flags = entry.args.flags;
-        info->tex_id = 0;
-        return 0;
-    }
-
     void flushResource(uint32_t res_handle) {
         auto taskId = mVirtioGpuTimelines->enqueueTask(VirtioGpuRingGlobal{});
         gfxstream::FrameBuffer::getFB()->postWithCallback(
@@ -2186,17 +2140,6 @@ class PipeVirglRenderer {
         if (it == mResources.end()) return -EINVAL;
         bool success =
             gfxstream::FrameBuffer::getFB()->platformImportResource(res_handle, res_info, resource);
-        return success ? 0 : -1;
-    }
-
-    int platformResourceInfo(int res_handle, int* width, int* height, int* internal_format) {
-        bool success = false;
-        auto it = mResources.find(res_handle);
-        if (it == mResources.end()) return -EINVAL;
-#if GFXSTREAM_ENABLE_HOST_GLES
-        success = gfxstream::FrameBuffer::getFB()->getColorBufferInfo(res_handle, width, height,
-                                                                      internal_format);
-#endif
         return success ? 0 : -1;
     }
 
@@ -2521,14 +2464,6 @@ VG_EXPORT void stream_renderer_ctx_detach_resource(int ctx_id, int res_handle) {
     sRenderer()->detachResource(ctx_id, res_handle);
 }
 
-VG_EXPORT int stream_renderer_resource_get_info(int res_handle,
-                                                struct stream_renderer_resource_info* info) {
-    GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
-                          "stream_renderer_resource_get_info()");
-
-    return sRenderer()->getResourceInfo(res_handle, info);
-}
-
 VG_EXPORT void stream_renderer_flush(uint32_t res_handle) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY, "stream_renderer_flush()");
 
@@ -2613,14 +2548,6 @@ VG_EXPORT int stream_renderer_platform_import_resource(int res_handle, int res_i
                           "stream_renderer_platform_import_resource()");
 
     return sRenderer()->platformImportResource(res_handle, res_info, resource);
-}
-
-VG_EXPORT int stream_renderer_platform_resource_info(int res_handle, int* width, int* height,
-                                                     int* internal_format) {
-    GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
-                          "stream_renderer_platform_resource_info()");
-
-    return sRenderer()->platformResourceInfo(res_handle, width, height, internal_format);
 }
 
 VG_EXPORT void* stream_renderer_platform_create_shared_egl_context() {
