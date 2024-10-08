@@ -33,6 +33,23 @@
       "message": "cleanups + removals are most definitely welcomed.",
       "revId": "dbcbc19dcb9b5c78ca77f32d62c882deed3c097d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4e121dee_77de71e5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-10-08T21:33:57Z",
+      "side": 1,
+      "message": "https://ci.android.com/builds/pending/P82343890/emulator-linux_aarch64/latest/view/logs%2Fbuild_error.log\n\nHmm, I was going off the assumption that all things QEMU-related were going through Rutabaga.\n\nCan somebody tell me about this \"qemu glue\"? Can we modify it to also remove these interfaces?",
+      "revId": "dbcbc19dcb9b5c78ca77f32d62c882deed3c097d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
