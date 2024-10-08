@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e67d5a3_d211b09d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-10-08T19:20:53Z",
+      "side": 1,
+      "message": "From what I know, there shouldn\u0027t be any solutions out there relying on this.\n\nWith this MR, my goal is to communicate that QNX solution also does not need this interface. If you don\u0027t want to entertain these kinds of changes at this time (i.e. cleanup/removal), then feel free to reject.",
+      "revId": "dbcbc19dcb9b5c78ca77f32d62c882deed3c097d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
