@@ -41,6 +41,7 @@ class VkReconstruction {
         size_t traceBytes = 0;
         // Book-keeping for which handles were created by this API
         std::vector<uint64_t> createdHandles;
+        bool saved = false;
     };
 
     using ApiTrace = android::base::EntityManager<32, 16, 16, ApiInfo>;
@@ -82,6 +83,8 @@ class VkReconstruction {
 
     ApiHandle createApiInfo();
     void destroyApiInfo(ApiHandle h);
+
+    void removeHandleFromApiInfo(ApiHandle h, uint64_t toRemove);
 
     ApiInfo* getApiInfo(ApiHandle h);
 
