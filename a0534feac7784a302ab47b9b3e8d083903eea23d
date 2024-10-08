@@ -52,6 +52,24 @@
       "parentUuid": "6f5de249_9429c5b3",
       "revId": "a0534feac7784a302ab47b9b3e8d083903eea23d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27251d2c_94c86e73",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-08T17:44:01Z",
+      "side": 1,
+      "message": "Ok, let\u0027s plan for using GuestAngle instead then.",
+      "parentUuid": "ff0ef762_5a01b5fd",
+      "revId": "a0534feac7784a302ab47b9b3e8d083903eea23d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
