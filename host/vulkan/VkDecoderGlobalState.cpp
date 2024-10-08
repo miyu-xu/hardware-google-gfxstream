@@ -1302,44 +1302,47 @@ class VkDecoderGlobalState::Impl {
             vk->vkGetPhysicalDeviceFeatures(physicalDevice, &pFeatures->features);
         }
 
-        pFeatures->features.textureCompressionETC2 |= enableEmulatedEtc2(physicalDevice, vk);
-        pFeatures->features.textureCompressionASTC_LDR |= enableEmulatedAstc(physicalDevice, vk);
-        VkPhysicalDeviceSamplerYcbcrConversionFeatures* ycbcrFeatures =
-            vk_find_struct<VkPhysicalDeviceSamplerYcbcrConversionFeatures>(pFeatures);
-        if (ycbcrFeatures != nullptr) {
-            ycbcrFeatures->samplerYcbcrConversion |= m_emu->enableYcbcrEmulation;
-        }
-        VkPhysicalDeviceProtectedMemoryFeatures* protectedMemoryFeatures =
-            vk_find_struct<VkPhysicalDeviceProtectedMemoryFeatures>(pFeatures);
-        if (protectedMemoryFeatures != nullptr) {
-            // Protected memory is not supported on emulators. Override feature
-            // information to mark as unsupported (see b/329845987).
-            protectedMemoryFeatures->protectedMemory = VK_FALSE;
-        }
+        // Disable a set of features if BypassVulkanFeatureSupportOverride is NOT enabled.
+        if (!m_emu->features.BypassVulkanFeatureSupportOverride.enabled) {
+            pFeatures->features.textureCompressionETC2 |= enableEmulatedEtc2(physicalDevice, vk);
+            pFeatures->features.textureCompressionASTC_LDR |= enableEmulatedAstc(physicalDevice, vk);
+            VkPhysicalDeviceSamplerYcbcrConversionFeatures* ycbcrFeatures =
+                vk_find_struct<VkPhysicalDeviceSamplerYcbcrConversionFeatures>(pFeatures);
+            if (ycbcrFeatures != nullptr) {
+                ycbcrFeatures->samplerYcbcrConversion |= m_emu->enableYcbcrEmulation;
+            }
+            VkPhysicalDeviceProtectedMemoryFeatures* protectedMemoryFeatures =
+                vk_find_struct<VkPhysicalDeviceProtectedMemoryFeatures>(pFeatures);
+            if (protectedMemoryFeatures != nullptr) {
+                // Protected memory is not supported on emulators. Override feature
+                // information to mark as unsupported (see b/329845987).
+                protectedMemoryFeatures->protectedMemory = VK_FALSE;
+            }
 
-        VkPhysicalDevicePrivateDataFeatures* privateDataFeatures =
-            vk_find_struct<VkPhysicalDevicePrivateDataFeatures>(pFeatures);
-        if (privateDataFeatures != nullptr) {
-            // Private data from the guest side is not currently supported and causes emulator
-            // crashes with the dEQP-VK.api.object_management.private_data tests (b/368009403).
-            privateDataFeatures->privateData = VK_FALSE;
-        }
+                VkPhysicalDevicePrivateDataFeatures* privateDataFeatures =
+                    vk_find_struct<VkPhysicalDevicePrivateDataFeatures>(pFeatures);
+                if (privateDataFeatures != nullptr) {
+                    // Private data from the guest side is not currently supported and causes emulator
+                    // crashes with the dEQP-VK.api.object_management.private_data tests (b/368009403).
+                    privateDataFeatures->privateData = VK_FALSE;
+                }
 
-        VkPhysicalDeviceInlineUniformBlockFeatures* iubFeatures =
-            vk_find_struct<VkPhysicalDeviceInlineUniformBlockFeatures>(pFeatures);
-        if (iubFeatures != nullptr) {
-            // Currently not supporting iub due to descriptor set optimization.
-            // TODO: fix the non-optimized descriptor set path and re-enable the features afterwads.
-            // b/372217918
-            iubFeatures->inlineUniformBlock = VK_FALSE;
-        }
+                VkPhysicalDeviceInlineUniformBlockFeatures* iubFeatures =
+                    vk_find_struct<VkPhysicalDeviceInlineUniformBlockFeatures>(pFeatures);
+                if (iubFeatures != nullptr) {
+                    // Currently not supporting iub due to descriptor set optimization.
+                    // TODO: fix the non-optimized descriptor set path and re-enable the features afterwads.
+                    // b/372217918
+                    iubFeatures->inlineUniformBlock = VK_FALSE;
+                }
 
-        VkPhysicalDeviceVulkan13Features* vulkan13Features =
-            vk_find_struct<VkPhysicalDeviceVulkan13Features>(pFeatures);
-        if (vulkan13Features != nullptr) {
-            vulkan13Features->privateData = VK_FALSE;
-            vulkan13Features->inlineUniformBlock = VK_FALSE;
-        }
+                VkPhysicalDeviceVulkan13Features* vulkan13Features =
+                    vk_find_struct<VkPhysicalDeviceVulkan13Features>(pFeatures);
+                if (vulkan13Features != nullptr) {
+                    vulkan13Features->privateData = VK_FALSE;
+                    vulkan13Features->inlineUniformBlock = VK_FALSE;
+                }
+            }
     }
 
     VkResult on_vkGetPhysicalDeviceImageFormatProperties(
