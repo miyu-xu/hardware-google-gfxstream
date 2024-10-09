@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff939566_9d722a5e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-10-09T16:36:23Z",
+      "side": 1,
+      "message": "This should have been in the unstable API to begin with, and https://chromium.googlesource.com/chromiumos/platform/crosvm/+/20803a3957b58b2e7378a139c1b3b15821d9f162 puts it under unstable wrapper.\n\nQNX will take care of absorbing these changes on their side accordingly.",
+      "revId": "669bfbc25f40c53a9df32022c0cb0d0d7178a7fa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
