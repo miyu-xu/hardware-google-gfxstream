@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "81b8b5ba_b45c207c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-10-09T22:50:35Z",
+      "side": 1,
+      "message": "You should make all for your unmerged changes into a single topic: right now you have `gfxstreamPlatformImportResource` and `gfxstreamSharedEglContext`.  Just make it something like `delete-code-oct9` instead, Gerrit prefers that.",
+      "revId": "00f66d1debe4fb35bd3928ae5f8091b3847b4bb3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
