@@ -41,6 +41,7 @@ enum class VirtioGpuResourceType {
     BLOB,
 };
 
+// LINT.IfChange(virtio_gpu_resource)
 struct VirtioGpuResource {
     stream_renderer_resource_create_args args;
     iovec* iov;
@@ -60,6 +61,7 @@ struct VirtioGpuResource {
     bool externalAddr = false;
     std::shared_ptr<BlobDescriptorInfo> descriptorInfo = nullptr;
 };
+// LINT.ThenChange(VirtioGpuResourceSnapshot.proto:virtio_gpu_resource)
 
 }  // namespace host
 }  // namespace gfxstream
