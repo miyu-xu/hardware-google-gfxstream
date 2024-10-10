@@ -30,6 +30,7 @@ extern "C" {
 namespace gfxstream {
 namespace host {
 
+// LINT.IfChange(virtio_gpu_context)
 struct VirtioGpuContext {
     std::string name;
     uint32_t capsetId;
@@ -42,6 +43,7 @@ struct VirtioGpuContext {
     std::unordered_map<uint32_t, struct stream_renderer_resource_create_args> blobMap;
     std::shared_ptr<gfxstream::SyncDescriptorInfo> latestFence;
 };
+// LINT.ThenChange(VirtioGpuContextSnapshot.proto:virtio_gpu_context)
 
 }  // namespace host
 }  // namespace gfxstream
