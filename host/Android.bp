@@ -17,9 +17,28 @@ package {
     default_applicable_licenses: ["hardware_google_gfxstream_license"],
 }
 
+cc_library {
+    name: "libgfxstream_backend_proto",
+    defaults: [
+        "gfxstream_defaults",
+        "gfxstream_host_cc_defaults",
+    ],
+    proto: {
+        canonical_path_from_root: false,
+        export_proto_headers: true,
+        type: "full",
+    },
+    srcs: [
+        "VirtioGpuContextSnapshot.proto",
+        "VirtioGpuFrontendSnapshot.proto",
+        "VirtioGpuResourceSnapshot.proto",
+    ],
+}
+
 gfxstream_backend_static_deps = [
     "gfxstream_base",
     "gfxstream_host_common",
+    "libgfxstream_backend_proto",
     "libgfxstream_common_utils",
     "libgfxstream_host_features",
     "libgfxstream_host_tracing",
@@ -126,9 +145,15 @@ cc_defaults {
     target: {
         host: {
             srcs: ["NativeSubWindow_x11.cpp"],
+            static_libs: [
+                "libprotobuf-cpp-full",
+            ],
         },
         android: {
             srcs: ["NativeSubWindow_android.cpp"],
+            shared_libs: [
+                "libprotobuf-cpp-full",
+            ],
         },
     },
 }
