@@ -35,6 +35,11 @@ namespace {
 
 using android::base::DescriptorType;
 using android::base::SharedMemory;
+#ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
+using gfxstream::host::snapshot::VirtioGpuContextSnapshot;
+using gfxstream::host::snapshot::VirtioGpuFrontendSnapshot;
+using gfxstream::host::snapshot::VirtioGpuResourceSnapshot;
+#endif  // ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
 
 enum pipe_texture_target {
     PIPE_BUFFER,
@@ -1706,6 +1711,80 @@ inline const GoldfishPipeServiceOps* VirtioGpuFrontend::ensureAndGetServiceOps()
     mServiceOps = goldfish_pipe_get_service_ops();
     return mServiceOps;
 }
+
+#ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
+
+int VirtioGpuFrontend::snapshot(gfxstream::host::snapshot::VirtioGpuFrontendSnapshot& outSnapshot) {
+
+    for (const auto& [contextId, context] : mContexts) {
+        VirtioGpuContextSnapshot contextSnapshot;
+        contextSnapshot.set_id(contextId);
+        contextSnapshot.set_name(context.name);
+        contextSnapshot.set_capset(context.capsetId);
+        if (context.hasAddressSpaceHandle) {
+            contextSnapshot.set_address_space_handle(context.addressSpaceHandle);
+        }
+        (*outSnapshot.mutable_contexts())[contextId] = contextSnapshot;
+    }
+
+    for (const auto& [resourceId, resource] : mResources) {
+        VirtioGpuResourceSnapshot resourceSnapshot;
+        resourceSnapshot.set_id(resourceId);
+
+        gfxstream::host::snapshot::VirtioGpuResourceCreateArgs* resourceCreateArgs =
+            resourceSnapshot.mutable_create_args();
+        resourceCreateArgs->set_id(resource.args.handle);
+        resourceCreateArgs->set_target(resource.args.target);
+        resourceCreateArgs->set_format(resource.args.format);
+        resourceCreateArgs->set_bind(resource.args.bind);
+        resourceCreateArgs->set_width(resource.args.width);
+        resourceCreateArgs->set_height(resource.args.height);
+        resourceCreateArgs->set_depth(resource.args.depth);
+        resourceCreateArgs->set_array_size(resource.args.array_size);
+        resourceCreateArgs->set_last_level(resource.args.last_level);
+        resourceCreateArgs->set_nr_samples(resource.args.nr_samples);
+        resourceCreateArgs->set_flags(resource.args.flags);
+
+        (*outSnapshot.mutable_resources())[resourceId] = resourceSnapshot;
+    }
+    return 0;
+}
+
+int VirtioGpuFrontend::restore(const VirtioGpuFrontendSnapshot& snapshot) {
+    mContexts.clear();
+    mResources.clear();
+
+    for (const auto& [contextId, contextSnapshot] : snapshot.contexts()) {
+        VirtioGpuContext& context = mContexts[contextId];
+        context.ctxId = contextId;
+        context.name = contextSnapshot.name();
+        context.capsetId = contextSnapshot.capset();
+        if (contextSnapshot.has_address_space_handle()) {
+            context.hasAddressSpaceHandle = true;
+            context.addressSpaceHandle = contextSnapshot.address_space_handle();
+        }
+    }
+
+    for (const auto& [resourceId, resourceSnapshot] : snapshot.resources()) {
+        VirtioGpuResource& resource = mResources[resourceId];
+
+        const auto& resourceCreateArgsSnapshot = resourceSnapshot.create_args();
+        resource.args.handle = resourceCreateArgsSnapshot.id();
+        resource.args.target = resourceCreateArgsSnapshot.target();
+        resource.args.format = resourceCreateArgsSnapshot.format();
+        resource.args.bind = resourceCreateArgsSnapshot.bind();
+        resource.args.width = resourceCreateArgsSnapshot.width();
+        resource.args.height = resourceCreateArgsSnapshot.height();
+        resource.args.depth = resourceCreateArgsSnapshot.depth();
+        resource.args.array_size = resourceCreateArgsSnapshot.array_size();
+        resource.args.last_level = resourceCreateArgsSnapshot.last_level();
+        resource.args.nr_samples = resourceCreateArgsSnapshot.nr_samples();
+        resource.args.flags = resourceCreateArgsSnapshot.flags();
+    }
+    return 0;
+}
+
+#endif  // ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
 
 }  // namespace host
 }  // namespace gfxstream
