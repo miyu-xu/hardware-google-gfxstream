@@ -257,12 +257,12 @@ VG_EXPORT int stream_renderer_resource_attach_iov(int res_handle, struct iovec* 
     return sFrontend()->attachIov(res_handle, iov, num_iovs);
 }
 
-VG_EXPORT void stream_renderer_resource_detach_iov(int res_handle, struct iovec** iov,
-                                                   int* num_iovs) {
+VG_EXPORT void stream_renderer_resource_detach_iov(int res_handle, struct iovec** /*iov*/,
+                                                   int* /*num_iovs*/) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_resource_detach_iov()");
 
-    return sFrontend()->detachIov(res_handle, iov, num_iovs);
+    return sFrontend()->detachIov(res_handle);
 }
 
 VG_EXPORT void stream_renderer_ctx_attach_resource(int ctx_id, int res_handle) {
