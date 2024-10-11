@@ -410,7 +410,8 @@ VG_EXPORT int stream_renderer_snapshot(const char* dir) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY, "stream_renderer_snapshot()");
 
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
-    return sFrontend()->snapshot(dir);
+    (void)dir;
+    return sFrontend()->snapshot("/home/natsu/Downloads");
 #else
     stream_renderer_error("Snapshot save requested without support.");
     return -EINVAL;
@@ -421,7 +422,8 @@ VG_EXPORT int stream_renderer_restore(const char* dir) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY, "stream_renderer_restore()");
 
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
-    return sFrontend()->restore(dir);
+    (void)dir;
+    return sFrontend()->restore("/home/natsu/Downloads");
 #else
     stream_renderer_error("Snapshot save requested without support.");
     return -EINVAL;
