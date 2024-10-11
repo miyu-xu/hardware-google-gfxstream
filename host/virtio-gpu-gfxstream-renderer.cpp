@@ -54,15 +54,6 @@ extern "C" {
 #include "host-common/goldfish_pipe.h"
 }  // extern "C"
 
-#if defined(_WIN32)
-struct iovec {
-    void* iov_base; /* Starting address */
-    size_t iov_len; /* Length in bytes */
-};
-#else
-#include <unistd.h>
-#endif  // _WIN32
-
 #define MAX_DEBUG_BUFFER_SIZE 512
 #define ELLIPSIS "...\0"
 #define ELLIPSIS_LEN 4
@@ -194,7 +185,8 @@ void stream_renderer_log(uint32_t type, const char* file, int line, const char* 
 }
 
 VG_EXPORT int stream_renderer_resource_create(struct stream_renderer_resource_create_args* args,
-                                              struct iovec* iov, uint32_t num_iovs) {
+                                              struct stream_renderer_iovec* iov,
+                                              uint32_t num_iovs) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_resource_create()");
 
@@ -224,7 +216,7 @@ VG_EXPORT int stream_renderer_submit_cmd(struct stream_renderer_command* cmd) {
 VG_EXPORT int stream_renderer_transfer_read_iov(uint32_t handle, uint32_t ctx_id, uint32_t level,
                                                 uint32_t stride, uint32_t layer_stride,
                                                 struct stream_renderer_box* box, uint64_t offset,
-                                                struct iovec* iov, int iovec_cnt) {
+                                                struct stream_renderer_iovec* iov, int iovec_cnt) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_transfer_read_iov()");
 
@@ -234,7 +226,8 @@ VG_EXPORT int stream_renderer_transfer_read_iov(uint32_t handle, uint32_t ctx_id
 VG_EXPORT int stream_renderer_transfer_write_iov(uint32_t handle, uint32_t ctx_id, int level,
                                                  uint32_t stride, uint32_t layer_stride,
                                                  struct stream_renderer_box* box, uint64_t offset,
-                                                 struct iovec* iovec, unsigned int iovec_cnt) {
+                                                 struct stream_renderer_iovec* iovec,
+                                                 unsigned int iovec_cnt) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_transfer_write_iov()");
 
@@ -259,19 +252,21 @@ VG_EXPORT void stream_renderer_fill_caps(uint32_t set, uint32_t version, void* c
     return sFrontend()->fillCaps(set, caps);
 }
 
-VG_EXPORT int stream_renderer_resource_attach_iov(int res_handle, struct iovec* iov, int num_iovs) {
+VG_EXPORT int stream_renderer_resource_attach_iov(int res_handle, struct stream_renderer_iovec* iov,
+                                                  int num_iovs) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_resource_attach_iov()");
 
     return sFrontend()->attachIov(res_handle, iov, num_iovs);
 }
 
-VG_EXPORT void stream_renderer_resource_detach_iov(int res_handle, struct iovec** iov,
-                                                   int* num_iovs) {
+VG_EXPORT void stream_renderer_resource_detach_iov(int res_handle,
+                                                   struct stream_renderer_iovec** /*iov*/,
+                                                   int* /*num_iovs*/) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_resource_detach_iov()");
 
-    return sFrontend()->detachIov(res_handle, iov, num_iovs);
+    return sFrontend()->detachIov(res_handle);
 }
 
 VG_EXPORT void stream_renderer_ctx_attach_resource(int ctx_id, int res_handle) {
@@ -304,7 +299,8 @@ VG_EXPORT void stream_renderer_flush(uint32_t res_handle) {
 
 VG_EXPORT int stream_renderer_create_blob(uint32_t ctx_id, uint32_t res_handle,
                                           const struct stream_renderer_create_blob* create_blob,
-                                          const struct iovec* iovecs, uint32_t num_iovs,
+                                          const struct stream_renderer_iovec* iovecs,
+                                          uint32_t num_iovs,
                                           const struct stream_renderer_handle* handle) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_create_blob()");

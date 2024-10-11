@@ -78,12 +78,12 @@ class VirtioGpuFrontend {
     void handleCreateResourceBuffer(struct stream_renderer_resource_create_args* args);
     void handleCreateResourceColorBuffer(struct stream_renderer_resource_create_args* args);
 
-    int createResource(struct stream_renderer_resource_create_args* args, struct iovec* iov,
-                       uint32_t num_iovs);
+    int createResource(struct stream_renderer_resource_create_args* args,
+                       struct stream_renderer_iovec* iov, uint32_t num_iovs);
     void unrefResource(uint32_t toUnrefId);
 
-    int attachIov(int resId, iovec* iov, int num_iovs);
-    void detachIov(int resId, iovec** iov, int* num_iovs);
+    int attachIov(int resId, struct stream_renderer_iovec* iov, int num_iovs);
+    void detachIov(int resId);
 
     int handleTransferReadPipe(VirtioGpuResource* res, uint64_t offset, stream_renderer_box* box);
     int handleTransferWritePipe(VirtioGpuResource* res, uint64_t offset, stream_renderer_box* box);
@@ -96,10 +96,10 @@ class VirtioGpuFrontend {
     int handleTransferWriteColorBuffer(VirtioGpuResource* res, uint64_t offset,
                                        stream_renderer_box* box);
 
-    int transferReadIov(int resId, uint64_t offset, stream_renderer_box* box, struct iovec* iov,
-                        int iovec_cnt);
-    int transferWriteIov(int resId, uint64_t offset, stream_renderer_box* box, struct iovec* iov,
-                         int iovec_cnt);
+    int transferReadIov(int resId, uint64_t offset, stream_renderer_box* box,
+                        struct stream_renderer_iovec* iov, int iovec_cnt);
+    int transferWriteIov(int resId, uint64_t offset, stream_renderer_box* box,
+                         struct stream_renderer_iovec* iov, int iovec_cnt);
 
     void getCapset(uint32_t set, uint32_t* max_size);
     void fillCaps(uint32_t set, void* caps);
@@ -147,7 +147,7 @@ class VirtioGpuFrontend {
 #endif  // CONFIG_AEMU
 
    private:
-    void allocResource(VirtioGpuResource& entry, iovec* iov, int num_iovs);
+    void allocResource(VirtioGpuResource& entry, struct stream_renderer_iovec* iov, int num_iovs);
     void detachResourceLocked(uint32_t ctxId, uint32_t toUnrefId);
 
     const GoldfishPipeServiceOps* ensureAndGetServiceOps();
