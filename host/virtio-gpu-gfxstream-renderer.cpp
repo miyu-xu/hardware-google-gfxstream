@@ -428,7 +428,7 @@ VG_EXPORT int stream_renderer_snapshot(const char* dir) {
         stream_renderer_error("Failed to save snapshot: failed to snapshot frontend.");
         return -1;
     }
-    std::filesystem::path snapshotPath = snapshotDirectory / "gfxstream_snapshot.txtproto";
+    std::filesystem::path snapshotPath = "/home/natsu/Downloads/gfxstream_snapshot.txtproto";
     int snapshotFd = open(snapshotPath.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0660);
     if (snapshotFd < 0) {
         stream_renderer_error("Failed to save snapshot: failed to open %s", snapshotPath.c_str());
@@ -441,7 +441,7 @@ VG_EXPORT int stream_renderer_snapshot(const char* dir) {
         return -1;
     }
 
-    std::filesystem::path snapshotBinaryPath = snapshotDirectory / "gfxstream_snapshot.bin";
+    std::filesystem::path snapshotBinaryPath = "/home/natsu/Downloads/gfxstream_snapshot.bin";
 
     std::unique_ptr<android::base::StdioStream> stream(new android::base::StdioStream(
         fopen(snapshotBinaryPath.c_str(), "wb"), android::base::StdioStream::kOwner));
@@ -465,7 +465,7 @@ VG_EXPORT int stream_renderer_restore(const char* dir) {
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
     std::filesystem::path snapshotDirectory = std::string(dir);
 
-    std::filesystem::path snapshotBinaryPath = snapshotDirectory / "gfxstream_snapshot.bin";
+    std::filesystem::path snapshotBinaryPath = "/home/natsu/Downloads/gfxstream_snapshot.bin";
     std::unique_ptr<android::base::StdioStream> stream(new android::base::StdioStream(
         fopen(snapshotBinaryPath.c_str(), "rb"), android::base::StdioStream::kOwner));
     android::snapshot::SnapshotLoadStream loadStream{
@@ -476,7 +476,7 @@ VG_EXPORT int stream_renderer_restore(const char* dir) {
     // We will need to resume all render threads without waiting for snapshot.
     android_getOpenglesRenderer()->resumeAll(false);
 
-    std::filesystem::path snapshotPath = snapshotDirectory / "gfxstream_snapshot.txtproto";
+    std::filesystem::path snapshotPath = "/home/natsu/Downloads/gfxstream_snapshot.txtproto";
     int snapshotFd = open(snapshotPath.c_str(), O_RDONLY);
     if (snapshotFd < 0) {
         stream_renderer_error("Failed to restore snapshot: failed to open %s",
