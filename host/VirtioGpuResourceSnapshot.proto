@@ -14,6 +14,8 @@
 
 syntax = "proto3";
 
+import "VirtioGpuRingBlobSnapshot.proto";
+
 package gfxstream.host.snapshot;
 
 message VirtioGpuResourceCreateArgs {
@@ -38,5 +40,6 @@ message VirtioGpuResourceSnapshot {
     // may not be the same across snapshot and restore. VMMs are expected to re-call
     // `stream_renderer_resource_attach_iov()` for resources with the new guest-memory
     // host virtual addresses.
+    optional VirtioGpuRingBlobSnapshot ring_blob = 3;
 }
 // LINT.ThenChange(VirtioGpuResource.h:virtio_gpu_resource)

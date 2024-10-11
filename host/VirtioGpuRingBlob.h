@@ -17,11 +17,16 @@
 #include <memory>
 #include <variant>
 
+#ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
+#include "VirtioGpuResourceSnapshot.pb.h"
+#endif
 #include "aemu/base/AlignedBuf.h"
 #include "aemu/base/memory/SharedMemory.h"
 
 namespace gfxstream {
 namespace host {
+
+// LINT.IfChange(virtio_gpu_ring_blob)
 
 struct AlignedMemory {
     void* addr = nullptr;
@@ -61,6 +66,16 @@ class RingBlob : public std::variant<std::unique_ptr<AlignedMemory>,
         return std::get<std::unique_ptr<android::base::SharedMemory>>(*this)->releaseHandle();
     }
 };
+
+#ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
+std::optional<gfxstream::host::snapshot::VirtioGpuRingBlobSnapshot> SnapshotRingBlob(
+    const RingBlob& resource);
+
+std::optional<std::unique_ptr<RingBlob>> RestoreRingBlob(
+    const gfxstream::host::snapshot::VirtioGpuRingBlobSnapshot& snapshot);
+#endif
+
+// LINT.ThenChange(VirtioGpuRingBlobSnapshot.h:virtio_gpu_ring_blob)
 
 }  // namespace host
 }  // namespace gfxstream

@@ -27,7 +27,7 @@ extern "C" {
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
 #include "VirtioGpuResourceSnapshot.pb.h"
 #endif
-#include "VirtioGpuRingBlobMemory.h"
+#include "VirtioGpuRingBlob.h"
 #include "gfxstream/virtio-gpu-gfxstream-renderer.h"
 #include "host/ExternalObjectManager.h"
 
