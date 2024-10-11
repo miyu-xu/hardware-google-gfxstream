@@ -1310,28 +1310,17 @@ int VirtioGpuFrontend::createRingBlob(VirtioGpuResource& entry, uint32_t res_han
                                       const struct stream_renderer_create_blob* create_blob,
                                       const struct stream_renderer_handle* handle) {
     if (mFeatures.ExternalBlob.enabled) {
-        std::string name = "shared-memory-" + std::to_string(res_handle);
-        auto shmem = std::make_unique<SharedMemory>(name, create_blob->size);
-        int ret = shmem->create(0600);
-        if (ret) {
-            stream_renderer_error("Failed to create shared memory blob");
-            return ret;
-        }
-
-        entry.hva = shmem->get();
-        entry.ringBlob = std::make_shared<RingBlob>(std::move(shmem));
-
+        entry.ringBlob = RingBlob::CreateWithShmem(res_handle, create_blob->size);
     } else {
-        auto mem = std::make_unique<AlignedMemory>(mPageSize, create_blob->size);
-        if (mem->addr == nullptr) {
-            stream_renderer_error("Failed to allocate ring blob");
-            return -ENOMEM;
-        }
-
-        entry.hva = mem->addr;
-        entry.ringBlob = std::make_shared<RingBlob>(std::move(mem));
+        entry.ringBlob = RingBlob::CreateWithHostMemory(res_handle, create_blob->size, mPageSize);
     }
 
+    if (!entry.ringBlob) {
+        stream_renderer_error("Failed to create ring blob %d.", res_handle);
+        return -ENOMEM;
+    }
+
+    entry.hva = entry.ringBlob->map();
     entry.hvaSize = create_blob->size;
     entry.externalAddr = true;
     entry.caching = STREAM_RENDERER_MAP_CACHE_CACHED;
@@ -1463,6 +1452,8 @@ int VirtioGpuFrontend::resourceMap(uint32_t resourceId, void** hvaOut, uint64_t*
     if (hvaOut) *hvaOut = entry.hva;
     if (sizeOut) *sizeOut = entry.hvaSize;
 
+    stream_renderer_error("jasonjason map resource returning: %p", *hvaOut);
+
     return 0;
 }
 
@@ -1528,10 +1519,10 @@ int VirtioGpuFrontend::resourceMapInfo(uint32_t resourceId, uint32_t* map_info) 
     return 0;
 }
 
-int VirtioGpuFrontend::exportBlob(uint32_t resourceId, struct stream_renderer_handle* handle) {
-    auto it = mResources.find(resourceId);
+int VirtioGpuFrontend::exportBlob(uint32_t res_handle, struct stream_renderer_handle* handle) {
+    auto it = mResources.find(res_handle);
     if (it == mResources.end()) {
-        stream_renderer_error("Failed to export blob: unknown resource %d.", resourceId);
+        stream_renderer_error("Failed to export blob: unknown resource %d.", res_handle);
         return -EINVAL;
     }
 

@@ -39,6 +39,16 @@ std::optional<VirtioGpuResourceSnapshot> SnapshotResource(const VirtioGpuResourc
     snapshotCreateArgs->set_nr_samples(resource.args.nr_samples);
     snapshotCreateArgs->set_flags(resource.args.flags);
 
+    if (resource.ringBlob) {
+        auto snapshotRingBlobOpt = resource.ringBlob->Snapshot();
+        if (!snapshotRingBlobOpt) {
+            stream_renderer_error("Failed to snapshot ring blob for resource %d",
+                                  resource.args.handle);
+            return std::nullopt;
+        }
+        resourceSnapshot.mutable_ring_blob()->Swap(&*snapshotRingBlobOpt);
+    }
+
     return resourceSnapshot;
 }
 
@@ -58,6 +68,16 @@ std::optional<VirtioGpuResource> RestoreResource(
     resource.args.last_level = resourceCreateArgsSnapshot.last_level();
     resource.args.nr_samples = resourceCreateArgsSnapshot.nr_samples();
     resource.args.flags = resourceCreateArgsSnapshot.flags();
+
+    if (resourceSnapshot.has_ring_blob()) {
+        auto resourceRingBlobOpt = RingBlob::Restore(resourceSnapshot.ring_blob());
+        if (!resourceRingBlobOpt) {
+            stream_renderer_error("Failed to restore ring blob for resource %d",
+                                  resource.args.handle);
+            return std::nullopt;
+        }
+        resource.ringBlob = std::move(*resourceRingBlobOpt);
+    }
 
     return resource;
 }
