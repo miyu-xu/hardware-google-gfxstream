@@ -418,7 +418,7 @@ VG_EXPORT int stream_renderer_suspend() {
 }
 
 // Work in progress. Disabled for now but code is present to get build CI.
-static constexpr const bool kEnableFrontendSnapshots = false;
+static constexpr const bool kEnableFrontendSnapshots = true;
 
 VG_EXPORT int stream_renderer_snapshot(const char* dir) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY, "stream_renderer_snapshot()");
@@ -432,7 +432,7 @@ VG_EXPORT int stream_renderer_snapshot(const char* dir) {
             stream_renderer_error("Failed to save snapshot: failed to snapshot frontend.");
             return -1;
         }
-        std::filesystem::path snapshotPath = snapshotDirectory / "gfxstream_snapshot.txtproto";
+        std::filesystem::path snapshotPath = "/home/natsu/Downloads/gfxstream_snapshot.txtproto";
         int snapshotFd = open(snapshotPath.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0660);
         if (snapshotFd < 0) {
             stream_renderer_error("Failed to save snapshot: failed to open %s", snapshotPath.c_str());
@@ -446,7 +446,7 @@ VG_EXPORT int stream_renderer_snapshot(const char* dir) {
         }
     }
 
-    std::filesystem::path snapshotBinaryPath = snapshotDirectory / "gfxstream_snapshot.bin";
+    std::filesystem::path snapshotBinaryPath = "/home/natsu/Downloads/gfxstream_snapshot.bin";
 
     std::unique_ptr<android::base::StdioStream> stream(new android::base::StdioStream(
         fopen(snapshotBinaryPath.c_str(), "wb"), android::base::StdioStream::kOwner));
@@ -470,7 +470,7 @@ VG_EXPORT int stream_renderer_restore(const char* dir) {
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
     std::filesystem::path snapshotDirectory = std::string(dir);
 
-    std::filesystem::path snapshotBinaryPath = snapshotDirectory / "gfxstream_snapshot.bin";
+    std::filesystem::path snapshotBinaryPath = "/home/natsu/Downloads/gfxstream_snapshot.bin";
     std::unique_ptr<android::base::StdioStream> stream(new android::base::StdioStream(
         fopen(snapshotBinaryPath.c_str(), "rb"), android::base::StdioStream::kOwner));
     android::snapshot::SnapshotLoadStream loadStream{
@@ -482,7 +482,7 @@ VG_EXPORT int stream_renderer_restore(const char* dir) {
     android_getOpenglesRenderer()->resumeAll(false);
 
     if (kEnableFrontendSnapshots) {
-        std::filesystem::path snapshotPath = snapshotDirectory / "gfxstream_snapshot.txtproto";
+        std::filesystem::path snapshotPath = "/home/natsu/Downloads/gfxstream_snapshot.txtproto";
         int snapshotFd = open(snapshotPath.c_str(), O_RDONLY);
         if (snapshotFd < 0) {
             stream_renderer_error("Failed to restore snapshot: failed to open %s",
