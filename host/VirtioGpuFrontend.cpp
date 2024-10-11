@@ -961,7 +961,7 @@ inline const GoldfishPipeServiceOps* VirtioGpuFrontend::ensureAndGetServiceOps()
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
 
 // Work in progress. Disabled for now but code is present to get build CI.
-static constexpr const bool kEnableFrontendAndAsgSnapshots = false;
+static constexpr const bool kEnableFrontendAndAsgSnapshots = true;
 
 static constexpr const char kSnapshotBasenameAsg[] = "gfxstream_asg.bin";
 static constexpr const char kSnapshotBasenameFrontend[] = "gfxstream_frontend.txtproto";
