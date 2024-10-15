@@ -9700,6 +9700,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vk->vkGetPhysicalDeviceQueueFamilyProperties2(
                     unboxed_physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
                 vkStream->unsetHandleMapping();
+                if (m_logCalls) {
+                    fprintf(stderr,
+                            "stream %p: resuls of vkGetPhysicalDeviceQueueFamilyProperties2 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            ioStream, (unsigned long long)physicalDevice,
+                            (unsigned long long)(*(pQueueFamilyPropertyCount)),
+                            (unsigned long long)pQueueFamilyProperties);
+                }
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pQueueFamilyPropertyCount;
                 vkStream->putBe64(cgen_var_3);

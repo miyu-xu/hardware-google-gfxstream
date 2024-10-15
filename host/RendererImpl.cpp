@@ -191,9 +191,9 @@ void RendererImpl::stop(bool wait) {
     // for a while. This means we need to make sure to wait for render thread
     // exit explicitly.
     for (const auto& c : mStoppedChannels) {
-        c->renderThread()->wait();
+    //    c->renderThread()->wait();
     }
-    mCleanupThread->waitForCleanup();
+    //mCleanupThread->waitForCleanup();
     mStoppedChannels.clear();
 }
 

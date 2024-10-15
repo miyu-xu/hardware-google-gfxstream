@@ -168,7 +168,9 @@ void RenderThread::save(android::base::Stream* stream) {
         assert(mState == SnapshotState::StartSaving ||
                mState == SnapshotState::InProgress ||
                mState == SnapshotState::Finished);
+            fprintf(stderr, "%s %s %d wait for this to finish save\n", __FILE__, __func__, __LINE__);
         waitForSnapshotCompletion(&lock);
+            fprintf(stderr, "%s %s %d wait for this to finish save done\n", __FILE__, __func__, __LINE__);
         success = mState == SnapshotState::Finished;
     }
 
@@ -182,29 +184,29 @@ void RenderThread::save(android::base::Stream* stream) {
 }
 
 void RenderThread::waitForSnapshotCompletion(AutoLock* lock) {
-    while (mState != SnapshotState::Finished &&
-           !mFinished.load(std::memory_order_relaxed)) {
-        mCondVar.wait(lock);
-    }
+    //while (mState != SnapshotState::Finished &&
+     //      !mFinished.load(std::memory_order_relaxed)) {
+      //  mCondVar.wait(lock);
+    //}
 }
 
 template <class OpImpl>
 void RenderThread::snapshotOperation(AutoLock* lock, OpImpl&& implFunc) {
     assert(isPausedForSnapshotLocked());
     mState = SnapshotState::InProgress;
-    mCondVar.broadcastAndUnlock(lock);
+//    mCondVar.broadcastAndUnlock(lock);
 
     implFunc();
 
-    lock->lock();
+ //   lock->lock();
 
     mState = SnapshotState::Finished;
     mCondVar.broadcast();
 
     // Only return after we're allowed to proceed.
-    while (isPausedForSnapshotLocked()) {
-        mCondVar.wait(lock);
-    }
+  //  while (isPausedForSnapshotLocked()) {
+   //     mCondVar.wait(lock);
+    //}
 }
 
 void RenderThread::loadImpl(AutoLock* lock, const SnapshotObjects& objects) {
@@ -218,13 +220,21 @@ void RenderThread::loadImpl(AutoLock* lock, const SnapshotObjects& objects) {
 }
 
 void RenderThread::saveImpl(AutoLock* lock, const SnapshotObjects& objects) {
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
     snapshotOperation(lock, [this, &objects] {
-        objects.readBuffer->onSave(&*mStream);
-        if (objects.channelStream) objects.channelStream->save(&*mStream);
-        if (objects.ringStream) objects.ringStream->save(&*mStream);
-        objects.checksumCalc->save(&*mStream);
-        objects.threadInfo->onSave(&*mStream);
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
+        //objects.readBuffer->onSave(&*mStream);
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
+        //if (objects.channelStream) objects.channelStream->save(&*mStream);
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
+        //if (objects.ringStream) objects.ringStream->save(&*mStream);
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
+        //objects.checksumCalc->save(&*mStream);
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
+        //objects.threadInfo->onSave(&*mStream);
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
     });
+            fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
 }
 
 bool RenderThread::isPausedForSnapshotLocked() const {
@@ -240,7 +250,9 @@ bool RenderThread::doSnapshotOperation(const SnapshotObjects& objects,
                 loadImpl(&lock, objects);
                 return true;
             case SnapshotState::StartSaving:
+            fprintf(stderr, "%s %s %d start for this thread\n", __FILE__, __func__, __LINE__);
                 saveImpl(&lock, objects);
+            fprintf(stderr, "%s %s %d done for this thread\n", __FILE__, __func__, __LINE__);
                 return true;
             default:
                 return false;
@@ -252,10 +264,10 @@ bool RenderThread::doSnapshotOperation(const SnapshotObjects& objects,
 void RenderThread::setFinished() {
     // Make sure it never happens that we wait forever for the thread to
     // save to snapshot while it was not even going to.
-    AutoLock lock(mLock);
+    //AutoLock lock(mLock);
     mFinished.store(true, std::memory_order_relaxed);
     if (mState != SnapshotState::Empty) {
-        mCondVar.broadcastAndUnlock(&lock);
+     //   mCondVar.broadcastAndUnlock(&lock);
     }
 }
 

@@ -2276,6 +2276,7 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
     //     m_prevDrawSurf
     AutoLock mutex(m_lock);
 
+    fprintf(stderr, "%s %d\n", __func__, __LINE__);
     std::unique_ptr<RecursiveScopedContextBind> bind;
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (m_emulationGl) {
@@ -2298,6 +2299,7 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
     }
 #endif
 
+    fprintf(stderr, "%s %d\n", __func__, __LINE__);
     // Don't save subWindow's x/y/w/h here - those are related to the current
     // emulator UI state, not guest state that we're saving.
     stream->putBe32(m_framebufferWidth);
@@ -2332,6 +2334,7 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
         [](Stream* s, const EmulatedEglContextMap::value_type& pair) { pair.second->onSave(s); });
 #endif
 
+    fprintf(stderr, "%s %d\n", __func__, __LINE__);
     // We don't need to save |m_colorBufferCloseTsMap| here - there's enough
     // information to reconstruct it when loading.
     uint64_t now = android::base::getUnixTimeUs();
@@ -2365,6 +2368,7 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
     saveProcOwnedCollection(stream, m_procOwnedEmulatedEglContexts);
 #endif
 
+    fprintf(stderr, "%s %d before saving vulkan\n", __func__, __LINE__);
     // TODO(b/309858017): remove if when ready to bump snapshot version
     if (m_features.VulkanSnapshots.enabled) {
         stream->putBe64(m_procOwnedResources.size());
@@ -2374,11 +2378,13 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
         }
     }
 
+    fprintf(stderr, "%s %d before saving vulkan 2\n", __func__, __LINE__);
     // Save Vulkan state
     if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
         vk::VkDecoderGlobalState::get()->save(stream);
     }
 
+    fprintf(stderr, "%s %d done saving vulkan 2\n", __func__, __LINE__);
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (m_emulationGl) {
         if (s_egl.eglPostSaveContext) {
@@ -2395,6 +2401,7 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
         EmulatedEglFenceSync::onSave(stream);
     }
 #endif
+    fprintf(stderr, "%s %d done saving FB\n", __func__, __LINE__);
 }
 
 bool FrameBuffer::onLoad(Stream* stream,
