@@ -131,7 +131,7 @@ class VkReconstruction {
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
 
    private:
-    std::vector<uint64_t> getOrderedUniqueModifyApis() const;
+    std::vector<uint64_t> getOrderedUniqueModifyApis() ;
 
     ApiTrace mApiTrace;
 
