@@ -476,7 +476,12 @@ class VkDecoderGlobalState::Impl {
         }
 #endif
 
-        snapshot()->save(stream);
+        const int savedBytes = snapshot()->save(stream);
+        if (savedBytes == 0) {
+            fprintf(stderr, "%s %s %d nothing to save\n",
+                    __FILE__, __func__, __LINE__);
+            return;
+        }
         // Save mapped memory
         uint32_t memoryCount = 0;
         for (const auto& it : mMemoryInfo) {
@@ -541,6 +546,7 @@ class VkDecoderGlobalState::Impl {
             releaseSnapshotStateBlock(&stateBlock);
         }
 
+        // yahan's descriptor saving cl starts here
         // snapshot descriptors
         std::vector<VkDescriptorPool> sortedBoxedDescriptorPools;
         for (const auto& descriptorPoolIte : mDescriptorPoolInfo) {
@@ -553,6 +559,8 @@ class VkDecoderGlobalState::Impl {
             auto unboxedDescriptorPool = unbox_VkDescriptorPool(boxedDescriptorPool);
             const DescriptorPoolInfo& poolInfo = mDescriptorPoolInfo[unboxedDescriptorPool];
 
+            // note: if VulkanBatchedDescriptorSetUpdate is not enabled, the poolInfo.poolIds
+            // would be empty, which mean no saving for descriptors
             for (uint64_t poolId : poolInfo.poolIds) {
                 DispatchableHandleInfo<uint64_t>* setHandleInfo = sBoxedHandleManager.get(poolId);
                 bool allocated = setHandleInfo->underlying != 0;
@@ -599,8 +607,7 @@ class VkDecoderGlobalState::Impl {
                 // regardless, we might hit a Vulkan validation error because the new image might
                 // have the "usage" flag that is unsuitable to bind to descriptors.
                 std::vector<std::pair<int, int>> validWriteIndices;
-                for (int bindingIdx = 0; bindingIdx < descriptorSetInfo.allWrites.size();
-                     bindingIdx++) {
+                for (int bindingIdx = 0; bindingIdx < descriptorSetInfo.allWrites.size(); bindingIdx++) {
                     for (int bindingElemIdx = 0;
                          bindingElemIdx < descriptorSetInfo.allWrites[bindingIdx].size();
                          bindingElemIdx++) {
@@ -624,8 +631,8 @@ class VkDecoderGlobalState::Impl {
                             continue;
                         }
                         validWriteIndices.push_back(std::make_pair(bindingIdx, bindingElemIdx));
-                    }
-                }
+                    } // for each element in the binding
+                } // for each binding
                 stream->putBe64(validWriteIndices.size());
                 // Save all valid descriptors
                 for (const auto& idx : validWriteIndices) {
@@ -672,10 +679,11 @@ class VkDecoderGlobalState::Impl {
                                    "desc write, abort (NYI)";
                         default:
                             break;
-                    }
-                }
-            }
-        }
+                    } // switch on writeType
+                } // for each write
+            } // for each pool id
+        } // for each pool
+        // yahan's descriptor saving cl ends here
 
         // Fences
         std::vector<VkFence> unsignaledFencesBoxed;
@@ -705,7 +713,13 @@ class VkDecoderGlobalState::Impl {
         mSnapshotState = SnapshotState::Loading;
         android::base::BumpPool bumpPool;
         // this part will replay in the decoder
-        snapshot()->load(stream, gfxLogger, healthMonitor);
+        fprintf(stderr, "%s %s %d before loading"
+                " mDescriptorPoolInfo size %d\n", __FILE__, __func__, __LINE__, (int)mDescriptorPoolInfo.size());
+        int totalBytes = snapshot()->load(stream, gfxLogger, healthMonitor);
+        if (totalBytes == 0) {
+            fprintf(stderr, "%s %s %d nothing to load", __FILE__, __func__, __LINE__);
+            return;
+        }
         // load mapped memory
         uint32_t memoryCount = stream->getBe32();
         for (uint32_t i = 0; i < memoryCount; i++) {
@@ -774,7 +788,10 @@ class VkDecoderGlobalState::Impl {
             releaseSnapshotStateBlock(&stateBlock);
         }
 
+        // yahan's descriptor loading cl starts here
         // snapshot descriptors
+        fprintf(stderr, "%s %s %d after loading"
+                " mDescriptorPoolInfo size %d\n", __FILE__, __func__, __LINE__, (int)mDescriptorPoolInfo.size());
         std::vector<VkDescriptorPool> sortedBoxedDescriptorPools;
         for (const auto& descriptorPoolIte : mDescriptorPoolInfo) {
             auto boxed =
@@ -798,10 +815,15 @@ class VkDecoderGlobalState::Impl {
             std::vector<std::unique_ptr<VkBufferView>> tmpBufferViews;
 
             for (uint64_t poolId : poolInfo.poolIds) {
+                fprintf(stderr, "%s %s %d poolId 0x%llx\n", __FILE__, __func__, __LINE__, (unsigned long long)poolId);
                 bool allocated = stream->getByte();
                 if (!allocated) {
+                fprintf(stderr, "%s %s %d poolId 0x%llx not allocated continue\n",
+                        __FILE__, __func__, __LINE__, (unsigned long long)poolId);
                     continue;
                 }
+                fprintf(stderr, "%s %s %d poolId 0x%llx is allocated get it\n",
+                        __FILE__, __func__, __LINE__, (unsigned long long)poolId);
                 poolIds.push_back(poolId);
                 writeStartingIndices.push_back(writeDescriptorSets.size());
                 VkDescriptorSetLayout boxedLayout = (VkDescriptorSetLayout)stream->getBe64();
@@ -873,6 +895,8 @@ class VkDecoderGlobalState::Impl {
                 poolIds.data(), whichPool.data(), pendingAlloc.data(), writeStartingIndices.data(),
                 writeDescriptorSets.size(), writeDescriptorSets.data());
         }
+        // yahan's descriptor loading cl ends here
+
         // Fences
         uint64_t fenceCount = stream->getBe64();
         std::vector<VkFence> unsignaledFencesBoxed(fenceCount);
@@ -1043,8 +1067,8 @@ class VkDecoderGlobalState::Impl {
         if (!m_emu->features.VulkanSnapshots.enabled ||
             (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
              kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
-            get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+            //get_emugl_vm_operations().setSkipSnapshotSave(true);
+            //get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
         }
 #endif
         // Box it up
@@ -3217,6 +3241,7 @@ class VkDecoderGlobalState::Impl {
 
         if (res == VK_SUCCESS) {
             std::lock_guard<std::recursive_mutex> lock(mLock);
+            fprintf(stderr, "%s %s %d mDescriptorPoolInfo size %d\n", __FILE__, __func__, __LINE__, (int)mDescriptorPoolInfo.size());
             auto& info = mDescriptorPoolInfo[*pDescriptorPool];
             info.device = device;
             *pDescriptorPool = new_boxed_non_dispatchable_VkDescriptorPool(*pDescriptorPool);
@@ -3237,6 +3262,9 @@ class VkDecoderGlobalState::Impl {
                 for (uint32_t i = 0; i < pCreateInfo->maxSets; ++i) {
                     info.poolIds.push_back(
                         (uint64_t)new_boxed_non_dispatchable_VkDescriptorSet(VK_NULL_HANDLE));
+                    fprintf(stderr, "%s %s %d new descriptor set id 0x%llx\n", __FILE__, __func__, __LINE__,
+                            (unsigned long long)info.poolIds.back());
+
                 }
                 if (snapshotsEnabled()) {
                     snapshot()->createExtraHandlesForNextApi(info.poolIds.data(),
@@ -3355,6 +3383,8 @@ class VkDecoderGlobalState::Impl {
 
         auto& setInfo = mDescriptorSetInfo[descriptorSet];
 
+        fprintf(stderr, "%s %s %d mDescriptorSetInfo size %d\n",
+                    __FILE__, __func__, __LINE__, (int)mDescriptorSetInfo.size());
         setInfo.pool = pool;
         setInfo.unboxedLayout = setLayout;
         setInfo.bindings = setLayoutInfo->bindings;
@@ -6900,6 +6930,8 @@ class VkDecoderGlobalState::Impl {
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
                 << "descriptor pool " << pool << " not found ";
         }
+
+        fprintf(stderr, "%s %s %d\n", __FILE__, __func__, __LINE__);
 
         DispatchableHandleInfo<uint64_t>* setHandleInfo = sBoxedHandleManager.get(poolId);
 
