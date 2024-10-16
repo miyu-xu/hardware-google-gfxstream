@@ -25,7 +25,7 @@
 namespace gfxstream {
 namespace vk {
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -58,7 +58,7 @@ std::vector<VkReconstruction::HandleWithState> typeTagSortedHandles(
     return res;
 }
 
-void VkReconstruction::save(android::base::Stream* stream) {
+int VkReconstruction::save(android::base::Stream* stream) {
     DEBUG_RECON("start")
 
 #if DEBUG_RECONSTRUCTION
@@ -175,6 +175,8 @@ void VkReconstruction::save(android::base::Stream* stream) {
     android::base::saveBufferRaw(stream, (char*)(createdHandleBuffer.data()),
                                  createdHandleBuffer.size() * sizeof(uint64_t));
     android::base::saveBufferRaw(stream, (char*)(apiTraceBuffer.data()), apiTraceBuffer.size());
+
+    return (int)( createdHandleBuffer.size() +  apiTraceBuffer.size());
 }
 
 class TrivialStream : public IOStream {
@@ -220,7 +222,7 @@ class TrivialStream : public IOStream {
     virtual unsigned char* onLoad(android::base::Stream* stream) { return nullptr; }
 };
 
-void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
+int VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
                             emugl::HealthMonitor<>* healthMonitor) {
     DEBUG_RECON("start. assuming VkDecoderGlobalState has been cleared for loading already");
     mApiTrace.clear();
@@ -234,6 +236,10 @@ void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& 
 
     DEBUG_RECON("created handle buffer size: %zu trace: %zu", createdHandleBuffer.size(),
                 apiTraceBuffer.size());
+    const int totalBytes = (createdHandleBuffer.size() + apiTraceBuffer.size());
+    if (totalBytes == 0) {
+        return 0;
+    }
 
     uint32_t createdHandleBufferSize = createdHandleBuffer.size();
 
@@ -265,6 +271,7 @@ void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& 
                              context);
 
     DEBUG_RECON("finished decoding trace");
+    return totalBytes;
 }
 
 VkReconstruction::ApiHandle VkReconstruction::createApiInfo() {
@@ -522,9 +529,21 @@ void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint
             item = mHandleModifications.get(toProcess[i]);
         }
 
-        if (!item) continue;
+        DEBUG_RECON("add modify api for handle 0x%lx with apiHandle 0x%lx",
+                toProcess[i], apiHandle);
+
+        if (!item) {
+        DEBUG_RECON("BUT cannot find item for handle 0x%lx", toProcess[i]);
+            continue;
+        }
 
         item->apiRefs.push_back(apiHandle);
+        DEBUG_RECON("Now there are total of api ref %d", (int)(item->apiRefs.size()));
+        int j=0;
+        for (auto ref: item->apiRefs) {
+            DEBUG_RECON("api ref %d: 0x%lx", j, ref);
+            ++j;
+        }
     }
 }
 
@@ -540,7 +559,7 @@ void VkReconstruction::forEachHandleClearModifyApi(const uint64_t* toProcess, ui
     }
 }
 
-std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() const {
+std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() {
     std::vector<HandleModification> orderedModifies;
 
     // Now add all handle modifications to the trace, ordered by the .order field.
@@ -559,9 +578,20 @@ std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() const {
 
     std::unordered_set<uint64_t> usedModifyApis;
     std::vector<uint64_t> orderedUniqueModifyApis;
+    for (const auto apiHandle:usedModifyApis) {
+            auto apiInfo = mApiTrace.get(apiHandle);
+            const char* apiName = apiInfo ? api_opcode_to_string(apiInfo->opCode) : "unalloced";
+            fprintf(stderr, "VkReconstruction::%s: mod:     0x%llx: %s\n", __func__,
+                    (unsigned long long)apiHandle, apiName);
+    }
 
+    fprintf(stderr, "before uniq apiRef\n");
     for (const auto& mod : orderedModifies) {
         for (auto apiRef : mod.apiRefs) {
+            auto apiInfo = mApiTrace.get(apiRef);
+            const char* apiName = apiInfo ? api_opcode_to_string(apiInfo->opCode) : "unalloced";
+            fprintf(stderr, "VkReconstruction::%s: mod:     0x%llx: %s\n", __func__,
+                    (unsigned long long)apiRef, apiName);
             if (usedModifyApis.find(apiRef) == usedModifyApis.end()) {
                 orderedUniqueModifyApis.push_back(apiRef);
                 usedModifyApis.insert(apiRef);
@@ -569,6 +599,13 @@ std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() const {
         }
     }
 
+    fprintf(stderr, "after uniq apiRef\n");
+    for (const auto apiHandle:orderedUniqueModifyApis) {
+            auto apiInfo = mApiTrace.get(apiHandle);
+            const char* apiName = apiInfo ? api_opcode_to_string(apiInfo->opCode) : "unalloced";
+            fprintf(stderr, "VkReconstruction::%s: mod:     0x%llx: %s\n", __func__,
+                    (unsigned long long)apiHandle, apiName);
+    }
     return orderedUniqueModifyApis;
 }
 
