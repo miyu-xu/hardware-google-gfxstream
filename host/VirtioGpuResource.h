@@ -29,6 +29,7 @@ extern "C" {
 #include "VirtioGpuResourceSnapshot.pb.h"
 #endif  // GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
 #include "VirtioGpuRingBlob.h"
+#include "gfxstream/host/Features.h"
 #include "gfxstream/virtio-gpu-gfxstream-renderer.h"
 
 namespace gfxstream {
@@ -47,33 +48,108 @@ enum class VirtioGpuResourceType {
 };
 
 // LINT.IfChange(virtio_gpu_resource)
-struct VirtioGpuResource {
-    VirtioGpuResourceId id = -1;
-    std::optional<struct stream_renderer_resource_create_args> createArgs;
-    std::optional<struct stream_renderer_create_blob> createBlobArgs;
-    std::vector<struct iovec> iovs;
-    void* linear;
-    size_t linearSize;
-    GoldfishHostPipe* hostPipe;
-    VirtioGpuContextId ctxId;
-    void* hva;
-    uint64_t hvaSize;
-    uint32_t caching;
-    VirtioGpuResourceType type;
-    std::shared_ptr<RingBlob> ringBlob;
-    bool externalAddr = false;
-    std::shared_ptr<BlobDescriptorInfo> descriptorInfo = nullptr;
-};
-// LINT.ThenChange(VirtioGpuResourceSnapshot.proto:virtio_gpu_resource)
+class VirtioGpuResource {
+  public:
+    static std::optional<VirtioGpuResource> Create(struct stream_renderer_resource_create_args* args,
+                                                   struct iovec* iov, uint32_t num_iovs);
+
+    static std::optional<VirtioGpuResource> Create(const gfxstream::host::FeatureSet& features,
+                                                   uint32_t contextId,
+                                                   uint32_t resourceId,
+                                                   const struct stream_renderer_create_blob* create_blob,
+                                                   const struct stream_renderer_handle* handle);
+
+    int Destroy();
+
+    void AttachIov(struct iovec* iov, uint32_t num_iovs);
+    void DetachIov();
+
+    int Map(void** outAddress, uint64_t* outSize);
+
+    int GetInfo(struct stream_renderer_resource_info* outInfo) const;
+
+    void SetHostPipe(GoldfishHostPipe* pipe) { mHostPipe = pipe; }
+
+    // Corresponds to Virtio GPU "TransferFromHost" commands and VMM requests to
+    // copy into display buffers.
+    int TransferRead(const GoldfishPipeServiceOps* ops,
+                     uint64_t offset, stream_renderer_box* box,
+                     std::optional<std::vector<struct iovec>> iovs = std::nullopt);
+
+    struct TransferWriteResult {
+        int status = 0;
+
+        // If, while processing the first guest to host transfer for a PIPE resource
+        // which contains the pipe service name, the returned pipe service to replace
+        // the generic pipe.
+        VirtioGpuContextId contextId = -1;
+        GoldfishHostPipe* contextPipe = nullptr;
+    };
+    // Corresponds to Virtio GPU "TransferToHost" commands.
+    TransferWriteResult TransferWrite(
+            const GoldfishPipeServiceOps* ops,
+            uint64_t offset, stream_renderer_box* box,
+            std::optional<std::vector<struct iovec>> iovs = std::nullopt);
 
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
-std::optional<gfxstream::host::snapshot::VirtioGpuResourceSnapshot>
-SnapshotResource(const VirtioGpuResource& resource);
+    static std::optional<gfxstream::host::snapshot::VirtioGpuResourceSnapshot>
+    Snapshot(const VirtioGpuResource& resource);
 
-std::optional<VirtioGpuResource>
-RestoreResource(const gfxstream::host::snapshot::VirtioGpuResourceSnapshot& snapshot);
+    static std::optional<VirtioGpuResource>
+    Restore(const gfxstream::host::snapshot::VirtioGpuResourceSnapshot& snapshot);
 #endif
 
+  private:
+    VirtioGpuResource() {}
+
+    int ReadFromPipeToLinear(const GoldfishPipeServiceOps* ops,
+                             uint64_t offset, stream_renderer_box* box);
+    TransferWriteResult WriteToPipeFromLinear(const GoldfishPipeServiceOps* ops,
+                                              uint64_t offset, stream_renderer_box* box);
+
+    int ReadFromBufferToLinear(uint64_t offset, stream_renderer_box* box);
+    int WriteToBufferFromLinear(uint64_t offset, stream_renderer_box* box);
+
+    int ReadFromColorBufferToLinear(uint64_t offset, stream_renderer_box* box);
+    int WriteToColorBufferFromLinear(uint64_t offset, stream_renderer_box* box);
+
+
+    // If `iovs` provided, copy from this resource's linear buffer to the given `iovs`.
+    // Otherwise, copy from this resource's linear buffer into its previously attached
+    // iovs.
+    int TransferToIov(uint64_t offset, const stream_renderer_box* box,
+                      std::optional<std::vector<struct iovec>> iovs = std::nullopt);
+
+    // If `iovs` provided, copy from the given `iovs` to this resources linear buffer.
+    // Otherwise, copy from this resource's previously attached iovs into its linear
+    // buffer.
+    int TransferFromIov(uint64_t offset, const stream_renderer_box* box,
+                        std::optional<std::vector<struct iovec>> iovs = std::nullopt);
+
+    enum TransferDirection {
+        IOV_TO_LINEAR = 0,
+        LINEAR_TO_IOV = 1,
+    };
+    int TransferWithIov(uint64_t offset, const stream_renderer_box* box,
+                        const std::vector<struct iovec>& iovs,
+                        TransferDirection direction);
+
+    VirtioGpuResourceId mId = -1;
+    VirtioGpuResourceType mResourceType;
+    std::optional<struct stream_renderer_resource_create_args> mCreateArgs;
+    std::optional<struct stream_renderer_create_blob> mCreateBlobArgs;
+    std::vector<struct iovec> mIovs;
+    std::vector<uint8_t> mLinear;
+    GoldfishHostPipe* mHostPipe = nullptr;
+    VirtioGpuContextId mContextId = -1;
+    void* mHva = nullptr;
+    uint64_t mHvaSize = 0;
+    uint32_t mHvaCaching = 0;
+    std::shared_ptr<RingBlob> mRingBlob;
+    bool mExternalAddress = false;
+    std::shared_ptr<BlobDescriptorInfo> mDescriptorInfo;
+};
+// LINT.ThenChange(VirtioGpuResourceSnapshot.proto:virtio_gpu_resource)
 
 }  // namespace host
 }  // namespace gfxstream

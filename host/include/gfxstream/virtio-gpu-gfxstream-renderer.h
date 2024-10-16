@@ -105,7 +105,7 @@ struct stream_renderer_debug {
 
 // Log level of gfxstream
 #ifndef STREAM_RENDERER_LOG_LEVEL
-#define STREAM_RENDERER_LOG_LEVEL STREAM_RENDERER_DEBUG_INFO
+#define STREAM_RENDERER_LOG_LEVEL STREAM_RENDERER_DEBUG_DEBUG
 #endif
 
 void stream_renderer_log(uint32_t type, const char* file, int line, const char* pretty_function,
