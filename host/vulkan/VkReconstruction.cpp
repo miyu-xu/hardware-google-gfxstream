@@ -25,7 +25,7 @@
 namespace gfxstream {
 namespace vk {
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -518,9 +518,14 @@ void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint
     for (uint32_t i = 0; i < count; ++i) {
         mHandleModifications.add(toProcess[i], HandleModification());
 
+        DEBUG_RECON("add modify api for handle 0x%lx with apiHandle 0x%lx",
+                toProcess[i], apiHandle);
         auto item = mHandleModifications.get(toProcess[i]);
 
-        if (!item) continue;
+        if (!item) {
+        DEBUG_RECON("BUT cannot find item for handle 0x%lx", toProcess[i]);
+            continue;
+        }
 
         item->apiRefs.push_back(apiHandle);
     }
