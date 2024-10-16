@@ -373,9 +373,18 @@ struct DescriptorSetInfo {
         std::optional<HandleType> boundColorBuffer;
     };
 
+    // there is only one pool
     VkDescriptorPool pool;
+    
+    // there is only one layout for this set
     VkDescriptorSetLayout unboxedLayout = 0;
+    
+    // one binding has one VkDescriptorType,
+    // one write has one descriptor set, one data(image/buffer/...)
+    // apparently, there are a vector of vectors of DescriptorWrite
     std::vector<std::vector<DescriptorWrite>> allWrites;
+    
+    // one layout has multiple bindings;
     std::vector<VkDescriptorSetLayoutBinding> bindings;
 };
 
