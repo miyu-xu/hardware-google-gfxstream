@@ -53,8 +53,8 @@ class VkDecoderSnapshot {
     VkDecoderSnapshot();
     ~VkDecoderSnapshot();
 
-    void save(android::base::Stream* stream);
-    void load(android::base::Stream* stream, emugl::GfxApiLogger& gfx_logger,
+    int save(android::base::Stream* stream);
+    int load(android::base::Stream* stream, emugl::GfxApiLogger& gfx_logger,
               emugl::HealthMonitor<>* healthMonitor);
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
 #ifdef VK_VERSION_1_0

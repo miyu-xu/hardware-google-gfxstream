@@ -30,8 +30,8 @@ class VkReconstruction {
    public:
     VkReconstruction();
 
-    void save(android::base::Stream* stream);
-    void load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
+    int save(android::base::Stream* stream);
+    int load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
               emugl::HealthMonitor<>* healthMonitor);
 
     struct ApiInfo {
@@ -46,7 +46,23 @@ class VkReconstruction {
     using ApiTrace = android::base::EntityManager<32, 16, 16, ApiInfo>;
     using ApiHandle = ApiTrace::EntityHandle;
 
-    enum HandleState { BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, HANDLE_STATE_COUNT };
+    // only one of the BOUND_MEMORY and CMD_RECORD is valid, so they
+    // both take on value of 1;
+    // once vkBeginCommandBuffer is called, the cmd enters the CMD_RECORD
+    // state, and the corresponding modify apis will be the vkCmd_xxx
+    // generic handles and their apiInfo, until vkEndCommandBuffer comes
+    // along to clean up the modify apis: we do not use modify apis
+    // for command buffer anymore, instead, it is used as intermediate
+    // data structure used to build up the dependency graph for this
+    // particular command buffer
+    // TODO:
+    // at the moment, only two other OPs are using modify apis
+    // OP_vkMapMemoryIntoAddressSpaceGOOGLE
+    // and
+    // OP_vkGetBlobGOOGLE
+    // they could also be converted to dependency graph, to do later
+    //
+    enum HandleState { BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, CMD_RECORD = 1, HANDLE_STATE_COUNT };
 
     typedef std::pair<uint64_t, HandleState> HandleWithState;
     struct HandleWithStateHash {
@@ -130,8 +146,9 @@ class VkReconstruction {
     // add them to OP_vkCreateDescriptorPool.
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
 
+    uint64_t getLastModifyApiOpHandle(uint64_t commandBuffer);
    private:
-    std::vector<uint64_t> getOrderedUniqueModifyApis() const;
+    std::vector<uint64_t> getOrderedUniqueModifyApis() ;
 
     ApiTrace mApiTrace;
 
