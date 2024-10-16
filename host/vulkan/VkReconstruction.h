@@ -30,8 +30,8 @@ class VkReconstruction {
    public:
     VkReconstruction();
 
-    void save(android::base::Stream* stream);
-    void load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
+    int save(android::base::Stream* stream);
+    int load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
               emugl::HealthMonitor<>* healthMonitor);
 
     struct ApiInfo {
@@ -131,7 +131,7 @@ class VkReconstruction {
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
 
    private:
-    std::vector<uint64_t> getOrderedUniqueModifyApis() const;
+    std::vector<uint64_t> getOrderedUniqueModifyApis() ;
 
     ApiTrace mApiTrace;
 
