@@ -785,7 +785,21 @@ class VkDecoderSnapshot::Impl {
     void vkAllocateDescriptorSets(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                   android::base::BumpPool* pool, VkResult input_result,
                                   VkDevice device, const VkDescriptorSetAllocateInfo* pAllocateInfo,
-                                  VkDescriptorSet* pDescriptorSets) {}
+                                  VkDescriptorSet* pDescriptorSets) {
+        android::base::AutoLock lock(mLock);
+        fprintf(stderr, "%s %s %d there are 0x%llx sets allocated\n",
+                __FILE__, __func__, __LINE__, (unsigned long long)pAllocateInfo->descriptorSetCount);
+        mReconstruction.addHandles((const uint64_t*)pDescriptorSets, 1);
+        mReconstruction.addHandleDependency((const uint64_t*)pDescriptorSets, 1,
+                                            (uint64_t)(uintptr_t)pAllocateInfo->descriptorPool);
+        auto apiHandle = mReconstruction.createApiInfo();
+        auto apiInfo = mReconstruction.getApiInfo(apiHandle);
+        mReconstruction.setApiTrace(apiInfo, OP_vkAllocateDescriptorSets, snapshotTraceBegin,
+                                    snapshotTraceBytes);
+        mReconstruction.forEachHandleAddApi((const uint64_t*)pDescriptorSets, 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)pDescriptorSets, 1);
+    }
     void vkFreeDescriptorSets(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkResult input_result, VkDevice device,
                               VkDescriptorPool descriptorPool, uint32_t descriptorSetCount,
