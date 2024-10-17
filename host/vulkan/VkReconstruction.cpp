@@ -25,7 +25,7 @@
 namespace gfxstream {
 namespace vk {
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -367,6 +367,7 @@ void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
     for (uint32_t i = 0; i < count; ++i) {
         DEBUG_RECON("add 0x%llx", (unsigned long long)toAdd[i]);
         mHandleReconstructions.add(toAdd[i], HandleWithStateReconstruction());
+        DEBUG_RECON("add 0x%llx done", (unsigned long long)toAdd[i]);
     }
 }
 
