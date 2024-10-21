@@ -1,5 +1,57 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee200b32_ba9a41e9",
+        "filename": "host/VirtioGpuResource.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-10-21T13:33:19Z",
+      "side": 1,
+      "message": "Here we\u0027re checking against `BUFFER`...",
+      "revId": "e9cb672b8f6c612e88841b025539816e3f720547",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d4bb827_7fcb0842",
+        "filename": "host/VirtioGpuResource.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-10-21T13:33:19Z",
+      "side": 1,
+      "message": "...and here we\u0027re checking against `BUFFER` again, so this will always be `false`.  Did we intend to check against `COLOR_BUFFER` here?",
+      "revId": "e9cb672b8f6c612e88841b025539816e3f720547",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbf1f3df_daa1297f",
+        "filename": "host/VirtioGpuResource.h",
+        "patchSetId": 8
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-10-21T13:33:19Z",
+      "side": 1,
+      "message": "Why don\u0027t we give this a default value like we\u0027ve with the other POD fields on this class?  That will help assure the field is never used uninitialized.",
+      "revId": "e9cb672b8f6c612e88841b025539816e3f720547",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
