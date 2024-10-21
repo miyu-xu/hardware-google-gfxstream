@@ -2908,7 +2908,6 @@ namespace {
 int parseGfxstreamFeatures(const int renderer_flags,
                            const std::string& renderer_features,
                            gfxstream::host::FeatureSet& features) {
-    std::abort();
     GFXSTREAM_SET_FEATURE_ON_CONDITION(
         &features, ExternalBlob,
         renderer_flags & STREAM_RENDERER_FLAGS_USE_EXTERNAL_BLOB);
