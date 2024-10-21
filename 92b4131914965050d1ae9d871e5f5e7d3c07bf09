@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f188b6eb_4569f38d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-21T16:57:28Z",
+      "side": 1,
+      "message": "Adding some other people into CC for this one, to give a heads up in case they have stashes/CLs/documentation to update related to the gfxstream host side code generator.",
+      "revId": "92b4131914965050d1ae9d871e5f5e7d3c07bf09",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
