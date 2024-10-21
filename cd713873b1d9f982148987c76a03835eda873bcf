@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2624b28_0df49209",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-10-21T17:09:15Z",
+      "side": 1,
+      "message": "Thanks a lot, Gurchetan!\n\nif you could add the command to generate the code, that would\nbe great, just for someone new for this gfxstream development\neven for us when we forget 😊\n\nsomethingliek\n\ncheckout emu-master-dev/aosp\ncd $somedirectory\nsource $sourcething\n$cmd1 arg1..\n$cmd2 arg2..\n\n$build to verify",
+      "range": {
+        "startLine": 7,
+        "startChar": 11,
+        "endLine": 7,
+        "endChar": 45
+      },
+      "revId": "cd713873b1d9f982148987c76a03835eda873bcf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "0cbc6eb9_726d712d",
