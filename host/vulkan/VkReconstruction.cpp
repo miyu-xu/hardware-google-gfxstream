@@ -111,8 +111,8 @@ int VkReconstruction::save(android::base::Stream* stream) {
                 if (savedApis.find(apiRef) != savedApis.end()) continue;
                 savedApis.insert(apiRef);
 #if DEBUG_RECONSTRUCTION
-                DEBUG_RECON("adding handle 0x%lx API 0x%lx op code %d", handle.first, apiRef,
-                            apiItem->opCode);
+                DEBUG_RECON("adding handle 0x%lx API 0x%lx op code %d name %s\n", handle.first, apiRef,
+                            apiItem->opCode, api_opcode_to_string(apiItem->opCode));
 #endif
                 nextApis.push_back(apiRef);
             }
@@ -156,7 +156,8 @@ int VkReconstruction::save(android::base::Stream* stream) {
         for (auto apiHandle : uniqApiRefsByTopoOrder[i]) {
             auto item = mApiTrace.get(apiHandle);
             // 4 bytes for opcode, and 4 bytes for saveBufferRaw's size field
-            DEBUG_RECON("saving api handle 0x%lx op code %d", apiHandle, item->opCode);
+            DEBUG_RECON("saving api handle 0x%lx op code %d name %s\n",
+                    apiHandle, item->opCode, api_opcode_to_string(item->opCode));
             memcpy(apiTracePtr, &item->opCode, sizeof(uint32_t));
             apiTracePtr += 4;
             uint32_t traceBytesForSnapshot = item->traceBytes + 8;
@@ -490,6 +491,7 @@ void VkReconstruction::addHandleDependency(const uint64_t* handles, uint32_t cou
     for (uint32_t i = 0; i < count; ++i) {
         auto childItem = mHandleReconstructions.get(handles[i]);
         if (!childItem) {
+            DEBUG_RECON("WARN: adding null child item: 0x%lx\n", handles[i]);
             continue;
         }
         parentItemState.childHandles.insert({handles[i], static_cast<HandleState>(childState)});
@@ -557,6 +559,26 @@ void VkReconstruction::forEachHandleClearModifyApi(const uint64_t* toProcess, ui
 
         item->apiRefs.clear();
     }
+}
+
+uint64_t VkReconstruction::getLastModifyApiOpHandle(uint64_t commandBuffer) {
+    if (!commandBuffer) return 0;
+
+    auto item = mHandleModifications.get(commandBuffer);
+    if (!item) return 0;
+
+    if (item->apiRefs.empty()) return 0;
+
+    auto last = item->apiRefs.size() - 1;
+    auto apiHandle = item->apiRefs[last];
+    auto itemApi = mApiTrace.get(apiHandle);
+    if (itemApi && itemApi->createdHandles.size() > 0) {
+        return itemApi->createdHandles[0];
+    }
+    fprintf(stderr, "%s %s %d failed: the api 0x%llx name %s does no create any handles\n",
+            __FILE__, __func__, __LINE__, (unsigned long long)apiHandle,
+            itemApi ? api_opcode_to_string(itemApi->opCode) : "unknown");
+    return 0;
 }
 
 std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() {
