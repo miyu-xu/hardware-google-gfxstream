@@ -559,6 +559,18 @@ void VkReconstruction::forEachHandleClearModifyApi(const uint64_t* toProcess, ui
     }
 }
 
+uint64_t VkReconstruction::getLastModifyApiOpHandle(uint64_t commandBuffer) {
+    if (!commandBuffer) return 0;
+
+    auto item = mHandleModifications.get(commandBuffer);
+    if (!item) return 0;
+
+    if (item->apiRefs.empty()) return 0;
+
+    auto last = item->apiRefs.size() - 1;
+    return item->apiRefs[last];
+}
+
 std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() {
     std::vector<HandleModification> orderedModifies;
 
