@@ -2908,6 +2908,7 @@ namespace {
 int parseGfxstreamFeatures(const int renderer_flags,
                            const std::string& renderer_features,
                            gfxstream::host::FeatureSet& features) {
+    std::abort();
     GFXSTREAM_SET_FEATURE_ON_CONDITION(
         &features, ExternalBlob,
         renderer_flags & STREAM_RENDERER_FLAGS_USE_EXTERNAL_BLOB);
@@ -2951,8 +2952,6 @@ int parseGfxstreamFeatures(const int renderer_flags,
     GFXSTREAM_SET_FEATURE_ON_CONDITION(
         &features, Vulkan,
         renderer_flags & STREAM_RENDERER_FLAGS_USE_VK_BIT);
-    GFXSTREAM_SET_FEATURE_ON_CONDITION(
-        &features, VulkanBatchedDescriptorSetUpdate, true);
     GFXSTREAM_SET_FEATURE_ON_CONDITION(
         &features, VulkanIgnoredHandles, true);
     GFXSTREAM_SET_FEATURE_ON_CONDITION(
