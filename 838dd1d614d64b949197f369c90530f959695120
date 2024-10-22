@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92f01871_76d83d47",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-10-22T18:32:42Z",
+      "side": 1,
+      "message": "sorry, should the guest code be built from hardwware/google/gfxstream as well ?",
+      "revId": "838dd1d614d64b949197f369c90530f959695120",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
