@@ -197,16 +197,16 @@ std::optional<VirtioGpuResource> VirtioGpuResource::Create(
 #if defined(__linux__) || defined(__QNX__)
             ManagedDescriptor managedHandle(handle->os_handle);
             ExternalObjectManager::get()->addBlobDescriptorInfo(
-                contextId, createBlobArgs->blob_id, std::move(managedHandle), handle->handle_type,
-                0, std::nullopt);
+                createBlobArgs->blob_id, std::move(managedHandle), handle->handle_type, 0,
+                std::nullopt);
 #else
             stream_renderer_error("Failed to create blob: unimplemented external blob.");
             return std::nullopt;
 #endif
         } else {
             if (!descriptorInfoOpt) {
-                descriptorInfoOpt = ExternalObjectManager::get()->removeBlobDescriptorInfo(
-                    contextId, createBlobArgs->blob_id);
+                descriptorInfoOpt =
+                    ExternalObjectManager::get()->removeBlobDescriptorInfo(createBlobArgs->blob_id);
             }
             if (!descriptorInfoOpt) {
                 stream_renderer_error("Failed to create blob: no external blob descriptor.");
@@ -217,7 +217,7 @@ std::optional<VirtioGpuResource> VirtioGpuResource::Create(
         }
     } else {
         auto memoryMappingOpt =
-            ExternalObjectManager::get()->removeMapping(contextId, createBlobArgs->blob_id);
+            ExternalObjectManager::get()->removeMapping(createBlobArgs->blob_id);
         if (!memoryMappingOpt) {
             stream_renderer_error("Failed to create blob: no external blob mapping.");
             return std::nullopt;
@@ -864,7 +864,6 @@ std::optional<VirtioGpuResourceSnapshot> VirtioGpuResource::Snapshot() const {
                 return std::nullopt;
             }
             auto snapshotDescriptorInfo = resourceSnapshot.mutable_external_memory_descriptor();
-            snapshotDescriptorInfo->set_context_id(*mContextId);
             snapshotDescriptorInfo->set_blob_id(mCreateBlobArgs->blob_id);
         } else if (std::holds_alternative<ExternalMemoryMapping>(*mBlobMemory)) {
             if (!mContextId) {
@@ -876,7 +875,6 @@ std::optional<VirtioGpuResourceSnapshot> VirtioGpuResource::Snapshot() const {
                 return std::nullopt;
             }
             auto snapshotDescriptorInfo = resourceSnapshot.mutable_external_memory_mapping();
-            snapshotDescriptorInfo->set_context_id(*mContextId);
             snapshotDescriptorInfo->set_blob_id(mCreateBlobArgs->blob_id);
         }
     }
@@ -926,7 +924,7 @@ std::optional<VirtioGpuResourceSnapshot> VirtioGpuResource::Snapshot() const {
         const auto& snapshotDescriptorInfo = resourceSnapshot.external_memory_descriptor();
 
         auto descriptorInfoOpt = ExternalObjectManager::get()->removeBlobDescriptorInfo(
-            snapshotDescriptorInfo.context_id(), snapshotDescriptorInfo.blob_id());
+            snapshotDescriptorInfo.blob_id());
         if (!descriptorInfoOpt) {
             stream_renderer_error(
                 "Failed to restore resource: failed to find blob descriptor info.");
@@ -938,8 +936,8 @@ std::optional<VirtioGpuResourceSnapshot> VirtioGpuResource::Snapshot() const {
     } else if (resourceSnapshot.has_external_memory_mapping()) {
         const auto& snapshotDescriptorInfo = resourceSnapshot.external_memory_mapping();
 
-        auto memoryMappingOpt = ExternalObjectManager::get()->removeMapping(
-            snapshotDescriptorInfo.context_id(), snapshotDescriptorInfo.blob_id());
+        auto memoryMappingOpt =
+            ExternalObjectManager::get()->removeMapping(snapshotDescriptorInfo.blob_id());
         if (!memoryMappingOpt) {
             stream_renderer_error("Failed to restore resource: failed to find mapping info.");
             return std::nullopt;
