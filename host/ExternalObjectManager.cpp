@@ -27,22 +27,19 @@ static ExternalObjectManager* sMapping() {
 // static
 ExternalObjectManager* ExternalObjectManager::get() { return sMapping(); }
 
-void ExternalObjectManager::addMapping(uint32_t ctxId, uint64_t blobId, void* addr,
-                                       uint32_t caching) {
+void ExternalObjectManager::addMapping(uint64_t blobId, void* addr, uint32_t caching) {
     struct HostMemInfo info = {
         .addr = addr,
         .caching = caching,
     };
 
-    auto key = std::make_pair(ctxId, blobId);
     std::lock_guard<std::mutex> lock(mLock);
-    mHostMemInfos.insert(std::make_pair(key, info));
+    mHostMemInfos.insert(std::make_pair(blobId, info));
 }
 
-std::optional<HostMemInfo> ExternalObjectManager::removeMapping(uint32_t ctxId, uint64_t blobId) {
-    auto key = std::make_pair(ctxId, blobId);
+std::optional<HostMemInfo> ExternalObjectManager::removeMapping(uint64_t blobId) {
     std::lock_guard<std::mutex> lock(mLock);
-    auto found = mHostMemInfos.find(key);
+    auto found = mHostMemInfos.find(blobId);
     if (found != mHostMemInfos.end()) {
         std::optional<HostMemInfo> ret = found->second;
         mHostMemInfos.erase(found);
@@ -52,9 +49,8 @@ std::optional<HostMemInfo> ExternalObjectManager::removeMapping(uint32_t ctxId, 
     return std::nullopt;
 }
 
-void ExternalObjectManager::addBlobDescriptorInfo(uint32_t ctxId, uint64_t blobId,
-                                                  ManagedDescriptor descriptor, uint32_t handleType,
-                                                  uint32_t caching,
+void ExternalObjectManager::addBlobDescriptorInfo(uint64_t blobId, ManagedDescriptor descriptor,
+                                                  uint32_t handleType, uint32_t caching,
                                                   std::optional<VulkanInfo> vulkanInfoOpt) {
     struct BlobDescriptorInfo info = {
         .descriptor = std::move(descriptor),
@@ -63,16 +59,13 @@ void ExternalObjectManager::addBlobDescriptorInfo(uint32_t ctxId, uint64_t blobI
         .vulkanInfoOpt = vulkanInfoOpt,
     };
 
-    auto key = std::make_pair(ctxId, blobId);
     std::lock_guard<std::mutex> lock(mLock);
-    mBlobDescriptorInfos.insert(std::make_pair(key, std::move(info)));
+    mBlobDescriptorInfos.insert(std::make_pair(blobId, std::move(info)));
 }
 
-std::optional<BlobDescriptorInfo> ExternalObjectManager::removeBlobDescriptorInfo(uint32_t ctxId,
-                                                                                  uint64_t blobId) {
-    auto key = std::make_pair(ctxId, blobId);
+std::optional<BlobDescriptorInfo> ExternalObjectManager::removeBlobDescriptorInfo(uint64_t blobId) {
     std::lock_guard<std::mutex> lock(mLock);
-    auto found = mBlobDescriptorInfos.find(key);
+    auto found = mBlobDescriptorInfos.find(blobId);
     if (found != mBlobDescriptorInfos.end()) {
         std::optional<BlobDescriptorInfo> ret = std::move(found->second);
         mBlobDescriptorInfos.erase(found);
@@ -82,24 +75,20 @@ std::optional<BlobDescriptorInfo> ExternalObjectManager::removeBlobDescriptorInf
     return std::nullopt;
 }
 
-void ExternalObjectManager::addSyncDescriptorInfo(uint32_t ctxId, uint64_t syncId,
-                                                  ManagedDescriptor descriptor,
+void ExternalObjectManager::addSyncDescriptorInfo(uint64_t syncId, ManagedDescriptor descriptor,
                                                   uint32_t handleType) {
     struct SyncDescriptorInfo info = {
         .descriptor = std::move(descriptor),
         .handleType = handleType,
     };
 
-    auto key = std::make_pair(ctxId, syncId);
     std::lock_guard<std::mutex> lock(mLock);
-    mSyncDescriptorInfos.insert(std::make_pair(key, std::move(info)));
+    mSyncDescriptorInfos.insert(std::make_pair(syncId, std::move(info)));
 }
 
-std::optional<SyncDescriptorInfo> ExternalObjectManager::removeSyncDescriptorInfo(uint32_t ctxId,
-                                                                                  uint64_t syncId) {
-    auto key = std::make_pair(ctxId, syncId);
+std::optional<SyncDescriptorInfo> ExternalObjectManager::removeSyncDescriptorInfo(uint64_t syncId) {
     std::lock_guard<std::mutex> lock(mLock);
-    auto found = mSyncDescriptorInfos.find(key);
+    auto found = mSyncDescriptorInfos.find(syncId);
     if (found != mSyncDescriptorInfos.end()) {
         std::optional<SyncDescriptorInfo> ret = std::move(found->second);
         mSyncDescriptorInfos.erase(found);

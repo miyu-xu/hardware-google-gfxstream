@@ -86,17 +86,15 @@ class ExternalObjectManager {
 
     static ExternalObjectManager* get();
 
-    void addMapping(uint32_t ctx_id, uint64_t blobId, void* addr, uint32_t caching);
-    std::optional<HostMemInfo> removeMapping(uint32_t ctx_id, uint64_t blobId);
+    void addMapping(uint64_t blobId, void* addr, uint32_t caching);
+    std::optional<HostMemInfo> removeMapping(uint64_t blobId);
 
-    void addBlobDescriptorInfo(uint32_t ctx_id, uint64_t blobId, ManagedDescriptor descriptor,
-                               uint32_t handleType, uint32_t caching,
-                               std::optional<VulkanInfo> vulkanInfoOpt);
-    std::optional<BlobDescriptorInfo> removeBlobDescriptorInfo(uint32_t ctx_id, uint64_t blobId);
+    void addBlobDescriptorInfo(uint64_t blobId, ManagedDescriptor descriptor, uint32_t handleType,
+                               uint32_t caching, std::optional<VulkanInfo> vulkanInfoOpt);
+    std::optional<BlobDescriptorInfo> removeBlobDescriptorInfo(uint64_t blobId);
 
-    void addSyncDescriptorInfo(uint32_t ctx_id, uint64_t syncId, ManagedDescriptor descriptor,
-                               uint32_t handleType);
-    std::optional<SyncDescriptorInfo> removeSyncDescriptorInfo(uint32_t ctx_id, uint64_t syncId);
+    void addSyncDescriptorInfo(uint64_t syncId, ManagedDescriptor descriptor, uint32_t handleType);
+    std::optional<SyncDescriptorInfo> removeSyncDescriptorInfo(uint64_t syncId);
 
    private:
     // Only for pairs of std::hash-able types for simplicity.
@@ -114,11 +112,9 @@ class ExternalObjectManager {
     };
 
     std::mutex mLock;
-    std::unordered_map<std::pair<uint32_t, uint64_t>, HostMemInfo, pair_hash> mHostMemInfos;
-    std::unordered_map<std::pair<uint32_t, uint64_t>, BlobDescriptorInfo, pair_hash>
-        mBlobDescriptorInfos;
-    std::unordered_map<std::pair<uint32_t, uint64_t>, SyncDescriptorInfo, pair_hash>
-        mSyncDescriptorInfos;
+    std::unordered_map<uint64_t, HostMemInfo> mHostMemInfos;
+    std::unordered_map<uint64_t, BlobDescriptorInfo> mBlobDescriptorInfos;
+    std::unordered_map<uint64_t, SyncDescriptorInfo> mSyncDescriptorInfos;
     DISALLOW_COPY_ASSIGN_AND_MOVE(ExternalObjectManager);
 };
 

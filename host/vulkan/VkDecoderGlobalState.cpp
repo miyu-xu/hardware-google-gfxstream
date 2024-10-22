@@ -186,12 +186,6 @@ static constexpr uint64_t kPageMaskForBlob = ~(0xfff);
 
 static uint64_t hostBlobId = 0;
 
-// b/319729462
-// On snapshot load, thread local data is not available, thus we use a
-// fake context ID. We will eventually need to fix it once we start using
-// snapshot with virtio.
-static uint32_t kTemporaryContextIdForSnapshotLoading = 1;
-
 static std::unordered_set<std::string> kSnapshotAppAllowList = {"Chromium"};
 static std::unordered_set<std::string> kSnapshotEngineAllowList = {"ANGLE", "ace"};
 
@@ -3001,7 +2995,6 @@ class VkDecoderGlobalState::Impl {
                                      VkSemaphore semaphore, uint64_t syncId) {
         VK_EXT_SYNC_HANDLE handle;
         uint32_t streamHandleType = 0;
-        auto* tInfo = RenderThreadInfoVk::get();
         auto vk = dispatch_VkDevice(boxed_device);
         auto device = unbox_VkDevice(boxed_device);
         VkExternalSemaphoreHandleTypeFlagBits flagBits =
@@ -3039,8 +3032,8 @@ class VkDecoderGlobalState::Impl {
         }
 
         ManagedDescriptor descriptor(handle);
-        ExternalObjectManager::get()->addSyncDescriptorInfo(
-            tInfo->ctx_id, syncId, std::move(descriptor), streamHandleType);
+        ExternalObjectManager::get()->addSyncDescriptorInfo(syncId, std::move(descriptor),
+                                                            streamHandleType);
         return VK_SUCCESS;
     }
 
@@ -4925,11 +4918,8 @@ class VkDecoderGlobalState::Impl {
         if (createBlobInfoPtr && createBlobInfoPtr->blobMem == STREAM_BLOB_MEM_GUEST &&
             (createBlobInfoPtr->blobFlags & STREAM_BLOB_FLAG_CREATE_GUEST_HANDLE)) {
             DescriptorType rawDescriptor;
-            uint32_t ctx_id = mSnapshotState == SnapshotState::Loading
-                                  ? kTemporaryContextIdForSnapshotLoading
-                                  : tInfo->ctx_id;
-            auto descriptorInfoOpt = ExternalObjectManager::get()->removeBlobDescriptorInfo(
-                ctx_id, createBlobInfoPtr->blobId);
+            auto descriptorInfoOpt =
+                ExternalObjectManager::get()->removeBlobDescriptorInfo(createBlobInfoPtr->blobId);
             if (descriptorInfoOpt) {
                 auto rawDescriptorOpt = (*descriptorInfoOpt).descriptor.release();
                 if (rawDescriptorOpt) {
@@ -5482,10 +5472,6 @@ class VkDecoderGlobalState::Impl {
 
     VkResult vkGetBlobInternal(VkDevice boxed_device, VkDeviceMemory memory, uint64_t hostBlobId) {
         std::lock_guard<std::recursive_mutex> lock(mLock);
-        auto* tInfo = RenderThreadInfoVk::get();
-        uint32_t ctx_id = mSnapshotState == SnapshotState::Loading
-                              ? kTemporaryContextIdForSnapshotLoading
-                              : tInfo->ctx_id;
 
         auto* info = android::base::find(mMemoryInfo, memory);
         if (!info) return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -5498,7 +5484,7 @@ class VkDecoderGlobalState::Impl {
             // The memory itself is destroyed only when all processes unmap / release their
             // handles.
             ExternalObjectManager::get()->addBlobDescriptorInfo(
-                ctx_id, hostBlobId, info->sharedMemory->releaseHandle(), handleType, info->caching,
+                hostBlobId, info->sharedMemory->releaseHandle(), handleType, info->caching,
                 std::nullopt);
         } else if (m_emu->features.ExternalBlob.enabled) {
             VkResult result;
@@ -5574,7 +5560,7 @@ class VkDecoderGlobalState::Impl {
 
             ManagedDescriptor managedHandle(handle);
             ExternalObjectManager::get()->addBlobDescriptorInfo(
-                ctx_id, hostBlobId, std::move(managedHandle), handleType, info->caching,
+                hostBlobId, std::move(managedHandle), handleType, info->caching,
                 std::optional<VulkanInfo>(vulkanInfo));
         } else if (!info->needUnmap) {
             auto device = unbox_VkDevice(boxed_device);
@@ -5598,8 +5584,8 @@ class VkDecoderGlobalState::Impl {
                     "using this blob may be corrupted/offset.",
                     kPageSizeforBlob, hva, alignedHva);
             }
-            ExternalObjectManager::get()->addMapping(ctx_id, hostBlobId,
-                                                     (void*)(uintptr_t)alignedHva, info->caching);
+            ExternalObjectManager::get()->addMapping(hostBlobId, (void*)(uintptr_t)alignedHva,
+                                                     info->caching);
             info->virtioGpuMapped = true;
             info->hostmemId = hostBlobId;
         }
