@@ -474,8 +474,8 @@ int VirtioGpuFrontend::submitCmd(struct stream_renderer_command* cmd) {
                 return -EINVAL;
             }
 
-            auto syncDescriptorInfoOpt = ExternalObjectManager::get()->removeSyncDescriptorInfo(
-                cmd->ctx_id, acquireSync.syncId);
+            auto syncDescriptorInfoOpt =
+                ExternalObjectManager::get()->removeSyncDescriptorInfo(acquireSync.syncId);
             if (syncDescriptorInfoOpt) {
                 ctxEntry.latestFence = std::make_shared<gfxstream::SyncDescriptorInfo>(
                     std::move(*syncDescriptorInfoOpt));
