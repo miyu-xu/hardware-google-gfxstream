@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97c57e56_214512ba",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 7526,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-10-23T15:26:55Z",
+      "side": 1,
+      "message": "should add back the __func__, so we know the ptr is unbox_something",
+      "range": {
+        "startLine": 7526,
+        "startChar": 34,
+        "endLine": 7526,
+        "endChar": 35
+      },
+      "revId": "1394152680c972a352455c189b6e174095ff220a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
