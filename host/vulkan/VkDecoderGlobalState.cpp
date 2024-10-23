@@ -476,7 +476,24 @@ class VkDecoderGlobalState::Impl {
         }
 #endif
 
+        {
+            std::unordered_map<VkDevice, uint32_t> deviceToContextId;
+            for (const auto& [device, deviceInfo] : mDeviceInfo) {
+                if (!deviceInfo.virtioGpuContextId) {
+                    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                        << "VkDevice" << device << " missing context id.";
+                }
+                deviceToContextId[deviceInfo.boxed] = *deviceInfo.virtioGpuContextId;
+            }
+            stream->putBe64(static_cast<uint64_t>(deviceToContextId.size()));
+            for (const auto [device, contextId] : deviceToContextId) {
+                stream->putBe64(reinterpret_cast<uint64_t>(device));
+                stream->putBe32(contextId);
+            }
+        }
+
         snapshot()->save(stream);
+
         // Save mapped memory
         uint32_t memoryCount = 0;
         for (const auto& it : mMemoryInfo) {
@@ -700,6 +717,7 @@ class VkDecoderGlobalState::Impl {
         }
         stream->putBe64(unsignaledFencesBoxed.size());
         stream->write(unsignaledFencesBoxed.data(), unsignaledFencesBoxed.size() * sizeof(VkFence));
+
         mSnapshotState = SnapshotState::Normal;
     }
 
@@ -711,6 +729,19 @@ class VkDecoderGlobalState::Impl {
         // destroy all current internal data structures
         clear();
         mSnapshotState = SnapshotState::Loading;
+
+        {
+            mSnapshotLoadVkDeviceToVirtioCpuContextId.emplace();
+
+            const uint64_t count = stream->getBe64();
+            for (uint64_t i = 0; i < count; i++) {
+                const uint64_t device = stream->getBe64();
+                const uint32_t contextId = stream->getBe32();
+                (*mSnapshotLoadVkDeviceToVirtioCpuContextId)[reinterpret_cast<VkDevice>(device)] =
+                    contextId;
+            }
+        }
+
         android::base::BumpPool bumpPool;
         // this part will replay in the decoder
         snapshot()->load(stream, gfxLogger, healthMonitor);
@@ -1918,6 +1949,22 @@ class VkDecoderGlobalState::Impl {
 
         deviceInfo.boxed = boxed;
 
+        if (mSnapshotState == SnapshotState::Loading) {
+            if (!mSnapshotLoadVkDeviceToVirtioCpuContextId) {
+                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                    << "Missing device to context id map during snapshot load.";
+            }
+            auto contextIdIt = mSnapshotLoadVkDeviceToVirtioCpuContextId->find(boxed);
+            if (contextIdIt == mSnapshotLoadVkDeviceToVirtioCpuContextId->end()) {
+                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                    << "Missing context id for VkDevice:" << boxed;
+            }
+            deviceInfo.virtioGpuContextId = contextIdIt->second;
+        } else {
+            auto* renderThreadInfo = RenderThreadInfoVk::get();
+            deviceInfo.virtioGpuContextId = renderThreadInfo->ctx_id;
+        }
+
         // Next, get information about the queue families used by this device.
         std::unordered_map<uint32_t, uint32_t> queueFamilyIndexCounts;
         for (uint32_t i = 0; i < pCreateInfo->queueCreateInfoCount; ++i) {
@@ -3010,18 +3057,16 @@ class VkDecoderGlobalState::Impl {
 
     VkResult on_vkGetSemaphoreGOOGLE(android::base::BumpPool* pool, VkDevice boxed_device,
                                      VkSemaphore semaphore, uint64_t syncId) {
-        VK_EXT_SYNC_HANDLE handle;
-        uint32_t streamHandleType = 0;
-        auto* tInfo = RenderThreadInfoVk::get();
-        auto vk = dispatch_VkDevice(boxed_device);
-        auto device = unbox_VkDevice(boxed_device);
-        VkExternalSemaphoreHandleTypeFlagBits flagBits =
-            static_cast<VkExternalSemaphoreHandleTypeFlagBits>(0);
-
         if (!m_emu->features.VulkanExternalSync.enabled) {
             return VK_ERROR_FEATURE_NOT_PRESENT;
         }
 
+        auto vk = dispatch_VkDevice(boxed_device);
+        auto device = unbox_VkDevice(boxed_device);
+
+        uint32_t virtioGpuContextId = 0;
+        VkExternalSemaphoreHandleTypeFlagBits flagBits =
+            static_cast<VkExternalSemaphoreHandleTypeFlagBits>(0);
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto* deviceInfo = android::base::find(mDeviceInfo, device);
@@ -3040,8 +3085,15 @@ class VkDecoderGlobalState::Impl {
                        VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT) {
                 flagBits = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
             }
+
+            if (!deviceInfo->virtioGpuContextId) {
+                ERR("VkDevice:%p is missing virtio gpu context id.", device);
+                return VK_ERROR_OUT_OF_HOST_MEMORY;
+            }
+            virtioGpuContextId = *deviceInfo->virtioGpuContextId;
         }
 
+        VK_EXT_SYNC_HANDLE handle;
         VkResult result =
             exportSemaphore(vk, device, semaphore, &handle,
                             std::make_optional<VkExternalSemaphoreHandleTypeFlagBits>(flagBits));
@@ -3051,7 +3103,7 @@ class VkDecoderGlobalState::Impl {
 
         ManagedDescriptor descriptor(handle);
         ExternalObjectManager::get()->addSyncDescriptorInfo(
-            tInfo->ctx_id, syncId, std::move(descriptor), streamHandleType);
+            virtioGpuContextId, syncId, std::move(descriptor), /*streamHandleType*/ 0);
         return VK_SUCCESS;
     }
 
@@ -4897,6 +4949,7 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
+        uint32_t virtioGpuContextId = 0;
         VkMemoryPropertyFlags memoryPropertyFlags;
 
         // Map guest memory index to host memory index and lookup memory properties:
@@ -4925,6 +4978,18 @@ class VkDecoderGlobalState::Impl {
 
             localAllocInfo.memoryTypeIndex = hostMemoryInfo.index;
             memoryPropertyFlags = hostMemoryInfo.memoryType.propertyFlags;
+
+            auto deviceInfoIt = mDeviceInfo.find(device);
+            if (deviceInfoIt == mDeviceInfo.end()) {
+                ERR("Failed to find device info for VkDevice:%p", device);
+                return VK_ERROR_DEVICE_LOST;
+            }
+            auto& deviceInfo = deviceInfoIt->second;
+            if (!deviceInfo.virtioGpuContextId) {
+                ERR("VkDevice:%p missing context id for vkAllocateMemory().");
+                return VK_ERROR_DEVICE_LOST;
+            }
+            virtioGpuContextId = *deviceInfo.virtioGpuContextId;
         }
 
         if (shouldUseDedicatedAllocInfo) {
@@ -4936,11 +5001,8 @@ class VkDecoderGlobalState::Impl {
         if (createBlobInfoPtr && createBlobInfoPtr->blobMem == STREAM_BLOB_MEM_GUEST &&
             (createBlobInfoPtr->blobFlags & STREAM_BLOB_FLAG_CREATE_GUEST_HANDLE)) {
             DescriptorType rawDescriptor;
-            uint32_t ctx_id = mSnapshotState == SnapshotState::Loading
-                                  ? kTemporaryContextIdForSnapshotLoading
-                                  : tInfo->ctx_id;
             auto descriptorInfoOpt = ExternalObjectManager::get()->removeBlobDescriptorInfo(
-                ctx_id, createBlobInfoPtr->blobId);
+                virtioGpuContextId, createBlobInfoPtr->blobId);
             if (descriptorInfoOpt) {
                 auto rawDescriptorOpt = (*descriptorInfoOpt).descriptor.release();
                 if (rawDescriptorOpt) {
@@ -5492,11 +5554,22 @@ class VkDecoderGlobalState::Impl {
     }
 
     VkResult vkGetBlobInternal(VkDevice boxed_device, VkDeviceMemory memory, uint64_t hostBlobId) {
+        auto device = unbox_VkDevice(boxed_device);
+        auto vk = dispatch_VkDevice(boxed_device);
+
         std::lock_guard<std::recursive_mutex> lock(mLock);
-        auto* tInfo = RenderThreadInfoVk::get();
-        uint32_t ctx_id = mSnapshotState == SnapshotState::Loading
-                              ? kTemporaryContextIdForSnapshotLoading
-                              : tInfo->ctx_id;
+
+        auto deviceInfoIt = mDeviceInfo.find(device);
+        if (deviceInfoIt == mDeviceInfo.end()) {
+            ERR("Failed to find device info for VkDevice:%p", device);
+            return VK_ERROR_OUT_OF_HOST_MEMORY;
+        }
+        auto& deviceInfo = deviceInfoIt->second;
+        if (!deviceInfo.virtioGpuContextId) {
+            ERR("VkDevice:%p missing context id for vkGetBlobInternal().");
+            return VK_ERROR_OUT_OF_HOST_MEMORY;
+        }
+        const uint32_t virtioGpuContextId = *deviceInfo.virtioGpuContextId;
 
         auto* info = android::base::find(mMemoryInfo, memory);
         if (!info) return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -5509,12 +5582,11 @@ class VkDecoderGlobalState::Impl {
             // The memory itself is destroyed only when all processes unmap / release their
             // handles.
             ExternalObjectManager::get()->addBlobDescriptorInfo(
-                ctx_id, hostBlobId, info->sharedMemory->releaseHandle(), handleType, info->caching,
-                std::nullopt);
+                virtioGpuContextId, hostBlobId, info->sharedMemory->releaseHandle(), handleType,
+                info->caching, std::nullopt);
         } else if (m_emu->features.ExternalBlob.enabled) {
             VkResult result;
-            auto device = unbox_VkDevice(boxed_device);
-            auto vk = dispatch_VkDevice(boxed_device);
+
             DescriptorType handle;
             uint32_t handleType;
             struct VulkanInfo vulkanInfo = {
@@ -5585,7 +5657,7 @@ class VkDecoderGlobalState::Impl {
 
             ManagedDescriptor managedHandle(handle);
             ExternalObjectManager::get()->addBlobDescriptorInfo(
-                ctx_id, hostBlobId, std::move(managedHandle), handleType, info->caching,
+                virtioGpuContextId, hostBlobId, std::move(managedHandle), handleType, info->caching,
                 std::optional<VulkanInfo>(vulkanInfo));
         } else if (!info->needUnmap) {
             auto device = unbox_VkDevice(boxed_device);
@@ -5609,7 +5681,7 @@ class VkDecoderGlobalState::Impl {
                     "using this blob may be corrupted/offset.",
                     kPageSizeforBlob, hva, alignedHva);
             }
-            ExternalObjectManager::get()->addMapping(ctx_id, hostBlobId,
+            ExternalObjectManager::get()->addMapping(virtioGpuContextId, hostBlobId,
                                                      (void*)(uintptr_t)alignedHva, info->caching);
             info->virtioGpuMapped = true;
             info->hostmemId = hostBlobId;
@@ -8556,6 +8628,12 @@ class VkDecoderGlobalState::Impl {
 
     std::vector<uint64_t> mCreatedHandlesForSnapshotLoad;
     size_t mCreatedHandlesForSnapshotLoadIndex = 0;
+
+    // NOTE: Only present during snapshot loading. This is needed to associate
+    // `VkDevice`s with Virtio GPU context ids because API calls are not currently
+    // replayed on the "same" RenderThread which originally made the API call so
+    // RenderThreadInfoVk::ctx_id is not available.
+    std::optional<std::unordered_map<VkDevice, uint32_t>> mSnapshotLoadVkDeviceToVirtioCpuContextId;
 
     Lock mOccupiedGpasLock;
     // Back-reference to the VkDeviceMemory that is occupying a particular
