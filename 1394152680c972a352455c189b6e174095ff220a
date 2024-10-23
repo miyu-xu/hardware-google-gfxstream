@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "99610019_047ca056",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-10-23T15:28:53Z",
+      "side": 1,
+      "message": "I copied from yahan,\n\n#include \u003cexecinfo.h\u003e\n#include \u003cstdio.h\u003e\n\n#define DDD(fmt, ...) \\\n    fprintf(stderr, \"%s %d: \" fmt \" \\n\", __func__, __LINE__, ##__VA_ARGS__);\n\nstatic void printCallStack() {\n    void* callstack[128];\n    int i, frames \u003d backtrace(callstack, 128);\n    char** strs \u003d backtrace_symbols(callstack, frames);\n    for (i \u003d 0; i \u003c frames; ++i) {\n        DDD(\"%s\\n\", strs[i]);\n    }\n    free(strs);\n}",
+      "revId": "1394152680c972a352455c189b6e174095ff220a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "97c57e56_214512ba",
