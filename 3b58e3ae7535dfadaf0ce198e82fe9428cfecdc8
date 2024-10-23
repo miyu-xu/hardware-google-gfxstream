@@ -72,6 +72,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "f0375ed5_90d10127",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-23T14:02:55Z",
+      "side": 1,
+      "message": "I think best course of action here, without causing undefined behaviors later on, would be:\n1. Log the unboxing errors for these cases, so that we can track back what went wrong. \n2. Mark the corresponding command buffer as invalid on any subdecoder unboxing failure\n3. Return VK_ERROR_DEVICE_LOST or VK_ERROR_OUT_OF_DEVICE_MEMORY when any invalid command buffer is submitted via vkQueueSubmit\n4. Clear the invalid flag on the command buffer when it\u0027s reset",
+      "parentUuid": "8d700b9c_cc4dad63",
+      "revId": "3b58e3ae7535dfadaf0ce198e82fe9428cfecdc8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "9f3b4840_2d3e5a35",
