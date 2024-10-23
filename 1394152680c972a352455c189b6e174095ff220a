@@ -56,6 +56,30 @@
       },
       "revId": "1394152680c972a352455c189b6e174095ff220a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1f0693b_8e92fc09",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 7526,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-23T16:02:48Z",
+      "side": 1,
+      "message": "Sure, I thought the logger was handling that, but apparently it\u0027s not. I\u0027ve added __func__ usages back.",
+      "parentUuid": "97c57e56_214512ba",
+      "range": {
+        "startLine": 7526,
+        "startChar": 34,
+        "endLine": 7526,
+        "endChar": 35
+      },
+      "revId": "1394152680c972a352455c189b6e174095ff220a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
