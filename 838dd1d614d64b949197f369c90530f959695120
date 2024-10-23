@@ -16,6 +16,24 @@
       "message": "sorry, should the guest code be built from hardwware/google/gfxstream as well ?",
       "revId": "838dd1d614d64b949197f369c90530f959695120",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d00a1584_8bf310a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-23T08:36:02Z",
+      "side": 1,
+      "message": "I think that can be done with a separate CL, would be great to have it inside this topic though. When auto rollers implemented for mesa-\u003eaosp, they will require running the code generation script, otherwise build failures can happen after that change.",
+      "parentUuid": "92f01871_76d83d47",
+      "revId": "838dd1d614d64b949197f369c90530f959695120",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
