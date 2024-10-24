@@ -1,0 +1,454 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e099d9d8_6ab88996",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "Is it possible to remove  `__func__`, `__LINE__` references from the macros? They might show up 2x.",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f90ed000_6afb4dc7",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 613,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "Is this fatal?",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "beea60ff_7b9ce35f",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2905,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "You can remove the \"%s: warning: and\" and `__func__` parameter and maybe say something like ERR(\"No vsync thread exists, dropping task\");",
+      "fixSuggestions": [
+        {
+          "fixId": "da184e45_4c070b92",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/FrameBuffer.cpp",
+              "range": {
+                "startLine": 2905,
+                "startChar": 0,
+                "endLine": 2906,
+                "endChar": 0
+              },
+              "replacement": "         ERR(\"no vsync thread exists\");\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c611809f_d705d60b",
+        "filename": "host/GfxStreamAgents.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "Should this be fatal? or ERR(\"Cannot create display when no display pointer is provided.\");",
+      "fixSuggestions": [
+        {
+          "fixId": "77d1399a_6e57ddc2",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/GfxStreamAgents.cpp",
+              "range": {
+                "startLine": 150,
+                "startChar": 0,
+                "endLine": 151,
+                "endChar": 0
+              },
+              "replacement": "                ERR(\"cannot create display, null displayId pointer\");\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74435f25_75143756",
+        "filename": "host/GfxStreamAgents.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "Unable to set display color buffer for non existing display: %d",
+      "fixSuggestions": [
+        {
+          "fixId": "bed220e0_e0f77f95",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/GfxStreamAgents.cpp",
+              "range": {
+                "startLine": 241,
+                "startChar": 0,
+                "endLine": 242,
+                "endChar": 0
+              },
+              "replacement": "                ERR(\"Unable to set display color buffer for non existing display: %d\", displayId);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b1fd127_24e25a32",
+        "filename": "host/PostWorker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "Do we need __func__ and __LINE__ ?",
+      "fixSuggestions": [
+        {
+          "fixId": "6b401b56_4be3ac6e",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/PostWorker.cpp",
+              "range": {
+                "startLine": 33,
+                "startChar": 0,
+                "endLine": 35,
+                "endChar": 0
+              },
+              "replacement": "#define DD(fmt, ...) WARN(fmt, ##__VA_ARGS__)\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1790bbd_22034b30",
+        "filename": "host/RenderControl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "ERR(\"Unexpected OpenGL ES version: %s\",",
+      "fixSuggestions": [
+        {
+          "fixId": "9ebbb711_12910b3e",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/RenderControl.cpp",
+              "range": {
+                "startLine": 411,
+                "startChar": 0,
+                "endLine": 412,
+                "endChar": 0
+              },
+              "replacement": "        ERR(\"%s: Error: unexpected OpenGL ES version string %s\",\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22570d84_0150c645",
+        "filename": "host/RingStream.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "WARN(\"Backed off %zu times to avoid overloading the guest system. This may indicate resource constraints or performance issues.\", backedOffIters);",
+      "fixSuggestions": [
+        {
+          "fixId": "31281176_70f0bfb2",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/RingStream.cpp",
+              "range": {
+                "startLine": 92,
+                "startChar": 0,
+                "endLine": 95,
+                "endChar": 0
+              },
+              "replacement": "        WARN(\"Backed off %zu times to avoid overloading the guest system. This \"\n             \"may indicate resource constraints or performance issues.\",\n             backedOffIters);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "090a0aa6_4efac788",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "I think this is a fallback logging endpoint. It is the one case where we probably do not need to use ERR and can leave the existing printf,",
+      "fixSuggestions": [
+        {
+          "fixId": "c781056a_507f27a3",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/virtio-gpu-gfxstream-renderer.cpp",
+              "range": {
+                "startLine": 183,
+                "startChar": 0,
+                "endLine": 184,
+                "endChar": 0
+              },
+              "replacement": "        fprintf(stderr, \"stream_renderer_log error: %s\\n\", printbuf);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1e8da929_8d6e1c65",
+        "filename": "host/vulkan/DisplayVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "ERR(\"Cannot post ColorBuffer: No surface bound.\");",
+      "range": {
+        "startLine": 349,
+        "startChar": 7,
+        "endLine": 349,
+        "endChar": 67
+      },
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f83ac259_499d1baf",
+        "filename": "host/vulkan/SwapChainStateVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "ERR(\"Failed to create ...",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3150d241_517cd0c8",
+        "filename": "host/vulkan/SwapChainStateVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "ERR(\"Failed to create ...",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "267355af_c3e8ceee",
+        "filename": "host/vulkan/SwapChainStateVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "ERR(\"Failed to create ...",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe4494ec_caeb5cb3",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "No need to use `__func__`, `__LINE__`",
+      "fixSuggestions": [
+        {
+          "fixId": "a6e5eb97_d89869a6",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkAndroidNativeBuffer.cpp",
+              "range": {
+                "startLine": 35,
+                "startChar": 0,
+                "endLine": 36,
+                "endChar": 0
+              },
+              "replacement": "#define VK_ANB_ERR(fmt, ...) INFO(fmt, ##__VA_ARGS__);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1c91303_cff68584",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "can `__func__`, `__LINE__` be removed?",
+      "fixSuggestions": [
+        {
+          "fixId": "5d11c40b_49d10de6",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkAndroidNativeBuffer.cpp",
+              "range": {
+                "startLine": 41,
+                "startChar": 0,
+                "endLine": 42,
+                "endChar": 0
+              },
+              "replacement": "    INFO(\"vk-anb-debug: \" fmt, ##__VA_ARGS__);\n"
+            },
+            {
+              "path": "host/vulkan/VkAndroidNativeBuffer.cpp",
+              "range": {
+                "startLine": 43,
+                "startChar": 0,
+                "endLine": 44,
+                "endChar": 0
+              },
+              "replacement": "    INFO(\"vk-anb-debug: %p \" fmt, obj, ##__VA_ARGS__);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c0b4422_ce14bff7",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2024-10-24T21:54:48Z",
+      "side": 1,
+      "message": "can `__func__`, `__LINE__` be removed?",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
