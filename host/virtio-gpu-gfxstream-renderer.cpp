@@ -180,7 +180,7 @@ void stream_renderer_log(uint32_t type, const char* file, int line, const char* 
         debug.message = &printbuf[0];
         globalDebugCallback(globalUserData, &debug);
     } else {
-        fprintf(stderr, "%s\n", printbuf);
+        fprintf(stderr, "stream_renderer_log error: %s\n", printbuf);
     }
 }
 
