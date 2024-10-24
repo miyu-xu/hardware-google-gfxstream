@@ -68,8 +68,9 @@ using emugl::FatalError;
 
 #ifndef VERBOSE
 #define VERBOSE(fmt, ...)        \
-    if (android::base::isVerboseLogging()) \
-        fprintf(stderr, "%s:%d " fmt "\n", __func__, __LINE__, ##__VA_ARGS__);
+    if (android::base::isVerboseLogging()) { \
+        INFO("%s:%d " fmt, __func__, __LINE__, ##__VA_ARGS__); \
+    }
 #endif
 
 constexpr size_t kPageBits = 12;

@@ -89,7 +89,7 @@ int RingStream::commitBuffer(size_t size) {
     }
 
     if (backedOffIters > 0) {
-        fprintf(stderr, "%s: warning: backed off %zu times due to guest slowness.\n",
+        WARN("%s: warning: backed off %zu times due to guest slowness.\n",
                 __func__,
                 backedOffIters);
     }
