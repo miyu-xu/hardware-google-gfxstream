@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b5d03711_05514e42",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 613,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Do you mean, this could crash the emulator earlier, and now with ERR it won\u0027t? I don\u0027t think this should be fatal, it\u0027s an error to be reported and we should try handling it in other places if things are not working fine.",
+      "parentUuid": "f90ed000_6afb4dc7",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "beea60ff_7b9ce35f",
         "filename": "host/FrameBuffer.cpp",
         "patchSetId": 2
@@ -66,6 +84,24 @@
           ]
         }
       ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc85e852_e56f062f",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2905,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "afaics, `OutputLog(file, severity, __FILE__, __LINE__, 0, fmt, ##__VA_ARGS__)` doesn\u0027t have `__func__` :?",
+      "parentUuid": "beea60ff_7b9ce35f",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -105,6 +141,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f27aaeed_3d2064e3",
+        "filename": "host/GfxStreamAgents.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "I\u0027ll apply the suggested change on the message here, I\u0027m not changing the intended behavior with this change, this is just related to using correct logging routines.",
+      "parentUuid": "c611809f_d705d60b",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74435f25_75143756",
@@ -136,6 +190,24 @@
           ]
         }
       ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7325b001_5e5ab69a",
+        "filename": "host/GfxStreamAgents.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "74435f25_75143756",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -175,6 +247,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cfb4aec7_321f4ae8",
+        "filename": "host/PostWorker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "8b1fd127_24e25a32",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b1790bbd_22034b30",
@@ -206,6 +296,24 @@
           ]
         }
       ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c2fd260_9c9e37f8",
+        "filename": "host/RenderControl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "b1790bbd_22034b30",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -245,6 +353,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c83f7fa_711876d5",
+        "filename": "host/RingStream.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "22570d84_0150c645",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "090a0aa6_4efac788",
@@ -276,6 +402,24 @@
           ]
         }
       ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "177b7959_7b1d2187",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "090a0aa6_4efac788",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -389,6 +533,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "84645898_4c9d4331",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "fe4494ec_caeb5cb3",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c1c91303_cff68584",
@@ -430,6 +592,24 @@
           ]
         }
       ],
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "75530e49_d15bf30d",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:27:26Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "c1c91303_cff68584",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
