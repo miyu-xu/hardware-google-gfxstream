@@ -1254,11 +1254,14 @@ TEST_P(GfxstreamEnd2EndVkSnapshotPipelineTest, DeleteBufferAfterWriteDescriptor)
 
 INSTANTIATE_TEST_CASE_P(GfxstreamEnd2EndTests, GfxstreamEnd2EndVkSnapshotPipelineTest,
                         ::testing::ValuesIn({
-                            TestParams{
-                                .with_gl = false,
-                                .with_vk = true,
-                                .with_features = {"VulkanSnapshots", "VulkanBatchedDescriptorSetUpdate"},
-                            },
+                            // TODO: We are currently disabling VulkanBatchedDescriptorSetUpdate
+                            // so this test will fail temporarily. See aosp/3317879
+                            // The test can be re-enabled once guest can enable VulkanBatchedDescriptorSetUpdate by reading host capabilities.
+                            // TestParams{
+                            //     .with_gl = false,
+                            //     .with_vk = true,
+                            //     .with_features = {"VulkanSnapshots", "VulkanBatchedDescriptorSetUpdate"},
+                            // },
                             TestParams{
                                 .with_gl = false,
                                 .with_vk = true,
