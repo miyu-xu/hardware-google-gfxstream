@@ -121,6 +121,7 @@ struct vulkanCapset {
     uint32_t ringSize;
     uint32_t bufferSize;
 
+    uint32_t vulkanBatchedDescriptorSetUpdate;
     uint32_t colorBufferMemoryIndex;
     uint32_t deferredMapping;
     uint32_t blobAlignment;

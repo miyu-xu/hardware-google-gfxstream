@@ -1818,6 +1818,11 @@ class VirtioGpuFrontend {
                         vk_emu->representativeColorBufferMemoryTypeInfo->guestMemoryTypeIndex;
                 }
 
+                if (mFeatures.VulkanBatchedDescriptorSetUpdate.enabled) {
+                    ERR("sergiusergiu caps should be enabled");
+                    capset->vulkanBatchedDescriptorSetUpdate=1;
+                }
+
                 capset->noRenderControlEnc = 1;
                 capset->blobAlignment = mPageSize;
                 if (vk_emu && vk_emu->live) {
