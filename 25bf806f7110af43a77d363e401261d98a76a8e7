@@ -447,6 +447,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "92506d16_9881ccbf",
+        "filename": "host/vulkan/DisplayVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:29:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e8da929_8d6e1c65",
+      "range": {
+        "startLine": 349,
+        "startChar": 7,
+        "endLine": 349,
+        "endChar": 67
+      },
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f83ac259_499d1baf",
@@ -460,6 +484,24 @@
       "writtenOn": "2024-10-24T21:54:48Z",
       "side": 1,
       "message": "ERR(\"Failed to create ...",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b316269e_a96bf7aa",
+        "filename": "host/vulkan/SwapChainStateVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:29:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f83ac259_499d1baf",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -481,6 +523,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8efeaead_06490191",
+        "filename": "host/vulkan/SwapChainStateVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:29:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3150d241_517cd0c8",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "267355af_c3e8ceee",
@@ -494,6 +554,24 @@
       "writtenOn": "2024-10-24T21:54:48Z",
       "side": 1,
       "message": "ERR(\"Failed to create ...",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "95e25e9f_c3284e33",
+        "filename": "host/vulkan/SwapChainStateVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:29:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "267355af_c3e8ceee",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -627,6 +705,24 @@
       "writtenOn": "2024-10-24T21:54:48Z",
       "side": 1,
       "message": "can `__func__`, `__LINE__` be removed?",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b67574f7_a43c0b9f",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-25T08:29:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c0b4422_ce14bff7",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
