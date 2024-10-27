@@ -124,6 +124,13 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
     out->vkAcquireNextImageKHR = (PFN_vkAcquireNextImageKHR)dlSymFunc(lib, "vkAcquireNextImageKHR");
     out->vkQueuePresentKHR = (PFN_vkQueuePresentKHR)dlSymFunc(lib, "vkQueuePresentKHR");
 #endif
+#ifdef VK_KHR_xlib_surface
+    out->vkCreateXlibSurfaceKHR =
+        (PFN_vkCreateXlibSurfaceKHR)dlSymFunc(lib, "vkCreateXlibSurfaceKHR");
+    out->vkGetPhysicalDeviceXlibPresentationSupportKHR =
+        (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)dlSymFunc(
+            lib, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
+#endif
 #ifdef VK_KHR_xcb_surface
     out->vkCreateXcbSurfaceKHR = (PFN_vkCreateXcbSurfaceKHR)dlSymFunc(lib, "vkCreateXcbSurfaceKHR");
     out->vkGetPhysicalDeviceXcbPresentationSupportKHR =
@@ -926,6 +933,13 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
         (PFN_vkAcquireNextImageKHR)vk->vkGetInstanceProcAddr(instance, "vkAcquireNextImageKHR");
     out->vkQueuePresentKHR =
         (PFN_vkQueuePresentKHR)vk->vkGetInstanceProcAddr(instance, "vkQueuePresentKHR");
+#endif
+#ifdef VK_KHR_xlib_surface
+    out->vkCreateXlibSurfaceKHR =
+        (PFN_vkCreateXlibSurfaceKHR)vk->vkGetInstanceProcAddr(instance, "vkCreateXlibSurfaceKHR");
+    out->vkGetPhysicalDeviceXlibPresentationSupportKHR =
+        (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)vk->vkGetInstanceProcAddr(
+            instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
 #endif
 #ifdef VK_KHR_xcb_surface
     out->vkCreateXcbSurfaceKHR =
@@ -1925,6 +1939,13 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
         (PFN_vkAcquireNextImageKHR)vk->vkGetDeviceProcAddr(device, "vkAcquireNextImageKHR");
     out->vkQueuePresentKHR =
         (PFN_vkQueuePresentKHR)vk->vkGetDeviceProcAddr(device, "vkQueuePresentKHR");
+#endif
+#ifdef VK_KHR_xlib_surface
+    out->vkCreateXlibSurfaceKHR =
+        (PFN_vkCreateXlibSurfaceKHR)vk->vkGetDeviceProcAddr(device, "vkCreateXlibSurfaceKHR");
+    out->vkGetPhysicalDeviceXlibPresentationSupportKHR =
+        (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)vk->vkGetDeviceProcAddr(
+            device, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
 #endif
 #ifdef VK_KHR_xcb_surface
     out->vkCreateXcbSurfaceKHR =

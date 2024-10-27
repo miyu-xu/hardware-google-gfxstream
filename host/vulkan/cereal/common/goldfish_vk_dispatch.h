@@ -311,6 +311,10 @@ struct VulkanDispatch {
     PFN_vkGetPhysicalDevicePresentRectanglesKHR vkGetPhysicalDevicePresentRectanglesKHR;
     PFN_vkAcquireNextImage2KHR vkAcquireNextImage2KHR;
 #endif
+#ifdef VK_KHR_xlib_surface
+    PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
+    PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR;
+#endif
 #ifdef VK_KHR_xcb_surface
     PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
     PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR;

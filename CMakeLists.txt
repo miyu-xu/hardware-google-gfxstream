@@ -33,6 +33,7 @@ option(BUILD_GRAPHICS_DETECTOR "Build the graphics detector utility" OFF)
 
 if (WIN32)
     add_definitions("-DUNICODE -D_UNICODE -DNOMINMAX -DEMUGL_BUILD -DVK_USE_PLATFORM_WIN32_KHR -DBUILDING_EMUGL_COMMON_SHARED")
+elseif (LINUX)
 endif()
 
 option(VIRGL_RENDERER_UNSTABLE_APIS "Use unstable virglrenderer APIs" ON)
@@ -89,6 +90,7 @@ elseif(UNIX)
     # TODO(kaiyili, b/179477624): Add Linux specific Vulkan platform macro definitions
     # Use X11 version of EGL platform specific definitions.
     add_compile_definitions(USE_X11)
+    add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
 elseif(WIN32)
     add_compile_definitions(VK_USE_PLATFORM_WIN32_KHR)
 endif()

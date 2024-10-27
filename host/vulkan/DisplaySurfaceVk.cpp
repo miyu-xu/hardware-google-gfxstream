@@ -17,6 +17,9 @@
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
 #include "vk_util.h"
+#ifdef __linux__
+#include "X11Support.h"
+#endif  // __linux__
 
 namespace gfxstream {
 namespace vk {
@@ -37,6 +40,20 @@ std::unique_ptr<DisplaySurfaceVk> DisplaySurfaceVk::create(const VulkanDispatch&
         .hwnd = window,
     };
     VK_CHECK(vk.vkCreateWin32SurfaceKHR(instance, &surfaceCi, nullptr, &surface));
+#elif defined(__linux__)
+    auto x11 = getX11Api();
+    auto* xDisplay = x11->XOpenDisplay(NULL);
+    if (!xDisplay) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "No X11 Display";
+    }
+    const VkXlibSurfaceCreateInfoKHR surfaceCi = {
+        .sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+        .pNext = nullptr,
+        .flags = 0,
+        .dpy = xDisplay,
+        .window = window,
+    };
+    VK_CHECK(vk.vkCreateXlibSurfaceKHR(instance, &surfaceCi, nullptr, &surface));
 #else
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
         << "Unimplemented.";
