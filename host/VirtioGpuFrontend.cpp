@@ -967,6 +967,26 @@ static constexpr const char kSnapshotBasenameAsg[] = "gfxstream_asg.bin";
 static constexpr const char kSnapshotBasenameFrontend[] = "gfxstream_frontend.txtproto";
 static constexpr const char kSnapshotBasenameRenderer[] = "gfxstream_renderer.bin";
 
+constexpr const uint32_t kSnapshotMagicNumberPreRendererSave = 123456;
+constexpr const uint32_t kSnapshotMagicNumberPostRendererSave = 87635342;
+
+constexpr const uint32_t kSnapshotMagicNumberPreAsgSave = 23585270;
+constexpr const uint32_t kSnapshotMagicNumberPostAsgSave = 927826;
+
+#define SNAPSHOT_WRITE_MAGIC(stream, x) \
+    stream->putBe32(x);
+
+#define SNAPSHOT_VERIFY_MAGIC(stream, x)                                                    \
+    do {                                                                                    \
+        const uint32_t val = stream->getBe32();                                             \
+        if (val != x) {                                                                     \
+            stream_renderer_error("Failed to verify snapshot magic value " #x               \
+                                  " actual:%" PRIu32 " expected:%" PRIu32,                  \
+                                  val, x);                                                  \
+            return -1;                                                                      \
+        }                                                                                   \
+    } while(0);
+
 int VirtioGpuFrontend::snapshotRenderer(const char* directory) {
     const std::filesystem::path snapshotDirectory = std::string(directory);
     const std::filesystem::path snapshotPath = snapshotDirectory / kSnapshotBasenameRenderer;
@@ -977,7 +997,9 @@ int VirtioGpuFrontend::snapshotRenderer(const char* directory) {
         .stream = &stream,
     };
 
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPreRendererSave);
     android_getOpenglesRenderer()->save(saveStream.stream, saveStream.textureSaver);
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPostRendererSave);
     return 0;
 }
 
@@ -1028,11 +1050,13 @@ int VirtioGpuFrontend::snapshotAsg(const char* directory) {
         .stream = &stream,
     };
 
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPreAsgSave);
     int ret = android::emulation::goldfish_address_space_memory_state_save(saveStream.stream);
     if (ret) {
         stream_renderer_error("Failed to save snapshot: failed to save ASG state.");
         return ret;
     }
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPostAsgSave);
     return 0;
 }
 
@@ -1073,7 +1097,9 @@ int VirtioGpuFrontend::restoreRenderer(const char* directory) {
         .stream = &stream,
     };
 
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPreRendererSave);
     android_getOpenglesRenderer()->load(loadStream.stream, loadStream.textureLoader);
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPostRendererSave);
     return 0;
 }
 
@@ -1165,11 +1191,13 @@ int VirtioGpuFrontend::restoreAsg(const char* directory) {
         return ret;
     }
 
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPreAsgSave);
     ret = android::emulation::goldfish_address_space_memory_state_load(loadStream.stream);
     if (ret) {
         stream_renderer_error("Failed to restore ASG device: failed to restore ASG state.");
         return ret;
     }
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPostAsgSave);
     return 0;
 }
 
