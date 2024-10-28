@@ -2266,7 +2266,32 @@ AsyncResult FrameBuffer::composeWithCallback(uint32_t bufferSize, void* buffer,
     }
 }
 
+static constexpr const uint32_t kSnapshotMagicNumberPreSave = 671093453;
+static constexpr const uint32_t kSnapshotMagicNumberPostSave = 867176024;
+static constexpr const uint32_t kSnapshotMagicNumberPreVulkanBackend = 938475123;
+static constexpr const uint32_t kSnapshotMagicNumberPostVulkanBackend = 123864251;
+
+#define SNAPSHOT_WRITE_MAGIC(x) \
+    stream->putBe32(x);
+
+#define SNAPSHOT_VERIFY_MAGIC(x)                                                            \
+    do {                                                                                    \
+        const uint32_t val = stream->getBe32();                                             \
+        if (val != x) {                                                                     \
+            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))                                 \
+                << "Failed to verify snapshot magic value "                                 \
+                << #x                                                                       \
+                << " actual: "                                                              \
+                << val                                                                      \
+                << " expected: "                                                            \
+                << x                                                                        \
+                << ".";                                                                     \
+        }                                                                                   \
+    } while(0);
+
 void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverPtr& textureSaver) {
+    SNAPSHOT_WRITE_MAGIC(kSnapshotMagicNumberPreSave);
+
     // Things we do not need to snapshot:
     //     m_eglSurface
     //     m_eglContext
@@ -2377,9 +2402,11 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
     }
 
     // Save Vulkan state
+    SNAPSHOT_WRITE_MAGIC(kSnapshotMagicNumberPreVulkanBackend);
     if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
         vk::VkDecoderGlobalState::get()->save(stream);
     }
+    SNAPSHOT_WRITE_MAGIC(kSnapshotMagicNumberPostVulkanBackend);
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (m_emulationGl) {
@@ -2397,10 +2424,14 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
         EmulatedEglFenceSync::onSave(stream);
     }
 #endif
+
+    SNAPSHOT_WRITE_MAGIC(kSnapshotMagicNumberPostSave);
 }
 
 bool FrameBuffer::onLoad(Stream* stream,
                          const android::snapshot::ITextureLoaderPtr& textureLoader) {
+    SNAPSHOT_VERIFY_MAGIC(kSnapshotMagicNumberPreSave);
+
     AutoLock lock(m_lock);
     // cleanups
     {
@@ -2660,12 +2691,14 @@ bool FrameBuffer::onLoad(Stream* stream,
     }
 
     // Restore Vulkan state
+    SNAPSHOT_VERIFY_MAGIC(kSnapshotMagicNumberPreVulkanBackend);
     if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
         lock.unlock();
         GfxApiLogger gfxLogger;
         vk::VkDecoderGlobalState::get()->load(stream, gfxLogger, m_healthMonitor.get());
         lock.lock();
     }
+    SNAPSHOT_VERIFY_MAGIC(kSnapshotMagicNumberPostVulkanBackend);
 
     repost(false);
 
@@ -2674,6 +2707,8 @@ bool FrameBuffer::onLoad(Stream* stream,
         EmulatedEglFenceSync::onLoad(stream);
     }
 #endif
+
+    SNAPSHOT_VERIFY_MAGIC(kSnapshotMagicNumberPostSave);
 
     return true;
     // TODO: restore memory management
