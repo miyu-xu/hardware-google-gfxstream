@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b59645e_9f5665ae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-28T18:29:53Z",
+      "side": 1,
+      "message": "I\u0027ll double check why we don\u0027t have KHR versions on the host side..",
+      "revId": "8751452348f4f4f582f7c88581569c5a154b4523",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
