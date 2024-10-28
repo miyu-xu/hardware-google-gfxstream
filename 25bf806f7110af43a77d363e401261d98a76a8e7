@@ -53,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "511a7a3f_5b274c07",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 613,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-28T10:38:32Z",
+      "side": 1,
+      "message": "I\u0027ll submit this without changing the runtime behavior for now, feel free to submit another CL if you think this should be handled differently.",
+      "parentUuid": "b5d03711_05514e42",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "beea60ff_7b9ce35f",
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "afaics, `OutputLog(file, severity, __FILE__, __LINE__, 0, fmt, ##__VA_ARGS__)` doesn\u0027t have `__func__` :?",
       "parentUuid": "beea60ff_7b9ce35f",
+      "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e98a92c_88f88d9c",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2905,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-10-28T10:38:32Z",
+      "side": 1,
+      "message": "I\u0027ll keep the error message similar here for now as this CL is more related to removal of stderr usages.",
+      "parentUuid": "dc85e852_e56f062f",
       "revId": "25bf806f7110af43a77d363e401261d98a76a8e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
