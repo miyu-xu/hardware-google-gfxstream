@@ -37,6 +37,7 @@
 #include "host-common/FeatureControl.h"
 #include "host-common/GraphicsAgentFactory.h"
 #include "host-common/address_space_device.h"
+#include "host-common/address_space_device.hpp"
 #include "host-common/android_pipe_common.h"
 #include "host-common/android_pipe_device.h"
 #include "host-common/globals.h"
@@ -421,6 +422,26 @@ VG_EXPORT int stream_renderer_suspend() {
 // Work in progress. Disabled for now but code is present to get build CI.
 static constexpr const bool kEnableFrontendSnapshots = true;
 
+constexpr const uint32_t kSnapshotMagicNumberPreRendererSave = 123456;
+constexpr const uint32_t kSnapshotMagicNumberPostRendererSave = 87635342;
+
+constexpr const uint32_t kSnapshotMagicNumberPreAsgSave = 23585270;
+constexpr const uint32_t kSnapshotMagicNumberPostAsgSave = 927826;
+
+#define SNAPSHOT_WRITE_MAGIC(stream, x) \
+    stream->putBe32(x);
+
+#define SNAPSHOT_VERIFY_MAGIC(stream, x)                                                    \
+    do {                                                                                    \
+        const uint32_t val = stream->getBe32();                                             \
+        if (val != x) {                                                                     \
+            stream_renderer_error("Failed to verify snapshot magic value " #x               \
+                                  " actual:%" PRIu32 " expected:%" PRIu32,                  \
+                                  val, x);                                                  \
+            return -1;                                                                      \
+        }                                                                                   \
+    } while(0);
+
 VG_EXPORT int stream_renderer_snapshot(const char* dir) {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY, "stream_renderer_snapshot()");
 
@@ -457,7 +478,20 @@ VG_EXPORT int stream_renderer_snapshot(const char* dir) {
         .stream = stream.get(),
     };
 
+
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPreRendererSave);
     android_getOpenglesRenderer()->save(saveStream.stream, saveStream.textureSaver);
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPostRendererSave);
+
+
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPreAsgSave);
+    int ret = android::emulation::goldfish_address_space_memory_state_save(saveStream.stream);
+    if (ret) {
+        stream_renderer_error("Failed to save snapshot: failed to save ASG state.");
+        return ret;
+    }
+    SNAPSHOT_WRITE_MAGIC(saveStream.stream, kSnapshotMagicNumberPostAsgSave);
+
     return 0;
 #else
     stream_renderer_error("Snapshot save requested without support.");
@@ -477,7 +511,22 @@ VG_EXPORT int stream_renderer_restore(const char* dir) {
     android::snapshot::SnapshotLoadStream loadStream{
         .stream = stream.get(),
     };
+
+
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPreRendererSave);
     android_getOpenglesRenderer()->load(loadStream.stream, loadStream.textureLoader);
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPostRendererSave);
+
+
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPreAsgSave);
+    int ret = android::emulation::goldfish_address_space_memory_state_load(loadStream.stream);
+    if (ret) {
+        stream_renderer_error("Failed to restore snapshot: failed to restore ASG state.");
+        return ret;
+    }
+    SNAPSHOT_VERIFY_MAGIC(loadStream.stream, kSnapshotMagicNumberPostAsgSave);
+
+
     // In end2end tests, we don't really do snapshot save for render threads.
     // We will need to resume all render threads without waiting for snapshot.
     android_getOpenglesRenderer()->resumeAll(false);
