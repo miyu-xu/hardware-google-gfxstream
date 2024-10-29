@@ -2962,27 +2962,23 @@ void transform_fromhost_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     VkDecoderGlobalState* resourceTracker,
     VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT* toTransform);
 
-void transform_tohost_VkVertexInputBindingDivisorDescriptionEXT(
-    VkDecoderGlobalState* resourceTracker, VkVertexInputBindingDivisorDescriptionEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_tohost_VkVertexInputBindingDivisorDescriptionKHR,
+                      transform_tohost_VkVertexInputBindingDivisorDescriptionEXT)
 
-void transform_fromhost_VkVertexInputBindingDivisorDescriptionEXT(
-    VkDecoderGlobalState* resourceTracker, VkVertexInputBindingDivisorDescriptionEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_fromhost_VkVertexInputBindingDivisorDescriptionKHR,
+                      transform_fromhost_VkVertexInputBindingDivisorDescriptionEXT)
 
-void transform_tohost_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    VkDecoderGlobalState* resourceTracker,
-    VkPipelineVertexInputDivisorStateCreateInfoEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_tohost_VkPipelineVertexInputDivisorStateCreateInfoKHR,
+                      transform_tohost_VkPipelineVertexInputDivisorStateCreateInfoEXT)
 
-void transform_fromhost_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    VkDecoderGlobalState* resourceTracker,
-    VkPipelineVertexInputDivisorStateCreateInfoEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_fromhost_VkPipelineVertexInputDivisorStateCreateInfoKHR,
+                      transform_fromhost_VkPipelineVertexInputDivisorStateCreateInfoEXT)
 
-void transform_tohost_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    VkDecoderGlobalState* resourceTracker,
-    VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_tohost_VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR,
+                      transform_tohost_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT)
 
-void transform_fromhost_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    VkDecoderGlobalState* resourceTracker,
-    VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_fromhost_VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR,
+                      transform_fromhost_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT)
 
 #endif
 #ifdef VK_EXT_pipeline_creation_feedback
@@ -3114,11 +3110,11 @@ DEFINE_ALIAS_FUNCTION(transform_fromhost_VkPipelineRasterizationLineStateCreateI
 
 #endif
 #ifdef VK_EXT_index_type_uint8
-void transform_tohost_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    VkDecoderGlobalState* resourceTracker, VkPhysicalDeviceIndexTypeUint8FeaturesEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_tohost_VkPhysicalDeviceIndexTypeUint8FeaturesKHR,
+                      transform_tohost_VkPhysicalDeviceIndexTypeUint8FeaturesEXT)
 
-void transform_fromhost_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    VkDecoderGlobalState* resourceTracker, VkPhysicalDeviceIndexTypeUint8FeaturesEXT* toTransform);
+DEFINE_ALIAS_FUNCTION(transform_fromhost_VkPhysicalDeviceIndexTypeUint8FeaturesKHR,
+                      transform_fromhost_VkPhysicalDeviceIndexTypeUint8FeaturesEXT)
 
 #endif
 #ifdef VK_EXT_extended_dynamic_state

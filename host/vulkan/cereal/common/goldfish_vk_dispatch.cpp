@@ -619,6 +619,10 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
     out->vkGetImageSubresourceLayout2KHR =
         (PFN_vkGetImageSubresourceLayout2KHR)dlSymFunc(lib, "vkGetImageSubresourceLayout2KHR");
 #endif
+#ifdef VK_KHR_line_rasterization
+    out->vkCmdSetLineStippleKHR =
+        (PFN_vkCmdSetLineStippleKHR)dlSymFunc(lib, "vkCmdSetLineStippleKHR");
+#endif
 #ifdef VK_ANDROID_native_buffer
     out->vkGetSwapchainGrallocUsageANDROID =
         (PFN_vkGetSwapchainGrallocUsageANDROID)dlSymFunc(lib, "vkGetSwapchainGrallocUsageANDROID");
@@ -804,12 +808,6 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
 #ifdef VK_QNX_external_memory_screen_buffer
     out->vkGetScreenBufferPropertiesQNX =
         (PFN_vkGetScreenBufferPropertiesQNX)dlSymFunc(lib, "vkGetScreenBufferPropertiesQNX");
-#endif
-#ifdef VK_EXT_external_memory_metal
-    out->vkGetMemoryMetalHandleEXT =
-        (PFN_vkGetMemoryMetalHandleEXT)dlSymFunc(lib, "vkGetMemoryMetalHandleEXT");
-    out->vkGetMemoryMetalHandlePropertiesEXT = (PFN_vkGetMemoryMetalHandlePropertiesEXT)dlSymFunc(
-        lib, "vkGetMemoryMetalHandlePropertiesEXT");
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
     out->vkCmdTraceRaysKHR = (PFN_vkCmdTraceRaysKHR)dlSymFunc(lib, "vkCmdTraceRaysKHR");
@@ -1583,6 +1581,10 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
         (PFN_vkGetImageSubresourceLayout2KHR)vk->vkGetInstanceProcAddr(
             instance, "vkGetImageSubresourceLayout2KHR");
 #endif
+#ifdef VK_KHR_line_rasterization
+    out->vkCmdSetLineStippleKHR =
+        (PFN_vkCmdSetLineStippleKHR)vk->vkGetInstanceProcAddr(instance, "vkCmdSetLineStippleKHR");
+#endif
 #ifdef VK_ANDROID_native_buffer
     out->vkGetSwapchainGrallocUsageANDROID =
         (PFN_vkGetSwapchainGrallocUsageANDROID)vk->vkGetInstanceProcAddr(
@@ -1807,13 +1809,6 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
     out->vkGetScreenBufferPropertiesQNX =
         (PFN_vkGetScreenBufferPropertiesQNX)vk->vkGetInstanceProcAddr(
             instance, "vkGetScreenBufferPropertiesQNX");
-#endif
-#ifdef VK_EXT_external_memory_metal
-    out->vkGetMemoryMetalHandleEXT = (PFN_vkGetMemoryMetalHandleEXT)vk->vkGetInstanceProcAddr(
-        instance, "vkGetMemoryMetalHandleEXT");
-    out->vkGetMemoryMetalHandlePropertiesEXT =
-        (PFN_vkGetMemoryMetalHandlePropertiesEXT)vk->vkGetInstanceProcAddr(
-            instance, "vkGetMemoryMetalHandlePropertiesEXT");
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
     out->vkCmdTraceRaysKHR =
@@ -2569,6 +2564,10 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
         (PFN_vkGetImageSubresourceLayout2KHR)vk->vkGetDeviceProcAddr(
             device, "vkGetImageSubresourceLayout2KHR");
 #endif
+#ifdef VK_KHR_line_rasterization
+    out->vkCmdSetLineStippleKHR =
+        (PFN_vkCmdSetLineStippleKHR)vk->vkGetDeviceProcAddr(device, "vkCmdSetLineStippleKHR");
+#endif
 #ifdef VK_ANDROID_native_buffer
     out->vkGetSwapchainGrallocUsageANDROID =
         (PFN_vkGetSwapchainGrallocUsageANDROID)vk->vkGetDeviceProcAddr(
@@ -2786,13 +2785,6 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
     out->vkGetScreenBufferPropertiesQNX =
         (PFN_vkGetScreenBufferPropertiesQNX)vk->vkGetDeviceProcAddr(
             device, "vkGetScreenBufferPropertiesQNX");
-#endif
-#ifdef VK_EXT_external_memory_metal
-    out->vkGetMemoryMetalHandleEXT =
-        (PFN_vkGetMemoryMetalHandleEXT)vk->vkGetDeviceProcAddr(device, "vkGetMemoryMetalHandleEXT");
-    out->vkGetMemoryMetalHandlePropertiesEXT =
-        (PFN_vkGetMemoryMetalHandlePropertiesEXT)vk->vkGetDeviceProcAddr(
-            device, "vkGetMemoryMetalHandlePropertiesEXT");
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
     out->vkCmdTraceRaysKHR =

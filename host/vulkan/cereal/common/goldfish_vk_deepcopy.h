@@ -1790,20 +1790,14 @@ void deepcopy_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     const VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT* from,
     VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT* to);
 
-void deepcopy_VkVertexInputBindingDivisorDescriptionEXT(
-    Allocator* alloc, VkStructureType rootType,
-    const VkVertexInputBindingDivisorDescriptionEXT* from,
-    VkVertexInputBindingDivisorDescriptionEXT* to);
+DEFINE_ALIAS_FUNCTION(deepcopy_VkVertexInputBindingDivisorDescriptionKHR,
+                      deepcopy_VkVertexInputBindingDivisorDescriptionEXT)
 
-void deepcopy_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    Allocator* alloc, VkStructureType rootType,
-    const VkPipelineVertexInputDivisorStateCreateInfoEXT* from,
-    VkPipelineVertexInputDivisorStateCreateInfoEXT* to);
+DEFINE_ALIAS_FUNCTION(deepcopy_VkPipelineVertexInputDivisorStateCreateInfoKHR,
+                      deepcopy_VkPipelineVertexInputDivisorStateCreateInfoEXT)
 
-void deepcopy_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    Allocator* alloc, VkStructureType rootType,
-    const VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* from,
-    VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* to);
+DEFINE_ALIAS_FUNCTION(deepcopy_VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR,
+                      deepcopy_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT)
 
 #endif
 #ifdef VK_EXT_pipeline_creation_feedback
@@ -1886,10 +1880,8 @@ DEFINE_ALIAS_FUNCTION(deepcopy_VkPipelineRasterizationLineStateCreateInfoKHR,
 
 #endif
 #ifdef VK_EXT_index_type_uint8
-void deepcopy_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    Allocator* alloc, VkStructureType rootType,
-    const VkPhysicalDeviceIndexTypeUint8FeaturesEXT* from,
-    VkPhysicalDeviceIndexTypeUint8FeaturesEXT* to);
+DEFINE_ALIAS_FUNCTION(deepcopy_VkPhysicalDeviceIndexTypeUint8FeaturesKHR,
+                      deepcopy_VkPhysicalDeviceIndexTypeUint8FeaturesEXT)
 
 #endif
 #ifdef VK_EXT_extended_dynamic_state

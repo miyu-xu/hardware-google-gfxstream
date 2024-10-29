@@ -1779,17 +1779,14 @@ void reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     VulkanStream* vkStream, VkStructureType rootType,
     VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
-void reservedunmarshal_VkVertexInputBindingDivisorDescriptionEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkVertexInputBindingDivisorDescriptionEXT* forUnmarshaling, uint8_t** ptr);
+DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkVertexInputBindingDivisorDescriptionKHR,
+                      reservedunmarshal_VkVertexInputBindingDivisorDescriptionEXT)
 
-void reservedunmarshal_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPipelineVertexInputDivisorStateCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
+DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPipelineVertexInputDivisorStateCreateInfoKHR,
+                      reservedunmarshal_VkPipelineVertexInputDivisorStateCreateInfoEXT)
 
-void reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* forUnmarshaling, uint8_t** ptr);
+DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR,
+                      reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT)
 
 #endif
 #ifdef VK_EXT_pipeline_creation_feedback
@@ -1867,9 +1864,8 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPipelineRasterizationLineStateCreateIn
 
 #endif
 #ifdef VK_EXT_index_type_uint8
-void reservedunmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceIndexTypeUint8FeaturesEXT* forUnmarshaling, uint8_t** ptr);
+DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesKHR,
+                      reservedunmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT)
 
 #endif
 #ifdef VK_EXT_extended_dynamic_state

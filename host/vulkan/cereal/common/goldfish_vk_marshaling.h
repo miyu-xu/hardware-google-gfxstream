@@ -3111,6 +3111,7 @@ void unmarshal_VkPipelineRasterizationLineStateCreateInfoKHR(
     VulkanStream* vkStream, VkStructureType rootType,
     VkPipelineRasterizationLineStateCreateInfoKHR* forUnmarshaling);
 
+#define OP_vkCmdSetLineStippleKHR 219923286
 #endif
 #ifdef VK_ANDROID_native_buffer
 void marshal_VkNativeBufferUsage2ANDROID(VulkanStream* vkStream, VkStructureType rootType,
@@ -3390,29 +3391,23 @@ void unmarshal_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     VulkanStream* vkStream, VkStructureType rootType,
     VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT* forUnmarshaling);
 
-void marshal_VkVertexInputBindingDivisorDescriptionEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    const VkVertexInputBindingDivisorDescriptionEXT* forMarshaling);
+DEFINE_ALIAS_FUNCTION(marshal_VkVertexInputBindingDivisorDescriptionKHR,
+                      marshal_VkVertexInputBindingDivisorDescriptionEXT)
 
-void unmarshal_VkVertexInputBindingDivisorDescriptionEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkVertexInputBindingDivisorDescriptionEXT* forUnmarshaling);
+DEFINE_ALIAS_FUNCTION(unmarshal_VkVertexInputBindingDivisorDescriptionKHR,
+                      unmarshal_VkVertexInputBindingDivisorDescriptionEXT)
 
-void marshal_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    const VkPipelineVertexInputDivisorStateCreateInfoEXT* forMarshaling);
+DEFINE_ALIAS_FUNCTION(marshal_VkPipelineVertexInputDivisorStateCreateInfoKHR,
+                      marshal_VkPipelineVertexInputDivisorStateCreateInfoEXT)
 
-void unmarshal_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPipelineVertexInputDivisorStateCreateInfoEXT* forUnmarshaling);
+DEFINE_ALIAS_FUNCTION(unmarshal_VkPipelineVertexInputDivisorStateCreateInfoKHR,
+                      unmarshal_VkPipelineVertexInputDivisorStateCreateInfoEXT)
 
-void marshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    const VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* forMarshaling);
+DEFINE_ALIAS_FUNCTION(marshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR,
+                      marshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT)
 
-void unmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* forUnmarshaling);
+DEFINE_ALIAS_FUNCTION(unmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR,
+                      unmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT)
 
 #endif
 #ifdef VK_EXT_pipeline_creation_feedback
@@ -3546,13 +3541,11 @@ DEFINE_ALIAS_FUNCTION(unmarshal_VkPipelineRasterizationLineStateCreateInfoKHR,
 #define OP_vkCmdSetLineStippleEXT 263855692
 #endif
 #ifdef VK_EXT_index_type_uint8
-void marshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    const VkPhysicalDeviceIndexTypeUint8FeaturesEXT* forMarshaling);
+DEFINE_ALIAS_FUNCTION(marshal_VkPhysicalDeviceIndexTypeUint8FeaturesKHR,
+                      marshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT)
 
-void unmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceIndexTypeUint8FeaturesEXT* forUnmarshaling);
+DEFINE_ALIAS_FUNCTION(unmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesKHR,
+                      unmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT)
 
 #endif
 #ifdef VK_EXT_extended_dynamic_state

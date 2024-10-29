@@ -435,6 +435,9 @@ struct VulkanDispatch {
     PFN_vkGetDeviceImageSubresourceLayoutKHR vkGetDeviceImageSubresourceLayoutKHR;
     PFN_vkGetImageSubresourceLayout2KHR vkGetImageSubresourceLayout2KHR;
 #endif
+#ifdef VK_KHR_line_rasterization
+    PFN_vkCmdSetLineStippleKHR vkCmdSetLineStippleKHR;
+#endif
 #ifdef VK_ANDROID_native_buffer
     PFN_vkGetSwapchainGrallocUsageANDROID vkGetSwapchainGrallocUsageANDROID;
     PFN_vkAcquireImageANDROID vkAcquireImageANDROID;
@@ -558,10 +561,6 @@ struct VulkanDispatch {
 #endif
 #ifdef VK_QNX_external_memory_screen_buffer
     PFN_vkGetScreenBufferPropertiesQNX vkGetScreenBufferPropertiesQNX;
-#endif
-#ifdef VK_EXT_external_memory_metal
-    PFN_vkGetMemoryMetalHandleEXT vkGetMemoryMetalHandleEXT;
-    PFN_vkGetMemoryMetalHandlePropertiesEXT vkGetMemoryMetalHandlePropertiesEXT;
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
     PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;

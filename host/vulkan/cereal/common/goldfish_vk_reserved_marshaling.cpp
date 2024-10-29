@@ -12206,7 +12206,17 @@ void reservedunmarshal_VkDebugUtilsMessengerCallbackDataEXT(
     }
     memcpy((int32_t*)&forUnmarshaling->messageIdNumber, *ptr, sizeof(int32_t));
     *ptr += sizeof(int32_t);
-    vkStream->loadStringInPlaceWithStreamPtr((char**)&forUnmarshaling->pMessage, ptr);
+    if (vkStream->getFeatureBits() & VULKAN_STREAM_FEATURE_NULL_OPTIONAL_STRINGS_BIT) {
+        // WARNING PTR CHECK
+        memcpy((char**)&forUnmarshaling->pMessage, (*ptr), 8);
+        android::base::Stream::fromBe64((uint8_t*)&forUnmarshaling->pMessage);
+        *ptr += 8;
+        if (forUnmarshaling->pMessage) {
+            vkStream->loadStringInPlaceWithStreamPtr((char**)&forUnmarshaling->pMessage, ptr);
+        }
+    } else {
+        vkStream->loadStringInPlaceWithStreamPtr((char**)&forUnmarshaling->pMessage, ptr);
+    }
     memcpy((uint32_t*)&forUnmarshaling->queueLabelCount, *ptr, sizeof(uint32_t));
     *ptr += sizeof(uint32_t);
     vkStream->alloc((void**)&forUnmarshaling->pQueueLabels,
@@ -12711,86 +12721,6 @@ void reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
     *ptr += sizeof(uint32_t);
 }
 
-void reservedunmarshal_VkVertexInputBindingDivisorDescriptionEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkVertexInputBindingDivisorDescriptionEXT* forUnmarshaling, uint8_t** ptr) {
-    memcpy((uint32_t*)&forUnmarshaling->binding, *ptr, sizeof(uint32_t));
-    *ptr += sizeof(uint32_t);
-    memcpy((uint32_t*)&forUnmarshaling->divisor, *ptr, sizeof(uint32_t));
-    *ptr += sizeof(uint32_t);
-}
-
-void reservedunmarshal_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPipelineVertexInputDivisorStateCreateInfoEXT* forUnmarshaling, uint8_t** ptr) {
-    memcpy((VkStructureType*)&forUnmarshaling->sType, *ptr, sizeof(VkStructureType));
-    *ptr += sizeof(VkStructureType);
-    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
-        rootType = forUnmarshaling->sType;
-    }
-    uint32_t pNext_size;
-    memcpy((uint32_t*)&pNext_size, *ptr, sizeof(uint32_t));
-    android::base::Stream::fromBe32((uint8_t*)&pNext_size);
-    *ptr += sizeof(uint32_t);
-    forUnmarshaling->pNext = nullptr;
-    if (pNext_size) {
-        vkStream->alloc((void**)&forUnmarshaling->pNext, sizeof(VkStructureType));
-        memcpy((void*)forUnmarshaling->pNext, *ptr, sizeof(VkStructureType));
-        *ptr += sizeof(VkStructureType);
-        VkStructureType extType = *(VkStructureType*)(forUnmarshaling->pNext);
-        vkStream->alloc((void**)&forUnmarshaling->pNext,
-                        goldfish_vk_extension_struct_size_with_stream_features(
-                            vkStream->getFeatureBits(), rootType, forUnmarshaling->pNext));
-        *(VkStructureType*)forUnmarshaling->pNext = extType;
-        reservedunmarshal_extension_struct(vkStream, rootType, (void*)(forUnmarshaling->pNext),
-                                           ptr);
-    }
-    memcpy((uint32_t*)&forUnmarshaling->vertexBindingDivisorCount, *ptr, sizeof(uint32_t));
-    *ptr += sizeof(uint32_t);
-    vkStream->alloc((void**)&forUnmarshaling->pVertexBindingDivisors,
-                    forUnmarshaling->vertexBindingDivisorCount *
-                        sizeof(const VkVertexInputBindingDivisorDescriptionEXT));
-    for (uint32_t i = 0; i < (uint32_t)forUnmarshaling->vertexBindingDivisorCount; ++i) {
-        reservedunmarshal_VkVertexInputBindingDivisorDescriptionEXT(
-            vkStream, rootType,
-            (VkVertexInputBindingDivisorDescriptionEXT*)(forUnmarshaling->pVertexBindingDivisors +
-                                                         i),
-            ptr);
-    }
-}
-
-void reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* forUnmarshaling, uint8_t** ptr) {
-    memcpy((VkStructureType*)&forUnmarshaling->sType, *ptr, sizeof(VkStructureType));
-    *ptr += sizeof(VkStructureType);
-    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
-        rootType = forUnmarshaling->sType;
-    }
-    uint32_t pNext_size;
-    memcpy((uint32_t*)&pNext_size, *ptr, sizeof(uint32_t));
-    android::base::Stream::fromBe32((uint8_t*)&pNext_size);
-    *ptr += sizeof(uint32_t);
-    forUnmarshaling->pNext = nullptr;
-    if (pNext_size) {
-        vkStream->alloc((void**)&forUnmarshaling->pNext, sizeof(VkStructureType));
-        memcpy((void*)forUnmarshaling->pNext, *ptr, sizeof(VkStructureType));
-        *ptr += sizeof(VkStructureType);
-        VkStructureType extType = *(VkStructureType*)(forUnmarshaling->pNext);
-        vkStream->alloc((void**)&forUnmarshaling->pNext,
-                        goldfish_vk_extension_struct_size_with_stream_features(
-                            vkStream->getFeatureBits(), rootType, forUnmarshaling->pNext));
-        *(VkStructureType*)forUnmarshaling->pNext = extType;
-        reservedunmarshal_extension_struct(vkStream, rootType, (void*)(forUnmarshaling->pNext),
-                                           ptr);
-    }
-    memcpy((VkBool32*)&forUnmarshaling->vertexAttributeInstanceRateDivisor, *ptr, sizeof(VkBool32));
-    *ptr += sizeof(VkBool32);
-    memcpy((VkBool32*)&forUnmarshaling->vertexAttributeInstanceRateZeroDivisor, *ptr,
-           sizeof(VkBool32));
-    *ptr += sizeof(VkBool32);
-}
-
 #endif
 #ifdef VK_EXT_fragment_density_map
 void reservedunmarshal_VkPhysicalDeviceFragmentDensityMapFeaturesEXT(
@@ -13036,37 +12966,6 @@ void reservedunmarshal_VkPipelineRasterizationProvokingVertexStateCreateInfoEXT(
     memcpy((VkProvokingVertexModeEXT*)&forUnmarshaling->provokingVertexMode, *ptr,
            sizeof(VkProvokingVertexModeEXT));
     *ptr += sizeof(VkProvokingVertexModeEXT);
-}
-
-#endif
-#ifdef VK_EXT_index_type_uint8
-void reservedunmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
-    VkPhysicalDeviceIndexTypeUint8FeaturesEXT* forUnmarshaling, uint8_t** ptr) {
-    memcpy((VkStructureType*)&forUnmarshaling->sType, *ptr, sizeof(VkStructureType));
-    *ptr += sizeof(VkStructureType);
-    if (rootType == VK_STRUCTURE_TYPE_MAX_ENUM) {
-        rootType = forUnmarshaling->sType;
-    }
-    uint32_t pNext_size;
-    memcpy((uint32_t*)&pNext_size, *ptr, sizeof(uint32_t));
-    android::base::Stream::fromBe32((uint8_t*)&pNext_size);
-    *ptr += sizeof(uint32_t);
-    forUnmarshaling->pNext = nullptr;
-    if (pNext_size) {
-        vkStream->alloc((void**)&forUnmarshaling->pNext, sizeof(VkStructureType));
-        memcpy((void*)forUnmarshaling->pNext, *ptr, sizeof(VkStructureType));
-        *ptr += sizeof(VkStructureType);
-        VkStructureType extType = *(VkStructureType*)(forUnmarshaling->pNext);
-        vkStream->alloc((void**)&forUnmarshaling->pNext,
-                        goldfish_vk_extension_struct_size_with_stream_features(
-                            vkStream->getFeatureBits(), rootType, forUnmarshaling->pNext));
-        *(VkStructureType*)forUnmarshaling->pNext = extType;
-        reservedunmarshal_extension_struct(vkStream, rootType, (void*)(forUnmarshaling->pNext),
-                                           ptr);
-    }
-    memcpy((VkBool32*)&forUnmarshaling->indexTypeUint8, *ptr, sizeof(VkBool32));
-    *ptr += sizeof(VkBool32);
 }
 
 #endif
@@ -14864,6 +14763,12 @@ void reservedunmarshal_extension_struct(VulkanStream* vkStream, VkStructureType 
                 reinterpret_cast<VkShaderModuleCreateInfo*>(structExtension_out), ptr);
             break;
         }
+        case VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO: {
+            reservedunmarshal_VkPipelineLayoutCreateInfo(
+                vkStream, rootType,
+                reinterpret_cast<VkPipelineLayoutCreateInfo*>(structExtension_out), ptr);
+            break;
+        }
 #endif
 #ifdef VK_VERSION_1_1
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES: {
@@ -15864,22 +15769,6 @@ void reservedunmarshal_extension_struct(VulkanStream* vkStream, VkStructureType 
                 ptr);
             break;
         }
-        case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT: {
-            reservedunmarshal_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-                vkStream, rootType,
-                reinterpret_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(
-                    structExtension_out),
-                ptr);
-            break;
-        }
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT: {
-            reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-                vkStream, rootType,
-                reinterpret_cast<VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT*>(
-                    structExtension_out),
-                ptr);
-            break;
-        }
 #endif
 #ifdef VK_EXT_fragment_density_map
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT: {
@@ -16009,15 +15898,6 @@ void reservedunmarshal_extension_struct(VulkanStream* vkStream, VkStructureType 
                 vkStream, rootType,
                 reinterpret_cast<VkPipelineRasterizationProvokingVertexStateCreateInfoEXT*>(
                     structExtension_out),
-                ptr);
-            break;
-        }
-#endif
-#ifdef VK_EXT_index_type_uint8
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT: {
-            reservedunmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-                vkStream, rootType,
-                reinterpret_cast<VkPhysicalDeviceIndexTypeUint8FeaturesEXT*>(structExtension_out),
                 ptr);
             break;
         }
