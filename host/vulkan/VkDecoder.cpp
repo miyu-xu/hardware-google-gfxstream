@@ -4687,7 +4687,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkCreateComputePipelines_VkResult_return = (VkResult)0;
                 vkCreateComputePipelines_VkResult_return =
-                    vk->vkCreateComputePipelines(unboxed_device, pipelineCache, createInfoCount,
+                    m_state->on_vkCreateComputePipelines(&m_pool, device, pipelineCache, createInfoCount,
                                                  pCreateInfos, pAllocator, pPipelines);
                 if ((vkCreateComputePipelines_VkResult_return) == VK_ERROR_DEVICE_LOST)
                     m_state->on_DeviceLost();
