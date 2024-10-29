@@ -20,6 +20,7 @@
 #include "VirtioGpuFrontend.h"
 #include "aemu/base/Metrics.h"
 #include "aemu/base/system/System.h"
+#include "gfxstream/FdStream.h"
 #include "gfxstream/Strings.h"
 #include "gfxstream/host/Features.h"
 #include "gfxstream/host/Tracing.h"
@@ -32,9 +33,9 @@
 #include "host-common/opengles.h"
 #include "host-common/refcount-pipe.h"
 #include "host-common/vm_operations.h"
-#include "vulkan/VulkanDispatch.h"
 #include "render-utils/RenderLib.h"
 #include "vk_util.h"
+#include "vulkan/VulkanDispatch.h"
 
 extern "C" {
 #include "gfxstream/virtio-gpu-gfxstream-renderer-unstable.h"
@@ -116,6 +117,7 @@ static char translate_severity(uint32_t type) {
 using android::AndroidPipe;
 using android::base::ManagedDescriptor;
 using android::base::MetricsLogger;
+using gfxstream::FdStream;
 using gfxstream::host::VirtioGpuFrontend;
 
 static VirtioGpuFrontend* sFrontend() {

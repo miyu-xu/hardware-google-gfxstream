@@ -29,9 +29,9 @@
 #include "FrameworkFormats.h"
 #include "VkCommonOperations.h"
 #include "aemu/base/ManagedDescriptor.hpp"
-#include "aemu/base/files/StdioStream.h"
 #include "aemu/base/memory/SharedMemory.h"
 #include "aemu/base/threads/WorkerThread.h"
+#include "gfxstream/FdStream.h"
 #include "gfxstream/host/Tracing.h"
 #include "host-common/AddressSpaceService.h"
 #include "host-common/address_space_device.h"
@@ -944,8 +944,7 @@ int VirtioGpuFrontend::snapshotRenderer(const char* directory) {
     const std::filesystem::path snapshotDirectory = std::string(directory);
     const std::filesystem::path snapshotPath = snapshotDirectory / kSnapshotBasenameRenderer;
 
-    android::base::StdioStream stream(fopen(snapshotPath.c_str(), "wb"),
-                                      android::base::StdioStream::kOwner);
+    FdStream stream = FdStream::Write(snapshotPath);
     android::snapshot::SnapshotSaveStream saveStream{
         .stream = &stream,
     };
@@ -995,8 +994,7 @@ int VirtioGpuFrontend::snapshotAsg(const char* directory) {
     const std::filesystem::path snapshotDirectory = std::string(directory);
     const std::filesystem::path snapshotPath = snapshotDirectory / kSnapshotBasenameAsg;
 
-    android::base::StdioStream stream(fopen(snapshotPath.c_str(), "wb"),
-                                      android::base::StdioStream::kOwner);
+    FdStream stream = FdStream::Write(snapshotPath);
     android::snapshot::SnapshotLoadStream saveStream{
         .stream = &stream,
     };
@@ -1037,8 +1035,7 @@ int VirtioGpuFrontend::restoreRenderer(const char* directory) {
     const std::filesystem::path snapshotDirectory = std::string(directory);
     const std::filesystem::path snapshotPath = snapshotDirectory / kSnapshotBasenameRenderer;
 
-    android::base::StdioStream stream(fopen(snapshotPath.c_str(), "rb"),
-                                      android::base::StdioStream::kOwner);
+    FdStream stream = FdStream::read(snapshotPath);
     android::snapshot::SnapshotLoadStream loadStream{
         .stream = &stream,
     };
@@ -1093,8 +1090,7 @@ int VirtioGpuFrontend::restoreAsg(const char* directory) {
     const std::filesystem::path snapshotDirectory = std::string(directory);
     const std::filesystem::path snapshotPath = snapshotDirectory / kSnapshotBasenameAsg;
 
-    android::base::StdioStream stream(fopen(snapshotPath.c_str(), "rb"),
-                                      android::base::StdioStream::kOwner);
+    FdStream stream = FdStream::read(snapshotPath);
     android::snapshot::SnapshotLoadStream loadStream{
         .stream = &stream,
     };

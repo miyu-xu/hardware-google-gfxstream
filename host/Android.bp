@@ -40,6 +40,7 @@ cc_library_host_static {
 gfxstream_backend_static_deps = [
     "gfxstream_base",
     "gfxstream_host_common",
+    "libgfxstream_common_fdstream",
     "libgfxstream_common_utils",
     "libgfxstream_host_features",
     "libgfxstream_host_tracing",

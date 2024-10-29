@@ -1,0 +1,16 @@
+# Header Library
+cc_library(
+    name = "gfxstream_common_fdstream_headers",
+    hdrs = glob(["include/**/*.h"]),
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+)
+
+# Code Library
+cc_library(
+    name = "gfxstream_common_fdstream",
+    srcs = ["FdStream.cpp"],
+    copts = ["-fno-exceptions"],
+    visibility = ["//visibility:public"],
+    deps = [":gfxstream_common_fdstream_headers"],
+)
