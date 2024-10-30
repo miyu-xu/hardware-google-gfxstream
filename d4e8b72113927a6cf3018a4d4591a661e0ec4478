@@ -16,6 +16,24 @@
       "message": "I think it\u0027s ok to track the compute pipelines, but I don\u0027t understand how this is helping with the leak issue on pipeline layouts?",
       "revId": "d4e8b72113927a6cf3018a4d4591a661e0ec4478",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b43b917_07d476f6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-10-30T13:49:39Z",
+      "side": 1,
+      "message": "just pick that bug to start with; will have more to come, thanks Serdar",
+      "parentUuid": "42e2fdda_5a12168b",
+      "revId": "d4e8b72113927a6cf3018a4d4591a661e0ec4478",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
