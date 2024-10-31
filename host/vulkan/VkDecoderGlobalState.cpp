@@ -2902,26 +2902,27 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
-        if (*pFence == VK_NULL_HANDLE) {
-            VkResult res = vk->vkCreateFence(device, &createInfo, pAllocator, pFence);
-            if (res != VK_SUCCESS) {
-                return res;
-            }
-        }
-
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
+            if (*pFence == VK_NULL_HANDLE) {
+                VkResult res = vk->vkCreateFence(device, &createInfo, pAllocator, pFence);
+                if (res != VK_SUCCESS) {
+                    return res;
+                }
+            }
 
-            DCHECK(fenceReused || mFenceInfo.find(*pFence) == mFenceInfo.end());
-            // Create FenceInfo for *pFence.
-            auto& fenceInfo = mFenceInfo[*pFence];
-            fenceInfo.device = device;
-            fenceInfo.vk = vk;
+            {
+                DCHECK(fenceReused || mFenceInfo.find(*pFence) == mFenceInfo.end());
+                // Create FenceInfo for *pFence.
+                auto& fenceInfo = mFenceInfo[*pFence];
+                fenceInfo.device = device;
+                fenceInfo.vk = vk;
 
-            *pFence = new_boxed_non_dispatchable_VkFence(*pFence);
-            fenceInfo.boxed = *pFence;
-            fenceInfo.external = exportSyncFd;
-            fenceInfo.state = FenceInfo::State::kNotWaitable;
+                *pFence = new_boxed_non_dispatchable_VkFence(*pFence);
+                fenceInfo.boxed = *pFence;
+                fenceInfo.external = exportSyncFd;
+                fenceInfo.state = FenceInfo::State::kNotWaitable;
+            }
         }
 
         return VK_SUCCESS;
