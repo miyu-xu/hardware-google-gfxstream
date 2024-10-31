@@ -2902,26 +2902,27 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
-        if (*pFence == VK_NULL_HANDLE) {
-            VkResult res = vk->vkCreateFence(device, &createInfo, pAllocator, pFence);
-            if (res != VK_SUCCESS) {
-                return res;
-            }
-        }
-
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
+            if (*pFence == VK_NULL_HANDLE) {
+                VkResult res = vk->vkCreateFence(device, &createInfo, pAllocator, pFence);
+                if (res != VK_SUCCESS) {
+                    return res;
+                }
+            }
 
-            DCHECK(fenceReused || mFenceInfo.find(*pFence) == mFenceInfo.end());
-            // Create FenceInfo for *pFence.
-            auto& fenceInfo = mFenceInfo[*pFence];
-            fenceInfo.device = device;
-            fenceInfo.vk = vk;
+            {
+                DCHECK(fenceReused || mFenceInfo.find(*pFence) == mFenceInfo.end());
+                // Create FenceInfo for *pFence.
+                auto& fenceInfo = mFenceInfo[*pFence];
+                fenceInfo.device = device;
+                fenceInfo.vk = vk;
 
-            *pFence = new_boxed_non_dispatchable_VkFence(*pFence);
-            fenceInfo.boxed = *pFence;
-            fenceInfo.external = exportSyncFd;
-            fenceInfo.state = FenceInfo::State::kNotWaitable;
+                *pFence = new_boxed_non_dispatchable_VkFence(*pFence);
+                fenceInfo.boxed = *pFence;
+                fenceInfo.external = exportSyncFd;
+                fenceInfo.state = FenceInfo::State::kNotWaitable;
+            }
         }
 
         return VK_SUCCESS;
@@ -2962,6 +2963,7 @@ class VkDecoderGlobalState::Impl {
             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, .pNext = 0, .flags = 0};
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
         if (!deviceInfo) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        std::lock_guard<std::recursive_mutex> lock(mLock);
         for (auto fence : externalFences) {
             VkFence replacement = deviceInfo->externalFencePool->pop(&createInfo);
             if (replacement == VK_NULL_HANDLE) {
@@ -2970,7 +2972,6 @@ class VkDecoderGlobalState::Impl {
             deviceInfo->externalFencePool->add(fence);
 
             {
-                std::lock_guard<std::recursive_mutex> lock(mLock);
                 auto boxed_fence = unboxed_to_boxed_non_dispatchable_VkFence(fence);
                 set_boxed_non_dispatchable_VkFence(boxed_fence, replacement);
 
@@ -8247,6 +8248,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void destroyInstanceObjects(InstanceObjects& objects) {
+        std::lock_guard<std::recursive_mutex> lock(mLock);
         VkInstance instance = objects.instance.key();
         InstanceInfo& instanceInfo = objects.instance.mapped();
 
