@@ -711,7 +711,7 @@ void VirtioGpuFrontend::attachResource(uint32_t contextId, uint32_t resourceId) 
 }
 
 void VirtioGpuFrontend::detachResource(uint32_t contextId, uint32_t resourceId) {
-    stream_renderer_debug("ctxid: %u resid: %u", ctxId, toUnrefId);
+    stream_renderer_debug("ctxid: %u resid: %u", contextId, resourceId);
 
     auto contextIt = mContexts.find(contextId);
     if (contextIt == mContexts.end()) {
