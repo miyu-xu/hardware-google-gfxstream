@@ -70,6 +70,23 @@
 #include <vulkan/vulkan_beta.h> // for MoltenVK portability extensions
 #endif
 
+#ifdef __linux__
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <unistd.h>
+uint64_t mygettid() {
+    return syscall(__NR_gettid);
+}
+#endif
+
+#if defined(__APPLE__)
+uint64_t mygettid() {
+uint64_t tid;
+pthread_threadid_np(NULL, &tid);
+return tid;
+}
+#endif
+
 #ifndef VERBOSE
 #define VERBOSE(fmt, ...)                    \
     if (android::base::isVerboseLogging()) { \
@@ -1087,8 +1104,8 @@ class VkDecoderGlobalState::Impl {
             info.enabledExtensionNames.push_back(createInfoFiltered.ppEnabledExtensionNames[i]);
         }
 
-        INFO("Created VkInstance:%p for application:%s engine:%s.", *pInstance,
-             info.applicationName.c_str(), info.engineName.c_str());
+        INFO("Created VkInstance:%p for application:%s engine:%s. pid %d tid %ld", *pInstance,
+             info.applicationName.c_str(), info.engineName.c_str(), getpid(),  mygettid());
 
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_SUPPORT
         // TODO: bug 129484301
@@ -1915,6 +1932,10 @@ class VkDecoderGlobalState::Impl {
         auto& instanceInfo = instanceInfoIt->second;
 
         // Fill out information about the logical device here.
+        if (mDeviceInfo.find(*pDevice) != mDeviceInfo.end()) {
+            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "VkDevice "
+                << *pDevice << " already exists!";
+        }
         auto& deviceInfo = mDeviceInfo[*pDevice];
         deviceInfo.physicalDevice = physicalDevice;
         deviceInfo.emulateTextureEtc2 = emulateTextureEtc2;
@@ -1932,10 +1953,11 @@ class VkDecoderGlobalState::Impl {
         deviceInfo.externalFenceInfo.supportedBinarySemaphoreHandleTypes =
             static_cast<VkExternalSemaphoreHandleTypeFlagBits>(supportedBinarySemaphoreHandleTypes);
 
-        INFO("Created VkDevice:%p for application:%s engine:%s ASTC emulation:%s CPU decoding:%s.",
+        INFO("Created VkDevice:%p for application:%s engine:%s ASTC emulation:%s CPU decoding:%s.  pid %d tid %d",
              *pDevice, instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str(),
              deviceInfo.emulateTextureAstc ? "on" : "off",
-             deviceInfo.useAstcCpuDecompression ? "on" : "off");
+             deviceInfo.useAstcCpuDecompression ? "on" : "off"
+             , getpid(),  mygettid());
 
         for (uint32_t i = 0; i < createInfoFiltered.enabledExtensionCount; ++i) {
             deviceInfo.enabledExtensionNames.push_back(
@@ -2124,6 +2146,13 @@ class VkDecoderGlobalState::Impl {
     }
 
     void destroyDeviceLocked(VkDevice device, const VkAllocationCallbacks* pAllocator) {
+        if ((unsigned long long)device < 0x100LL) {
+            fprintf(stderr, "%s %s %d device to destroy is invalid %llx.\n", __FILE__, __func__, __LINE__,
+                    (unsigned long long)device);
+            return;
+        } else {
+            fprintf(stderr, "%s %d device to destroy is valid %llx.\n", __func__, __LINE__, (unsigned long long)device);
+        }
         auto deviceInfoIt = mDeviceInfo.find(device);
         if (deviceInfoIt == mDeviceInfo.end()) return;
         auto& deviceInfo = deviceInfoIt->second;

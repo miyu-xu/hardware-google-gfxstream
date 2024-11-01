@@ -288,6 +288,7 @@ struct SamplerInfo {
 };
 
 struct FenceInfo {
+    std::optional<uint32_t> virtioGpuContextId;
     VkDevice device = VK_NULL_HANDLE;
     VkFence boxed = VK_NULL_HANDLE;
     VulkanDispatch* vk = nullptr;
