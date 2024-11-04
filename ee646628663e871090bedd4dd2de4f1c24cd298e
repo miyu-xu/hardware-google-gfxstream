@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf76b1f2_26b41233",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-04T06:58:19Z",
+      "side": 1,
+      "message": "Maybe we should modify `on_vkDestroyDevice` to remove all related fences from mFenceInfo correctly, so that host `vkDestroyFence` can\u0027t be called afterwards?",
+      "parentUuid": "f98f0e99_f05afd10",
+      "range": {
+        "startLine": 10,
+        "startChar": 21,
+        "endLine": 10,
+        "endChar": 46
+      },
+      "revId": "ee646628663e871090bedd4dd2de4f1c24cd298e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "c2fccae2_ab6c3e8c",
