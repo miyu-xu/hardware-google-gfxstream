@@ -22,6 +22,30 @@
       },
       "revId": "e9bce9620d5ff8b254388cc0bb65022a61ae04ea",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6182352a_45ea71cf",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2315,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-04T19:30:51Z",
+      "side": 1,
+      "message": "This actually happens with recent API 35 images. I believe we give the support info at https://cs.android.com/android/platform/superproject/main/+/main:external/mesa3d/src/gfxstream/guest/vulkan_enc/AndroidHardwareBuffer.cpp;l\u003d127\n\nand at your ref [2], it doesn\u0027t return VK_ERROR_VALIDATION_FAILED_EXT as the externalFormat is also marked as invalid (ie. won\u0027t take `if (extFormatAndroidPtr-\u003eexternalFormat)` branch). I didn\u0027t check this in detail, but since the current images are causing this problem and it can also just be an app valid usage error, we need to handle it on the host side to avoid crashes. \n\nProbably we need some additional guest side changes to properly fix this, like additional check on [2] for the vk_format given, hence I added comment here as \u0027the image might be old\u0027.",
+      "parentUuid": "f016f8fb_e8449dd5",
+      "range": {
+        "startLine": 2314,
+        "startChar": 53,
+        "endLine": 2315,
+        "endChar": 55
+      },
+      "revId": "e9bce9620d5ff8b254388cc0bb65022a61ae04ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
