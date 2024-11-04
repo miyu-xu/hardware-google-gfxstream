@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f016f8fb_e8449dd5",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2315,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-04T18:05:48Z",
+      "side": 1,
+      "message": "Do you specifically which is happening? I was under the impression the former shouldn\u0027t happen after we started sending format support to the guest [1] and error out in the guest if it isn\u0027t supported [2].\n\n[1] https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/host/VirtioGpuFrontend.cpp;l\u003d727-762;drc\u003d8c91f560699d3b2b73f1f15889d096c0b5a88931\n\n[2] https://cs.android.com/android/platform/superproject/main/+/main:external/mesa3d/src/gfxstream/guest/vulkan_enc/ResourceTracker.cpp;l\u003d4285-4293;drc\u003dc78adbd9881d49af290d198e478a7f7e9e48e2c3",
+      "range": {
+        "startLine": 2314,
+        "startChar": 53,
+        "endLine": 2315,
+        "endChar": 55
+      },
+      "revId": "e9bce9620d5ff8b254388cc0bb65022a61ae04ea",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
