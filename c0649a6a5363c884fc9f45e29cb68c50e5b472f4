@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88015b76_1998732c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-05T16:51:47Z",
+      "side": 1,
+      "message": "I think this is a no-op really. It\u0027s likely SSO does the right thing here.",
+      "revId": "c0649a6a5363c884fc9f45e29cb68c50e5b472f4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
