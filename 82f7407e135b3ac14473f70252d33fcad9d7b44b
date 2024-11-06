@@ -230,6 +230,24 @@
       "parentUuid": "f1b4aeb8_b1488db6",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67d71f28_26577f6a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-11-06T22:34:55Z",
+      "side": 1,
+      "message": "The capset (`disableVulkanBatchedDescriptorSetUpdate`) and feature string (`VulkanBatchedDescriptorSetUpdate`) can be string\n\nThe capset is a `libgfxstream_vulkan.so` \u003c--\u003e `libgfxstream_backend` interface.\n\nThe feature string is a VMM \u003c--\u003e `libgfxstream_backend.so` interface.  \n\nSo we\u0027ll only have to change this MR to modify the name of the capset (`disableVulkanBatchedDescriptorSetUpdate`).  We\u0027ll also need a guest side MR to modify the capset name, and do `mFeatureInfo.hasVulkanBatchedDescriptorSetUpdate \u003d !mCaps.vulkanCapset. disableVulkanBatchedDescriptorSetUpdate;`.  That\u0027s essentially it.",
+      "parentUuid": "d7ef6661_5e44ea26",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
