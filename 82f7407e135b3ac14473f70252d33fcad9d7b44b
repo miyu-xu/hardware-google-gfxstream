@@ -122,6 +122,24 @@
       "message": "Ah, so aosp/3323076 did disable the batched descriptor stuff on the host side.  But for older guests, it\u0027s still enabled on the guest side.  Then stuff breaks.\n\nCan you change `capset-\u003evulkanBatchedDescriptorSetUpdate` to `capset-\u003edisableVulkanBatchedDescriptorSetUpdate`?  `capset-\u003edisableVulkanBatchedDescriptorSetUpdate` needs to be off by default.",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa5f56c7_0097546e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-06T18:14:07Z",
+      "side": 1,
+      "message": "Sorry, can you expand on this? Are you suggesting to just change the name? \nAs I understand it, capset can be set to 0 or 1 right? What advantage do you see in inverting the name?\n\n```\nmFeatureInfo.hasVulkanBatchedDescriptorSetUpdate \u003d mCaps.vulkanCapset.vulkanBatchedDescriptorSetUpdate;\n```\n\nThis will then just become:\n```\nmFeatureInfo.hasVulkanBatchedDescriptorSetUpdate \u003d !mCaps.vulkanCapset. disableVulkanBatchedDescriptorSetUpdate;\n```",
+      "parentUuid": "6fda18d5_d83e6a08",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
