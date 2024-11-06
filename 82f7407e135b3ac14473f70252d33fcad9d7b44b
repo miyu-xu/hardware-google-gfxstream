@@ -194,6 +194,24 @@
       "parentUuid": "809f9b75_4abc5204",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1b4aeb8_b1488db6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-11-06T21:09:59Z",
+      "side": 1,
+      "message": "I\u0027ve played around with this batched descriptor stuff in the past, and yes having guests OFF and host ON didn\u0027t work well.",
+      "parentUuid": "98858400_305fc1f8",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
