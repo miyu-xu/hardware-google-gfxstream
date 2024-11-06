@@ -176,6 +176,24 @@
       "parentUuid": "a52272ab_45658df3",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98858400_305fc1f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-06T21:07:25Z",
+      "side": 1,
+      "message": "The question is: Do you know for sure that this breaks if guest is OFF and host is ON? \n\nI don\u0027t have the capacity to test this right now, nor do I know enough about this mechanism.",
+      "parentUuid": "809f9b75_4abc5204",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
