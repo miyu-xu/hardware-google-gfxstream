@@ -140,6 +140,24 @@
       "parentUuid": "6fda18d5_d83e6a08",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a52272ab_45658df3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-06T18:22:15Z",
+      "side": 1,
+      "message": "Yah let\u0027s just apply the change in this review to keep things backwards-compatible (default ON in gfxstream-renderer). Then hypervisors can define their own default behavior by passing in renderer_features, at their own peril.",
+      "parentUuid": "aa5f56c7_0097546e",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
