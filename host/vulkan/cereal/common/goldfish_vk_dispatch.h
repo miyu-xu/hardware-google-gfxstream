@@ -36,6 +36,9 @@
 #include "goldfish_vk_private_defs.h"
 #include "vk_android_native_buffer_gfxstream.h"
 #include "vulkan_gfxstream.h"
+
+#define JOSH_DEBUG 1
+
 namespace gfxstream {
 namespace vk {
 
@@ -79,8 +82,13 @@ struct VulkanDispatch {
     PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties;
     PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
     PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
+#ifdef JOSH_DEBUG
+    std::function<VkResult(VkPhysicalDevice, const VkDeviceCreateInfo*, const VkAllocationCallbacks*, VkDevice*)> vkCreateDevice;
+    std::function<void(VkDevice, const VkAllocationCallbacks*)> vkDestroyDevice;
+#else
     PFN_vkCreateDevice vkCreateDevice;
     PFN_vkDestroyDevice vkDestroyDevice;
+#endif
     PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
     PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties;
     PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties;
@@ -104,8 +112,13 @@ struct VulkanDispatch {
     PFN_vkGetPhysicalDeviceSparseImageFormatProperties
         vkGetPhysicalDeviceSparseImageFormatProperties;
     PFN_vkQueueBindSparse vkQueueBindSparse;
+#ifdef JOSH_DEBUG
+    std::function<VkResult(VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence)> vkCreateFence;
+    std::function<void(VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator)> vkDestroyFence;
+#else
     PFN_vkCreateFence vkCreateFence;
     PFN_vkDestroyFence vkDestroyFence;
+#endif
     PFN_vkResetFences vkResetFences;
     PFN_vkGetFenceStatus vkGetFenceStatus;
     PFN_vkWaitForFences vkWaitForFences;
