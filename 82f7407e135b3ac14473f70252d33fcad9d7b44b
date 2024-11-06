@@ -212,6 +212,24 @@
       "parentUuid": "98858400_305fc1f8",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d7ef6661_5e44ea26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-06T21:41:56Z",
+      "side": 1,
+      "message": "@sergiuferentz@google.com do you have the capacity right now to change to a \"disabled\" flag on guest/host/qemu?",
+      "parentUuid": "f1b4aeb8_b1488db6",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
