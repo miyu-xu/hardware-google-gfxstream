@@ -158,6 +158,24 @@
       "parentUuid": "aa5f56c7_0097546e",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "809f9b75_4abc5204",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-11-06T20:59:04Z",
+      "side": 1,
+      "message": "Some people like newer guests on older hosts too ).  I define an older host to be one which does not include aosp/3323076 (for example, auto_cf_arm_64 from the Android CI on an older QAVF image).\n\nCurrently, the default in the case of a newer guest/older host would be for the batched descriptor update mechanism to be OFF.  It needs to be ON, so protocol can only actively disable it.  Hence `disableVulkanBatchedDescriptorSetUpdate` (yes, we\u0027ll need to update the guest side too).",
+      "parentUuid": "a52272ab_45658df3",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
