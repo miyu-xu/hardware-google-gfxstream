@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1576f82f_4dcdad0a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-11-06T16:18:36Z",
+      "side": 1,
+      "message": "aosp/3323076 didn\u0027t actually change anything on the host side aside from advertising the capability.  Are you running with aosp/3323076 + https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/31929/diffs?commit_id\u003d72dbabdfefeaf5f72a6f7220e3ae4b5b03a32501 together?  \n\nEssentially, which app/environment are you observing the breakage?",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
