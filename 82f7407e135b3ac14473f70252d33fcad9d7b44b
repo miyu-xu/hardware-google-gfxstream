@@ -51,6 +51,24 @@
       "message": "Hi Aaron, thanks for the CL.\n\nCould you provide more details regarding the breakage and what use case you’re exercising here?\n\nGenerally, we believe forcing vulkan batched descriptor set update was a mistake to begin with. As such, we would suggest updating the guest if at all possible? As you can see, we still retain the ability to turn it on by passing -feature VulkanBatchedDescriptorSetUpdate if that is a feature you rely on.\n\nIf you do rely on it, I would be curious what case you\u0027re encountering that requires this functionality.",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2b35078_8b55720e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-06T17:23:49Z",
+      "side": 1,
+      "message": "IMO, gfxstream host changes should aim to backwards-compatible with existing Android guests and hypervisors, correct? aosp/3323076 changed the default (on the host) from on to off. Based on the code-change, this seems like it may have been unintended (the following code snippit doesn\u0027t make sense, it effectively sets `feature.enabled \u003d feature.enabled`)\n\n```\n    GFXSTREAM_SET_FEATURE_ON_CONDITION(\n        \u0026features, VulkanBatchedDescriptorSetUpdate, features.VulkanBatchedDescriptorSetUpdate.enabled);\n```\n\nI understand the change, and understand the argument that vulkanBatchedDescriptorSetUpdates was a mistake to begin with. But I think we need to keep the feature ON by default, and hypervisors going forward can choose to *disable* by default by internally setting renderer_features string.",
+      "parentUuid": "ff8e9919_99d38a53",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
