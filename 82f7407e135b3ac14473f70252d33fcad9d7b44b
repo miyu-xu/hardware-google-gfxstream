@@ -69,6 +69,24 @@
       "parentUuid": "ff8e9919_99d38a53",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a85ee6e7_1fc8ead3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-06T17:39:46Z",
+      "side": 1,
+      "message": "Instead, maybe we want cuttlefish/QEMU/crosvm to disable this on their end, by default, going forward? (and this is valid because the recommendation is that host-tools are always supposed to be updated alongside Android CF/Trout images).",
+      "parentUuid": "a2b35078_8b55720e",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
