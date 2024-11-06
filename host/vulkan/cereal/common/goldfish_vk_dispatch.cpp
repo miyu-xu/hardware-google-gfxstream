@@ -33,12 +33,41 @@
 
 #include "goldfish_vk_dispatch.h"
 
+#include "aemu/base/threads/Thread.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 namespace gfxstream {
 namespace vk {
+
+#ifdef JOSH_DEBUG
+namespace {
+
+VkResult debug_vkCreateDevice(PFN_vkCreateDevice func, VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
+    VkResult res = func(physicalDevice, pCreateInfo, pAllocator, pDevice);
+    fprintf(stderr, "JOSH tid=0x%lx vkCreateDevice device=%p res=%d\n", android::base::getCurrentThreadId(), *pDevice, res);
+    return res;
+}
+
+void debug_vkDestroyDevice(PFN_vkDestroyDevice func, VkDevice device, const VkAllocationCallbacks* pAllocator) {
+    fprintf(stderr, "JOSH tid=0x%lx vkDestroyDevice device=%p\n", android::base::getCurrentThreadId(), device);
+    func(device, pAllocator);
+};
+
+VkResult debug_vkCreateFence(PFN_vkCreateFence func, VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
+    VkResult res = func(device, pCreateInfo, pAllocator, pFence);
+    fprintf(stderr, "JOSH tid=0x%lx vkCreateFence device=%p fence=%p res=%d\n", android::base::getCurrentThreadId(), device, *pFence, res);
+    return res;
+}
+
+void debug_vkDestroyFence(PFN_vkDestroyFence func, VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
+    fprintf(stderr, "JOSH tid=0x%lx vkDestroyFence device=%p fence=%p\n", android::base::getCurrentThreadId(), device, fence);
+    func(device, fence, pAllocator);
+}
+
+}
+#endif  // JOSH_DEBUG
 
 void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dlSymFunc,
                                              VulkanDispatch* out) {
@@ -64,8 +93,27 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
     out->vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)dlSymFunc(
         lib, "vkGetPhysicalDeviceMemoryProperties");
     out->vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)dlSymFunc(lib, "vkGetInstanceProcAddr");
+#if JOSH_DEBUG
+    PFN_vkCreateDevice josh_vkCreateDevice = (PFN_vkCreateDevice)dlSymFunc(lib, "vkCreateDevice");
+    PFN_vkDestroyDevice josh_vkDestroyDevice = (PFN_vkDestroyDevice)dlSymFunc(lib, "vkDestroyDevice");
+    if (josh_vkCreateDevice) {
+        out->vkCreateDevice = [josh_vkCreateDevice](VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) -> VkResult {
+            return debug_vkCreateDevice(josh_vkCreateDevice, physicalDevice, pCreateInfo, pAllocator, pDevice);
+        };
+    } else {
+        out->vkCreateDevice = nullptr;
+    }
+    if (josh_vkDestroyDevice) {
+        out->vkDestroyDevice = [josh_vkDestroyDevice](VkDevice device, const VkAllocationCallbacks* pAllocator) {
+            debug_vkDestroyDevice(josh_vkDestroyDevice, device, pAllocator);
+        };
+    } else {
+        out->vkDestroyDevice = nullptr;
+    }
+#else
     out->vkCreateDevice = (PFN_vkCreateDevice)dlSymFunc(lib, "vkCreateDevice");
     out->vkDestroyDevice = (PFN_vkDestroyDevice)dlSymFunc(lib, "vkDestroyDevice");
+#endif
     out->vkEnumerateDeviceExtensionProperties = (PFN_vkEnumerateDeviceExtensionProperties)dlSymFunc(
         lib, "vkEnumerateDeviceExtensionProperties");
     out->vkEnumerateDeviceLayerProperties =
@@ -181,8 +229,27 @@ void init_vulkan_dispatch_from_system_loader(DlOpenFunc dlOpenFunc, DlSymFunc dl
     out->vkGetImageSparseMemoryRequirements = (PFN_vkGetImageSparseMemoryRequirements)dlSymFunc(
         lib, "vkGetImageSparseMemoryRequirements");
     out->vkQueueBindSparse = (PFN_vkQueueBindSparse)dlSymFunc(lib, "vkQueueBindSparse");
+#if JOSH_DEBUG
+    PFN_vkCreateFence josh_vkCreateFence = (PFN_vkCreateFence)dlSymFunc(lib, "vkCreateFence");
+    PFN_vkDestroyFence josh_vkDestroyFence = (PFN_vkDestroyFence)dlSymFunc(lib, "vkDestroyFence");
+    if (josh_vkCreateFence) {
+        out->vkCreateFence = [josh_vkCreateFence](VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence) -> VkResult {
+            return debug_vkCreateFence(josh_vkCreateFence, device, pCreateInfo, pAllocator, pFence);
+        };
+    } else {
+        out->vkCreateFence = nullptr;
+    }
+    if (josh_vkDestroyFence) {
+        out->vkDestroyFence = [josh_vkDestroyFence](VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
+            debug_vkDestroyFence(josh_vkDestroyFence, device, fence, pAllocator);
+        };
+    } else {
+        out->vkDestroyFence = nullptr;
+    }
+#else
     out->vkCreateFence = (PFN_vkCreateFence)dlSymFunc(lib, "vkCreateFence");
     out->vkDestroyFence = (PFN_vkDestroyFence)dlSymFunc(lib, "vkDestroyFence");
+#endif
     out->vkResetFences = (PFN_vkResetFences)dlSymFunc(lib, "vkResetFences");
     out->vkGetFenceStatus = (PFN_vkGetFenceStatus)dlSymFunc(lib, "vkGetFenceStatus");
     out->vkWaitForFences = (PFN_vkWaitForFences)dlSymFunc(lib, "vkWaitForFences");
@@ -860,9 +927,28 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
             instance, "vkGetPhysicalDeviceMemoryProperties");
     out->vkGetInstanceProcAddr =
         (PFN_vkGetInstanceProcAddr)vk->vkGetInstanceProcAddr(instance, "vkGetInstanceProcAddr");
+#if JOSH_DEBUG
+    PFN_vkCreateDevice josh_vkCreateDevice = (PFN_vkCreateDevice)vk->vkGetInstanceProcAddr(instance, "vkCreateDevice");
+    PFN_vkDestroyDevice josh_vkDestroyDevice = (PFN_vkDestroyDevice)vk->vkGetInstanceProcAddr(instance, "vkDestroyDevice");
+    if (josh_vkCreateDevice) {
+        out->vkCreateDevice = [josh_vkCreateDevice](VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) -> VkResult {
+            return debug_vkCreateDevice(josh_vkCreateDevice, physicalDevice, pCreateInfo, pAllocator, pDevice);
+        };
+    } else {
+        out->vkCreateDevice = nullptr;
+    }
+    if (josh_vkDestroyDevice) {
+        out->vkDestroyDevice = [josh_vkDestroyDevice](VkDevice device, const VkAllocationCallbacks* pAllocator) {
+            debug_vkDestroyDevice(josh_vkDestroyDevice, device, pAllocator);
+        };
+    } else {
+        out->vkDestroyDevice = nullptr;
+    }
+#else
     out->vkCreateDevice = (PFN_vkCreateDevice)vk->vkGetInstanceProcAddr(instance, "vkCreateDevice");
     out->vkDestroyDevice =
         (PFN_vkDestroyDevice)vk->vkGetInstanceProcAddr(instance, "vkDestroyDevice");
+#endif
     out->vkEnumerateDeviceExtensionProperties =
         (PFN_vkEnumerateDeviceExtensionProperties)vk->vkGetInstanceProcAddr(
             instance, "vkEnumerateDeviceExtensionProperties");
@@ -1007,8 +1093,27 @@ void init_vulkan_dispatch_from_instance(VulkanDispatch* vk, VkInstance instance,
             instance, "vkGetImageSparseMemoryRequirements");
     out->vkQueueBindSparse =
         (PFN_vkQueueBindSparse)vk->vkGetInstanceProcAddr(instance, "vkQueueBindSparse");
+#if JOSH_DEBUG
+    PFN_vkCreateFence josh_vkCreateFence = (PFN_vkCreateFence)vk->vkGetInstanceProcAddr(instance, "vkCreateFence");
+    PFN_vkDestroyFence josh_vkDestroyFence = (PFN_vkDestroyFence)vk->vkGetInstanceProcAddr(instance, "vkDestroyFence");
+    if (josh_vkCreateFence) {
+        out->vkCreateFence = [josh_vkCreateFence](VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence) -> VkResult {
+            return debug_vkCreateFence(josh_vkCreateFence, device, pCreateInfo, pAllocator, pFence);
+        };
+    } else {
+        out->vkCreateFence = nullptr;
+    }
+    if (josh_vkDestroyFence) {
+        out->vkDestroyFence = [josh_vkDestroyFence](VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
+            debug_vkDestroyFence(josh_vkDestroyFence, device, fence, pAllocator);
+        };
+    } else {
+        out->vkDestroyFence = nullptr;
+    }
+#else
     out->vkCreateFence = (PFN_vkCreateFence)vk->vkGetInstanceProcAddr(instance, "vkCreateFence");
     out->vkDestroyFence = (PFN_vkDestroyFence)vk->vkGetInstanceProcAddr(instance, "vkDestroyFence");
+#endif
     out->vkResetFences = (PFN_vkResetFences)vk->vkGetInstanceProcAddr(instance, "vkResetFences");
     out->vkGetFenceStatus =
         (PFN_vkGetFenceStatus)vk->vkGetInstanceProcAddr(instance, "vkGetFenceStatus");
@@ -1868,8 +1973,27 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
             device, "vkGetPhysicalDeviceMemoryProperties");
     out->vkGetInstanceProcAddr =
         (PFN_vkGetInstanceProcAddr)vk->vkGetDeviceProcAddr(device, "vkGetInstanceProcAddr");
+#if JOSH_DEBUG
+    PFN_vkCreateDevice josh_vkCreateDevice = (PFN_vkCreateDevice)vk->vkGetDeviceProcAddr(device, "vkCreateDevice");
+    PFN_vkDestroyDevice josh_vkDestroyDevice = (PFN_vkDestroyDevice)vk->vkGetDeviceProcAddr(device, "vkDestroyDevice");
+    if (josh_vkCreateDevice) {
+        out->vkCreateDevice = [josh_vkCreateDevice](VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) -> VkResult {
+            return debug_vkCreateDevice(josh_vkCreateDevice, physicalDevice, pCreateInfo, pAllocator, pDevice);
+        };
+    } else {
+        out->vkCreateDevice = nullptr;
+    }
+    if (josh_vkDestroyDevice) {
+        out->vkDestroyDevice = [josh_vkDestroyDevice](VkDevice device, const VkAllocationCallbacks* pAllocator) {
+            debug_vkDestroyDevice(josh_vkDestroyDevice, device, pAllocator);
+        };
+    } else {
+        out->vkDestroyDevice = nullptr;
+    }
+#else
     out->vkCreateDevice = (PFN_vkCreateDevice)vk->vkGetDeviceProcAddr(device, "vkCreateDevice");
     out->vkDestroyDevice = (PFN_vkDestroyDevice)vk->vkGetDeviceProcAddr(device, "vkDestroyDevice");
+#endif
     out->vkEnumerateDeviceExtensionProperties =
         (PFN_vkEnumerateDeviceExtensionProperties)vk->vkGetDeviceProcAddr(
             device, "vkEnumerateDeviceExtensionProperties");
@@ -2012,8 +2136,27 @@ void init_vulkan_dispatch_from_device(VulkanDispatch* vk, VkDevice device, Vulka
             device, "vkGetImageSparseMemoryRequirements");
     out->vkQueueBindSparse =
         (PFN_vkQueueBindSparse)vk->vkGetDeviceProcAddr(device, "vkQueueBindSparse");
+#if JOSH_DEBUG
+    PFN_vkCreateFence josh_vkCreateFence = (PFN_vkCreateFence)vk->vkGetDeviceProcAddr(device, "vkCreateFence");
+    PFN_vkDestroyFence josh_vkDestroyFence = (PFN_vkDestroyFence)vk->vkGetDeviceProcAddr(device, "vkDestroyFence");
+    if (josh_vkCreateFence) {
+        out->vkCreateFence = [josh_vkCreateFence](VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence) -> VkResult {
+            return debug_vkCreateFence(josh_vkCreateFence, device, pCreateInfo, pAllocator, pFence);
+        };
+    } else {
+        out->vkCreateFence = nullptr;
+    }
+    if (josh_vkDestroyFence) {
+        out->vkDestroyFence = [josh_vkDestroyFence](VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
+            debug_vkDestroyFence(josh_vkDestroyFence, device, fence, pAllocator);
+        };
+    } else {
+        out->vkDestroyFence = nullptr;
+    }
+#else
     out->vkCreateFence = (PFN_vkCreateFence)vk->vkGetDeviceProcAddr(device, "vkCreateFence");
     out->vkDestroyFence = (PFN_vkDestroyFence)vk->vkGetDeviceProcAddr(device, "vkDestroyFence");
+#endif
     out->vkResetFences = (PFN_vkResetFences)vk->vkGetDeviceProcAddr(device, "vkResetFences");
     out->vkGetFenceStatus =
         (PFN_vkGetFenceStatus)vk->vkGetDeviceProcAddr(device, "vkGetFenceStatus");

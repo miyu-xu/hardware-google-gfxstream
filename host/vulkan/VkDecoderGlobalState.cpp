@@ -3171,7 +3171,9 @@ class VkDecoderGlobalState::Impl {
             deviceInfo.deviceOpTracker->AddPendingGarbage(*fenceInfo.latestUse, fence);
             deviceInfo.deviceOpTracker->PollAndProcessGarbage();
         } else {
+            fprintf(stderr, "START vkDestroyFence device=%p fence=%p\n", device, fence);
             deviceDispatch->vkDestroyFence(device, fence, pAllocator);
+            fprintf(stderr, "END vkDestroyFence device=%p fence=%p\n", device, fence);
         }
 
         return DestroyFenceStatus::kDestroyed;
