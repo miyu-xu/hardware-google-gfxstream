@@ -16,6 +16,24 @@
       "message": "aosp/3323076 didn\u0027t actually change anything on the host side aside from advertising the capability.  Are you running with aosp/3323076 + https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/31929/diffs?commit_id\u003d72dbabdfefeaf5f72a6f7220e3ae4b5b03a32501 together?  \n\nEssentially, which app/environment are you observing the breakage?",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc9c3b83_4bc9c239",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-06T16:36:02Z",
+      "side": 1,
+      "message": "Actually, aosp/3323076 did change the default behavior on the host-side. It literally just sets feature.enabled \u003d feature.enabled; with the GFXSTREAM_SET_FEATURE_ON_CONDITION macro. I don\u0027t think that was the intended purpose.",
+      "parentUuid": "1576f82f_4dcdad0a",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
