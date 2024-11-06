@@ -87,6 +87,24 @@
       "parentUuid": "a2b35078_8b55720e",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "429ad7e9_2e2de381",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-06T17:52:55Z",
+      "side": 1,
+      "message": "Well that was indeed the intention. I disabled it on the QEMU side (which doesn\u0027t use stream_api) for our other emulator. My understanding was that both crosvm and cuttlefish were using stream api so we thought toggling it there wouldn\u0027t be dangerous. \n\nI will have to check, but my current understanding after this exchange is that crosvm and cuttlefish would communicate with stream api using the renderer_features so we should aim to toggle it off there. \n\nMakes sense.",
+      "parentUuid": "a85ee6e7_1fc8ead3",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
