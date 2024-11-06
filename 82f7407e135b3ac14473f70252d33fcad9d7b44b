@@ -34,6 +34,23 @@
       "parentUuid": "1576f82f_4dcdad0a",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff8e9919_99d38a53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-06T17:09:00Z",
+      "side": 1,
+      "message": "Hi Aaron, thanks for the CL.\n\nCould you provide more details regarding the breakage and what use case you’re exercising here?\n\nGenerally, we believe forcing vulkan batched descriptor set update was a mistake to begin with. As such, we would suggest updating the guest if at all possible? As you can see, we still retain the ability to turn it on by passing -feature VulkanBatchedDescriptorSetUpdate if that is a feature you rely on.\n\nIf you do rely on it, I would be curious what case you\u0027re encountering that requires this functionality.",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
