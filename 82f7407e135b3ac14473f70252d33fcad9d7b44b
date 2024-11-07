@@ -320,6 +320,24 @@
       "parentUuid": "b0b3f9f5_3889aedf",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "23cbb183_7477dd8a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-11-07T16:51:09Z",
+      "side": 1,
+      "message": "Let\u0027s see if the Cuttlefish CI would catch the \"newer guest with default ON, host with default OFF\".",
+      "parentUuid": "ee280637_7b171837",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
