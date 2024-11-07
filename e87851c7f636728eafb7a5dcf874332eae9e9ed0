@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a27c8a06_9bd87c94",
+        "filename": "host/VirtioGpuContext.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1096713
+      },
+      "writtenOn": "2024-11-07T13:52:49Z",
+      "side": 1,
+      "message": "We\u0027re making a copy of `contextName` when this function is called.  Would we want to take this by const reference instead, to avoid the copy?  That is:\n\n```\nconst std::string\u0026 contextName,\n```",
+      "revId": "e87851c7f636728eafb7a5dcf874332eae9e9ed0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
