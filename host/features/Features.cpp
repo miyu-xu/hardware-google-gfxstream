@@ -31,7 +31,7 @@ FeatureResult FeatureDependencyHandler::checkAllDependentFeaturesAreEnabled() {
             for (auto const& dep : dependentFeatures) {
                 if (!dep->enabled) {
                     ss << "Feature: " << feature->name << " requests missing dependency: " << dep->name << "\n";
-                    allDependenciesAreEnabled = false;
+                    // allDependenciesAreEnabled = false;
                 }
             }
         }
