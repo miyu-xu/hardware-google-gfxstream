@@ -284,6 +284,24 @@
       "parentUuid": "98141dd7_29968892",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0b3f9f5_3889aedf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-07T11:15:24Z",
+      "side": 1,
+      "message": "We initially thought the loss of the feature disablement support was a bug that only affected small number of builds (in ~2-weeks period), but looks like it\u0027s been there for some time and I agree that it\u0027d be better to solve this in a backwards compatible way.\n\nFor our goldfish android guests, I think the disablement works fine (we should verify this), but virtio path is not backwards compatible due to the guest side bug which doesn\u0027t respect the host feature bits given. So, it sounds good to submit this to keep it \u0027on\u0027 for that path, and solve the compatibility by introducing another feature bit later on?",
+      "parentUuid": "0c95f7e5_1fb448f9",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
