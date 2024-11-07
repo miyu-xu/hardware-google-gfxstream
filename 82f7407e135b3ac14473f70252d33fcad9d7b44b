@@ -302,6 +302,24 @@
       "parentUuid": "0c95f7e5_1fb448f9",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee280637_7b171837",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-07T16:38:53Z",
+      "side": 1,
+      "message": "Sorry, no. As @gurchetansingh@google.com made clear earlier, there are two problems right now --\n\nOlder guest, newer host: Currently broken, making the change in this MR to keep this as default ON would fix this.\nNewer guest, older host: Making the change in this MR would BREAK this.\n\nThe only way to do this properly is as Gurchetan said:\n\n\"\nSo we\u0027ll only have to change this MR to modify the name of the capset (disableVulkanBatchedDescriptorSetUpdate). We\u0027ll also need a guest side MR to modify the capset name, and do mFeatureInfo.hasVulkanBatchedDescriptorSetUpdate \u003d !mCaps.vulkanCapset. disableVulkanBatchedDescriptorSetUpdate;. That\u0027s essentially it.\n\"\n\nI will go ahead and make this change.",
+      "parentUuid": "b0b3f9f5_3889aedf",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
