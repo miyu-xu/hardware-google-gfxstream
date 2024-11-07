@@ -248,6 +248,24 @@
       "parentUuid": "d7ef6661_5e44ea26",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98141dd7_29968892",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-07T10:25:43Z",
+      "side": 1,
+      "message": "\u003eThe capset (disableVulkanBatchedDescriptorSetUpdate) and feature string (VulkanBatchedDescriptorSetUpdate) can be string\n\u003e The capset is a libgfxstream_vulkan.so \u003c--\u003e libgfxstream_backend interface.\n\u003e The feature string is a VMM \u003c--\u003e libgfxstream_backend.so interface.\n\nThat makes sense. Thanks!\n\nAnd while I understand your point, I disagree with the assumption that this should be ON by default. The optimization doesn\u0027t offer any benefit and I believe it should have not been introduced in the first place (all 3d benchmarks I ran seem to score either the same, or occasionally worse with the batch on). \n\nIf there are older cases that rely on this optimization, then these should be treated as \u0027the odd ones out\u0027 cases that should use this temporarily until they manage to migrate to newer guests, but by default we shouldn\u0027t rely on the batch going forward as a default.\n\nAs such, I am happy to restore this to \u0027ON\u0027 for the virtio path, but I believe the capset name should not be changed. We already check whether the feature is enabled on the host and only then toggle the capset to 1 which newer guests will pick up on. As such, after we merge this - all virtio host/guests will always default to ON for the time being until a subsequent change is made to the VM to tweak the renderer_features based on the \u0027-feature\u0027 flag",
+      "parentUuid": "67d71f28_26577f6a",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
