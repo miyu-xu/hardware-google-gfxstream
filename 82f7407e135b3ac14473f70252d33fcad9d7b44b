@@ -338,6 +338,24 @@
       "parentUuid": "ee280637_7b171837",
       "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60671373_47130a38",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-07T17:02:17Z",
+      "side": 1,
+      "message": "\u003eNewer guest, older host: Making the change in this MR would BREAK this.\n\nHosts (even older ones) can already enable or disable the feature at startup. So you\u0027ll just need to ensure you specifically request `-feature VulkanBatchedDescriptorSetUpdate` (or -feature -VulkanBatchedDescriptorSetUpdate for disablement) which is why I am suggesting this should be an opt-in as opposed to an opt-out. This way the host knows to expect that the guest will process batches of descriptor sets.",
+      "parentUuid": "ee280637_7b171837",
+      "revId": "82f7407e135b3ac14473f70252d33fcad9d7b44b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
