@@ -5427,9 +5427,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 if (m_logCalls) {
                     fprintf(stderr,
-                            "stream %p: call vkAllocateDescriptorSets 0x%llx 0x%llx 0x%llx \n",
+                            "stream %p: call vkAllocateDescriptorSets 0x%llx 0x%llx 0x%llx set 0 %llx\n",
                             ioStream, (unsigned long long)device, (unsigned long long)pAllocateInfo,
-                            (unsigned long long)pDescriptorSets);
+                            (unsigned long long)pDescriptorSets, (unsigned long long)pDescriptorSets[0]);
                 }
                 VkResult vkAllocateDescriptorSets_VkResult_return = (VkResult)0;
                 vkAllocateDescriptorSets_VkResult_return = m_state->on_vkAllocateDescriptorSets(
@@ -5447,8 +5447,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     static_assert(
                         8 == sizeof(VkDescriptorSet),
                         "handle map overwrite requires VkDescriptorSet to be 8 bytes long");
+                    if (m_logCalls) {
+                        fprintf(stderr, "before map set0 %llx\n", (unsigned long long)pDescriptorSets[0]);
+                    }
                     vkStream->handleMapping()->mapHandles_VkDescriptorSet(
                         (VkDescriptorSet*)pDescriptorSets, pAllocateInfo->descriptorSetCount);
+                    if (m_logCalls) {
+                        fprintf(stderr, "after map set0 %llx\n", (unsigned long long)pDescriptorSets[0]);
+                    }
                     vkStream->write((VkDescriptorSet*)pDescriptorSets,
                                     8 * pAllocateInfo->descriptorSetCount);
                 }
