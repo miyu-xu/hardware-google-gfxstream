@@ -750,6 +750,8 @@ class VkDecoderGlobalState {
     // Snapshot access
     VkDecoderSnapshot* snapshot();
 
+    uint64_t newGlobalVkGenericHandle();
+
 #define DEFINE_TRANSFORMED_TYPE_PROTOTYPE(type)                \
     void transformImpl_##type##_tohost(const type*, uint32_t); \
     void transformImpl_##type##_fromhost(const type*, uint32_t);

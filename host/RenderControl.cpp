@@ -344,7 +344,7 @@ static bool shouldEnableVulkanShaderFloat16Int8(const gfxstream::host::FeatureSe
 }
 
 static bool shouldEnableAsyncQueueSubmit(const gfxstream::host::FeatureSet& features) {
-    return shouldEnableVulkan(features);
+    return shouldEnableDeferredVulkanCommands();
 }
 
 static bool shouldEnableVulkanAsyncQsri(const gfxstream::host::FeatureSet& features) {
