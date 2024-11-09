@@ -46,11 +46,11 @@ class VkDecoderSnapshot::Impl {
    public:
     Impl() {}
 
-    void save(android::base::Stream* stream) { mReconstruction.save(stream); }
+    int save(android::base::Stream* stream) { return mReconstruction.save(stream); }
 
-    void load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
+    int load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
               HealthMonitor<>* healthMonitor) {
-        mReconstruction.load(stream, gfx_logger, healthMonitor);
+        return mReconstruction.load(stream, gfx_logger, healthMonitor);
     }
 
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count) {
@@ -5784,11 +5784,11 @@ class VkDecoderSnapshot::Impl {
 
 VkDecoderSnapshot::VkDecoderSnapshot() : mImpl(new VkDecoderSnapshot::Impl()) {}
 
-void VkDecoderSnapshot::save(android::base::Stream* stream) { mImpl->save(stream); }
+int VkDecoderSnapshot::save(android::base::Stream* stream) { return mImpl->save(stream); }
 
-void VkDecoderSnapshot::load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
+int VkDecoderSnapshot::load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
                              HealthMonitor<>* healthMonitor) {
-    mImpl->load(stream, gfx_logger, healthMonitor);
+    return mImpl->load(stream, gfx_logger, healthMonitor);
 }
 
 void VkDecoderSnapshot::createExtraHandlesForNextApi(const uint64_t* created, uint32_t count) {
