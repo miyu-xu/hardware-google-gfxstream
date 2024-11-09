@@ -201,6 +201,9 @@ static std::unordered_set<std::string> kSnapshotEngineAllowList = {"ANGLE", "ace
 enum BoxedHandleTypeTag {
     Tag_Invalid = 0,
     GOLDFISH_VK_LIST_HANDLE_TYPES_BY_STAGE(DEFINE_BOXED_HANDLE_TYPE_TAG)
+
+    // additional generic tag
+    Tag_VkGeneric = 1001,
 };
 
 template <class T>
@@ -8785,6 +8788,11 @@ void VkDecoderGlobalState::reset() {
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
+
+uint64_t VkDecoderGlobalState::newGlobalVkGenericHandle() {
+    DispatchableHandleInfo<uint64_t> item;                                                    \
+    return mImpl->newGlobalHandle(item, Tag_VkGeneric);
+}
 
 VkDecoderGlobalState::SnapshotState VkDecoderGlobalState::getSnapshotState() const {
     return mImpl->getSnapshotState();
