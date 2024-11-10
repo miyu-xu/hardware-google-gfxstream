@@ -34,7 +34,7 @@ class VkReconstruction {
     void load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
               emugl::HealthMonitor<>* healthMonitor);
 
-    enum HandleState { BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, HANDLE_STATE_COUNT };
+    enum HandleState { BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, CMD_RECORD = 1, HANDLE_STATE_COUNT };
 
     typedef std::pair<uint64_t, HandleState> HandleWithState;
     struct HandleWithStateHash {
@@ -83,6 +83,12 @@ class VkReconstruction {
     void addHandles(const uint64_t* toAdd, uint32_t count);
     void removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive = true);
 
+    // only applicable to command pool
+    void resetChildren(const uint64_t* toReset, uint32_t count);
+
+    // only applicable to command buffer, needs to remove the RECORD
+    void resetHandles(const uint64_t* toRemove, uint32_t count);
+
     void forEachHandleAddApi(const uint64_t* toProcess, uint32_t count,
                              uint64_t VkSnapshotApiCallHandle, HandleState state = CREATED);
     void forEachHandleDeleteApi(const uint64_t* toProcess, uint32_t count);
@@ -121,10 +127,17 @@ class VkReconstruction {
     // add them to OP_vkCreateDescriptorPool.
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
 
-   private:
-    std::vector<uint64_t> getOrderedUniqueModifyApis() const;
+    // for command buffer, it will have a list of modifying api calls
+    // such as vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindPipeline etc;
+    // this method finds the last of the modifying api, and then returns the one
+    // and only one handle it has created, which is an action handle; this method
+    // is used to create dependency, so the next cmd will depend on previous cmd
+    uint64_t getHandleOfLastModifyApi(uint64_t commandBuffer);
 
-    VkSnapshotApiCallManager mApiCallManager;
+   private:
+    std::vector<uint64_t> getOrderedUniqueModifyApis() ;
+
+    VkSnapshotApiCallManager mApiCallManager{0xfff};
 
     HandleWithStateReconstructions mHandleReconstructions;
     HandleModifications mHandleModifications;
