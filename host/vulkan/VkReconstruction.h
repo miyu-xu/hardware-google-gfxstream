@@ -130,6 +130,13 @@ class VkReconstruction {
     // add them to OP_vkCreateDescriptorPool.
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
 
+    // for command buffer, it will have a list of modifying api calls
+    // such as vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindPipeline etc;
+    // this method finds the last of the modifying api, and then returns the one
+    // and only one handle it has created, which is an action handle; this method
+    // is used to create dependency, so the next cmd will depend on previous cmd
+    uint64_t getHandleOfLastModifyApi(uint64_t commandBuffer);
+
    private:
     std::vector<uint64_t> getOrderedUniqueModifyApis() const;
 
