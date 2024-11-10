@@ -1110,11 +1110,16 @@ class VkDecoderGlobalState::Impl {
 
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_SUPPORT
         // TODO: bug 129484301
+        const bool enableSnapshotAllowList =
+            android::base::getEnvironmentVariable("ANDROID_EMU_VK_DISABLE_SNAPSHOT_ALLOWLIST")
+                .empty();
         if (!m_emu->features.VulkanSnapshots.enabled ||
             (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
              kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
-            get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+            if (enableSnapshotAllowList) {
+                get_emugl_vm_operations().setSkipSnapshotSave(true);
+                get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+            }
         }
 #endif
         // Box it up
