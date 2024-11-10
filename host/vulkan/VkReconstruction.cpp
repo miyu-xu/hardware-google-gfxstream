@@ -572,5 +572,25 @@ std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() const {
     return orderedUniqueModifyApis;
 }
 
+uint64_t VkReconstruction::getHandleOfLastModifyApi(uint64_t commandBuffer) {
+    if (!commandBuffer) return 0;
+
+    auto item = mHandleModifications.get(commandBuffer);
+    if (!item) return 0;
+
+    if (item->apiRefs.empty()) return 0;
+
+    auto last = item->apiRefs.size() - 1;
+    auto apiHandle = item->apiRefs[last];
+    auto itemApi = mApiTrace.get(apiHandle);
+    if (itemApi && itemApi->createdHandles.size() > 0) {
+        return itemApi->createdHandles[0];
+    }
+    DEBUG_RECON("%s %s %d failed: the api 0x%llx name %s does no create any handles\n",
+            __FILE__, __func__, __LINE__, (unsigned long long)apiHandle,
+            itemApi ? api_opcode_to_string(itemApi->opCode) : "unknown");
+    return 0;
+}
+
 }  // namespace vk
 }  // namespace gfxstream
