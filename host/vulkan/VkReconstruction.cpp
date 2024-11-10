@@ -58,7 +58,7 @@ std::vector<VkReconstruction::HandleWithState> typeTagSortedHandles(
     return res;
 }
 
-void VkReconstruction::save(android::base::Stream* stream) {
+int VkReconstruction::save(android::base::Stream* stream) {
     DEBUG_RECON("start")
 
 #if DEBUG_RECONSTRUCTION
@@ -175,6 +175,8 @@ void VkReconstruction::save(android::base::Stream* stream) {
     android::base::saveBufferRaw(stream, (char*)(createdHandleBuffer.data()),
                                  createdHandleBuffer.size() * sizeof(uint64_t));
     android::base::saveBufferRaw(stream, (char*)(apiTraceBuffer.data()), apiTraceBuffer.size());
+
+    return (int)(createdHandleBuffer.size() + apiTraceBuffer.size());
 }
 
 class TrivialStream : public IOStream {
@@ -220,7 +222,7 @@ class TrivialStream : public IOStream {
     virtual unsigned char* onLoad(android::base::Stream* stream) { return nullptr; }
 };
 
-void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
+int VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
                             emugl::HealthMonitor<>* healthMonitor) {
     DEBUG_RECON("start. assuming VkDecoderGlobalState has been cleared for loading already");
     mApiTrace.clear();
@@ -234,6 +236,11 @@ void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& 
 
     DEBUG_RECON("created handle buffer size: %zu trace: %zu", createdHandleBuffer.size(),
                 apiTraceBuffer.size());
+
+    const int totalBytes = (createdHandleBuffer.size() + apiTraceBuffer.size());
+    if (totalBytes == 0) {
+        return 0;
+    }
 
     uint32_t createdHandleBufferSize = createdHandleBuffer.size();
 
@@ -265,6 +272,7 @@ void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& 
                              context);
 
     DEBUG_RECON("finished decoding trace");
+    return totalBytes;
 }
 
 VkReconstruction::ApiHandle VkReconstruction::createApiInfo() {
@@ -570,6 +578,26 @@ std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() const {
     }
 
     return orderedUniqueModifyApis;
+}
+
+uint64_t VkReconstruction::getHandleOfLastModifyApi(uint64_t commandBuffer) {
+    if (!commandBuffer) return 0;
+
+    auto item = mHandleModifications.get(commandBuffer);
+    if (!item) return 0;
+
+    if (item->apiRefs.empty()) return 0;
+
+    auto last = item->apiRefs.size() - 1;
+    auto apiHandle = item->apiRefs[last];
+    auto itemApi = mApiTrace.get(apiHandle);
+    if (itemApi && itemApi->createdHandles.size() > 0) {
+        return itemApi->createdHandles[0];
+    }
+    DEBUG_RECON("%s %s %d failed: the api 0x%llx name %s does no create any handles\n",
+            __FILE__, __func__, __LINE__, (unsigned long long)apiHandle,
+            itemApi ? api_opcode_to_string(itemApi->opCode) : "unknown");
+    return 0;
 }
 
 }  // namespace vk
