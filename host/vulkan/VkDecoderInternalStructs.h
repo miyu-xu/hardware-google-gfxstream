@@ -326,24 +326,6 @@ struct DescriptorSetLayoutInfo {
     std::vector<VkDescriptorSetLayoutBinding> bindings;
 };
 
-struct DescriptorPoolInfo {
-    VkDevice device = 0;
-    VkDescriptorPool boxed = 0;
-    struct PoolState {
-        VkDescriptorType type;
-        uint32_t descriptorCount;
-        uint32_t used;
-    };
-
-    VkDescriptorPoolCreateInfo createInfo;
-    uint32_t maxSets;
-    uint32_t usedSets;
-    std::vector<PoolState> pools;
-
-    std::unordered_map<VkDescriptorSet, VkDescriptorSet> allocedSetsToBoxed;
-    std::vector<uint64_t> poolIds;
-};
-
 struct DescriptorSetInfo {
     enum DescriptorWriteType {
         Empty = 0,
@@ -377,6 +359,26 @@ struct DescriptorSetInfo {
     VkDescriptorSetLayout unboxedLayout = 0;
     std::vector<std::vector<DescriptorWrite>> allWrites;
     std::vector<VkDescriptorSetLayoutBinding> bindings;
+};
+
+struct DescriptorPoolInfo {
+    VkDevice device = 0;
+    VkDescriptorPool boxed = 0;
+    struct PoolState {
+        VkDescriptorType type;
+        uint32_t descriptorCount;
+        uint32_t used;
+    };
+
+    VkDescriptorPoolCreateInfo createInfo;
+    uint32_t maxSets;
+    uint32_t usedSets;
+    std::vector<PoolState> pools;
+
+    std::unordered_map<VkDescriptorSet, VkDescriptorSet> allocedSetsToBoxed;
+    std::vector<uint64_t> poolIds;
+
+    std::unordered_map<VkDescriptorSet, DescriptorSetInfo> descriptorSetInfo;
 };
 
 struct ShaderModuleInfo {

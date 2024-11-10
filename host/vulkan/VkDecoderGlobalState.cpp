@@ -587,8 +587,8 @@ class VkDecoderGlobalState::Impl {
                     continue;
                 }
 
-                const DescriptorSetInfo& descriptorSetInfo =
-                    mDescriptorSetInfo[(VkDescriptorSet)setHandleInfo->underlying];
+                const auto& descriptorSetInfo =
+                    poolInfo.descriptorSetInfo.at((VkDescriptorSet)setHandleInfo->underlying);
                 VkDescriptorSetLayout boxedLayout =
                     unboxed_to_boxed_non_dispatchable_VkDescriptorSetLayout(
                         descriptorSetInfo.unboxedLayout);
@@ -3317,7 +3317,7 @@ class VkDecoderGlobalState::Impl {
         for (auto it : descriptorPoolInfo.allocedSetsToBoxed) {
             auto unboxedSet = it.first;
             auto boxedSet = it.second;
-            mDescriptorSetInfo.erase(unboxedSet);
+            descriptorPoolInfo.descriptorSetInfo.erase(unboxedSet);
             if (!m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                 delete_VkDescriptorSet(boxedSet);
             }
@@ -3364,7 +3364,8 @@ class VkDecoderGlobalState::Impl {
         auto& descriptorPoolInfo = descriptorPoolInfoIt->second;
 
         destroyDescriptorPoolWithExclusiveInfo(device, deviceDispatch, descriptorPool,
-                                               descriptorPoolInfo, mDescriptorSetInfo, pAllocator);
+                                               descriptorPoolInfo,
+                                               descriptorPoolInfo.descriptorSetInfo, pAllocator);
 
         mDescriptorPoolInfo.erase(descriptorPoolInfoIt);
     }
@@ -3384,7 +3385,8 @@ class VkDecoderGlobalState::Impl {
         if (descriptorPoolInfoIt == mDescriptorPoolInfo.end()) return;
         auto& descriptorPoolInfo = descriptorPoolInfoIt->second;
 
-        cleanupDescriptorPoolAllocedSetsLocked(descriptorPoolInfo, mDescriptorSetInfo,
+        cleanupDescriptorPoolAllocedSetsLocked(descriptorPoolInfo,
+                                               descriptorPoolInfo.descriptorSetInfo,
                                                /*isDestroy=*/false);
     }
 
@@ -3415,7 +3417,7 @@ class VkDecoderGlobalState::Impl {
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Cannot find setLayout";
         }
 
-        auto& setInfo = mDescriptorSetInfo[descriptorSet];
+        auto& setInfo = (poolInfo->descriptorSetInfo)[descriptorSet];
 
         setInfo.pool = pool;
         setInfo.unboxedLayout = setLayout;
@@ -3480,10 +3482,11 @@ class VkDecoderGlobalState::Impl {
             std::lock_guard<std::recursive_mutex> lock(mLock);
 
             for (uint32_t i = 0; i < descriptorSetCount; ++i) {
-                auto* setInfo = android::base::find(mDescriptorSetInfo, pDescriptorSets[i]);
-                if (!setInfo) continue;
-                auto* poolInfo = android::base::find(mDescriptorPoolInfo, setInfo->pool);
+                auto* poolInfo = android::base::find(mDescriptorPoolInfo, descriptorPool);
                 if (!poolInfo) continue;
+                auto* setInfo = android::base::find(poolInfo->descriptorSetInfo,
+                                                    pDescriptorSets[i]);
+                if (!setInfo) continue;
 
                 removeDescriptorSetAllocationLocked(*poolInfo, setInfo->bindings);
 
@@ -3502,7 +3505,7 @@ class VkDecoderGlobalState::Impl {
 
                 poolInfo->allocedSetsToBoxed.erase(pDescriptorSets[i]);
 
-                mDescriptorSetInfo.erase(pDescriptorSets[i]);
+                poolInfo->descriptorSetInfo.erase(pDescriptorSets[i]);
             }
         }
 
@@ -3529,115 +3532,119 @@ class VkDecoderGlobalState::Impl {
                                        const VkCopyDescriptorSet* pDescriptorCopies) {
         for (uint32_t writeIdx = 0; writeIdx < descriptorWriteCount; writeIdx++) {
             const VkWriteDescriptorSet& descriptorWrite = pDescriptorWrites[writeIdx];
-            auto ite = mDescriptorSetInfo.find(descriptorWrite.dstSet);
-            if (ite == mDescriptorSetInfo.end()) {
-                continue;
-            }
-            DescriptorSetInfo& descriptorSetInfo = ite->second;
-            auto& table = descriptorSetInfo.allWrites;
-            VkDescriptorType descType = descriptorWrite.descriptorType;
-            uint32_t dstBinding = descriptorWrite.dstBinding;
-            uint32_t dstArrayElement = descriptorWrite.dstArrayElement;
-            uint32_t descriptorCount = descriptorWrite.descriptorCount;
+            for (auto& descriptorPoolIte : mDescriptorPoolInfo) {
+                auto& descriptorSets = descriptorPoolIte.second.descriptorSetInfo;
+                auto ite = descriptorSets.find(descriptorWrite.dstSet);
+                if (ite == descriptorSets.end()) {
+                    continue;
+                }
 
-            uint32_t arrOffset = dstArrayElement;
+                DescriptorSetInfo& descriptorSetInfo = ite->second;
+                auto& table = descriptorSetInfo.allWrites;
+                VkDescriptorType descType = descriptorWrite.descriptorType;
+                uint32_t dstBinding = descriptorWrite.dstBinding;
+                uint32_t dstArrayElement = descriptorWrite.dstArrayElement;
+                uint32_t descriptorCount = descriptorWrite.descriptorCount;
 
-            if (isDescriptorTypeImageInfo(descType)) {
-                for (uint32_t writeElemIdx = 0; writeElemIdx < descriptorCount;
-                     ++writeElemIdx, ++arrOffset) {
-                    // Descriptor writes wrap to the next binding. See
-                    // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkWriteDescriptorSet.html
-                    if (arrOffset >= table[dstBinding].size()) {
-                        ++dstBinding;
-                        arrOffset = 0;
-                    }
-                    auto& entry = table[dstBinding][arrOffset];
-                    entry.imageInfo = descriptorWrite.pImageInfo[writeElemIdx];
-                    entry.writeType = DescriptorSetInfo::DescriptorWriteType::ImageInfo;
-                    entry.descriptorType = descType;
-                    entry.alives.clear();
-                    entry.boundColorBuffer.reset();
-                    if (descriptorTypeContainsImage(descType)) {
-                        auto* imageViewInfo =
-                            android::base::find(mImageViewInfo, entry.imageInfo.imageView);
-                        if (imageViewInfo) {
-                            entry.alives.push_back(imageViewInfo->alive);
-                            entry.boundColorBuffer = imageViewInfo->boundColorBuffer;
+                uint32_t arrOffset = dstArrayElement;
+
+                if (isDescriptorTypeImageInfo(descType)) {
+                    for (uint32_t writeElemIdx = 0; writeElemIdx < descriptorCount;
+                        ++writeElemIdx, ++arrOffset) {
+                        // Descriptor writes wrap to the next binding. See
+                        // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkWriteDescriptorSet.html
+                        if (arrOffset >= table[dstBinding].size()) {
+                            ++dstBinding;
+                            arrOffset = 0;
+                        }
+                        auto& entry = table[dstBinding][arrOffset];
+                        entry.imageInfo = descriptorWrite.pImageInfo[writeElemIdx];
+                        entry.writeType = DescriptorSetInfo::DescriptorWriteType::ImageInfo;
+                        entry.descriptorType = descType;
+                        entry.alives.clear();
+                        entry.boundColorBuffer.reset();
+                        if (descriptorTypeContainsImage(descType)) {
+                            auto* imageViewInfo =
+                                android::base::find(mImageViewInfo, entry.imageInfo.imageView);
+                            if (imageViewInfo) {
+                                entry.alives.push_back(imageViewInfo->alive);
+                                entry.boundColorBuffer = imageViewInfo->boundColorBuffer;
+                            }
+                        }
+                        if (descriptorTypeContainsSampler(descType)) {
+                            auto* samplerInfo =
+                                android::base::find(mSamplerInfo, entry.imageInfo.sampler);
+                            if (samplerInfo) {
+                                entry.alives.push_back(samplerInfo->alive);
+                            }
                         }
                     }
-                    if (descriptorTypeContainsSampler(descType)) {
-                        auto* samplerInfo =
-                            android::base::find(mSamplerInfo, entry.imageInfo.sampler);
-                        if (samplerInfo) {
-                            entry.alives.push_back(samplerInfo->alive);
+                } else if (isDescriptorTypeBufferInfo(descType)) {
+                    for (uint32_t writeElemIdx = 0; writeElemIdx < descriptorCount;
+                        ++writeElemIdx, ++arrOffset) {
+                        if (arrOffset >= table[dstBinding].size()) {
+                            ++dstBinding;
+                            arrOffset = 0;
+                        }
+                        auto& entry = table[dstBinding][arrOffset];
+                        entry.bufferInfo = descriptorWrite.pBufferInfo[writeElemIdx];
+                        entry.writeType = DescriptorSetInfo::DescriptorWriteType::BufferInfo;
+                        entry.descriptorType = descType;
+                        entry.alives.clear();
+                        auto* bufferInfo = android::base::find(mBufferInfo, entry.bufferInfo.buffer);
+                        if (bufferInfo) {
+                            entry.alives.push_back(bufferInfo->alive);
                         }
                     }
-                }
-            } else if (isDescriptorTypeBufferInfo(descType)) {
-                for (uint32_t writeElemIdx = 0; writeElemIdx < descriptorCount;
-                     ++writeElemIdx, ++arrOffset) {
-                    if (arrOffset >= table[dstBinding].size()) {
-                        ++dstBinding;
-                        arrOffset = 0;
+                } else if (isDescriptorTypeBufferView(descType)) {
+                    for (uint32_t writeElemIdx = 0; writeElemIdx < descriptorCount;
+                        ++writeElemIdx, ++arrOffset) {
+                        if (arrOffset >= table[dstBinding].size()) {
+                            ++dstBinding;
+                            arrOffset = 0;
+                        }
+                        auto& entry = table[dstBinding][arrOffset];
+                        entry.bufferView = descriptorWrite.pTexelBufferView[writeElemIdx];
+                        entry.writeType = DescriptorSetInfo::DescriptorWriteType::BufferView;
+                        entry.descriptorType = descType;
+                        if (snapshotsEnabled()) {
+                            // TODO: check alive
+                            ERR("%s: Snapshot for texel buffer view is incomplete.\n", __func__);
+                        }
                     }
-                    auto& entry = table[dstBinding][arrOffset];
-                    entry.bufferInfo = descriptorWrite.pBufferInfo[writeElemIdx];
-                    entry.writeType = DescriptorSetInfo::DescriptorWriteType::BufferInfo;
-                    entry.descriptorType = descType;
-                    entry.alives.clear();
-                    auto* bufferInfo = android::base::find(mBufferInfo, entry.bufferInfo.buffer);
-                    if (bufferInfo) {
-                        entry.alives.push_back(bufferInfo->alive);
-                    }
-                }
-            } else if (isDescriptorTypeBufferView(descType)) {
-                for (uint32_t writeElemIdx = 0; writeElemIdx < descriptorCount;
-                     ++writeElemIdx, ++arrOffset) {
-                    if (arrOffset >= table[dstBinding].size()) {
-                        ++dstBinding;
-                        arrOffset = 0;
-                    }
-                    auto& entry = table[dstBinding][arrOffset];
-                    entry.bufferView = descriptorWrite.pTexelBufferView[writeElemIdx];
-                    entry.writeType = DescriptorSetInfo::DescriptorWriteType::BufferView;
-                    entry.descriptorType = descType;
-                    if (snapshotsEnabled()) {
-                        // TODO: check alive
-                        ERR("%s: Snapshot for texel buffer view is incomplete.\n", __func__);
-                    }
-                }
-            } else if (isDescriptorTypeInlineUniformBlock(descType)) {
-                const VkWriteDescriptorSetInlineUniformBlock* descInlineUniformBlock =
-                    static_cast<const VkWriteDescriptorSetInlineUniformBlock*>(
-                        descriptorWrite.pNext);
-                while (descInlineUniformBlock &&
-                       descInlineUniformBlock->sType !=
-                           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK) {
-                    descInlineUniformBlock =
+                } else if (isDescriptorTypeInlineUniformBlock(descType)) {
+                    const VkWriteDescriptorSetInlineUniformBlock* descInlineUniformBlock =
                         static_cast<const VkWriteDescriptorSetInlineUniformBlock*>(
-                            descInlineUniformBlock->pNext);
-                }
-                if (!descInlineUniformBlock) {
-                    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-                        << __func__ << ": did not find inline uniform block";
-                    return;
-                }
-                auto& entry = table[dstBinding][0];
-                entry.inlineUniformBlock = *descInlineUniformBlock;
-                entry.inlineUniformBlockBuffer.assign(
-                    static_cast<const uint8_t*>(descInlineUniformBlock->pData),
-                    static_cast<const uint8_t*>(descInlineUniformBlock->pData) +
-                        descInlineUniformBlock->dataSize);
-                entry.writeType = DescriptorSetInfo::DescriptorWriteType::InlineUniformBlock;
-                entry.descriptorType = descType;
-                entry.dstArrayElement = dstArrayElement;
-            } else if (isDescriptorTypeAccelerationStructure(descType)) {
-                // TODO
-                // Look for pNext inline uniform block or acceleration structure.
-                // Append new DescriptorWrite entry that holds the buffer
-                if (snapshotsEnabled()) {
-                    ERR("%s: Ignoring Snapshot for emulated write for descriptor type 0x%x\n",
-                        __func__, descType);
+                            descriptorWrite.pNext);
+                    while (descInlineUniformBlock &&
+                        descInlineUniformBlock->sType !=
+                            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK) {
+                        descInlineUniformBlock =
+                            static_cast<const VkWriteDescriptorSetInlineUniformBlock*>(
+                                descInlineUniformBlock->pNext);
+                    }
+                    if (!descInlineUniformBlock) {
+                        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                            << __func__ << ": did not find inline uniform block";
+                        return;
+                    }
+                    auto& entry = table[dstBinding][0];
+                    entry.inlineUniformBlock = *descInlineUniformBlock;
+                    entry.inlineUniformBlockBuffer.assign(
+                        static_cast<const uint8_t*>(descInlineUniformBlock->pData),
+                        static_cast<const uint8_t*>(descInlineUniformBlock->pData) +
+                            descInlineUniformBlock->dataSize);
+                    entry.writeType = DescriptorSetInfo::DescriptorWriteType::InlineUniformBlock;
+                    entry.descriptorType = descType;
+                    entry.dstArrayElement = dstArrayElement;
+                } else if (isDescriptorTypeAccelerationStructure(descType)) {
+                    // TODO
+                    // Look for pNext inline uniform block or acceleration structure.
+                    // Append new DescriptorWrite entry that holds the buffer
+                    if (snapshotsEnabled()) {
+                        ERR("%s: Ignoring Snapshot for emulated write for descriptor type 0x%x\n",
+                            __func__, descType);
+                    }
                 }
             }
         }
@@ -3652,8 +3659,6 @@ class VkDecoderGlobalState::Impl {
         std::unique_ptr<bool[]> descriptorWritesNeedDeepCopy(new bool[descriptorWriteCount]);
         for (uint32_t i = 0; i < descriptorWriteCount; i++) {
             const VkWriteDescriptorSet& descriptorWrite = pDescriptorWrites[i];
-            auto descriptorSetInfo =
-                android::base::find(mDescriptorSetInfo, descriptorWrite.dstSet);
             descriptorWritesNeedDeepCopy[i] = false;
             if (!vk_util::vk_descriptor_type_has_image_view(descriptorWrite.descriptorType)) {
                 continue;
@@ -5938,19 +5943,23 @@ class VkDecoderGlobalState::Impl {
                             continue;
                         }
                         for (auto descriptorSet : cmdBufferInfo->allDescriptorSets) {
-                            auto descriptorSetInfo =
-                                android::base::find(mDescriptorSetInfo, descriptorSet);
-                            if (!descriptorSetInfo) {
-                                continue;
-                            }
-                            for (auto& writes : descriptorSetInfo->allWrites) {
-                                for (const auto& write : writes) {
-                                    bool isValid = true;
-                                    for (const auto& alive : write.alives) {
-                                        isValid &= !alive.expired();
-                                    }
-                                    if (isValid && write.boundColorBuffer.has_value()) {
-                                        acquiredColorBuffers.insert(write.boundColorBuffer.value());
+                            for (auto& descriptorPoolIte : mDescriptorPoolInfo) {
+                                auto& descriptorSets = descriptorPoolIte.second.descriptorSetInfo;
+                                auto ite = descriptorSets.find(descriptorSet);
+                                if (ite == descriptorSets.end()) {
+                                    continue;
+                                }
+
+                                auto& descriptorSetInfo = ite->second;
+                                for (auto& writes : descriptorSetInfo.allWrites) {
+                                    for (const auto& write : writes) {
+                                        bool isValid = true;
+                                        for (const auto& alive : write.alives) {
+                                            isValid &= !alive.expired();
+                                        }
+                                        if (isValid && write.boundColorBuffer.has_value()) {
+                                            acquiredColorBuffers.insert(write.boundColorBuffer.value());
+                                        }
                                     }
                                 }
                             }
@@ -8625,15 +8634,21 @@ class VkDecoderGlobalState::Impl {
         T underlying;
     };
 
+    // TODO: Move all of these maps into their respective parent's maps.
     std::unordered_map<VkInstance, InstanceInfo> mInstanceInfo;
+
+    // Parent: VkInstance
     std::unordered_map<VkPhysicalDevice, PhysicalDeviceInfo> mPhysdevInfo;
+
+    // Parent: VkPhysicalDevice
     std::unordered_map<VkDevice, DeviceInfo> mDeviceInfo;
+
+    // Parent: VkDevice
     std::unordered_map<VkImage, ImageInfo> mImageInfo;
     std::unordered_map<VkImageView, ImageViewInfo> mImageViewInfo;
     std::unordered_map<VkSampler, SamplerInfo> mSamplerInfo;
-    std::unordered_map<VkCommandBuffer, CommandBufferInfo> mCommandBufferInfo;
-    std::unordered_map<VkCommandPool, CommandPoolInfo> mCommandPoolInfo;
     // TODO: release CommandBufferInfo when a command pool is reset/released
+    std::unordered_map<VkCommandPool, CommandPoolInfo> mCommandPoolInfo;
     std::unordered_map<VkQueue, QueueInfo> mQueueInfo;
     std::unordered_map<VkBuffer, BufferInfo> mBufferInfo;
     std::unordered_map<VkDeviceMemory, MemoryInfo> mMemoryInfo;
@@ -8646,7 +8661,10 @@ class VkDecoderGlobalState::Impl {
     std::unordered_map<VkFence, FenceInfo> mFenceInfo;
     std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo;
     std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo;
-    std::unordered_map<VkDescriptorSet, DescriptorSetInfo> mDescriptorSetInfo;
+
+    // Parent: VkCommandPool
+    std::unordered_map<VkCommandBuffer, CommandBufferInfo> mCommandBufferInfo;
+
 
     // Back-reference to the physical device associated with a particular
     // VkDevice, and the VkDevice corresponding to a VkQueue.
