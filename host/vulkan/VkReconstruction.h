@@ -46,7 +46,7 @@ class VkReconstruction {
     using ApiTrace = android::base::EntityManager<32, 16, 16, ApiInfo>;
     using ApiHandle = ApiTrace::EntityHandle;
 
-    enum HandleState { BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, HANDLE_STATE_COUNT };
+    enum HandleState { BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, CMD_RECORD = 1, HANDLE_STATE_COUNT };
 
     typedef std::pair<uint64_t, HandleState> HandleWithState;
     struct HandleWithStateHash {
@@ -129,6 +129,13 @@ class VkReconstruction {
     // Next time setCreatedHandlesForApi is called, it will check the cached handles and
     // add them to OP_vkCreateDescriptorPool.
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count);
+
+    // for command buffer, it will have a list of modifying api calls
+    // such as vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindPipeline etc;
+    // this method finds the last of the modifying api, and then returns the one
+    // and only one handle it has created, which is an action handle; this method
+    // is used to create dependency, so the next cmd will depend on previous cmd
+    uint64_t getHandleOfLastModifyApi(uint64_t commandBuffer);
 
    private:
     std::vector<uint64_t> getOrderedUniqueModifyApis() const;

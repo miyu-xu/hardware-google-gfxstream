@@ -46,11 +46,11 @@ class VkDecoderSnapshot::Impl {
    public:
     Impl() {}
 
-    void save(android::base::Stream* stream) { mReconstruction.save(stream); }
+    int save(android::base::Stream* stream) { return mReconstruction.save(stream); }
 
-    void load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
-              HealthMonitor<>* healthMonitor) {
-        mReconstruction.load(stream, gfx_logger, healthMonitor);
+    int load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
+             HealthMonitor<>* healthMonitor) {
+        return mReconstruction.load(stream, gfx_logger, healthMonitor);
     }
 
     void createExtraHandlesForNextApi(const uint64_t* created, uint32_t count) {
@@ -1003,31 +1003,62 @@ class VkDecoderSnapshot::Impl {
                               VkCommandBuffer commandBuffer,
                               const VkCommandBufferBeginInfo* pBeginInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkBeginCommandBuffer, snapshotTraceBegin,
                                     snapshotTraceBytes);
         for (uint32_t i = 0; i < 1; ++i) {
-            // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
+            mReconstruction.forEachHandleClearModifyApi((const uint64_t*)(&boxed), 1);
         }
-    }
-    void vkEndCommandBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
-                            android::base::BumpPool* pool, VkResult input_result,
-                            VkCommandBuffer commandBuffer) {
-        android::base::AutoLock lock(mLock);
-        // commandBuffer modify
-        auto apiHandle = mReconstruction.createApiInfo();
-        auto apiInfo = mReconstruction.getApiInfo(apiHandle);
-        mReconstruction.setApiTrace(apiInfo, OP_vkEndCommandBuffer, snapshotTraceBegin,
-                                    snapshotTraceBytes);
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)&commandBuffer, 1, (uint64_t)(uintptr_t)commandBuffer,
+            VkReconstruction::CMD_RECORD, VkReconstruction::CREATED);
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)&handle, 1, (uint64_t)(uintptr_t)commandBuffer,
+            VkReconstruction::CREATED, VkReconstruction::CMD_RECORD);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
+    }
+    void vkEndCommandBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
+                            android::base::BumpPool* pool, VkResult input_result,
+                            VkCommandBuffer commandBuffer) {
+        android::base::AutoLock lock(mLock);
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
+        auto apiHandle = mReconstruction.createApiInfo();
+        auto apiInfo = mReconstruction.getApiInfo(apiHandle);
+        mReconstruction.setApiTrace(apiInfo, OP_vkEndCommandBuffer, snapshotTraceBegin,
+                                    snapshotTraceBytes);
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
+        for (uint32_t i = 0; i < 1; ++i) {
+            // commandBuffer is already boxed, no need to box again
+            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
+            mReconstruction.forEachHandleClearModifyApi((const uint64_t*)(&boxed), 1);
+        }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkResetCommandBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkResult input_result,
@@ -1048,153 +1079,283 @@ class VkDecoderSnapshot::Impl {
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindPipeline, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetViewport(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                           android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                           uint32_t firstViewport, uint32_t viewportCount,
                           const VkViewport* pViewports) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetViewport, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetScissor(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                          uint32_t firstScissor, uint32_t scissorCount, const VkRect2D* pScissors) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetScissor, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetLineWidth(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            float lineWidth) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetLineWidth, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthBias(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            float depthBiasConstantFactor, float depthBiasClamp,
                            float depthBiasSlopeFactor) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthBias, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetBlendConstants(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 const float blendConstants[4]) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetBlendConstants, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthBounds(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              float minDepthBounds, float maxDepthBounds) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthBounds, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetStencilCompareMask(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                     VkStencilFaceFlags faceMask, uint32_t compareMask) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetStencilCompareMask, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetStencilWriteMask(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                   android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                   VkStencilFaceFlags faceMask, uint32_t writeMask) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetStencilWriteMask, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetStencilReference(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                   android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                   VkStencilFaceFlags faceMask, uint32_t reference) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetStencilReference, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBindDescriptorSets(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1203,156 +1364,286 @@ class VkDecoderSnapshot::Impl {
                                  const VkDescriptorSet* pDescriptorSets,
                                  uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindDescriptorSets, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBindIndexBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                               VkBuffer buffer, VkDeviceSize offset, VkIndexType indexType) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindIndexBuffer, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBindVertexBuffers(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 uint32_t firstBinding, uint32_t bindingCount,
                                 const VkBuffer* pBuffers, const VkDeviceSize* pOffsets) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindVertexBuffers, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDraw(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                    uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex,
                    uint32_t firstInstance) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDraw, snapshotTraceBegin, snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDrawIndexed(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                           android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                           uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex,
                           int32_t vertexOffset, uint32_t firstInstance) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDrawIndexed, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDrawIndirect(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            VkBuffer buffer, VkDeviceSize offset, uint32_t drawCount,
                            uint32_t stride) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDrawIndirect, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDrawIndexedIndirect(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                   android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                   VkBuffer buffer, VkDeviceSize offset, uint32_t drawCount,
                                   uint32_t stride) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDrawIndexedIndirect, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDispatch(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                        uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDispatch, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDispatchIndirect(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                VkBuffer buffer, VkDeviceSize offset) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDispatchIndirect, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                          VkBuffer srcBuffer, VkBuffer dstBuffer, uint32_t regionCount,
                          const VkBufferCopy* pRegions) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyBuffer, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyImage(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                         android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1360,16 +1651,29 @@ class VkDecoderSnapshot::Impl {
                         VkImageLayout dstImageLayout, uint32_t regionCount,
                         const VkImageCopy* pRegions) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyImage, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBlitImage(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                         android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1377,80 +1681,145 @@ class VkDecoderSnapshot::Impl {
                         VkImageLayout dstImageLayout, uint32_t regionCount,
                         const VkImageBlit* pRegions, VkFilter filter) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBlitImage, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyBufferToImage(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 VkBuffer srcBuffer, VkImage dstImage, VkImageLayout dstImageLayout,
                                 uint32_t regionCount, const VkBufferImageCopy* pRegions) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyBufferToImage, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyImageToBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 VkImage srcImage, VkImageLayout srcImageLayout, VkBuffer dstBuffer,
                                 uint32_t regionCount, const VkBufferImageCopy* pRegions) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyImageToBuffer, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdUpdateBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize,
                            const void* pData) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdUpdateBuffer, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdFillBuffer(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                          VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize size,
                          uint32_t data) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdFillBuffer, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdClearColorImage(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1458,16 +1827,29 @@ class VkDecoderSnapshot::Impl {
                               const VkClearColorValue* pColor, uint32_t rangeCount,
                               const VkImageSubresourceRange* pRanges) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdClearColorImage, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdClearDepthStencilImage(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                      android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1475,32 +1857,58 @@ class VkDecoderSnapshot::Impl {
                                      const VkClearDepthStencilValue* pDepthStencil,
                                      uint32_t rangeCount, const VkImageSubresourceRange* pRanges) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdClearDepthStencilImage, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdClearAttachments(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                uint32_t attachmentCount, const VkClearAttachment* pAttachments,
                                uint32_t rectCount, const VkClearRect* pRects) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdClearAttachments, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdResolveImage(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1508,46 +1916,85 @@ class VkDecoderSnapshot::Impl {
                            VkImageLayout dstImageLayout, uint32_t regionCount,
                            const VkImageResolve* pRegions) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdResolveImage, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetEvent(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer, VkEvent event,
                        VkPipelineStageFlags stageMask) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetEvent, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdResetEvent(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                          VkEvent event, VkPipelineStageFlags stageMask) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdResetEvent, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdWaitEvents(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1559,16 +2006,29 @@ class VkDecoderSnapshot::Impl {
                          uint32_t imageMemoryBarrierCount,
                          const VkImageMemoryBarrier* pImageMemoryBarriers) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdWaitEvents, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdPipelineBarrier(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1580,77 +2040,154 @@ class VkDecoderSnapshot::Impl {
                               uint32_t imageMemoryBarrierCount,
                               const VkImageMemoryBarrier* pImageMemoryBarriers) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdPipelineBarrier, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
+        for (uint32_t i = 0; i < bufferMemoryBarrierCount; ++i) {
+            mReconstruction.addHandleDependency(
+                (const uint64_t*)&handle, 1,
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkBuffer(
+                    pBufferMemoryBarriers[i].buffer),
+                VkReconstruction::CREATED, VkReconstruction::BOUND_MEMORY);
+        }
+        for (uint32_t i = 0; i < bufferMemoryBarrierCount; ++i) {
+            mReconstruction.addHandleDependency(
+                (const uint64_t*)&handle, 1,
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(
+                    pImageMemoryBarriers[i].image));
+        }
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBeginQuery(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                          VkQueryPool queryPool, uint32_t query, VkQueryControlFlags flags) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginQuery, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndQuery(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                        VkQueryPool queryPool, uint32_t query) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndQuery, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdResetQueryPool(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              VkQueryPool queryPool, uint32_t firstQuery, uint32_t queryCount) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdResetQueryPool, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdWriteTimestamp(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              VkPipelineStageFlagBits pipelineStage, VkQueryPool queryPool,
                              uint32_t query) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdWriteTimestamp, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyQueryPoolResults(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1658,92 +2195,170 @@ class VkDecoderSnapshot::Impl {
                                    VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize stride,
                                    VkQueryResultFlags flags) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyQueryPoolResults, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdPushConstants(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                             android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                             VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint32_t offset,
                             uint32_t size, const void* pValues) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdPushConstants, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBeginRenderPass(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                               const VkRenderPassBeginInfo* pRenderPassBegin,
                               VkSubpassContents contents) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginRenderPass, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdNextSubpass(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                           android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                           VkSubpassContents contents) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdNextSubpass, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndRenderPass(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                             android::base::BumpPool* pool, VkCommandBuffer commandBuffer) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndRenderPass, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdExecuteCommands(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                               uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdExecuteCommands, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_VERSION_1_1
@@ -1789,32 +2404,58 @@ class VkDecoderSnapshot::Impl {
                             android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                             uint32_t deviceMask) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDeviceMask, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDispatchBase(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            uint32_t baseGroupX, uint32_t baseGroupY, uint32_t baseGroupZ,
                            uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDispatchBase, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkEnumeratePhysicalDeviceGroups(
         const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes, android::base::BumpPool* pool,
@@ -1960,16 +2601,29 @@ class VkDecoderSnapshot::Impl {
                                 VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                 uint32_t stride) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDrawIndirectCount, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDrawIndexedIndirectCount(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -1977,16 +2631,29 @@ class VkDecoderSnapshot::Impl {
                                        VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                        uint32_t stride) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDrawIndexedIndirectCount, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCreateRenderPass2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkResult input_result, VkDevice device,
@@ -2011,47 +2678,86 @@ class VkDecoderSnapshot::Impl {
                                const VkRenderPassBeginInfo* pRenderPassBegin,
                                const VkSubpassBeginInfo* pSubpassBeginInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginRenderPass2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdNextSubpass2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            const VkSubpassBeginInfo* pSubpassBeginInfo,
                            const VkSubpassEndInfo* pSubpassEndInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdNextSubpass2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndRenderPass2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              const VkSubpassEndInfo* pSubpassEndInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndRenderPass2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkResetQueryPool(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                           android::base::BumpPool* pool, VkDevice device, VkQueryPool queryPool,
@@ -2122,77 +2828,142 @@ class VkDecoderSnapshot::Impl {
                         android::base::BumpPool* pool, VkCommandBuffer commandBuffer, VkEvent event,
                         const VkDependencyInfo* pDependencyInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetEvent2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdResetEvent2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                           android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                           VkEvent event, VkPipelineStageFlags2 stageMask) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdResetEvent2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdWaitEvents2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                           android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                           uint32_t eventCount, const VkEvent* pEvents,
                           const VkDependencyInfo* pDependencyInfos) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdWaitEvents2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdPipelineBarrier2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                const VkDependencyInfo* pDependencyInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdPipelineBarrier2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdWriteTimestamp2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                               VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint32_t query) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdWriteTimestamp2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkQueueSubmit2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                         android::base::BumpPool* pool, VkResult input_result, VkQueue queue,
@@ -2201,195 +2972,364 @@ class VkDecoderSnapshot::Impl {
                           android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                           const VkCopyBufferInfo2* pCopyBufferInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyBuffer2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyImage2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                          const VkCopyImageInfo2* pCopyImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyImage2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyBufferToImage2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                  const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyBufferToImage2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyImageToBuffer2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                  const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyImageToBuffer2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBlitImage2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                          android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                          const VkBlitImageInfo2* pBlitImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBlitImage2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdResolveImage2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                             android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                             const VkResolveImageInfo2* pResolveImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdResolveImage2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBeginRendering(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              const VkRenderingInfo* pRenderingInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginRendering, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndRendering(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndRendering, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetCullMode(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                           android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                           VkCullModeFlags cullMode) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetCullMode, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetFrontFace(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            VkFrontFace frontFace) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetFrontFace, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetPrimitiveTopology(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                    VkPrimitiveTopology primitiveTopology) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetPrimitiveTopology, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetViewportWithCount(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                    uint32_t viewportCount, const VkViewport* pViewports) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetViewportWithCount, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetScissorWithCount(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                   android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                   uint32_t scissorCount, const VkRect2D* pScissors) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetScissorWithCount, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBindVertexBuffers2(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -2397,154 +3337,284 @@ class VkDecoderSnapshot::Impl {
                                  const VkBuffer* pBuffers, const VkDeviceSize* pOffsets,
                                  const VkDeviceSize* pSizes, const VkDeviceSize* pStrides) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindVertexBuffers2, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthTestEnable(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                  VkBool32 depthTestEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthTestEnable, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthWriteEnable(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                   android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                   VkBool32 depthWriteEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthWriteEnable, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthCompareOp(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 VkCompareOp depthCompareOp) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthCompareOp, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthBoundsTestEnable(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                        VkBool32 depthBoundsTestEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthBoundsTestEnable, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetStencilTestEnable(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                    VkBool32 stencilTestEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetStencilTestEnable, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetStencilOp(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            VkStencilFaceFlags faceMask, VkStencilOp failOp, VkStencilOp passOp,
                            VkStencilOp depthFailOp, VkCompareOp compareOp) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetStencilOp, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetRasterizerDiscardEnable(const uint8_t* snapshotTraceBegin,
                                          size_t snapshotTraceBytes, android::base::BumpPool* pool,
                                          VkCommandBuffer commandBuffer,
                                          VkBool32 rasterizerDiscardEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetRasterizerDiscardEnable, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthBiasEnable(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                  VkBool32 depthBiasEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthBiasEnable, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetPrimitiveRestartEnable(const uint8_t* snapshotTraceBegin,
                                         size_t snapshotTraceBytes, android::base::BumpPool* pool,
                                         VkCommandBuffer commandBuffer,
                                         VkBool32 primitiveRestartEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetPrimitiveRestartEnable, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkGetDeviceBufferMemoryRequirements(const uint8_t* snapshotTraceBegin,
                                              size_t snapshotTraceBytes,
@@ -2623,30 +3693,56 @@ class VkDecoderSnapshot::Impl {
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 const VkRenderingInfo* pRenderingInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginRenderingKHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndRenderingKHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndRenderingKHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_KHR_get_physical_device_properties2
@@ -2771,47 +3867,86 @@ class VkDecoderSnapshot::Impl {
                                   const VkRenderPassBeginInfo* pRenderPassBegin,
                                   const VkSubpassBeginInfo* pSubpassBeginInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginRenderPass2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdNextSubpass2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                               const VkSubpassBeginInfo* pSubpassBeginInfo,
                               const VkSubpassEndInfo* pSubpassEndInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdNextSubpass2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndRenderPass2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 const VkSubpassEndInfo* pSubpassEndInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndRenderPass2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_KHR_external_fence_capabilities
@@ -2951,78 +4086,143 @@ class VkDecoderSnapshot::Impl {
                            android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                            VkEvent event, const VkDependencyInfo* pDependencyInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetEvent2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdResetEvent2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              VkEvent event, VkPipelineStageFlags2 stageMask) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdResetEvent2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdWaitEvents2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              uint32_t eventCount, const VkEvent* pEvents,
                              const VkDependencyInfo* pDependencyInfos) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdWaitEvents2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdPipelineBarrier2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                   android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                   const VkDependencyInfo* pDependencyInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdPipelineBarrier2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdWriteTimestamp2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                  VkPipelineStageFlags2 stage, VkQueryPool queryPool,
                                  uint32_t query) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdWriteTimestamp2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkQueueSubmit2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                            android::base::BumpPool* pool, VkResult input_result, VkQueue queue,
@@ -3032,16 +4232,29 @@ class VkDecoderSnapshot::Impl {
                                     VkPipelineStageFlags2 stage, VkBuffer dstBuffer,
                                     VkDeviceSize dstOffset, uint32_t marker) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdWriteBufferMarker2AMD, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkGetQueueCheckpointData2NV(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                      android::base::BumpPool* pool, VkQueue queue,
@@ -3053,91 +4266,169 @@ class VkDecoderSnapshot::Impl {
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              const VkCopyBufferInfo2* pCopyBufferInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyBuffer2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyImage2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                             android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                             const VkCopyImageInfo2* pCopyImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyImage2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyBufferToImage2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                     const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyBufferToImage2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdCopyImageToBuffer2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                     const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdCopyImageToBuffer2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBlitImage2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                             android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                             const VkBlitImageInfo2* pBlitImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBlitImage2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdResolveImage2KHR(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                const VkResolveImageInfo2* pResolveImageInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdResolveImage2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_KHR_maintenance4
@@ -3163,16 +4454,29 @@ class VkDecoderSnapshot::Impl {
                                   VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size,
                                   VkIndexType indexType) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindIndexBuffer2KHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkGetRenderingAreaGranularityKHR(const uint8_t* snapshotTraceBegin,
                                           size_t snapshotTraceBytes, android::base::BumpPool* pool,
@@ -3195,16 +4499,29 @@ class VkDecoderSnapshot::Impl {
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 uint32_t lineStippleFactor, uint16_t lineStipplePattern) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetLineStippleKHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_ANDROID_native_buffer
@@ -3267,16 +4584,29 @@ class VkDecoderSnapshot::Impl {
         VkCommandBuffer commandBuffer, uint32_t firstBinding, uint32_t bindingCount,
         const VkBuffer* pBuffers, const VkDeviceSize* pOffsets, const VkDeviceSize* pSizes) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindTransformFeedbackBuffersEXT,
                                     snapshotTraceBegin, snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBeginTransformFeedbackEXT(const uint8_t* snapshotTraceBegin,
                                         size_t snapshotTraceBytes, android::base::BumpPool* pool,
@@ -3285,16 +4615,29 @@ class VkDecoderSnapshot::Impl {
                                         const VkBuffer* pCounterBuffers,
                                         const VkDeviceSize* pCounterBufferOffsets) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginTransformFeedbackEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndTransformFeedbackEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                       android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -3302,47 +4645,86 @@ class VkDecoderSnapshot::Impl {
                                       const VkBuffer* pCounterBuffers,
                                       const VkDeviceSize* pCounterBufferOffsets) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndTransformFeedbackEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBeginQueryIndexedEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                    VkQueryPool queryPool, uint32_t query, VkQueryControlFlags flags,
                                    uint32_t index) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginQueryIndexedEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndQueryIndexedEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                  android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                  VkQueryPool queryPool, uint32_t query, uint32_t index) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndQueryIndexedEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdDrawIndirectByteCountEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -3350,16 +4732,29 @@ class VkDecoderSnapshot::Impl {
                                        VkBuffer counterBuffer, VkDeviceSize counterBufferOffset,
                                        uint32_t counterOffset, uint32_t vertexStride) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdDrawIndirectByteCountEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_EXT_debug_utils
@@ -3383,45 +4778,84 @@ class VkDecoderSnapshot::Impl {
                                       android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                       const VkDebugUtilsLabelEXT* pLabelInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBeginDebugUtilsLabelEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdEndDebugUtilsLabelEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkCommandBuffer commandBuffer) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdEndDebugUtilsLabelEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdInsertDebugUtilsLabelEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                        const VkDebugUtilsLabelEXT* pLabelInfo) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdInsertDebugUtilsLabelEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCreateDebugUtilsMessengerEXT(const uint8_t* snapshotTraceBegin,
                                         size_t snapshotTraceBytes, android::base::BumpPool* pool,
@@ -3479,16 +4913,29 @@ class VkDecoderSnapshot::Impl {
                                 android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                 uint32_t lineStippleFactor, uint16_t lineStipplePattern) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetLineStippleEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_EXT_extended_dynamic_state
@@ -3496,76 +4943,141 @@ class VkDecoderSnapshot::Impl {
                              android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                              VkCullModeFlags cullMode) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetCullModeEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetFrontFaceEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                               VkFrontFace frontFace) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetFrontFaceEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetPrimitiveTopologyEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                       android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                       VkPrimitiveTopology primitiveTopology) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetPrimitiveTopologyEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetViewportWithCountEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                       android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                       uint32_t viewportCount, const VkViewport* pViewports) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetViewportWithCountEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetScissorWithCountEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                      android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                      uint32_t scissorCount, const VkRect2D* pScissors) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetScissorWithCountEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdBindVertexBuffers2EXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
@@ -3573,108 +5085,199 @@ class VkDecoderSnapshot::Impl {
                                     const VkBuffer* pBuffers, const VkDeviceSize* pOffsets,
                                     const VkDeviceSize* pSizes, const VkDeviceSize* pStrides) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdBindVertexBuffers2EXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthTestEnableEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                     VkBool32 depthTestEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthTestEnableEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthWriteEnableEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                      android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                      VkBool32 depthWriteEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthWriteEnableEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthCompareOpEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                    android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                    VkCompareOp depthCompareOp) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthCompareOpEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthBoundsTestEnableEXT(const uint8_t* snapshotTraceBegin,
                                           size_t snapshotTraceBytes, android::base::BumpPool* pool,
                                           VkCommandBuffer commandBuffer,
                                           VkBool32 depthBoundsTestEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthBoundsTestEnableEXT,
                                     snapshotTraceBegin, snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetStencilTestEnableEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                       android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                       VkBool32 stencilTestEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetStencilTestEnableEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetStencilOpEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                               android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                               VkStencilFaceFlags faceMask, VkStencilOp failOp, VkStencilOp passOp,
                               VkStencilOp depthFailOp, VkCompareOp compareOp) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetStencilOpEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_EXT_host_image_copy
@@ -3730,16 +5333,29 @@ class VkDecoderSnapshot::Impl {
                                        android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                        uint32_t patchControlPoints) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetPatchControlPointsEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetRasterizerDiscardEnableEXT(const uint8_t* snapshotTraceBegin,
                                             size_t snapshotTraceBytes,
@@ -3747,62 +5363,114 @@ class VkDecoderSnapshot::Impl {
                                             VkCommandBuffer commandBuffer,
                                             VkBool32 rasterizerDiscardEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetRasterizerDiscardEnableEXT,
                                     snapshotTraceBegin, snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetDepthBiasEnableEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                                     android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                     VkBool32 depthBiasEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetDepthBiasEnableEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetLogicOpEXT(const uint8_t* snapshotTraceBegin, size_t snapshotTraceBytes,
                             android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                             VkLogicOp logicOp) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetLogicOpEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCmdSetPrimitiveRestartEnableEXT(const uint8_t* snapshotTraceBegin,
                                            size_t snapshotTraceBytes, android::base::BumpPool* pool,
                                            VkCommandBuffer commandBuffer,
                                            VkBool32 primitiveRestartEnable) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetPrimitiveRestartEnableEXT,
                                     snapshotTraceBegin, snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_EXT_color_write_enable
@@ -3810,16 +5478,29 @@ class VkDecoderSnapshot::Impl {
                                      android::base::BumpPool* pool, VkCommandBuffer commandBuffer,
                                      uint32_t attachmentCount, const VkBool32* pColorWriteEnables) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetColorWriteEnableEXT, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
 #ifdef VK_GOOGLE_gfxstream
@@ -4002,16 +5683,29 @@ class VkDecoderSnapshot::Impl {
                            const VkStridedDeviceAddressRegionKHR* pCallableShaderBindingTable,
                            uint32_t width, uint32_t height, uint32_t depth) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdTraceRaysKHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkCreateRayTracingPipelinesKHR(const uint8_t* snapshotTraceBegin,
                                         size_t snapshotTraceBytes, android::base::BumpPool* pool,
@@ -4034,16 +5728,29 @@ class VkDecoderSnapshot::Impl {
         const VkStridedDeviceAddressRegionKHR* pCallableShaderBindingTable,
         VkDeviceAddress indirectDeviceAddress) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdTraceRaysIndirectKHR, snapshotTraceBegin,
                                     snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
     void vkGetRayTracingShaderGroupStackSizeKHR(const uint8_t* snapshotTraceBegin,
                                                 size_t snapshotTraceBytes,
@@ -4057,16 +5764,29 @@ class VkDecoderSnapshot::Impl {
                                                 VkCommandBuffer commandBuffer,
                                                 uint32_t pipelineStackSize) {
         android::base::AutoLock lock(mLock);
-        // commandBuffer modify
+        // commandBuffer action
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        if (m_state->batchedDescriptorSetUpdateEnabled()) {
+            return;
+        }
+        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiHandle = mReconstruction.createApiInfo();
         auto apiInfo = mReconstruction.getApiInfo(apiHandle);
         mReconstruction.setApiTrace(apiInfo, OP_vkCmdSetRayTracingPipelineStackSizeKHR,
                                     snapshotTraceBegin, snapshotTraceBytes);
+        // handle vkCmd*** api
+        uint64_t lastCmdModfier =
+            mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiHandle);
         }
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiHandle,
+                                            VkReconstruction::CREATED);
+        mReconstruction.setCreatedHandlesForApi(apiHandle, (const uint64_t*)(&handle), 1);
     }
 #endif
    private:
@@ -4076,11 +5796,11 @@ class VkDecoderSnapshot::Impl {
 
 VkDecoderSnapshot::VkDecoderSnapshot() : mImpl(new VkDecoderSnapshot::Impl()) {}
 
-void VkDecoderSnapshot::save(android::base::Stream* stream) { mImpl->save(stream); }
+int VkDecoderSnapshot::save(android::base::Stream* stream) { return mImpl->save(stream); }
 
-void VkDecoderSnapshot::load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
-                             HealthMonitor<>* healthMonitor) {
-    mImpl->load(stream, gfx_logger, healthMonitor);
+int VkDecoderSnapshot::load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
+                            HealthMonitor<>* healthMonitor) {
+    return mImpl->load(stream, gfx_logger, healthMonitor);
 }
 
 void VkDecoderSnapshot::createExtraHandlesForNextApi(const uint64_t* created, uint32_t count) {
