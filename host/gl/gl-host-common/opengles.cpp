@@ -125,6 +125,8 @@ int android_initOpenglesEmulation() {
         << "Not meant to call android_initOpenglesEmulation in the new build.";
 }
 
+static bool android_syncDeviceExistsOverride() { return true; }
+
 int
 android_startOpenglesRenderer(int width, int height,
                               bool guestPhoneApi, int guestApiLevel,
@@ -153,12 +155,17 @@ android_startOpenglesRenderer(int width, int height,
     sRenderLib->setAvdInfo(guestPhoneApi, guestApiLevel);
     // sRenderLib->setCrashReporter(&crashhandler_die_format);
     // sRenderLib->setFeatureController(&android::featurecontrol::isEnabled);
-    sRenderLib->setSyncDevice(goldfish_sync_create_timeline,
-            goldfish_sync_create_fence,
-            goldfish_sync_timeline_inc,
-            goldfish_sync_destroy_timeline,
-            goldfish_sync_register_trigger_wait,
-            goldfish_sync_device_exists);
+
+    const auto* features = reinterpret_cast<const gfxstream::host::FeatureSet*>(gfxstreamFeatures);
+    emugl_sync_device_exists_t sync_device_exists_func = goldfish_sync_device_exists;
+#ifndef CONFIG_AEMU
+    if (features->GlAsyncSwap.enabled) {
+        sync_device_exists_func = android_syncDeviceExistsOverride;
+    }
+#endif
+    sRenderLib->setSyncDevice(goldfish_sync_create_timeline, goldfish_sync_create_fence,
+                              goldfish_sync_timeline_inc, goldfish_sync_destroy_timeline,
+                              goldfish_sync_register_trigger_wait, sync_device_exists_func);
 
     sRenderLib->setLogger(android_opengl_logger_write);
     sRenderLib->setGLObjectCounter(android::base::GLObjectCounter::get());
@@ -172,7 +179,6 @@ android_startOpenglesRenderer(int width, int height,
     // sRenderLib->setUsageTracker(android::base::CpuUsage::get(),
     //                             android::base::MemoryTracker::get());
 
-    const auto* features = reinterpret_cast<const gfxstream::host::FeatureSet*>(gfxstreamFeatures);
     sRenderer = sRenderLib->initRenderer(width, height, *features, sRendererUsesSubWindow, sEgl2egl);
     android_setOpenglesRenderer(&sRenderer);
 
