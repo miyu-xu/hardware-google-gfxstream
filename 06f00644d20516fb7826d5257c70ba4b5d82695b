@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2369994_f5868eab",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-11-11T18:44:56Z",
+      "side": 1,
+      "message": "It\u0027s common to include a single short-line in the first line of the commit message, followed by a longer paragraph.\n\nIt\u0027s also useful to add the theorized mechanism of action.\n\n```\ngfxstream: Override sync_device_exists function\n\nThis helps performance since the rendering out-fence can be used as the host-composition-in fence.\n\nThis speeds up gfxbench \u003csubtest\u003e by \u003cblah\u003e\n \u003cblah\u003e \u003cblah\u003e \u003cblah\u003e\n```\n\nAlso can you include a BUG and test line:\n\n```\nBUG\u003d370577572\nTEST\u003dGFXBench \n```",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 0
+      },
+      "revId": "06f00644d20516fb7826d5257c70ba4b5d82695b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "bdd72386_acab8112",
@@ -32,6 +55,29 @@
       "side": 1,
       "message": "To clarify, the reason we need \"sync_device_exists() \u003d\u003d true\" when trying to use asyncSwaps is in RenderControl: https://android.googlesource.com/platform/hardware/google/gfxstream/+/refs/heads/main/host/RenderControl.cpp#320\n\n```\nstatic bool shouldEnableAsyncSwap(const gfxstream::host::FeatureSet\u0026 features) {\n    bool isPhone \u003d true;\n    bool playStoreImage \u003d features.PlayStoreImage.enabled;\n    return features.GlAsyncSwap.enabled \u0026\u0026\n           emugl_sync_device_exists() \u0026\u0026 (isPhone || playStoreImage) \u0026\u0026\n           sizeof(void*) \u003d\u003d 8;\n}\n\n```",
       "parentUuid": "bdd72386_acab8112",
+      "revId": "06f00644d20516fb7826d5257c70ba4b5d82695b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4173bb82_526a9870",
+        "filename": "host/gl/gl-host-common/opengles.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-11-11T18:44:56Z",
+      "side": 1,
+      "message": "Can you do:\n\n```\nfunc_ptr \u003d goldfish_sync_device_exists;\n#ifndef CONFIG_AEMU\nif (features-\u003eGlAsyncSwap.enabled) {\n    func_ptr \u003d android_syncDeviceExistsOverride;\n}\n#endif\n```\n\nthis as less likelihood of interacting with the emulator.",
+      "range": {
+        "startLine": 163,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 0
+      },
       "revId": "06f00644d20516fb7826d5257c70ba4b5d82695b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
