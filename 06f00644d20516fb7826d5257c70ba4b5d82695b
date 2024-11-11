@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "ec9e2c86_d319ddf0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-11T19:12:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b2369994_f5868eab",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 0
+      },
+      "revId": "06f00644d20516fb7826d5257c70ba4b5d82695b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "bdd72386_acab8112",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -72,6 +96,30 @@
       "writtenOn": "2024-11-11T18:44:56Z",
       "side": 1,
       "message": "Can you do:\n\n```\nfunc_ptr \u003d goldfish_sync_device_exists;\n#ifndef CONFIG_AEMU\nif (features-\u003eGlAsyncSwap.enabled) {\n    func_ptr \u003d android_syncDeviceExistsOverride;\n}\n#endif\n```\n\nthis as less likelihood of interacting with the emulator.",
+      "range": {
+        "startLine": 163,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 0
+      },
+      "revId": "06f00644d20516fb7826d5257c70ba4b5d82695b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d5b33ca_1c1518fe",
+        "filename": "host/gl/gl-host-common/opengles.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-11T19:12:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4173bb82_526a9870",
       "range": {
         "startLine": 163,
         "startChar": 0,
