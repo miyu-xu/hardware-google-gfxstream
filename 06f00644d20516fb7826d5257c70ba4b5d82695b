@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bdd72386_acab8112",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-11T16:41:22Z",
+      "side": 1,
+      "message": "This allows a virtio-gpu frontend to enable Features::GlAsyncSwap if it really wants to. This only has an effect if the VMM explicitly enables this with \"GlAsyncSwap:enabled\" (and also \"VirtioGpuNativeSync:disabled\").\n\nI understand asynchronous swapping isn\u0027t actually there without the proper host fencing support. However, synchronous swapping through virtio-gpu sync mechanisms is currently revealing some performance issues in Android guests (at least on QNX reference images). Using `GlAsyncSwap:enabled,VirtioGpuNativeSync:disabled`, on-screen benchmarks are matching their off-screen counterparts. So although there might be some incorrect output, and this isn\u0027t a production-ready configuration, it gives VMMs (i.e. QNX QVM) some additional tools for demonstration purposes (i.e. benchmarks).",
+      "revId": "06f00644d20516fb7826d5257c70ba4b5d82695b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
