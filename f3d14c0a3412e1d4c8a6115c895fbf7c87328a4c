@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3f7f2c81_909e45b5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-11T18:30:04Z",
+      "side": 1,
+      "message": "Can you elaborate the reasoning here for the scope change? I feel like having them separate is not a big issue and should still work fine, and actually can be better in some cases, like mapping from a set pointer to its info. The pool structure already has `allocedSetsToBoxed` to perform operations over the sets when needed and having 1-1 mapping between the vulkan handles to info structures just feels natural.",
+      "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5a81bd59_ee1831d8",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
