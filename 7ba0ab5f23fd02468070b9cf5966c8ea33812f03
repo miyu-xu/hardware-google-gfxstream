@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd15f03e_bb9b6351",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-11-11T20:39:30Z",
+      "side": 1,
+      "message": "I\u0027ve been struggling with synchronization-related issues w/ performance. I believe this is the proper fix.\n\nMaybe we need some feature negotation for this, based on guest support? Please let me know. If it comes to this (a little more involved of a change), I will probably commit QNX-side for the time being (as we are able to match up guest and host releases explicitly).\n\nI will discard aosp/3345098, it\u0027s not really valid because it just results in unsynchronized rendering.",
+      "revId": "7ba0ab5f23fd02468070b9cf5966c8ea33812f03",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
