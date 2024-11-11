@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8043ec07_262d090a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-11-11T18:44:44Z",
+      "side": 1,
+      "message": "The reasoning is all of these mappings have an incorrect assumption; that vulkan handles are globally unique. This is actually not a guarantee, as Bo and I have observed, and is also not clearly defined in the Vulkan spec. The only guarantee that we have is that VkInstances are unique as it is a per-application state object.\n\nFor example, we\u0027ve seen VkDevices handles with the exact same unboxed handles, but coming from different VkInstances. This problem is actually why we have vkDestroyFence crashes (VkDevice handle collisions).\n\nThe scoping refactor (this CL would be the first of many) will correctly put all of the objects in the proper hierarchy, so that unboxed Vulkan handles can co-exist without these collisions, and we can clean up correctly.",
+      "parentUuid": "3f7f2c81_909e45b5",
+      "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5a81bd59_ee1831d8",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
