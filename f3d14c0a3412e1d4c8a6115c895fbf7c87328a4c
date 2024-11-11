@@ -22,6 +22,40 @@
       },
       "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1ecbf5c_6128092e",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 590,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-11T17:06:09Z",
+      "side": 1,
+      "message": "`mDescriptorPoolInfo[unboxedDescriptorPool]` can be replaced with `poolInfo`? Also not sure if auto would create a copy of the map here. `const auto\u0026` or removing `descriptorSetInfoMap` might be more readable.",
+      "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6b5f3fa_150d4f28",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 3322,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-11T17:06:09Z",
+      "side": 1,
+      "message": "Can this part be better optimized with this change, I think we can remove all of the descriptors under the pool with this call, without searching each one of them one by one with `erase` calls. I wonder if we still need `allocedSetsToBoxed`?",
+      "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
