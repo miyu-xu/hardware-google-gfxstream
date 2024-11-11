@@ -56,6 +56,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0c2c716e_afc91eee",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 574,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-11T21:51:26Z",
+      "side": 1,
+      "message": "I guess this bug/change points out one other major issue, if our \"unboxed handles\"/\"host handles\" are not globally unique, *every* single use of `unboxed_to_boxed_*` is broken and we need to fix that ASAP.",
+      "range": {
+        "startLine": 574,
+        "startChar": 16,
+        "endLine": 574,
+        "endChar": 49
+      },
+      "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5a81bd59_ee1831d8",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
