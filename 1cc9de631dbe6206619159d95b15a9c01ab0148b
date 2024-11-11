@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2dbee1ca_e27c2211",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 591,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-11T21:49:06Z",
+      "side": 0,
+      "message": "One general question/thought. IIUC, the issue is that there may be conflicts with the \"host handles\"/\"unboxed handles\". What if we just stopped using \"unboxed handles\" as the keys in the various info maps (`mDescriptorSetInfo`, etc) and only used the boxed handles? The boxed handles should be unique, right?",
+      "range": {
+        "startLine": 591,
+        "startChar": 20,
+        "endLine": 591,
+        "endChar": 83
+      },
+      "revId": "1cc9de631dbe6206619159d95b15a9c01ab0148b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "51982ee7_42d5246a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-11T21:49:06Z",
+      "side": 1,
+      "message": "If this applies all handles, what do you think about keeping the `mDescriptorSetInfo` as is but then moving everything into per-instance/per-device structs?\n\n```\nstruct DeviceInfo {\n  std::mutex mMutex;\n  std::unordered_map\u003cVkBuffer, BufferInfo\u003e mBufferInfos GUARDED_BY(mMutex);\n  std::unordered_map\u003cVkImage, ImageInfo\u003e mImageInfos GUARDED_BY(mMutex);\n  ...\n  std::unordered_map\u003cVkDescriptorSet, DescriptorSetInfo\u003e mDescriptorSetInfos GUARDED_BY(mMutex);\n};\n\nstruct InstanceInfo {\n  std::mutex mMutex;  \n  std::unordered_map\u003cVkDevice, DeviceInfo\u003e mDeviceInfos GUARDED_BY(mMutex);\n};\n\nclass VkDecoderGlobalState::Impl {\n  private:\n    std::mutex mMutex;\n    std::unordered_map\u003cVkInstance, InstanceInfo\u003e mInstanceInfos GUARDED_BY(mMutex);\n}\n```\n\nI suppose this might also allow us to have finer grain locking -  instead of everything holding onto the global lock.",
+      "parentUuid": "8043ec07_262d090a",
+      "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5a81bd59_ee1831d8",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
