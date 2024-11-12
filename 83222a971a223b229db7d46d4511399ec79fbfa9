@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3fbc0d93_52743c8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-12T17:04:02Z",
+      "side": 1,
+      "message": "Actually, hold on, this probably requires one more change on device features..",
+      "revId": "83222a971a223b229db7d46d4511399ec79fbfa9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
