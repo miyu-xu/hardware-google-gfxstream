@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9ce79bf_a2f94569",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-11-12T16:52:57Z",
+      "side": 1,
+      "message": "Thanks Jason,\n  those are very good questions, and will address them shortly.",
+      "revId": "b32fb06f078275e9f4be37af9580f3cd108199fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "844e0a1f_2bd61593",
@@ -14,6 +31,30 @@
       "writtenOn": "2024-11-12T04:50:34Z",
       "side": 1,
       "message": "IIUC, this introduces kind of an artificial node into the dependency graph so keep the objects from vkUpdateDescriptorSets alive.\n\nSo if you do \n\n```\nVkDescriptorSets descriptorSets[2];\n\nvkAllocateDescriptorSets( ... { 2 }... \u0026descriptorSets);\n\n// descriptorSets \u003d { VkDescriptorSet1, VkDescriptorSet2 };\n\nvkUpdateDescriptorSets({ \n   VkDescriptorSet1 -\u003e VkImage1,\n   VkDescriptorSet2 -\u003e VkBuffer1,\n});\n```\n\nthere is effectively a tree:\n\n```\n\u003csynthetic handle\u003e\n   -\u003e \u003cApiInfo for vkUpdateDescriptorSets\u003e\n   -\u003e VkDescriptorSet1 \n     -\u003e \u003cApiInfo for vkAllocateDescriptorSets()\u003e\n     -\u003e VkImage1\n       -\u003e \u003cApiInfo for vkCreateImage()\u003e\n   -\u003e VkDescriptorSet2\n     -\u003e \u003cApiInfo for vkAllocateDescriptorSets()\u003e\n     -\u003e VkBuffer1\n       -\u003e \u003cApiInfo for vkCreateBuffer()\u003e\n```\n\n2 questions:\n\n1) IIUC, because the synthetic handle created by `newGlobalVkGenericHandle()` is not associated with anything, it never gets deleted via `removeHandles()` nor overwritten. I believe this means that Gfxstream would end up with an infinetly growing snapshot when opening a simple Vulkan app that updates a descriptor set every frame to render a triangle. I think somehow, we would have to tie the lifetime of the synthetic handle to the lifetime of the descriptor sets - maybe this needs a `std::shared_ptr\u003cuint64_t\u003e handle` that is shared between all of the descriptor sets in the `vkUpdateDescriptorSets()` call and then subsequent calls to `vkUpdateDescriptorSets()` associates the latest handle to the descriptor set?\n\n2) Is it correct that this does not address the case of \n\n```\nVkDescriptorSets descriptorSets[2];\n\nvkAllocateDescriptorSets( ... { 2 }... \u0026descriptorSets);\n\n// descriptorSets \u003d { VkDescriptorSet1, VkDescriptorSet2 };\n\nvkUpdateDescriptorSets({ \n   VkDescriptorSet1 -\u003e VkImage1,\n   VkDescriptorSet2 -\u003e VkBuffer1,\n});\n\nvkFreeDescriptorSet( ... VkDescriptorSet1 ... );\n```",
+      "range": {
+        "startLine": 833,
+        "startChar": 8,
+        "endLine": 834,
+        "endChar": 66
+      },
+      "revId": "b32fb06f078275e9f4be37af9580f3cd108199fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "357d9c0c_023d3051",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 834,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-11-12T16:52:57Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "844e0a1f_2bd61593",
       "range": {
         "startLine": 833,
         "startChar": 8,
