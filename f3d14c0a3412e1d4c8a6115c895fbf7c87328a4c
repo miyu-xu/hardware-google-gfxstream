@@ -56,6 +56,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2bb4097b_d0e3554d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-12T10:43:03Z",
+      "side": 1,
+      "message": "I was under the impression that we were using the unique guest side handles with these, but this looks like we\u0027re in bad position here, as the host side non dispatchable handles can be the same even if we group them into instance/device categories. We\u0027ll discuss this in depth, to also provide a solution for some other issues.",
+      "parentUuid": "51982ee7_42d5246a",
+      "revId": "f3d14c0a3412e1d4c8a6115c895fbf7c87328a4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0c2c716e_afc91eee",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
