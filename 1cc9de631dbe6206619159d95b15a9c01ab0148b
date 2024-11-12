@@ -22,6 +22,30 @@
       },
       "revId": "1cc9de631dbe6206619159d95b15a9c01ab0148b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28672168_cb55b819",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 591,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-11-12T15:08:35Z",
+      "side": 0,
+      "message": "Yeah, using the boxed handles as the keys would be one solution. A place we could put it is in the instance/device dispatch.\n\nAnother thought would be to create a layer to hand back globally unique handles, as Serdar mentioned something similar about `VK_EXT_private_data`.",
+      "parentUuid": "2dbee1ca_e27c2211",
+      "range": {
+        "startLine": 591,
+        "startChar": 20,
+        "endLine": 591,
+        "endChar": 83
+      },
+      "revId": "1cc9de631dbe6206619159d95b15a9c01ab0148b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
