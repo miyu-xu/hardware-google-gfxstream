@@ -7874,6 +7874,14 @@ class VkDecoderGlobalState::Impl {
         }
 
 #endif
+
+        if (hasDeviceExtension(properties, VK_EXT_PRIVATE_DATA_EXTENSION_NAME)) {
+            //TODO(b/378686769): Enable private data extension where available to
+            // mitigate the issues with duplicated vulkan handles. This should be
+            // removed once the issue is properly resolved.
+            res.push_back(VK_EXT_PRIVATE_DATA_EXTENSION_NAME);
+        }
+
         return res;
     }
 
