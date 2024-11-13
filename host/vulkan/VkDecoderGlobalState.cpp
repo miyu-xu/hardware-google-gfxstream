@@ -42,6 +42,7 @@
 #include "aemu/base/synchronization/ConditionVariable.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/system/System.h"
+#include "aemu/base/ThreadAnnotations.h"
 #include "common/goldfish_vk_deepcopy.h"
 #include "common/goldfish_vk_dispatch.h"
 #include "common/goldfish_vk_marshaling.h"
@@ -379,7 +380,7 @@ class VkDecoderGlobalState::Impl {
     // Resets all internal tracking info.
     // Assumes that the heavyweight cleanup operations
     // have already happened.
-    void clear() {
+    void clear() REQUIRES(mLock) {
         mInstanceInfo.clear();
         mPhysdevInfo.clear();
         mDeviceInfo.clear();
@@ -468,7 +469,7 @@ class VkDecoderGlobalState::Impl {
         stateBlock->deviceDispatch->vkDestroyCommandPool(stateBlock->device, stateBlock->commandPool, nullptr);
     }
 
-    void save(android::base::Stream* stream) {
+    void save(android::base::Stream* stream) NO_THREAD_SAFETY_ANALYSIS {
         mSnapshotState = SnapshotState::Saving;
 
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_SUPPORT
@@ -722,7 +723,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void load(android::base::Stream* stream, GfxApiLogger& gfxLogger,
-              HealthMonitor<>* healthMonitor) {
+              HealthMonitor<>* healthMonitor) NO_THREAD_SAFETY_ANALYSIS {
         // assume that we already destroyed all instances
         // from FrameBuffer's onLoad method.
 
@@ -2123,7 +2124,7 @@ class VkDecoderGlobalState::Impl {
         delete_VkDevice(deviceInfo.boxed);
     }
 
-    void destroyDeviceLocked(VkDevice device, const VkAllocationCallbacks* pAllocator) {
+    void destroyDeviceLocked(VkDevice device, const VkAllocationCallbacks* pAllocator) REQUIRES(mLock) {
         auto deviceInfoIt = mDeviceInfo.find(device);
         if (deviceInfoIt == mDeviceInfo.end()) return;
         auto& deviceInfo = deviceInfoIt->second;
@@ -3179,7 +3180,7 @@ class VkDecoderGlobalState::Impl {
 
     void destroyFenceLocked(VkDevice device, VulkanDispatch* deviceDispatch, VkFence fence,
                             const VkAllocationCallbacks* pAllocator,
-                            bool allowExternalFenceRecycling) {
+                            bool allowExternalFenceRecycling) REQUIRES(mLock) {
         auto fenceInfoIt = mFenceInfo.find(fence);
         if (fenceInfoIt == mFenceInfo.end()) {
             ERR("Failed to find fence info for VkFence:%p. Leaking fence!", fence);
@@ -8643,7 +8644,7 @@ class VkDecoderGlobalState::Impl {
     std::unordered_map<VkRenderPass, RenderPassInfo> mRenderPassInfo;
     std::unordered_map<VkFramebuffer, FramebufferInfo> mFramebufferInfo;
     std::unordered_map<VkSemaphore, SemaphoreInfo> mSemaphoreInfo;
-    std::unordered_map<VkFence, FenceInfo> mFenceInfo;
+    std::unordered_map<VkFence, FenceInfo> mFenceInfo GUARDED_BY(mLock);
     std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo;
     std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo;
     std::unordered_map<VkDescriptorSet, DescriptorSetInfo> mDescriptorSetInfo;
