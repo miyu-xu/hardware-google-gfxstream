@@ -33,6 +33,24 @@
       "message": "I have a slight preference for:\n\n```\ntemplate \u003ctypename T, typename K\u003e\nvoid validateNewHandleInfoEntry(const std::unordered_map\u003cT, K\u003e\u0026 vkObjectMap, const K\u0026 new_entry) {\n  if (vkObjectMap.find(new_entry) !\u003d vkObjectMap.end()) {\n   ERR(\"Found duplicate %s handle (%p) for info tracking!\", typeid(K).name(), new_entry)\n  }\n}\n```\n\nThis way we at least force the usage of the maps as opposed to just a random string. Especially for stuff like PhysDev people would be inclined to pass in PhysicalDevice naturally.",
       "revId": "a93c966573e3a5eba925c4984890b6cdb5185b04",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ea44975_591a1ec8",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-11-13T16:32:37Z",
+      "side": 1,
+      "message": "yep, this template is better to me",
+      "parentUuid": "d5f02fa1_460b202d",
+      "revId": "a93c966573e3a5eba925c4984890b6cdb5185b04",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
