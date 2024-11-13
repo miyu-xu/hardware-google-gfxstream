@@ -1,0 +1,22 @@
+{
+    "file_format_version" : "1.2.0",
+    "layer" : {
+      "name": "VK_LAYER_gfxstream_example",
+      "type": "GLOBAL",
+      "library_path": "libVkLayer_gfxstream_example.so",
+      "api_version": "1.3.290",
+      "implementation_version": "2",
+      "description": "Gfxstream example vulkan layer",
+      "platforms": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+      ],
+      "instance_extensions": [
+          {
+              "name": "VK_EXT_layer_settings",
+              "spec_version": "2"
+          }
+      ]
+    }
+}
