@@ -1,5 +1,6 @@
 add_subdirectory(cereal)
 add_subdirectory(emulated_textures)
+add_subdirectory(layers)
 
 if(CONFIG_AEMU)
     add_compile_definitions(GFXSTREAM_BUILD_WITH_SNAPSHOT_SUPPORT)
