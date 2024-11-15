@@ -63,6 +63,29 @@
       ],
       "revId": "27d786af4998ab07e9cefad9e50a827f92416b12",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffb50250_ae484536",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 583,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-15T22:04:06Z",
+      "side": 1,
+      "message": "Could we return a `std::optional\u003cuint64_t\u003e` so that `VkDecoderSnapshot` can handle errors? As is right now, a command could end up as a dependent on a non-existent command.\n\nEither that, or could we define some `constexpr const uint64_t kInvalidHandle \u003d 0;` somewhere, use `kInvalidHandle` in this new `getHandleOfLastModifyApi()`, and update `VkReconstruction`s handle methods to check against adding dependencies on/from `kInvalidHandle`?",
+      "range": {
+        "startLine": 583,
+        "startChar": 0,
+        "endLine": 583,
+        "endChar": 8
+      },
+      "revId": "27d786af4998ab07e9cefad9e50a827f92416b12",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
