@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b70fc0b_5d86ad40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-11-15T23:25:24Z",
+      "side": 1,
+      "message": "I had run into the situation where the saved bytes is 0 but the following loading operation still carries on and lead to crash; however, I have not seen it happening yet again. so this saved bytes and loaded bytes is not used, except for debugging purpose.",
+      "revId": "d3d352ed2c3f7a17f0819a9d98bc83a1205e9e53",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
