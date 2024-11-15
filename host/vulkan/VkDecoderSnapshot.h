@@ -32,7 +32,9 @@
 //
 #pragma once
 #include <vulkan/vulkan.h>
-
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+#include <vulkan/vulkan_beta.h>
+#endif  // VK_ENABLE_BETA_EXTENSIONS
 #include <memory>
 
 #include "aemu/base/HealthMonitor.h"

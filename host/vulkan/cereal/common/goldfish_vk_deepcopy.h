@@ -32,7 +32,9 @@
 //
 #pragma once
 #include <vulkan/vulkan.h>
-
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+#include <vulkan/vulkan_beta.h>
+#endif  // VK_ENABLE_BETA_EXTENSIONS
 #include "aemu/base/BumpPool.h"
 #include "goldfish_vk_private_defs.h"
 #include "vk_android_native_buffer_gfxstream.h"

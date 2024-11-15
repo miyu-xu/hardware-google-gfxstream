@@ -32,7 +32,9 @@
 //
 #pragma once
 #include <vulkan/vulkan.h>
-
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+#include <vulkan/vulkan_beta.h>
+#endif  // VK_ENABLE_BETA_EXTENSIONS
 #include "VulkanStream.h"
 #include "aemu/base/files/StreamSerializing.h"
 #include "goldfish_vk_private_defs.h"

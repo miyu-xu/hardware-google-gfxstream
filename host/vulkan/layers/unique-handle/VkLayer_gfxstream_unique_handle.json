@@ -1,0 +1,22 @@
+{
+    "file_format_version" : "1.2.0",
+    "layer" : {
+      "name": "VK_LAYER_gfxstream_unique_handle",
+      "type": "GLOBAL",
+      "library_path": "libVkLayer_gfxstream_unique_handle.so",
+      "api_version": "1.2.198",
+      "implementation_version": "2",
+      "description": "Gfxstream vulkan layer to generate globally unique handles",
+      "platforms": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+      ],
+      "instance_extensions": [
+          {
+              "name": "VK_EXT_layer_settings",
+              "spec_version": "2"
+          }
+      ]
+    }
+}
