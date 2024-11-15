@@ -1,0 +1,68 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5076404e_2ddc4515",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-15T21:56:41Z",
+      "side": 1,
+      "message": "Should this be `return 0;` for just a \"successful save\"? I was under the impression that we don\u0027t track bytes saved/loaded anywhere.",
+      "range": {
+        "startLine": 179,
+        "startChar": 4,
+        "endLine": 179,
+        "endChar": 71
+      },
+      "revId": "27d786af4998ab07e9cefad9e50a827f92416b12",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb576ca5_2a37424b",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-15T21:56:41Z",
+      "side": 1,
+      "message": "ditto: `return 0` for a \"successful load\"?",
+      "range": {
+        "startLine": 275,
+        "startChar": 4,
+        "endLine": 275,
+        "endChar": 22
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "ae896a4f_ae1a0f61",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkReconstruction.cpp",
+              "range": {
+                "startLine": 275,
+                "startChar": 0,
+                "endLine": 276,
+                "endChar": 0
+              },
+              "replacement": "    return 0;\n"
+            }
+          ]
+        }
+      ],
+      "revId": "27d786af4998ab07e9cefad9e50a827f92416b12",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
