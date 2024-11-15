@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "142f1fe2_2fcdf384",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-15T22:17:48Z",
+      "side": 1,
+      "message": "Please add a comment to the `VkReconstruction` header.\n\n\u003e whether to skip the rest of the save/load inside the VkDecodeGlobalState::save and load\n\nWill the condition to skip the rest of the save/load in `VkDecodeGlobalState` just be `if bytes_saved/loaded \u003d\u003d 0`? This happen in practice? Does that mean someone tried to load an empty snapshot? or saved a snapshot when VK was turned off?\n\nnit: strange spacing\n\n```suggestion\n    return (int)(createdHandleBuffer.size() + apiTraceBuffer.size());\n```\n\nmaybe just `git clang-format HEAD^1`",
+      "parentUuid": "9a38955c_33b838e6",
+      "range": {
+        "startLine": 179,
+        "startChar": 4,
+        "endLine": 179,
+        "endChar": 71
+      },
+      "revId": "27d786af4998ab07e9cefad9e50a827f92416b12",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cb576ca5_2a37424b",
         "filename": "host/vulkan/VkReconstruction.cpp",
         "patchSetId": 3
