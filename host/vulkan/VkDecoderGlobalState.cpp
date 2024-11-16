@@ -1278,8 +1278,8 @@ class VkDecoderGlobalState::Impl {
         if (pPhysicalDeviceCount && pPhysicalDevices) {
             // Box them up
             for (uint32_t i = 0; i < std::min(requestedCount, availableCount); ++i) {
+                VALIDATE_NEW_HANDLE_INFO_ENTRY(mPhysicalDeviceToInstance, physicalDevices[i]);
                 mPhysicalDeviceToInstance[physicalDevices[i]] = instance;
-
                 VALIDATE_NEW_HANDLE_INFO_ENTRY(mPhysdevInfo, physicalDevices[i]);
                 auto& physdevInfo = mPhysdevInfo[physicalDevices[i]];
                 physdevInfo.instance = instance;
@@ -8301,6 +8301,8 @@ class VkDecoderGlobalState::Impl {
 
             if (physicalDeviceInstance != instance) continue;
             mPhysicalDeviceToInstance.erase(physicalDeviceInstanceIt);
+
+            mPhysdevInfo.erase(physicalDevice);
 
             auto deviceInfoIt = mDeviceInfo.find(device);
             if (deviceInfoIt == mDeviceInfo.end()) continue;
