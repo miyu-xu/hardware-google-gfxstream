@@ -6751,6 +6751,11 @@ class VkDecoderGlobalState::Impl {
         CommandBufferInfo* cmdBufferInfo = android::base::find(mCommandBufferInfo, commandBuffer);
         FramebufferInfo* fbInfo =
             android::base::find(mFramebufferInfo, pRenderPassBegin->framebuffer);
+        if (!fbInfo) {
+            ERR("%s %d cannot find framebuffer %p", __func__, __LINE__,
+                pRenderPassBegin->framebuffer);
+            return;
+        }
         cmdBufferInfo->releasedColorBuffers.insert(fbInfo->attachedColorBuffers.begin(),
                                                    fbInfo->attachedColorBuffers.end());
     }
