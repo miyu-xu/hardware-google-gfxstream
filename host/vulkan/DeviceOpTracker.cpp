@@ -70,6 +70,7 @@ void DeviceOpTracker::AddPendingGarbage(DeviceOpWaitable waitable, VkSemaphore s
 void DeviceOpTracker::Poll() {
     std::lock_guard<std::mutex> lock(mPollFunctionsMutex);
 
+#if 0
     // Assuming that polling functions are added to the queue in the roughly the order
     // they are used, encountering an unsignaled/pending polling functions likely means
     // that all polling functions after are also still pending. This might not necessarily
@@ -82,6 +83,13 @@ void DeviceOpTracker::Poll() {
                                            return status == DeviceOpStatus::kPending;
                                        });
     mPollFunctions.erase(mPollFunctions.begin(), firstPendingIt);
+#endif
+    mPollFunctions.erase(std::remove_if(mPollFunctions.begin(), mPollFunctions.end(),
+                                        [](const OpPollingFunction& pollingFunc) {
+                                            DeviceOpStatus status = pollingFunc();
+                                            return status != DeviceOpStatus::kPending;
+                                        }),
+                         mPollFunctions.end());
 
     if (mPollFunctions.size() > kSizeLoggingThreshold) {
         WARN("VkDevice:%p has %d pending waitables.", mDevice, mPollFunctions.size());
