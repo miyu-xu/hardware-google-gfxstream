@@ -229,11 +229,12 @@ struct DeviceInfo {
 };
 
 struct QueueInfo {
-    android::base::Lock* lock = nullptr;
+    std::unique_ptr<android::base::Lock> physicalQueueLock;
     VkDevice device;
     uint32_t queueFamilyIndex;
     VkQueue boxed = nullptr;
-    uint32_t sequenceNumber = 0;
+    bool isVirtual = false;
+    VkQueue virtualUnboxed = nullptr;
 };
 
 struct BufferInfo {
