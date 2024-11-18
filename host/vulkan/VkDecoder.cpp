@@ -668,15 +668,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkPhysicalDevice physicalDevice;
                 uint32_t* pQueueFamilyPropertyCount;
                 VkQueueFamilyProperties* pQueueFamilyProperties;
-                // Begin non wrapped dispatchable handle unboxing for physicalDevice;
+                // Begin global wrapped dispatchable handle unboxing for physicalDevice;
                 uint64_t cgen_var_0;
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkPhysicalDevice*)&physicalDevice =
                     (VkPhysicalDevice)(VkPhysicalDevice)((VkPhysicalDevice)(*&cgen_var_0));
-                auto unboxed_physicalDevice = unbox_VkPhysicalDevice(physicalDevice);
-                auto vk = dispatch_VkPhysicalDevice(physicalDevice);
-                // End manual dispatchable handle unboxing for physicalDevice;
                 // Begin manual dispatchable handle unboxing for pQueueFamilyPropertyCount;
                 vkReadStream->unsetHandleMapping();
                 // WARNING PTR CHECK
@@ -722,8 +719,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pQueueFamilyPropertyCount,
                             (unsigned long long)pQueueFamilyProperties);
                 }
-                vk->vkGetPhysicalDeviceQueueFamilyProperties(
-                    unboxed_physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
+                m_state->on_vkGetPhysicalDeviceQueueFamilyProperties(
+                    &m_pool, physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pQueueFamilyPropertyCount;
@@ -2540,11 +2537,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 uint32_t bindInfoCount;
                 const VkBindSparseInfo* pBindInfo;
                 VkFence fence;
-                // Begin global wrapped dispatchable handle unboxing for queue;
+                // Begin non wrapped dispatchable handle unboxing for queue;
                 uint64_t cgen_var_0;
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkQueue*)&queue = (VkQueue)(VkQueue)((VkQueue)(*&cgen_var_0));
+                auto unboxed_queue = unbox_VkQueue(queue);
+                auto vk = dispatch_VkQueue(queue);
+                // End manual dispatchable handle unboxing for queue;
                 memcpy((uint32_t*)&bindInfoCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pBindInfo,
@@ -2572,7 +2572,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkQueueBindSparse_VkResult_return = (VkResult)0;
                 vkQueueBindSparse_VkResult_return =
-                    m_state->on_vkQueueBindSparse(&m_pool, queue, bindInfoCount, pBindInfo, fence);
+                    vk->vkQueueBindSparse(unboxed_queue, bindInfoCount, pBindInfo, fence);
                 if ((vkQueueBindSparse_VkResult_return) == VK_ERROR_DEVICE_LOST)
                     m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkQueueBindSparse_VkResult_return, opcode, context);
@@ -9640,15 +9640,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkPhysicalDevice physicalDevice;
                 uint32_t* pQueueFamilyPropertyCount;
                 VkQueueFamilyProperties2* pQueueFamilyProperties;
-                // Begin non wrapped dispatchable handle unboxing for physicalDevice;
+                // Begin global wrapped dispatchable handle unboxing for physicalDevice;
                 uint64_t cgen_var_0;
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkPhysicalDevice*)&physicalDevice =
                     (VkPhysicalDevice)(VkPhysicalDevice)((VkPhysicalDevice)(*&cgen_var_0));
-                auto unboxed_physicalDevice = unbox_VkPhysicalDevice(physicalDevice);
-                auto vk = dispatch_VkPhysicalDevice(physicalDevice);
-                // End manual dispatchable handle unboxing for physicalDevice;
                 // Begin manual dispatchable handle unboxing for pQueueFamilyPropertyCount;
                 vkReadStream->unsetHandleMapping();
                 // WARNING PTR CHECK
@@ -9694,8 +9691,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pQueueFamilyPropertyCount,
                             (unsigned long long)pQueueFamilyProperties);
                 }
-                vk->vkGetPhysicalDeviceQueueFamilyProperties2(
-                    unboxed_physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
+                m_state->on_vkGetPhysicalDeviceQueueFamilyProperties2(
+                    &m_pool, physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pQueueFamilyPropertyCount;
@@ -13478,14 +13475,11 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                                       "VkDecoder vkQueuePresentKHR");
                 VkQueue queue;
                 const VkPresentInfoKHR* pPresentInfo;
-                // Begin non wrapped dispatchable handle unboxing for queue;
+                // Begin global wrapped dispatchable handle unboxing for queue;
                 uint64_t cgen_var_0;
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkQueue*)&queue = (VkQueue)(VkQueue)((VkQueue)(*&cgen_var_0));
-                auto unboxed_queue = unbox_VkQueue(queue);
-                auto vk = dispatch_VkQueue(queue);
-                // End manual dispatchable handle unboxing for queue;
                 vkReadStream->alloc((void**)&pPresentInfo, sizeof(const VkPresentInfoKHR));
                 reservedunmarshal_VkPresentInfoKHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                    (VkPresentInfoKHR*)(pPresentInfo),
@@ -13499,7 +13493,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkQueuePresentKHR_VkResult_return = (VkResult)0;
                 vkQueuePresentKHR_VkResult_return =
-                    vk->vkQueuePresentKHR(unboxed_queue, pPresentInfo);
+                    m_state->on_vkQueuePresentKHR(&m_pool, queue, pPresentInfo);
                 if ((vkQueuePresentKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
                     m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkQueuePresentKHR_VkResult_return, opcode, context);
