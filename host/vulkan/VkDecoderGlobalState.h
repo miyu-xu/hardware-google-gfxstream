@@ -177,6 +177,21 @@ class VkDecoderGlobalState {
                                               VkPhysicalDevice physicalDevice,
                                               VkPhysicalDeviceProperties2* pProperties);
 
+    // Override queue properties
+    void on_vkGetPhysicalDeviceQueueFamilyProperties(
+        android::base::BumpPool* pool, VkPhysicalDevice physicalDevice,
+        uint32_t* pQueueFamilyPropertyCount, VkQueueFamilyProperties* pQueueFamilyProperties);
+    void on_vkGetPhysicalDeviceQueueFamilyProperties2(
+        android::base::BumpPool* pool, VkPhysicalDevice physicalDevice,
+        uint32_t* pQueueFamilyPropertyCount, VkQueueFamilyProperties2* pQueueFamilyProperties);
+
+    // Handle virtual queue handles and sync
+    VkResult on_vkQueueBindSparse(android::base::BumpPool* pool, VkQueue queue,
+                                 uint32_t bindInfoCount, const VkBindSparseInfo* pBindInfo,
+                                 VkFence fence);
+    VkResult on_vkQueuePresentKHR(android::base::BumpPool* pool, VkQueue queue,
+                                  const VkPresentInfoKHR* pPresentInfo);
+
     // Override memory types advertised from host
     //
     void on_vkGetPhysicalDeviceMemoryProperties(
