@@ -5065,6 +5065,20 @@ class VkDecoderGlobalState::Impl {
             }
             const auto& hostMemoryInfo = *hostMemoryInfoOpt;
 
+#ifdef _WIN32
+            VkMemoryWin32HandlePropertiesKHR memPropertiesWin32;
+            VkResult result = vkGetMemoryWin32HandlePropertiesKHR(device, importInfo.handleType, importInfo.handle, &memPropertiesWin32);
+            if (result == VK_SUCCESS) {
+                for (uint32_t i = 0; i <= 31; ++i) {
+                    if ((memPropertiesWin32.memoryTypeBits & (1u << i)) == 0) {
+                        continue;
+                    }
+                    hostMemoryInfo.index = i;
+                    break;
+                }
+            }
+#endif
+
             localAllocInfo.memoryTypeIndex = hostMemoryInfo.index;
             memoryPropertyFlags = hostMemoryInfo.memoryType.propertyFlags;
 
@@ -5185,9 +5199,9 @@ class VkDecoderGlobalState::Impl {
                     .handleTypes = handleTypes,
                 };
                 vk_append_struct(&structChainIter, &*exportAllocateInfo);
-            } else if (m_emu->features.VulkanAllocateHostMemory.enabled &&
+            } else if (m_emu && m_emu->features.VulkanAllocateHostMemory.enabled &&
                        localAllocInfo.pNext == nullptr) {
-                if (!m_emu || !m_emu->deviceInfo.supportsExternalMemoryHostProps) {
+                if (!m_emu->deviceInfo.supportsExternalMemoryHostProps) {
                     ERR("VK_EXT_EXTERNAL_MEMORY_HOST is not supported, cannot use "
                         "VulkanAllocateHostMemory");
                     return VK_ERROR_INCOMPATIBLE_DRIVER;
