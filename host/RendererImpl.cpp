@@ -237,6 +237,8 @@ RenderChannelPtr RendererImpl::createRenderChannel(
         android::base::Stream* loadStream, uint32_t virtioGpuContextId) {
     const auto channel =
         std::make_shared<RenderChannelImpl>(loadStream, virtioGpuContextId);
+    std::vector<std::shared_ptr<RenderChannelImpl>> finished_channels;
+
     {
         android::base::AutoLock lock(mChannelsLock);
 
@@ -245,6 +247,15 @@ RenderChannelPtr RendererImpl::createRenderChannel(
         }
 
         // Clean up the stopped channels.
+        // using async so it does not block the calling thread,
+        // which could be vm thread and could hang if it gets
+        // blocked by the cleaning of finished channels, which
+        // usually wait for renderthread to join
+        for (auto & it : mChannels) {
+            if (it->renderThread()->isFinished()) {
+                finished_channels.push_back(it);
+            }
+        }
         mChannels.erase(
                 std::remove_if(mChannels.begin(), mChannels.end(),
                                [](const std::shared_ptr<RenderChannelImpl>& c) {
@@ -252,6 +263,12 @@ RenderChannelPtr RendererImpl::createRenderChannel(
                                }),
                 mChannels.end());
         mChannels.emplace_back(channel);
+
+        std::thread cleanupThread([&finished_channels]() {
+                finished_channels.clear();
+                });
+
+        cleanupThread.detach();
 
         // Take the time to check if our loader thread is done as well.
         if (mLoaderRenderThread && mLoaderRenderThread->isFinished()) {
