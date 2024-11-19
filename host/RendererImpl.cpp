@@ -245,6 +245,15 @@ RenderChannelPtr RendererImpl::createRenderChannel(
         }
 
         // Clean up the stopped channels.
+        // using mStoppedChannels so it does not block the calling thread,
+        // which could be vm thread and could hang if it gets
+        // blocked by the cleaning of finished channels, which
+        // usually wait for renderthread to join
+        for (auto & it : mChannels) {
+            if (it->renderThread()->isFinished()) {
+                mStoppedChannels.push_back(it);
+            }
+        }
         mChannels.erase(
                 std::remove_if(mChannels.begin(), mChannels.end(),
                                [](const std::shared_ptr<RenderChannelImpl>& c) {
