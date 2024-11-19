@@ -2211,6 +2211,111 @@ std::vector<TestParams> GenerateTestCases() {
     return cases;
 }
 
+TEST_P(GfxstreamEnd2EndVkTest, UseDoubleQueuesAndSynchronizeCorrectly) {
+    auto vk = GFXSTREAM_ASSERT(SetUpTypicalVkTestEnvironment());
+    auto& [instance, physicalDevice, device, queue_dont_use, graphicsQueueFamilyIndex] = vk;
+
+    //Recreate logical device to get 2 queues
+    const float queuePriority = 1.0f;
+    const vkhpp::DeviceQueueCreateInfo deviceQueueCreateInfo = {
+        .queueFamilyIndex = graphicsQueueFamilyIndex,
+        .queueCount = 2,
+        .pQueuePriorities = &queuePriority,
+    };
+    std::vector<const char*> deviceExtensions = {
+        VK_ANDROID_NATIVE_BUFFER_EXTENSION_NAME,
+        VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME,
+    };
+    const vkhpp::DeviceCreateInfo deviceCreateInfo = {
+        .pNext = nullptr,
+        .pQueueCreateInfos = &deviceQueueCreateInfo,
+        .queueCreateInfoCount = 1,
+        .enabledLayerCount = 0,
+        .ppEnabledLayerNames = nullptr,
+        .enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size()),
+        .ppEnabledExtensionNames = deviceExtensions.data(),
+    };
+
+    device = GFXSTREAM_ASSERT_VKHPP_RV(physicalDevice.createDeviceUnique(deviceCreateInfo));
+    auto queue1 = device->getQueue(graphicsQueueFamilyIndex, 0);
+    auto queue2 = device->getQueue(graphicsQueueFamilyIndex, 1);
+
+    const VkDeviceSize kBufferSize = 1024;
+    auto bufferWithMemory1 = GFXSTREAM_ASSERT(CreateBuffer(
+            vk, kBufferSize,
+            vkhpp::BufferUsageFlagBits::eTransferDst |
+                vkhpp::BufferUsageFlagBits::eTransferSrc |
+                vkhpp::BufferUsageFlagBits::eUniformBuffer,
+            vkhpp::MemoryPropertyFlagBits::eHostVisible |
+                vkhpp::MemoryPropertyFlagBits::eHostCoherent));
+    auto bufferWithMemory2 = GFXSTREAM_ASSERT(CreateBuffer(
+            vk, kBufferSize,
+            vkhpp::BufferUsageFlagBits::eTransferDst |
+                vkhpp::BufferUsageFlagBits::eTransferSrc |
+                vkhpp::BufferUsageFlagBits::eUniformBuffer,
+            vkhpp::MemoryPropertyFlagBits::eHostVisible |
+                vkhpp::MemoryPropertyFlagBits::eHostCoherent));
+
+    const vkhpp::CommandPoolCreateInfo commandPoolCreateInfo = {
+        .queueFamilyIndex = graphicsQueueFamilyIndex,
+    };
+
+    auto commandPool =
+        GFXSTREAM_ASSERT_VKHPP_RV(device->createCommandPoolUnique(commandPoolCreateInfo));
+
+    const vkhpp::CommandBufferAllocateInfo commandBufferAllocateInfo = {
+        .commandPool = *commandPool,
+        .level = vkhpp::CommandBufferLevel::ePrimary,
+        .commandBufferCount = 2,
+    };
+    auto commandBuffers = GFXSTREAM_ASSERT_VKHPP_RV(
+        device->allocateCommandBuffersUnique(commandBufferAllocateInfo));
+    auto commandBufferA = std::move(commandBuffers[0]);
+    auto commandBufferB = std::move(commandBuffers[1]);
+
+    std::vector<vkhpp::CommandBuffer> commandBufferHandles;
+    commandBufferHandles.push_back(*commandBufferA);
+    commandBufferHandles.push_back(*commandBufferB);
+    vkhpp::UniqueSemaphore semaphore = device->createSemaphoreUnique(vkhpp::SemaphoreCreateInfo()).value;
+
+    vkhpp::SubmitInfo submitInfoWrite = {
+        .commandBufferCount = 1,
+        .pCommandBuffers = &commandBufferHandles[0],
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = &*semaphore
+    };
+    vkhpp::SubmitInfo submitInfoCopy = {
+        .commandBufferCount = 1,
+        .pCommandBuffers = &commandBufferHandles[1],
+    };
+    const vkhpp::CommandBufferBeginInfo commandBufferBeginInfo = {
+        .flags = vkhpp::CommandBufferUsageFlagBits::eOneTimeSubmit,
+    };
+
+    commandBufferA->begin(commandBufferBeginInfo);
+    std::vector<uint8_t> dataToWrite(kBufferSize, 0xFF);
+    commandBufferA->updateBuffer(bufferWithMemory1.buffer.get(), 0, dataToWrite.size(), dataToWrite.data());
+    commandBufferA->end();
+
+    commandBufferB->begin(commandBufferBeginInfo);
+    vkhpp::BufferCopy copyRegion{};
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = kBufferSize;
+    vkhpp::ArrayProxy<const vkhpp::BufferCopy> copyRegions = copyRegion;
+    commandBufferB->copyBuffer(bufferWithMemory1.buffer.get(), bufferWithMemory2.buffer.get(), copyRegions);
+    commandBufferB->end();
+
+
+    queue1.submit(submitInfoWrite);
+    queue2.submit(submitInfoCopy);
+    queue2.waitIdle();
+    void* mappedMemory = GFXSTREAM_ASSERT_VKHPP_RV(device->mapMemory(*bufferWithMemory2.bufferMemory, 0, kBufferSize));
+    uint8_t* readData = static_cast<uint8_t*>(mappedMemory);
+    device->unmapMemory(*bufferWithMemory2.bufferMemory);
+    ASSERT_TRUE(std::memcmp(readData, dataToWrite.data(), dataToWrite.size()) == 0);
+}
+
 TEST_P(GfxstreamEnd2EndVkTest, GetFenceStatusOnExternalFence) {
     auto vk = GFXSTREAM_ASSERT(SetUpTypicalVkTestEnvironment());
     auto& [instance, physicalDevice, device, queue, queueFamilyIndex] = vk;
