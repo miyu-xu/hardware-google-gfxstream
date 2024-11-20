@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82200283_5f3f2bfe",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2222,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-20T17:11:01Z",
+      "side": 1,
+      "message": "To make this valid, we need to query the available queueCount on the queue family and skip the test if there are less than 2 graphics queues available.",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a742469_26632d44",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2244,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-20T17:11:01Z",
+      "side": 1,
+      "message": "Some GPU won\u0027t support all these flags together, so they will fail on creating the buffer. Memory types supported can be checked, or rather than using an assert, we can skip the test if it cannot create a buffer here. Ideally, staging buffers should be used to increase coverage for various GPUs,",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec541643_f5a9b2a4",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2273,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-20T17:11:01Z",
+      "side": 1,
+      "message": "similar to submitInfo, would be better to name commandbuffers as write/copy",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ba3864f_5401f954",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2276,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-20T17:11:01Z",
+      "side": 1,
+      "message": "do we need to put them into a vector?",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7cc5e0e_a254a368",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2289,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-20T17:11:01Z",
+      "side": 1,
+      "message": "wait semaphore is missing?",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "41b636f0_ea1347f0",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2296,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-20T17:11:01Z",
+      "side": 1,
+      "message": "Might be better to use randomized data",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
