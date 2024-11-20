@@ -192,7 +192,9 @@ void RenderChannelImpl::resume() {
 
 RenderChannelImpl::~RenderChannelImpl() {
     // Make sure the render thread is stopped before the channel is gone.
-    mRenderThread->wait();
+    if (!mRenderThread->isFinished()) {
+        mRenderThread->wait();
+    }
 }
 
 void RenderChannelImpl::updateStateLocked() {
