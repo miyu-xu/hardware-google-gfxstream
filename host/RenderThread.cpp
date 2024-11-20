@@ -79,14 +79,14 @@ static constexpr int kMinThreadsToRunUnlimited = 5;
 // A thread run limiter that limits render threads to run one slice at a time.
 static android::base::Lock sThreadRunLimiter;
 
-RenderThread::RenderThread(RenderChannelImpl* channel,
-                           android::base::Stream* loadStream,
+RenderThread::RenderThread(RenderChannelImpl* channel, android::base::Stream* loadStream,
                            uint32_t virtioGpuContextId)
-    : android::base::Thread(android::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024),
+    : android::base::Thread(
+          android::base::ThreadFlags::MaskSignals | android::base::ThreadFlags::Detach,
+          2 * 1024 * 1024),
       mChannel(channel),
       mRunInLimitedMode(android::base::getCpuCoreCount() < kMinThreadsToRunUnlimited),
-      mContextId(virtioGpuContextId)
-{
+      mContextId(virtioGpuContextId) {
     if (loadStream) {
         const bool success = loadStream->getByte();
         if (success) {
