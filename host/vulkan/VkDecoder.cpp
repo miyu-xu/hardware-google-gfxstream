@@ -726,6 +726,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pQueueFamilyPropertyCount;
                 vkStream->putBe64(cgen_var_3);
                 if (pQueueFamilyPropertyCount) {
+                    *((uint32_t*)pQueueFamilyPropertyCount) = 1;
                     vkStream->write((uint32_t*)pQueueFamilyPropertyCount, sizeof(uint32_t));
                 }
                 if (pQueueFamilyPropertyCount) {
