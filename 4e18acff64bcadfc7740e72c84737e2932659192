@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b443500_1bd4f448",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-20T10:25:34Z",
+      "side": 1,
+      "message": "I\u0027ve separated the codegen related changes from aosp/3365404 into this CL, to make the review, merge and possible revert of the other CL easier.",
+      "revId": "4e18acff64bcadfc7740e72c84737e2932659192",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
