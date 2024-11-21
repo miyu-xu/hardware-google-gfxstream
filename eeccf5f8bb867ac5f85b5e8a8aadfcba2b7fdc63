@@ -67,6 +67,53 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "87982ef5_c547768e",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1724,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-11-21T21:05:19Z",
+      "side": 1,
+      "message": "Ahh, ok you\u0027re right. So we also don\u0027t need the null check on line 1740 either.",
+      "parentUuid": "6ae65608_6f528d5a",
+      "range": {
+        "startLine": 1724,
+        "startChar": 8,
+        "endLine": 1724,
+        "endChar": 44
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1d493be6_4043a1d2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1748,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-11-21T21:05:19Z",
+      "side": 1,
+      "message": "Don\u0027t need the null check?\n```suggestion\n        *pQueueFamilyPropertyCount \u003d\n                std::min((uint32_t)properties.size(), *pQueueFamilyPropertyCount);\n        for (uint32_t i \u003d 0; i \u003c *pQueueFamilyPropertyCount; i++) {\n            pQueueFamilyProperties[i].queueFamilyProperties \u003d properties[i];\n        }\n```",
+      "range": {
+        "startLine": 1740,
+        "startChar": 0,
+        "endLine": 1748,
+        "endChar": 9
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a19c5bd0_8b9b21a6",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
