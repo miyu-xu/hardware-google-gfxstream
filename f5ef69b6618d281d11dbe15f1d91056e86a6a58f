@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a50993c_995cbe8e",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2222,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-21T16:13:54Z",
+      "side": 1,
+      "message": "I believe the correct syntax is  `GTEST_SKIP() \u003c\u003c \"Skipping test due to ...\";`",
+      "revId": "f5ef69b6618d281d11dbe15f1d91056e86a6a58f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
