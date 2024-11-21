@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6668fb05_9b09cec8",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1724,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2024-11-21T19:13:06Z",
+      "side": 1,
+      "message": "pQueueFamilyProperties may be null?\n```suggestion\n        if (pQueueFamilyProperties \u0026\u0026 pQueueFamilyProperties-\u003epNext) {\n```",
+      "range": {
+        "startLine": 1724,
+        "startChar": 8,
+        "endLine": 1724,
+        "endChar": 44
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a19c5bd0_8b9b21a6",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
