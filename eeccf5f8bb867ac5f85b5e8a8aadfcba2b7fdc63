@@ -87,6 +87,24 @@
       "parentUuid": "1395b715_2dc981ad",
       "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "318fb7ef_78ce5706",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 2180,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-21T14:31:01Z",
+      "side": 1,
+      "message": "That\u0027s not an assumption, but a feature/limitation of the virtual queue. This loop iterates through the family indices requested, so the whole code block is related to a single family index and I don\u0027t think a separate comment would be more useful here. \nWe\u0027re solving a specific problem for Android\u0027s use case and virtualization for a different queue family is not necessary at the moment.",
+      "parentUuid": "a19c5bd0_8b9b21a6",
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
