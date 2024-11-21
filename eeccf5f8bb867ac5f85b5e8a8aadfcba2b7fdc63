@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "91a5361e_421de017",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-21T13:30:27Z",
+      "side": 1,
+      "message": "I think we can submit this initial implementation which just enables advertising of the virtual queue. All the dEQEP multi_queue tests for synchronization are passing with it, and it\u0027s disabled by default.\n\nMore info at go/gfxstream_multi_queue",
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
