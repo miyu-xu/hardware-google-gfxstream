@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2ba56cf_99e5e319",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2222,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T12:30:25Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "82200283_5f3f2bfe",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8a742469_26632d44",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-11-20T17:11:01Z",
       "side": 1,
       "message": "Some GPU won\u0027t support all these flags together, so they will fail on creating the buffer. Memory types supported can be checked, or rather than using an assert, we can skip the test if it cannot create a buffer here. Ideally, staging buffers should be used to increase coverage for various GPUs,",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7124f30_3708a140",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2244,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T12:30:25Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "8a742469_26632d44",
       "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe822b79_789c34d1",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2273,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T12:30:25Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "ec541643_f5a9b2a4",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7ba3864f_5401f954",
@@ -65,6 +119,24 @@
       "writtenOn": "2024-11-20T17:11:01Z",
       "side": 1,
       "message": "do we need to put them into a vector?",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad7f20c9_4cb7920e",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2276,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T12:30:25Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "7ba3864f_5401f954",
       "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -86,6 +158,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c15fe27_eebed1dd",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2289,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T12:30:25Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "f7cc5e0e_a254a368",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "41b636f0_ea1347f0",
@@ -99,6 +189,24 @@
       "writtenOn": "2024-11-20T17:11:01Z",
       "side": 1,
       "message": "Might be better to use randomized data",
+      "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ec47773_a0bd5f2c",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2296,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T12:30:25Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "41b636f0_ea1347f0",
       "revId": "585bd6943aa66db4d4983e3da44a895a7885b180",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
