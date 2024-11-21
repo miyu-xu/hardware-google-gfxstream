@@ -20,6 +20,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e070670f_9c4fa991",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T23:22:20Z",
+      "side": 1,
+      "message": "Could we use a `Feature` to set this \n (`hardware/google/gfxstream/host/features/include/gfxstream/host/Features.h`) so that this can be toggled via the stream renderer interface?",
+      "range": {
+        "startLine": 383,
+        "startChar": 12,
+        "endLine": 383,
+        "endChar": 88
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f048705_0b2263e8",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1717,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T23:22:20Z",
+      "side": 1,
+      "message": "It might be more readable to move some of the new code from this change into a `VkEmulatedPhysicalDeviceQueues.[cpp|h]` in the same way that `VkEmulatedPhysicalDeviceMemory.h` is used for emulating memory. I think this has the benefit hiding `mEnableVirtualVkQueue` from a lot of functions in `VkDecoderGlobalState` in the same way `EmulatedPhysicalDeviceMemoryProperties` hides a bunch of \n\n```\nif (features.VulkanAllocateDeviceMemoryOnly.enabled) {\n  // do thing 1\n} else {\n  // do thing 2\n}\n```",
+      "range": {
+        "startLine": 1717,
+        "startChar": 8,
+        "endLine": 1717,
+        "endChar": 95
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6668fb05_9b09cec8",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
@@ -131,6 +177,29 @@
         "startChar": 0,
         "endLine": 1748,
         "endChar": 9
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5a2a616_56cfec1b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 2169,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T23:22:20Z",
+      "side": 1,
+      "message": "Given that @joshuaduong@google.com is already looking into fixing up the boxed handle system to handle duplicated unboxed handles and given that this change already adds custom boxed/unboxed handling of `VkQueue`, what if we just (ab)used duplicated unboxed handles right now?\n\nYou could just do a single \n\n```\nVALIDATE_NEW_HANDLE_INFO_ENTRY(mQueueInfo, physicalQueue);\nQueueInfo\u0026 physicalQueueInfo \u003d mQueueInfo[physicalQueue];\n```\n\nwith the single unboxed-`VkQueue`, you could generate 2 boxed-`VkQueue` with two calls to `new_boxed_VkQueue()` calls which both point at the same unboxed-`VkQueue`, and then you could update the custom `unboxed_to_boxed_VkQueue()` implementation to just do an `GFXSTREAM_ABORT() \u003c\u003c \"Never call this function.\"` since it is never used anyway. \n\nYou might have to add a `std::vector\u003cVkQueue\u003e boxedQueues;` to `DeviceInfo` so that we clean up both boxed handles during `vkDestroyDevice()`.\n\nI think this would allow you to remove almost all of the new custom boxed/unboxed handling from this change except for making the `unboxed_to_boxed_VkQueue()` an abort.\n\nWDYT?",
+      "range": {
+        "startLine": 2160,
+        "startChar": 20,
+        "endLine": 2169,
+        "endChar": 22
       },
       "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
