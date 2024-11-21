@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f86f74fe_739b4bd3",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2735,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T23:39:03Z",
+      "side": 1,
+      "message": "I\u0027m not sure how `.end()` is implemented exactly so I think it might be safer to keep lock for the duration of this function.",
+      "range": {
+        "startLine": 2735,
+        "startChar": 4,
+        "endLine": 2735,
+        "endChar": 42
+      },
+      "revId": "acd0ef0774d1230b5867716c58a605fc4c19c3a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
