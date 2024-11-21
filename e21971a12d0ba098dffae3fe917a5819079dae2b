@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ed40f67_db1f3421",
+        "filename": "host/FrameBuffer.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 769,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T23:28:08Z",
+      "side": 1,
+      "message": "nit: could you move this down to line 843 so that it is next to `m_procOwnedResources`?",
+      "range": {
+        "startLine": 769,
+        "startChar": 4,
+        "endLine": 769,
+        "endChar": 49
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "315fa1f0_f3960071",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/FrameBuffer.h",
+              "range": {
+                "startLine": 769,
+                "startChar": 0,
+                "endLine": 770,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "host/FrameBuffer.h",
+              "range": {
+                "startLine": 845,
+                "startChar": 0,
+                "endLine": 845,
+                "endChar": 0
+              },
+              "replacement": "    android::base::Lock m_procOwnedResourcesLock;\n"
+            }
+          ]
+        }
+      ],
+      "revId": "e21971a12d0ba098dffae3fe917a5819079dae2b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2f4e0cd_fa3fb5de",
+        "filename": "host/FrameBuffer.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 844,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T23:28:08Z",
+      "side": 1,
+      "message": "optional: could we start adding `GUARDED_BY(m_procOwnedResourcesLock)` annotations? you might need to create a new `hardware/google/gfxstream/common/utils/include/gfxstream/CompilerAnnotations.h` with something like\n\n```\n#if defined(__clang__)\n#define THREAD_ANNOTATION_ATTRIBUTE(x) __attribute__((x))\n#else\n#define THREAD_ANNOTATION_ATTRIBUTE(x)  // no-op\n#endif\n\n#define GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE(guarded_by(x))\n```",
+      "range": {
+        "startLine": 844,
+        "startChar": 68,
+        "endLine": 844,
+        "endChar": 88
+      },
+      "revId": "e21971a12d0ba098dffae3fe917a5819079dae2b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
