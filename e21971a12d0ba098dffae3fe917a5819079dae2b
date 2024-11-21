@@ -54,6 +54,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "7f1e5119_8d64a484",
+        "filename": "host/FrameBuffer.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 769,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-11-21T23:34:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ed40f67_db1f3421",
+      "range": {
+        "startLine": 769,
+        "startChar": 4,
+        "endLine": 769,
+        "endChar": 49
+      },
+      "revId": "e21971a12d0ba098dffae3fe917a5819079dae2b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "b2f4e0cd_fa3fb5de",
         "filename": "host/FrameBuffer.h",
         "patchSetId": 1
@@ -65,6 +89,30 @@
       "writtenOn": "2024-11-21T23:28:08Z",
       "side": 1,
       "message": "optional: could we start adding `GUARDED_BY(m_procOwnedResourcesLock)` annotations? you might need to create a new `hardware/google/gfxstream/common/utils/include/gfxstream/CompilerAnnotations.h` with something like\n\n```\n#if defined(__clang__)\n#define THREAD_ANNOTATION_ATTRIBUTE(x) __attribute__((x))\n#else\n#define THREAD_ANNOTATION_ATTRIBUTE(x)  // no-op\n#endif\n\n#define GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE(guarded_by(x))\n```",
+      "range": {
+        "startLine": 844,
+        "startChar": 68,
+        "endLine": 844,
+        "endChar": 88
+      },
+      "revId": "e21971a12d0ba098dffae3fe917a5819079dae2b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "557ee46c_22fef464",
+        "filename": "host/FrameBuffer.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 844,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-11-21T23:34:29Z",
+      "side": 1,
+      "message": "thanks that is a good idea, will follow up with that",
+      "parentUuid": "b2f4e0cd_fa3fb5de",
       "range": {
         "startLine": 844,
         "startChar": 68,
