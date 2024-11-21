@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6ae65608_6f528d5a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1724,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T20:31:52Z",
+      "side": 1,
+      "message": "Nice spot, but technically I don\u0027t think in actuality can be null as we\u0027re checking above in \u0027requiresPropertyOverrides\u0027 and that would return if this were null. But good for defensive programming.",
+      "parentUuid": "6668fb05_9b09cec8",
+      "range": {
+        "startLine": 1724,
+        "startChar": 8,
+        "endLine": 1724,
+        "endChar": 44
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a19c5bd0_8b9b21a6",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
