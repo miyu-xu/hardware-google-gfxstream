@@ -33,6 +33,24 @@
       "message": "IIUC - you are hardcoding an assumption here that the virtual queue will always be part of the same family as the physicalQueue. I think this probably needs to be called out with a comment in case we need to extend this in the future to make the intention clear (at this time we\u0027re only interested in supporting HWUI which uses 2 of the same queues)\n\nI can imagine we\u0027d have cases for applications where this is not always applicable and they can use a queue that is from a different family, right?",
       "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99ac850b_1c3ec67a",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 2180,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-21T14:26:50Z",
+      "side": 1,
+      "message": "I guess I am just trying to avoid unexpected behavior where off the cuff we advertise we support 2 queues and someone is trying to use the case I described above, but then we crash because we sneakily set the second queue to be part of the same family as the first one. So maybe a log, comment or an ERR if the second queue is different from the first could mitigate this for now and in the future give us good errors if we encounter this case?",
+      "parentUuid": "a19c5bd0_8b9b21a6",
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
