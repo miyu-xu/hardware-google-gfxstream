@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b235c4df_7cbcb93c",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2283,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T21:05:59Z",
+      "side": 1,
+      "message": "nit: recommend moving the recording of the command buffer up here\n\n```suggestion\n    std::vector\u003cuint8_t\u003e dataToWrite \u003d utils::getRandomNByteData(100);\n\n    auto commandBufferWriteInto \u003d std::move(commandBuffers[0]);\n    {\n        const vkhpp::CommandBufferBeginInfo commandBufferBeginInfo \u003d {\n            .flags \u003d vkhpp::CommandBufferUsageFlagBits::eOneTimeSubmit,\n        };\n        commandBufferWriteInto-\u003ebegin(commandBufferBeginInfo);\n        \n        \n        commandBufferWriteInto-\u003eupdateBuffer(sourceBufferWithMemory.buffer.get(), 0, dataToWrite.size(), dataToWrite.data());\n        \n        const vkhpp::BufferMemoryBarrier bufferBarrier \u003d {\n           .srcAccessMask \u003d vkhpp::AccessFlagBits::eTransferWrite,\n           .dstAccessMask \u003d vkhpp::AccessFlagBits::eTransferRead,\n           .srcQueueFamilyIndex \u003d VK_QUEUE_FAMILY_IGNORED,\n           .dstQueueFamilyIndex \u003d VK_QUEUE_FAMILY_IGNORED,\n           .buffer \u003d *sourceBufferWithMemory.buffer,\n           .offset \u003d 0,\n           .size \u003d kBufferSize,\n        };\n        commandBufferWriteInto-\u003epipelineBarrier(vkhpp::PipelineStageFlagBits::eTransfer,\n                                            vkhpp::PipelineStageFlagBits::eTransfer,\n                                            vkhpp::DependencyFlags(), {}, bufferBarrier, {});\n        commandBufferWriteInto-\u003eend();\n    }\n```\n\njust so we\u0027re not interleaving the recording work with submission work",
+      "range": {
+        "startLine": 2283,
+        "startChar": 4,
+        "endLine": 2283,
+        "endChar": 63
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e665c92_13040c2a",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2284,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T21:05:59Z",
+      "side": 1,
+      "message": "nit: same\n\n```suggestion\n    auto commandBufferCopy \u003d std::move(commandBuffers[1]);\n    {\n        const vkhpp::CommandBufferBeginInfo commandBufferBeginInfo \u003d {\n            .flags \u003d vkhpp::CommandBufferUsageFlagBits::eOneTimeSubmit,\n        };\n        commandBufferCopy-\u003ebegin(commandBufferBeginInfo);\n        \n        const std::vector\u003cvkhpp::BufferCopy\u003e bufferCopies \u003d {\n            {\n                .srcOffset \u003d 0,\n                .dstOffset \u003d 0,\n                .size \u003d kBufferSize,\n            },\n        };\n        commandBufferCopy-\u003ecopyBuffer(*sourceBufferWithMemory.buffer,\n                                      *destBufferWithMemory.buffer, bufferCopies);\n                                      \n        commandBufferCopy-\u003eend();\n    }\n```",
+      "range": {
+        "startLine": 2284,
+        "startChar": 4,
+        "endLine": 2284,
+        "endChar": 58
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "287541ae_08ac8d9e",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2304,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T21:05:59Z",
+      "side": 1,
+      "message": "It looks like https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdUpdateBuffer.html requires that the write be a multiple of 4.",
+      "range": {
+        "startLine": 2304,
+        "startChar": 39,
+        "endLine": 2304,
+        "endChar": 70
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd6d8208_015e3c7a",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2337,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-21T21:05:59Z",
+      "side": 1,
+      "message": "This test exercises that sequential / dependent command buffers work when submitted to the multiple queues sequentially. Could you also add a test that exercises 2 independent workloads being submitted to the different queues simultaneously?\n\n```\nTEST_P(GfxstreamEnd2EndVkTest, UseDoubleQueuesWithSimulatenousSubmit) {\n\u003cmake buffer 1\u003e\n\u003cmake buffer 2\u003e\n\n\u003cmake command buffer 1\u003e\n\u003cmake command buffer 2\u003e\n\n\u003crecord command buffer 1\u003e\n\u003crecord command buffer 2\u003e\n\nstd::barrier threadsReady(2);\n\nstd::thread thread1([\u0026]() {\n  // Wait for both threads to be \"running\" to try to catch behavior when \n  // submitting to the same underlying queue that is emulated by 2 virtual queues.\n  threadsReady.arrive_and_wait();\n  \n  \u003csubmit command buffer 1 to queue 1\u003e\n});\nstd::thread thread2([\u0026]() {\n  // Wait for both threads to be \"running\" to try to catch behavior when \n  // submitting to the same underlying queue that is emulated by 2 virtual queues.\n  threadsReady.arrive_and_wait();\n  \n  \u003csubmit command buffer 2 to queue 2\u003e\n});\n\nthread1.join();\nthread2.join();\n\n}\n```",
+      "range": {
+        "startLine": 2337,
+        "startChar": 0,
+        "endLine": 2337,
+        "endChar": 1
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
