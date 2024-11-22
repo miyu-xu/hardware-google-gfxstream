@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4a3c1b2_82cca861",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2283,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-22T14:49:36Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "b235c4df_7cbcb93c",
+      "range": {
+        "startLine": 2283,
+        "startChar": 4,
+        "endLine": 2283,
+        "endChar": 63
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2e665c92_13040c2a",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-11-21T21:05:59Z",
       "side": 1,
       "message": "nit: same\n\n```suggestion\n    auto commandBufferCopy \u003d std::move(commandBuffers[1]);\n    {\n        const vkhpp::CommandBufferBeginInfo commandBufferBeginInfo \u003d {\n            .flags \u003d vkhpp::CommandBufferUsageFlagBits::eOneTimeSubmit,\n        };\n        commandBufferCopy-\u003ebegin(commandBufferBeginInfo);\n        \n        const std::vector\u003cvkhpp::BufferCopy\u003e bufferCopies \u003d {\n            {\n                .srcOffset \u003d 0,\n                .dstOffset \u003d 0,\n                .size \u003d kBufferSize,\n            },\n        };\n        commandBufferCopy-\u003ecopyBuffer(*sourceBufferWithMemory.buffer,\n                                      *destBufferWithMemory.buffer, bufferCopies);\n                                      \n        commandBufferCopy-\u003eend();\n    }\n```",
+      "range": {
+        "startLine": 2284,
+        "startChar": 4,
+        "endLine": 2284,
+        "endChar": 58
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13d40765_40ed0484",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2284,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-22T14:49:36Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "2e665c92_13040c2a",
       "range": {
         "startLine": 2284,
         "startChar": 4,
@@ -72,6 +120,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e99cdfe0_70902d8b",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2304,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-22T14:49:36Z",
+      "side": 1,
+      "message": "I\u0027ll probably make this 4 * 25 then to signal that it needs to be a multiple of 4 👍",
+      "parentUuid": "287541ae_08ac8d9e",
+      "range": {
+        "startLine": 2304,
+        "startChar": 39,
+        "endLine": 2304,
+        "endChar": 70
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dd6d8208_015e3c7a",
         "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
         "patchSetId": 7
@@ -83,6 +155,30 @@
       "writtenOn": "2024-11-21T21:05:59Z",
       "side": 1,
       "message": "This test exercises that sequential / dependent command buffers work when submitted to the multiple queues sequentially. Could you also add a test that exercises 2 independent workloads being submitted to the different queues simultaneously?\n\n```\nTEST_P(GfxstreamEnd2EndVkTest, UseDoubleQueuesWithSimulatenousSubmit) {\n\u003cmake buffer 1\u003e\n\u003cmake buffer 2\u003e\n\n\u003cmake command buffer 1\u003e\n\u003cmake command buffer 2\u003e\n\n\u003crecord command buffer 1\u003e\n\u003crecord command buffer 2\u003e\n\nstd::barrier threadsReady(2);\n\nstd::thread thread1([\u0026]() {\n  // Wait for both threads to be \"running\" to try to catch behavior when \n  // submitting to the same underlying queue that is emulated by 2 virtual queues.\n  threadsReady.arrive_and_wait();\n  \n  \u003csubmit command buffer 1 to queue 1\u003e\n});\nstd::thread thread2([\u0026]() {\n  // Wait for both threads to be \"running\" to try to catch behavior when \n  // submitting to the same underlying queue that is emulated by 2 virtual queues.\n  threadsReady.arrive_and_wait();\n  \n  \u003csubmit command buffer 2 to queue 2\u003e\n});\n\nthread1.join();\nthread2.join();\n\n}\n```",
+      "range": {
+        "startLine": 2337,
+        "startChar": 0,
+        "endLine": 2337,
+        "endChar": 1
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "869d7c05_d6980ec3",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2337,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-22T14:49:36Z",
+      "side": 1,
+      "message": "That makes sense, I also think this is likely the most common case we\u0027re going to encounter. I\u0027d probably need a bit more clarity on how to achieve this in terms of Vulkan synchronization.\n\nAFAIU for proper Vulkan usage and semaphore signaling, you need the semaphore to be submitted before being waited on else it\u0027s a spec violation. There was some discussions around timeline semaphores so maybe that would be the solution here. Maybe something like submitting just the semaphores synchronously and then the rest of the commands asynchronously might work?\n\nIf you have any tips, let me know - I\u0027ll look more into Vulkan synchronization to try and achieve this as I believe it\u0027s definitely something we want to test.",
+      "parentUuid": "dd6d8208_015e3c7a",
       "range": {
         "startLine": 2337,
         "startChar": 0,
