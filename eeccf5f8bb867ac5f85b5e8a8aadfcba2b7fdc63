@@ -279,6 +279,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b778ff51_47d669c0",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 2169,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-22T13:55:33Z",
+      "side": 1,
+      "message": "I\u0027m not sure if I get this right, but calling `new_boxed_VkQueue` right now requires unique unboxed handles, so cannot be done twice with the same handle.  I think a layer to create unique handles is not directly related to this change, and we should be getting unique dispatchable handles right now anyway.\n\nI believe `boxed_to_boxed_VkQueue` is not necessary and I\u0027ve actually removed it with this CL. I think raw unboxed handles should not be converted back to boxed ones even if we have a layer to make them unique. Using higher level mQueueInfo or similar structures would be better for such operations, given that we always get the unboxed handle via an unboxing operation. If we start reading back handles from GPU directly for any reasons, that\u0027d be another story.",
+      "parentUuid": "d5a2a616_56cfec1b",
+      "range": {
+        "startLine": 2160,
+        "startChar": 20,
+        "endLine": 2169,
+        "endChar": 22
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a19c5bd0_8b9b21a6",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
