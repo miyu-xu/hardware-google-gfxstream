@@ -232,6 +232,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8feddd75_25170b4b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1748,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-22T13:39:25Z",
+      "side": 1,
+      "message": "That\u0027s right, I\u0027ll update both functions with the next patchset.",
+      "parentUuid": "1d493be6_4043a1d2",
+      "range": {
+        "startLine": 1740,
+        "startChar": 0,
+        "endLine": 1748,
+        "endChar": 9
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d5a2a616_56cfec1b",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
