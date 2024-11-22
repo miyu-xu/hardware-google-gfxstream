@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a36a79ba_e1c2e16c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-22T13:38:21Z",
+      "side": 1,
+      "message": "I\u0027d prefer keeping it as an experimental envvar with limited scope, until we are convinced that this will work for all HWUI needs.",
+      "parentUuid": "e070670f_9c4fa991",
+      "range": {
+        "startLine": 383,
+        "startChar": 12,
+        "endLine": 383,
+        "endChar": 88
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1f048705_0b2263e8",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
@@ -54,6 +78,30 @@
       "writtenOn": "2024-11-21T23:22:20Z",
       "side": 1,
       "message": "It might be more readable to move some of the new code from this change into a `VkEmulatedPhysicalDeviceQueues.[cpp|h]` in the same way that `VkEmulatedPhysicalDeviceMemory.h` is used for emulating memory. I think this has the benefit hiding `mEnableVirtualVkQueue` from a lot of functions in `VkDecoderGlobalState` in the same way `EmulatedPhysicalDeviceMemoryProperties` hides a bunch of \n\n```\nif (features.VulkanAllocateDeviceMemoryOnly.enabled) {\n  // do thing 1\n} else {\n  // do thing 2\n}\n```",
+      "range": {
+        "startLine": 1717,
+        "startChar": 8,
+        "endLine": 1717,
+        "endChar": 95
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c1ca039_e54832a3",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1717,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-22T13:38:21Z",
+      "side": 1,
+      "message": "Acknowledged, makes sense. But similar to making it a feature bit, I think it\u0027d be better to keep the impact radius on this small until we find all the necessary changes needed. It\u0027s currently not clear if HWUI requires full render state tracking to reuse the same virtual queue after doing some other work on the physical queue. That would require something similar to what snapshots are doing, with runtime reconstruction. Probably until that\u0027s cleared out, this should stay as a CL.",
+      "parentUuid": "1f048705_0b2263e8",
       "range": {
         "startLine": 1717,
         "startChar": 8,
@@ -325,6 +373,24 @@
       "writtenOn": "2024-11-21T18:47:55Z",
       "side": 1,
       "message": "Shouldn\u0027t this be released at some point?",
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "049c773f_51edcac1",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 6198,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-22T13:38:21Z",
+      "side": 1,
+      "message": "get() does not transfer ownership, just returns a raw pointer?",
+      "parentUuid": "90b80af1_c4126487",
       "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
