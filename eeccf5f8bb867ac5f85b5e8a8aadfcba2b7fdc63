@@ -303,6 +303,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f31ed9bd_63d44e1d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 2169,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-22T16:43:23Z",
+      "side": 1,
+      "message": "My understanding was that it was only the `m[VkType]Info` maps that needed the unique unboxed handles (because you can\u0027t have 2 infos for the same host handle) and that `new_boxed_[VkType]` may only want unique unboxed handles for the reverse map in order to support `unboxed_to_boxed_[VkType]` but this is never used for `VkQueue`.",
+      "parentUuid": "b778ff51_47d669c0",
+      "range": {
+        "startLine": 2160,
+        "startChar": 20,
+        "endLine": 2169,
+        "endChar": 22
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a19c5bd0_8b9b21a6",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 16
