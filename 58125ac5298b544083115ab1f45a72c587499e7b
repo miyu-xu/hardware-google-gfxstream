@@ -142,6 +142,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "66e895c3_25e43e96",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2304,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-22T18:48:57Z",
+      "side": 1,
+      "message": "Ahh sorry, brainfart, I think I thought this wasn\u0027t divisible for 4 for some reason. This is fine as is.",
+      "parentUuid": "e99cdfe0_70902d8b",
+      "range": {
+        "startLine": 2304,
+        "startChar": 39,
+        "endLine": 2304,
+        "endChar": 70
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dd6d8208_015e3c7a",
@@ -179,6 +203,30 @@
       "side": 1,
       "message": "That makes sense, I also think this is likely the most common case we\u0027re going to encounter. I\u0027d probably need a bit more clarity on how to achieve this in terms of Vulkan synchronization.\n\nAFAIU for proper Vulkan usage and semaphore signaling, you need the semaphore to be submitted before being waited on else it\u0027s a spec violation. There was some discussions around timeline semaphores so maybe that would be the solution here. Maybe something like submitting just the semaphores synchronously and then the rest of the commands asynchronously might work?\n\nIf you have any tips, let me know - I\u0027ll look more into Vulkan synchronization to try and achieve this as I believe it\u0027s definitely something we want to test.",
       "parentUuid": "dd6d8208_015e3c7a",
+      "range": {
+        "startLine": 2337,
+        "startChar": 0,
+        "endLine": 2337,
+        "endChar": 1
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e98cf29e_94ef1515",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2337,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-11-22T18:48:57Z",
+      "side": 1,
+      "message": "I was thinking you could just have 2 completely separate streams of work that do not require any synchronization between each other - so like 2 separate buffers doing 2 command buffers with upload-to-buffer-and-download-from-buffer.",
+      "parentUuid": "869d7c05_d6980ec3",
       "range": {
         "startLine": 2337,
         "startChar": 0,
