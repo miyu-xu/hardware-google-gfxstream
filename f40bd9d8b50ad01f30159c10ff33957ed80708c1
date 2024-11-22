@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24ed7dee_fbf7864a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-11-22T17:52:37Z",
+      "side": 1,
+      "message": "Looks good to me. I don\u0027t have the full context behind this, but is it maybe worth enabling this for meson and Android.bp as well? Just so when we use this CL in the future as an example, it\u0027s obvious where the other files need to be changed as well. Just a thought.",
+      "revId": "f40bd9d8b50ad01f30159c10ff33957ed80708c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
