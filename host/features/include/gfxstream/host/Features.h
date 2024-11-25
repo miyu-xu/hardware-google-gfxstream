@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 namespace gfxstream {
@@ -24,19 +24,14 @@ namespace host {
 struct FeatureInfo;
 
 using FeatureMap = std::map<std::string, FeatureInfo*>;
-//type used for returning success or a string with the concatenated errors (missing features)
+// type used for returning success or a string with the concatenated errors (missing features)
 using FeatureResult = std::pair<bool, std::string>;
 
 struct FeatureInfo {
     FeatureInfo(const FeatureInfo& rhs) = default;
 
-    FeatureInfo(const char* name,
-                const char* description,
-                FeatureMap* map) :
-            name(name),
-            description(description),
-            enabled(false),
-            reason("Default value") {
+    FeatureInfo(const char* name, const char* description, FeatureMap* map)
+        : name(name), description(description), enabled(false), reason("Default value") {
         if (map) {
             (*map)[std::string(name)] = this;
         }
@@ -221,8 +216,10 @@ struct FeatureSet {
     };
     FeatureInfo BypassVulkanDeviceFeatureOverrides = {
         "BypassVulkanDeviceFeatureOverrides",
-        "We are force disabling (overriding) some vulkan features (private data, uniform inline block etc) which the device may naturally support."
-        "If toggled ON, this flag will cause the host side to not force disable anything and let the device fully advertise supported features.",
+        "We are force disabling (overriding) some vulkan features (private data, uniform inline "
+        "block etc) which the device may naturally support."
+        "If toggled ON, this flag will cause the host side to not force disable anything and let "
+        "the device fully advertise supported features.",
         &map,
     };
     FeatureInfo VulkanAllocateDeviceMemoryOnly = {
@@ -315,22 +312,30 @@ struct FeatureSet {
         "buffers on device lost. (TODO: VK_AMD_buffer_marker)",
         &map,
     };
+    FeatureInfo VulkanRobustness2 = {
+        "VulkanRobustness2",
+        "If enabled, VK_EXT_robustness2 extension with supported features will be enabled on all "
+        "created devices.",
+        &map,
+    };
 };
+
 struct FeatureDependencyHandler {
-    FeatureDependencyHandler(const FeatureSet& set) : featureSetView(set){}
+    FeatureDependencyHandler(const FeatureSet& set) : featureSetView(set) {}
     const FeatureSet& featureSetView;
-    const std::map<const FeatureInfo*, std::vector<const FeatureInfo*>> VK_FEATURE_DEPENDENCY_MAP= {
-        // List other dependencies here in the shape of:
-        // {FEATURE_X, {DEPENDENT_FEATURE_A, DEPENDENT_FEATURE_B}}
-        {&featureSetView.VulkanSnapshots, {&featureSetView.VulkanBatchedDescriptorSetUpdate, &featureSetView.Vulkan}},
+    const std::map<const FeatureInfo*, std::vector<const FeatureInfo*>> VK_FEATURE_DEPENDENCY_MAP =
+        {
+            // List other dependencies here in the shape of:
+            // {FEATURE_X, {DEPENDENT_FEATURE_A, DEPENDENT_FEATURE_B}}
+            {&featureSetView.VulkanSnapshots,
+             {&featureSetView.VulkanBatchedDescriptorSetUpdate, &featureSetView.Vulkan}},
     };
 
     FeatureResult checkAllDependentFeaturesAreEnabled();
 };
 
 #define GFXSTREAM_SET_FEATURE_ON_CONDITION(set, feature, condition) \
-    do                                                              \
-    {                                                               \
+    do {                                                            \
         {                                                           \
             (set)->feature.enabled = condition;                     \
             (set)->feature.reason = #condition;                     \

@@ -239,6 +239,9 @@ struct VkEmulation {
 #else
         PFN_vkGetMemoryFdKHR getMemoryHandleFunc = nullptr;
 #endif
+
+        // Set only if requested and supported
+        std::optional<VkPhysicalDeviceRobustness2FeaturesEXT> robustness2Features;
     };
 
     struct ExternalMemoryInfo {

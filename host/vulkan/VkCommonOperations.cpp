@@ -1154,6 +1154,15 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
                 vk_append_struct(&features2Chain, &privateDataFeatures);
             }
 
+            VkPhysicalDeviceRobustness2FeaturesEXT robustness2Features = {
+                .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
+            const bool robustness2Requested = true; //sVkEmulation->features.VulkanRobustness2.enabled; //TODO0: feature flag doesn't work!
+            const bool robustness2Supported =
+                extensionsSupported(deviceExts, {VK_EXT_ROBUSTNESS_2_EXTENSION_NAME});
+            if (robustness2Requested && robustness2Supported) {
+                vk_append_struct(&features2Chain, &robustness2Features);
+            }
+
             sVkEmulation->getPhysicalDeviceFeatures2Func(physdevs[i], &features2);
 
             deviceInfos[i].supportsSamplerYcbcrConversion =
@@ -1163,6 +1172,15 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
                 deviceDiagnosticsConfigFeatures.diagnosticsConfig == VK_TRUE;
 
             deviceInfos[i].supportsPrivateData = (privateDataFeatures.privateData == VK_TRUE);
+
+            // Enable robustness only when requested
+            if (robustness2Requested && robustness2Supported) {
+                deviceInfos[i].robustness2Features = vk_make_orphan_copy(robustness2Features);
+            } else if (robustness2Requested) {
+                WARN(
+                    "VulkanRobustness2 was requested but the "
+                    "VK_EXT_robustness2 extension is not supported.");
+            }
 
 #if defined(__QNX__)
             deviceInfos[i].supportsExternalMemoryImport =
@@ -1296,6 +1314,20 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     }
 #endif
 
+    const bool commandBufferCheckpointsSupported =
+        sVkEmulation->deviceInfo.supportsNvidiaDeviceDiagnosticCheckpoints;
+    const bool commandBufferCheckpointsRequested =
+        sVkEmulation->features.VulkanCommandBufferCheckpoints.enabled;
+    const bool commandBufferCheckpointsSupportedAndRequested =
+        commandBufferCheckpointsSupported && commandBufferCheckpointsRequested;
+    if (commandBufferCheckpointsSupportedAndRequested) {
+        selectedDeviceExtensionNames_.emplace(VK_NV_DEVICE_DIAGNOSTICS_CONFIG_EXTENSION_NAME);
+    }
+
+    if (sVkEmulation->deviceInfo.robustness2Features) {
+        selectedDeviceExtensionNames_.emplace(VK_EXT_ROBUSTNESS_2_EXTENSION_NAME);
+    }
+
     std::vector<const char*> selectedDeviceExtensionNames(selectedDeviceExtensionNames_.begin(),
                                                           selectedDeviceExtensionNames_.end());
 
@@ -1341,12 +1373,6 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     }
 #endif
 
-    const bool commandBufferCheckpointsSupported =
-        sVkEmulation->deviceInfo.supportsNvidiaDeviceDiagnosticCheckpoints;
-    const bool commandBufferCheckpointsRequested =
-        sVkEmulation->features.VulkanCommandBufferCheckpoints.enabled;
-    const bool commandBufferCheckpointsSupportedAndRequested =
-        commandBufferCheckpointsSupported && commandBufferCheckpointsRequested;
     VkPhysicalDeviceDiagnosticsConfigFeaturesNV deviceDiagnosticsConfigFeatures = {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DIAGNOSTICS_CONFIG_FEATURES_NV,
         .diagnosticsConfig = VK_TRUE,
@@ -1358,6 +1384,14 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
         WARN(
             "VulkanCommandBufferCheckpoints was requested but the "
             "VK_NV_device_diagnostic_checkpoints extension is not supported.");
+    }
+
+    VkPhysicalDeviceRobustness2FeaturesEXT r2features = {};
+    if (sVkEmulation->deviceInfo.robustness2Features) {
+        r2features = *sVkEmulation->deviceInfo.robustness2Features;
+        INFO("Enabling VK_EXT_robustness2 (%d %d %d).", r2features.robustBufferAccess2,
+             r2features.robustImageAccess2, r2features.nullDescriptor);
+        vk_append_struct(&deviceCiChain, &r2features);
     }
 
     ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
@@ -3350,7 +3384,7 @@ MTLResource_id getColorBufferMetalMemoryHandle(uint32_t colorBuffer) {
     return infoPtr->memory.externalMetalHandle;
 }
 
-// TODO0(b/351765838): Temporary function for MoltenVK
+// TODO(b/351765838): Temporary function for MoltenVK
 VkImage getColorBufferVkImage(uint32_t colorBufferHandle) {
     if (!sVkEmulation || !sVkEmulation->live) return nullptr;
 
