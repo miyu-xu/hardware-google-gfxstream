@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b562c75e_82d4a159",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-11-25T18:22:38Z",
+      "side": 1,
+      "message": "@natsu@google.com, looking at this change and the spec for the extension again, I\u0027m not sure if it\u0027s really necessary. Feel free to revert if it affects any of your work.",
+      "revId": "7f151387d5fe0f0152c36b16aa409817680811b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
