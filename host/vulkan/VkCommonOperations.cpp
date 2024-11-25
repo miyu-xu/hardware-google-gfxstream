@@ -1222,6 +1222,15 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
                 vk_append_struct(&features2Chain, &privateDataFeatures);
             }
 
+            VkPhysicalDeviceRobustness2FeaturesEXT robustness2Features = {
+                .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
+            const bool robustness2Requested = emulation->mFeatures.VulkanRobustness.enabled; //TODO0: feature flag doesn't work!
+            const bool robustness2Supported =
+                extensionsSupported(deviceExts, {VK_EXT_ROBUSTNESS_2_EXTENSION_NAME});
+            if (robustness2Requested && robustness2Supported) {
+                vk_append_struct(&features2Chain, &robustness2Features);
+            }
+
             emulation->mGetPhysicalDeviceFeatures2Func(physicalDevices[i], &features2);
 
             deviceInfos[i].supportsSamplerYcbcrConversion =
@@ -1231,6 +1240,15 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
                 deviceDiagnosticsConfigFeatures.diagnosticsConfig == VK_TRUE;
 
             deviceInfos[i].supportsPrivateData = (privateDataFeatures.privateData == VK_TRUE);
+
+            // Enable robustness only when requested
+            if (robustness2Requested && robustness2Supported) {
+                deviceInfos[i].robustness2Features = vk_make_orphan_copy(robustness2Features);
+            } else if (robustness2Requested) {
+                WARN(
+                    "VulkanRobustness was requested but the "
+                    "VK_EXT_robustness2 extension is not supported.");
+            }
 
 #if defined(__QNX__)
             deviceInfos[i].supportsExternalMemoryImport =
@@ -1360,6 +1378,10 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
     }
 #endif
 
+    if (emulation->mDeviceInfo.robustness2Features) {
+        selectedDeviceExtensionNames_.emplace(VK_EXT_ROBUSTNESS_2_EXTENSION_NAME);
+    }
+
     std::vector<const char*> selectedDeviceExtensionNames(selectedDeviceExtensionNames_.begin(),
                                                           selectedDeviceExtensionNames_.end());
 
@@ -1422,6 +1444,14 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
         WARN(
             "VulkanCommandBufferCheckpoints was requested but the "
             "VK_NV_device_diagnostic_checkpoints extension is not supported.");
+    }
+
+    VkPhysicalDeviceRobustness2FeaturesEXT r2features = {};
+    if (emulation->mDeviceInfo.robustness2Features) {
+        r2features = *emulation->mDeviceInfo.robustness2Features;
+        INFO("Enabling VK_EXT_robustness2 (%d %d %d).", r2features.robustBufferAccess2,
+             r2features.robustImageAccess2, r2features.nullDescriptor);
+        vk_append_struct(&deviceCiChain, &r2features);
     }
 
     ivk->vkCreateDevice(emulation->mPhysicalDevice, &dCi, nullptr, &emulation->mDevice);
@@ -1757,6 +1787,10 @@ bool VkEmulation::supportsDmaBuf() const { return mDeviceInfo.supportsDmaBuf; }
 
 bool VkEmulation::supportsExternalMemoryHostProperties() const {
     return mDeviceInfo.supportsExternalMemoryHostProps;
+}
+
+std::optional<VkPhysicalDeviceRobustness2FeaturesEXT> VkEmulation::getRobustness2Features() const {
+    return mDeviceInfo.robustness2Features;
 }
 
 VkPhysicalDeviceExternalMemoryHostPropertiesEXT VkEmulation::externalMemoryHostProperties() const {
