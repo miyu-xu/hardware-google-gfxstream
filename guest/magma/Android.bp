@@ -29,7 +29,6 @@ cc_library_static {
         "libmagma_enc_headers",
         "libmagma_headers",
         "mesa_gfxstream_guest_iostream",
-        "mesa_gfxstream_aemu_headers",
     ],
     shared_libs: [
         "libdrm",
@@ -39,7 +38,7 @@ cc_library_static {
     static_libs: [
         "mesa_gfxstream_guest_android",
         "mesa_goldfish_address_space",
-        "mesa_gfxstream_aemu",
+        "libgfxstream_androidemu_static",
     ],
     srcs: [
         "magma.cpp",
