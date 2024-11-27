@@ -816,7 +816,12 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 
     const bool debugUtilsSupported =
         extensionsSupported(instanceExts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
+#if 1
+    // WAIT_ALL_FENCES: feature flags won't work, for enable
+    const bool debugUtilsRequested = true;
+#else
     const bool debugUtilsRequested = sVkEmulation->features.VulkanDebugUtils.enabled;
+#endif
     const bool debugUtilsAvailableAndRequested = debugUtilsSupported && debugUtilsRequested;
     if (debugUtilsAvailableAndRequested) {
         selectedInstanceExtensionNames.emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -2511,6 +2516,7 @@ bool initializeVkColorBufferLocked(
         getValidMemoryTypeIndex(infoPtr->memReqs.memoryTypeBits, infoPtr->memoryProperty);
 
     const VkFormat imageVkFormat = infoPtr->imageCreateInfoShallow.format;
+
     VERBOSE(
         "ColorBuffer %d, dimensions: %dx%d, format: %s, "
         "allocation size and type index: %lu, %d, "
