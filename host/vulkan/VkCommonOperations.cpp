@@ -816,7 +816,12 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 
     const bool debugUtilsSupported =
         extensionsSupported(instanceExts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
+#if 1
+    // WAIT_ALL_FENCES: feature flags won't work, for enable
+    const bool debugUtilsRequested = true;
+#else
     const bool debugUtilsRequested = sVkEmulation->features.VulkanDebugUtils.enabled;
+#endif
     const bool debugUtilsAvailableAndRequested = debugUtilsSupported && debugUtilsRequested;
     if (debugUtilsAvailableAndRequested) {
         selectedInstanceExtensionNames.emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -2511,18 +2516,19 @@ bool initializeVkColorBufferLocked(
         getValidMemoryTypeIndex(infoPtr->memReqs.memoryTypeBits, infoPtr->memoryProperty);
 
     const VkFormat imageVkFormat = infoPtr->imageCreateInfoShallow.format;
+    Optional<VkImage> dedicatedImage = useDedicated ? Optional<VkImage>(infoPtr->image) : kNullopt;
     VERBOSE(
         "ColorBuffer %d, dimensions: %dx%d, format: %s, "
         "allocation size and type index: %lu, %d, "
         "allocated memory property: %d, "
-        "requested memory property: %d",
+        "requested memory property: %d, "
+        "extMemHandle: %p, dedicatedImage:%p",
         colorBufferHandle, infoPtr->width, infoPtr->height,
         string_VkFormat(imageVkFormat),
         infoPtr->memory.size, infoPtr->memory.typeIndex,
         sVkEmulation->deviceInfo.memProps.memoryTypes[infoPtr->memory.typeIndex].propertyFlags,
-        infoPtr->memoryProperty);
+        infoPtr->memoryProperty, extMemHandle, dedicatedImage);
 
-    Optional<VkImage> dedicatedImage = useDedicated ? Optional<VkImage>(infoPtr->image) : kNullopt;
     if (VK_EXT_MEMORY_HANDLE_INVALID != extMemHandle) {
         if (!updateExternalMemoryInfo(extMemHandle, &infoPtr->memReqs, &infoPtr->memory)) {
             ERR("Failed to update external memory info for ColorBuffer: %d\n", colorBufferHandle);

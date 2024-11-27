@@ -461,6 +461,10 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     if (s_egl.eglQueryVulkanInteropSupportANDROID) {
         emulationGl->mGlesVulkanInteropSupported = s_egl.eglQueryVulkanInteropSupportANDROID();
     }
+#if 1
+    // WAIT_ALL_FENCES: disable interop
+    emulationGl->mGlesVulkanInteropSupported = false;
+#endif
 
     emulationGl->mTextureDraw = std::make_unique<TextureDraw>();
     if (!emulationGl->mTextureDraw) {

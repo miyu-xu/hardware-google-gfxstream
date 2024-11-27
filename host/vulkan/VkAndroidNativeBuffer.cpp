@@ -102,7 +102,13 @@ void AndroidNativeBufferInfo::QsriWaitFencePool::returnFence(VkFence fence) {
             << "Return an unmanaged Qsri VkFence back to the pool.";
         return;
     }
+
+#if 1
+    // WAIT_ALL_FENCES: always recreate fences
+    mVk->vkDestroyFence(mDevice, fence, nullptr);
+#else
     mAvailableFences.push_back(fence);
+#endif
 }
 
 bool parseAndroidNativeBufferInfo(const VkImageCreateInfo* pCreateInfo,
@@ -626,6 +632,15 @@ VkResult setAndroidNativeImageSemaphoreSignaled(VulkanDispatch* vk, VkDevice dev
         }
     }
 
+#if 1
+    // WAIT_ALL_FENCES
+    VkResult result = vk->vkWaitForFences(device, 1, &fence, VK_TRUE, /* 3 sec */ 3000000000L);
+    if (result != VK_SUCCESS) {
+        ERR("vkWaitForFences failed: %s [%d]", string_VkResult(result), result);
+        return result;
+    }
+#endif
+
     return VK_SUCCESS;
 }
 
@@ -797,6 +812,11 @@ VkResult syncImageToColorBuffer(gfxstream::host::BackendCallbacks& callbacks, Vu
     VkFence qsriFence = anbInfo->qsriWaitFencePool->getFenceFromPool();
     AutoLock qLock(*queueLock);
     VK_CHECK(vk->vkQueueSubmit(queueState.queue, 1, &submitInfo, qsriFence));
+
+#if 1
+    // WAIT_ALL_FENCES
+    VK_CHECK(vk->vkWaitForFences(anbInfo->device, 1, &qsriFence, VK_TRUE, /* 3 sec */ 3000000000L));
+#endif
     auto waitForQsriFenceTask = [anbInfo, vk, device = anbInfo->device, qsriFence, traceId] {
         GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DEFAULT_CATEGORY, "Wait for QSRI fence",
                               GFXSTREAM_TRACE_FLOW(traceId));
