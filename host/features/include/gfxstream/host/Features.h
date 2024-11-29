@@ -302,12 +302,6 @@ struct FeatureSet {
         "If enabled, the host will cache YUV frames.",
         &map,
     };
-    FeatureInfo VulkanDebugUtils = {
-        "VulkanDebugUtils",
-        "If enabled, the host will enable VK_EXT_debug_utils extension when available to use "
-        "labels on Vulkan resources and operation",
-        &map,
-    };
     FeatureInfo VulkanCommandBufferCheckpoints = {
         "VulkanCommandBufferCheckpoints",
         "If enabled, the host will enable the VK_NV_device_diagnostic_checkpoints extension "

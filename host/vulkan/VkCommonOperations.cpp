@@ -814,14 +814,17 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 
     std::unordered_set<const char*> selectedInstanceExtensionNames;
 
+    // The overhead of command and resource markers is expected to be low, enable them
+    // by default but keep a way to disable in case of any driver issues or regressions.
+    const bool debugUtilsRequested =
+        android::base::getEnvironmentVariable("ANDROID_EMUGL_NO_DEBUGUTILS") == "1";
     const bool debugUtilsSupported =
         extensionsSupported(instanceExts, {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
-    const bool debugUtilsRequested = sVkEmulation->features.VulkanDebugUtils.enabled;
-    const bool debugUtilsAvailableAndRequested = debugUtilsSupported && debugUtilsRequested;
+    const bool debugUtilsAvailableAndRequested = debugUtilsRequested && debugUtilsSupported;
     if (debugUtilsAvailableAndRequested) {
         selectedInstanceExtensionNames.emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     } else if (debugUtilsRequested) {
-        WARN("VulkanDebugUtils requested, but '%' extension is not supported.",
+        INFO("'%' instance extension is not supported, cannot enable debug utilities.",
              VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
