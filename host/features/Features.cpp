@@ -13,24 +13,38 @@
 // limitations under the License.
 
 #include "gfxstream/host/Features.h"
+
 #include <sstream>
 #include <vector>
+
 namespace gfxstream {
 namespace host {
 
-FeatureSet::FeatureSet(const FeatureSet& rhs) : FeatureSet() {
-    *this = rhs;
+FeatureSet::FeatureSet(const FeatureSet& rhs) : FeatureSet() { *this = rhs; }
+
+FeatureSet& FeatureSet::operator=(const FeatureSet& rhs) {
+    for (const auto& [featureName, featureInfo] : rhs.map) {
+        auto iter = map.find(featureName);
+        if (iter != map.end() && iter->second != nullptr) {
+            *iter->second = *featureInfo;
+        } else {
+            fprintf(stderr, "%s: Cannot set feature %s", __func__, featureName.c_str());
+        }
+    }
+    return *this;
 }
 
 FeatureResult FeatureDependencyHandler::checkAllDependentFeaturesAreEnabled() {
-    // Only check for direct dependencies. Since we're verifying all enabled features, this should cover the whole span.
+    // Only check for direct dependencies. Since we're verifying all enabled features, this should
+    // cover the whole span.
     bool allDependenciesAreEnabled = true;
     std::stringstream ss;
-    for (auto const&[feature, dependentFeatures] : VK_FEATURE_DEPENDENCY_MAP) {
+    for (auto const& [feature, dependentFeatures] : VK_FEATURE_DEPENDENCY_MAP) {
         if (feature->enabled && !dependentFeatures.empty()) {
             for (auto const& dep : dependentFeatures) {
                 if (!dep->enabled) {
-                    ss << "Feature: " << feature->name << " requests missing dependency: " << dep->name << "\n";
+                    ss << "Feature: " << feature->name
+                       << " requests missing dependency: " << dep->name << "\n";
                     allDependenciesAreEnabled = false;
                 }
             }
@@ -39,12 +53,5 @@ FeatureResult FeatureDependencyHandler::checkAllDependentFeaturesAreEnabled() {
     return {allDependenciesAreEnabled, ss.str()};
 };
 
-FeatureSet& FeatureSet::operator=(const FeatureSet& rhs) {
-    for (const auto& [featureName, featureInfo] : rhs.map) {
-        *map[featureName] = *featureInfo;
-    }
-    return *this;
-}
-
-}  // host
-}  // gfxstream
+}  // namespace host
+}  // namespace gfxstream
