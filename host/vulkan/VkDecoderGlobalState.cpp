@@ -5875,12 +5875,7 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::recursive_mutex> lock(mLock);
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        auto* commandPoolInfo = android::base::find(mCommandPoolInfo, pAllocateInfo->commandPool);
-        if (!deviceInfo || !commandPoolInfo) {
-            ERR("Cannot allocate command buffers, dependency not found! (%p, %p)", deviceInfo,
-                commandPoolInfo);
-            return VK_ERROR_UNKNOWN;
-        }
+        if (!deviceInfo) return VK_ERROR_UNKNOWN;
 
         for (uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
             VALIDATE_NEW_HANDLE_INFO_ENTRY(mCommandBufferInfo, pCommandBuffers[i]);
@@ -5891,9 +5886,6 @@ class VkDecoderGlobalState::Impl {
             auto boxed = new_boxed_VkCommandBuffer(pCommandBuffers[i], vk,
                                                    false /* does not own dispatch */);
             mCommandBufferInfo[pCommandBuffers[i]].boxed = boxed;
-
-            commandPoolInfo->cmdBuffers.insert(pCommandBuffers[i]);
-
             pCommandBuffers[i] = (VkCommandBuffer)boxed;
         }
         return result;
@@ -5928,13 +5920,7 @@ class VkDecoderGlobalState::Impl {
         std::unordered_map<VkCommandBuffer, CommandBufferInfo>& commandBufferInfos,
         const VkAllocationCallbacks* pAllocator) {
         for (const VkCommandBuffer commandBuffer : commandPoolInfo.cmdBuffers) {
-            auto iterInInfos = commandBufferInfos.find(commandBuffer);
-            if (iterInInfos != commandBufferInfos.end()) {
-                commandBufferInfos.erase(iterInInfos);
-            } else {
-                ERR("Cannot find command buffer reference (%p).",
-                    commandBuffer);
-            }
+            commandBufferInfos.erase(commandBuffer);
         }
 
         deviceDispatch->vkDestroyCommandPool(device, commandPool, pAllocator);
@@ -6269,7 +6255,7 @@ class VkDecoderGlobalState::Impl {
         return result;
     }
 
-    void freeCommandBufferWithExclusiveInfos(
+    void destroyCommandBufferWithExclusiveInfos(
         VkDevice device, VulkanDispatch* deviceDispatch, VkCommandBuffer commandBuffer,
         CommandBufferInfo& commandBufferInfo,
         std::unordered_map<VkCommandPool, CommandPoolInfo> commandPoolInfos) {
@@ -6279,29 +6265,21 @@ class VkDecoderGlobalState::Impl {
         if (commandPoolInfoIt == commandPoolInfos.end()) return;
         auto& commandPoolInfo = commandPoolInfoIt->second;
 
-        auto iterInPool = commandPoolInfo.cmdBuffers.find(commandBuffer);
-        if (iterInPool != commandPoolInfo.cmdBuffers.end()) {
-            commandPoolInfo.cmdBuffers.erase(iterInPool);
-        } else {
-            ERR("Cannot find command buffer reference (%p) in the pool.", commandBuffer);
-        }
+        commandPoolInfo.cmdBuffers.erase(commandBuffer);
 
         // Note delete_VkCommandBuffer(cmdBufferInfoIt->second.boxed); currently done in decoder.
 
         deviceDispatch->vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
     }
 
-    void freeCommandBufferLocked(VkDevice device, VulkanDispatch* deviceDispatch,
-                                 VkCommandPool commandPool, VkCommandBuffer commandBuffer) {
+    void destroyCommandBufferLocked(VkDevice device, VulkanDispatch* deviceDispatch,
+                                    VkCommandPool commandPool, VkCommandBuffer commandBuffer) {
         auto commandBufferInfoIt = mCommandBufferInfo.find(commandBuffer);
-        if (commandBufferInfoIt == mCommandBufferInfo.end()) {
-            WARN("freeCommandBufferLocked cannot find %p", commandBuffer);
-            return;
-        }
+        if (commandBufferInfoIt == mCommandBufferInfo.end()) return;
         auto& commandBufferInfo = commandBufferInfoIt->second;
 
-        freeCommandBufferWithExclusiveInfos(device, deviceDispatch, commandBuffer,
-                                            commandBufferInfo, mCommandPoolInfo);
+        destroyCommandBufferWithExclusiveInfos(device, deviceDispatch, commandBuffer,
+                                               commandBufferInfo, mCommandPoolInfo);
 
         mCommandBufferInfo.erase(commandBufferInfoIt);
     }
@@ -6319,7 +6297,7 @@ class VkDecoderGlobalState::Impl {
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
         for (uint32_t i = 0; i < commandBufferCount; i++) {
-            freeCommandBufferLocked(device, deviceDispatch, commandPool, pCommandBuffers[i]);
+            destroyCommandBufferLocked(device, deviceDispatch, commandPool, pCommandBuffers[i]);
         }
     }
 
@@ -8456,7 +8434,7 @@ class VkDecoderGlobalState::Impl {
             }
 
             for (auto& [commandBuffer, commandBufferInfo] : deviceObjects.commandBuffers) {
-                freeCommandBufferWithExclusiveInfos(device, deviceDispatch, commandBuffer,
+                destroyCommandBufferWithExclusiveInfos(device, deviceDispatch, commandBuffer,
                                                        commandBufferInfo,
                                                        deviceObjects.commandPools);
             }
