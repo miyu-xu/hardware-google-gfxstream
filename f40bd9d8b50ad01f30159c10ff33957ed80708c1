@@ -34,6 +34,23 @@
       "parentUuid": "24ed7dee_fbf7864a",
       "revId": "f40bd9d8b50ad01f30159c10ff33957ed80708c1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4725e1ed_9377f480",
+        "filename": "host/vulkan/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-02T10:40:07Z",
+      "side": 1,
+      "message": "This is nice, but not sure why we should add it into the gfxstream source tree? \n\nI think it would be better to create a separate project for this, and define why using the existing ones won\u0027t be enough, eg. https://github.com/baldurk/sample_layer? One possible advantage of this might be making the layer available to the guest but still we\u0027d need some use cases to make sure it\u0027ll be testable, and keep working fine.",
+      "revId": "f40bd9d8b50ad01f30159c10ff33957ed80708c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
