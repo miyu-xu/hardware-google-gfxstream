@@ -16,6 +16,24 @@
       "message": "LGTM, but I am not sure if this isn\u0027t already in use more widely. Will let Jason make a call on this.",
       "revId": "4283c21c79bd5b2d5365fac329b5a7135d304a0c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "063ead5d_e96690fa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-02T11:55:57Z",
+      "side": 1,
+      "message": "The feature flag was introduced recently, so I don\u0027t think there are many users of it to enable or disable. The extension is supported on most of the recent drivers.",
+      "parentUuid": "61bc892c_70b0c912",
+      "revId": "4283c21c79bd5b2d5365fac329b5a7135d304a0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
