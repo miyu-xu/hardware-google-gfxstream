@@ -4946,6 +4946,9 @@ class VkDecoderGlobalState::Impl {
 #endif
 
         void* mappedPtr = nullptr;
+        // If required by the platform, wrap the descriptor received from VkEmulation for
+        // a ColorBuffer or Buffer import as a ManagedDescriptor, so it will be closed
+        // appropriately when it goes out of scope.
         ManagedDescriptor managedHandle;
         if (importCbInfoPtr) {
             bool colorBufferMemoryUsesDedicatedAlloc = false;
@@ -5010,26 +5013,12 @@ class VkDecoderGlobalState::Impl {
 #endif
 
                 if (opaqueFd && m_emu->deviceInfo.supportsExternalMemoryImport) {
-                    uint32_t cbExtMemStreamHandleType;
-                    ExternalHandleType cbExtMemoryHandle =
-                        getColorBufferExtMemoryHandle(importCbInfoPtr->colorBuffer, &cbExtMemStreamHandleType);
-
-                    if (cbExtMemoryHandle == VK_EXT_MEMORY_HANDLE_INVALID) {
-                        fprintf(stderr,
-                                "%s: VK_ERROR_OUT_OF_DEVICE_MEMORY: "
-                                "colorBuffer 0x%x does not have Vulkan external memory backing\n",
-                                __func__, importCbInfoPtr->colorBuffer);
-                        return VK_ERROR_OUT_OF_DEVICE_MEMORY;
-                    }
-
-                    auto dupHandle = dupExternalMemory(cbExtMemoryHandle, cbExtMemStreamHandleType);
-                    if (!dupHandle) {
-                        ERR("Failed to duplicate external memory handle: 0x%x, type: 0x%x, for ColorBuffer: %d",
-                            cbExtMemoryHandle, cbExtMemStreamHandleType, importCbInfoPtr->colorBuffer);
+                    auto dupHandleInfo = dupColorBufferExtMemoryHandle(importCbInfoPtr->colorBuffer);
+                    if (!dupHandleInfo) {
+                        ERR("Failed to duplicate external memory handle/descriptor for ColorBuffer object, with internal handle: %d", importCbInfoPtr->colorBuffer);
                         return VK_ERROR_OUT_OF_DEVICE_MEMORY;
                     }
 #if defined(_WIN32)
-
                     // Wrap the dup'd handle in a ManagedDescriptor, and let it close the underlying
                     // HANDLE when it goes out of scope. From the VkImportMemoryWin32HandleInfoKHR
                     // spec: Importing memory object payloads from Windows handles does not transfer
@@ -5037,28 +5026,22 @@ class VkDecoderGlobalState::Impl {
                     // as NT handles, the application must release handle ownership using the CloseHandle
                     // system call when the handle is no longer needed. For handle types defined as NT
                     // handles, the imported memory object holds a reference to its payload
-                    managedHandle = ManagedDescriptor(*dupHandle);
+                    managedHandle = ManagedDescriptor(dupHandleInfo->handle);
                     importWin32HandleInfo.handle =
-                        externalMemoryHandle.get().value_or(static_cast<HANDLE>(NULL));
+                        managedHandle.get().value_or(static_cast<HANDLE>(NULL));
                     vk_append_struct(&structChainIter, &importWin32HandleInfo);
 #elif defined(__QNX__)
-                    if (STREAM_MEM_HANDLE_TYPE_SCREEN_BUFFER_QNX == cbExtMemStreamHandleType) {
-                        importScreenBufferInfo.buffer = (screen_buffer_t)(*dupHandle);
+                    if (STREAM_MEM_HANDLE_TYPE_SCREEN_BUFFER_QNX == dupHandleInfo->streamHandleType) {
+                        importScreenBufferInfo.buffer = (screen_buffer_t)(dupHandleInfo->handle);
                         vk_append_struct(&structChainIter, &importScreenBufferInfo);
                     } else {
                         // TODO(aruby@blackberry.com): Fall through to the importFdInfo sequence below to support
                         // non-screenbuffer external object imports on QNX?
-                        ERR("Stream mem handleType: 0x%x not support for ColorBuffer import", cbExtMemStreamHandleType);
+                        ERR("Stream mem handleType: 0x%x not support for ColorBuffer import", dupHandleInfo->streamHandleType);
                         return VK_ERROR_OUT_OF_DEVICE_MEMORY;
                     }
 #else
-                    // For handles imported with ImportFdInfo, no need to wrap the descriptor as a managed handle, as
-                    // the ownership will get transferred to the Vulkan implementation. From VkImportMemoryFdInfoKHR
-                    // spec: Importing memory from a file descriptor transfers ownership of the file descriptor from
-                    // the application to the Vulkan implementation. The application must not perform any
-                    // operations on the file descriptor after a successful import. The imported memory object
-                    // holds a reference to its payload.
-                    importFdInfo.fd = (int)(*dupHandle);
+                    importFdInfo.fd = (int)(dupHandleInfo->handle);
                     vk_append_struct(&structChainIter, &importFdInfo);
 #endif
                 }
@@ -5099,40 +5082,36 @@ class VkDecoderGlobalState::Impl {
 #endif
 
             if (opaqueFd && m_emu->deviceInfo.supportsExternalMemoryImport) {
-                uint32_t bufferExtMemStreamHandleType;
-                ExternalHandleType bufferExtMemoryHandle =
-                    getBufferExtMemoryHandle(importBufferInfoPtr->buffer, &bufferExtMemStreamHandleType);
-
-                if (bufferExtMemoryHandle == VK_EXT_MEMORY_HANDLE_INVALID) {
-                    fprintf(stderr,
-                            "%s: VK_ERROR_OUT_OF_DEVICE_MEMORY: "
-                            "buffer 0x%x does not have Vulkan external memory "
-                            "backing\n",
-                            __func__, importBufferInfoPtr->buffer);
-                    return VK_ERROR_OUT_OF_DEVICE_MEMORY;
-                }
-
-                auto dupHandle = dupExternalMemory(bufferExtMemoryHandle, bufferExtMemStreamHandleType);
-                if (!dupHandle) {
-                    ERR("Failed to duplicate external memory handle: 0x%x, for Buffer: %d", bufferExtMemoryHandle, importBufferInfoPtr->buffer);
+                auto dupHandleInfo = dupBufferExtMemoryHandle(importBufferInfoPtr->buffer);
+                if (!dupHandleInfo) {
+                    ERR("Failed to duplicate external memory handle/descriptor for Buffer object, with internal handle: %d", importBufferInfoPtr->buffer);
                     return VK_ERROR_OUT_OF_DEVICE_MEMORY;
                 }
 
 #if defined(_WIN32)
-                importWin32HandleInfo.handle = *dupHandle;
+                // Wrap the dup'd handle in a ManagedDescriptor, and let it close the underlying
+                // HANDLE when it goes out of scope. From the VkImportMemoryWin32HandleInfoKHR
+                // spec: Importing memory object payloads from Windows handles does not transfer
+                // ownership of the handle to the Vulkan implementation. For handle types defined
+                // as NT handles, the application must release handle ownership using the CloseHandle
+                // system call when the handle is no longer needed. For handle types defined as NT
+                // handles, the imported memory object holds a reference to its payload
+                managedHandle = ManagedDescriptor(dupHandleInfo->handle);
+                importWin32HandleInfo.handle =
+                    managedHandle.get().value_or(static_cast<HANDLE>(NULL));
                 vk_append_struct(&structChainIter, &importWin32HandleInfo);
 #elif defined(__QNX__)
-                if (STREAM_MEM_HANDLE_TYPE_SCREEN_BUFFER_QNX == bufferExtMemStreamHandleType) {
-                    importScreenBufferInfo.buffer = (screen_buffer_t)(*dupHandle);
+                if (STREAM_MEM_HANDLE_TYPE_SCREEN_BUFFER_QNX == dupHandleInfo->streamHandleType) {
+                    importScreenBufferInfo.buffer = (screen_buffer_t)(dupHandleInfo->handle);
                     vk_append_struct(&structChainIter, &importScreenBufferInfo);
                 } else {
                     // TODO(aruby@blackberry.com): Fall through to the importFdInfo sequence below to support
                     // non-screenbuffer external object imports on QNX?
-                    ERR("Stream mem handleType: 0x%x not support for Buffer object import", bufferExtMemStreamHandleType);
+                    ERR("Stream mem handleType: 0x%x not support for Buffer object import", dupHandleInfo->streamHandleType);
                     return VK_ERROR_OUT_OF_DEVICE_MEMORY;
                 }
 #else
-                importFdInfo.fd = bufferExtMemoryHandle;
+                importFdInfo.fd = (int)(dupHandleInfo->handle);
                 vk_append_struct(&structChainIter, &importFdInfo);
 #endif
             }

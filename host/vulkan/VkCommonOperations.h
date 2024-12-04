@@ -78,8 +78,6 @@ bool getStagingMemoryTypeIndex(VulkanDispatch* vk, VkDevice device,
                                const VkPhysicalDeviceMemoryProperties* memProps,
                                uint32_t* typeIndex);
 
-std::optional<ExternalHandleType> dupExternalMemory(ExternalHandleType handle, uint32_t streamHandleType);
-
 enum class AstcEmulationMode {
     Disabled,  // No ASTC emulation (ie: ASTC not supported unless the GPU supports it natively)
     Cpu,       // Decompress ASTC textures on the CPU
@@ -503,14 +501,14 @@ bool importExtMemoryHandleToVkColorBuffer(uint32_t colorBufferHandle, uint32_t s
                                           ExternalHandleType extMemHandle);
 
 VkEmulation::ColorBufferInfo getColorBufferInfo(uint32_t colorBufferHandle);
-ExternalHandleType getColorBufferExtMemoryHandle(uint32_t bufferHandle, uint32_t* outStreamHandleType);
+std::optional<ExternalHandleInfo> dupColorBufferExtMemoryHandle(uint32_t colorBufferHandle);
 #ifdef __APPLE__
 MTLResource_id getColorBufferMetalMemoryHandle(uint32_t colorBufferHandle);
 VkImage getColorBufferVkImage(uint32_t colorBufferHandle);
 #endif
 
 struct VkColorBufferMemoryExport {
-    GenericDescriptorInfo descriptorInfo;
+    ExternalHandleInfo handleInfo;
     uint64_t size = 0;
     bool linearTiling = false;
     bool dedicatedAllocation = false;
@@ -540,7 +538,7 @@ bool setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulkanOnly = false
                    uint32_t memoryProperty = 0);
 bool teardownVkBuffer(uint32_t bufferHandle);
 
-ExternalHandleType getBufferExtMemoryHandle(uint32_t bufferHandle, uint32_t* outStreamHandleType);
+std::optional<ExternalHandleInfo> dupBufferExtMemoryHandle(uint32_t bufferHandle);
 #ifdef __APPLE__
 MTLResource_id getBufferMetalMemoryHandle(uint32_t bufferHandle);
 #endif
