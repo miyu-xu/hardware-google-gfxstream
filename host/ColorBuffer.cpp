@@ -432,7 +432,7 @@ bool ColorBuffer::invalidateForVk() {
     return true;
 }
 
-bool ColorBuffer::importNativeResource(void* nativeResource, uint32_t type, bool preserveContent) {
+bool ColorBuffer::importNativeResource(void* nativeResource, uint32_t type) {
     switch (type) {
         case RESOURCE_TYPE_VK_EXT_MEMORY_HANDLE: {
             if (mColorBufferGl) {
@@ -447,7 +447,20 @@ bool ColorBuffer::importNativeResource(void* nativeResource, uint32_t type, bool
                        "import.";
                 return false;
             }
-            return mColorBufferVk->importExtMemoryHandle(nativeResource, type, preserveContent);
+
+            uint32_t extMemStreamHandleType = 0x0;
+#if defined(__QNX__)
+            // TODO(aruby@blackberry.com): Remove RESOURCE_TYPE_VK_EXT_MEMORY_HANDLE,
+            // require STREAM_* types to be specified directly (allowing for multiple external memory
+            // memory handle types on a given platform).
+            extMemStreamHandleType = STREAM_MEM_HANDLE_TYPE_SCREEN_BUFFER_QNX;
+#endif
+            if (extMemStreamHandleType) {
+                return mColorBufferVk->importExtMemoryHandle(nativeResource, extMemStreamHandleType);
+            } else {
+                ERR("importNativeResource not supported for this platform.");
+                return false;
+            }
         }
         default:
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
