@@ -46,24 +46,19 @@ bool BufferVk::updateFromBytes(uint64_t offset, uint64_t size, const void* bytes
 }
 
 std::optional<BlobDescriptorInfo> BufferVk::exportBlob() {
-    uint32_t streamHandleType;
-    ExternalHandleType extMemoryHandle = getBufferExtMemoryHandle(mHandle, &streamHandleType);
-    if (VK_EXT_MEMORY_HANDLE_INVALID != extMemoryHandle) {
-        auto dupHandle = dupExternalMemory(extMemoryHandle, streamHandleType);
-        if (!dupHandle) {
-            return std::nullopt;
-        }
-        return BlobDescriptorInfo{
-            .descriptorInfo{
-                .descriptor = ManagedDescriptor(*dupHandle),
-                .streamHandleType = streamHandleType,
-            },
-            .caching = 0,
-            .vulkanInfoOpt = std::nullopt,
-        };
-    } else {
+    auto dupHandleInfo = dupBufferExtMemoryHandle(mHandle);
+    if (!dupHandleInfo) {
         return std::nullopt;
     }
+    return BlobDescriptorInfo{
+        .descriptorInfo =
+            {
+                .descriptor = ManagedDescriptor(dupHandleInfo->handle),
+                .streamHandleType = dupHandleInfo->streamHandleType,
+            },
+        .caching = 0,
+        .vulkanInfoOpt = std::nullopt,
+    };
 }
 
 }  // namespace vk

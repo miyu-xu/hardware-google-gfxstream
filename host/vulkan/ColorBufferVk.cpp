@@ -81,7 +81,11 @@ std::optional<BlobDescriptorInfo> ColorBufferVk::exportBlob() {
     auto info = exportColorBufferMemory(mHandle);
     if (info) {
         return BlobDescriptorInfo{
-            .descriptorInfo = std::move(info->descriptorInfo),
+            .descriptorInfo =
+                {
+                    .descriptor = ManagedDescriptor(info->handleInfo.handle),
+                    .streamHandleType = info->handleInfo.streamHandleType,
+                },
             .caching = 0,
             .vulkanInfoOpt = std::nullopt,
         };
