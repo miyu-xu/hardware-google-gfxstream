@@ -30,7 +30,6 @@
 #include "DeviceOpTracker.h"
 #include "DisplayVk.h"
 #include "FrameworkFormats.h"
-#include "aemu/base/ManagedDescriptor.hpp"
 #include "aemu/base/Optional.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "gfxstream/host/BackendCallbacks.h"
@@ -38,6 +37,7 @@
 #include "goldfish_vk_private_defs.h"
 #include "utils/GfxApiLogger.h"
 #include "utils/RenderDoc.h"
+#include "ExternalObjectManager.h"
 
 #ifdef _WIN32
 typedef void* HANDLE;
@@ -517,9 +517,8 @@ VkImage getColorBufferVkImage(uint32_t colorBufferHandle);
 #endif
 
 struct VkColorBufferMemoryExport {
-    android::base::ManagedDescriptor descriptor;
+    GenericDescriptorInfo descriptorInfo;
     uint64_t size = 0;
-    uint32_t streamHandleType = 0;
     bool linearTiling = false;
     bool dedicatedAllocation = false;
 };

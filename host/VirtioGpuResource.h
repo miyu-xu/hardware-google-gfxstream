@@ -170,11 +170,11 @@ class VirtioGpuResource {
     //   * For non ring blobs, the memory from the backend as either an external
     //     memory handle (`BlobDescriptorInfo`) or a raw mapping.
     using RingBlobMemory = std::shared_ptr<RingBlob>;
-    using ExternalMemoryDescriptor = std::shared_ptr<BlobDescriptorInfo>;
+    using ExternalMemoryInfo = std::shared_ptr<BlobDescriptorInfo>;
     using ExternalMemoryMapping = HostMemInfo;
 
     using BlobMemory =
-        std::variant<RingBlobMemory, ExternalMemoryDescriptor, ExternalMemoryMapping>;
+        std::variant<RingBlobMemory, ExternalMemoryInfo, ExternalMemoryMapping>;
     std::optional<BlobMemory> mBlobMemory;
     // LINT.ThenChange(VirtioGpuResourceSnapshot.proto:virtio_gpu_resource)
 };
