@@ -109,7 +109,7 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
         auto memoryExport = vk::exportColorBufferMemory(handle);
         if (memoryExport) {
             if (colorBuffer->mColorBufferGl->importMemory(
-                    std::move(memoryExport->descriptorInfo.descriptor), memoryExport->size,
+                    ManagedDescriptor(memoryExport->handleInfo.handle), memoryExport->size,
                     memoryExport->dedicatedAllocation, memoryExport->linearTiling)) {
                 colorBuffer->mGlAndVkAreSharingExternalMemory = true;
             } else {
