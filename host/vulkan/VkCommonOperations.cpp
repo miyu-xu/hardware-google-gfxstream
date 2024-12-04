@@ -100,7 +100,7 @@ static bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_
                                              uint32_t w, uint32_t h, const void* pixels,
                                              size_t inputPixelsSize);
 
-static std::optional<ExternalHandleType> dupExternalMemory(ExternalHandleInfo handleInfo) {
+static std::optional<ExternalHandleInfo> dupExternalMemory(const ExternalHandleInfo& handleInfo) {
 #if defined(_WIN32)
     auto myProcessHandle = GetCurrentProcess();
     VK_EXT_MEMORY_HANDLE res;
@@ -108,17 +108,23 @@ static std::optional<ExternalHandleType> dupExternalMemory(ExternalHandleInfo ha
                     myProcessHandle, &res,  // target process and pointer to handle
                     0 /* desired access (ignored) */, true /* inherit */,
                     DUPLICATE_SAME_ACCESS /* same access option */);
-    return res;
+    return ExternalHandleInfo {
+        .handle = res,
+        .streamHandleType = handleInfo.streamHandleType,
+    };
 #elif defined(__QNX__)
     if (STREAM_MEM_HANDLE_TYPE_SCREEN_BUFFER_QNX == handleInfo.streamHandleType) {
         // No dup required for the screen_buffer handle
-        return handleInfo.handle;
+        return handleInfo;
     }
     // TODO(aruby@blackberry.com): Support dup-ing for OPAQUE_FD or DMABUF types on QNX
     return std::nullopt;
 #else
     // TODO(aruby@blackberry.com): Check handleType?
-    return dup(handleInfo.handle);
+    return ExternalHandleInfo {
+        .handle = dup(handleInfo.handle),
+        .streamHandleType = handleInfo.streamHandleType,
+    };
 #endif
 }
 
@@ -1863,7 +1869,7 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
 
     exportRes = sVkEmulation->deviceInfo.getMemoryHandleFunc(
         sVkEmulation->device, &getWin32HandleInfo, &info->handleInfo.handle);
-    validHandle = (VK_EXT_MEMORY_HANDLE_INVALID != info->handleInfo.handle);
+    validHandle = (VK_SUCCESS == exportRes);
     info->streamHandleType = STREAM_MEM_HANDLE_TYPE_OPAQUE_WIN32;
 #else
 
@@ -1883,11 +1889,10 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
 #endif
 
     if (opaqueFd) {
+        uint32_t streamHandleType = STREAM_MEM_HANDLE_TYPE_OPAQUE_FD;
         if (sVkEmulation->deviceInfo.supportsDmaBuf) {
             vkHandleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
-            info->handleInfo.streamHandleType = STREAM_MEM_HANDLE_TYPE_DMABUF;
-        } else {
-            info->handleInfo.streamHandleType = STREAM_MEM_HANDLE_TYPE_OPAQUE_FD;
+            streamHandleType = STREAM_MEM_HANDLE_TYPE_DMABUF;
         }
 
         VkMemoryGetFdInfoKHR getFdInfo = {
@@ -1900,7 +1905,10 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
         exportRes = sVkEmulation->deviceInfo.getMemoryHandleFunc(sVkEmulation->device, &getFdInfo,
                                                                  &exportFd);
         validHandle = (VK_SUCCESS == exportRes) && (-1 != exportFd);
-        info->handleInfo.handle = (ExternalHandleType)exportFd;
+        info->handleInfo = ExternalHandleInfo {
+            .handle = exportFd,
+            .streamHandleType = streamHandleType,
+        };
     }
 #endif
 
@@ -1935,21 +1943,21 @@ void freeExternalMemoryLocked(VulkanDispatch* vk, VkEmulation::ExternalMemoryInf
 
     info->memory = VK_NULL_HANDLE;
 
-    if (info->handleInfo.handle != VK_EXT_MEMORY_HANDLE_INVALID) {
+    if (info->handleInfo) {
 #ifdef _WIN32
         CloseHandle(info->handleInfo->handle);
 #else
-        switch(info->handleInfo.streamHandleType) {
+        switch(info->handleInfo->streamHandleType) {
             case STREAM_MEM_HANDLE_TYPE_OPAQUE_FD:
             case STREAM_MEM_HANDLE_TYPE_DMABUF:
-                close(info->handleInfo.handle);
+                close(info->handleInfo->handle);
                 break;
             case STREAM_MEM_HANDLE_TYPE_SCREEN_BUFFER_QNX:
             default:
                 break;
         }
 #endif
-        info->handleInfo.handle = VK_EXT_MEMORY_HANDLE_INVALID;
+        info->handleInfo = std::nullopt;
     }
 
 #if defined(__APPLE__)
@@ -1964,12 +1972,17 @@ bool importExternalMemory(VulkanDispatch* vk, VkDevice targetDevice,
                           VkMemoryDedicatedAllocateInfo *dedicatedAllocInfoPtr,
                           VkDeviceMemory* out) {
     const void* importInfoPtr = nullptr;
+    auto handleInfo = info->handleInfo;
+    if (!handleInfo) {
+        ERR("importExternalMemory: External handle info is not available to be imported for the memory allocation");
+        return false;
+    }
 #ifdef _WIN32
     VkImportMemoryWin32HandleInfoKHR importInfo = {
         VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR,
         dedicatedAllocInfoPtr,
-        VK_EXT_MEMORY_HANDLE_TYPE_BIT,
-        info->handleInfo.handle,
+        VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT,
+        handleInfo->handle,
         0,
     };
     importInfoPtr = &importInfo;
@@ -1977,7 +1990,7 @@ bool importExternalMemory(VulkanDispatch* vk, VkDevice targetDevice,
     VkImportScreenBufferInfoQNX importInfo = {
         VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX,
         dedicatedAllocInfoPtr,
-        (screen_buffer_t)info->handleInfo.handle,
+        (screen_buffer_t)handleInfo->handle,
     };
     importInfoPtr = &importInfo;
 #elif defined(__APPLE__)
@@ -1996,16 +2009,16 @@ bool importExternalMemory(VulkanDispatch* vk, VkDevice targetDevice,
     VkImportMemoryFdInfoKHR importInfoFd = {
         VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
         dedicatedAllocInfoPtr,
-        VK_EXT_MEMORY_HANDLE_TYPE_BIT,
-        VK_EXT_MEMORY_HANDLE_INVALID,
+        VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT,
+        -1,
     };
     if (!importInfoPtr) {
-        auto dupHandle = dupExternalMemory(info->handleInfo);
+        auto dupHandle = dupExternalMemory(*handleInfo);
         if (!dupHandle) {
-            ERR("importExternalMemory: Failed to duplicate handleInfo.handle: 0x%x, streamHandleType: %d", info->handleInfo.handle, info->handleInfo.streamHandleType);
+            ERR("importExternalMemory: Failed to duplicate handleInfo.handle: 0x%x, streamHandleType: %d", handleInfo->handle, handleInfo->streamHandleType);
             return false;
         }
-        importInfoFd.fd = *dupHandle;
+        importInfoFd.fd = dupHandle->handle;
         importInfoPtr = &importInfoFd;
     }
 
@@ -2271,13 +2284,10 @@ std::unique_ptr<VkImageCreateInfo> generateColorBufferVkImageCreateInfo(VkFormat
     return generateColorBufferVkImageCreateInfo_locked(format, width, height, tiling);
 }
 
-static bool updateExternalMemoryInfo(ExternalHandleType extMemHandle,
-                                     uint32_t extMemStreamHandleType,
+static bool updateExternalMemoryInfo(std::optional<ExternalHandleInfo> extMemHandleInfo,
                                      const VkMemoryRequirements* pMemReqs,
                                      VkEmulation::ExternalMemoryInfo* pInfo) {
-    // Set handleInfo.handle on the output info
-    pInfo->handleInfo.handle = extMemHandle;
-    pInfo->handleInfo.streamHandleType = extMemStreamHandleType;
+    pInfo->handleInfo = extMemHandleInfo;
     pInfo->dedicatedAllocation = true;
 
 #if defined(__QNX__)
@@ -2287,7 +2297,7 @@ static bool updateExternalMemoryInfo(ExternalHandleType extMemHandle,
     };
     auto vk = sVkEmulation->dvk;
     VkResult queryRes =
-        vk->vkGetScreenBufferPropertiesQNX(sVkEmulation->device, (screen_buffer_t)extMemHandle, &screenBufferProps);
+        vk->vkGetScreenBufferPropertiesQNX(sVkEmulation->device, (screen_buffer_t)extMemHandleInfo->handle, &screenBufferProps);
     if (VK_SUCCESS != queryRes) {
         ERR("Failed to get QNX Screen Buffer properties, VK error: %s", string_VkResult(queryRes));
         return false;
@@ -2334,8 +2344,7 @@ static bool updateExternalMemoryInfo(ExternalHandleType extMemHandle,
 // to begin with, via filtering from the host.
 
 bool initializeVkColorBufferLocked(
-    uint32_t colorBufferHandle, ExternalHandleType extMemHandle = VK_EXT_MEMORY_HANDLE_INVALID,
-    uint32_t extMemStreamHandleType = 0x0) {
+    uint32_t colorBufferHandle, std::optional<ExternalHandleInfo> extMemHandleInfo = std::nullopt) {
     auto infoPtr = android::base::find(sVkEmulation->colorBuffers, colorBufferHandle);
     // Not initialized
     if (!infoPtr) {
@@ -2352,9 +2361,8 @@ bool initializeVkColorBufferLocked(
         return false;
     }
 
-    const bool extMemImport = (VK_EXT_MEMORY_HANDLE_INVALID != extMemHandle);
-    if (extMemImport && !sVkEmulation->deviceInfo.supportsExternalMemoryImport) {
-        ERR("Failed to initialize Vk ColorBuffer -- extMemHandle provided, but device does "
+    if (extMemHandleInfo && !sVkEmulation->deviceInfo.supportsExternalMemoryImport) {
+        ERR("Failed to initialize Vk ColorBuffer -- extMemHandleInfo provided, but device does "
             "not support externalMemoryImport");
         return false;
     }
@@ -2411,7 +2419,7 @@ bool initializeVkColorBufferLocked(
 
     VkExternalMemoryImageCreateInfo* extImageCiPtr = nullptr;
 
-    if (extMemImport || sVkEmulation->deviceInfo.supportsExternalMemoryExport) {
+    if (extMemHandleInfo || sVkEmulation->deviceInfo.supportsExternalMemoryExport) {
         extImageCiPtr = &extImageCi;
     }
 
@@ -2471,8 +2479,8 @@ bool initializeVkColorBufferLocked(
         infoPtr->memoryProperty);
 
     Optional<VkImage> dedicatedImage = useDedicated ? Optional<VkImage>(infoPtr->image) : kNullopt;
-    if (VK_EXT_MEMORY_HANDLE_INVALID != extMemHandle) {
-        if (!updateExternalMemoryInfo(extMemHandle, extMemStreamHandleType, &infoPtr->memReqs, &infoPtr->memory)) {
+    if (extMemHandleInfo) {
+        if (!updateExternalMemoryInfo(extMemHandleInfo, &infoPtr->memReqs, &infoPtr->memory)) {
             ERR("Failed to update external memory info for ColorBuffer: %d\n", colorBufferHandle);
             return false;
         }
@@ -2694,19 +2702,22 @@ std::optional<VkColorBufferMemoryExport> exportColorBufferMemory(uint32_t colorB
         return std::nullopt;
     }
 
-    auto dupHandle = dupExternalMemory(info->memory.handleInfo);
+    auto handleInfo = info->memory.handleInfo;
+    if (!handleInfo) {
+        ERR("Could not export ColorBuffer memory, no external handle info available");
+        return std::nullopt;
+    }
+
+    auto dupHandle = dupExternalMemory(*handleInfo);
     if (!dupHandle) {
-        ERR("Could not dup external memory handle: 0x%x, with handleType: %d", info->memory.handleInfo.handle, info->memory.handleInfo.streamHandleType);
+        ERR("Could not dup external memory handle: 0x%x, with handleType: %d", handleInfo->handle, handleInfo->streamHandleType);
         return std::nullopt;
     }
 
     info->glExported = true;
 
     return VkColorBufferMemoryExport{
-        .handleInfo = {
-            .handle = *dupHandle,
-            .streamHandleType = info->memory.handleInfo.streamHandleType,
-        },
+        .handleInfo = *dupHandle,
         .size = info->memory.size,
         .linearTiling = info->imageCreateInfoShallow.tiling == VK_IMAGE_TILING_LINEAR,
         .dedicatedAllocation = info->memory.dedicatedAllocation,
@@ -2746,19 +2757,15 @@ bool teardownVkColorBuffer(uint32_t colorBufferHandle) {
     return teardownVkColorBufferLocked(colorBufferHandle);
 }
 
-bool importExtMemoryHandleToVkColorBuffer(uint32_t colorBufferHandle, uint32_t streamHandleType,
-                                          ExternalHandleType extMemHandle) {
+bool importExtMemoryHandleToVkColorBuffer(uint32_t colorBufferHandle, ExternalHandleInfo extMemHandleInfo) {
     if (!sVkEmulation || !sVkEmulation->live) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "VkEmulation not available.";
-    }
-    if (VK_EXT_MEMORY_HANDLE_INVALID == extMemHandle) {
-        return false;
     }
 
     AutoLock lock(sVkEmulationLock);
     // Initialize the colorBuffer with the external memory handle
     // Note that this will fail if the colorBuffer memory was previously initialized.
-    return initializeVkColorBufferLocked(colorBufferHandle, extMemHandle, streamHandleType);
+    return initializeVkColorBufferLocked(colorBufferHandle, extMemHandleInfo);
 }
 
 VkEmulation::ColorBufferInfo getColorBufferInfo(uint32_t colorBufferHandle) {
@@ -3285,15 +3292,13 @@ std::optional<ExternalHandleInfo> dupColorBufferExtMemoryHandle(uint32_t colorBu
         return std::nullopt;
     }
 
-    auto dupHandle = dupExternalMemory(infoPtr->memory.handleInfo);
-    if (!dupHandle) {
+    auto handleInfo = infoPtr->memory.handleInfo;
+    if (!handleInfo) {
+        ERR("Could not dup ColorBuffer external memory handle, no external handle info available");
         return std::nullopt;
     }
 
-    return ExternalHandleInfo{
-        .handle = *dupHandle,
-        .streamHandleType = infoPtr->memory.handleInfo.streamHandleType,
-    };
+    return dupExternalMemory(*handleInfo);
 }
 
 #ifdef __APPLE__
@@ -3602,15 +3607,13 @@ std::optional<ExternalHandleInfo> dupBufferExtMemoryHandle(uint32_t bufferHandle
         return std::nullopt;
     }
 
-    auto dupHandle = dupExternalMemory(infoPtr->memory.handleInfo);
-    if (!dupHandle) {
+    auto handleInfo = infoPtr->memory.handleInfo;
+    if (!handleInfo) {
+        ERR("Could not dup Buffer external memory handle, no external handle info available");
         return std::nullopt;
     }
 
-    return ExternalHandleInfo{
-        .handle = *dupHandle,
-        .streamHandleType = infoPtr->memory.handleInfo.streamHandleType,
-    };
+    return dupExternalMemory(*handleInfo);
 }
 
 #ifdef __APPLE__
