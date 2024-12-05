@@ -4916,7 +4916,7 @@ class VkDecoderGlobalState::Impl {
         VkImportMemoryWin32HandleInfoKHR importWin32HandleInfo{
             VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR,
             0,
-            VK_EXT_MEMORY_HANDLE_TYPE_BIT,
+            VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT,
             NULL,
             L"",
         };
@@ -4940,7 +4940,7 @@ class VkDecoderGlobalState::Impl {
         VkImportMemoryFdInfoKHR importFdInfo{
             VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
             0,
-            VK_EXT_MEMORY_HANDLE_TYPE_BIT,
+            VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT,
             -1,
         };
 #endif
