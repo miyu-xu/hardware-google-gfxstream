@@ -278,6 +278,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2710a84a_c93d8962",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 1748,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-05T14:48:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8feddd75_25170b4b",
+      "range": {
+        "startLine": 1740,
+        "startChar": 0,
+        "endLine": 1748,
+        "endChar": 9
+      },
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d5a2a616_56cfec1b",
@@ -487,6 +511,24 @@
       "side": 1,
       "message": "get() does not transfer ownership, just returns a raw pointer?",
       "parentUuid": "90b80af1_c4126487",
+      "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "12b5a256_34c1aadb",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 6198,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-05T14:48:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "049c773f_51edcac1",
       "revId": "eeccf5f8bb867ac5f85b5e8a8aadfcba2b7fdc63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
