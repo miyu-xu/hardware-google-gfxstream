@@ -70,13 +70,9 @@ bool ColorBufferVk::updateFromBytes(uint32_t x, uint32_t y, uint32_t w, uint32_t
     return updateColorBufferFromBytes(mHandle, x, y, w, h, bytes);
 }
 
-bool ColorBufferVk::importExtMemoryHandle(void* nativeResource, uint32_t type,
-                                          bool preserveContent) {
-    // TODO: Any need to support preserveContent?
-    assert(!preserveContent);
-    VK_EXT_MEMORY_HANDLE extMemoryHandle =
-        *reinterpret_cast<VK_EXT_MEMORY_HANDLE*>(&nativeResource);
-    return importExtMemoryHandleToVkColorBuffer(mHandle, type, extMemoryHandle);
+bool ColorBufferVk::importExtMemoryHandle(void* extMemHandle, uint32_t extMemStreamHandleType) {
+    return importExtMemoryHandleToVkColorBuffer(mHandle, extMemStreamHandleType,
+                                                (ExternalHandleType)extMemHandle);
 }
 
 int ColorBufferVk::waitSync() { return waitSyncVkColorBuffer(mHandle); }
