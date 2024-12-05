@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18505fc0_b8b723d0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-05T20:47:25Z",
+      "side": 1,
+      "message": "20:41:01(12:24.21) bld | \u001b[33;20mManagedDescriptorBase(const ManagedDescriptorBase\u0026) \u003d delete;\u001b[0m\n20:41:01(12:24.21) bld | \u001b[33;20m^\u001b[0m\n...ManagedDescriptor.hpp(65,5): note: candidate constructor not viable: no known conversion from \u0027ExternalHandleType\u0027 (aka \u0027long long\u0027) to \u0027ManagedDescriptorBase\u003cPlatformTraitWin32\u003e\u0027 for 1st argument\u001b[0m\n20:41:01(12:24.21) bld | \u001b[33;20mManagedDescriptorBase(ManagedDescriptorBase\u0026\u0026 that)\u001b[0m\n20:41:01(12:24.77) bld | \u001b[33;20m^\u001b[0m\n20:41:01(12:24.77) bld | \u001b[33;20m2 errors generated.\u001b[0m\n20:41:43(13:06.67) bld | \u001b[33;20mninja: build stopped: subcommand failed.\u001b[0m\n20:41:43(13:06.69) bld | \u001b[31;20mBuild failure due to C:\\buildbot\\src\\android\\emu-master-dev\\prebuilts\\cmake\\windows-x86\\bin\\cmake.EXE --build C:\\buildbot\\src\\out --target install Status: 1 !\u003d 0\u001b[0m",
+      "revId": "7c3a50e98efd6a133a1995c7dcaae0ab81e93901",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
