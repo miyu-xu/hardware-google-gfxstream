@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f42f7516_02bdc274",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-05T17:16:54Z",
+      "side": 1,
+      "message": "Can you put\n\n`NO_IFTTT\u003ddoesn\u0027t affect snapshot`\n\nin the commit message.",
+      "revId": "bdcddac44dc4b4353b5c96ac9f8cc5daa7803676",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
