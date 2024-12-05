@@ -235,6 +235,30 @@
       },
       "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43dbdbc2_7b3059a8",
+        "filename": "common/end2end/GfxstreamEnd2EndVkTests.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 2337,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2024-12-05T14:38:11Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "e98cf29e_94ef1515",
+      "range": {
+        "startLine": 2337,
+        "startChar": 0,
+        "endLine": 2337,
+        "endChar": 1
+      },
+      "revId": "58125ac5298b544083115ab1f45a72c587499e7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
