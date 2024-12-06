@@ -16,6 +16,24 @@
       "message": "```\n23:33:00(10:49.38) bld | \u001b[33;20mCloseHandle(\u001b[0m\n23:33:00(10:49.38) bld | \u001b[33;20m^\u001b[0m\n...ogle/gfxstream/host/vulkan/VkCommonOperations.cpp(1995,9): error: cannot initialize a member subobject of type \u0027HANDLE\u0027 (aka \u0027void *\u0027) with an lvalue of type \u0027ExternalHandleType\u0027 (aka \u0027long long\u0027)\u001b[0m\n23:33:00(10:49.38) bld | \u001b[33;20mhandleInfo-\u003ehandle,\u001b[0m\n23:33:00(10:49.38) bld | \u001b[33;20m^~~~~~~~~~~~~~~~~~\u001b[0m\n23:33:00(10:49.38) bld | \u001b[33;20m8 errors generated.\u001b[0m\n23:33:42(11:32.74) bld | \u001b[33;20mninja: build stopped: subcommand failed.\u001b[0m\n23:33:42(11:32.3 ) bld | \u001b[31;20mBuild failure due to C:\\buildbot\\src\\android\\emu-master-dev\\prebuilts\\cmake\\windows-x86\\bin\\cmake.EXE --build C:\\buildbot\\src\\out --target install Status: 1 !\u003d 0\u001b[0m\nTraceback (most recent call last):\n  File \"C:\\buildbot\\src\\android\\emu-master-dev\\tools\\buildSrc\\servers\\build_tools.py\", line 219, in \u003cmodule\u003e\n    main(sys.argv)\n  File \"C:\\buildbot\\src\\android\\emu-master-dev\\tools\\buildSrc\\servers\\build_tools.py\", line 204, in main\n    run_python(launcher + cmd, cfg.get_env(), timeout\u003d3600, log_prefix\u003d\"bld\")\n  File \"C:\\buildbot\\src\\android\\emu-master-dev\\tools\\buildSrc\\servers\\build_tools.py\", line 146, in run_python\n    pyrun.run(run_args, env, timeout\u003dtimeout, log_prefix\u003dlog_prefix)\n  File \"C:\\buildbot\\src\\android\\emu-master-dev\\tools\\buildSrc\\servers\\pyrunner.py\", line 213, in run\n    return run(\n  File \"C:\\buildbot\\src\\android\\emu-master-dev\\tools\\buildSrc\\servers\\utils.py\", line 147, in run\n    raise Exception(\"Failed to run %s - %s\" % (\" \".join(cmd), proc.returncode))\n... --out C:\\buildbot\\src\\out --sdk_build_number P86376773 --target windows --dist c:\\buildbot\\dist_dirs\\aosp-emu-master-dev-windows-emulator-windows_x64_gfxstream\\P86376773 --test_jobs 8 --gfxstream - 1\n```",
       "revId": "46fde5b6cbf1db1a3e02abef117f1b97d17926cf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8908999_81327b5d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-06T16:11:13Z",
+      "side": 1,
+      "message": "Yes, resolving now. Patchset incoming ...\n\nSorry, I don\u0027t have the win32 build environment setup. Just need to resolve the type-casting.",
+      "parentUuid": "24f910f5_0d8ba205",
+      "revId": "46fde5b6cbf1db1a3e02abef117f1b97d17926cf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
