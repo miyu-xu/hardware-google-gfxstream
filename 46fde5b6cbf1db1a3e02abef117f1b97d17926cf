@@ -34,6 +34,24 @@
       "parentUuid": "24f910f5_0d8ba205",
       "revId": "46fde5b6cbf1db1a3e02abef117f1b97d17926cf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60e38605_1a5a6aae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-06T16:20:07Z",
+      "side": 1,
+      "message": "New patchset uploaded.",
+      "parentUuid": "e8908999_81327b5d",
+      "revId": "46fde5b6cbf1db1a3e02abef117f1b97d17926cf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
