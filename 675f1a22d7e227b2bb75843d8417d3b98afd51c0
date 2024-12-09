@@ -16,6 +16,23 @@
       "message": "Last failure was due to, though new CLs could\u0027ve fixed it:\n\n```\n... 114 lines skipped ...\n17:02:55(12:06.54) bld | \u001b[33;20mCloseHandle(info-\u003ehandleInfo-\u003ehandle);\u001b[0m\n17:02:55(12:06.94) bld | \u001b[33;20m^~~~~~~~~~~\u001b[0m\n17:02:55(12:06.94) bld | \u001b[33;20mC:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.19041.0\\um/handleapi.h(38,1): note: candidate function not viable: no known conversion from \u0027ExternalHandleType\u0027 (aka \u0027long long\u0027) to \u0027HANDLE\u0027 (aka \u0027void *\u0027) for 1st argument; take the address of the argument with \u0026\u001b[0m\n17:02:55(12:06.94) bld | \u001b[33;20mCloseHandle(\u001b[0m\n```",
       "revId": "675f1a22d7e227b2bb75843d8417d3b98afd51c0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3baac9aa_fc7e00b7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-09T17:15:12Z",
+      "side": 1,
+      "message": "Ping on this. Patchset has been updated.",
+      "revId": "675f1a22d7e227b2bb75843d8417d3b98afd51c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
