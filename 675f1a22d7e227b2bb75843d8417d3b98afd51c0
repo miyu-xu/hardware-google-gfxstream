@@ -33,6 +33,24 @@
       "message": "Ping on this. Patchset has been updated.",
       "revId": "675f1a22d7e227b2bb75843d8417d3b98afd51c0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "22ca7810_554fec56",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-12-09T17:18:58Z",
+      "side": 1,
+      "message": "Kicking presubmit.",
+      "parentUuid": "3baac9aa_fc7e00b7",
+      "revId": "675f1a22d7e227b2bb75843d8417d3b98afd51c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
