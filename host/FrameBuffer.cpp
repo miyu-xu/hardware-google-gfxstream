@@ -1178,11 +1178,11 @@ HandleType FrameBuffer::createColorBuffer(int p_width,
     sweepColorBuffersLocked();
     AutoLock colorBufferMapLock(m_colorBufferMapLock);
 
-    return createColorBufferWithHandleLocked(p_width, p_height, p_internalFormat, p_frameworkFormat,
+    return createColorBufferWithResHandleLocked(p_width, p_height, p_internalFormat, p_frameworkFormat,
                                              genHandle_locked());
 }
 
-void FrameBuffer::createColorBufferWithHandle(int p_width, int p_height, GLenum p_internalFormat,
+void FrameBuffer::createColorBufferWithResHandle(int p_width, int p_height, GLenum p_internalFormat,
                                               FrameworkFormat p_frameworkFormat, HandleType handle,
                                               bool p_linear) {
     {
@@ -1199,12 +1199,12 @@ void FrameBuffer::createColorBufferWithHandle(int p_width, int p_height, GLenum 
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER));
         }
 
-        createColorBufferWithHandleLocked(p_width, p_height, p_internalFormat, p_frameworkFormat,
+        createColorBufferWithResHandleLocked(p_width, p_height, p_internalFormat, p_frameworkFormat,
                                           handle, p_linear);
     }
 }
 
-HandleType FrameBuffer::createColorBufferWithHandleLocked(int p_width, int p_height,
+HandleType FrameBuffer::createColorBufferWithResHandleLocked(int p_width, int p_height,
                                                           GLenum p_internalFormat,
                                                           FrameworkFormat p_frameworkFormat,
                                                           HandleType handle, bool p_linear) {
@@ -1251,10 +1251,10 @@ HandleType FrameBuffer::createColorBufferWithHandleLocked(int p_width, int p_hei
 HandleType FrameBuffer::createBuffer(uint64_t p_size, uint32_t memoryProperty) {
     AutoLock mutex(m_lock);
     AutoLock colorBufferMapLock(m_colorBufferMapLock);
-    return createBufferWithHandleLocked(p_size, genHandle_locked(), memoryProperty);
+    return createBufferWithResHandleLocked(p_size, genHandle_locked(), memoryProperty);
 }
 
-void FrameBuffer::createBufferWithHandle(uint64_t size, HandleType handle) {
+void FrameBuffer::createBufferWithResHandle(uint64_t size, HandleType handle) {
     AutoLock mutex(m_lock);
     AutoLock colorBufferMapLock(m_colorBufferMapLock);
 
@@ -1263,10 +1263,10 @@ void FrameBuffer::createBufferWithHandle(uint64_t size, HandleType handle) {
             << "Buffer already exists with handle " << handle;
     }
 
-    createBufferWithHandleLocked(size, handle, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    createBufferWithResHandleLocked(size, handle, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 }
 
-HandleType FrameBuffer::createBufferWithHandleLocked(int p_size, HandleType handle,
+HandleType FrameBuffer::createBufferWithResHandleLocked(int p_size, HandleType handle,
                                                      uint32_t memoryProperty) {
     if (m_buffers.count(handle) != 0) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
