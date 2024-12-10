@@ -376,7 +376,8 @@ class VkDecoderGlobalState::Impl {
             android::base::getEnvironmentVariable("ANDROID_EMU_VK_NO_CLEANUP") != "1";
         mLogging = android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1";
         mVerbosePrints = android::base::getEnvironmentVariable("ANDROID_EMUGL_VERBOSE") == "1";
-        mEnableVirtualVkQueue = m_emu->features.VulkanVirtualQueue.enabled;
+        mEnableVirtualVkQueue =
+            android::base::getEnvironmentVariable("ANDROID_EMU_VK_ENABLE_VIRTUAL_QUEUE") == "1";
 
         if (get_emugl_address_space_device_control_ops().control_get_hw_funcs &&
             get_emugl_address_space_device_control_ops().control_get_hw_funcs()) {
