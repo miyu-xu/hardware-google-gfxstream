@@ -58,7 +58,7 @@ class VirtioGpuResource {
 
     static std::optional<VirtioGpuResource> Create(
         const struct stream_renderer_resource_create_args* args, struct iovec* iov,
-        uint32_t num_iovs);
+        uint32_t num_iovs, const struct stream_renderer_handle* handle);
 
     static std::optional<VirtioGpuResource> Create(
         const gfxstream::host::FeatureSet& features, uint32_t pageSize, uint32_t contextId,

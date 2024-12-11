@@ -177,7 +177,25 @@ VG_EXPORT int stream_renderer_resource_create(struct stream_renderer_resource_cr
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_resource_create()");
 
-    return sFrontend()->createResource(args, iov, num_iovs);
+    return sFrontend()->createResource(args, iov, num_iovs, NULL);
+}
+
+VG_EXPORT int stream_renderer_import_resource(uint32_t res_handle, const struct stream_renderer_handle* import_handle,
+                                              const struct stream_renderer_import_data* import_data,
+                                              const struct stream_renderer_resource_create_args* create_args) {
+    GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
+                          "stream_renderer_import_resource()");
+
+    if (create_args) {
+        if (import_data && import_data->flags) {
+            stream_renderer_error("import_data not currently supported for resource-creation with an import_handle");
+            return false;
+        }
+        return sFrontend()->createResource(create_args, NULL, 0, import_handle);
+    }
+
+    stream_renderer_error("stream_renderer_import_resource currently only supported at time of resource-creation; create_args must be provided.");
+    return -EINVAL;
 }
 
 VG_EXPORT void stream_renderer_resource_unref(uint32_t res_handle) {
