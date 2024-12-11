@@ -21,15 +21,24 @@
 namespace gfxstream {
 namespace vk {
 
+using VkSnapshotApiCallHandle = uint64_t;
+
 struct VkSnapshotApiCallInfo {
+    VkSnapshotApiCallHandle handle = -1;
+
     // Raw packet from VkDecoder.
     std::vector<uint8_t> packet;
+
     // Book-keeping for which handles were created by this API
     std::vector<uint64_t> createdHandles;
+
+    void addOrderedBoxedHandlesCreatedByCall(const uint64_t* boxedHandles,
+                                             uint32_t boxedHandlesCount) {
+        createdHandles.insert(createdHandles.end(), boxedHandles, boxedHandles + boxedHandlesCount);
+    }
 };
 
 using VkSnapshotApiCallManager = android::base::EntityManager<32, 16, 16, VkSnapshotApiCallInfo>;
-using VkSnapshotApiCallHandle = VkSnapshotApiCallManager::EntityHandle;
 
 }  // namespace vk
 }  // namespace gfxstream
