@@ -99,7 +99,8 @@ VirtioGpuResourceType GetResourceType(const struct stream_renderer_resource_crea
 
 /*static*/
 std::optional<VirtioGpuResource> VirtioGpuResource::Create(
-    const struct stream_renderer_resource_create_args* args, struct iovec* iov, uint32_t num_iovs) {
+    const struct stream_renderer_resource_create_args* args, struct iovec* iov, uint32_t num_iovs,
+    const struct stream_renderer_handle* import_handle) {
     stream_renderer_debug("resource id: %u", args->handle);
 
     const auto resourceType = GetResourceType(*args);
@@ -110,9 +111,23 @@ std::optional<VirtioGpuResource> VirtioGpuResource::Create(
 
     if (resourceType == VirtioGpuResourceType::PIPE) {
         // Frontend only resource.
+        if (import_handle) {
+            stream_renderer_warn("import_handle not supported for VirtioGpuResourceType::PIPE. Ignoring import_handle ...");
+        }
     } else if (resourceType == VirtioGpuResourceType::BUFFER) {
+        if (import_handle) {
+            stream_renderer_warn("import_handle not supported for VirtioGpuResourceType::BUFFER. Ignoring import_handle ...");
+        }
         FrameBuffer::getFB()->createBufferWithResHandle(args->width * args->height, args->handle);
     } else if (resourceType == VirtioGpuResourceType::COLOR_BUFFER) {
+        if (import_handle) {
+            ExternalObjectManager::get()->addResourceExternalHandleInfo(args->handle,
+                ExternalHandleInfo {
+                    .handle = import_handle->os_handle,
+                    .streamHandleType = import_handle->handle_type,
+                }
+            );
+        }
         const uint32_t glformat = virgl_format_to_gl(args->format);
         const auto fwkformat = (gfxstream::FrameworkFormat)virgl_format_to_fwk_format(args->format);
         const bool linear =
@@ -157,7 +172,7 @@ std::optional<VirtioGpuResource> VirtioGpuResource::Create(
             return std::nullopt;
         }
 
-        auto resourceOpt = Create(createArgs, nullptr, 0);
+        auto resourceOpt = Create(createArgs, nullptr, 0, nullptr);
         if (!resourceOpt) {
             return std::nullopt;
         }

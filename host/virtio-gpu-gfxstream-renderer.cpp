@@ -177,7 +177,15 @@ VG_EXPORT int stream_renderer_resource_create(struct stream_renderer_resource_cr
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
                           "stream_renderer_resource_create()");
 
-    return sFrontend()->createResource(args, iov, num_iovs);
+    return sFrontend()->createResource(args, iov, num_iovs, NULL);
+}
+
+VG_EXPORT int stream_renderer_resource_create_import_handle(struct stream_renderer_resource_create_args* args,
+                                                            const struct stream_renderer_handle *import_handle) {
+    GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY,
+                          "stream_renderer_resource_create_import_handle()");
+
+    return sFrontend()->createResource(args, NULL, 0, import_handle);
 }
 
 VG_EXPORT void stream_renderer_resource_unref(uint32_t res_handle) {

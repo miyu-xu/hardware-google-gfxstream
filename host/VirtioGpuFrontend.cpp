@@ -450,8 +450,9 @@ int VirtioGpuFrontend::acquireContextFence(uint32_t contextId, uint64_t fenceId)
 void VirtioGpuFrontend::poll() { mVirtioGpuTimelines->poll(); }
 
 int VirtioGpuFrontend::createResource(struct stream_renderer_resource_create_args* args,
-                                      struct iovec* iov, uint32_t num_iovs) {
-    auto resourceOpt = VirtioGpuResource::Create(args, iov, num_iovs);
+                                      struct iovec* iov, uint32_t num_iovs,
+                                      const struct stream_renderer_handle *import_handle) {
+    auto resourceOpt = VirtioGpuResource::Create(args, iov, num_iovs, import_handle);
     if (!resourceOpt) {
         stream_renderer_error("Failed to create resource %u.", args->handle);
         return -EINVAL;

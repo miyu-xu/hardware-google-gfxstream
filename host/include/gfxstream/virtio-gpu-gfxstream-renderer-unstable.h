@@ -112,6 +112,9 @@ VG_EXPORT int stream_renderer_resume();
 
 VG_EXPORT int stream_renderer_wait_sync_resource(uint32_t res_handle);
 
+VG_EXPORT int stream_renderer_resource_create_import_handle(struct stream_renderer_resource_create_args* args,
+                                                            const struct stream_renderer_handle* import_handle);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
