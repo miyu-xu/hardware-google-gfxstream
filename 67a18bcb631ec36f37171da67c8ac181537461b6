@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5dcb7bfc_6e937881",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-12T23:51:27Z",
+      "side": 1,
+      "message": "RFC: The idea here is that create_args is optional, and that determines whether the resource is handle is being imported at time of creation, or whether the resource already exists and is to be backed/replaced with the import_handle. This way, I can roll the existing platformImportResource into this interface.\n\nHowever, I\u0027m now wondering if maybe these should just be two new, different, interfaces to make it as explicit as possible? i.e. `stream_renderer_resource_create_and_import()` and `stream_renderer_resource_import()`",
+      "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
