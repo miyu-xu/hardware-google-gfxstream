@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "663d813f_b459a741",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-12T00:24:28Z",
+      "side": 1,
+      "message": "Maybe add a void* here for extra extensibility?  What I want cross-domain interop, and I need to know Vulkan memory index, physical device: stuff like that?\n\nSo maybe:\n\n`stream_render_import_resource(void *metadata, uint32_t METADATA_TYPE, handle)`\n\nsomething like that.",
+      "range": {
+        "startLine": 116,
+        "startChar": 97,
+        "endLine": 116,
+        "endChar": 112
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "0d6dbcd1_d2667282",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+              "range": {
+                "startLine": 115,
+                "startChar": 0,
+                "endLine": 117,
+                "endChar": 0
+              },
+              "replacement": "VG_EXPORT int stream_renderer_import_resource(struct stream_renderer_resource_create_args* args,\n                                              const struct stream_renderer_handle* import_handle,\n                                              void* extra_info);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "164fb86f8a227acb648606a3c45f8237835b8fab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
