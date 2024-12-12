@@ -959,10 +959,6 @@ class VkDecoderGlobalState::Impl {
         mSnapshotState = SnapshotState::Normal;
     }
 
-    void lock() { mLock.lock(); }
-
-    void unlock() { mLock.unlock(); }
-
     size_t setCreatedHandlesForSnapshotLoad(const unsigned char* buffer) {
         size_t consumed = 0;
 
@@ -4096,6 +4092,26 @@ class VkDecoderGlobalState::Impl {
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
         destroyPipelineCacheLocked(device, deviceDispatch, pipelineCache, pAllocator);
+    }
+
+    VkResult on_vkCreatePipelineLayout(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
+                                       VkDevice boxed_device,
+                                       const VkPipelineLayoutCreateInfo* pCreateInfo,
+                                       const VkAllocationCallbacks* pAllocator,
+                                       VkPipelineLayout* pPipelineLayout) {
+        auto device = unbox_VkDevice(boxed_device);
+        auto deviceDispatch = dispatch_VkDevice(boxed_device);
+
+        // b/145153816: hold lock while calling into host to work around driver bugs.
+        std::lock_guard<std::recursive_mutex> lock(mLock);
+
+        VkResult result = deviceDispatch->vkCreatePipelineLayout(device, pCreateInfo, pAllocator,
+                                                                 pPipelineLayout);
+        if (result != VK_SUCCESS) return result;
+
+        *pPipelineLayout = new_boxed_non_dispatchable_VkPipelineLayout(*pPipelineLayout);
+
+        return VK_SUCCESS;
     }
 
     VkResult on_vkCreateGraphicsPipelines(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
@@ -9222,10 +9238,6 @@ void VkDecoderGlobalState::load(android::base::Stream* stream, GfxApiLogger& gfx
     mImpl->load(stream, gfxLogger, healthMonitor);
 }
 
-void VkDecoderGlobalState::lock() { mImpl->lock(); }
-
-void VkDecoderGlobalState::unlock() { mImpl->unlock(); }
-
 size_t VkDecoderGlobalState::setCreatedHandlesForSnapshotLoad(const unsigned char* buffer) {
     return mImpl->setCreatedHandlesForSnapshotLoad(buffer);
 }
@@ -9697,6 +9709,14 @@ void VkDecoderGlobalState::on_vkDestroyPipelineCache(android::base::BumpPool* po
                                                      VkPipelineCache pipelineCache,
                                                      const VkAllocationCallbacks* pAllocator) {
     mImpl->on_vkDestroyPipelineCache(pool, snapshotInfo, boxed_device, pipelineCache, pAllocator);
+}
+
+VkResult VkDecoderGlobalState::on_vkCreatePipelineLayout(
+    android::base::BumpPool* pool, VkSnapshotApiCallInfo* snapshotInfo, VkDevice boxed_device,
+    const VkPipelineLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator,
+    VkPipelineLayout* pPipelineLayout) {
+    return mImpl->on_vkCreatePipelineLayout(pool, snapshotInfo, boxed_device, pCreateInfo,
+                                            pAllocator, pPipelineLayout);
 }
 
 VkResult VkDecoderGlobalState::on_vkCreateGraphicsPipelines(
