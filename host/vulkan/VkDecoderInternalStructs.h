@@ -458,7 +458,7 @@ struct CommandPoolInfo {
 };
 
 struct InstanceObjects {
-    std::unordered_map<VkInstance, InstanceInfo>::node_type instance;
+    std::pair<VkInstance, InstanceInfo> instance;
     std::unordered_map<VkPhysicalDevice, PhysicalDeviceInfo> physicalDevices;
     struct DeviceObjects {
         std::unordered_map<VkDevice, DeviceInfo>::node_type device;

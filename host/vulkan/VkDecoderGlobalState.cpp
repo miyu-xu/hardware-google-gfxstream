@@ -1184,10 +1184,11 @@ class VkDecoderGlobalState::Impl {
         if (instance == VK_NULL_HANDLE) {
             return;
         }
+        // The instance should not be used after vkDestroyInstanceImpl is called,
+        // remove it from the cleanup callback mapping.
+        m_emu->callbacks.unregisterProcessCleanupCallback(instance);
 
         vkDestroyInstanceImpl(instance, pAllocator);
-
-        m_emu->callbacks.unregisterProcessCleanupCallback(instance);
     }
 
     VkResult GetPhysicalDevices(VkInstance instance, VulkanDispatch* vk,
@@ -8583,8 +8584,8 @@ class VkDecoderGlobalState::Impl {
     }
 
     void destroyInstanceObjects(InstanceObjects& objects) {
-        VkInstance instance = objects.instance.key();
-        InstanceInfo& instanceInfo = objects.instance.mapped();
+        VkInstance instance = objects.instance.first;
+        InstanceInfo& instanceInfo = objects.instance.second;
         LOG_CALLS_VERBOSE(
             "destroyInstanceObjects called for instance (app:%s, engine:%s) with %d devices.",
             instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str(),
