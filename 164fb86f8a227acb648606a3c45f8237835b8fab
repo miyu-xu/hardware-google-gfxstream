@@ -88,6 +88,30 @@
       },
       "revId": "164fb86f8a227acb648606a3c45f8237835b8fab",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec013e47_5622c0ed",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-12T19:01:38Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "7d363444_f734a31a",
+      "range": {
+        "startLine": 116,
+        "startChar": 97,
+        "endLine": 116,
+        "endChar": 112
+      },
+      "revId": "164fb86f8a227acb648606a3c45f8237835b8fab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
