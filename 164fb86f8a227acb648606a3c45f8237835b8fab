@@ -40,6 +40,30 @@
       ],
       "revId": "164fb86f8a227acb648606a3c45f8237835b8fab",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53fd399b_7364f75a",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-12T16:32:27Z",
+      "side": 1,
+      "message": "ACK\u0027d, I like this. I also like the updated nomenclature (`stream_renderer_import_resource()`). Will update.",
+      "parentUuid": "663d813f_b459a741",
+      "range": {
+        "startLine": 116,
+        "startChar": 97,
+        "endLine": 116,
+        "endChar": 112
+      },
+      "revId": "164fb86f8a227acb648606a3c45f8237835b8fab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
