@@ -1179,9 +1179,8 @@ class VkDecoderGlobalState::Impl {
             return;
         }
 
-        vkDestroyInstanceImpl(instance, pAllocator);
-
         m_emu->callbacks.unregisterProcessCleanupCallback(instance);
+        vkDestroyInstanceImpl(instance, pAllocator);
     }
 
     VkResult GetPhysicalDevices(VkInstance instance, VulkanDispatch* vk,
