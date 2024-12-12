@@ -64,6 +64,30 @@
       },
       "revId": "164fb86f8a227acb648606a3c45f8237835b8fab",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d363444_f734a31a",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-12T17:49:23Z",
+      "side": 1,
+      "message": "Hmm, I think you can also do a versioned struct:\n\nstream_render_import_resource(struct stream_renderer_import_data *data, uint32_t handle);\n\nwhere\n\n```\nSTREAM_RENDERER_IMPORT_FLAG_3D_INFO 1 \u003c\u003c 0\nSTREAM_RENDERER_IMPORT_FLAG_VULKAN_INFO 1 \u003c\u003c 2\nstruct stream_renderer_import_data {\n   uint32_t flags;\n   struct stream_renderer_3d_info;\n   struct stream_renderer_vulkan_info;\n}```\n\nsee rutabaga for VulkanInfo and 3Dinfo respectively.  If new data news to be added, new flags can be.",
+      "parentUuid": "53fd399b_7364f75a",
+      "range": {
+        "startLine": 116,
+        "startChar": 97,
+        "endLine": 116,
+        "endChar": 112
+      },
+      "revId": "164fb86f8a227acb648606a3c45f8237835b8fab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
