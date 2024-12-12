@@ -2091,6 +2091,11 @@ class VkDecoderGlobalState::Impl {
 
         deviceInfo.boxed = boxedDevice;
 
+        DeviceLostHelper::DeviceWithQueues deviceWithQueues = {
+            .device = *pDevice,
+            .deviceDispatch = dispatch,
+        };
+
         if (mSnapshotState == SnapshotState::Loading) {
             if (!mSnapshotLoadVkDeviceToVirtioCpuContextId) {
                 GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
@@ -2150,6 +2155,11 @@ class VkDecoderGlobalState::Impl {
                 physicalQueueInfo.queueMutex = std::make_shared<std::mutex>();
                 queues.push_back(physicalQueue);
 
+                deviceWithQueues.queues.push_back(DeviceLostHelper::QueueWithMutex{
+                    .queue = physicalQueue,
+                    .queueMutex = physicalQueueInfo.queueMutex,
+                });
+
                 if (addVirtualQueue) {
                     VERBOSE("Creating virtual device queue for physical VkQueue %p", physicalQueue);
                     const uint64_t physicalQueue64 = reinterpret_cast<uint64_t>(physicalQueue);
@@ -2186,6 +2196,8 @@ class VkDecoderGlobalState::Impl {
         if (snapshotsEnabled()) {
             snapshot()->createExtraHandlesForNextApi(extraHandles.data(), extraHandles.size());
         }
+
+        m_emu->deviceLostHelper.onDeviceCreated(std::move(deviceWithQueues));
 
         // Box the device.
         *pDevice = (VkDevice)deviceInfo.boxed;
@@ -2244,6 +2256,8 @@ class VkDecoderGlobalState::Impl {
                                         std::unordered_map<VkFence, FenceInfo>& fenceInfos,
                                         std::unordered_map<VkQueue, QueueInfo>& queueInfos,
                                         const VkAllocationCallbacks* pAllocator) {
+        m_emu->deviceLostHelper.onDeviceDestroyed(device);
+
         deviceInfo.decompPipelines->clear();
 
         auto eraseIt = queueInfos.begin();
@@ -7500,22 +7514,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void on_DeviceLost() {
-        {
-            std::lock_guard<std::recursive_mutex> lock(mLock);
-
-            std::vector<DeviceLostHelper::DeviceWithQueues> devicesToQueues;
-            for (const auto& [device, deviceInfo] : mDeviceInfo) {
-                auto& deviceToQueues = devicesToQueues.emplace_back();
-                deviceToQueues.device = device;
-                deviceToQueues.deviceDispatch = dispatch_VkDevice(deviceInfo.boxed);
-                for (const auto& [queueIndex, queues] : deviceInfo.queues) {
-                    deviceToQueues.queues.insert(deviceToQueues.queues.end(), queues.begin(),
-                                                 queues.end());
-                }
-            }
-            m_emu->deviceLostHelper.onDeviceLost(devicesToQueues);
-        }
-
+        m_emu->deviceLostHelper.onDeviceLost();
         GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
     }
 
