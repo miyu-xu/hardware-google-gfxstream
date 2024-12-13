@@ -93,6 +93,24 @@
       "parentUuid": "cb86cdef_c16d15c6",
       "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef075adc_fc1422f4",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-13T17:01:18Z",
+      "side": 1,
+      "message": "Ack.  Maybe just add a new flag to specify the \"stream_renderer_resource_already exists`\n\n```\nSTREAM_RENDERER_IMPORT_FLAG_STRUCT_MASK 0xffffffff\nSTREAM_RENDERER_IMPORT_FLAG_3D_INFO 1 \u003c\u003c 0\nSTREAM_RENDERER_IMPORT_FLAG_VULKAN_INFO 1 \u003c\u003c 2\n\nSTREAM_RENDERER_IMPORT_FLAG_USE_MASK 0xffffffff00000\nSTREAM_RENDERER_IMPORT_FLAG_RESOURCE_EXISTS 1 \u003c\u003c 32\n```\n\n```\nstruct stream_renderer_import_data {\n   uint64_t flags;\n   struct stream_renderer_3d_info;\n   struct stream_renderer_vulkan_info;\n};```",
+      "parentUuid": "8a9c6871_2375e690",
+      "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
