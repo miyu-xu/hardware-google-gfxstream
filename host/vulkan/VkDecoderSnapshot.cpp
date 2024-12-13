@@ -50,15 +50,19 @@ class VkDecoderSnapshot::Impl {
    public:
     Impl() {}
 
-    void save(android::base::Stream* stream) {
+    void saveDecoderReplayBuffer(android::base::Stream* stream) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        mReconstruction.save(stream);
+        mReconstruction.saveDecoderReplayBuffer(stream);
     }
 
-    void load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
-              HealthMonitor<>* healthMonitor) {
+    void clear() {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        mReconstruction.load(stream, gfx_logger, healthMonitor);
+        mReconstruction.clear();
+    }
+
+    static void loadDecoderReplayBuffer(android::base::Stream* stream,
+                                        std::vector<uint8_t>* outBuffer) {
+        VkReconstruction::loadDecoderReplayBuffer(stream, outBuffer);
     }
 
     VkSnapshotApiCallInfo* createApiCallInfo() {
@@ -4007,11 +4011,16 @@ class VkDecoderSnapshot::Impl {
 
 VkDecoderSnapshot::VkDecoderSnapshot() : mImpl(new VkDecoderSnapshot::Impl()) {}
 
-void VkDecoderSnapshot::save(android::base::Stream* stream) { mImpl->save(stream); }
+void VkDecoderSnapshot::clear() { mImpl->clear(); }
 
-void VkDecoderSnapshot::load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
-                             HealthMonitor<>* healthMonitor) {
-    mImpl->load(stream, gfx_logger, healthMonitor);
+/*static*/
+void VkDecoderSnapshot::saveDecoderReplayBuffer(android::base::Stream* stream) {
+    mImpl->saveDecoderReplayBuffer(stream);
+}
+
+void VkDecoderSnapshot::loadDecoderReplayBuffer(android::base::Stream* stream,
+                                                std::vector<uint8_t>* outBuffer) {
+    VkDecoderSnapshot::Impl::loadDecoderReplayBuffer(stream, outBuffer);
 }
 
 VkSnapshotApiCallInfo* VkDecoderSnapshot::createApiCallInfo() { return mImpl->createApiCallInfo(); }
