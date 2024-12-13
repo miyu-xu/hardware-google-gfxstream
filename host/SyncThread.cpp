@@ -156,7 +156,9 @@ void SyncThread::triggerWaitWithCompletionCallback(EmulatedEglFenceSync* fenceSy
 }
 
 void SyncThread::initSyncEGLContext() {
-    mWorkerThreadPool.broadcast([this] {
+    std::mutex initMutex;
+    mWorkerThreadPool.broadcast([&, this] {
+        std::lock_guard<std::mutex> initLock(initMutex);
         return Command{
             .mTask = std::packaged_task<int(WorkerId)>([this](WorkerId workerId) {
                 DPRINT("for worker id: %d", workerId);
