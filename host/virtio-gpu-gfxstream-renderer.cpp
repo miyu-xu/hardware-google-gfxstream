@@ -583,7 +583,6 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     androidHw->hw_gltransport_drawFlushInterval = 10000;
 
     EmuglConfig config;
-
     // Make all the console agents available.
     android::emulation::injectGraphicsAgents(android::emulation::GfxStreamGraphicsAgentFactory());
 
