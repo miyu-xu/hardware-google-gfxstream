@@ -50,6 +50,104 @@
       ],
       "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e5081f0_a05f5266",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2708,
+      "author": {
+        "id": 1278660
+      },
+      "writtenOn": "2024-12-13T22:12:57Z",
+      "side": 1,
+      "message": "Ah, it could be WAI.",
+      "parentUuid": "26041e11_ece5e5ac",
+      "range": {
+        "startLine": 2708,
+        "startChar": 51,
+        "endLine": 2708,
+        "endChar": 52
+      },
+      "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0111e914_3317c5dc",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2713,
+      "author": {
+        "id": 1278660
+      },
+      "writtenOn": "2024-12-13T22:12:57Z",
+      "side": 1,
+      "message": "just use `.insert({key, std::move(cb)}).second`",
+      "range": {
+        "startLine": 2713,
+        "startChar": 15,
+        "endLine": 2713,
+        "endChar": 25
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "b0da19a8_7fa2ba81",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/FrameBuffer.cpp",
+              "range": {
+                "startLine": 2709,
+                "startChar": 0,
+                "endLine": 2710,
+                "endChar": 0
+              },
+              "replacement": "    if (!callbackMap.insert({key, std::move(cb)}).second) {\n"
+            },
+            {
+              "path": "host/FrameBuffer.cpp",
+              "range": {
+                "startLine": 2713,
+                "startChar": 0,
+                "endLine": 2714,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28c393a8_b58e2c0c",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2727,
+      "author": {
+        "id": 1278660
+      },
+      "writtenOn": "2024-12-13T22:12:57Z",
+      "side": 1,
+      "message": "`erase(Key)` returns the number of elements deleted, which saves you one lookup.",
+      "range": {
+        "startLine": 2722,
+        "startChar": 0,
+        "endLine": 2727,
+        "endChar": 27
+      },
+      "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
