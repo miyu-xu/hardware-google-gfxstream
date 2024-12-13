@@ -49,6 +49,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "66b49157_4cbc7c8f",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-12-13T23:18:19Z",
+      "side": 1,
+      "message": "Potentially we also want to remove the handle dependencies from \n\n```\n\u003cVkCommandBuffer\u003e -\u003e \"generic-handle-1\"\n\u003cVkCommandBuffer\u003e -\u003e \"generic-handle-2\"\n\u003cVkCommandBuffer\u003e -\u003e \"generic-handle-3\"\n\u003cVkCommandBuffer\u003e -\u003e \"generic-handle-4\"\n\u003cVkCommandBuffer\u003e -\u003e \"generic-handle-5\"\n```\n\nhere. IIUC, `VkDecoderSnapshot` is now creating the dependency in both directions.",
+      "parentUuid": "0b20bcd9_b030cd36",
+      "range": {
+        "startLine": 547,
+        "startChar": 8,
+        "endLine": 547,
+        "endChar": 30
+      },
+      "revId": "b7d4d96d57bf09f369486a88753f7f8d0d28c575",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8cbf0610_0fd29d0e",
         "filename": "host/vulkan/VkReconstruction.cpp",
         "patchSetId": 6
