@@ -22,6 +22,30 @@
       },
       "revId": "742467d20dc6ca45e0786716de7558ae2b0398e5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "548eeab4_41f9e9f3",
+        "filename": "host/SyncThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2024-12-13T22:29:46Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "031d90e1_1f4ae06c",
+      "range": {
+        "startLine": 159,
+        "startChar": 4,
+        "endLine": 159,
+        "endChar": 25
+      },
+      "revId": "742467d20dc6ca45e0786716de7558ae2b0398e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
