@@ -33,12 +33,10 @@
 
 #include "VkDecoderSnapshot.h"
 
-#include <mutex>
-
 #include "VkDecoderGlobalState.h"
 #include "VkReconstruction.h"
 #include "VulkanHandleMapping.h"
-#include "aemu/base/ThreadAnnotations.h"
+#include "aemu/base/synchronization/Lock.h"
 
 using emugl::GfxApiLogger;
 using emugl::HealthMonitor;
@@ -50,24 +48,20 @@ class VkDecoderSnapshot::Impl {
    public:
     Impl() {}
 
-    void save(android::base::Stream* stream) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        mReconstruction.save(stream);
-    }
+    void save(android::base::Stream* stream) { mReconstruction.save(stream); }
 
     void load(android::base::Stream* stream, GfxApiLogger& gfx_logger,
               HealthMonitor<>* healthMonitor) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
         mReconstruction.load(stream, gfx_logger, healthMonitor);
     }
 
     VkSnapshotApiCallInfo* createApiCallInfo() {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         return mReconstruction.createApiCallInfo();
     }
 
     void destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         return mReconstruction.destroyApiCallInfoIfUnused(info);
     }
 #ifdef VK_VERSION_1_0
@@ -76,7 +70,7 @@ class VkDecoderSnapshot::Impl {
                           VkResult input_result, const VkInstanceCreateInfo* pCreateInfo,
                           const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
         if (!pInstance) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pInstance create
         mReconstruction.addHandles((const uint64_t*)pInstance, 1);
         auto apiCallHandle = apiCallInfo->handle;
@@ -88,7 +82,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyInstance(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkInstance instance, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // instance destroy
         mReconstruction.removeHandles((const uint64_t*)(&instance), 1, true);
     }
@@ -99,7 +93,7 @@ class VkDecoderSnapshot::Impl {
                                     uint32_t* pPhysicalDeviceCount,
                                     VkPhysicalDevice* pPhysicalDevices) {
         if (!pPhysicalDevices) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pPhysicalDevices create
         mReconstruction.addHandles((const uint64_t*)pPhysicalDevices, (*(pPhysicalDeviceCount)));
         mReconstruction.addHandleDependency((const uint64_t*)pPhysicalDevices,
@@ -161,7 +155,7 @@ class VkDecoderSnapshot::Impl {
                         const VkDeviceCreateInfo* pCreateInfo,
                         const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
         if (!pDevice) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        mLock.tryLock();
         // pDevice create
         mReconstruction.addHandles((const uint64_t*)pDevice, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pDevice, 1,
@@ -171,11 +165,12 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.forEachHandleAddApi((const uint64_t*)pDevice, 1, apiCallHandle,
                                             VkReconstruction::CREATED);
         mReconstruction.setCreatedHandlesForApi(apiCallHandle, (const uint64_t*)pDevice, 1);
+        mLock.unlock();
     }
     void vkDestroyDevice(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                          const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // device destroy
         mReconstruction.removeHandles((const uint64_t*)(&device), 1, true);
     }
@@ -222,7 +217,7 @@ class VkDecoderSnapshot::Impl {
                           const VkMemoryAllocateInfo* pAllocateInfo,
                           const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
         if (!pMemory) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pMemory create
         mReconstruction.addHandles((const uint64_t*)pMemory, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pMemory, 1,
@@ -252,7 +247,7 @@ class VkDecoderSnapshot::Impl {
     void vkFreeMemory(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                       const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                       VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // memory destroy
         mReconstruction.removeHandles((const uint64_t*)(&memory), 1, true);
     }
@@ -284,7 +279,7 @@ class VkDecoderSnapshot::Impl {
                             VkResult input_result, VkDevice device, VkBuffer buffer,
                             VkDeviceMemory memory, VkDeviceSize memoryOffset) {
         VkBuffer boxed_VkBuffer = unboxed_to_boxed_non_dispatchable_VkBuffer((&buffer)[0]);
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // buffer create
         mReconstruction.addHandleDependency(
             (const uint64_t*)&boxed_VkBuffer, 1,
@@ -303,7 +298,7 @@ class VkDecoderSnapshot::Impl {
                            VkResult input_result, VkDevice device, VkImage image,
                            VkDeviceMemory memory, VkDeviceSize memoryOffset) {
         VkImage boxed_VkImage = unboxed_to_boxed_non_dispatchable_VkImage((&image)[0]);
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // image create
         mReconstruction.addHandleDependency(
             (const uint64_t*)&boxed_VkImage, 1,
@@ -347,7 +342,7 @@ class VkDecoderSnapshot::Impl {
                        VkResult input_result, VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                        const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
         if (!pFence) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pFence create
         mReconstruction.addHandles((const uint64_t*)pFence, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pFence, 1,
@@ -361,7 +356,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyFence(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                         const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                         VkFence fence, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // fence destroy
         mReconstruction.removeHandles((const uint64_t*)(&fence), 1, true);
     }
@@ -382,7 +377,7 @@ class VkDecoderSnapshot::Impl {
                            const VkSemaphoreCreateInfo* pCreateInfo,
                            const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
         if (!pSemaphore) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pSemaphore create
         mReconstruction.addHandles((const uint64_t*)pSemaphore, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pSemaphore, 1,
@@ -396,7 +391,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroySemaphore(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                             VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // semaphore destroy
         mReconstruction.removeHandles((const uint64_t*)(&semaphore), 1, true);
     }
@@ -405,7 +400,7 @@ class VkDecoderSnapshot::Impl {
                        VkResult input_result, VkDevice device, const VkEventCreateInfo* pCreateInfo,
                        const VkAllocationCallbacks* pAllocator, VkEvent* pEvent) {
         if (!pEvent) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pEvent create
         mReconstruction.addHandles((const uint64_t*)pEvent, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pEvent, 1,
@@ -419,7 +414,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyEvent(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                         const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                         VkEvent event, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // event destroy
         mReconstruction.removeHandles((const uint64_t*)(&event), 1, true);
     }
@@ -438,7 +433,7 @@ class VkDecoderSnapshot::Impl {
                            const VkQueryPoolCreateInfo* pCreateInfo,
                            const VkAllocationCallbacks* pAllocator, VkQueryPool* pQueryPool) {
         if (!pQueryPool) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pQueryPool create
         mReconstruction.addHandles((const uint64_t*)pQueryPool, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pQueryPool, 1,
@@ -452,7 +447,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyQueryPool(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                             VkQueryPool queryPool, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // queryPool destroy
         mReconstruction.removeHandles((const uint64_t*)(&queryPool), 1, true);
     }
@@ -467,7 +462,7 @@ class VkDecoderSnapshot::Impl {
                         const VkBufferCreateInfo* pCreateInfo,
                         const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer) {
         if (!pBuffer) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pBuffer create
         mReconstruction.addHandles((const uint64_t*)pBuffer, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pBuffer, 1,
@@ -481,7 +476,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyBuffer(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                          VkBuffer buffer, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // buffer destroy
         mReconstruction.removeHandles((const uint64_t*)(&buffer), 1, true);
     }
@@ -491,7 +486,7 @@ class VkDecoderSnapshot::Impl {
                             const VkBufferViewCreateInfo* pCreateInfo,
                             const VkAllocationCallbacks* pAllocator, VkBufferView* pView) {
         if (!pView) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pView create
         mReconstruction.addHandles((const uint64_t*)pView, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pView, 1, (uint64_t)(uintptr_t)device);
@@ -505,7 +500,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkDevice device, VkBufferView bufferView,
                              const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // bufferView destroy
         mReconstruction.removeHandles((const uint64_t*)(&bufferView), 1, true);
     }
@@ -514,7 +509,7 @@ class VkDecoderSnapshot::Impl {
                        VkResult input_result, VkDevice device, const VkImageCreateInfo* pCreateInfo,
                        const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
         if (!pImage) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pImage create
         mReconstruction.addHandles((const uint64_t*)pImage, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pImage, 1,
@@ -528,7 +523,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyImage(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                         const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                         VkImage image, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // image destroy
         mReconstruction.removeHandles((const uint64_t*)(&image), 1, true);
     }
@@ -544,7 +539,7 @@ class VkDecoderSnapshot::Impl {
                            const VkImageViewCreateInfo* pCreateInfo,
                            const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
         if (!pView) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pView create
         mReconstruction.addHandles((const uint64_t*)pView, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pView, 1, (uint64_t)(uintptr_t)device);
@@ -561,7 +556,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyImageView(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                             VkImageView imageView, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // imageView destroy
         mReconstruction.removeHandles((const uint64_t*)(&imageView), 1, true);
     }
@@ -572,7 +567,7 @@ class VkDecoderSnapshot::Impl {
                               const VkAllocationCallbacks* pAllocator,
                               VkShaderModule* pShaderModule) {
         if (!pShaderModule) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pShaderModule create
         mReconstruction.addHandles((const uint64_t*)pShaderModule, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pShaderModule, 1,
@@ -587,7 +582,7 @@ class VkDecoderSnapshot::Impl {
                                const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                VkDevice device, VkShaderModule shaderModule,
                                const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // shaderModule destroy
         mReconstruction.removeHandles((const uint64_t*)(&shaderModule), 1, false);
     }
@@ -598,7 +593,7 @@ class VkDecoderSnapshot::Impl {
                                const VkAllocationCallbacks* pAllocator,
                                VkPipelineCache* pPipelineCache) {
         if (!pPipelineCache) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pPipelineCache create
         mReconstruction.addHandles((const uint64_t*)pPipelineCache, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pPipelineCache, 1,
@@ -613,7 +608,7 @@ class VkDecoderSnapshot::Impl {
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkDevice device, VkPipelineCache pipelineCache,
                                 const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pipelineCache destroy
         mReconstruction.removeHandles((const uint64_t*)(&pipelineCache), 1, true);
     }
@@ -633,7 +628,7 @@ class VkDecoderSnapshot::Impl {
                                    const VkAllocationCallbacks* pAllocator,
                                    VkPipeline* pPipelines) {
         if (!pPipelines) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pPipelines create
         mReconstruction.addHandles((const uint64_t*)pPipelines, ((createInfoCount)));
         mReconstruction.addHandleDependency((const uint64_t*)pPipelines, ((createInfoCount)),
@@ -664,7 +659,7 @@ class VkDecoderSnapshot::Impl {
                                   const VkComputePipelineCreateInfo* pCreateInfos,
                                   const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines) {
         if (!pPipelines) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pPipelines create
         mReconstruction.addHandles((const uint64_t*)pPipelines, ((createInfoCount)));
         mReconstruction.addHandleDependency((const uint64_t*)pPipelines, ((createInfoCount)),
@@ -679,7 +674,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroyPipeline(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                            VkPipeline pipeline, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pipeline destroy
         mReconstruction.removeHandles((const uint64_t*)(&pipeline), 1, true);
     }
@@ -690,7 +685,7 @@ class VkDecoderSnapshot::Impl {
                                 const VkAllocationCallbacks* pAllocator,
                                 VkPipelineLayout* pPipelineLayout) {
         if (!pPipelineLayout) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pPipelineLayout create
         mReconstruction.addHandles((const uint64_t*)pPipelineLayout, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pPipelineLayout, 1,
@@ -705,7 +700,7 @@ class VkDecoderSnapshot::Impl {
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkDevice device, VkPipelineLayout pipelineLayout,
                                  const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pipelineLayout destroy
         mReconstruction.removeHandles((const uint64_t*)(&pipelineLayout), 1, true);
     }
@@ -715,7 +710,7 @@ class VkDecoderSnapshot::Impl {
                          const VkSamplerCreateInfo* pCreateInfo,
                          const VkAllocationCallbacks* pAllocator, VkSampler* pSampler) {
         if (!pSampler) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pSampler create
         mReconstruction.addHandles((const uint64_t*)pSampler, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pSampler, 1,
@@ -729,7 +724,7 @@ class VkDecoderSnapshot::Impl {
     void vkDestroySampler(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkDevice device,
                           VkSampler sampler, const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // sampler destroy
         mReconstruction.removeHandles((const uint64_t*)(&sampler), 1, true);
     }
@@ -741,7 +736,7 @@ class VkDecoderSnapshot::Impl {
                                      const VkAllocationCallbacks* pAllocator,
                                      VkDescriptorSetLayout* pSetLayout) {
         if (!pSetLayout) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pSetLayout create
         mReconstruction.addHandles((const uint64_t*)pSetLayout, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pSetLayout, 1,
@@ -757,7 +752,7 @@ class VkDecoderSnapshot::Impl {
                                       const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                       VkDevice device, VkDescriptorSetLayout descriptorSetLayout,
                                       const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // descriptorSetLayout destroy
         mReconstruction.removeHandles((const uint64_t*)(&descriptorSetLayout), 1, true);
     }
@@ -768,7 +763,7 @@ class VkDecoderSnapshot::Impl {
                                 const VkAllocationCallbacks* pAllocator,
                                 VkDescriptorPool* pDescriptorPool) {
         if (!pDescriptorPool) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        mLock.tryLock();
         // pDescriptorPool create
         mReconstruction.addHandles((const uint64_t*)pDescriptorPool, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pDescriptorPool, 1,
@@ -778,12 +773,13 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.forEachHandleAddApi((const uint64_t*)pDescriptorPool, 1, apiCallHandle,
                                             VkReconstruction::CREATED);
         mReconstruction.setCreatedHandlesForApi(apiCallHandle, (const uint64_t*)pDescriptorPool, 1);
+        mLock.unlock();
     }
     void vkDestroyDescriptorPool(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkDevice device, VkDescriptorPool descriptorPool,
                                  const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // descriptorPool destroy
         mReconstruction.removeHandles((const uint64_t*)(&descriptorPool), 1, true);
     }
@@ -797,7 +793,7 @@ class VkDecoderSnapshot::Impl {
                                   const VkDescriptorSetAllocateInfo* pAllocateInfo,
                                   VkDescriptorSet* pDescriptorSets) {
         if (!pDescriptorSets) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pDescriptorSets create
         mReconstruction.addHandles((const uint64_t*)pDescriptorSets,
                                    pAllocateInfo->descriptorSetCount);
@@ -821,7 +817,7 @@ class VkDecoderSnapshot::Impl {
                               VkResult input_result, VkDevice device,
                               VkDescriptorPool descriptorPool, uint32_t descriptorSetCount,
                               const VkDescriptorSet* pDescriptorSets) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pDescriptorSets destroy
         mReconstruction.removeHandles((const uint64_t*)pDescriptorSets, ((descriptorSetCount)),
                                       true);
@@ -832,7 +828,7 @@ class VkDecoderSnapshot::Impl {
                                 const VkWriteDescriptorSet* pDescriptorWrites,
                                 uint32_t descriptorCopyCount,
                                 const VkCopyDescriptorSet* pDescriptorCopies) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pDescriptorWrites action
         VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
         if (m_state->batchedDescriptorSetUpdateEnabled()) {
@@ -887,7 +883,7 @@ class VkDecoderSnapshot::Impl {
                              const VkFramebufferCreateInfo* pCreateInfo,
                              const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
         if (!pFramebuffer) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pFramebuffer create
         mReconstruction.addHandles((const uint64_t*)pFramebuffer, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pFramebuffer, 1,
@@ -912,7 +908,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkDevice device, VkFramebuffer framebuffer,
                               const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // framebuffer destroy
         mReconstruction.removeHandles((const uint64_t*)(&framebuffer), 1, true);
     }
@@ -922,7 +918,7 @@ class VkDecoderSnapshot::Impl {
                             const VkRenderPassCreateInfo* pCreateInfo,
                             const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
         if (!pRenderPass) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pRenderPass create
         mReconstruction.addHandles((const uint64_t*)pRenderPass, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pRenderPass, 1,
@@ -937,7 +933,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkDevice device, VkRenderPass renderPass,
                              const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // renderPass destroy
         mReconstruction.removeHandles((const uint64_t*)(&renderPass), 1, true);
     }
@@ -952,7 +948,7 @@ class VkDecoderSnapshot::Impl {
                              const VkCommandPoolCreateInfo* pCreateInfo,
                              const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
         if (!pCommandPool) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pCommandPool create
         mReconstruction.addHandles((const uint64_t*)pCommandPool, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pCommandPool, 1,
@@ -967,7 +963,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkDevice device, VkCommandPool commandPool,
                               const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandPool destroy
         mReconstruction.removeHandles((const uint64_t*)(&commandPool), 1, true);
     }
@@ -981,7 +977,7 @@ class VkDecoderSnapshot::Impl {
                                   const VkCommandBufferAllocateInfo* pAllocateInfo,
                                   VkCommandBuffer* pCommandBuffers) {
         if (!pCommandBuffers) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pCommandBuffers create
         mReconstruction.addHandles((const uint64_t*)pCommandBuffers,
                                    pAllocateInfo->commandBufferCount);
@@ -1001,7 +997,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkDevice device, VkCommandPool commandPool,
                               uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pCommandBuffers destroy
         mReconstruction.removeHandles((const uint64_t*)pCommandBuffers, ((commandBufferCount)),
                                       true);
@@ -1010,7 +1006,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkResult input_result, VkCommandBuffer commandBuffer,
                               const VkCommandBufferBeginInfo* pBeginInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1023,7 +1019,7 @@ class VkDecoderSnapshot::Impl {
     void vkEndCommandBuffer(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkResult input_result, VkCommandBuffer commandBuffer) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1037,7 +1033,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkResult input_result, VkCommandBuffer commandBuffer,
                               VkCommandBufferResetFlags flags) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1051,7 +1047,7 @@ class VkDecoderSnapshot::Impl {
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
                            VkPipeline pipeline) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1065,7 +1061,7 @@ class VkDecoderSnapshot::Impl {
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                           VkCommandBuffer commandBuffer, uint32_t firstViewport,
                           uint32_t viewportCount, const VkViewport* pViewports) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1079,7 +1075,7 @@ class VkDecoderSnapshot::Impl {
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkCommandBuffer commandBuffer, uint32_t firstScissor,
                          uint32_t scissorCount, const VkRect2D* pScissors) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1092,7 +1088,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetLineWidth(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer, float lineWidth) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1106,7 +1102,7 @@ class VkDecoderSnapshot::Impl {
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer, float depthBiasConstantFactor,
                            float depthBiasClamp, float depthBiasSlopeFactor) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1119,7 +1115,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetBlendConstants(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkCommandBuffer commandBuffer, const float blendConstants[4]) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1133,7 +1129,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer, float minDepthBounds,
                              float maxDepthBounds) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1148,7 +1144,7 @@ class VkDecoderSnapshot::Impl {
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask,
                                     uint32_t compareMask) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1162,7 +1158,7 @@ class VkDecoderSnapshot::Impl {
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask,
                                   uint32_t writeMask) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1176,7 +1172,7 @@ class VkDecoderSnapshot::Impl {
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask,
                                   uint32_t reference) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1193,7 +1189,7 @@ class VkDecoderSnapshot::Impl {
                                  uint32_t firstSet, uint32_t descriptorSetCount,
                                  const VkDescriptorSet* pDescriptorSets,
                                  uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1207,7 +1203,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                               VkIndexType indexType) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1222,7 +1218,7 @@ class VkDecoderSnapshot::Impl {
                                 VkCommandBuffer commandBuffer, uint32_t firstBinding,
                                 uint32_t bindingCount, const VkBuffer* pBuffers,
                                 const VkDeviceSize* pOffsets) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1236,7 +1232,7 @@ class VkDecoderSnapshot::Impl {
                    const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                    VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount,
                    uint32_t firstVertex, uint32_t firstInstance) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1251,7 +1247,7 @@ class VkDecoderSnapshot::Impl {
                           VkCommandBuffer commandBuffer, uint32_t indexCount,
                           uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset,
                           uint32_t firstInstance) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1265,7 +1261,7 @@ class VkDecoderSnapshot::Impl {
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                            uint32_t drawCount, uint32_t stride) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1279,7 +1275,7 @@ class VkDecoderSnapshot::Impl {
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkCommandBuffer commandBuffer, VkBuffer buffer,
                                   VkDeviceSize offset, uint32_t drawCount, uint32_t stride) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1293,7 +1289,7 @@ class VkDecoderSnapshot::Impl {
                        const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                        VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY,
                        uint32_t groupCountZ) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1307,7 +1303,7 @@ class VkDecoderSnapshot::Impl {
                                const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                VkCommandBuffer commandBuffer, VkBuffer buffer,
                                VkDeviceSize offset) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1321,7 +1317,7 @@ class VkDecoderSnapshot::Impl {
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer,
                          uint32_t regionCount, const VkBufferCopy* pRegions) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1337,7 +1333,7 @@ class VkDecoderSnapshot::Impl {
                         VkImageLayout srcImageLayout, VkImage dstImage,
                         VkImageLayout dstImageLayout, uint32_t regionCount,
                         const VkImageCopy* pRegions) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1353,7 +1349,7 @@ class VkDecoderSnapshot::Impl {
                         VkImageLayout srcImageLayout, VkImage dstImage,
                         VkImageLayout dstImageLayout, uint32_t regionCount,
                         const VkImageBlit* pRegions, VkFilter filter) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1368,7 +1364,7 @@ class VkDecoderSnapshot::Impl {
                                 VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage,
                                 VkImageLayout dstImageLayout, uint32_t regionCount,
                                 const VkBufferImageCopy* pRegions) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1383,7 +1379,7 @@ class VkDecoderSnapshot::Impl {
                                 VkCommandBuffer commandBuffer, VkImage srcImage,
                                 VkImageLayout srcImageLayout, VkBuffer dstBuffer,
                                 uint32_t regionCount, const VkBufferImageCopy* pRegions) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1397,7 +1393,7 @@ class VkDecoderSnapshot::Impl {
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer, VkBuffer dstBuffer,
                            VkDeviceSize dstOffset, VkDeviceSize dataSize, const void* pData) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1411,7 +1407,7 @@ class VkDecoderSnapshot::Impl {
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkCommandBuffer commandBuffer, VkBuffer dstBuffer, VkDeviceSize dstOffset,
                          VkDeviceSize size, uint32_t data) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1426,7 +1422,7 @@ class VkDecoderSnapshot::Impl {
                               VkCommandBuffer commandBuffer, VkImage image,
                               VkImageLayout imageLayout, const VkClearColorValue* pColor,
                               uint32_t rangeCount, const VkImageSubresourceRange* pRanges) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1443,7 +1439,7 @@ class VkDecoderSnapshot::Impl {
                                      VkImageLayout imageLayout,
                                      const VkClearDepthStencilValue* pDepthStencil,
                                      uint32_t rangeCount, const VkImageSubresourceRange* pRanges) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1458,7 +1454,7 @@ class VkDecoderSnapshot::Impl {
                                VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                const VkClearAttachment* pAttachments, uint32_t rectCount,
                                const VkClearRect* pRects) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1474,7 +1470,7 @@ class VkDecoderSnapshot::Impl {
                            VkImageLayout srcImageLayout, VkImage dstImage,
                            VkImageLayout dstImageLayout, uint32_t regionCount,
                            const VkImageResolve* pRegions) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1488,7 +1484,7 @@ class VkDecoderSnapshot::Impl {
                        const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                        VkCommandBuffer commandBuffer, VkEvent event,
                        VkPipelineStageFlags stageMask) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1502,7 +1498,7 @@ class VkDecoderSnapshot::Impl {
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkCommandBuffer commandBuffer, VkEvent event,
                          VkPipelineStageFlags stageMask) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1521,7 +1517,7 @@ class VkDecoderSnapshot::Impl {
                          const VkBufferMemoryBarrier* pBufferMemoryBarriers,
                          uint32_t imageMemoryBarrierCount,
                          const VkImageMemoryBarrier* pImageMemoryBarriers) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1540,7 +1536,7 @@ class VkDecoderSnapshot::Impl {
                               const VkBufferMemoryBarrier* pBufferMemoryBarriers,
                               uint32_t imageMemoryBarrierCount,
                               const VkImageMemoryBarrier* pImageMemoryBarriers) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1554,7 +1550,7 @@ class VkDecoderSnapshot::Impl {
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t query,
                          VkQueryControlFlags flags) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1567,7 +1563,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdEndQuery(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                        const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                        VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t query) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1581,7 +1577,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer, VkQueryPool queryPool,
                              uint32_t firstQuery, uint32_t queryCount) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1595,7 +1591,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage,
                              VkQueryPool queryPool, uint32_t query) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1611,7 +1607,7 @@ class VkDecoderSnapshot::Impl {
                                    VkQueryPool queryPool, uint32_t firstQuery, uint32_t queryCount,
                                    VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize stride,
                                    VkQueryResultFlags flags) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1626,7 +1622,7 @@ class VkDecoderSnapshot::Impl {
                             VkCommandBuffer commandBuffer, VkPipelineLayout layout,
                             VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size,
                             const void* pValues) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1641,7 +1637,7 @@ class VkDecoderSnapshot::Impl {
                               VkCommandBuffer commandBuffer,
                               const VkRenderPassBeginInfo* pRenderPassBegin,
                               VkSubpassContents contents) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1654,7 +1650,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdNextSubpass(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                           VkCommandBuffer commandBuffer, VkSubpassContents contents) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1667,7 +1663,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdEndRenderPass(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkCommandBuffer commandBuffer) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1681,7 +1677,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkCommandBuffer commandBuffer, uint32_t commandBufferCount,
                               const VkCommandBuffer* pCommandBuffers) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1705,7 +1701,7 @@ class VkDecoderSnapshot::Impl {
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkResult input_result, VkDevice device, uint32_t bindInfoCount,
                             const VkBindImageMemoryInfo* pBindInfos) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         for (uint32_t i = 0; i < bindInfoCount; ++i) {
             VkImage boxed_VkImage = unboxed_to_boxed_non_dispatchable_VkImage(pBindInfos[i].image);
             VkDeviceMemory boxed_VkDeviceMemory =
@@ -1735,7 +1731,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetDeviceMask(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkCommandBuffer commandBuffer, uint32_t deviceMask) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1750,7 +1746,7 @@ class VkDecoderSnapshot::Impl {
                            VkCommandBuffer commandBuffer, uint32_t baseGroupX, uint32_t baseGroupY,
                            uint32_t baseGroupZ, uint32_t groupCountX, uint32_t groupCountY,
                            uint32_t groupCountZ) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1829,7 +1825,7 @@ class VkDecoderSnapshot::Impl {
                                         const VkAllocationCallbacks* pAllocator,
                                         VkSamplerYcbcrConversion* pYcbcrConversion) {
         if (!pYcbcrConversion) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pYcbcrConversion create
         mReconstruction.addHandles((const uint64_t*)pYcbcrConversion, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pYcbcrConversion, 1,
@@ -1846,7 +1842,7 @@ class VkDecoderSnapshot::Impl {
                                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                          VkDevice device, VkSamplerYcbcrConversion ycbcrConversion,
                                          const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // ycbcrConversion destroy
         mReconstruction.removeHandles((const uint64_t*)(&ycbcrConversion), 1, true);
     }
@@ -1858,7 +1854,7 @@ class VkDecoderSnapshot::Impl {
                                           const VkAllocationCallbacks* pAllocator,
                                           VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate) {
         if (!pDescriptorUpdateTemplate) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pDescriptorUpdateTemplate create
         mReconstruction.addHandles((const uint64_t*)pDescriptorUpdateTemplate, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pDescriptorUpdateTemplate, 1,
@@ -1876,7 +1872,7 @@ class VkDecoderSnapshot::Impl {
                                            VkDevice device,
                                            VkDescriptorUpdateTemplate descriptorUpdateTemplate,
                                            const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // descriptorUpdateTemplate destroy
         mReconstruction.removeHandles((const uint64_t*)(&descriptorUpdateTemplate), 1, true);
     }
@@ -1914,7 +1910,7 @@ class VkDecoderSnapshot::Impl {
                                 VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                 VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                 uint32_t maxDrawCount, uint32_t stride) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1931,7 +1927,7 @@ class VkDecoderSnapshot::Impl {
                                        VkDeviceSize offset, VkBuffer countBuffer,
                                        VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                        uint32_t stride) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1947,7 +1943,7 @@ class VkDecoderSnapshot::Impl {
                              const VkRenderPassCreateInfo2* pCreateInfo,
                              const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
         if (!pRenderPass) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pRenderPass create
         mReconstruction.addHandles((const uint64_t*)pRenderPass, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pRenderPass, 1,
@@ -1963,7 +1959,7 @@ class VkDecoderSnapshot::Impl {
                                VkCommandBuffer commandBuffer,
                                const VkRenderPassBeginInfo* pRenderPassBegin,
                                const VkSubpassBeginInfo* pSubpassBeginInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1978,7 +1974,7 @@ class VkDecoderSnapshot::Impl {
                            VkCommandBuffer commandBuffer,
                            const VkSubpassBeginInfo* pSubpassBeginInfo,
                            const VkSubpassEndInfo* pSubpassEndInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -1992,7 +1988,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer,
                              const VkSubpassEndInfo* pSubpassEndInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2046,7 +2042,7 @@ class VkDecoderSnapshot::Impl {
                                  const VkAllocationCallbacks* pAllocator,
                                  VkPrivateDataSlot* pPrivateDataSlot) {
         if (!pPrivateDataSlot) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pPrivateDataSlot create
         mReconstruction.addHandles((const uint64_t*)pPrivateDataSlot, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pPrivateDataSlot, 1,
@@ -2062,7 +2058,7 @@ class VkDecoderSnapshot::Impl {
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkDevice device, VkPrivateDataSlot privateDataSlot,
                                   const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // privateDataSlot destroy
         mReconstruction.removeHandles((const uint64_t*)(&privateDataSlot), 1, true);
     }
@@ -2079,7 +2075,7 @@ class VkDecoderSnapshot::Impl {
                         const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                         VkCommandBuffer commandBuffer, VkEvent event,
                         const VkDependencyInfo* pDependencyInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2093,7 +2089,7 @@ class VkDecoderSnapshot::Impl {
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                           VkCommandBuffer commandBuffer, VkEvent event,
                           VkPipelineStageFlags2 stageMask) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2107,7 +2103,7 @@ class VkDecoderSnapshot::Impl {
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                           VkCommandBuffer commandBuffer, uint32_t eventCount,
                           const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2121,7 +2117,7 @@ class VkDecoderSnapshot::Impl {
                                const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                VkCommandBuffer commandBuffer,
                                const VkDependencyInfo* pDependencyInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2135,7 +2131,7 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage,
                               VkQueryPool queryPool, uint32_t query) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2152,7 +2148,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdCopyBuffer2(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                           VkCommandBuffer commandBuffer, const VkCopyBufferInfo2* pCopyBufferInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2165,7 +2161,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdCopyImage2(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkCommandBuffer commandBuffer, const VkCopyImageInfo2* pCopyImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2179,7 +2175,7 @@ class VkDecoderSnapshot::Impl {
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkCommandBuffer commandBuffer,
                                  const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2193,7 +2189,7 @@ class VkDecoderSnapshot::Impl {
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkCommandBuffer commandBuffer,
                                  const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2206,7 +2202,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdBlitImage2(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkCommandBuffer commandBuffer, const VkBlitImageInfo2* pBlitImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2220,7 +2216,7 @@ class VkDecoderSnapshot::Impl {
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkCommandBuffer commandBuffer,
                             const VkResolveImageInfo2* pResolveImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2233,7 +2229,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdBeginRendering(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer, const VkRenderingInfo* pRenderingInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2246,7 +2242,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdEndRendering(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2259,7 +2255,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetCullMode(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                           VkCommandBuffer commandBuffer, VkCullModeFlags cullMode) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2272,7 +2268,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetFrontFace(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer, VkFrontFace frontFace) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2286,7 +2282,7 @@ class VkDecoderSnapshot::Impl {
                                    VkSnapshotApiCallInfo* apiCallInfo, const uint8_t* apiCallPacket,
                                    size_t apiCallPacketSize, VkCommandBuffer commandBuffer,
                                    VkPrimitiveTopology primitiveTopology) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2300,7 +2296,7 @@ class VkDecoderSnapshot::Impl {
                                    VkSnapshotApiCallInfo* apiCallInfo, const uint8_t* apiCallPacket,
                                    size_t apiCallPacketSize, VkCommandBuffer commandBuffer,
                                    uint32_t viewportCount, const VkViewport* pViewports) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2314,7 +2310,7 @@ class VkDecoderSnapshot::Impl {
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkCommandBuffer commandBuffer, uint32_t scissorCount,
                                   const VkRect2D* pScissors) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2330,7 +2326,7 @@ class VkDecoderSnapshot::Impl {
                                  uint32_t bindingCount, const VkBuffer* pBuffers,
                                  const VkDeviceSize* pOffsets, const VkDeviceSize* pSizes,
                                  const VkDeviceSize* pStrides) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2343,7 +2339,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetDepthTestEnable(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkCommandBuffer commandBuffer, VkBool32 depthTestEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2356,7 +2352,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetDepthWriteEnable(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkCommandBuffer commandBuffer, VkBool32 depthWriteEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2369,7 +2365,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetDepthCompareOp(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkCommandBuffer commandBuffer, VkCompareOp depthCompareOp) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2384,7 +2380,7 @@ class VkDecoderSnapshot::Impl {
                                        const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                        VkCommandBuffer commandBuffer,
                                        VkBool32 depthBoundsTestEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2398,7 +2394,7 @@ class VkDecoderSnapshot::Impl {
                                    VkSnapshotApiCallInfo* apiCallInfo, const uint8_t* apiCallPacket,
                                    size_t apiCallPacketSize, VkCommandBuffer commandBuffer,
                                    VkBool32 stencilTestEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2413,7 +2409,7 @@ class VkDecoderSnapshot::Impl {
                            VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask,
                            VkStencilOp failOp, VkStencilOp passOp, VkStencilOp depthFailOp,
                            VkCompareOp compareOp) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2428,7 +2424,7 @@ class VkDecoderSnapshot::Impl {
                                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                          VkCommandBuffer commandBuffer,
                                          VkBool32 rasterizerDiscardEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2441,7 +2437,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetDepthBiasEnable(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkCommandBuffer commandBuffer, VkBool32 depthBiasEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2456,7 +2452,7 @@ class VkDecoderSnapshot::Impl {
                                         const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                         VkCommandBuffer commandBuffer,
                                         VkBool32 primitiveRestartEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2491,7 +2487,7 @@ class VkDecoderSnapshot::Impl {
                               const VkSwapchainCreateInfoKHR* pCreateInfo,
                               const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain) {
         if (!pSwapchain) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pSwapchain create
         mReconstruction.addHandles((const uint64_t*)pSwapchain, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pSwapchain, 1,
@@ -2506,7 +2502,7 @@ class VkDecoderSnapshot::Impl {
                                const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                VkDevice device, VkSwapchainKHR swapchain,
                                const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // swapchain destroy
         mReconstruction.removeHandles((const uint64_t*)(&swapchain), 1, true);
     }
@@ -2551,7 +2547,7 @@ class VkDecoderSnapshot::Impl {
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkCommandBuffer commandBuffer,
                                 const VkRenderingInfo* pRenderingInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2564,7 +2560,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdEndRenderingKHR(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkCommandBuffer commandBuffer) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2649,7 +2645,7 @@ class VkDecoderSnapshot::Impl {
         const VkAllocationCallbacks* pAllocator,
         VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate) {
         if (!pDescriptorUpdateTemplate) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pDescriptorUpdateTemplate create
         mReconstruction.addHandles((const uint64_t*)pDescriptorUpdateTemplate, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pDescriptorUpdateTemplate, 1,
@@ -2667,7 +2663,7 @@ class VkDecoderSnapshot::Impl {
                                               size_t apiCallPacketSize, VkDevice device,
                                               VkDescriptorUpdateTemplate descriptorUpdateTemplate,
                                               const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // descriptorUpdateTemplate destroy
         mReconstruction.removeHandles((const uint64_t*)(&descriptorUpdateTemplate), 1, true);
     }
@@ -2687,7 +2683,7 @@ class VkDecoderSnapshot::Impl {
                                 const VkAllocationCallbacks* pAllocator,
                                 VkRenderPass* pRenderPass) {
         if (!pRenderPass) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pRenderPass create
         mReconstruction.addHandles((const uint64_t*)pRenderPass, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pRenderPass, 1,
@@ -2703,7 +2699,7 @@ class VkDecoderSnapshot::Impl {
                                   VkCommandBuffer commandBuffer,
                                   const VkRenderPassBeginInfo* pRenderPassBegin,
                                   const VkSubpassBeginInfo* pSubpassBeginInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2718,7 +2714,7 @@ class VkDecoderSnapshot::Impl {
                               VkCommandBuffer commandBuffer,
                               const VkSubpassBeginInfo* pSubpassBeginInfo,
                               const VkSubpassEndInfo* pSubpassEndInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2732,7 +2728,7 @@ class VkDecoderSnapshot::Impl {
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkCommandBuffer commandBuffer,
                                 const VkSubpassEndInfo* pSubpassEndInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2788,7 +2784,7 @@ class VkDecoderSnapshot::Impl {
                                            const VkAllocationCallbacks* pAllocator,
                                            VkSamplerYcbcrConversion* pYcbcrConversion) {
         if (!pYcbcrConversion) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pYcbcrConversion create
         mReconstruction.addHandles((const uint64_t*)pYcbcrConversion, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pYcbcrConversion, 1,
@@ -2806,7 +2802,7 @@ class VkDecoderSnapshot::Impl {
                                             VkDevice device,
                                             VkSamplerYcbcrConversion ycbcrConversion,
                                             const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // ycbcrConversion destroy
         mReconstruction.removeHandles((const uint64_t*)(&ycbcrConversion), 1, true);
     }
@@ -2820,7 +2816,7 @@ class VkDecoderSnapshot::Impl {
                                const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                VkResult input_result, VkDevice device, uint32_t bindInfoCount,
                                const VkBindImageMemoryInfo* pBindInfos) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         for (uint32_t i = 0; i < bindInfoCount; ++i) {
             VkImage boxed_VkImage = unboxed_to_boxed_non_dispatchable_VkImage(pBindInfos[i].image);
             VkDeviceMemory boxed_VkDeviceMemory =
@@ -2889,7 +2885,7 @@ class VkDecoderSnapshot::Impl {
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                            VkCommandBuffer commandBuffer, VkEvent event,
                            const VkDependencyInfo* pDependencyInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2903,7 +2899,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer, VkEvent event,
                              VkPipelineStageFlags2 stageMask) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2917,7 +2913,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer, uint32_t eventCount,
                              const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2931,7 +2927,7 @@ class VkDecoderSnapshot::Impl {
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkCommandBuffer commandBuffer,
                                   const VkDependencyInfo* pDependencyInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2945,7 +2941,7 @@ class VkDecoderSnapshot::Impl {
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage,
                                  VkQueryPool queryPool, uint32_t query) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2964,7 +2960,7 @@ class VkDecoderSnapshot::Impl {
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage,
                                     VkBuffer dstBuffer, VkDeviceSize dstOffset, uint32_t marker) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2985,7 +2981,7 @@ class VkDecoderSnapshot::Impl {
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer,
                              const VkCopyBufferInfo2* pCopyBufferInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -2998,7 +2994,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdCopyImage2KHR(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkCommandBuffer commandBuffer, const VkCopyImageInfo2* pCopyImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3013,7 +3009,7 @@ class VkDecoderSnapshot::Impl {
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkCommandBuffer commandBuffer,
                                     const VkCopyBufferToImageInfo2* pCopyBufferToImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3028,7 +3024,7 @@ class VkDecoderSnapshot::Impl {
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkCommandBuffer commandBuffer,
                                     const VkCopyImageToBufferInfo2* pCopyImageToBufferInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3041,7 +3037,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdBlitImage2KHR(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkCommandBuffer commandBuffer, const VkBlitImageInfo2* pBlitImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3055,7 +3051,7 @@ class VkDecoderSnapshot::Impl {
                                const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                VkCommandBuffer commandBuffer,
                                const VkResolveImageInfo2* pResolveImageInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3090,7 +3086,7 @@ class VkDecoderSnapshot::Impl {
                                   const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                   VkCommandBuffer commandBuffer, VkBuffer buffer,
                                   VkDeviceSize offset, VkDeviceSize size, VkIndexType indexType) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3124,7 +3120,7 @@ class VkDecoderSnapshot::Impl {
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkCommandBuffer commandBuffer, uint32_t lineStippleFactor,
                                 uint16_t lineStipplePattern) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3170,7 +3166,7 @@ class VkDecoderSnapshot::Impl {
                                         const VkAllocationCallbacks* pAllocator,
                                         VkDebugReportCallbackEXT* pCallback) {
         if (!pCallback) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pCallback create
         mReconstruction.addHandles((const uint64_t*)pCallback, 1);
         auto apiCallHandle = apiCallInfo->handle;
@@ -3184,7 +3180,7 @@ class VkDecoderSnapshot::Impl {
                                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                          VkInstance instance, VkDebugReportCallbackEXT callback,
                                          const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // callback destroy
         mReconstruction.removeHandles((const uint64_t*)(&callback), 1, true);
     }
@@ -3201,7 +3197,7 @@ class VkDecoderSnapshot::Impl {
         const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkCommandBuffer commandBuffer,
         uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers,
         const VkDeviceSize* pOffsets, const VkDeviceSize* pSizes) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3218,7 +3214,7 @@ class VkDecoderSnapshot::Impl {
                                         uint32_t counterBufferCount,
                                         const VkBuffer* pCounterBuffers,
                                         const VkDeviceSize* pCounterBufferOffsets) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3234,7 +3230,7 @@ class VkDecoderSnapshot::Impl {
                                       VkCommandBuffer commandBuffer, uint32_t firstCounterBuffer,
                                       uint32_t counterBufferCount, const VkBuffer* pCounterBuffers,
                                       const VkDeviceSize* pCounterBufferOffsets) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3249,7 +3245,7 @@ class VkDecoderSnapshot::Impl {
                                    size_t apiCallPacketSize, VkCommandBuffer commandBuffer,
                                    VkQueryPool queryPool, uint32_t query, VkQueryControlFlags flags,
                                    uint32_t index) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3263,7 +3259,7 @@ class VkDecoderSnapshot::Impl {
                                  const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                  VkCommandBuffer commandBuffer, VkQueryPool queryPool,
                                  uint32_t query, uint32_t index) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3280,7 +3276,7 @@ class VkDecoderSnapshot::Impl {
                                        uint32_t firstInstance, VkBuffer counterBuffer,
                                        VkDeviceSize counterBufferOffset, uint32_t counterOffset,
                                        uint32_t vertexStride) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3319,7 +3315,7 @@ class VkDecoderSnapshot::Impl {
                                       const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                       VkCommandBuffer commandBuffer,
                                       const VkDebugUtilsLabelEXT* pLabelInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3333,7 +3329,7 @@ class VkDecoderSnapshot::Impl {
                                     VkSnapshotApiCallInfo* apiCallInfo,
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkCommandBuffer commandBuffer) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3348,7 +3344,7 @@ class VkDecoderSnapshot::Impl {
                                        const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                        VkCommandBuffer commandBuffer,
                                        const VkDebugUtilsLabelEXT* pLabelInfo) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3366,7 +3362,7 @@ class VkDecoderSnapshot::Impl {
                                         const VkAllocationCallbacks* pAllocator,
                                         VkDebugUtilsMessengerEXT* pMessenger) {
         if (!pMessenger) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pMessenger create
         mReconstruction.addHandles((const uint64_t*)pMessenger, 1);
         auto apiCallHandle = apiCallInfo->handle;
@@ -3380,7 +3376,7 @@ class VkDecoderSnapshot::Impl {
                                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                          VkInstance instance, VkDebugUtilsMessengerEXT messenger,
                                          const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // messenger destroy
         mReconstruction.removeHandles((const uint64_t*)(&messenger), 1, true);
     }
@@ -3418,7 +3414,7 @@ class VkDecoderSnapshot::Impl {
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkCommandBuffer commandBuffer, uint32_t lineStippleFactor,
                                 uint16_t lineStipplePattern) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3433,7 +3429,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetCullModeEXT(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                              const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                              VkCommandBuffer commandBuffer, VkCullModeFlags cullMode) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3446,7 +3442,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetFrontFaceEXT(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkCommandBuffer commandBuffer, VkFrontFace frontFace) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3461,7 +3457,7 @@ class VkDecoderSnapshot::Impl {
                                       const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                       VkCommandBuffer commandBuffer,
                                       VkPrimitiveTopology primitiveTopology) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3476,7 +3472,7 @@ class VkDecoderSnapshot::Impl {
                                       const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                       VkCommandBuffer commandBuffer, uint32_t viewportCount,
                                       const VkViewport* pViewports) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3491,7 +3487,7 @@ class VkDecoderSnapshot::Impl {
                                      const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                      VkCommandBuffer commandBuffer, uint32_t scissorCount,
                                      const VkRect2D* pScissors) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3508,7 +3504,7 @@ class VkDecoderSnapshot::Impl {
                                     uint32_t bindingCount, const VkBuffer* pBuffers,
                                     const VkDeviceSize* pOffsets, const VkDeviceSize* pSizes,
                                     const VkDeviceSize* pStrides) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3522,7 +3518,7 @@ class VkDecoderSnapshot::Impl {
                                     VkSnapshotApiCallInfo* apiCallInfo,
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkCommandBuffer commandBuffer, VkBool32 depthTestEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3536,7 +3532,7 @@ class VkDecoderSnapshot::Impl {
                                      VkSnapshotApiCallInfo* apiCallInfo,
                                      const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                      VkCommandBuffer commandBuffer, VkBool32 depthWriteEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3550,7 +3546,7 @@ class VkDecoderSnapshot::Impl {
                                    VkSnapshotApiCallInfo* apiCallInfo, const uint8_t* apiCallPacket,
                                    size_t apiCallPacketSize, VkCommandBuffer commandBuffer,
                                    VkCompareOp depthCompareOp) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3565,7 +3561,7 @@ class VkDecoderSnapshot::Impl {
                                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                           VkCommandBuffer commandBuffer,
                                           VkBool32 depthBoundsTestEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3579,7 +3575,7 @@ class VkDecoderSnapshot::Impl {
                                       VkSnapshotApiCallInfo* apiCallInfo,
                                       const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                       VkCommandBuffer commandBuffer, VkBool32 stencilTestEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3594,7 +3590,7 @@ class VkDecoderSnapshot::Impl {
                               VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask,
                               VkStencilOp failOp, VkStencilOp passOp, VkStencilOp depthFailOp,
                               VkCompareOp compareOp) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3666,7 +3662,7 @@ class VkDecoderSnapshot::Impl {
                                        VkSnapshotApiCallInfo* apiCallInfo,
                                        const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                        VkCommandBuffer commandBuffer, uint32_t patchControlPoints) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3681,7 +3677,7 @@ class VkDecoderSnapshot::Impl {
                                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                             VkCommandBuffer commandBuffer,
                                             VkBool32 rasterizerDiscardEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3695,7 +3691,7 @@ class VkDecoderSnapshot::Impl {
                                     VkSnapshotApiCallInfo* apiCallInfo,
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkCommandBuffer commandBuffer, VkBool32 depthBiasEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3708,7 +3704,7 @@ class VkDecoderSnapshot::Impl {
     void vkCmdSetLogicOpEXT(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                             const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                             VkCommandBuffer commandBuffer, VkLogicOp logicOp) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3723,7 +3719,7 @@ class VkDecoderSnapshot::Impl {
                                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                            VkCommandBuffer commandBuffer,
                                            VkBool32 primitiveRestartEnable) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3740,7 +3736,7 @@ class VkDecoderSnapshot::Impl {
                                      const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                      VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                      const VkBool32* pColorWriteEnables) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3757,7 +3753,7 @@ class VkDecoderSnapshot::Impl {
                                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                            VkResult input_result, VkDevice device,
                                            VkDeviceMemory memory, uint64_t* pAddress) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // memory modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3802,7 +3798,7 @@ class VkDecoderSnapshot::Impl {
                                              VkImage* pImage,
                                              VkMemoryRequirements* pMemoryRequirements) {
         if (!pImage) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pImage create
         mReconstruction.addHandles((const uint64_t*)pImage, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pImage, 1,
@@ -3820,7 +3816,7 @@ class VkDecoderSnapshot::Impl {
         const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer,
         VkMemoryRequirements* pMemoryRequirements) {
         if (!pBuffer) return;
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // pBuffer create
         mReconstruction.addHandles((const uint64_t*)pBuffer, 1);
         mReconstruction.addHandleDependency((const uint64_t*)pBuffer, 1,
@@ -3841,7 +3837,7 @@ class VkDecoderSnapshot::Impl {
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                 VkResult input_result, VkDevice device, VkDeviceMemory memory,
                                 const VkAllocationCallbacks* pAllocator) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // memory destroy
         mReconstruction.removeHandles((const uint64_t*)(&memory), 1, true);
     }
@@ -3904,7 +3900,7 @@ class VkDecoderSnapshot::Impl {
     void vkGetBlobGOOGLE(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                          const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                          VkResult input_result, VkDevice device, VkDeviceMemory memory) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // memory modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3940,7 +3936,7 @@ class VkDecoderSnapshot::Impl {
                            const VkStridedDeviceAddressRegionKHR* pHitShaderBindingTable,
                            const VkStridedDeviceAddressRegionKHR* pCallableShaderBindingTable,
                            uint32_t width, uint32_t height, uint32_t depth) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3969,7 +3965,7 @@ class VkDecoderSnapshot::Impl {
         const VkStridedDeviceAddressRegionKHR* pHitShaderBindingTable,
         const VkStridedDeviceAddressRegionKHR* pCallableShaderBindingTable,
         VkDeviceAddress indirectDeviceAddress) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -3989,7 +3985,7 @@ class VkDecoderSnapshot::Impl {
                                                 size_t apiCallPacketSize,
                                                 VkCommandBuffer commandBuffer,
                                                 uint32_t pipelineStackSize) {
-        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        android::base::AutoLock lock(mLock);
         // commandBuffer modify
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
@@ -4001,8 +3997,8 @@ class VkDecoderSnapshot::Impl {
     }
 #endif
    private:
-    std::mutex mReconstructionMutex;
-    VkReconstruction mReconstruction GUARDED_BY(mReconstructionMutex);
+    android::base::Lock mLock;
+    VkReconstruction mReconstruction;
 };
 
 VkDecoderSnapshot::VkDecoderSnapshot() : mImpl(new VkDecoderSnapshot::Impl()) {}
