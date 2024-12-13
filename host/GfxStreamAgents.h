@@ -24,6 +24,7 @@ namespace emulation {
 //
 // Most of the agents are not defined, add your agents here if you need
 // access to additional agents.
+#ifdef CONFIG_AEMU
 class GfxStreamGraphicsAgentFactory : public GraphicsAgentFactory {
 public:
     const QAndroidVmOperations* android_get_QAndroidVmOperations()
@@ -35,6 +36,7 @@ public:
     const QAndroidEmulatorWindowAgent*
     android_get_QAndroidEmulatorWindowAgent() const override;
 };
+#endif
 
 }  // namespace emulation
 }  // namespace android
