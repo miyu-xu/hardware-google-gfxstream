@@ -3,6 +3,47 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7ae5f48c_d0531568",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-13T16:12:56Z",
+      "side": 1,
+      "message": "get rid of this, we eventually want it out of rutabaga too.",
+      "range": {
+        "startLine": 123,
+        "startChar": 9,
+        "endLine": 123,
+        "endChar": 27
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "b855e0a7_fd45412f",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+              "range": {
+                "startLine": 123,
+                "startChar": 0,
+                "endLine": 124,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5dcb7bfc_6e937881",
         "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
         "patchSetId": 3
@@ -14,6 +55,24 @@
       "writtenOn": "2024-12-12T23:51:27Z",
       "side": 1,
       "message": "RFC: The idea here is that create_args is optional, and that determines whether the resource is handle is being imported at time of creation, or whether the resource already exists and is to be backed/replaced with the import_handle. This way, I can roll the existing platformImportResource into this interface.\n\nHowever, I\u0027m now wondering if maybe these should just be two new, different, interfaces to make it as explicit as possible? i.e. `stream_renderer_resource_create_and_import()` and `stream_renderer_resource_import()`",
+      "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb86cdef_c16d15c6",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-13T16:12:56Z",
+      "side": 1,
+      "message": "I think it\u0027s important to differentiate a virtio-gpu resource, rutabaga resource, and stream_renderer_resource.  \n\nWith `stream_renderer_resource_import()`, we\u0027ll always want to create a stream_renderer_resource.  For example, even if the `cross-domain` context allocates, we\u0027ll need to import here, adding an additional reference on the underlying memory.  So we\u0027ll have to call `stream_renderer_unref()` too.\n\nSo I just recommend:\n\n```\nstream_renderer_resource_import(uint32_t res_handle, const struct stream_renderer_handle* import_handle, const struct stream_renderer_import_data* import_data)` \n``` \n \n following those semantics.\n\nYou can probably also remove `stream_renderer_resource_create_args` from the import_data.  `stream_renderer_3d_info` is generally enough to reconstruct those arguments (i.e, from DRM_format you can infer VIRGL format, where it\u0027s a texture or buffer, bind).",
+      "parentUuid": "5dcb7bfc_6e937881",
       "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
