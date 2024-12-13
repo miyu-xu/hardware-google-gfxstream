@@ -8652,15 +8652,7 @@ class VkDecoderGlobalState::Impl {
         }
     }
 
-    void destroyInstanceObjects(InstanceObjects& objects) {
-        VkInstance instance = objects.instance.key();
-        InstanceInfo& instanceInfo = objects.instance.mapped();
-        LOG_CALLS_VERBOSE(
-            "destroyInstanceObjects called for instance (app:%s, engine:%s) with %d devices.",
-            instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str(),
-            objects.devices.size());
-
-        for (InstanceObjects::DeviceObjects& deviceObjects : objects.devices) {
+    void destroyDeviceObjects(InstanceObjects::DeviceObjects& deviceObjects) {
             VkDevice device = deviceObjects.device.key();
             DeviceInfo& deviceInfo = deviceObjects.device.mapped();
             VulkanDispatch* deviceDispatch = dispatch_VkDevice(deviceInfo.boxed);
@@ -8673,95 +8665,95 @@ class VkDecoderGlobalState::Impl {
                 // to avoid further issues.
                 ERR("Cannot destroy Vulkan device and objects. "
                     "vkDeviceWaitIdle failed with %s [%d].", string_VkResult(res), res);
-                continue;
+                return;
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu semaphores.", deviceObjects.semaphores.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu semaphores.", deviceObjects.semaphores.size());
             for (auto& [semaphore, semaphoreInfo] : deviceObjects.semaphores) {
                 destroySemaphoreWithExclusiveInfo(device, deviceDispatch, semaphore, semaphoreInfo,
                                                   nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu samplers.", deviceObjects.samplers.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu samplers.", deviceObjects.samplers.size());
             for (auto& [sampler, samplerInfo] : deviceObjects.samplers) {
                 destroySamplerWithExclusiveInfo(device, deviceDispatch, sampler, samplerInfo,
                                                 nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu buffers.", deviceObjects.buffers.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu buffers.", deviceObjects.buffers.size());
             for (auto& [buffer, bufferInfo] : deviceObjects.buffers) {
                 destroyBufferWithExclusiveInfo(device, deviceDispatch, buffer, bufferInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu imageViews.", deviceObjects.imageViews.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu imageViews.", deviceObjects.imageViews.size());
             for (auto& [imageView, imageViewInfo] : deviceObjects.imageViews) {
                 destroyImageViewWithExclusiveInfo(device, deviceDispatch, imageView, imageViewInfo,
                                                   nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu images.", deviceObjects.images.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu images.", deviceObjects.images.size());
             for (auto& [image, imageInfo] : deviceObjects.images) {
                 destroyImageWithExclusiveInfo(device, deviceDispatch, image, imageInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu memories.", deviceObjects.memories.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu memories.", deviceObjects.memories.size());
             for (auto& [memory, memoryInfo] : deviceObjects.memories) {
                 destroyMemoryWithExclusiveInfo(device, deviceDispatch, memory, memoryInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu commandBuffers.", deviceObjects.commandBuffers.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu commandBuffers.", deviceObjects.commandBuffers.size());
             for (auto& [commandBuffer, commandBufferInfo] : deviceObjects.commandBuffers) {
                 freeCommandBufferWithExclusiveInfos(device, deviceDispatch, commandBuffer,
                                                        commandBufferInfo,
                                                        deviceObjects.commandPools);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu commandPools.", deviceObjects.commandPools.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu commandPools.", deviceObjects.commandPools.size());
             for (auto& [commandPool, commandPoolInfo] : deviceObjects.commandPools) {
                 destroyCommandPoolWithExclusiveInfo(device, deviceDispatch, commandPool,
                                                     commandPoolInfo, deviceObjects.commandBuffers,
                                                     nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu descriptorPools.", deviceObjects.descriptorPools.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu descriptorPools.", deviceObjects.descriptorPools.size());
             for (auto& [descriptorPool, descriptorPoolInfo] : deviceObjects.descriptorPools) {
                 destroyDescriptorPoolWithExclusiveInfo(device, deviceDispatch, descriptorPool,
                                                        descriptorPoolInfo,
                                                        deviceObjects.descriptorSets, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu descriptorSetLayouts.", deviceObjects.descriptorSetLayouts.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu descriptorSetLayouts.", deviceObjects.descriptorSetLayouts.size());
             for (auto& [descriptorSetLayout, descriptorSetLayoutInfo] :
                  deviceObjects.descriptorSetLayouts) {
                 destroyDescriptorSetLayoutWithExclusiveInfo(
                     device, deviceDispatch, descriptorSetLayout, descriptorSetLayoutInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu shaderModules.", deviceObjects.shaderModules.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu shaderModules.", deviceObjects.shaderModules.size());
             for (auto& [shaderModule, shaderModuleInfo] : deviceObjects.shaderModules) {
                 destroyShaderModuleWithExclusiveInfo(device, deviceDispatch, shaderModule,
                                                      shaderModuleInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu pipelines.", deviceObjects.pipelines.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu pipelines.", deviceObjects.pipelines.size());
             for (auto& [pipeline, pipelineInfo] : deviceObjects.pipelines) {
                 destroyPipelineWithExclusiveInfo(device, deviceDispatch, pipeline, pipelineInfo,
                                                  nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu pipelineCaches.", deviceObjects.pipelineCaches.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu pipelineCaches.", deviceObjects.pipelineCaches.size());
             for (auto& [pipelineCache, pipelineCacheInfo] : deviceObjects.pipelineCaches) {
                 destroyPipelineCacheWithExclusiveInfo(device, deviceDispatch, pipelineCache,
                                                       pipelineCacheInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu framebuffers.", deviceObjects.framebuffers.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu framebuffers.", deviceObjects.framebuffers.size());
             for (auto& [framebuffer, framebufferInfo] : deviceObjects.framebuffers) {
                 destroyFramebufferWithExclusiveInfo(device, deviceDispatch, framebuffer,
                                                     framebufferInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyInstanceObjects: %zu renderPasses.", deviceObjects.renderPasses.size());
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu renderPasses.", deviceObjects.renderPasses.size());
             for (auto& [renderPass, renderPassInfo] : deviceObjects.renderPasses) {
                 destroyRenderPassWithExclusiveInfo(device, deviceDispatch, renderPass,
                                                    renderPassInfo, nullptr);
@@ -8769,6 +8761,18 @@ class VkDecoderGlobalState::Impl {
 
             destroyDeviceWithExclusiveInfo(device, deviceObjects.device.mapped(),
                                            deviceObjects.fences, deviceObjects.queues, nullptr);
+    }
+
+    void destroyInstanceObjects(InstanceObjects& objects) {
+        VkInstance instance = objects.instance.key();
+        InstanceInfo& instanceInfo = objects.instance.mapped();
+        LOG_CALLS_VERBOSE(
+            "destroyInstanceObjects called for instance (app:%s, engine:%s) with %d devices.",
+            instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str(),
+            objects.devices.size());
+
+        for (InstanceObjects::DeviceObjects& deviceObjects : objects.devices) {
+            destroyDeviceObjects(deviceObjects);
         }
 
         m_vk->vkDestroyInstance(instance, nullptr);
