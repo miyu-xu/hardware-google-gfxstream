@@ -1,5 +1,57 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26041e11_ece5e5ac",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2708,
+      "author": {
+        "id": 1278660
+      },
+      "writtenOn": "2024-12-13T22:05:11Z",
+      "side": 1,
+      "message": "I don\u0027t think you want to use `operator[]` as it will create an empty instance in `m_procOwnedCleanupCallbacks` if `tInfo-\u003em_puid` is not present.",
+      "range": {
+        "startLine": 2708,
+        "startChar": 51,
+        "endLine": 2708,
+        "endChar": 52
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "e33e9bc8_d0181cbe",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/FrameBuffer.cpp",
+              "range": {
+                "startLine": 2708,
+                "startChar": 0,
+                "endLine": 2709,
+                "endChar": 0
+              },
+              "replacement": "    auto callbackMapIt \u003d m_procOwnedCleanupCallbacks.find(tInfo-\u003em_puid);\n    if (callbackMapIt \u003d\u003d m_procOwnedCleanupCallbacks.end()) {\n        ERR(\"%s: tried to register cleanup callback for nonexistent process %llu\",\n            __func__, (unsigned long long)(tInfo-\u003em_puid));\n        return;\n    }\n    auto\u0026 callbackMap \u003d callbackMapIt-\u003esecond;\n"
+            },
+            {
+              "path": "host/FrameBuffer.cpp",
+              "range": {
+                "startLine": 2721,
+                "startChar": 0,
+                "endLine": 2722,
+                "endChar": 0
+              },
+              "replacement": "    auto callbackMapIt \u003d m_procOwnedCleanupCallbacks.find(tInfo-\u003em_puid);\n    if (callbackMapIt \u003d\u003d m_procOwnedCleanupCallbacks.end()) {\n        ERR(\"%s: tried to unregister cleanup callback for nonexistent process %llu\",\n            __func__, (unsigned long long)(tInfo-\u003em_puid));\n        return;\n    }\n    auto\u0026 callbackMap \u003d callbackMapIt-\u003esecond;\n"
+            }
+          ]
+        }
+      ],
+      "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
