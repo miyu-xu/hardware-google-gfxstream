@@ -75,6 +75,24 @@
       "parentUuid": "5dcb7bfc_6e937881",
       "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a9c6871_2375e690",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-13T16:38:19Z",
+      "side": 1,
+      "message": "Keep in mind I\u0027m trying to cover the case here where the stream-renderer resource already exists i.e. I want to roll platformImportResource into this functionality, and abolish that interface entirely. So in this case, when res_handle already exists, it doesn\u0027t create a new resource. Are we ok with that behavior being somewhat implicit?",
+      "parentUuid": "cb86cdef_c16d15c6",
+      "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
