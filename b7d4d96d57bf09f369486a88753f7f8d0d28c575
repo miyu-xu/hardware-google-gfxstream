@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dce9ad17_c72531a4",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 1055,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-12-13T22:44:05Z",
+      "side": 1,
+      "message": "I think we want to check this against `0` to avoid making a connection to a invalid node. Perhaps define a \n\n```\nstatic constexpr const uint64_t kInvalidHandle \u003d 0;\n```\n\nin `VkSnapshotApiCall.h` and compare against that to make it more readable.",
+      "range": {
+        "startLine": 1055,
+        "startChar": 8,
+        "endLine": 1055,
+        "endChar": 33
+      },
+      "revId": "b7d4d96d57bf09f369486a88753f7f8d0d28c575",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b20bcd9_b030cd36",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-12-13T22:44:05Z",
+      "side": 1,
+      "message": "IIUC, the `HandleModification::apiRefs` only refers to the \"generic\" handles created for `vkCmd*()` calls. Does that mean that we can do:\n\n```suggestion\n        removeHandles(item-\u003eapiRefs.data(), item-\u003eapiRefs.size());\n\n        item-\u003eapiRefs.clear();\n```\n\nso that with something like\n\n```\n// Frame-1\n\u003cvkBeginCommandBuffer\u003e -\u003e \"generic-handle-1\"\n\u003cvkCmdBeginRenderPass\u003e -\u003e \"generic-handle-2\"\n\u003cvkCmdDraw\u003e            -\u003e \"generic-handle-3\"\n\u003cvkCmdEndRenderPass\u003e   -\u003e \"generic-handle-4\"\n\u003cvkEndCommandBuffer\u003e   -\u003e \"generic-handle-5\"\n\n// Frame-2\n\u003cvkBeginCommandBuffer\u003e -\u003e \"generic-handle-6\"\n```\n\nwe destroy `generic-handle-1` through `generic-handle-5` during the `vkBeginCommandBuffer()` in `Frame-2`?",
+      "range": {
+        "startLine": 547,
+        "startChar": 8,
+        "endLine": 547,
+        "endChar": 30
+      },
+      "revId": "b7d4d96d57bf09f369486a88753f7f8d0d28c575",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8cbf0610_0fd29d0e",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 586,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-12-13T22:44:05Z",
+      "side": 1,
+      "message": "```suggestion\n    auto* item \u003d mHandleModifications.get(commandBuffer);\n```",
+      "range": {
+        "startLine": 586,
+        "startChar": 4,
+        "endLine": 586,
+        "endChar": 8
+      },
+      "revId": "b7d4d96d57bf09f369486a88753f7f8d0d28c575",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4ed5211_a8e0d3c8",
+        "filename": "host/vulkan/VkReconstruction.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 592,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2024-12-13T22:44:05Z",
+      "side": 1,
+      "message": "```suggestion\n    auto lastApiHandle \u003d item-\u003eapiRefs.back();\n```\n\nsince you already checked for non-empty",
+      "range": {
+        "startLine": 591,
+        "startChar": 4,
+        "endLine": 592,
+        "endChar": 41
+      },
+      "revId": "b7d4d96d57bf09f369486a88753f7f8d0d28c575",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
