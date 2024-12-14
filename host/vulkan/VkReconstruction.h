@@ -83,6 +83,12 @@ class VkReconstruction {
     void addHandles(const uint64_t* toAdd, uint32_t count);
     void removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive = true);
 
+    // only applicable to command pool
+    void resetChildren(const uint64_t* toReset, uint32_t count);
+
+    // only applicable to command buffer, needs to remove the RECORD
+    void resetHandles(const uint64_t* toRemove, uint32_t count);
+
     void forEachHandleAddApi(const uint64_t* toProcess, uint32_t count,
                              uint64_t VkSnapshotApiCallHandle, HandleState state = CREATED);
     void forEachHandleDeleteApi(const uint64_t* toProcess, uint32_t count);
@@ -129,7 +135,7 @@ class VkReconstruction {
     uint64_t getHandleOfLastModifyApi(uint64_t commandBuffer);
 
    private:
-    std::vector<uint64_t> getOrderedUniqueModifyApis() const;
+    std::vector<uint64_t> getOrderedUniqueModifyApis() ;
 
     VkSnapshotApiCallManager mApiCallManager;
 
