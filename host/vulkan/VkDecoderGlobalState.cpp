@@ -2167,7 +2167,7 @@ class VkDecoderGlobalState::Impl {
                 physicalQueueInfo.device = *pDevice;
                 physicalQueueInfo.queueFamilyIndex = index;
                 physicalQueueInfo.boxed = boxedQueue;
-                physicalQueueInfo.queueMutex = std::make_shared<std::mutex>();
+                physicalQueueInfo.physicalQueueLock = std::make_shared<android::base::Lock>();
                 queues.push_back(physicalQueue);
 
                 if (addVirtualQueue) {
@@ -2196,7 +2196,8 @@ class VkDecoderGlobalState::Impl {
                         virtualQueueInfo.device = physicalQueueInfo.device;
                         virtualQueueInfo.queueFamilyIndex = physicalQueueInfo.queueFamilyIndex;
                         virtualQueueInfo.boxed = boxedVirtualQueue;
-                        virtualQueueInfo.queueMutex = physicalQueueInfo.queueMutex;  // Shares the same lock!
+                        virtualQueueInfo.physicalQueueLock =
+                            physicalQueueInfo.physicalQueueLock;  // Shares the same lock!
                         queues.push_back(virtualQueue);
                     }
                     i++;
@@ -2272,7 +2273,7 @@ class VkDecoderGlobalState::Impl {
         auto eraseIt = queueInfos.begin();
         for (; eraseIt != queueInfos.end();) {
             if (eraseIt->second.device == device) {
-                eraseIt->second.queueMutex.reset();
+                eraseIt->second.physicalQueueLock.reset();
                 delete_VkQueue(eraseIt->second.boxed);
                 eraseIt = queueInfos.erase(eraseIt);
             } else {
@@ -5750,9 +5751,9 @@ class VkDecoderGlobalState::Impl {
 
         VkQueue defaultQueue;
         uint32_t defaultQueueFamilyIndex;
-        std::mutex* defaultQueueMutex;
+        Lock* defaultQueueLock;
         if (!getDefaultQueueForDeviceLocked(device, &defaultQueue, &defaultQueueFamilyIndex,
-                                            &defaultQueueMutex)) {
+                                            &defaultQueueLock)) {
             INFO("%s: can't get the default q", __func__);
             return VK_ERROR_INITIALIZATION_FAILED;
         }
@@ -5767,7 +5768,7 @@ class VkDecoderGlobalState::Impl {
         AndroidNativeBufferInfo* anbInfo = imageInfo->anbInfo.get();
 
         VkResult result = setAndroidNativeImageSemaphoreSignaled(
-            vk, device, defaultQueue, defaultQueueFamilyIndex, defaultQueueMutex, semaphore,
+            vk, device, defaultQueue, defaultQueueFamilyIndex, defaultQueueLock, semaphore,
             usedFence, anbInfo);
         if (result != VK_SUCCESS) {
             return result;
@@ -5828,7 +5829,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         return syncImageToColorBuffer(m_emu->callbacks, vk, queueInfo->queueFamilyIndex, queue,
-                                      queueInfo->queueMutex.get(), waitSemaphoreCount, pWaitSemaphores,
+                                      queueInfo->physicalQueueLock.get(), waitSemaphoreCount, pWaitSemaphores,
                                       pNativeFenceFd, anbInfo);
     }
 
@@ -6254,7 +6255,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         VkDevice device = VK_NULL_HANDLE;
-        std::mutex* queueMutex = nullptr;
+        Lock* ql;
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto* queueInfo = android::base::find(mQueueInfo, queue);
@@ -6263,7 +6264,7 @@ class VkDecoderGlobalState::Impl {
                 return VK_ERROR_INITIALIZATION_FAILED;
             }
             device = queueInfo->device;
-            queueMutex = queueInfo->queueMutex.get();
+            ql = queueInfo->physicalQueueLock.get();
 
             // Unsafe to release when snapshot enabled.
             // Snapshot load might fail to find the shader modules if we release them here.
@@ -6315,7 +6316,7 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
-        std::lock_guard<std::mutex> queueLock(*queueMutex);
+        AutoLock qlock(*ql);
         auto result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
 
         if (result != VK_SUCCESS) {
@@ -6398,12 +6399,12 @@ class VkDecoderGlobalState::Impl {
 
         if (!queue) return VK_SUCCESS;
 
-        std::mutex* queueMutex;
+        Lock* ql;
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
             auto* queueInfo = android::base::find(mQueueInfo, queue);
             if (!queueInfo) return VK_SUCCESS;
-            queueMutex = queueInfo->queueMutex.get();
+            ql = queueInfo->physicalQueueLock.get();
         }
 
         if (mEnableVirtualVkQueue) {
@@ -6412,7 +6413,7 @@ class VkDecoderGlobalState::Impl {
             // allow submissions and other operations on the virtualized queue
         }
 
-        std::lock_guard<std::mutex> queueLock(*queueMutex);
+        AutoLock qlock(*ql);
         return vk->vkQueueWaitIdle(queue);
     }
 
@@ -8296,7 +8297,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     bool getDefaultQueueForDeviceLocked(VkDevice device, VkQueue* queue, uint32_t* queueFamilyIndex,
-                                        std::mutex** queueMutex) {
+                                        Lock** queueLock) {
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
         if (!deviceInfo) return false;
 
@@ -8309,7 +8310,7 @@ class VkDecoderGlobalState::Impl {
                 for (auto& deviceQueue : it.second) {
                     *queue = deviceQueue;
                     *queueFamilyIndex = index;
-                    *queueMutex = mQueueInfo.at(deviceQueue).queueMutex.get();
+                    *queueLock = mQueueInfo.at(deviceQueue).physicalQueueLock.get();
                     return true;
                 }
             }
@@ -8319,7 +8320,7 @@ class VkDecoderGlobalState::Impl {
             // Use queue family index 0.
             *queue = zeroIt->second[0];
             *queueFamilyIndex = 0;
-            *queueMutex = mQueueInfo.at(zeroIt->second[0]).queueMutex.get();
+            *queueLock = mQueueInfo.at(zeroIt->second[0]).physicalQueueLock.get();
             return true;
         }
 

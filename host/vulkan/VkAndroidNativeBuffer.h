@@ -18,7 +18,6 @@
 #include <atomic>
 #include <deque>
 #include <memory>
-#include <mutex>
 #include <optional>
 #include <unordered_set>
 #include <vector>
@@ -96,11 +95,11 @@ struct AndroidNativeBufferInfo {
         VkCommandBuffer cb = VK_NULL_HANDLE;
         VkCommandBuffer cb2 = VK_NULL_HANDLE;
         VkFence fence = VK_NULL_HANDLE;
-        std::mutex* queueMutex = nullptr;
+        android::base::Lock* lock = nullptr;
         uint32_t queueFamilyIndex = 0;
         std::optional<CancelableFuture> latestUse;
         void setup(VulkanDispatch* vk, VkDevice device, VkQueue queue, uint32_t queueFamilyIndex,
-                   std::mutex* queueMutex);
+                   android::base::Lock* queueLock);
         void teardown(VulkanDispatch* vk, VkDevice device);
     };
     // We keep one QueueState for each queue family index used by the guest
@@ -132,7 +131,7 @@ struct AndroidNativeBufferInfo {
         void returnFence(VkFence fence);
 
        private:
-        std::mutex mMutex;
+        android::base::Lock mLock;
 
         VulkanDispatch* mVk;
         VkDevice mDevice;
@@ -163,13 +162,13 @@ void getGralloc1Usage(VkFormat format, VkImageUsageFlags imageUsage,
 VkResult setAndroidNativeImageSemaphoreSignaled(VulkanDispatch* vk, VkDevice device,
                                                 VkQueue defaultQueue,
                                                 uint32_t defaultQueueFamilyIndex,
-                                                std::mutex* defaultQueueMutex,
+                                                android::base::Lock* defaultQueueLock,
                                                 VkSemaphore semaphore, VkFence fence,
                                                 AndroidNativeBufferInfo* anbInfo);
 
 VkResult syncImageToColorBuffer(gfxstream::host::BackendCallbacks& callbacks, VulkanDispatch* vk,
                                 uint32_t queueFamilyIndex, VkQueue queue,
-                                std::mutex* queueMutex, uint32_t waitSemaphoreCount,
+                                android::base::Lock* queueLock, uint32_t waitSemaphoreCount,
                                 const VkSemaphore* pWaitSemaphores, int* pNativeFenceFd,
                                 AndroidNativeBufferInfo* anbInfo);
 
