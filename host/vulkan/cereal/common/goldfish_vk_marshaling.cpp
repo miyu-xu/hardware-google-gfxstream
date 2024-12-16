@@ -23339,6 +23339,9 @@ const char* api_opcode_to_string(const uint32_t opcode) {
         }
 #endif
         default: {
+                     fprintf(stderr, "%s %s %d opcode 0x%llx %d does not have name\n",
+                             __FILE__, __func__, __LINE__, (unsigned long long)opcode, (int)opcode);
+                     abort();
             return "OP_UNKNOWN_API_CALL";
         }
     }

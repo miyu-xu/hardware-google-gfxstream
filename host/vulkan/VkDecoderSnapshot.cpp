@@ -1433,6 +1433,10 @@ class VkDecoderSnapshot::Impl {
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
+        for (uint32_t i = 0; i < bindingCount; ++i) {
+            mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkBuffer(pBuffers[i]));
+        }
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
@@ -1863,6 +1867,7 @@ class VkDecoderSnapshot::Impl {
                                VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                const VkClearAttachment* pAttachments, uint32_t rectCount,
                                const VkClearRect* pRects) {
+        // todo: add deps on attachments and rects
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
         // commandBuffer action
         VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();

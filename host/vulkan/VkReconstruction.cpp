@@ -28,6 +28,11 @@ namespace vk {
 namespace {
 
 uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
+    if (info.packet.empty()) {
+        fprintf(stderr, "%s %s %d: empty packet for info handle 0x%llx\n",
+                __FILE__, __func__, __LINE__, (unsigned long long)(info.handle));
+        return -1;
+    }
     if (info.packet.size() <= 4) return -1;
 
     return *(reinterpret_cast<const uint32_t*>(info.packet.data()));
@@ -379,10 +384,12 @@ void VkReconstruction::dump() {
 
     mApiCallManager.forEachLiveEntry_const(
         [&traceBytesTotal](bool live, uint64_t handle, const VkSnapshotApiCallInfo& info) {
-            const uint32_t opcode = GetOpcode(info);
-            INFO("VkReconstruction::%s: api handle 0x%llx: %s", __func__,
+            if(!info.packet.empty()) {
+                const uint32_t opcode = GetOpcode(info);
+                INFO("VkReconstruction::%s: api handle 0x%llx: %s", __func__,
                  (unsigned long long)handle, api_opcode_to_string(opcode));
-            traceBytesTotal += info.packet.size();
+                traceBytesTotal += info.packet.size();
+            }
         });
 
     mHandleReconstructions.forEachLiveComponent_const(
@@ -390,16 +397,23 @@ void VkReconstruction::dump() {
                const HandleWithStateReconstruction& reconstruction) {
             INFO("VkReconstruction::%s: %p handle 0x%llx api refs:", __func__, this,
                     (unsigned long long)entityHandle);
-            for (const auto& state : reconstruction.states) {
+            for (int i = 0; i < reconstruction.states.size(); ++i ) {
+                INFO("VkReconstruction::%s: %p handle 0x%llx api refs: state %d",
+                        __func__, this, (unsigned long long)entityHandle, i);
+                const auto& state = reconstruction.states[i];
                 for (auto apiHandle : state.apiRefs) {
                     auto apiInfo = mApiCallManager.get(apiHandle);
                     const char* apiName =
                         apiInfo ? api_opcode_to_string(GetOpcode(*apiInfo)) : "unalloced";
+                    if (apiInfo) {
                     INFO("VkReconstruction::%s:     0x%llx: %s", __func__,
                             (unsigned long long)apiHandle, apiName);
                     for (auto createdHandle : apiInfo->createdHandles) {
                         INFO("VkReconstruction::%s:         created 0x%llx", __func__,
                                 (unsigned long long)createdHandle);
+                    }
+                    } else {
+                        ERR("BAD there is no apiInfo for handle 0x%llx state %d", (unsigned long long)entityHandle, i);
                     }
                 }
             }
@@ -562,7 +576,10 @@ void VkReconstruction::addHandleDependency(const uint64_t* handles, uint32_t cou
                                            HandleState parentState) {
     if (!handles) return;
 
-    if (!parentHandle) return;
+    if (!parentHandle) {
+        DEBUG_RECON("WARN: adding null parent handle for : 0x%lx", handles[0]);
+        return;
+    }
 
     auto parentItem = mHandleReconstructions.get(parentHandle);
 
@@ -609,6 +626,7 @@ void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint
 
         if (!item) continue;
 
+        DEBUG_RECON("%s %d handle 0x%lx added modify api 0x%llx", __func__, __LINE__, toProcess[i], apiHandle);
         item->apiRefs.push_back(apiHandle);
     }
 }
@@ -687,6 +705,7 @@ uint64_t VkReconstruction::getHandleOfLastModifyApi(uint64_t commandBuffer) {
     DEBUG_RECON("%s %s %d failed: the api 0x%llx name %s does no create any handles\n",
             __FILE__, __func__, __LINE__, (unsigned long long)apiHandle,
             itemApi ? api_opcode_to_string(GetOpcode(*itemApi)) : "unknown");
+    abort();
     return 0;
 }
 
