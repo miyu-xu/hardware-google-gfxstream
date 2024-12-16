@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e76ed585_d90adade",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-16T16:23:15Z",
+      "side": 1,
+      "message": "Hi @kocdemir@google.com, did you resolve the issues that required the revert originally?",
+      "revId": "fa8fb334e5434b29d707b30aa8f112efaa360226",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
