@@ -34,6 +34,24 @@
       "parentUuid": "e76ed585_d90adade",
       "revId": "fa8fb334e5434b29d707b30aa8f112efaa360226",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4009533b_ca00f9e3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-16T17:16:17Z",
+      "side": 1,
+      "message": "ACK, I\u0027ve got the fix incoming, so I will checkout this patchset, and then append to it. Then hopefully we can actually submit this revert^2 + the fix 😊",
+      "parentUuid": "7c95f284_9e3d7f85",
+      "revId": "fa8fb334e5434b29d707b30aa8f112efaa360226",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
