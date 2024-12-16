@@ -129,6 +129,24 @@
       "parentUuid": "ef075adc_fc1422f4",
       "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0422490c_f17a5581",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-16T18:35:48Z",
+      "side": 1,
+      "message": "Done, updated.",
+      "parentUuid": "465f258d_0023c074",
+      "revId": "67a18bcb631ec36f37171da67c8ac181537461b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
