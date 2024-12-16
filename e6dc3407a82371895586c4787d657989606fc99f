@@ -16,6 +16,24 @@
       "message": "lgtm, but I think there is no need to shorten it to \u0027ResHandle\u0027 and \u0027ResourceHandle\u0027 would actually be be better.",
       "revId": "e6dc3407a82371895586c4787d657989606fc99f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a197a3fa_4d53e4bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-16T18:34:44Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "31b50845_28b0742d",
+      "revId": "e6dc3407a82371895586c4787d657989606fc99f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
