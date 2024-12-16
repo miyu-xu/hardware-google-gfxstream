@@ -76,6 +76,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef115208_29fe2896",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2708,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-16T10:24:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7e5081f0_a05f5266",
+      "range": {
+        "startLine": 2708,
+        "startChar": 51,
+        "endLine": 2708,
+        "endChar": 52
+      },
+      "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0111e914_3317c5dc",
@@ -127,6 +151,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e0d770f_8bbbd8af",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2713,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-16T10:24:21Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "0111e914_3317c5dc",
+      "range": {
+        "startLine": 2713,
+        "startChar": 15,
+        "endLine": 2713,
+        "endChar": 25
+      },
+      "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "28c393a8_b58e2c0c",
@@ -140,6 +188,30 @@
       "writtenOn": "2024-12-13T22:12:57Z",
       "side": 1,
       "message": "`erase(Key)` returns the number of elements deleted, which saves you one lookup.",
+      "range": {
+        "startLine": 2722,
+        "startChar": 0,
+        "endLine": 2727,
+        "endChar": 27
+      },
+      "revId": "674d2a97718a24c3f2e1b1f5383b6f0f164f89aa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3665483a_b0dd5b2a",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2727,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-16T10:24:21Z",
+      "side": 1,
+      "message": "Acknowledged, I\u0027ll create a separate CL.",
+      "parentUuid": "28c393a8_b58e2c0c",
       "range": {
         "startLine": 2722,
         "startChar": 0,
