@@ -16,6 +16,24 @@
       "message": "Hi @kocdemir@google.com, did you resolve the issues that required the revert originally?",
       "revId": "fa8fb334e5434b29d707b30aa8f112efaa360226",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c95f284_9e3d7f85",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-16T16:38:12Z",
+      "side": 1,
+      "message": "Not yet, I just reverted the revert to try the changes locally by downloading them all from gerrit. Although, we have some other issues on ToT Mac that I need to prioritize, so will need to deal with relanding this later.",
+      "parentUuid": "e76ed585_d90adade",
+      "revId": "fa8fb334e5434b29d707b30aa8f112efaa360226",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
