@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6a5f803_005e0dda",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-16T21:22:43Z",
+      "side": 1,
+      "message": "@kocdemir@google.com can you take this out of WIP? All the changes in https://android-https://android-review.googlesource.com/q/topic:%22revert-3414268-revert-3393388-extmem-refactor-dec-5-BQXYSDRQMH-NSWBHNMIQY%22 are ready to be submitted, including the revert-of-revert.",
+      "revId": "3a0092e21d71da70e8e846086c867047d6bae8a8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
