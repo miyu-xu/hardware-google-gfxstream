@@ -16,6 +16,24 @@
       "message": "You\u0027ll need to rebase this chain to avoid getting compilation errors due to a cmake function removal from the qemu side (aosp/3416642).",
       "revId": "30ca6ff07b8bddbe44572a4f85c88b024c1ea7c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf4d997e_153352ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-17T16:35:45Z",
+      "side": 1,
+      "message": "@kocdemir@google.com, I can\u0027t push patchsets to your existing ChangeId:\n\n```\nTo https://android.googlesource.com/platform/hardware/google/gfxstream\n ! [remote rejected]     HEAD -\u003e refs/for/main (cannot add patch set to 3416499.)\nerror: failed to push some refs to \u0027https://android.googlesource.com/platform/hardware/google/gfxstream\u0027\n```\n\nDo you want to just abandon your revert change, and I can submit my own branch new, rebased chain?",
+      "parentUuid": "009a1e8f_f879dfed",
+      "revId": "30ca6ff07b8bddbe44572a4f85c88b024c1ea7c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
