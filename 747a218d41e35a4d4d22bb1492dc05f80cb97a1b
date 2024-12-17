@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "953038c1_8a328cbd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-17T23:45:37Z",
+      "side": 1,
+      "message": "I think this one requires `NO_IFTTT` in the commit message.",
+      "revId": "747a218d41e35a4d4d22bb1492dc05f80cb97a1b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
