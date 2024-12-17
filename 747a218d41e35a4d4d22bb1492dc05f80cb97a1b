@@ -16,6 +16,24 @@
       "message": "I think this one requires `NO_IFTTT` in the commit message.",
       "revId": "747a218d41e35a4d4d22bb1492dc05f80cb97a1b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e5a6f97_c8115d0a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-17T23:49:35Z",
+      "side": 1,
+      "message": "ACK, can you give new +2?",
+      "parentUuid": "953038c1_8a328cbd",
+      "revId": "747a218d41e35a4d4d22bb1492dc05f80cb97a1b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
