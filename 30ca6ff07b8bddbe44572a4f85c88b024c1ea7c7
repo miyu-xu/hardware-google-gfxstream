@@ -34,6 +34,24 @@
       "parentUuid": "009a1e8f_f879dfed",
       "revId": "30ca6ff07b8bddbe44572a4f85c88b024c1ea7c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ea33e04_67a41de5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-17T17:00:52Z",
+      "side": 1,
+      "message": "Ok, I pushed my own patchset: https://android-review.googlesource.com/q/topic:%22revert-3414268-revert-3393388-extmem-refactor-dec-5-BQXYSDRQMH-OOUAWBOGDN%22\n\nYou can discard your revert chain, please 😊",
+      "parentUuid": "cf4d997e_153352ed",
+      "revId": "30ca6ff07b8bddbe44572a4f85c88b024c1ea7c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
