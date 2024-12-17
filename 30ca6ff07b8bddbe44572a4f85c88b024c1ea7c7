@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "009a1e8f_f879dfed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-17T12:39:31Z",
+      "side": 1,
+      "message": "You\u0027ll need to rebase this chain to avoid getting compilation errors due to a cmake function removal from the qemu side (aosp/3416642).",
+      "revId": "30ca6ff07b8bddbe44572a4f85c88b024c1ea7c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
