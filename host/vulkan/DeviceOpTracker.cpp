@@ -86,11 +86,11 @@ void DeviceOpTracker::Poll() {
             mPollFunctions.begin(), mPollFunctions.end(), [old](const PollFunction& pollingFunc) {
                 return (pollingFunc.timepoint < old);
             });
-        if (numOldFuncs > kSizeLoggingThreshold) {
-            WARN("VkDevice:%p has %d pending waitables, %d taking more than %d milliseconds.",
-                 mDevice, mPollFunctions.size(), numOldFuncs,
-                 std::chrono::duration_cast<std::chrono::milliseconds>(kSizeLoggingTimeThreshold));
-        }
+        // if (numOldFuncs > kSizeLoggingThreshold) {
+        //     WARN("VkDevice:%p has %d pending waitables, %d taking more than %d milliseconds.",
+        //          mDevice, mPollFunctions.size(), numOldFuncs,
+        //          std::chrono::duration_cast<std::chrono::milliseconds>(kSizeLoggingTimeThreshold));
+        // }
     }
 }
 
