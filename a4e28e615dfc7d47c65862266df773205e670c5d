@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4706688c_d78c1f9f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3665895
+      },
+      "writtenOn": "2024-12-17T04:34:23Z",
+      "side": 1,
+      "message": "Nyes I agree w commit Msg the major stalkings is what it like.",
+      "revId": "a4e28e615dfc7d47c65862266df773205e670c5d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
