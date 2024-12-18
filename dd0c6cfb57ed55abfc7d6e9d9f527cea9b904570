@@ -62,6 +62,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0353f878_90b5e574",
+        "filename": "host/VirtioGpuResource.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-18T17:04:15Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "a7b91ebc_085b1413",
+      "range": {
+        "startLine": 185,
+        "startChar": 41,
+        "endLine": 185,
+        "endChar": 113
+      },
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e4ce9b7e_ed7ec6c6",
@@ -103,6 +127,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0bcc6b37_ef173d86",
+        "filename": "host/VirtioGpuResource.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-18T17:04:15Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "e4ce9b7e_ed7ec6c6",
+      "range": {
+        "startLine": 212,
+        "startChar": 62,
+        "endLine": 212,
+        "endChar": 75
+      },
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1533a4d4_39b0c551",
@@ -140,6 +188,30 @@
           ]
         }
       ],
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76cc2d67_a6ce95cd",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-18T17:04:15Z",
+      "side": 1,
+      "message": "I am also going to have `STREAM_RENDERER_IMPORT_FLAG_PRESERVE_CONTENT` in subsequent review. What is the reason for this making this bit 31?",
+      "parentUuid": "1533a4d4_39b0c551",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 60
+      },
       "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
