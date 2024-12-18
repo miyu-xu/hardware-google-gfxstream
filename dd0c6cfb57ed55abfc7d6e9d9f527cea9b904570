@@ -238,6 +238,30 @@
       },
       "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73a1b87c_01f92c18",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-18T17:16:45Z",
+      "side": 1,
+      "message": "ACK. But, we need to continue supporting it for now on our end, unfortunately 😞",
+      "parentUuid": "d2a6e849_4233b4a4",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 60
+      },
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
