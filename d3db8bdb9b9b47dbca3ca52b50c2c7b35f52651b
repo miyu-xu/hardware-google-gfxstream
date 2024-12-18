@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf33b2ce_65006271",
+        "filename": "host/gl/ColorBufferGl.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 381,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-18T17:02:15Z",
+      "side": 1,
+      "message": "100-line limit",
+      "range": {
+        "startLine": 350,
+        "startChar": 0,
+        "endLine": 381,
+        "endChar": 0
+      },
+      "revId": "d3db8bdb9b9b47dbca3ca52b50c2c7b35f52651b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
