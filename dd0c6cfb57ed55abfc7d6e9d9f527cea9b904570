@@ -1,0 +1,147 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7b91ebc_085b1413",
+        "filename": "host/VirtioGpuResource.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-18T16:55:16Z",
+      "side": 1,
+      "message": "100 line limit",
+      "range": {
+        "startLine": 185,
+        "startChar": 41,
+        "endLine": 185,
+        "endChar": 113
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "002ccc51_52ba8376",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/VirtioGpuResource.cpp",
+              "range": {
+                "startLine": 185,
+                "startChar": 0,
+                "endLine": 186,
+                "endChar": 0
+              },
+              "replacement": "        stream_renderer_error(\n            \"Failed to import resource: stream_renderer_3d_info not provided in import data.\");\n"
+            },
+            {
+              "path": "host/VirtioGpuResource.cpp",
+              "range": {
+                "startLine": 197,
+                "startChar": 0,
+                "endLine": 198,
+                "endChar": 0
+              },
+              "replacement": "        stream_renderer_error(\"No virgl format available for drm_fourcc: %d\",\n                              import_data-\u003einfo_3d.drm_fourcc);\n"
+            },
+            {
+              "path": "host/VirtioGpuResource.cpp",
+              "range": {
+                "startLine": 212,
+                "startChar": 0,
+                "endLine": 213,
+                "endChar": 0
+              },
+              "replacement": "        stream_renderer_error(\n            \"Failed to create resource with import_handle: arguments resulted in unhandled type. \"\n            \"Only ColorBuffer resources are supported for import.\");\n"
+            }
+          ]
+        }
+      ],
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4ce9b7e_ed7ec6c6",
+        "filename": "host/VirtioGpuResource.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-18T16:55:16Z",
+      "side": 1,
+      "message": "100 line limit.  Try running clang format on file.",
+      "range": {
+        "startLine": 212,
+        "startChar": 62,
+        "endLine": 212,
+        "endChar": 75
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "f557dd6a_e60b4289",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/VirtioGpuResource.cpp",
+              "range": {
+                "startLine": 212,
+                "startChar": 0,
+                "endLine": 213,
+                "endChar": 0
+              },
+              "replacement": "        stream_renderer_error(\"Failed to create resource with import_handle: \"\n                              \"arguments resulted in unhandled type. Only ColorBuffer resources are \"\n                              \"supported for import.\");\n"
+            }
+          ]
+        }
+      ],
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1533a4d4_39b0c551",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-18T16:55:16Z",
+      "side": 1,
+      "message": "Make this (1 \u003c\u003c 31)",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 60
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "7650bcf7_b2912d51",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+              "range": {
+                "startLine": 127,
+                "startChar": 0,
+                "endLine": 128,
+                "endChar": 0
+              },
+              "replacement": "#define STREAM_RENDERER_IMPORT_FLAG_RESOURCE_EXISTS (1 \u003c\u003c 31)\n"
+            }
+          ]
+        }
+      ],
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
