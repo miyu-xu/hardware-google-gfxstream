@@ -214,6 +214,30 @@
       },
       "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d2a6e849_4233b4a4",
+        "filename": "host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2024-12-18T17:06:57Z",
+      "side": 1,
+      "message": "Very GL focused.  Once we have VK everywhere, which is a trend with Zink/ANGLE, we can delete GL related flags without leaving \"gaps\".",
+      "parentUuid": "76cc2d67_a6ce95cd",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 60
+      },
+      "revId": "dd0c6cfb57ed55abfc7d6e9d9f527cea9b904570",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
