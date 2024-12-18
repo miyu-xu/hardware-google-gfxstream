@@ -1118,13 +1118,17 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
     ContextPtr prevCtx = thread->eglContext;
 
     if(releaseContext) { //releasing current context
-       if(prevCtx.get()) {
-           g_eglInfo->getIface(prevCtx->version())->flush();
-           if(!dpy->nativeType()->makeCurrent(NULL,NULL,NULL)) {
-               RETURN_ERROR(EGL_FALSE,EGL_BAD_ACCESS);
-           }
-           thread->updateInfo(ContextPtr(),dpy,NULL,ShareGroupPtr(),dpy->getManager(prevCtx->version()));
-       }
+        if (prevCtx.get()) {
+            g_eglInfo->getIface(prevCtx->version())->flush();
+            {
+                android::base::AutoLock mutex(s_eglLock);
+                if (!dpy->nativeType()->makeCurrent(NULL, NULL, NULL)) {
+                    RETURN_ERROR(EGL_FALSE, EGL_BAD_ACCESS);
+                }
+            }
+            thread->updateInfo(ContextPtr(), dpy, NULL, ShareGroupPtr(),
+                               dpy->getManager(prevCtx->version()));
+        }
     } else { //assining new context
         VALIDATE_CONTEXT(context);
         VALIDATE_SURFACE(draw,newDrawSrfc);
@@ -1268,6 +1272,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSwapBuffers(EGLDisplay display, EGLSurface surf
         RETURN_ERROR(EGL_FALSE,EGL_BAD_SURFACE);
     }
 
+    android::base::AutoLock mutex(s_eglLock);
     dpy->nativeType()->swapBuffers(Srfc->native());
     return EGL_TRUE;
 }
