@@ -1119,6 +1119,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
 
     if(releaseContext) { //releasing current context
        if(prevCtx.get()) {
+           android::base::AutoLock mutex(s_eglLock);
            g_eglInfo->getIface(prevCtx->version())->flush();
            if(!dpy->nativeType()->makeCurrent(NULL,NULL,NULL)) {
                RETURN_ERROR(EGL_FALSE,EGL_BAD_ACCESS);
@@ -1268,6 +1269,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSwapBuffers(EGLDisplay display, EGLSurface surf
         RETURN_ERROR(EGL_FALSE,EGL_BAD_SURFACE);
     }
 
+    android::base::AutoLock mutex(s_eglLock);
     dpy->nativeType()->swapBuffers(Srfc->native());
     return EGL_TRUE;
 }
