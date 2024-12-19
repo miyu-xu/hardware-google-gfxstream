@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2f4c7c1_989ad940",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2024-12-19T14:11:12Z",
+      "side": 1,
+      "message": "Probably we should introduce a separate function for this, because there are other similar usages in VkCommonOperations.cpp and actually we may need multiple handles in some queries. But there is already some other refactoring going on around these functionalities, so LGTM.",
+      "revId": "b91d745f66f6d04b5a8258e6603f40f5eb5191b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
