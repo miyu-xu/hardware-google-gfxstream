@@ -236,13 +236,21 @@ bool RenderThread::saveSnapshot(const SnapshotObjects& objects) {
     });
 }
 
-void RenderThread::setFinished() {
+void RenderThread::sendExitSignal() {
+    AutoLock lock(mLock);
+    mExitSignal.broadcastAndUnlock(&lock);
+}
+void RenderThread::setFinished(bool waitForExitSignal) {
     // Make sure it never happens that we wait forever for the thread to
     // save to snapshot while it was not even going to.
     AutoLock lock(mLock);
     mFinished.store(true, std::memory_order_relaxed);
     if (mState != SnapshotState::Empty) {
         mCondVar.broadcastAndUnlock(&lock);
+    }
+    if (waitForExitSignal) {
+        GL_LOG("Waiting for exit signal RenderThread @%p", this);
+        mExitSignal.wait(&lock);
     }
 }
 
@@ -310,7 +318,7 @@ intptr_t RenderThread::main() {
         while (ioStream->read(&flags, sizeof(flags)) != sizeof(flags)) {
             // Stream read may fail because of a pending snapshot.
             if (!saveSnapshot(snapshotObjects)) {
-                setFinished();
+                setFinished(true);
                 GL_LOG("Exited a RenderThread @%p early", this);
                 return 0;
             }
@@ -583,7 +591,7 @@ intptr_t RenderThread::main() {
     }
 #endif
 
-    setFinished();
+    setFinished(true);
 
     GL_LOG("Exited a RenderThread @%p", this);
     return 0;
