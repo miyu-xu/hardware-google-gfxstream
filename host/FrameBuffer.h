@@ -401,6 +401,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // lock and unlock handles (EmulatedEglContext, ColorBuffer, EmulatedEglWindowSurface)
     void lock() ACQUIRE(m_lock);
     void unlock() RELEASE(m_lock);
+    void eglLock();
+    void eglUnlock();
 
     float getDpr() const { return m_dpr; }
     int windowWidth() const { return m_windowWidth; }

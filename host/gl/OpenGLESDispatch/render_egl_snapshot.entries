@@ -21,3 +21,5 @@ void eglUseOsEglApi(EGLBoolean enable, EGLBoolean nullEgl);
 void eglSetMaxGLESVersion(EGLint glesVersion);
 
 void eglFillUsages(void* usages);
+void eglLock();
+void eglUnlock();

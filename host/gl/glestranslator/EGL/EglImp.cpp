@@ -141,6 +141,9 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSaveContext(EGLDisplay display, EGLContext cont
 EGLAPI EGLBoolean EGLAPIENTRY eglPostSaveContext(EGLDisplay display, EGLContext context, EGLStreamKHR stream);
 EGLAPI EGLContext EGLAPIENTRY eglLoadContext(EGLDisplay display, const EGLint *attrib_list, EGLStreamKHR stream);
 
+EGLAPI void eglLock();
+EGLAPI void eglUnlock();
+
 EGLAPI EGLBoolean EGLAPIENTRY eglSaveAllImages(EGLDisplay display,
                                                EGLStreamKHR stream,
                                                const void* textureSaver);
@@ -1749,6 +1752,12 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSaveAllImages(EGLDisplay display,
     return EGL_TRUE;
 }
 
+EGLAPI void eglLock(){
+    s_eglLock.lock();
+}
+EGLAPI void eglUnlock(){
+    s_eglLock.unlock();
+}
 EGLAPI EGLBoolean EGLAPIENTRY eglLoadAllImages(EGLDisplay display,
                                                EGLStreamKHR stream,
                                                const void* textureLoader) {

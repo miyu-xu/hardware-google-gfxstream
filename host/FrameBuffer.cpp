@@ -2677,6 +2677,14 @@ bool FrameBuffer::onLoad(Stream* stream,
     // TODO: restore memory management
 }
 
+void FrameBuffer::eglLock() {
+    s_egl.eglLock();
+}
+
+void FrameBuffer::eglUnlock() {
+    s_egl.eglUnlock();
+}
+
 void FrameBuffer::lock() { m_lock.lock(); }
 
 void FrameBuffer::unlock() { m_lock.unlock(); }

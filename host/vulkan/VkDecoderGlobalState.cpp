@@ -46,6 +46,7 @@
 #include "common/goldfish_vk_reserved_marshaling.h"
 #include "compressedTextureFormats/AstcCpuDecompressor.h"
 #include "gfxstream/host/Tracing.h"
+#include "FrameBuffer.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/HostmemIdMapping.h"
 #include "host-common/address_space_device_control_ops.h"
@@ -2316,7 +2317,12 @@ class VkDecoderGlobalState::Impl {
         }
 
         // Run the underlying API call.
-        m_vk->vkDestroyDevice(device, pAllocator);
+        {
+            auto fb = FrameBuffer::getFB();
+            fb->eglLock();
+            m_vk->vkDestroyDevice(device, pAllocator);
+            fb->eglUnlock();
+        }
 
         delete_VkDevice(deviceInfo.boxed);
     }
