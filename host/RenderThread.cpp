@@ -29,6 +29,7 @@
 #include "aemu/base/synchronization/MessageChannel.h"
 #include "aemu/base/system/System.h"
 #include "apigen-codec-common/ChecksumCalculatorThreadInfo.h"
+#include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
 #include "vulkan/VkCommonOperations.h"
 
@@ -53,6 +54,8 @@ namespace gfxstream {
 using android::base::AutoLock;
 using android::base::EventHangMetadata;
 using android::base::MessageChannel;
+using emugl::ABORT_REASON_OTHER;
+using emugl::FatalError;
 using emugl::GfxApiLogger;
 using vk::VkDecoderContext;
 
@@ -236,13 +239,33 @@ bool RenderThread::saveSnapshot(const SnapshotObjects& objects) {
     });
 }
 
-void RenderThread::setFinished() {
+void RenderThread::waitForFinished() {
+    AutoLock lock(mLock);
+    while (!mFinished.load(std::memory_order_relaxed)) {
+        mCondVar.wait(&lock);
+    }
+}
+
+void RenderThread::sendExitSignal() {
+    AutoLock lock(mLock);
+    if (!mFinished.load(std::memory_order_relaxed)) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+            << "RenderThread exit signal sent before finished";
+    }
+    mExitSignal.broadcastAndUnlock(&lock);
+}
+
+void RenderThread::setFinished(bool waitForExitSignal) {
     // Make sure it never happens that we wait forever for the thread to
     // save to snapshot while it was not even going to.
     AutoLock lock(mLock);
     mFinished.store(true, std::memory_order_relaxed);
     if (mState != SnapshotState::Empty) {
         mCondVar.broadcastAndUnlock(&lock);
+    }
+    if (waitForExitSignal) {
+        GL_LOG("Waiting for exit signal RenderThread @%p", this);
+        mExitSignal.wait(&lock);
     }
 }
 
@@ -310,7 +333,7 @@ intptr_t RenderThread::main() {
         while (ioStream->read(&flags, sizeof(flags)) != sizeof(flags)) {
             // Stream read may fail because of a pending snapshot.
             if (!saveSnapshot(snapshotObjects)) {
-                setFinished();
+                setFinished(true);
                 GL_LOG("Exited a RenderThread @%p early", this);
                 return 0;
             }
@@ -583,7 +606,7 @@ intptr_t RenderThread::main() {
     }
 #endif
 
-    setFinished();
+    setFinished(true);
 
     GL_LOG("Exited a RenderThread @%p", this);
     return 0;
