@@ -182,6 +182,9 @@ AstcEmulationMode getAstcEmulationMode() {
 //    return AstcEmulationMode::Cpu;
 }
 
+#if !GFXSTREAM_ENABLE_HOST_GLES
+android::base::Lock* s_graphicsDriverLock = new android::base::Lock();
+#endif 
 }  // namespace
 
 // |sInitialized| caches the initialized framebuffer state - this way
@@ -2675,6 +2678,24 @@ bool FrameBuffer::onLoad(Stream* stream,
 
     return true;
     // TODO: restore memory management
+}
+
+// static
+void FrameBuffer::graphicsDriverLock() {
+#if GFXSTREAM_ENABLE_HOST_GLES
+    s_egl.eglLock();
+#else
+    s_graphicsDriverLock->lock();
+#endif
+}
+
+// static
+void FrameBuffer::graphicsDriverUnlock() {
+#if GFXSTREAM_ENABLE_HOST_GLES
+    s_egl.eglUnlock();
+#else
+    s_graphicsDriverLock->unlock();
+#endif
 }
 
 void FrameBuffer::lock() { m_lock.lock(); }

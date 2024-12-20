@@ -191,7 +191,10 @@ void RendererImpl::stop(bool wait) {
     // for a while. This means we need to make sure to wait for render thread
     // exit explicitly.
     for (const auto& c : mStoppedChannels) {
+        FrameBuffer::graphicsDriverLock();
+        c->renderThread()->sendExitSignal();
         c->renderThread()->wait();
+        FrameBuffer::graphicsDriverUnlock();
     }
     mCleanupThread->waitForCleanup();
     mStoppedChannels.clear();
@@ -222,7 +225,10 @@ void RendererImpl::cleanupRenderThreads() {
         c->stop();
     }
     for (const auto& c : channels) {
+        FrameBuffer::graphicsDriverLock();
+        c->renderThread()->sendExitSignal();
         c->renderThread()->wait();
+        FrameBuffer::graphicsDriverUnlock();
     }
 }
 
@@ -294,7 +300,11 @@ void RendererImpl::addressSpaceGraphicsConsumerDestroy(void* consumer) {
         android::base::AutoLock lock(mAddressSpaceRenderThreadLock);
         mAddressSpaceRenderThreads.erase(thread);
     }
+
+    FrameBuffer::graphicsDriverLock();
+    thread->sendExitSignal();
     thread->wait();
+    FrameBuffer::graphicsDriverUnlock();
     delete thread;
 }
 

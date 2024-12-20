@@ -13,6 +13,7 @@
 // limitations under the License.
 #include "RenderChannelImpl.h"
 
+#include "FrameBuffer.h"
 #include "RenderThread.h"
 #include "aemu/base/synchronization/Lock.h"
 
@@ -27,7 +28,7 @@
 
 namespace gfxstream {
 
-using Buffer = RenderChannel::Buffer;
+using RCBuffer = RenderChannel::Buffer;
 using IoResult = android::base::BufferQueueResult;
 using State = RenderChannel::State;
 using AutoLock = android::base::AutoLock;
@@ -83,7 +84,7 @@ RenderChannel::State RenderChannelImpl::state() const {
     return mState;
 }
 
-IoResult RenderChannelImpl::tryWrite(Buffer&& buffer) {
+IoResult RenderChannelImpl::tryWrite(RCBuffer&& buffer) {
     D("buffer size=%d", (int)buffer.size());
     AutoLock lock(mLock);
     auto result = mFromGuest.tryPushLocked(std::move(buffer));
@@ -98,7 +99,7 @@ void RenderChannelImpl::waitUntilWritable() {
     mFromGuest.waitUntilPushableLocked();
 }
 
-IoResult RenderChannelImpl::tryRead(Buffer* buffer) {
+IoResult RenderChannelImpl::tryRead(RCBuffer* buffer) {
     D("enter");
     AutoLock lock(mLock);
     auto result = mToGuest.tryPopLocked(buffer);
@@ -108,7 +109,7 @@ IoResult RenderChannelImpl::tryRead(Buffer* buffer) {
     return result;
 }
 
-IoResult RenderChannelImpl::readBefore(Buffer* buffer, Duration waitUntilUs) {
+IoResult RenderChannelImpl::readBefore(RCBuffer* buffer, Duration waitUntilUs) {
     D("enter");
     AutoLock lock(mLock);
     auto result = mToGuest.popLockedBefore(buffer, waitUntilUs);
@@ -131,7 +132,7 @@ void RenderChannelImpl::stop() {
     mEventCallback = [](State state) {};
 }
 
-bool RenderChannelImpl::writeToGuest(Buffer&& buffer) {
+bool RenderChannelImpl::writeToGuest(RCBuffer&& buffer) {
     D("buffer size=%d", (int)buffer.size());
     AutoLock lock(mLock);
     IoResult result = mToGuest.pushLocked(std::move(buffer));
@@ -141,7 +142,7 @@ bool RenderChannelImpl::writeToGuest(Buffer&& buffer) {
     return result == IoResult::Ok;
 }
 
-IoResult RenderChannelImpl::readFromGuest(Buffer* buffer, bool blocking) {
+IoResult RenderChannelImpl::readFromGuest(RCBuffer* buffer, bool blocking) {
     D("enter");
     AutoLock lock(mLock);
     IoResult result;
@@ -192,7 +193,10 @@ void RenderChannelImpl::resume() {
 
 RenderChannelImpl::~RenderChannelImpl() {
     // Make sure the render thread is stopped before the channel is gone.
+    FrameBuffer::graphicsDriverLock();
+    mRenderThread->sendExitSignal();
     mRenderThread->wait();
+    FrameBuffer::graphicsDriverUnlock();
 }
 
 void RenderChannelImpl::updateStateLocked() {
