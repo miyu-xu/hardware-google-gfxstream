@@ -377,6 +377,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     void unlockContextStructureRead() { m_contextStructureLock.unlockRead(); }
 
     // For use with sync threads and otherwise, any time we need a GL context
+    // For use with sync threads and otherwise, any time we need a GL context
     // not specifically for drawing, but to obtain certain things about
     // GL state.
     // It can be unsafe / leaky to change the structure of contexts

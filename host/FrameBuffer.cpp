@@ -182,6 +182,9 @@ AstcEmulationMode getAstcEmulationMode() {
 //    return AstcEmulationMode::Cpu;
 }
 
+#if !GFXSTREAM_ENABLE_HOST_GLES
+android::base::Lock* s_graphicsDriverLock = new android::base::Lock();
+#endif
 }  // namespace
 
 // |sInitialized| caches the initialized framebuffer state - this way
