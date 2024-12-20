@@ -16,6 +16,24 @@
       "message": "```\n19:01:59(08:00.8 ) bld | ::testing::AssertionResult(expression))                     \\\n19:01:59(08:00.20) bld | ^~~~~~~~~~\n...9:01:59(08:00.37) bld | /buildbot/src/android/emu-master-dev/hardware/google/gfxstream/host/tests/FrameBuffer_unittest.cpp:948:58: error: use of undeclared identifier \u0027RESOURCE_TYPE_EGL_NATIVE_PIXMAP\u0027\n19:01:59(08:00.44) bld | EXPECT_TRUE(mFb-\u003eplatformImportResource(colorBuffer, RESOURCE_TYPE_EGL_NATIVE_PIXMAP, pixmap));\n19:01:59(08:00.57) bld | ^\n19:01:59(08:00.82) bld | 5 errors generated.\n19:02:15(08:16.97) bld | ninja: build stopped: subcommand failed.\n```",
       "revId": "1a2234cafae59d9f9bb617d2fe555f5dc3e000f8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "faf97d17_541df961",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2024-12-20T19:09:12Z",
+      "side": 1,
+      "message": "How do I tell what branch of: https://android.googlesource.com/platform/external/qemu/ this checks out?",
+      "parentUuid": "b16e3ee6_93671e76",
+      "revId": "1a2234cafae59d9f9bb617d2fe555f5dc3e000f8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
