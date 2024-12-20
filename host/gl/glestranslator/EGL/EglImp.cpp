@@ -141,6 +141,9 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSaveContext(EGLDisplay display, EGLContext cont
 EGLAPI EGLBoolean EGLAPIENTRY eglPostSaveContext(EGLDisplay display, EGLContext context, EGLStreamKHR stream);
 EGLAPI EGLContext EGLAPIENTRY eglLoadContext(EGLDisplay display, const EGLint *attrib_list, EGLStreamKHR stream);
 
+EGLAPI void eglLock();
+EGLAPI void eglUnlock();
+
 EGLAPI EGLBoolean EGLAPIENTRY eglSaveAllImages(EGLDisplay display,
                                                EGLStreamKHR stream,
                                                const void* textureSaver);
@@ -1120,6 +1123,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglMakeCurrent(EGLDisplay display,
     if(releaseContext) { //releasing current context
        if(prevCtx.get()) {
            g_eglInfo->getIface(prevCtx->version())->flush();
+           android::base::AutoLock mutex(s_eglLock);
            if(!dpy->nativeType()->makeCurrent(NULL,NULL,NULL)) {
                RETURN_ERROR(EGL_FALSE,EGL_BAD_ACCESS);
            }
@@ -1268,7 +1272,10 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSwapBuffers(EGLDisplay display, EGLSurface surf
         RETURN_ERROR(EGL_FALSE,EGL_BAD_SURFACE);
     }
 
-    dpy->nativeType()->swapBuffers(Srfc->native());
+    {
+        android::base::AutoLock mutex(s_eglLock);
+        dpy->nativeType()->swapBuffers(Srfc->native());
+    }
     return EGL_TRUE;
 }
 
@@ -1749,6 +1756,12 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSaveAllImages(EGLDisplay display,
     return EGL_TRUE;
 }
 
+EGLAPI void eglLock(){
+    s_eglLock.lock();
+}
+EGLAPI void eglUnlock(){
+    s_eglLock.unlock();
+}
 EGLAPI EGLBoolean EGLAPIENTRY eglLoadAllImages(EGLDisplay display,
                                                EGLStreamKHR stream,
                                                const void* textureLoader) {
