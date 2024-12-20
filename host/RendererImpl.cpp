@@ -20,6 +20,7 @@
 #include <variant>
 
 #include "FrameBuffer.h"
+#include "GraphicsDriverLock.h"
 #include "RenderChannelImpl.h"
 #include "RenderThread.h"
 #include "aemu/base/system/System.h"
@@ -191,7 +192,13 @@ void RendererImpl::stop(bool wait) {
     // for a while. This means we need to make sure to wait for render thread
     // exit explicitly.
     for (const auto& c : mStoppedChannels) {
-        c->renderThread()->wait();
+        c->renderThread()->waitForFinished();
+        graphicsDriverLock();
+        {
+            android::base::AutoLock lock(*graphicsDriverLock());
+            c->renderThread()->sendExitSignal();
+            c->renderThread()->wait();
+        }
     }
     mCleanupThread->waitForCleanup();
     mStoppedChannels.clear();
@@ -222,7 +229,12 @@ void RendererImpl::cleanupRenderThreads() {
         c->stop();
     }
     for (const auto& c : channels) {
-        c->renderThread()->wait();
+        c->renderThread()->waitForFinished();
+        {
+            android::base::AutoLock lock(*graphicsDriverLock());
+            c->renderThread()->sendExitSignal();
+            c->renderThread()->wait();
+        }
     }
 }
 
@@ -294,7 +306,13 @@ void RendererImpl::addressSpaceGraphicsConsumerDestroy(void* consumer) {
         android::base::AutoLock lock(mAddressSpaceRenderThreadLock);
         mAddressSpaceRenderThreads.erase(thread);
     }
-    thread->wait();
+
+    thread->waitForFinished();
+    {
+        android::base::AutoLock lock(*graphicsDriverLock());
+        thread->sendExitSignal();
+        thread->wait();
+    }
     delete thread;
 }
 
