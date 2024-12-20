@@ -17,5 +17,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglPostSaveContext(EGLDisplay display, EGLConfig c
 EGLAPI void EGLAPIENTRY eglUseOsEglApi(EGLBoolean enable, EGLBoolean nullEgl);
 EGLAPI void EGLAPIENTRY eglSetMaxGLESVersion(EGLint glesVersion);
 EGLAPI void EGLAPIENTRY eglFillUsages(void* usages);
+EGLAPI void EGLAPIENTRY eglLock();
+EGLAPI void EGLAPIENTRY eglUnlock();
 } // namespace translator
 } // namespace egl
