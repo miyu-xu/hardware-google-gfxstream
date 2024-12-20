@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "FrameBuffer.h"
 #include "RenderThreadInfoVk.h"
 #include "VkAndroidNativeBuffer.h"
 #include "VkCommonOperations.h"
@@ -2316,7 +2317,11 @@ class VkDecoderGlobalState::Impl {
         }
 
         // Run the underlying API call.
-        m_vk->vkDestroyDevice(device, pAllocator);
+        {
+            FrameBuffer::eglLock();
+            m_vk->vkDestroyDevice(device, pAllocator);
+            FrameBuffer::eglUnlock();
+        }
 
         delete_VkDevice(deviceInfo.boxed);
     }
