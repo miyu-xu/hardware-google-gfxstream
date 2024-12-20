@@ -13,6 +13,7 @@
 // limitations under the License.
 #include "RenderChannelImpl.h"
 
+#include "GraphicsDriverLock.h"
 #include "RenderThread.h"
 #include "aemu/base/synchronization/Lock.h"
 
@@ -192,7 +193,11 @@ void RenderChannelImpl::resume() {
 
 RenderChannelImpl::~RenderChannelImpl() {
     // Make sure the render thread is stopped before the channel is gone.
+    mRenderThread->waitForFinished();
+    graphicsDriverLock();
+    mRenderThread->sendExitSignal();
     mRenderThread->wait();
+    graphicsDriverUnlock();
 }
 
 void RenderChannelImpl::updateStateLocked() {
