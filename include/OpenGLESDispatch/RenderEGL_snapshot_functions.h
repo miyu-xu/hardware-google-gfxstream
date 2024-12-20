@@ -17,6 +17,8 @@
   X(void, eglUseOsEglApi, (EGLBoolean enable, EGLBoolean nullEgl)) \
   X(void, eglSetMaxGLESVersion, (EGLint glesVersion)) \
   X(void, eglFillUsages, (void* usages)) \
+  X(void, eglLock, ()) \
+  X(void, eglUnlock, ()) \
 
 EGLAPI EGLConfig EGLAPIENTRY eglLoadConfig(EGLDisplay display, EGLStreamKHR stream);
 EGLAPI EGLContext EGLAPIENTRY eglLoadContext(EGLDisplay display, const EGLint * attrib_list, EGLStreamKHR stream);
