@@ -1057,6 +1057,8 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1099,6 +1101,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1128,6 +1132,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1155,6 +1161,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1181,6 +1189,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1208,6 +1218,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1234,6 +1246,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1261,6 +1275,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1289,6 +1305,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1316,6 +1334,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1343,6 +1363,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1373,6 +1395,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1403,6 +1427,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1431,6 +1457,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1458,6 +1486,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1486,6 +1516,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1513,6 +1545,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1540,6 +1574,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1567,6 +1603,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1594,6 +1632,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1621,6 +1661,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1650,6 +1692,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1679,6 +1723,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1707,6 +1753,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1735,6 +1783,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1762,6 +1812,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1789,6 +1841,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1817,6 +1871,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1847,6 +1903,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1875,6 +1933,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1904,6 +1964,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1931,6 +1993,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1958,6 +2022,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -1990,6 +2056,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2021,6 +2089,8 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2061,6 +2131,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2087,6 +2159,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2114,6 +2188,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2141,6 +2217,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2170,6 +2248,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2198,6 +2278,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2230,6 +2312,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2256,6 +2340,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2282,6 +2368,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2309,6 +2397,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2376,6 +2466,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2404,6 +2496,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2581,6 +2675,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2611,6 +2707,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2656,6 +2754,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2684,6 +2784,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2711,6 +2813,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2811,6 +2915,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2838,6 +2944,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2865,6 +2973,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2892,6 +3002,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2919,6 +3031,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2949,6 +3063,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -2975,6 +3091,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3002,6 +3120,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3029,6 +3149,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3055,6 +3177,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3082,6 +3206,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3108,6 +3234,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3134,6 +3262,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3160,6 +3290,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3186,6 +3318,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3213,6 +3347,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3240,6 +3376,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3267,6 +3405,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3296,6 +3436,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3322,6 +3464,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3348,6 +3492,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3374,6 +3520,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3402,6 +3550,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3429,6 +3579,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3457,6 +3609,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3485,6 +3639,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3511,6 +3667,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3539,6 +3697,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3647,6 +3807,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3673,6 +3835,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3825,6 +3989,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3853,6 +4019,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -3880,6 +4048,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4050,6 +4220,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4077,6 +4249,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4104,6 +4278,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4131,6 +4307,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4158,6 +4336,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4190,6 +4370,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4224,6 +4406,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4250,6 +4434,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4278,6 +4464,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4306,6 +4494,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4332,6 +4522,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4359,6 +4551,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4407,6 +4601,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4454,6 +4650,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4544,6 +4742,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4574,6 +4774,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4603,6 +4805,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4631,6 +4835,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4658,6 +4864,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4688,6 +4896,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4740,6 +4950,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4767,6 +4979,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4795,6 +5009,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4878,6 +5094,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4906,6 +5124,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4932,6 +5152,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4960,6 +5182,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -4988,6 +5212,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5016,6 +5242,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5046,6 +5274,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5073,6 +5303,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5100,6 +5332,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5127,6 +5361,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5155,6 +5391,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5182,6 +5420,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5210,6 +5450,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5295,6 +5537,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5323,6 +5567,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5350,6 +5596,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5376,6 +5624,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5404,6 +5654,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5434,6 +5686,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5662,6 +5916,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5704,6 +5960,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
@@ -5737,6 +5995,8 @@ class VkDecoderSnapshot::Impl {
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         // handle vkCmd*** api
+        mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                            (uint64_t)(uintptr_t)commandBuffer);
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
