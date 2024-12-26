@@ -228,7 +228,7 @@ class BoxedHandleManager {
     // We use 16000 as the max number of live handles to track; we don't
     // expect the system to go over 16000 total live handles, outside some
     // dEQP object management tests.
-    using Store = android::base::HybridEntityManager<16000, uint64_t, T>;
+    using Store = android::base::HybridEntityManager<160000, uint64_t, T>;
 
     Lock lock;
     mutable Store store;

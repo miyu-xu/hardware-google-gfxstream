@@ -137,7 +137,7 @@ class VkReconstruction {
    private:
     std::vector<uint64_t> getOrderedUniqueModifyApis() ;
 
-    VkSnapshotApiCallManager mApiCallManager;
+    VkSnapshotApiCallManager mApiCallManager{0xfff};
 
     HandleWithStateReconstructions mHandleReconstructions;
     HandleModifications mHandleModifications;

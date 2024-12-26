@@ -334,6 +334,10 @@ void VkReconstruction::removeHandleFromApiInfo(VkSnapshotApiCallHandle h, uint64
     }
     DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
                 (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
+    if (handles.empty()) {
+        mApiCallManager.remove(h);
+        apiInfo->packet.clear();
+    }
 }
 
 void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
@@ -344,6 +348,7 @@ void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
     if (!item->createdHandles.empty()) return;
 
     item->createdHandles.clear();
+    item->packet.clear();
 
     mApiCallManager.remove(h);
 }
