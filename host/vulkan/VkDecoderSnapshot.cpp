@@ -1378,6 +1378,7 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
                 (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkPipelineLayout(layout));
+        // todo: add descriptor set deps
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
@@ -2200,6 +2201,10 @@ class VkDecoderSnapshot::Impl {
         uint64_t lastCmdModfier =
             mReconstruction.getHandleOfLastModifyApi((uint64_t)(uintptr_t)commandBuffer);
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1, lastCmdModfier);
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)&handle, 1,
+            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkPipelineLayout(layout));
+
         for (uint32_t i = 0; i < 1; ++i) {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
