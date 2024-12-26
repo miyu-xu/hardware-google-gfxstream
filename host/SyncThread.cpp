@@ -160,9 +160,9 @@ void SyncThread::initSyncEGLContext() {
     // believed to be a driver issue.
     std::mutex initMutex;
     mWorkerThreadPool.broadcast([&, this] {
-        std::lock_guard<std::mutex> initLock(initMutex);
         return Command{
-            .mTask = std::packaged_task<int(WorkerId)>([this](WorkerId workerId) {
+            .mTask = std::packaged_task<int(WorkerId)>([&, this](WorkerId workerId) {
+                std::lock_guard<std::mutex> initLock(initMutex);
                 DPRINT("for worker id: %d", workerId);
                 // We shouldn't initialize EGL context, when SyncThread is initialized
                 // without GL enabled.
