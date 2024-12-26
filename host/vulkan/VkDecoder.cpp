@@ -21745,6 +21745,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
 #endif
             default: {
                 m_pool.freeAll();
+                if (m_snapshotsEnabled) {
+                    m_state->snapshot()->destroyApiCallInfoIfUnused(snapshotApiCallInfo);
+                }
                 return ptr - (unsigned char*)buf;
             }
         }

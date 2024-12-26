@@ -23339,7 +23339,9 @@ const char* api_opcode_to_string(const uint32_t opcode) {
         }
 #endif
         default: {
-            return "OP_UNKNOWN_API_CALL";
+            char tmp[256];
+            snprintf(tmp, sizeof(tmp), "OP_UNKNOWN_API_CALL_OPCODE_%d", opcode);
+            return strdup(tmp);
         }
     }
 }
