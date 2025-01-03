@@ -218,6 +218,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
         VkSnapshotApiCallInfo* snapshotApiCallInfo = nullptr;
         if (m_snapshotsEnabled) {
             snapshotApiCallInfo = m_state->snapshot()->createApiCallInfo();
+            fprintf(stderr, "stream %p: created apiInfo 0x%llx\n",
+                            ioStream, (unsigned long long)snapshotApiCallInfo->handle);
         }
 
         gfx_logger.recordCommandExecution();

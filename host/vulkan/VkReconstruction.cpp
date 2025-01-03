@@ -39,7 +39,7 @@ uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
 
 #if DEBUG_RECONSTRUCTION
 
-#define DEBUG_RECON(fmt, ...) INFO(fmt, ##__VA_ARGS__);
+#define DEBUG_RECON(fmt, ...) INFO("%s %d " fmt, __func__, __LINE__, ##__VA_ARGS__);
 
 #else
 
@@ -329,14 +329,22 @@ void VkReconstruction::removeHandleFromApiInfo(VkSnapshotApiCallHandle h, uint64
     auto& handles = apiInfo->createdHandles;
     auto it = std::find(handles.begin(), handles.end(), toRemove);
 
+    DEBUG_RECON("try to removed 1 vk handle  0x%llx from apiInfo  0x%llx, it has %d",
+                (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
     if (it != handles.end()) {
         handles.erase(it);
     }
     DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
                 (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
     if (handles.empty()) {
-        mApiCallManager.remove(h);
         apiInfo->packet.clear();
+        mApiCallManager.remove(h);
+    } else {
+        for (auto handle:handles) {
+            DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, it has 0x%llx",
+                (unsigned long long)toRemove, (unsigned long long)h,
+                (unsigned long long)handle);
+        }
     }
 }
 
@@ -350,6 +358,7 @@ void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
     item->createdHandles.clear();
     item->packet.clear();
 
+    DEBUG_RECON("removed 1 api apiInfo  0x%llx", (unsigned long long)h);
     mApiCallManager.remove(h);
 }
 
@@ -357,6 +366,7 @@ void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
     if (!info) return;
 
     if (info->packet.empty()) {
+        DEBUG_RECON("removed 1 api apiInfo  0x%llx", (unsigned long long)info->handle);
         mApiCallManager.remove(info->handle);
         return;
     }
@@ -365,6 +375,10 @@ void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
         info->createdHandles.insert(info->createdHandles.end(), info->extraCreatedHandles.begin(),
                                     info->extraCreatedHandles.end());
         info->extraCreatedHandles.clear();
+    }
+    for (auto handle: info->createdHandles) {
+        DEBUG_RECON("apiInfo  0x%llx, handle 0x%llx",
+                (unsigned long long)info->handle, (unsigned long long)handle);
     }
 }
 
@@ -465,13 +479,14 @@ void VkReconstruction::resetHandles(const uint64_t* toReset, uint32_t count) {
         DEBUG_RECON("reset cmd buffer 0x%llx parent handles %d to 0", (unsigned long long)toReset[i], item.parentHandles.size());
         item.parentHandles.clear();
     }
+    forEachHandleClearModifyApi(toReset, count);
 }
 
 void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive) {
     if (!toRemove) return;
 
     for (uint32_t i = 0; i < count; ++i) {
-        DEBUG_RECON("remove 0x%llx", (unsigned long long)toRemove[i]);
+        DEBUG_RECON("begin remove 0x%llx", (unsigned long long)toRemove[i]);
         auto item = mHandleReconstructions.get(toRemove[i]);
         // Delete can happen in arbitrary order.
         // It might delete the parents before children, which will automatically remove
@@ -513,6 +528,7 @@ void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, b
             std::vector<uint64_t> childHandles;
             for (const auto& childHandle : item->states[j].childHandles) {
                 if (childHandle.second == CREATED) {
+                    DEBUG_RECON("add child to remove 0x%llx", (unsigned long long)childHandle.first);
                     childHandles.push_back(childHandle.first);
                 }
             }
@@ -521,6 +537,7 @@ void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, b
         }
         forEachHandleDeleteApi(toRemove + i, 1);
         mHandleReconstructions.remove(toRemove[i]);
+        DEBUG_RECON("done remove 0x%llx", (unsigned long long)toRemove[i]);
     }
 }
 
@@ -599,6 +616,12 @@ void VkReconstruction::setCreatedHandlesForApi(uint64_t apiHandle, const uint64_
     if (!item) return;
 
     item->createdHandles.insert(item->createdHandles.end(), created, created + count);
+    for (auto handle: item->createdHandles) {
+        DEBUG_RECON("apiInfo  0x%llx, handle 0x%llx api %s",
+                (unsigned long long)apiHandle,
+                (unsigned long long)handle,
+                api_opcode_to_string(GetOpcode(*item)));
+    }
 }
 
 void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint32_t count,
@@ -626,7 +649,12 @@ void VkReconstruction::forEachHandleClearModifyApi(const uint64_t* toProcess, ui
 
         if (!item) continue;
 
-        item->apiRefs.clear();
+        if (!item->apiRefs.empty()) {
+            DEBUG_RECON("clean out modify api for cmdbuffer handle 0x%llx",
+                    (unsigned long long)toProcess[i]);
+            item->apiRefs.clear();
+        }
+        mHandleModifications.remove(toProcess[i]);
     }
 }
 
@@ -689,9 +717,11 @@ uint64_t VkReconstruction::getHandleOfLastModifyApi(uint64_t commandBuffer) {
     if (itemApi && itemApi->createdHandles.size() > 0) {
         return itemApi->createdHandles[0];
     }
-    DEBUG_RECON("%s %s %d failed: the api 0x%llx name %s does no create any handles\n",
-            __FILE__, __func__, __LINE__, (unsigned long long)apiHandle,
+    DEBUG_RECON("%s %s %d failed: cmdbuffer 0x%llx the api 0x%llx name %s does no create any handles\n", __FILE__, __func__, __LINE__,
+            (unsigned long long)commandBuffer,
+            (unsigned long long)apiHandle,
             itemApi ? api_opcode_to_string(GetOpcode(*itemApi)) : "unknown");
+    abort();
     return 0;
 }
 
