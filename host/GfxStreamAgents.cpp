@@ -466,7 +466,6 @@ static const QAndroidVmOperations sQAndroidVmOperations =
 namespace android {
 namespace emulation {
 
-#ifndef GFXSTREAM_MESON_BUILD
 const QAndroidVmOperations*
 GfxStreamGraphicsAgentFactory::android_get_QAndroidVmOperations() const {
     return &sQAndroidVmOperations;
@@ -482,7 +481,5 @@ GfxStreamGraphicsAgentFactory::android_get_QAndroidEmulatorWindowAgent()
         const {
     return &sQAndroidEmulatorWindowAgent;
 }
-#endif
-
 }  // namespace emulation
 }  // namespace android
