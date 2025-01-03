@@ -528,8 +528,23 @@ void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, b
             std::vector<uint64_t> childHandles;
             for (const auto& childHandle : item->states[j].childHandles) {
                 if (childHandle.second == CREATED) {
-                    DEBUG_RECON("add child to remove 0x%llx", (unsigned long long)childHandle.first);
-                    childHandles.push_back(childHandle.first);
+                    DEBUG_RECON("try add child to remove 0x%llx", (unsigned long long)childHandle.first);
+                    auto mychild = mHandleReconstructions.get(childHandle.first);
+                    if (mychild) {
+                        bool found=false;
+                        auto &myparents = mychild->states[CREATED].parentHandles;
+                        for (auto p1 : myparents) {
+                            if (p1.first == toRemove[i]) {
+                                childHandles.push_back(childHandle.first);
+                                DEBUG_RECON("add child to remove 0x%llx", (unsigned long long)childHandle.first);
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                    DEBUG_RECON("failed to add child to remove 0x%llx", (unsigned long long)childHandle.first);
+                        }
+                    }
                 }
             }
             item->states[j].childHandles.clear();
@@ -600,6 +615,10 @@ void VkReconstruction::addHandleDependency(const uint64_t* handles, uint32_t cou
             continue;
         }
         parentItemState.childHandles.insert({handles[i], static_cast<HandleState>(childState)});
+//        for (const auto& childHandle : parentItemState.childHandles) {
+//            DEBUG_RECON("parent handle 0x%llx state %d child handle 0x%llx state %d",
+//                   parentHandle, parentState, (unsigned long long)childHandle.first, childHandle.second);
+//       }
         childItem->states[childState].parentHandles.push_back(
             {parentHandle, static_cast<HandleState>(parentState)});
         DEBUG_RECON("Child handle 0x%lx state %d depends on parent handle 0x%lx state %d",
