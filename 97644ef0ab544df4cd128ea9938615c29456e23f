@@ -16,6 +16,23 @@
       "message": "https://android-review.googlesource.com/c/platform/prebuilts/android-emulator/+/102652",
       "revId": "97644ef0ab544df4cd128ea9938615c29456e23f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff579a24_56354740",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3821657
+      },
+      "writtenOn": "2025-01-06T04:44:51Z",
+      "side": 1,
+      "message": "102652",
+      "revId": "97644ef0ab544df4cd128ea9938615c29456e23f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
