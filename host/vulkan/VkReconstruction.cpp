@@ -35,17 +35,21 @@ uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
 
 }  // namespace
 
-#define DEBUG_RECONSTRUCTION 1
+#define DEBUG_RECONSTRUCTION 0
 
 #if DEBUG_RECONSTRUCTION
 
 #define DEBUG_RECON(fmt, ...) INFO("%s %d " fmt, __func__, __LINE__, ##__VA_ARGS__);
+#define DEBUG_RECON_X(fmt, ...) INFO("%s %d " fmt, __func__, __LINE__, ##__VA_ARGS__);
 
 #else
 
 #define DEBUG_RECON(fmt, ...)
+#define DEBUG_RECON_X(fmt, ...)
 
 #endif
+#define DEBUG_RECON_Y(fmt, ...) INFO("%s %d " fmt, __func__, __LINE__, ##__VA_ARGS__);
+
 
 VkReconstruction::VkReconstruction() = default;
 
@@ -313,6 +317,7 @@ void VkReconstruction::load(android::base::Stream* stream, emugl::GfxApiLogger& 
 }
 
 VkSnapshotApiCallInfo* VkReconstruction::createApiCallInfo() {
+    std::lock_guard<std::mutex> lock(mApiMutex);
     VkSnapshotApiCallHandle handle = mApiCallManager.add(VkSnapshotApiCallInfo(), 1);
 
     auto* info = mApiCallManager.get(handle);
@@ -333,11 +338,14 @@ void VkReconstruction::removeHandleFromApiInfo(VkSnapshotApiCallHandle h, uint64
                 (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
     if (it != handles.end()) {
         handles.erase(it);
-    }
-    DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
+        DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
                 (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
+    }
     if (handles.empty()) {
         apiInfo->packet.clear();
+        DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx",
+                (unsigned long long)toRemove, (unsigned long long)h);
+        std::lock_guard<std::mutex> lock(mApiMutex);
         mApiCallManager.remove(h);
     } else {
         for (auto handle:handles) {
@@ -358,7 +366,9 @@ void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
     item->createdHandles.clear();
     item->packet.clear();
 
-    DEBUG_RECON("removed 1 api apiInfo  0x%llx", (unsigned long long)h);
+    DEBUG_RECON_X("removed 1 api apiInfo  0x%llx", (unsigned long long)h);
+        fflush(stdout);
+    std::lock_guard<std::mutex> lock(mApiMutex);
     mApiCallManager.remove(h);
 }
 
@@ -366,7 +376,9 @@ void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
     if (!info) return;
 
     if (info->packet.empty()) {
-        DEBUG_RECON("removed 1 api apiInfo  0x%llx", (unsigned long long)info->handle);
+        DEBUG_RECON_X("removed 1 api apiInfo  0x%llx", (unsigned long long)info->handle);
+        fflush(stdout);
+        std::lock_guard<std::mutex> lock(mApiMutex);
         mApiCallManager.remove(info->handle);
         return;
     }
@@ -636,7 +648,7 @@ void VkReconstruction::setCreatedHandlesForApi(uint64_t apiHandle, const uint64_
 
     item->createdHandles.insert(item->createdHandles.end(), created, created + count);
     for (auto handle: item->createdHandles) {
-        DEBUG_RECON("apiInfo  0x%llx, handle 0x%llx api %s",
+        DEBUG_RECON_X("apiInfo  0x%llx, handle 0x%llx api %s",
                 (unsigned long long)apiHandle,
                 (unsigned long long)handle,
                 api_opcode_to_string(GetOpcode(*item)));
@@ -733,13 +745,31 @@ uint64_t VkReconstruction::getHandleOfLastModifyApi(uint64_t commandBuffer) {
     auto last = item->apiRefs.size() - 1;
     auto apiHandle = item->apiRefs[last];
     auto itemApi = mApiCallManager.get(apiHandle);
-    if (itemApi && itemApi->createdHandles.size() > 0) {
-        return itemApi->createdHandles[0];
+    if (!itemApi) {
+        DEBUG_RECON_Y("%s %s %d failed: cmdbuffer 0x%llx the api 0x%llx is missing\n",
+                __FILE__, __func__, __LINE__, (unsigned long long)commandBuffer,
+                (unsigned long long)apiHandle);
+        fflush(stdout);
+        abort();
     }
-    DEBUG_RECON("%s %s %d failed: cmdbuffer 0x%llx the api 0x%llx name %s does no create any handles\n", __FILE__, __func__, __LINE__,
+    if (itemApi && itemApi->createdHandles.size() > 0) {
+        if (itemApi->createdHandles.size() == 1) {
+            return itemApi->createdHandles[0];
+        } else {
+        DEBUG_RECON_Y("%s %s %d failed: cmdbuffer 0x%llx the api 0x%llx name %s has created %d handles\n",
+                __FILE__, __func__, __LINE__, (unsigned long long)commandBuffer,
+                (unsigned long long)apiHandle,
+                api_opcode_to_string(GetOpcode(*itemApi)),
+                    (int)itemApi->createdHandles.size());
+        fflush(stdout);
+        abort();
+        }
+    }
+    DEBUG_RECON_Y("%s %s %d failed: cmdbuffer 0x%llx the api 0x%llx name %s does no create any handles\n", __FILE__, __func__, __LINE__,
             (unsigned long long)commandBuffer,
             (unsigned long long)apiHandle,
             itemApi ? api_opcode_to_string(GetOpcode(*itemApi)) : "unknown");
+    fflush(stdout);
     abort();
     return 0;
 }

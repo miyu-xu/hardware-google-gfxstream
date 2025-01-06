@@ -2307,6 +2307,7 @@ class VkDecoderSnapshot::Impl {
         if (m_state->batchedDescriptorSetUpdateEnabled()) {
             return;
         }
+        // todo add deps on framebuffers
         uint64_t handle = m_state->newGlobalVkGenericHandle();
         mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiCallHandle = apiCallInfo->handle;
