@@ -34,6 +34,24 @@
       "parentUuid": "7faa5344_2d6d0343",
       "revId": "1304263f596cbbc502f0a58d3639a99f162ceefa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "76b62660_1e2cdfd8",
+        "filename": "host/ExternalObjectManager.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-01-07T17:01:05Z",
+      "side": 1,
+      "message": "@kocdemir@google.com I have this open already: https://android-review.googlesource.com/c/platform/hardware/google/aemu/+/3440120. Sounds like it might not be 100% necessary, but we can make the change for completeness anywways 😊",
+      "parentUuid": "7f563756_4ac51395",
+      "revId": "1304263f596cbbc502f0a58d3639a99f162ceefa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
