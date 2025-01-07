@@ -16,6 +16,24 @@
       "message": "These are actually also defined in aemu/host-common/include/host-common/HostmemIdMapping.h, but not sure if that\u0027s really necessary for any projects. Now with the existing values are changed, can you create a CL within the same topic on aemu for completeness, to amend or remove the definitions from there?",
       "revId": "1304263f596cbbc502f0a58d3639a99f162ceefa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f563756_4ac51395",
+        "filename": "host/ExternalObjectManager.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-01-07T16:54:55Z",
+      "side": 1,
+      "message": "It\u0027s not necessary for `aemu/host-common/include/host-common/HostmemIdMapping.h`, BTW.  I think it should be possible to remove `HostmemIdMapping.h` in general after b:308624869 is fixed, and from gfxstream now.  Up to Aaron exactly what he wants to do from that aspect.",
+      "parentUuid": "7faa5344_2d6d0343",
+      "revId": "1304263f596cbbc502f0a58d3639a99f162ceefa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
