@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7faa5344_2d6d0343",
+        "filename": "host/ExternalObjectManager.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-07T16:41:08Z",
+      "side": 1,
+      "message": "These are actually also defined in aemu/host-common/include/host-common/HostmemIdMapping.h, but not sure if that\u0027s really necessary for any projects. Now with the existing values are changed, can you create a CL within the same topic on aemu for completeness, to amend or remove the definitions from there?",
+      "revId": "1304263f596cbbc502f0a58d3639a99f162ceefa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
