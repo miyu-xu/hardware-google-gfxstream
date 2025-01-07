@@ -2312,6 +2312,15 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandles((const uint64_t*)(&handle), 1);
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
+
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)&handle, 1,
+            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkRenderPass(
+                pRenderPassBegin->renderPass));
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)&handle, 1,
+            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkFramebuffer(
+                pRenderPassBegin->framebuffer));
         // handle vkCmd*** api
         mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
                                             (uint64_t)(uintptr_t)commandBuffer);
