@@ -34,6 +34,24 @@
       "parentUuid": "dbe9c1fa_72997734",
       "revId": "358ec6e88db9574e346c8763025bea1b3446e505",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49b33dd8_6bbce215",
+        "filename": "CMakeLists.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2025-01-08T20:33:29Z",
+      "side": 1,
+      "message": "We upgraded our XCode install on the build bots. This change should no longer be needed.",
+      "parentUuid": "1d6a76dd_deb23107",
+      "revId": "358ec6e88db9574e346c8763025bea1b3446e505",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
