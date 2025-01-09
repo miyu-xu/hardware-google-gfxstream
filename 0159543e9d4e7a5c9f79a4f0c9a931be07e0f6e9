@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26aaaeb9_89c5144d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368821
+      },
+      "writtenOn": "2025-01-09T00:11:31Z",
+      "side": 1,
+      "message": "Actually this branch is NOT open/ready yet. It needs to be reset first.",
+      "revId": "0159543e9d4e7a5c9f79a4f0c9a931be07e0f6e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
