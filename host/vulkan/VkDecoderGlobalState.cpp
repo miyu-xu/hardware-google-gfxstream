@@ -1510,11 +1510,11 @@ class VkDecoderGlobalState::Impl {
             return res;
         }
 
-        if (instanceInfo->apiVersion >= VK_MAKE_VERSION(1, 1, 0) &&
+        if (false && instanceInfo->apiVersion >= VK_MAKE_VERSION(1, 1, 0) &&
             physdevInfo->props.apiVersion >= VK_MAKE_VERSION(1, 1, 0)) {
             res = vk->vkGetPhysicalDeviceImageFormatProperties2(physicalDevice, pImageFormatInfo,
                                                                 pImageFormatProperties);
-        } else if (hasInstanceExtension(instance,
+        } else if (false && hasInstanceExtension(instance,
                                         VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
             res = vk->vkGetPhysicalDeviceImageFormatProperties2KHR(physicalDevice, pImageFormatInfo,
                                                                    pImageFormatProperties);
@@ -2039,6 +2039,9 @@ class VkDecoderGlobalState::Impl {
             lock = std::make_unique<std::lock_guard<std::recursive_mutex>>(mLock);
         }
 
+        if (mEnableVirtualVkQueue) {
+            const_cast<VkDeviceQueueCreateInfo*>(createInfoFiltered.pQueueCreateInfos)->queueCount = 1;
+        }
         VkResult result =
             vk->vkCreateDevice(physicalDevice, &createInfoFiltered, pAllocator, pDevice);
 
@@ -6188,6 +6191,19 @@ class VkDecoderGlobalState::Impl {
         auto queue = unbox_VkQueue(boxed_queue);
         auto vk = dispatch_VkQueue(boxed_queue);
 
+        if(mEnableVirtualVkQueue){
+            std::lock_guard<std::recursive_mutex> lock(mLock);
+            auto* queueInfo = android::base::find(mQueueInfo, queue);
+            if (!queueInfo) {
+                ERR("vkQueueSubmit cannot find queue info for %p", queue);
+                return VK_ERROR_INITIALIZATION_FAILED;
+            }
+            std::mutex* queueMutex = nullptr;
+            queueMutex = queueInfo->queueMutex.get();
+
+            std::lock_guard<std::mutex> queueLock(*queueMutex);
+            vk->vkQueueWaitIdle(queue);
+        }
         std::unordered_set<HandleType> acquiredColorBuffers;
         std::unordered_set<HandleType> releasedColorBuffers;
         if (!m_emu->features.GuestVulkanOnly.enabled) {
