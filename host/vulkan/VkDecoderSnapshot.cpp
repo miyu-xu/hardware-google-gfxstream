@@ -76,7 +76,7 @@ class VkDecoderSnapshot::Impl {
                           const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
         if (!pInstance) return;
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        // pInstance create
+        // pInstance create extra comment
         mReconstruction.addHandles((const uint64_t*)pInstance, 1);
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
