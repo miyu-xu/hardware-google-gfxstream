@@ -23,6 +23,7 @@
 #include "aemu/base/threads/Thread.h"
 
 #include <atomic>
+#include <future>
 #include <memory>
 
 namespace gfxstream {
@@ -59,6 +60,9 @@ public:
     void pausePreSnapshot();
     void resume(bool waitForSave);
     void save(android::base::Stream* stream);
+    void setFuture(std::shared_future<void> fut) {
+        mFuture = fut;
+    }
 
 private:
     virtual intptr_t main();
@@ -98,6 +102,7 @@ private:
 
     SnapshotState mState = SnapshotState::Empty;
     std::atomic<bool> mFinished { false };
+    std::shared_future<void> mFuture;
     android::base::Lock mLock;
     android::base::ConditionVariable mCondVar;
     android::base::Optional<android::base::MemStream> mStream;

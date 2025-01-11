@@ -310,7 +310,8 @@ intptr_t RenderThread::main() {
             // Stream read may fail because of a pending snapshot.
             if (!saveSnapshot(snapshotObjects)) {
                 setFinished();
-                GL_LOG("Exited a RenderThread @%p early", this);
+                mFuture.get();
+                fprintf(stderr, "Exited a RenderThread @%p early\n", this);
                 return 0;
             }
         }
@@ -583,6 +584,8 @@ intptr_t RenderThread::main() {
 #endif
 
     setFinished();
+    mFuture.get();
+    fprintf(stderr, "Exited a RenderThread @%p\n", this);
 
     GL_LOG("Exited a RenderThread @%p", this);
     return 0;

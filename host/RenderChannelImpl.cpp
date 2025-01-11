@@ -63,6 +63,7 @@ RenderChannelImpl::RenderChannelImpl(android::base::Stream* loadStream, uint32_t
         updateStateLocked();
     }
     mRenderThread.reset(new RenderThread(this, loadStream, contextId));
+    mRenderThread->setFuture(mPromise.get_future().share());
     mRenderThread->start();
 }
 
@@ -192,6 +193,7 @@ void RenderChannelImpl::resume() {
 
 RenderChannelImpl::~RenderChannelImpl() {
     // Make sure the render thread is stopped before the channel is gone.
+    mPromise.set_value();
     mRenderThread->wait();
 }
 

@@ -110,6 +110,7 @@ private:
 
     EventCallback mEventCallback;
     std::unique_ptr<RenderThread> mRenderThread;
+    std::promise<void> mPromise;
 
     // A single lock to protect the state and the two buffer queues at the
     // same time. NOTE: This needs to appear before the BufferQueue instances.
