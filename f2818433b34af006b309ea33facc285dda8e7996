@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "917b8d0f_edb808ba",
+        "filename": "host/RenderThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-01-13T16:55:45Z",
+      "side": 1,
+      "message": "should it also wait after this call to setFinished() ?",
+      "range": {
+        "startLine": 327,
+        "startChar": 16,
+        "endLine": 327,
+        "endChar": 27
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "00bc8987_b0f6a8f4",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/RenderThread.cpp",
+              "range": {
+                "startLine": 327,
+                "startChar": 0,
+                "endLine": 328,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "f2818433b34af006b309ea33facc285dda8e7996",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "490af7a2_33729739",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2310,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-01-13T16:55:45Z",
+      "side": 1,
+      "message": "why this is lock for read instead of lock for write?\ndo we also need to lock in the eglMakeCurrent .etc calls",
+      "range": {
+        "startLine": 2310,
+        "startChar": 21,
+        "endLine": 2310,
+        "endChar": 45
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "ebbd88d9_c7b7a843",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 2310,
+                "startChar": 0,
+                "endLine": 2311,
+                "endChar": 0
+              },
+              "replacement": "        FrameBuffer::lockContextStructureWrite();\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 2312,
+                "startChar": 0,
+                "endLine": 2313,
+                "endChar": 0
+              },
+              "replacement": "        FrameBuffer::unlockContextStructureWrite();\n"
+            }
+          ]
+        }
+      ],
+      "revId": "f2818433b34af006b309ea33facc285dda8e7996",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
