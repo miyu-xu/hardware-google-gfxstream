@@ -4593,14 +4593,11 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 const VkPipelineLayoutCreateInfo* pCreateInfo;
                 const VkAllocationCallbacks* pAllocator;
                 VkPipelineLayout* pPipelineLayout;
-                // Begin non wrapped dispatchable handle unboxing for device;
+                // Begin global wrapped dispatchable handle unboxing for device;
                 uint64_t cgen_var_0;
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
-                auto unboxed_device = unbox_VkDevice(device);
-                auto vk = dispatch_VkDevice(device);
-                // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkPipelineLayoutCreateInfo));
                 reservedunmarshal_VkPipelineLayoutCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
@@ -4637,26 +4634,23 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pCreateInfo,
                             (unsigned long long)pAllocator, (unsigned long long)pPipelineLayout);
                 }
-                m_state->lock();
                 VkResult vkCreatePipelineLayout_VkResult_return = (VkResult)0;
-                vkCreatePipelineLayout_VkResult_return = vk->vkCreatePipelineLayout(
-                    unboxed_device, pCreateInfo, pAllocator, pPipelineLayout);
+                vkCreatePipelineLayout_VkResult_return = m_state->on_vkCreatePipelineLayout(
+                    &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pPipelineLayout);
                 if ((vkCreatePipelineLayout_VkResult_return) == VK_ERROR_DEVICE_LOST)
                     m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkCreatePipelineLayout_VkResult_return, opcode,
                                              context);
-                m_state->unlock();
                 vkStream->unsetHandleMapping();
-                // Begin auto non dispatchable handle create for pPipelineLayout;
-                if (vkCreatePipelineLayout_VkResult_return == VK_SUCCESS)
-                    vkStream->setHandleMapping(&m_boxedHandleCreateMapping);
+                // Begin manual non dispatchable handle create for pPipelineLayout;
+                vkStream->unsetHandleMapping();
                 uint64_t cgen_var_3;
                 static_assert(8 == sizeof(VkPipelineLayout),
                               "handle map overwrite requires VkPipelineLayout to be 8 bytes long");
                 vkStream->handleMapping()->mapHandles_VkPipelineLayout(
                     (VkPipelineLayout*)pPipelineLayout, 1);
                 vkStream->write((VkPipelineLayout*)pPipelineLayout, 8 * 1);
-                // Begin auto non dispatchable handle create for pPipelineLayout;
+                // Begin manual non dispatchable handle create for pPipelineLayout;
                 vkStream->setHandleMapping(&m_boxedHandleUnwrapMapping);
                 vkStream->write(&vkCreatePipelineLayout_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -4677,14 +4671,11 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkDevice device;
                 VkPipelineLayout pipelineLayout;
                 const VkAllocationCallbacks* pAllocator;
-                // Begin non wrapped dispatchable handle unboxing for device;
+                // Begin global wrapped dispatchable handle unboxing for device;
                 uint64_t cgen_var_0;
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
-                auto unboxed_device = unbox_VkDevice(device);
-                auto vk = dispatch_VkDevice(device);
-                // End manual dispatchable handle unboxing for device;
                 // Begin manual non dispatchable handle destroy unboxing for pipelineLayout;
                 VkPipelineLayout boxed_pipelineLayout_preserve;
                 uint64_t cgen_var_1;
@@ -4714,20 +4705,15 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device,
                             (unsigned long long)pipelineLayout, (unsigned long long)pAllocator);
                 }
-                std::function<void()> delayed_remove_callback = [vk, unboxed_device, pipelineLayout,
-                                                                 pAllocator]() {
-                    auto state = VkDecoderGlobalState::get();
-                    // state already locked;
-                    vk->vkDestroyPipelineLayout(unboxed_device, pipelineLayout, pAllocator);
-                };
+                m_state->on_vkDestroyPipelineLayout(&m_pool, snapshotApiCallInfo, device,
+                                                    pipelineLayout, pAllocator);
                 vkStream->unsetHandleMapping();
                 if (m_snapshotsEnabled) {
                     m_state->snapshot()->vkDestroyPipelineLayout(
                         &m_pool, snapshotApiCallInfo, packet, packetLen, device,
                         boxed_pipelineLayout_preserve, pAllocator);
                 }
-                delayed_delete_VkPipelineLayout(boxed_pipelineLayout_preserve, unboxed_device,
-                                                delayed_remove_callback);
+                delete_VkPipelineLayout(boxed_pipelineLayout_preserve);
                 vkReadStream->clearPool();
                 if (m_queueSubmitWithCommandsEnabled)
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
