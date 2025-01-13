@@ -215,6 +215,21 @@ bool RenderThread::doSnapshotOp(const SnapshotObjects& objects, SnapshotState ex
     return true;
 }
 
+bool RenderThread::wait(intptr_t* exitStatus) {
+    // b/377677250: RenderThreads are waiting for a signal to exit it's main function, so we send
+    // the signal here and hide it from the caller. We hold the contextStructureLock to ensure
+    // the RenderThread exit handlers do not happen concurrently with any vkDestroyDevice.
+    bool res = false;
+    FrameBuffer::lockContextStructureWrite();
+    {
+        AutoLock lock(mLock);
+        mCondVar.broadcastAndUnlock(&lock);
+    }
+    res = Thread::wait(exitStatus);
+    FrameBuffer::unlockContextStructureWrite();
+    return res;
+}
+
 bool RenderThread::loadSnapshot(const SnapshotObjects& objects) {
     return doSnapshotOp(objects, SnapshotState::StartLoading, [this, &objects] {
         objects.readBuffer->onLoad(&*mStream);
@@ -508,7 +523,7 @@ intptr_t RenderThread::main() {
             // any sort of GLES call when we are creating/destroying EGL
             // contexts.
             {
-                FrameBuffer::getFB()->lockContextStructureRead();
+                FrameBuffer::lockContextStructureRead();
             }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
@@ -538,7 +553,7 @@ intptr_t RenderThread::main() {
             }
 #endif
 
-            FrameBuffer::getFB()->unlockContextStructureRead();
+            FrameBuffer::unlockContextStructureRead();
             //
             // try to process some of the command buffer using the
             // renderControl decoder
@@ -583,6 +598,18 @@ intptr_t RenderThread::main() {
 #endif
 
     setFinished();
+
+    // b/377677250
+    //
+    // Nvidia driver seems to register some thread-specific data (pthread_key_create), and their
+    // registered destructor needs to be externally synchronized against vkDestroyDevice calls. So
+    // we workaround this by holding the thread open and acquiring a mutex while the thread exit
+    // handlers run.
+    {
+        AutoLock lock(mLock);
+        GL_LOG("RenderThread @%p waiting for exit signal", this);
+        mCondVar.wait(&lock);
+    }
 
     GL_LOG("Exited a RenderThread @%p", this);
     return 0;

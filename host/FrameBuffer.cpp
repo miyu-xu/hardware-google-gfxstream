@@ -69,6 +69,7 @@
 namespace gfxstream {
 
 using android::base::AutoLock;
+using android::base::ReadWriteLock;
 using android::base::MetricEventVulkanOutOfMemory;
 using android::base::Stream;
 using android::base::WorkerProcessingResult;
@@ -182,6 +183,7 @@ AstcEmulationMode getAstcEmulationMode() {
 //    return AstcEmulationMode::Cpu;
 }
 
+ReadWriteLock* s_contextStructureLock = new ReadWriteLock;
 }  // namespace
 
 // |sInitialized| caches the initialized framebuffer state - this way
@@ -3121,7 +3123,7 @@ HandleType FrameBuffer::createEmulatedEglContext(int config, HandleType shareCon
     }
 
     AutoLock mutex(m_lock);
-    android::base::AutoWriteLock contextLock(m_contextStructureLock);
+    android::base::AutoWriteLock contextLock(*s_contextStructureLock);
     // Hold the ColorBuffer map lock so that the new handle won't collide with a ColorBuffer handle.
     AutoLock colorBufferMapLock(m_colorBufferMapLock);
 
@@ -3166,7 +3168,7 @@ void FrameBuffer::destroyEmulatedEglContext(HandleType contextHandle) {
     AutoLock mutex(m_lock);
     sweepColorBuffersLocked();
 
-    android::base::AutoWriteLock contextLock(m_contextStructureLock);
+    android::base::AutoWriteLock contextLock(*s_contextStructureLock);
     m_contexts.erase(contextHandle);
     RenderThreadInfo* tinfo = RenderThreadInfo::get();
     uint64_t puid = tinfo->m_puid;
@@ -3331,7 +3333,7 @@ void FrameBuffer::drainGlRenderThreadContexts() {
     }
 
     AutoLock mutex(m_lock);
-    android::base::AutoWriteLock contextLock(m_contextStructureLock);
+    android::base::AutoWriteLock contextLock(*s_contextStructureLock);
     for (const HandleType contextHandle : tinfo->m_contextSet) {
         m_contexts.erase(contextHandle);
     }
@@ -3479,7 +3481,7 @@ HandleType FrameBuffer::createEmulatedEglImage(HandleType contextHandle, EGLenum
 
     EmulatedEglContext* context = nullptr;
     if (contextHandle) {
-        android::base::AutoWriteLock contextLock(m_contextStructureLock);
+        android::base::AutoWriteLock contextLock(*s_contextStructureLock);
 
         auto it = m_contexts.find(contextHandle);
         if (it == m_contexts.end()) {
@@ -3897,4 +3899,12 @@ const gl::EGLDispatch* FrameBuffer::getEglDispatch() {
 
 #endif
 
+// static
+void FrameBuffer::lockContextStructureRead() { s_contextStructureLock->lockRead(); }
+// static
+void FrameBuffer::unlockContextStructureRead() { s_contextStructureLock->unlockRead(); }
+// static
+void FrameBuffer::lockContextStructureWrite() { s_contextStructureLock->lockWrite(); }
+// static
+void FrameBuffer::unlockContextStructureWrite() { s_contextStructureLock->unlockWrite(); }
 }  // namespace gfxstream

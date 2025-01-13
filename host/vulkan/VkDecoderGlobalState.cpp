@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "FrameBuffer.h"
 #include "RenderThreadInfoVk.h"
 #include "VkAndroidNativeBuffer.h"
 #include "VkCommonOperations.h"
@@ -61,6 +62,7 @@
 
 #ifndef _WIN32
 #include <unistd.h>
+#include <sys/syscall.h>
 #endif
 
 #ifdef __APPLE__
@@ -2305,7 +2307,9 @@ class VkDecoderGlobalState::Impl {
         }
 
         // Run the underlying API call.
+        FrameBuffer::lockContextStructureRead();
         m_vk->vkDestroyDevice(device, pAllocator);
+        FrameBuffer::unlockContextStructureRead();
 
         delete_VkDevice(deviceInfo.boxed);
     }

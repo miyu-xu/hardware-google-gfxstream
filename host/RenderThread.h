@@ -56,6 +56,11 @@ public:
     // Returns true iff the thread has finished.
     bool isFinished() const { return mFinished.load(std::memory_order_relaxed); }
 
+    // Since we prevent the RenderThread from exiting, we override the wait() function to:
+    // - send exit signal,
+    // - protect thread exit with FrameBuffer contextStructureLock.
+    virtual bool wait(intptr_t* exitStatus = nullptr) override;
+
     void pausePreSnapshot();
     void resume(bool waitForSave);
     void save(android::base::Stream* stream);

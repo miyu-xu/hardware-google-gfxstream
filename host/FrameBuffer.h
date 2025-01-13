@@ -373,8 +373,10 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
         }
     }
 
-    void lockContextStructureRead() { m_contextStructureLock.lockRead(); }
-    void unlockContextStructureRead() { m_contextStructureLock.unlockRead(); }
+    static void lockContextStructureRead();
+    static void unlockContextStructureRead();
+    static void lockContextStructureWrite();
+    static void unlockContextStructureWrite();
 
     // For use with sync threads and otherwise, any time we need a GL context
     // not specifically for drawing, but to obtain certain things about
@@ -754,7 +756,6 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     android::base::Thread* m_perfThread;
     android::base::Lock m_lock;
-    android::base::ReadWriteLock m_contextStructureLock;
     android::base::Lock m_colorBufferMapLock;
     uint64_t mFrameNumber;
     FBNativeWindowType m_nativeWindow = 0;
