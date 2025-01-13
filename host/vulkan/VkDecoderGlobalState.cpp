@@ -413,6 +413,7 @@ class VkDecoderGlobalState::Impl {
         mMemoryInfo.clear();
         mShaderModuleInfo.clear();
         mPipelineCacheInfo.clear();
+        mPipelineLayoutInfo.clear();
         mPipelineInfo.clear();
         mRenderPassInfo.clear();
         mFramebufferInfo.clear();
@@ -4109,6 +4110,63 @@ class VkDecoderGlobalState::Impl {
 
         std::lock_guard<std::recursive_mutex> lock(mLock);
         destroyPipelineCacheLocked(device, deviceDispatch, pipelineCache, pAllocator);
+    }
+
+    VkResult on_vkCreatePipelineLayout(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
+                                      VkDevice boxed_device,
+                                      const VkPipelineLayoutCreateInfo* pCreateInfo,
+                                      const VkAllocationCallbacks* pAllocator,
+                                      VkPipelineLayout* pPipelineLayout) {
+        auto device = unbox_VkDevice(boxed_device);
+        auto deviceDispatch = dispatch_VkDevice(boxed_device);
+
+        VkResult result =
+            deviceDispatch->vkCreatePipelineLayout(device, pCreateInfo, pAllocator, pPipelineLayout);
+        if (result != VK_SUCCESS) {
+            return result;
+        }
+
+        std::lock_guard<std::recursive_mutex> lock(mLock);
+
+        VALIDATE_NEW_HANDLE_INFO_ENTRY(mPipelineLayoutInfo, *pPipelineLayout);
+        auto& pipelineLayoutInfo = mPipelineLayoutInfo[*pPipelineLayout];
+        pipelineLayoutInfo.device = device;
+
+        *pPipelineLayout = new_boxed_non_dispatchable_VkPipelineLayout(*pPipelineLayout);
+
+        return result;
+    }
+
+    void destroyPipelineLayoutWithExclusiveInfo(VkDevice device, VulkanDispatch* deviceDispatch,
+                                                VkPipelineLayout pipelineLayout,
+                                                PipelineLayoutInfo& pipelineLayoutInfo,
+                                                const VkAllocationCallbacks* pAllocator) {
+        deviceDispatch->vkDestroyPipelineLayout(device, pipelineLayout, pAllocator);
+    }
+
+    void destroyPipelineLayoutLocked(VkDevice device, VulkanDispatch* deviceDispatch,
+                                     VkPipelineLayout pipelineLayout,
+                                     const VkAllocationCallbacks* pAllocator) {
+        auto pipelineLayoutInfoIt = mPipelineLayoutInfo.find(pipelineLayout);
+        if (pipelineLayoutInfoIt == mPipelineLayoutInfo.end()) return;
+        auto& pipelineLayoutInfo = pipelineLayoutInfoIt->second;
+
+        destroyPipelineLayoutWithExclusiveInfo(device, deviceDispatch, pipelineLayout,
+                                               pipelineLayoutInfo, pAllocator);
+
+        mPipelineLayoutInfo.erase(pipelineLayout);
+    }
+
+    // This call will be delayed as VulkanQueueSubmitWithCommands feature can change order
+    // of the commands and pipeline layouts need to stay valid during recording.
+    void on_vkDestroyPipelineLayout(android::base::BumpPool*, VkSnapshotApiCallInfo*,
+                                    VkDevice boxed_device, VkPipelineLayout pipelineLayout,
+                                    const VkAllocationCallbacks* pAllocator) {
+        auto device = unbox_VkDevice(boxed_device);
+        auto deviceDispatch = dispatch_VkDevice(boxed_device);
+
+        std::lock_guard<std::recursive_mutex> lock(mLock);
+        destroyPipelineLayoutLocked(device, deviceDispatch, pipelineLayout, pAllocator);
     }
 
     VkResult on_vkCreateGraphicsPipelines(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
@@ -8603,6 +8661,13 @@ class VkDecoderGlobalState::Impl {
         extractInfosWithDeviceInto(device, mImageInfo, deviceObjects.images);
         extractInfosWithDeviceInto(device, mImageViewInfo, deviceObjects.imageViews);
         extractInfosWithDeviceInto(device, mPipelineCacheInfo, deviceObjects.pipelineCaches);
+<<<<<<< PATCH SET (687107 Track pipeline layouts on decoder)
+        extractInfosWithDeviceInto(device, mPipelineLayoutInfo, deviceObjects.pipelineLayouts);
+        extractInfosWithDeviceInto(device, mQueueInfo, deviceObjects.queues);
+||||||| BASE
+        extractInfosWithDeviceInto(device, mQueueInfo, deviceObjects.queues);
+=======
+>>>>>>> BASE      (fbe24b Merge "Add missing tracking info collection for device teard)
         extractInfosWithDeviceInto(device, mPipelineInfo, deviceObjects.pipelines);
         extractInfosWithDeviceInto(device, mQueueInfo, deviceObjects.queues);
         extractInfosWithDeviceInto(device, mRenderPassInfo, deviceObjects.renderPasses);
@@ -8743,6 +8808,12 @@ class VkDecoderGlobalState::Impl {
             for (auto& [pipelineCache, pipelineCacheInfo] : deviceObjects.pipelineCaches) {
                 destroyPipelineCacheWithExclusiveInfo(device, deviceDispatch, pipelineCache,
                                                       pipelineCacheInfo, nullptr);
+            }
+
+            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu pipelineLayouts.", deviceObjects.pipelineLayouts.size());
+            for (auto& [pipelineLayout, pipelineLayoutInfo] : deviceObjects.pipelineLayouts) {
+                destroyPipelineLayoutWithExclusiveInfo(device, deviceDispatch, pipelineLayout,
+                                                      pipelineLayoutInfo, nullptr);
             }
 
             LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu framebuffers.", deviceObjects.framebuffers.size());
@@ -9060,6 +9131,49 @@ class VkDecoderGlobalState::Impl {
     std::unordered_map<VkInstance, InstanceInfo> mInstanceInfo;
     std::unordered_map<VkPhysicalDevice, PhysicalDeviceInfo> mPhysdevInfo;
     std::unordered_map<VkDevice, DeviceInfo> mDeviceInfo;
+<<<<<<< PATCH SET (687107 Track pipeline layouts on decoder)
+    std::unordered_map<VkImage, ImageInfo> mImageInfo;
+    std::unordered_map<VkImageView, ImageViewInfo> mImageViewInfo;
+    std::unordered_map<VkSampler, SamplerInfo> mSamplerInfo;
+    std::unordered_map<VkCommandBuffer, CommandBufferInfo> mCommandBufferInfo;
+    std::unordered_map<VkCommandPool, CommandPoolInfo> mCommandPoolInfo;
+    // TODO: release CommandBufferInfo when a command pool is reset/released
+    std::unordered_map<VkQueue, QueueInfo> mQueueInfo;
+    std::unordered_map<VkBuffer, BufferInfo> mBufferInfo;
+    std::unordered_map<VkDeviceMemory, MemoryInfo> mMemoryInfo;
+    std::unordered_map<VkShaderModule, ShaderModuleInfo> mShaderModuleInfo;
+    std::unordered_map<VkPipelineCache, PipelineCacheInfo> mPipelineCacheInfo;
+    std::unordered_map<VkPipelineLayout, PipelineLayoutInfo> mPipelineLayoutInfo;
+    std::unordered_map<VkPipeline, PipelineInfo> mPipelineInfo;
+    std::unordered_map<VkRenderPass, RenderPassInfo> mRenderPassInfo;
+    std::unordered_map<VkFramebuffer, FramebufferInfo> mFramebufferInfo;
+    std::unordered_map<VkSemaphore, SemaphoreInfo> mSemaphoreInfo;
+    std::unordered_map<VkFence, FenceInfo> mFenceInfo;
+    std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo;
+    std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo;
+    std::unordered_map<VkDescriptorSet, DescriptorSetInfo> mDescriptorSetInfo;
+||||||| BASE
+    std::unordered_map<VkImage, ImageInfo> mImageInfo;
+    std::unordered_map<VkImageView, ImageViewInfo> mImageViewInfo;
+    std::unordered_map<VkSampler, SamplerInfo> mSamplerInfo;
+    std::unordered_map<VkCommandBuffer, CommandBufferInfo> mCommandBufferInfo;
+    std::unordered_map<VkCommandPool, CommandPoolInfo> mCommandPoolInfo;
+    // TODO: release CommandBufferInfo when a command pool is reset/released
+    std::unordered_map<VkQueue, QueueInfo> mQueueInfo;
+    std::unordered_map<VkBuffer, BufferInfo> mBufferInfo;
+    std::unordered_map<VkDeviceMemory, MemoryInfo> mMemoryInfo;
+    std::unordered_map<VkShaderModule, ShaderModuleInfo> mShaderModuleInfo;
+    std::unordered_map<VkPipelineCache, PipelineCacheInfo> mPipelineCacheInfo;
+    std::unordered_map<VkPipeline, PipelineInfo> mPipelineInfo;
+    std::unordered_map<VkRenderPass, RenderPassInfo> mRenderPassInfo;
+    std::unordered_map<VkFramebuffer, FramebufferInfo> mFramebufferInfo;
+    std::unordered_map<VkSemaphore, SemaphoreInfo> mSemaphoreInfo;
+    std::unordered_map<VkFence, FenceInfo> mFenceInfo;
+    std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo;
+    std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo;
+    std::unordered_map<VkDescriptorSet, DescriptorSetInfo> mDescriptorSetInfo;
+=======
+>>>>>>> BASE      (fbe24b Merge "Add missing tracking info collection for device teard)
 
     // Back-reference to the physical device associated with a particular
     // VkDevice, and the VkDevice corresponding to a VkQueue.
@@ -9689,6 +9803,22 @@ void VkDecoderGlobalState::on_vkDestroyPipelineCache(android::base::BumpPool* po
                                                      VkPipelineCache pipelineCache,
                                                      const VkAllocationCallbacks* pAllocator) {
     mImpl->on_vkDestroyPipelineCache(pool, snapshotInfo, boxed_device, pipelineCache, pAllocator);
+}
+
+VkResult VkDecoderGlobalState::on_vkCreatePipelineLayout(
+    android::base::BumpPool* pool, VkSnapshotApiCallInfo* snapshotInfo, VkDevice boxed_device,
+    const VkPipelineLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator,
+    VkPipelineLayout* pPipelineLayout) {
+    return mImpl->on_vkCreatePipelineLayout(pool, snapshotInfo, boxed_device, pCreateInfo,
+                                           pAllocator, pPipelineLayout);
+}
+
+void VkDecoderGlobalState::on_vkDestroyPipelineLayout(android::base::BumpPool* pool,
+                                                     VkSnapshotApiCallInfo* snapshotInfo,
+                                                     VkDevice boxed_device,
+                                                     VkPipelineLayout pipelineLayout,
+                                                     const VkAllocationCallbacks* pAllocator) {
+    mImpl->on_vkDestroyPipelineLayout(pool, snapshotInfo, boxed_device, pipelineLayout, pAllocator);
 }
 
 VkResult VkDecoderGlobalState::on_vkCreateGraphicsPipelines(
