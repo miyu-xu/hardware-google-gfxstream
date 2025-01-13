@@ -16,6 +16,23 @@
       "message": "According to codegen, the global state locking here was for working around some old driver issues. I didn\u0027t modify codegen to re-add that automatically, and think it\u0027s better to avoid it until we find a real case.",
       "revId": "8bee0e260b9908171102cbad8c162309adbe2dd3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfe98c01_7929e725",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4729,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-01-13T18:01:52Z",
+      "side": 0,
+      "message": "As I mentioned in the chat, on the host, the vkEndCommandBuffer call may be called as late as when the guest calls vkQueueSubmit(and that may be where we record the VkCommandBuffer on the host). However, on the guest, vkDestroyPipelineLayout may be called before vkQueueSubmit is called. In this case, if we don\u0027t delay vkDestroyPipelineLayout, we may end up using a deleted VkPipelineLayout on the host when we delay the recording of VkCommandBuffer.",
+      "revId": "8bee0e260b9908171102cbad8c162309adbe2dd3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
