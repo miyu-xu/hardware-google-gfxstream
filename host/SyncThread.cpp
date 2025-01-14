@@ -156,11 +156,7 @@ void SyncThread::triggerWaitWithCompletionCallback(EmulatedEglFenceSync* fenceSy
 }
 
 void SyncThread::initSyncEGLContext() {
-    // b/383543476: force sequential init to work around a deadlock that is
-    // believed to be a driver issue.
-    std::mutex initMutex;
-    mWorkerThreadPool.broadcast([&, this] {
-        std::lock_guard<std::mutex> initLock(initMutex);
+    mWorkerThreadPool.broadcast([this] {
         return Command{
             .mTask = std::packaged_task<int(WorkerId)>([this](WorkerId workerId) {
                 DPRINT("for worker id: %d", workerId);
