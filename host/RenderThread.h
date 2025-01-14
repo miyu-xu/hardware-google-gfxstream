@@ -60,9 +60,10 @@ public:
     void resume(bool waitForSave);
     void save(android::base::Stream* stream);
 
+    void sendExitSignal();
 private:
     virtual intptr_t main();
-    void setFinished();
+    void setFinished(bool waitForExitSignal);
 
     // Snapshot support.
     enum class SnapshotState {
@@ -100,6 +101,7 @@ private:
     std::atomic<bool> mFinished { false };
     android::base::Lock mLock;
     android::base::ConditionVariable mCondVar;
+    android::base::ConditionVariable mExitSignal;
     android::base::Optional<android::base::MemStream> mStream;
 
     bool mRunInLimitedMode = false;

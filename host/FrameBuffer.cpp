@@ -182,6 +182,13 @@ AstcEmulationMode getAstcEmulationMode() {
 //    return AstcEmulationMode::Cpu;
 }
 
+// This lock needs to outlive the framebuffer, as vulkan cleanup code can still use this lock after
+// FrameBuffer is destroyed.
+//
+// This lock's intention is to workaround an NVIDIA driver bug, where there's a race condition in
+// RenderThread's thread exit cleanup (pthread thread-specific data), vkDestroyDevice, and
+// eglMakeCurrent.
+android::base::Lock* s_RenderThreadExitLock = new android::base::Lock;
 }  // namespace
 
 // |sInitialized| caches the initialized framebuffer state - this way
@@ -191,6 +198,11 @@ static InitializedGlobals* sGlobals() {
     static InitializedGlobals* g = new InitializedGlobals;
     return g;
 }
+
+// static
+void FrameBuffer::lockRenderThreadExit() { s_RenderThreadExitLock->lock(); }
+// static
+void FrameBuffer::unlockRenderThreadExit() { s_RenderThreadExitLock->unlock(); }
 
 void FrameBuffer::waitUntilInitialized() {
     if (sInitialized.load(std::memory_order_relaxed)) {
