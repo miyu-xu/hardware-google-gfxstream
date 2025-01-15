@@ -7585,15 +7585,28 @@ class VkDecoderGlobalState::Impl {
                 auto& deviceToQueues = devicesToQueues.emplace_back();
                 deviceToQueues.device = device;
                 deviceToQueues.deviceDispatch = dispatch_VkDevice(deviceInfo.boxed);
+                if (deviceToQueues.deviceDispatch->vkDeviceWaitIdle(device) !=
+                    VK_ERROR_DEVICE_LOST) {
+                    continue;
+                }
+
                 for (const auto& [queueIndex, queues] : deviceInfo.queues) {
                     deviceToQueues.queues.insert(deviceToQueues.queues.end(), queues.begin(),
                                                  queues.end());
                 }
             }
             m_emu->deviceLostHelper.onDeviceLost(devicesToQueues);
+
+            for (const DeviceLostHelper::DeviceWithQueues& deviceWithQueues : devicesToQueues) {
+                const auto& device = deviceWithQueues.device;
+                const auto* deviceDispatch = deviceWithQueues.deviceDispatch;
+                WARN("Cleaning up lost device : 0x%llx", (unsigned long long)device);
+                on_vkDestroyDevice(nullptr, nullptr, device, nullptr);
+                WARN("Cleaning up lost device : 0x%llx Done!", (unsigned long long)device);
+            }
         }
 
-        GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
+        // GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
     }
 
     void on_CheckOutOfMemory(VkResult result, uint32_t opCode, const VkDecoderContext& context,
