@@ -33,6 +33,24 @@
       "message": "As I mentioned in the chat, on the host, the vkEndCommandBuffer call may be called as late as when the guest calls vkQueueSubmit(and that may be where we record the VkCommandBuffer on the host). However, on the guest, vkDestroyPipelineLayout may be called before vkQueueSubmit is called. In this case, if we don\u0027t delay vkDestroyPipelineLayout, we may end up using a deleted VkPipelineLayout on the host when we delay the recording of VkCommandBuffer.",
       "revId": "8bee0e260b9908171102cbad8c162309adbe2dd3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73700579_5238df4d",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 4729,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-15T10:54:35Z",
+      "side": 0,
+      "message": "Thanks Kaiyi! I think this type of logic could be kept on the guest side to avoid complexity in the codegen, but moving to host side also makes sense. So, I moved it to the host side with the feature flag control to make it more efficient when the feature is disabled(we might need to disable it for snapshots) and understandable; I\u0027ll mark it as active for reviews once it passes presubmits.",
+      "parentUuid": "bfe98c01_7929e725",
+      "revId": "8bee0e260b9908171102cbad8c162309adbe2dd3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
