@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c8e2bd1_589065c3",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4716,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-01-15T17:50:52Z",
+      "side": 1,
+      "message": "This is problematic in case the destruction of VkPipelineLayout is delayed: when the host receives the guest\u0027s delayed request of `vkCmdBindDescriptorSets`, which needs to unbox the `VkPipelineLayout`, it fails, because we have already removed the VkPipelineLayout from the underlying boxed handle manager due to the early call of `delete_VkPipelineLayout`.",
+      "revId": "2d54356d99f82081f3e2f68040bf836c8c4482c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f85272d_f0f71cf5",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4163,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-01-15T17:50:52Z",
+      "side": 1,
+      "message": "The current logic is correct, but it\u0027s probably confusing that in the case where the vkDestroyPipelineLayout call is delayed, the entry in `mPipelineLayoutInfo` can be removed earlier than the host actually uses the VkPipelineLayout in a vkCmdXXX call. We probably want to leave a comment in case we add on_vkCmdXXX in the future that wants to look up `mPipelineLayoutInfo`, but I don\u0027t feel strong on doing so. Feel free to just close the comment with an Ack.",
+      "revId": "2d54356d99f82081f3e2f68040bf836c8c4482c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
