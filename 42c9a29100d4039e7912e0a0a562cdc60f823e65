@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd92bcd5_8d3c9c54",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-15T11:03:00Z",
+      "side": 1,
+      "message": "I wonder if making `postOnlyOnMainThread` true for this case can also help here?",
+      "revId": "42c9a29100d4039e7912e0a0a562cdc60f823e65",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
