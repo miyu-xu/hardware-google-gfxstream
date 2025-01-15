@@ -7585,6 +7585,11 @@ class VkDecoderGlobalState::Impl {
                 auto& deviceToQueues = devicesToQueues.emplace_back();
                 deviceToQueues.device = device;
                 deviceToQueues.deviceDispatch = dispatch_VkDevice(deviceInfo.boxed);
+                if (deviceToQueues.deviceDispatch->vkDeviceWaitIdle(device) !=
+                    VK_ERROR_DEVICE_LOST) {
+                    continue;
+                }
+
                 for (const auto& [queueIndex, queues] : deviceInfo.queues) {
                     deviceToQueues.queues.insert(deviceToQueues.queues.end(), queues.begin(),
                                                  queues.end());
