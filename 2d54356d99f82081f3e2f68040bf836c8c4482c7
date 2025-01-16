@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "33e3fa44_812e8140",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4716,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-16T10:10:11Z",
+      "side": 1,
+      "message": "Thanks for spotting this, I was initially replacing this call with a comment with the codegen then thought maybe I can remove the need for `DELAYED_DECODER_DELETES` altogether. Right, I\u0027ll check if calling the wrapped function inside the delayed callback would be a better idea here.",
+      "parentUuid": "2c8e2bd1_589065c3",
+      "revId": "2d54356d99f82081f3e2f68040bf836c8c4482c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5f85272d_f0f71cf5",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 2
