@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3640530d_3ec6c390",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4716,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-17T11:45:16Z",
+      "side": 1,
+      "message": "Modified the codegen to support delayed call of wrapped calls instead. Now it\u0027s delaying the `on_vkDestroyPipelineLayout` call with some limitations, and it\u0027s delaying them even when the feature flag is disabled. PTAL.",
+      "parentUuid": "33e3fa44_812e8140",
+      "revId": "2d54356d99f82081f3e2f68040bf836c8c4482c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5f85272d_f0f71cf5",
@@ -49,6 +67,24 @@
       "writtenOn": "2025-01-15T17:50:52Z",
       "side": 1,
       "message": "The current logic is correct, but it\u0027s probably confusing that in the case where the vkDestroyPipelineLayout call is delayed, the entry in `mPipelineLayoutInfo` can be removed earlier than the host actually uses the VkPipelineLayout in a vkCmdXXX call. We probably want to leave a comment in case we add on_vkCmdXXX in the future that wants to look up `mPipelineLayoutInfo`, but I don\u0027t feel strong on doing so. Feel free to just close the comment with an Ack.",
+      "revId": "2d54356d99f82081f3e2f68040bf836c8c4482c7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "28fadc4f_c97e531c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4163,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-17T11:45:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f85272d_f0f71cf5",
       "revId": "2d54356d99f82081f3e2f68040bf836c8c4482c7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
