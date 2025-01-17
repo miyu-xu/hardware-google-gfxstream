@@ -8587,11 +8587,11 @@ class VkDecoderGlobalState::Impl {
         }
     }
 
-    void extractDeviceAndDependenciesLocked(VkDevice device, InstanceObjects::DeviceObjects& deviceObjects) {
-        extractInfosWithDeviceInto(device, mBufferInfo, deviceObjects.buffers);
+    void extractDeviceAndDependenciesLocked(VkDevice device, InstanceObjects::DeviceObjects& deviceObjects) {extractInfosWithDeviceInto(device, mBufferInfo, deviceObjects.buffers);
         extractInfosWithDeviceInto(device, mCommandBufferInfo, deviceObjects.commandBuffers);
         extractInfosWithDeviceInto(device, mCommandPoolInfo, deviceObjects.commandPools);
         extractInfosWithDeviceInto(device, mDescriptorPoolInfo, deviceObjects.descriptorPools);
+        extractInfosWithDeviceInto(device, mDescriptorSetInfo, deviceObjects.descriptorSets);
         extractInfosWithDeviceInto(device, mDescriptorSetLayoutInfo, deviceObjects.descriptorSetLayouts);
         extractInfosWithDeviceInto(device, mFenceInfo, deviceObjects.fences);
         extractInfosWithDeviceInto(device, mFramebufferInfo, deviceObjects.framebuffers);
@@ -8599,9 +8599,10 @@ class VkDecoderGlobalState::Impl {
         extractInfosWithDeviceInto(device, mImageViewInfo, deviceObjects.imageViews);
         extractInfosWithDeviceInto(device, mMemoryInfo, deviceObjects.memories);
         extractInfosWithDeviceInto(device, mPipelineCacheInfo, deviceObjects.pipelineCaches);
-        extractInfosWithDeviceInto(device, mQueueInfo, deviceObjects.queues);
         extractInfosWithDeviceInto(device, mPipelineInfo, deviceObjects.pipelines);
+        extractInfosWithDeviceInto(device, mQueueInfo, deviceObjects.queues);
         extractInfosWithDeviceInto(device, mRenderPassInfo, deviceObjects.renderPasses);
+        extractInfosWithDeviceInto(device, mSamplerInfo, deviceObjects.samplers);
         extractInfosWithDeviceInto(device, mSemaphoreInfo, deviceObjects.semaphores);
         extractInfosWithDeviceInto(device, mShaderModuleInfo, deviceObjects.shaderModules);
     }
@@ -9051,28 +9052,27 @@ class VkDecoderGlobalState::Impl {
         }
     }
 
-    std::unordered_map<VkInstance, InstanceInfo> mInstanceInfo;
-    std::unordered_map<VkPhysicalDevice, PhysicalDeviceInfo> mPhysdevInfo;
-    std::unordered_map<VkDevice, DeviceInfo> mDeviceInfo;
-    std::unordered_map<VkImage, ImageInfo> mImageInfo;
-    std::unordered_map<VkImageView, ImageViewInfo> mImageViewInfo;
-    std::unordered_map<VkSampler, SamplerInfo> mSamplerInfo;
+    std::unordered_map<VkBuffer, BufferInfo> mBufferInfo;
     std::unordered_map<VkCommandBuffer, CommandBufferInfo> mCommandBufferInfo;
     std::unordered_map<VkCommandPool, CommandPoolInfo> mCommandPoolInfo;
-    // TODO: release CommandBufferInfo when a command pool is reset/released
-    std::unordered_map<VkQueue, QueueInfo> mQueueInfo;
-    std::unordered_map<VkBuffer, BufferInfo> mBufferInfo;
-    std::unordered_map<VkDeviceMemory, MemoryInfo> mMemoryInfo;
-    std::unordered_map<VkShaderModule, ShaderModuleInfo> mShaderModuleInfo;
-    std::unordered_map<VkPipelineCache, PipelineCacheInfo> mPipelineCacheInfo;
-    std::unordered_map<VkPipeline, PipelineInfo> mPipelineInfo;
-    std::unordered_map<VkRenderPass, RenderPassInfo> mRenderPassInfo;
-    std::unordered_map<VkFramebuffer, FramebufferInfo> mFramebufferInfo;
-    std::unordered_map<VkSemaphore, SemaphoreInfo> mSemaphoreInfo;
-    std::unordered_map<VkFence, FenceInfo> mFenceInfo;
-    std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo;
     std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo;
     std::unordered_map<VkDescriptorSet, DescriptorSetInfo> mDescriptorSetInfo;
+    std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo;
+    std::unordered_map<VkDevice, DeviceInfo> mDeviceInfo;
+    std::unordered_map<VkFence, FenceInfo> mFenceInfo;
+    std::unordered_map<VkFramebuffer, FramebufferInfo> mFramebufferInfo;
+    std::unordered_map<VkImage, ImageInfo> mImageInfo;
+    std::unordered_map<VkImageView, ImageViewInfo> mImageViewInfo;
+    std::unordered_map<VkInstance, InstanceInfo> mInstanceInfo;
+    std::unordered_map<VkDeviceMemory, MemoryInfo> mMemoryInfo;
+    std::unordered_map<VkPhysicalDevice, PhysicalDeviceInfo> mPhysdevInfo;
+    std::unordered_map<VkPipeline, PipelineInfo> mPipelineInfo;
+    std::unordered_map<VkPipelineCache, PipelineCacheInfo> mPipelineCacheInfo;
+    std::unordered_map<VkQueue, QueueInfo> mQueueInfo;
+    std::unordered_map<VkRenderPass, RenderPassInfo> mRenderPassInfo;
+    std::unordered_map<VkSampler, SamplerInfo> mSamplerInfo;
+    std::unordered_map<VkSemaphore, SemaphoreInfo> mSemaphoreInfo;
+    std::unordered_map<VkShaderModule, ShaderModuleInfo> mShaderModuleInfo;
 
     // Back-reference to the physical device associated with a particular
     // VkDevice, and the VkDevice corresponding to a VkQueue.
