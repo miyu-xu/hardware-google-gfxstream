@@ -52,9 +52,14 @@ class ExternalFencePool {
 
     ~ExternalFencePool() {
         if (!mPool.empty()) {
-            GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
-                << "External fence pool for device " << static_cast<void*>(mDevice)
-                << " destroyed but " << mPool.size() << " fences still not destroyed.";
+            // TODO00? no need to mark the device as lost because device object should be removed anyway?
+            // TODO00: make fatal but put fence destroy to device destroy? is it timing out?
+            ERR("External fence pool for device %p has %d elements on destroy",
+                mDevice, mPool.size());
+            onVkFatalError();
+            // GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
+            //     << "External fence pool for device " << static_cast<void*>(mDevice)
+            //     << " destroyed but " << mPool.size() << " fences still not destroyed.";
         }
     }
 
@@ -196,6 +201,16 @@ struct ExternalFenceInfo {
     VkExternalFenceHandleTypeFlagBits supportedFenceHandleTypes;
 };
 
+struct DeviceLostInfo {
+    std::string errorMessage;
+};
+
+struct DeviceDebugInfo {
+    std::string applicationName; // Duplicated from instance info
+    std::string engineName;
+    VkDeviceCreateInfo createInfoShallow;
+};
+
 struct DeviceInfo {
     std::unordered_map<uint32_t, std::vector<VkQueue>> queues;
     std::vector<std::string> enabledExtensionNames;
@@ -212,6 +227,8 @@ struct DeviceInfo {
     std::unique_ptr<GpuDecompressionPipelineManager> decompPipelines = nullptr;
     DeviceOpTrackerPtr deviceOpTracker = nullptr;
     std::optional<uint32_t> virtioGpuContextId;
+    std::optional<DeviceLostInfo> lostInfo;
+    DeviceDebugInfo debugInfo;
 
     // True if this is a compressed image that needs to be decompressed on the GPU (with our
     // compute shader)
@@ -226,6 +243,9 @@ struct DeviceInfo {
     bool needEmulatedDecompression(VkFormat format) {
         return (gfxstream::vk::isEtc2(format) && emulateTextureEtc2) ||
                (gfxstream::vk::isAstc(format) && emulateTextureAstc);
+    }
+    bool isLost() const {
+        return lostInfo.has_value();
     }
 };
 

@@ -436,6 +436,7 @@ VkEmulation* getGlobalVkEmulation();
 void teardownGlobalVkEmulation();
 
 void onVkDeviceLost();
+void onVkFatalError();
 
 std::unique_ptr<gfxstream::DisplaySurface> createDisplaySurface(FBNativeWindowType window,
                                                                 uint32_t width, uint32_t height);
