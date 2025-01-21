@@ -27,17 +27,25 @@ RenderThreadInfoVk::RenderThreadInfoVk() {
             << "Attempted to set thread local Vk render thread info twice.";
     }
     tlThreadInfo = this;
+
+    mIsLost = false;
 }
 
-RenderThreadInfoVk::~RenderThreadInfoVk() { tlThreadInfo = nullptr; }
+RenderThreadInfoVk::~RenderThreadInfoVk() {
+    tlThreadInfo = nullptr;
+}
 
 RenderThreadInfoVk* RenderThreadInfoVk::get() { return tlThreadInfo; }
 
 void RenderThreadInfoVk::onSave(android::base::Stream* stream) {
+    //TODO0: save mIsLost information?
     stream->putBe32(ctx_id);
 }
 
 bool RenderThreadInfoVk::onLoad(android::base::Stream* stream) {
+    //TODO0: load mIsLost information?
+    ERR("RenderThreadInfoVk::onLoad called, setting mIsLost true");
+    //mIsLost = true;
     ctx_id = stream->getBe32();
     return true;
 }
