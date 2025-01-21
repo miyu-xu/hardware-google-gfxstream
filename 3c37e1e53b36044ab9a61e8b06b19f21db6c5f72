@@ -16,6 +16,24 @@
       "message": "in void RendererImpl::stop(bool wait) {\n    android::base::AutoLock lock(mChannelsLock);\n    mStopped \u003d true;\n    auto channels \u003d std::move(mChannels);\n    lock.unlock();\n\n    if (const auto fb \u003d FrameBuffer::getFB()) {\n        fb-\u003esetShuttingDown();\n    }\n    for (const auto\u0026 c : channels) {\n        c-\u003estopFromHost();\n    }\n    // We\u0027re stopping the renderer, so there\u0027s no need to clean up resources\n    // of some pending processes: we\u0027ll destroy everything soon.\n    mCleanupThread-\u003estop();\n\n    mStoppedChannels.insert(mStoppedChannels.end(),\n                            std::make_move_iterator(channels.begin()),\n                            std::make_move_iterator(channels.end()));\n\n    if (!wait) {\n        return;\n    }\n\n    // Each render channel is referenced in the corresponing pipe object, so\n    // even if we clear the |channels| vector they could still be alive\n    // for a while. This means we need to make sure to wait for render thread\n    // exit explicitly.\n    for (const auto\u0026 c : mStoppedChannels) {\n        c-\u003erenderThread()-\u003ewait();\n    }\n    mCleanupThread-\u003ewaitForCleanup();\n    mStoppedChannels.clear();\n}\n\nvoid RendererImpl::finish() {\n    {\n        android::base::AutoLock lock(mChannelsLock);\n        mRenderWindow-\u003esetPaused(true);\n    }\n    cleanupRenderThreads();\n    {\n        android::base::AutoLock lock(mChannelsLock);\n        mRenderWindow-\u003esetPaused(false);\n    }\n}\n\n\ndo you need to waitforfinished and sendExitSignal?",
       "revId": "3c37e1e53b36044ab9a61e8b06b19f21db6c5f72",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e753365b_460670be",
+        "filename": "host/RenderChannelImpl.cpp",
+        "patchSetId": 14
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2025-01-21T21:00:52Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "1a9027db_c98a0fb8",
+      "revId": "3c37e1e53b36044ab9a61e8b06b19f21db6c5f72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
