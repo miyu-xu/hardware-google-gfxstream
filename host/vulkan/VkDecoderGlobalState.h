@@ -858,6 +858,8 @@ class VkDecoderGlobalState {
         VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties);
 
     void on_DeviceLost();
+    void on_FatalError();
+    void on_FatalErrorOnDevice(VkDevice device);
 
     void on_CheckOutOfMemory(VkResult result, uint32_t opCode, const VkDecoderContext& context,
                              std::optional<uint64_t> allocationSize = std::nullopt);
