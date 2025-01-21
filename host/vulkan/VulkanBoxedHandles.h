@@ -102,6 +102,9 @@ class BoxedHandleManager {
 
     void replayHandles(std::vector<BoxedHandle> handles);
 
+    void setFatalErrorCallback(std::function<void(const char*)> callback);
+    void onFatalError(const char* errorString);
+
     void clear();
 
    private:
@@ -121,6 +124,8 @@ class BoxedHandleManager {
     // be used when replaying commands.
     bool mHandleReplay = false;
     std::deque<BoxedHandle> mHandleReplayQueue;
+
+    std::function<void(const char*)> fatalErrorCallback = nullptr;
 };
 
 extern BoxedHandleManager sBoxedHandleManager;
