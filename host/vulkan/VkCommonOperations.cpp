@@ -1714,6 +1714,7 @@ void teardownGlobalVkEmulation() {
 }
 
 void onVkDeviceLost() { VkDecoderGlobalState::get()->on_DeviceLost(); }
+void onVkFatalError() { VkDecoderGlobalState::get()->on_FatalError(); }
 
 std::unique_ptr<gfxstream::DisplaySurface> createDisplaySurface(FBNativeWindowType window,
                                                                 uint32_t width, uint32_t height) {
