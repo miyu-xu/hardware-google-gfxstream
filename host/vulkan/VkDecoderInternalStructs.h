@@ -54,6 +54,7 @@ class ExternalFencePool {
 
     ~ExternalFencePool() {
         if (!mPool.empty()) {
+            // TODO0: should we convert this into onVkFatalError and handle gracefully?
             GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
                 << "External fence pool for device " << static_cast<void*>(mDevice)
                 << " destroyed but " << mPool.size() << " fences still not destroyed.";
@@ -198,6 +199,12 @@ struct ExternalFenceInfo {
     VkExternalFenceHandleTypeFlagBits supportedFenceHandleTypes;
 };
 
+struct DeviceDebugInfo {
+    std::string applicationName; // Duplicated from instance info
+    std::string engineName;
+    VkDeviceCreateInfo createInfoShallow;
+};
+
 struct DeviceInfo {
     std::unordered_map<uint32_t, std::vector<VkQueue>> queues;
     std::vector<std::string> enabledExtensionNames;
@@ -214,6 +221,8 @@ struct DeviceInfo {
     std::unique_ptr<GpuDecompressionPipelineManager> decompPipelines = nullptr;
     DeviceOpTrackerPtr deviceOpTracker = nullptr;
     std::optional<uint32_t> virtioGpuContextId;
+    DeviceDebugInfo debugInfo;
+    bool mIsLost;
 
     // True if this is a compressed image that needs to be decompressed on the GPU (with our
     // compute shader)
@@ -228,6 +237,12 @@ struct DeviceInfo {
     bool needEmulatedDecompression(VkFormat format) {
         return (gfxstream::vk::isEtc2(format) && emulateTextureEtc2) ||
                (gfxstream::vk::isAstc(format) && emulateTextureAstc);
+    }
+    bool isLost() const {
+        return mIsLost;
+    }
+    void setLost() {
+        mIsLost = true;
     }
 };
 

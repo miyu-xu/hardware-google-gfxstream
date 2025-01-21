@@ -27,17 +27,34 @@ RenderThreadInfoVk::RenderThreadInfoVk() {
             << "Attempted to set thread local Vk render thread info twice.";
     }
     tlThreadInfo = this;
+
+    mIsLost = false;
+
+    //TODO0: temp
+    mId = std::this_thread::get_id();
+    {
+        std::stringstream ss;
+        ss << mId;
+        mIdStr = ss.str();
+    }
+    INFO("RenderThreadInfoVk created for %s", mIdStr.c_str());
 }
 
-RenderThreadInfoVk::~RenderThreadInfoVk() { tlThreadInfo = nullptr; }
+RenderThreadInfoVk::~RenderThreadInfoVk() {
+    tlThreadInfo = nullptr;
+    //TODO0: temp
+    INFO("RenderThreadInfoVk removed for %s", mIdStr.c_str());
+}
 
 RenderThreadInfoVk* RenderThreadInfoVk::get() { return tlThreadInfo; }
 
 void RenderThreadInfoVk::onSave(android::base::Stream* stream) {
+    //TODO0: save/load new information?
     stream->putBe32(ctx_id);
 }
 
 bool RenderThreadInfoVk::onLoad(android::base::Stream* stream) {
+    //TODO0: save/load new information?
     ctx_id = stream->getBe32();
     return true;
 }
