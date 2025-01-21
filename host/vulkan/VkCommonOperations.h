@@ -131,10 +131,221 @@ struct VkEmulation {
     PFN_vkGetPhysicalDeviceProperties2KHR getPhysicalDeviceProperties2Func = nullptr;
     PFN_vkGetPhysicalDeviceFeatures2 getPhysicalDeviceFeatures2Func = nullptr;
 
+<<<<<<< PATCH SET (7ce4ff Better handling of fatal Vulkan errors)
+    bool isGuestVulkanOnly() const;
+
+    bool commandBufferCheckpointsEnabled() const;
+
+    bool supportsSamplerYcbcrConversion() const;
+
+    bool debugUtilsEnabled() const;
+
+    DebugUtilsHelper& getDebugUtilsHelper();
+
+    DeviceLostHelper& getDeviceLostHelper();
+
+    const gfxstream::host::FeatureSet& getFeatures() const;
+
+    const gfxstream::host::BackendCallbacks& getCallbacks() const;
+
+    AstcEmulationMode getAstcLdrEmulationMode() const;
+
+    emugl::RenderDocWithMultipleVkInstances* getRenderDoc();
+
+    Compositor* getCompositor();
+
+    DisplayVk* getDisplay();
+
+    VkInstance getInstance();
+
+    std::string getGpuVendor() const;
+    std::string getGpuName() const;
+    std::string getGpuVersionString() const;
+    std::string getInstanceExtensionsString() const;
+    std::string getDeviceExtensionsString() const;
+
+    const VkPhysicalDeviceProperties getPhysicalDeviceProperties() const;
+
+    struct RepresentativeColorBufferMemoryTypeInfo {
+        // The host memory type index used for Buffer/ColorBuffer allocations.
+        uint32_t hostMemoryTypeIndex;
+
+        // The guest memory type index that will be returned to guest processes querying
+        // the memory type index of host AHardwareBuffer/ColorBuffer allocations. This may
+        // point to an emulated memory type so that the host can control which memory flags are
+        // exposed to the guest (i.e. hide VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT from the guest).
+        uint32_t guestMemoryTypeIndex;
+    };
+    RepresentativeColorBufferMemoryTypeInfo getRepresentativeColorBufferMemoryTypeInfo() const;
+
+    void onVkDeviceLost();
+    void onVkFatalError(const char* errorMessage);
+
+    VkExternalMemoryHandleTypeFlagBits getDefaultExternalMemoryHandleType();
+
+    std::unique_ptr<gfxstream::DisplaySurface> createDisplaySurface(FBNativeWindowType window,
+                                                                    uint32_t width,
+                                                                    uint32_t height);
+
+    // ColorBuffer operations
+
+    bool getColorBufferShareInfo(uint32_t colorBufferHandle, bool* glExported,
+                                 bool* externalMemoryCompatible);
+
+    bool getColorBufferAllocationInfo(uint32_t colorBufferHandle, VkDeviceSize* outSize,
+                                      uint32_t* outMemoryTypeIndex, bool* outMemoryIsDedicatedAlloc,
+                                      void** outMappedPtr);
+
+    std::unique_ptr<VkImageCreateInfo> generateColorBufferVkImageCreateInfo(VkFormat format,
+                                                                            uint32_t width,
+                                                                            uint32_t height,
+                                                                            VkImageTiling tiling);
+
+    bool isFormatSupported(GLenum format);
+
+    bool createVkColorBuffer(uint32_t width, uint32_t height, GLenum format,
+                             FrameworkFormat frameworkFormat, uint32_t colorBufferHandle,
+                             bool vulkanOnly, uint32_t memoryProperty);
+
+    bool teardownVkColorBuffer(uint32_t colorBufferHandle);
+
+    struct ExternalMemoryInfo {
+        // Input fields
+        VkDeviceSize size;
+        uint32_t typeIndex;
+
+        // Output fields
+        uint32_t id = 0;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
+
+        // host-mapping fields
+        // host virtual address (hva).
+        void* mappedPtr = nullptr;
+        // host virtual address, aligned to 4KB page.
+        void* pageAlignedHva = nullptr;
+        // the offset of |mappedPtr| off its memory page.
+        uint32_t pageOffset = 0u;
+        // the offset set in |vkBindImageMemory| or |vkBindBufferMemory|.
+        uint32_t bindOffset = 0u;
+        // the size of all the pages the memory uses.
+        size_t sizeToPage = 0u;
+        // guest physical address.
+        uintptr_t gpa = 0u;
+
+        std::optional<ExternalHandleInfo> handleInfo = std::nullopt;
+#ifdef __APPLE__
+        // This is used as an external handle when MoltenVK is enabled
+        MTLResource_id externalMetalHandle = nullptr;
+||||||| BASE
+    bool isGuestVulkanOnly() const;
+
+    bool commandBufferCheckpointsEnabled() const;
+
+    bool supportsSamplerYcbcrConversion() const;
+
+    bool debugUtilsEnabled() const;
+
+    DebugUtilsHelper& getDebugUtilsHelper();
+
+    DeviceLostHelper& getDeviceLostHelper();
+
+    const gfxstream::host::FeatureSet& getFeatures() const;
+
+    const gfxstream::host::BackendCallbacks& getCallbacks() const;
+
+    AstcEmulationMode getAstcLdrEmulationMode() const;
+
+    emugl::RenderDocWithMultipleVkInstances* getRenderDoc();
+
+    Compositor* getCompositor();
+
+    DisplayVk* getDisplay();
+
+    VkInstance getInstance();
+
+    std::string getGpuVendor() const;
+    std::string getGpuName() const;
+    std::string getGpuVersionString() const;
+    std::string getInstanceExtensionsString() const;
+    std::string getDeviceExtensionsString() const;
+
+    const VkPhysicalDeviceProperties getPhysicalDeviceProperties() const;
+
+    struct RepresentativeColorBufferMemoryTypeInfo {
+        // The host memory type index used for Buffer/ColorBuffer allocations.
+        uint32_t hostMemoryTypeIndex;
+
+        // The guest memory type index that will be returned to guest processes querying
+        // the memory type index of host AHardwareBuffer/ColorBuffer allocations. This may
+        // point to an emulated memory type so that the host can control which memory flags are
+        // exposed to the guest (i.e. hide VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT from the guest).
+        uint32_t guestMemoryTypeIndex;
+    };
+    RepresentativeColorBufferMemoryTypeInfo getRepresentativeColorBufferMemoryTypeInfo() const;
+
+    void onVkDeviceLost();
+
+    VkExternalMemoryHandleTypeFlagBits getDefaultExternalMemoryHandleType();
+
+    std::unique_ptr<gfxstream::DisplaySurface> createDisplaySurface(FBNativeWindowType window,
+                                                                    uint32_t width,
+                                                                    uint32_t height);
+
+    // ColorBuffer operations
+
+    bool getColorBufferShareInfo(uint32_t colorBufferHandle, bool* glExported,
+                                 bool* externalMemoryCompatible);
+
+    bool getColorBufferAllocationInfo(uint32_t colorBufferHandle, VkDeviceSize* outSize,
+                                      uint32_t* outMemoryTypeIndex, bool* outMemoryIsDedicatedAlloc,
+                                      void** outMappedPtr);
+
+    std::unique_ptr<VkImageCreateInfo> generateColorBufferVkImageCreateInfo(VkFormat format,
+                                                                            uint32_t width,
+                                                                            uint32_t height,
+                                                                            VkImageTiling tiling);
+
+    bool isFormatSupported(GLenum format);
+
+    bool createVkColorBuffer(uint32_t width, uint32_t height, GLenum format,
+                             FrameworkFormat frameworkFormat, uint32_t colorBufferHandle,
+                             bool vulkanOnly, uint32_t memoryProperty);
+
+    bool teardownVkColorBuffer(uint32_t colorBufferHandle);
+
+    struct ExternalMemoryInfo {
+        // Input fields
+        VkDeviceSize size;
+        uint32_t typeIndex;
+
+        // Output fields
+        uint32_t id = 0;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
+
+        // host-mapping fields
+        // host virtual address (hva).
+        void* mappedPtr = nullptr;
+        // host virtual address, aligned to 4KB page.
+        void* pageAlignedHva = nullptr;
+        // the offset of |mappedPtr| off its memory page.
+        uint32_t pageOffset = 0u;
+        // the offset set in |vkBindImageMemory| or |vkBindBufferMemory|.
+        uint32_t bindOffset = 0u;
+        // the size of all the pages the memory uses.
+        size_t sizeToPage = 0u;
+        // guest physical address.
+        uintptr_t gpa = 0u;
+
+        std::optional<ExternalHandleInfo> handleInfo = std::nullopt;
+#ifdef __APPLE__
+        // This is used as an external handle when MoltenVK is enabled
+        MTLResource_id externalMetalHandle = nullptr;
+=======
 #if defined(__APPLE__)
     bool instanceSupportsMoltenVK = false;
 #else
     static const bool instanceSupportsMoltenVK = false;
+>>>>>>> BASE      (9cdb43 Update generated code for dispatcher checks)
 #endif
 
     bool debugUtilsAvailableAndRequested = false;

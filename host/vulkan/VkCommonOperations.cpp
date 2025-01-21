@@ -28,6 +28,7 @@
 #include "VkDecoderGlobalState.h"
 #include "VkEmulatedPhysicalDeviceMemory.h"
 #include "VkFormatUtils.h"
+#include "VulkanBoxedHandles.h"
 #include "VulkanDispatch.h"
 #include "aemu/base/Optional.h"
 #include "aemu/base/Tracing.h"
@@ -1719,7 +1720,146 @@ std::unique_ptr<gfxstream::DisplaySurface> createDisplaySurface(FBNativeWindowTy
         return nullptr;
     }
 
+<<<<<<< PATCH SET (7ce4ff Better handling of fatal Vulkan errors)
+    std::array<uint8_t, VK_UUID_SIZE> uuid;
+    std::memcpy(uuid.data(), mDeviceInfo.idProps.deviceUUID, VK_UUID_SIZE);
+    return uuid;
+}
+
+std::optional<std::array<uint8_t, VK_UUID_SIZE>> VkEmulation::getDriverUuid() {
+    if (!supportsPhysicalDeviceIDProperties()) {
+        return std::nullopt;
+    }
+
+    std::array<uint8_t, VK_UUID_SIZE> uuid;
+    std::memcpy(uuid.data(), mDeviceInfo.idProps.driverUUID, VK_UUID_SIZE);
+    return uuid;
+}
+
+std::string VkEmulation::getGpuVendor() const { return mDeviceInfo.driverVendor; }
+
+std::string VkEmulation::getGpuName() const { return mDeviceInfo.physdevProps.deviceName; }
+
+std::string VkEmulation::getGpuVersionString() const {
+    std::stringstream builder;
+    builder << "Vulkan "                                            //
+            << VK_API_VERSION_MAJOR(mVulkanInstanceVersion) << "."  //
+            << VK_API_VERSION_MINOR(mVulkanInstanceVersion) << "."  //
+            << VK_API_VERSION_PATCH(mVulkanInstanceVersion) << " "  //
+            << getGpuVendor() << " "                                //
+            << getGpuName();
+    return builder.str();
+}
+
+std::string VkEmulation::getInstanceExtensionsString() const {
+    std::stringstream builder;
+    for (const auto& instanceExtension : mInstanceExtensions) {
+        if (builder.tellp() != 0) {
+            builder << " ";
+        }
+        builder << instanceExtension.extensionName;
+    }
+    return builder.str();
+}
+
+std::string VkEmulation::getDeviceExtensionsString() const {
+    std::stringstream builder;
+    for (const auto& deviceExtension : mDeviceInfo.extensions) {
+        if (builder.tellp() != 0) {
+            builder << " ";
+        }
+        builder << deviceExtension.extensionName;
+    }
+    return builder.str();
+}
+
+const VkPhysicalDeviceProperties VkEmulation::getPhysicalDeviceProperties() const {
+    return mDeviceInfo.physdevProps;
+}
+
+VkEmulation::RepresentativeColorBufferMemoryTypeInfo
+VkEmulation::getRepresentativeColorBufferMemoryTypeInfo() const {
+    return mRepresentativeColorBufferMemoryTypeInfo;
+}
+
+void VkEmulation::onVkDeviceLost() { VkDecoderGlobalState::get()->on_DeviceLost(); }
+void VkEmulation::onVkFatalError(const char* errorMessage) {
+    VkDecoderGlobalState::get()->on_FatalError(errorMessage);
+}
+
+std::unique_ptr<gfxstream::DisplaySurface> VkEmulation::createDisplaySurface(
+    FBNativeWindowType window, uint32_t width, uint32_t height) {
+    auto surfaceVk = DisplaySurfaceVk::create(*mIvk, mInstance, window);
+||||||| BASE
+    std::array<uint8_t, VK_UUID_SIZE> uuid;
+    std::memcpy(uuid.data(), mDeviceInfo.idProps.deviceUUID, VK_UUID_SIZE);
+    return uuid;
+}
+
+std::optional<std::array<uint8_t, VK_UUID_SIZE>> VkEmulation::getDriverUuid() {
+    if (!supportsPhysicalDeviceIDProperties()) {
+        return std::nullopt;
+    }
+
+    std::array<uint8_t, VK_UUID_SIZE> uuid;
+    std::memcpy(uuid.data(), mDeviceInfo.idProps.driverUUID, VK_UUID_SIZE);
+    return uuid;
+}
+
+std::string VkEmulation::getGpuVendor() const { return mDeviceInfo.driverVendor; }
+
+std::string VkEmulation::getGpuName() const { return mDeviceInfo.physdevProps.deviceName; }
+
+std::string VkEmulation::getGpuVersionString() const {
+    std::stringstream builder;
+    builder << "Vulkan "                                            //
+            << VK_API_VERSION_MAJOR(mVulkanInstanceVersion) << "."  //
+            << VK_API_VERSION_MINOR(mVulkanInstanceVersion) << "."  //
+            << VK_API_VERSION_PATCH(mVulkanInstanceVersion) << " "  //
+            << getGpuVendor() << " "                                //
+            << getGpuName();
+    return builder.str();
+}
+
+std::string VkEmulation::getInstanceExtensionsString() const {
+    std::stringstream builder;
+    for (const auto& instanceExtension : mInstanceExtensions) {
+        if (builder.tellp() != 0) {
+            builder << " ";
+        }
+        builder << instanceExtension.extensionName;
+    }
+    return builder.str();
+}
+
+std::string VkEmulation::getDeviceExtensionsString() const {
+    std::stringstream builder;
+    for (const auto& deviceExtension : mDeviceInfo.extensions) {
+        if (builder.tellp() != 0) {
+            builder << " ";
+        }
+        builder << deviceExtension.extensionName;
+    }
+    return builder.str();
+}
+
+const VkPhysicalDeviceProperties VkEmulation::getPhysicalDeviceProperties() const {
+    return mDeviceInfo.physdevProps;
+}
+
+VkEmulation::RepresentativeColorBufferMemoryTypeInfo
+VkEmulation::getRepresentativeColorBufferMemoryTypeInfo() const {
+    return mRepresentativeColorBufferMemoryTypeInfo;
+}
+
+void VkEmulation::onVkDeviceLost() { VkDecoderGlobalState::get()->on_DeviceLost(); }
+
+std::unique_ptr<gfxstream::DisplaySurface> VkEmulation::createDisplaySurface(
+    FBNativeWindowType window, uint32_t width, uint32_t height) {
+    auto surfaceVk = DisplaySurfaceVk::create(*mIvk, mInstance, window);
+=======
     auto surfaceVk = DisplaySurfaceVk::create(*sVkEmulation->ivk, sVkEmulation->instance, window);
+>>>>>>> BASE      (9cdb43 Update generated code for dispatcher checks)
     if (!surfaceVk) {
         ERR("Failed to create DisplaySurfaceVk.");
         return nullptr;
