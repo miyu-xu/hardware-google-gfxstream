@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "acf9d4f5_949fc5d5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-23T08:09:25Z",
+      "side": 1,
+      "message": "This now passed presubmit and can be merged in.",
+      "revId": "a175970b0a734d7f093707b6cacf6a5e5ea0ae1a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
