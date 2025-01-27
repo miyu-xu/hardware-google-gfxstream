@@ -31,6 +31,7 @@
 #include "VkDecoderSnapshot.h"
 #include "VkDecoderSnapshotUtils.h"
 #include "VkEmulatedPhysicalDeviceMemory.h"
+#include "VkEmulatedPhysicalDeviceQueue.h"
 #include "VulkanDispatch.h"
 #include "VulkanStream.h"
 #include "aemu/base/Optional.h"
@@ -1315,28 +1316,19 @@ class VkDecoderGlobalState::Impl {
                         m_emu->representativeColorBufferMemoryTypeInfo->hostMemoryTypeIndex,
                         getFeatures());
 
+                std::vector<VkQueueFamilyProperties> queueFamilyProperties;
                 uint32_t queueFamilyPropCount = 0;
-
                 vk->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevices[i],
                                                              &queueFamilyPropCount, nullptr);
-
-                physdevInfo.queueFamilyProperties.resize((size_t)queueFamilyPropCount);
-
+                queueFamilyProperties.resize((size_t)queueFamilyPropCount);
                 vk->vkGetPhysicalDeviceQueueFamilyProperties(
                     physicalDevices[i], &queueFamilyPropCount,
-                    physdevInfo.queueFamilyProperties.data());
+                    queueFamilyProperties.data());
 
-                // Override queueCount for the virtual queue to be provided with device creations
-                if (mEnableVirtualVkQueue) {
-                    for (VkQueueFamilyProperties& qfp : physdevInfo.queueFamilyProperties) {
-                        // Check if the queue requires a virtualized version. For Android, we need
-                        // 2 graphics queues on the same queue family.
-                        if ( (qfp.queueFlags & VK_QUEUE_GRAPHICS_BIT) && qfp.queueCount == 1 ) {
-                            qfp.queueCount = 2;
-                            physdevInfo.hasVirtualGraphicsQueues = true;
-                        }
-                    }
-                }
+                physdevInfo.queuePropertiesHelper =
+                    std::make_unique<EmulatedPhysicalDeviceQueueProperties>(
+                        queueFamilyProperties,
+                        getFeatures());
 
                 pPhysicalDevices[i] = (VkPhysicalDevice)physdevInfo.boxed;
             }
@@ -1695,23 +1687,17 @@ class VkDecoderGlobalState::Impl {
         auto physicalDevice = unbox_VkPhysicalDevice(boxed_physicalDevice);
         auto vk = dispatch_VkPhysicalDevice(boxed_physicalDevice);
 
-        const bool requiresPropertyOverrides = mEnableVirtualVkQueue && pQueueFamilyProperties;
-        if (!requiresPropertyOverrides) {
-            // Can just use results from the driver
-            return vk->vkGetPhysicalDeviceQueueFamilyProperties(
-                physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
-        }
-
-        // Use cached queue family properties to accommodate for any property overrides/emulation
         std::lock_guard<std::recursive_mutex> lock(mLock);
         const PhysicalDeviceInfo* physicalDeviceInfo =
             android::base::find(mPhysdevInfo, physicalDevice);
-        if (!physicalDeviceInfo) {
+        if (!physicalDeviceInfo || !physicalDeviceInfo->queuePropertiesHelper) {
             ERR("Failed to find physical device info.");
             return;
         }
 
-        const auto& properties = physicalDeviceInfo->queueFamilyProperties;
+        // Use queuePropertiesHelper to accommodate for any property overrides/emulation
+        const auto& properties =
+            physicalDeviceInfo->queuePropertiesHelper->getQueueFamilyProperties();
         *pQueueFamilyPropertyCount =
             std::min((uint32_t)properties.size(), *pQueueFamilyPropertyCount);
         for (uint32_t i = 0; i < *pQueueFamilyPropertyCount; i++) {
@@ -1726,29 +1712,23 @@ class VkDecoderGlobalState::Impl {
         auto physicalDevice = unbox_VkPhysicalDevice(boxed_physicalDevice);
         auto vk = dispatch_VkPhysicalDevice(boxed_physicalDevice);
 
-        const bool requiresPropertyOverrides = mEnableVirtualVkQueue && pQueueFamilyProperties;
-        if (!requiresPropertyOverrides) {
-            // Can just use results from the driver
-            return vk->vkGetPhysicalDeviceQueueFamilyProperties2(
-                physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
-        }
-
-        if (pQueueFamilyProperties->pNext) {
-            // We still need to call the driver version to fill in any pNext values
+        if (pQueueFamilyProperties && pQueueFamilyProperties->pNext) {
+            // We need to call the driver version to fill in any pNext values
             vk->vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, pQueueFamilyPropertyCount,
                                                           pQueueFamilyProperties);
         }
 
-        // Use cached queue family properties to accommodate for any property overrides/emulation
         std::lock_guard<std::recursive_mutex> lock(mLock);
         const PhysicalDeviceInfo* physicalDeviceInfo =
             android::base::find(mPhysdevInfo, physicalDevice);
-        if (!physicalDeviceInfo) {
+        if (!physicalDeviceInfo || !physicalDeviceInfo->queuePropertiesHelper) {
             ERR("Failed to find physical device info.");
             return;
         }
 
-        const auto& properties = physicalDeviceInfo->queueFamilyProperties;
+        // Use queuePropertiesHelper to accommodate for any property overrides/emulation
+        const auto& properties =
+            physicalDeviceInfo->queuePropertiesHelper->getQueueFamilyProperties();
         *pQueueFamilyPropertyCount =
             std::min((uint32_t)properties.size(), *pQueueFamilyPropertyCount);
         for (uint32_t i = 0; i < *pQueueFamilyPropertyCount; i++) {
@@ -2156,7 +2136,7 @@ class VkDecoderGlobalState::Impl {
         for (auto it : queueFamilyIndexCounts) {
             auto index = it.first;
             auto count = it.second;
-            auto addVirtualQueue = (count == 2) && physicalDeviceInfo.hasVirtualGraphicsQueues;
+            auto addVirtualQueue = (count == 2) && physicalDeviceInfo.queuePropertiesHelper->hasVirtualGraphicsQueue();
             auto& queues = deviceInfo.queues[index];
             for (uint32_t i = 0; i < count; ++i) {
                 VkQueue physicalQueue;
@@ -2165,7 +2145,7 @@ class VkDecoderGlobalState::Impl {
                     INFO("%s: get device queue (begin)", __func__);
                 }
 
-                assert(i == 0 || !physicalDeviceInfo.hasVirtualGraphicsQueues);
+                assert(i == 0 || !physicalDeviceInfo.queuePropertiesHelper->hasVirtualGraphicsQueue());
                 vk->vkGetDeviceQueue(*pDevice, index, i, &physicalQueue);
 
                 if (mLogging) {
