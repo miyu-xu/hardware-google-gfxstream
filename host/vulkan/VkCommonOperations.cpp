@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include "VkCommonOperations.h"
+#include <mach/clock_types.h>
+
+#error BAD! Wrong do it again
+
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
