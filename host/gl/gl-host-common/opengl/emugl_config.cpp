@@ -14,12 +14,17 @@
 
 #include "host-common/opengl/emugl_config.h"
 
+#include "aemu/base/logging/Log.h"
 #include "aemu/base/StringFormat.h"
+#include "aemu/base/files/PathUtils.h"
 #include "aemu/base/system/System.h"
 #include "host-common/globals.h"
 #include "host-common/opengl/EmuglBackendList.h"
 #include "host-common/opengl/gpuinfo.h"
 #include "host-common/opengl/misc.h"
+#include "vulkan/vulkan.h"
+#include "vulkan/vk_enum_string_helper.h"
+#include "vulkan/VkCommonOperations.h"
 
 #include <string>
 
@@ -28,6 +33,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(__APPLE__)
+#if (VK_HEADER_VERSION > 216)
+#include <vulkan/vulkan_beta.h>
+#else
+// Manually define MoltenVK related parts until we update the Vulkan headers
+#ifndef VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+#define VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME \
+    "VK_KHR_portability_enumeration"
+#endif
+static const uint32_t VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR =
+        0x00000001;
+#endif
+#endif
+
+#ifndef _WIN32
+#include <dlfcn.h>
+#endif
 
 #define DEBUG 0
 
@@ -186,6 +209,469 @@ void free_emugl_host_gpu_props(emugl_host_gpu_prop_list proplist) {
 
 static void setCurrentRenderer(const char* gpuMode) {
     sCurrentRenderer = emuglConfig_get_renderer(gpuMode);
+}
+
+struct DeviceSupportInfo {
+    VkPhysicalDeviceProperties physdevProps;
+    VkPhysicalDeviceMemoryProperties memProperties;
+    bool hasGraphicsQueueFamily;
+
+    uint64_t getDeviceLocalMemorySize() const {
+        uint64_t deviceLocalMemorySize = 0;
+        for (uint32_t i = 0; i < memProperties.memoryHeapCount; i++) {
+            if (memProperties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
+                deviceLocalMemorySize += memProperties.memoryHeaps[i].size;
+            }
+        }
+        return deviceLocalMemorySize;
+    }
+
+    void getApiVersion(int* major, int* minor, int* patch) const {
+        if (major) {
+            *major = VK_API_VERSION_MAJOR(physdevProps.apiVersion);
+        }
+        if (minor) {
+            *minor = VK_API_VERSION_MINOR(physdevProps.apiVersion);
+        }
+        if (patch) {
+            *patch = VK_API_VERSION_PATCH(physdevProps.apiVersion);
+        }
+    }
+
+    std::string getDriverVersionStr() const {
+        bool isNvidia = (physdevProps.vendorID == 4318);
+        std::string driverVersionStr;
+        if (isNvidia) {
+            // Decode Nvidia driver version to make it meaningful to the users
+            // Reference: VulkanDeviceInfo::getDriverVersion() at
+            // https://github.com/SaschaWillems/VulkanCapsViewer/blob/master/vulkanDeviceInfo.cpp
+            // 10 bits = major version (up to r1023)
+            // 8 bits = minor version (up to 255)
+            // 8 bits = secondary branch version/build version (up to 255)
+            // 6 bits = tertiary branch/build version (up to 63)
+            const uint32_t major = (physdevProps.driverVersion >> 22) & 0x3ff;
+            const uint32_t minor = (physdevProps.driverVersion >> 14) & 0x0ff;
+
+            return std::to_string(major) + "." + std::to_string(minor);
+        }
+
+        // Use regular VK_API_VERSION encoding to print the version.
+        return std::to_string(VK_API_VERSION_MAJOR(physdevProps.driverVersion)) + "." +
+               std::to_string(VK_API_VERSION_MINOR(physdevProps.driverVersion)) + "." +
+               std::to_string(VK_API_VERSION_PATCH(physdevProps.driverVersion));
+    }
+};
+
+// Checks if the user enforced a specific GPU, it can be done via index or name.
+// Otherwise try to find the best device with discrete GPU and high vulkan API
+// level. Scoring of the devices is done by some implicit choices based on known
+// driver quality, stability and performance issues of current GPUs. Only one
+// Vulkan device is selected; this makes things simple for now, but we could
+// consider utilizing multiple devices in use cases that make sense.
+int getSelectedGpuIndex(const std::vector<DeviceSupportInfo>& deviceInfos) {
+    const int physdevCount = deviceInfos.size();
+    if (physdevCount == 1) {
+        return 0;
+    }
+
+    const char* EnvVarSelectGpu = "ANDROID_EMU_VK_SELECT_GPU";
+    std::string enforcedGpuStr = android::base::getEnvironmentVariable(EnvVarSelectGpu);
+    int enforceGpuIndex = -1;
+    if (enforcedGpuStr.size()) {
+        INFO("%s is set to %s", EnvVarSelectGpu, enforcedGpuStr.c_str());
+
+        if (enforcedGpuStr[0] == '0') {
+            enforceGpuIndex = 0;
+        } else {
+            enforceGpuIndex = (atoi(enforcedGpuStr.c_str()));
+            if (enforceGpuIndex == 0) {
+                // Could not convert to an integer, try searching with device name
+                // Do the comparison case insensitive as vendor names don't have consistency
+                enforceGpuIndex = -1;
+                std::transform(enforcedGpuStr.begin(), enforcedGpuStr.end(), enforcedGpuStr.begin(),
+                               [](unsigned char c) { return std::tolower(c); });
+
+                for (int i = 0; i < physdevCount; ++i) {
+                    std::string deviceName = std::string(deviceInfos[i].physdevProps.deviceName);
+                    std::transform(deviceName.begin(), deviceName.end(), deviceName.begin(),
+                                   [](unsigned char c) { return std::tolower(c); });
+                    INFO("Physical device [%d] = %s", i, deviceName.c_str());
+
+                    if (deviceName.find(enforcedGpuStr) != std::string::npos) {
+                        enforceGpuIndex = i;
+                    }
+                }
+            }
+        }
+
+        if (enforceGpuIndex != -1 && enforceGpuIndex >= 0 && enforceGpuIndex < deviceInfos.size()) {
+            INFO("Selecting GPU (%s) at index %d.",
+                 deviceInfos[enforceGpuIndex].physdevProps.deviceName, enforceGpuIndex);
+        } else {
+            WARN("Could not select the GPU with ANDROID_EMU_VK_GPU_SELECT.");
+            enforceGpuIndex = -1;
+        }
+    }
+
+    if (enforceGpuIndex != -1) {
+        return enforceGpuIndex;
+    }
+
+    // If there are multiple devices, and none of them are enforced to use,
+    // score each device and select the best
+    int selectedGpuIndex = 0;
+    auto getDeviceScore = [](const DeviceSupportInfo& deviceInfo) {
+        uint32_t deviceScore = 0;
+        if (!deviceInfo.hasGraphicsQueueFamily) {
+            // Not supporting graphics, cannot be used.
+            return deviceScore;
+        }
+
+        // Matches the ordering in VkPhysicalDeviceType
+        const uint32_t deviceTypeScoreTable[] = {
+            100,   // VK_PHYSICAL_DEVICE_TYPE_OTHER = 0,
+            1000,  // VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU = 1,
+            2000,  // VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU = 2,
+            500,   // VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU = 3,
+            600,   // VK_PHYSICAL_DEVICE_TYPE_CPU = 4,
+        };
+
+        // Prefer discrete GPUs, then integrated and then others..
+        const int deviceType = deviceInfo.physdevProps.deviceType;
+        deviceScore += deviceTypeScoreTable[deviceInfo.physdevProps.deviceType];
+
+        // Prefer higher level of Vulkan API support, restrict version numbers to
+        // common limits to ensure an always increasing scoring change
+        const uint32_t major = VK_API_VERSION_MAJOR(deviceInfo.physdevProps.apiVersion);
+        const uint32_t minor = VK_API_VERSION_MINOR(deviceInfo.physdevProps.apiVersion);
+        const uint32_t patch = VK_API_VERSION_PATCH(deviceInfo.physdevProps.apiVersion);
+        deviceScore += major * 5000 + std::min(minor, 10u) * 500 + std::min(patch, 400u);
+
+        return deviceScore;
+    };
+
+    uint32_t maxScore = 0;
+    for (int i = 0; i < physdevCount; ++i) {
+        const uint32_t score = getDeviceScore(deviceInfos[i]);
+        if (score > maxScore) {
+            selectedGpuIndex = i;
+            maxScore = score;
+        }
+    }
+
+    return selectedGpuIndex;
+}
+
+static std::string sVkRuntimePath;
+
+const char* emuglConfig_get_vulkan_runtime_full_path() {
+    if (sVkRuntimePath.size()) {
+        return sVkRuntimePath.c_str();
+    }
+
+    const std::string explicitPath = android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOADER_PATH");
+    if (!explicitPath.empty()) {
+        sVkRuntimePath = explicitPath;
+        return sVkRuntimePath.c_str();
+    }
+
+#if defined(_WIN32)
+    const char* myLibName = "vulkan-1.dll";
+#elif defined(__linux__)
+    const char* myLibName = "libvulkan.so";
+#elif defined(__APPLE__)
+    const char* myLibName = "libvulkan.dylib";
+#endif
+
+    const std::string localVkRuntimePath = android::base::PathUtils::join(
+            android::base::getLauncherDirectory(), "lib64",
+            "vulkan", myLibName);
+
+    // Use local by default, switch to system if it's newer on supported
+    // platforms
+    std::string selectedPath = localVkRuntimePath;
+
+#if defined(_WIN32)
+    const std::string systemVkRuntimePath = myLibName;
+
+    // Make sure users can enforce the selection with an envvar
+    const std::string vkRuntimeOption =
+            android::base::getEnvironmentVariable("ANDROID_EMU_VK_RUNTIME");
+    if (vkRuntimeOption == "SYSTEM") {
+        selectedPath = systemVkRuntimePath;
+    } else if (vkRuntimeOption == "LOCAL") {
+        selectedPath = localVkRuntimePath;
+    } else {
+        // Check if the locally distributed version of the vulkan runtime is
+        // newer
+        int globalMajor, globalMinor, globalBuild_1, globalBuild_2;
+        int localMajor, localMinor, localBuild_1, localBuild_2;
+        dprint("%s: Checking for %s versions", __func__, myLibName);
+        if (android::base::queryFileVersionInfo(systemVkRuntimePath.c_str(),
+                                         &globalMajor, &globalMinor,
+                                         &globalBuild_1, &globalBuild_2) &&
+            android::base::queryFileVersionInfo(localVkRuntimePath.c_str(),
+                                         &localMajor, &localMinor,
+                                         &localBuild_1, &localBuild_2)) {
+            dprint("%s version: %d.%d.%d.%d", systemVkRuntimePath.c_str(),
+                   globalMajor, globalMinor, globalBuild_1, globalBuild_2);
+            dprint("%s version: %d.%d.%d.%d", localVkRuntimePath.c_str(),
+                   localMajor, localMinor, localBuild_1, localBuild_2);
+
+            if ((localMajor > globalMajor) ||
+                (localMajor == globalMajor && localMinor > globalMinor) ||
+                (localMajor == globalMajor && localMinor == globalMinor &&
+                 localBuild_1 > globalBuild_1)) {
+                // Use globally available runtime if newer
+                selectedPath = systemVkRuntimePath;
+            }
+        }
+    }
+#endif
+
+    sVkRuntimePath = selectedPath;
+    dprint("%s: Using vulkan runtime path: %s", __func__,
+           sVkRuntimePath.c_str());
+
+    return sVkRuntimePath.c_str();
+}
+
+bool emuglConfig_get_vulkan_hardware_gpu_support_info(
+        DeviceSupportInfo* outProps);
+
+void emuglConfig_get_vulkan_hardware_gpu(char** vendor,
+                                         int* major,
+                                         int* minor,
+                                         int* patch,
+                                         uint64_t* deviceMemBytes,
+                                         uint32_t* driverVersion) {
+    if (!vendor || !major || !minor || !patch) {
+        derror("%s: Invalid argument!", __func__);
+        return;
+    }
+
+    DeviceSupportInfo vkProps = {};
+    if (!emuglConfig_get_vulkan_hardware_gpu_support_info(&vkProps)) {
+        *vendor = nullptr;
+        return;
+    }
+    const char* mylibname = emuglConfig_get_vulkan_runtime_full_path();
+
+    const VkPhysicalDeviceProperties& physicalProp = vkProps.physdevProps;
+    const VkPhysicalDeviceMemoryProperties& memProps = vkProps.memProperties;
+
+    // TODO: expose emuglConfig_get_vulkan_hardware_gpu_support_info outside
+    // Here we make sure sure 'vendor' starts with the vendor's name.
+    // We do not expose vendorID with this code path, and the resulting value
+    // is actually used as 'device name'. But some old code will incorrectly
+    // depend on string comparison for vendor matching.
+    std::string vendorName = physicalProp.deviceName;
+    std::vector<std::pair<uint32_t, std::string>> vendorIdPairs = {
+            {4318, "NVIDIA"},
+            {32902, "Intel"},
+            {4098, "AMD"},
+    };
+    for (auto& p : vendorIdPairs) {
+        if (physicalProp.vendorID == p.first) {
+            if (vendorName.rfind(p.second, 0) != 0) {
+                // Doesn't start with vendor name
+                vendorName = p.second + " " + vendorName;
+            }
+            break;
+        }
+    }
+    *vendor = strdup(vendorName.c_str());
+
+    vkProps.getApiVersion(major, minor, patch);
+    if (deviceMemBytes) {
+        *deviceMemBytes = vkProps.getDeviceLocalMemorySize();
+    }
+    if (driverVersion) {
+        *driverVersion = physicalProp.driverVersion;
+    }
+}
+
+static bool sVkPropsInitialized = false;
+static DeviceSupportInfo sVkProps = {};
+
+bool emuglConfig_get_vulkan_hardware_gpu_support_info(
+        DeviceSupportInfo* outProps) {
+    if (!outProps) {
+        derror("%s: Invalid argument!", __func__);
+        return false;
+    }
+
+    if (sVkPropsInitialized) {
+        *outProps = sVkProps;
+        return true;
+    }
+
+    const char* mylibname = emuglConfig_get_vulkan_runtime_full_path();
+
+#if defined(_WIN32)
+    HMODULE library = LoadLibraryA(mylibname);
+    if (!library) {
+        dwarning("%s: cannot open vulkan lib %s\n", __func__, mylibname);
+        return false;
+    }
+    auto* pvkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(GetProcAddress(library, "vkGetInstanceProcAddr"));
+#else
+    auto library = dlopen(mylibname, RTLD_NOW);
+    if (!library) {
+        dwarning("%s: failed to open %s", __func__, mylibname);
+        return false;
+    }
+    auto* pvkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(dlsym(library, "vkGetInstanceProcAddr"));
+#endif
+
+    if (!pvkGetInstanceProcAddr) {
+        derror("Failed to load vkGetInstanceProcAddr function!");
+        return false;
+    }
+
+#define GET_VK_INSTANCE_PROC(inst, name) \
+    PFN_##name(pvkGetInstanceProcAddr(inst, #name));
+
+    auto* pvkCreateInstance = GET_VK_INSTANCE_PROC(nullptr, vkCreateInstance);
+    if (!pvkCreateInstance) {
+        derror("Failed to load vkCreateInstance function!");
+        return false;
+    }
+
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "DetectGpuInfo";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "test_engine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_0;
+
+    VkInstanceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+
+    std::vector<const char*> extNames;
+
+#if defined(__APPLE__)
+    // MoltenVK requires portability enumeratiion and extension enabled
+    createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    extNames.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
+
+    createInfo.enabledExtensionCount = (uint32_t)extNames.size();
+    createInfo.ppEnabledExtensionNames = extNames.data();
+
+    VkInstance instance;
+
+    VkResult result = pvkCreateInstance(&createInfo, 0, &instance);
+
+    if (result != VK_SUCCESS) {
+        derror("%s: Failed to create vulkan instance. Error: [%s] %d\n",
+               __func__, string_VkResult(result), result);
+        return false;
+    }
+    dprint("%s: Successfully created vulkan instance\n", __func__);
+
+    auto* pvkDestroyInstance = GET_VK_INSTANCE_PROC(instance, vkDestroyInstance);
+    auto* pvkEnumeratePhysicalDevices =
+            GET_VK_INSTANCE_PROC(instance, vkEnumeratePhysicalDevices);
+    auto* pvkGetPhysicalDeviceProperties =
+            GET_VK_INSTANCE_PROC(instance, vkGetPhysicalDeviceProperties);
+    auto* pvkGetPhysicalDeviceMemoryProperties =
+            GET_VK_INSTANCE_PROC(instance, vkGetPhysicalDeviceMemoryProperties);
+    auto* pvkGetPhysicalDeviceQueueFamilyProperties =
+            GET_VK_INSTANCE_PROC(instance, vkGetPhysicalDeviceQueueFamilyProperties);
+
+#undef GET_VK_INSTANCE_PROC
+
+    if (!pvkEnumeratePhysicalDevices ||
+        !pvkGetPhysicalDeviceProperties || !pvkDestroyInstance ||
+        !pvkGetPhysicalDeviceMemoryProperties || !pvkGetPhysicalDeviceQueueFamilyProperties) {
+        derror("Failed to load Vulkan functions!");
+        return false;
+    }
+
+    uint32_t deviceCount = 0;
+    result = pvkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+    if (result != VK_SUCCESS) {
+        pvkDestroyInstance(instance, nullptr);
+        derror("%s: Failed to query physical devices count. Error: %s [%d]\n",
+               __func__, string_VkResult(result), result);
+        return false;
+    }
+    dprint("%s: Physical devices count is %d\n", __func__, (int)(deviceCount));
+    if (deviceCount == 0) {
+        pvkDestroyInstance(instance, nullptr);
+        derror("%s: Could not find any Vulkan supported devices, try updating "
+               "your GPU drivers.\n",
+               __func__);
+        return false;
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    result =
+            pvkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+    if (result != VK_SUCCESS) {
+        pvkDestroyInstance(instance, nullptr);
+        derror("%s: Failed to query physical devices. Error: %s [%d]\n",
+               __func__, string_VkResult(result), result);
+        return false;
+    }
+
+    std::vector<DeviceSupportInfo> deviceInfos(deviceCount);
+    for (int i = 0; i < deviceCount; i++) {
+        pvkGetPhysicalDeviceProperties(devices[i],
+                                       &deviceInfos[i].physdevProps);
+
+        pvkGetPhysicalDeviceMemoryProperties(devices[i],
+                                             &deviceInfos[i].memProperties);
+
+        deviceInfos[i].hasGraphicsQueueFamily = false;
+        {
+            uint32_t queueFamilyCount = 0;
+            pvkGetPhysicalDeviceQueueFamilyProperties(
+                    devices[i], &queueFamilyCount, nullptr);
+            std::vector<VkQueueFamilyProperties> queueFamilyProps(
+                    queueFamilyCount);
+            pvkGetPhysicalDeviceQueueFamilyProperties(
+                    devices[i], &queueFamilyCount, queueFamilyProps.data());
+
+            for (uint32_t j = 0; j < queueFamilyCount; ++j) {
+                auto count = queueFamilyProps[j].queueCount;
+                auto flags = queueFamilyProps[j].queueFlags;
+                if (count > 0 && (flags & VK_QUEUE_GRAPHICS_BIT)) {
+                    deviceInfos[i].hasGraphicsQueueFamily = true;
+                    break;
+                }
+            }
+        }
+
+        // Put the GPU information into the logs to be able to track down any
+        // errors more easily
+        const VkPhysicalDeviceProperties& physdevProps =
+                deviceInfos[i].physdevProps;
+        const char* deviceType =
+                string_VkPhysicalDeviceType(physdevProps.deviceType);
+        int vkMajor, vkMinor, vkPatch;
+        deviceInfos[i].getApiVersion(&vkMajor, &vkMinor, &vkPatch);
+        std::string driverVersionStr = deviceInfos[i].getDriverVersionStr();
+        dinfo("%s: Found physical GPU '%s', type: %s, apiVersion: %d.%d.%d, "
+              "driverVersion: %s\n",
+              __func__, physdevProps.deviceName, deviceType, vkMajor, vkMinor,
+              vkPatch, driverVersionStr.c_str());
+    }
+
+    uint32_t selectedGpuIndex = getSelectedGpuIndex(deviceInfos);
+
+    // save the props
+    sVkProps = deviceInfos[selectedGpuIndex];
+    sVkPropsInitialized = true;
+
+    *outProps = sVkProps;
+
+    pvkDestroyInstance(instance, nullptr);
+
+    return true;
 }
 
 bool emuglConfig_init(EmuglConfig* config,
