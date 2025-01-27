@@ -1758,7 +1758,7 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
     VkExportMemoryAllocateInfo exportAi = {
         .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
         .pNext = nullptr,
-        .handleTypes = getDefaultExternalMemoryHandleType(),
+        .handleTypes = static_cast<VkExternalMemoryHandleTypeFlags>(getDefaultExternalMemoryHandleType()),
     };
 
     VkMemoryDedicatedAllocateInfo dedicatedAllocInfo = {
@@ -2452,7 +2452,7 @@ static bool createVkColorBufferLocked(uint32_t width, uint32_t height, GLenum in
     VkExternalMemoryImageCreateInfo extImageCi = {
         VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO,
         0,
-        getDefaultExternalMemoryHandleType(),
+        static_cast<VkExternalMemoryHandleTypeFlags>(getDefaultExternalMemoryHandleType()),
     };
 #if defined(__APPLE__)
     if (sVkEmulation->instanceSupportsMoltenVK) {
@@ -3464,7 +3464,7 @@ bool setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulkanOnly, uint32
     VkExternalMemoryBufferCreateInfo extBufferCi = {
         VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO,
         0,
-        getDefaultExternalMemoryHandleType(),
+        static_cast<VkExternalMemoryHandleTypeFlags>(getDefaultExternalMemoryHandleType()),
     };
 
     void* extBufferCiPtr = nullptr;
