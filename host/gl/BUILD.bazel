@@ -202,6 +202,8 @@ cc_library(
         "//hardware/google/gfxstream/common/opengl:gfxstream_opengl_headers",
         "//hardware/google/gfxstream/host/apigen-codec-common",
         "//hardware/google/gfxstream/host/features:gfxstream_features",
+        "//hardware/google/gfxstream/common/vulkan:gfxstream_vulkan_headers",
+        "//hardware/google/gfxstream/host/vulkan:gfxstream-vulkan-common",
     ] + select({
         "@platforms//os:macos": ["gfxstream-gl-host-common-darwin"],
         "//conditions:default": [],

@@ -1,3 +1,44 @@
+cc_library(name="gfxstream-vulkan-common",
+hdrs = ["VkCommonOperations.h"],
+srcs = ["VkCommonOperations.cpp"],
+    visibility = ["//visibility:public"],
+    copts = [
+        "-Wno-return-type-c-linkage",
+        "-Wno-extern-c-compat",
+    ],
+    defines = [
+        "VK_GFXSTREAM_STRUCTURE_TYPE_EXT",
+        "EMUGL_BUILD",
+        "BUILDING_EMUGL_COMMON_SHARED",
+        "GFXSTREAM_ENABLE_HOST_GLES=1",
+    ] + select({
+        "@platforms//os:macos": [
+            "VK_USE_PLATFORM_METAL_EXT",
+            "VK_USE_PLATFORM_MACOS_MVK",
+        ],
+        "@platforms//os:windows": ["VK_USE_PLATFORM_WIN32_KHR"],
+        "@platforms//os:linux": [],
+        "//conditions:default": [],
+    }),
+    includes = [
+        ".",
+        "cereal",
+        "cereal/common",
+    ],
+    deps = [
+        "//hardware/google/gfxstream/common/vulkan:gfxstream_vulkan_headers",
+        "//hardware/google/gfxstream/host:gfxstream-compressedTextures",
+        "//hardware/google/gfxstream/host:gfxstream_host_headers",
+        "//hardware/google/gfxstream/host/apigen-codec-common",
+        "//hardware/google/gfxstream/host/gl:gl_headers",
+        "//hardware/google/gfxstream/host/vulkan:OpenglRender_vulkan_cereal",
+        "//hardware/google/gfxstream/host/vulkan:emulated_textures",
+        "//hardware/google/gfxstream/third-party/glm",
+        "//hardware/google/gfxstream/third-party/renderdoc",
+        "//hardware/google/gfxstream/utils:gfxstream_utils",
+    ],
+)
+
 cc_library(
     name = "gfxstream-vulkan-server",
     srcs = [
