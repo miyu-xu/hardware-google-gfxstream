@@ -191,7 +191,7 @@ static void load_gpu_registry_info(const wchar_t* keyName, GpuInfo* gpu) {
 //     guid.erase(std::remove(guid.begin(), guid.end(), '-'), guid.end());
 //     auto tempName = PathUtils::join(System::get()->getTempDir(),
 //                                     StringFormat("gpuinfo_%s.txt", guid));
-// 
+//
 //     auto deleteTempFile = makeCustomScopedPtr(
 //             &tempName,
 //             [](const std::string* name) { path_delete_file(name->c_str()); });
@@ -375,13 +375,78 @@ bool badAmdVulkanDriverVersion() {
 
 using WindowsDllVersion = std::tuple<int, int, int, int>;
 
+namespace {
+std::string sVkRuntimePath;
+
+const char* get_vulkan_runtime_full_path() {
+    if (sVkRuntimePath.size()) {
+        return sVkRuntimePath.c_str();
+    }
+
+    const std::string explicitPath =
+        android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOADER_PATH");
+    if (!explicitPath.empty()) {
+        sVkRuntimePath = explicitPath;
+        return sVkRuntimePath.c_str();
+    }
+
+    const char* myLibName = "vulkan-1.dll";
+
+    const std::string localVkRuntimePath = android::base::PathUtils::join(
+        android::base::getLauncherDirectory(), "lib64", "vulkan", myLibName);
+
+    // Use local by default, switch to system if it's newer on supported
+    // platforms
+    std::string selectedPath = localVkRuntimePath;
+
+    const std::string systemVkRuntimePath = myLibName;
+
+    // Make sure users can enforce the selection with an envvar
+    const std::string vkRuntimeOption =
+        android::base::getEnvironmentVariable("ANDROID_EMU_VK_RUNTIME");
+    if (vkRuntimeOption == "SYSTEM") {
+        selectedPath = systemVkRuntimePath;
+    } else if (vkRuntimeOption == "LOCAL") {
+        selectedPath = localVkRuntimePath;
+    } else {
+        // Check if the locally distributed version of the vulkan runtime is
+        // newer
+        int globalMajor, globalMinor, globalBuild_1, globalBuild_2;
+        int localMajor, localMinor, localBuild_1, localBuild_2;
+        dprint("%s: Checking for %s versions", __func__, myLibName);
+        if (android::base::queryFileVersionInfo(systemVkRuntimePath.c_str(), &globalMajor,
+                                                &globalMinor, &globalBuild_1, &globalBuild_2) &&
+            android::base::queryFileVersionInfo(localVkRuntimePath.c_str(), &localMajor,
+                                                &localMinor, &localBuild_1, &localBuild_2)) {
+            dprint("%s version: %d.%d.%d.%d", systemVkRuntimePath.c_str(), globalMajor, globalMinor,
+                   globalBuild_1, globalBuild_2);
+            dprint("%s version: %d.%d.%d.%d", localVkRuntimePath.c_str(), localMajor, localMinor,
+                   localBuild_1, localBuild_2);
+
+            if ((localMajor > globalMajor) ||
+                (localMajor == globalMajor && localMinor > globalMinor) ||
+                (localMajor == globalMajor && localMinor == globalMinor &&
+                 localBuild_1 > globalBuild_1)) {
+                // Use globally available runtime if newer
+                selectedPath = systemVkRuntimePath;
+            }
+        }
+    }
+
+    sVkRuntimePath = selectedPath;
+    dprint("%s: Using vulkan runtime path: %s", __func__, sVkRuntimePath.c_str());
+
+    return sVkRuntimePath.c_str();
+}
+}  // namespace
+
 bool badVulkanDllVersion() {
     int major, minor, build_1, build_2;
 
     // crashhandler_append_message_format(
     //     "checking for bad vulkan-1.dll version...\n");
 
-    const char* vulkanDllPath = emuglConfig_get_vulkan_runtime_full_path();
+    const char* vulkanDllPath = get_vulkan_runtime_full_path();
     if (!android::base::queryFileVersionInfo(vulkanDllPath, &major, &minor, &build_1, &build_2)) {
         // crashhandler_append_message_format(
         //     "info on vulkan-1.dll cannot be found, continue.\n");
