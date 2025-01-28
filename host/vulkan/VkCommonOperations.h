@@ -171,10 +171,6 @@ struct VkEmulation {
         VkFormatProperties2 formatProps2;
         VkImageFormatProperties2 imageFormatProps2;
         VkExternalImageFormatProperties extFormatProps;
-
-        // Populated later when device is available.
-        uint32_t memoryTypeBits = 0;
-        bool memoryTypeBitsKnown = false;
     };
 
     std::vector<ImageSupportInfo> imageSupportInfo;
@@ -247,6 +243,7 @@ struct VkEmulation {
 #endif
 
         bool dedicatedAllocation = false;
+        uint32_t validMemoryTypeBits = ~0;
     };
 
     // 128 mb staging buffer (really, just a few 4K frames or one 4k HDR frame)
