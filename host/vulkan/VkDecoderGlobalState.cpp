@@ -178,6 +178,8 @@ static constexpr const char* const kEmulatedDeviceExtensions[] = {
     VK_KHR_EXTERNAL_FENCE_EXTENSION_NAME,
     VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME,
     VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
+    VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
+    VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
 #if defined(__QNX__)
     VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
     VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
@@ -1554,6 +1556,17 @@ class VkDecoderGlobalState::Impl {
         if (extImageFormatInfo && extImageFormatProps) {
             extImageFormatProps->externalMemoryProperties.externalMemoryFeatures |=
                 VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT;
+
+            // TODO: if (emulateDmaBufSupport)
+            if (extImageFormatInfo->handleType == VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT) {
+                extImageFormatProps->externalMemoryProperties.externalMemoryFeatures |=
+                    VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT |
+                    VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT;
+                extImageFormatProps->externalMemoryProperties.exportFromImportedHandleTypes =
+                    extImageFormatProps->externalMemoryProperties.compatibleHandleTypes =
+                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT |
+                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+            }
         }
 
         if (emulatedTexture) {
@@ -1631,6 +1644,20 @@ class VkDecoderGlobalState::Impl {
                                                             pFormatProperties);
                 },
                 vk, physicalDevice, format, &pFormatProperties->formatProperties);
+        }
+
+        auto* drmFmtMod = vk_find_struct<VkDrmFormatModifierPropertiesListEXT>(pFormatProperties);
+        if (drmFmtMod) {
+            drmFmtMod->drmFormatModifierCount = 1;
+            if (drmFmtMod->pDrmFormatModifierProperties) {
+                drmFmtMod->pDrmFormatModifierProperties[0] = {
+                    .drmFormatModifier = 0,
+                    .drmFormatModifierPlaneCount = 1,
+                    .drmFormatModifierTilingFeatures =
+                        VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT |
+                        VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT |
+                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT};
+            }
         }
     }
 
