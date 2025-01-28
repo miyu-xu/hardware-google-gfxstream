@@ -2323,31 +2323,31 @@ static bool updateExternalMemoryInfo(std::optional<ExternalHandleInfo> extMemHan
     pInfo->dedicatedAllocation = true;
 
 #if defined(__QNX__)
-    VkScreenBufferPropertiesQNX screenBufferProps = {
-        VK_STRUCTURE_TYPE_SCREEN_BUFFER_PROPERTIES_QNX,
-        0,
-    };
-    auto vk = sVkEmulation->dvk;
-    VkResult queryRes = vk->vkGetScreenBufferPropertiesQNX(
-        sVkEmulation->device, (screen_buffer_t)extMemHandleInfo->handle, &screenBufferProps);
-    if (VK_SUCCESS != queryRes) {
-        ERR("Failed to get QNX Screen Buffer properties, VK error: %s", string_VkResult(queryRes));
-        return false;
+    if (STREAM_HANDLE_TYPE_PLATFORM_SCREEN_BUFFER_QNX == extMemHandleInfo->streamHandleType) {
+        VkScreenBufferPropertiesQNX screenBufferProps = {
+            VK_STRUCTURE_TYPE_SCREEN_BUFFER_PROPERTIES_QNX,
+            0,
+        };
+        auto vk = sVkEmulation->dvk;
+        VkResult queryRes = vk->vkGetScreenBufferPropertiesQNX(
+            sVkEmulation->device, (screen_buffer_t)extMemHandleInfo->handle, &screenBufferProps);
+        if (VK_SUCCESS != queryRes) {
+            ERR("Failed to get QNX Screen Buffer properties, VK error: %s",
+                string_VkResult(queryRes));
+            return false;
+        }
+        if (screenBufferProps.allocationSize < pMemReqs->size) {
+            ERR("QNX Screen buffer allocationSize (0x%lx) is not large enough for ColorBuffer "
+                "image "
+                "size requirements (0x%lx)",
+                screenBufferProps.allocationSize, pMemReqs->size);
+            return false;
+        }
+        // Use the actual allocationSize for VkDeviceMemory object creation
+        pInfo->size = screenBufferProps.allocationSize;
+        // Mask the validMemoryTypeBits with the ones available for the screen_buffer import
+        pInfo->validMemoryTypeBits &= screenBufferProps.memoryTypeBits;
     }
-    if (!((1 << pInfo->typeIndex) & screenBufferProps.memoryTypeBits)) {
-        ERR("QNX Screen buffer can not be imported to memory with typeIndex=%d, "
-            "screenBufferProps.memoryTypeBits=0x%x",
-            pInfo->typeIndex, screenBufferProps.memoryTypeBits);
-        return false;
-    }
-    if (screenBufferProps.allocationSize < pMemReqs->size) {
-        ERR("QNX Screen buffer allocationSize (0x%lx) is not large enough for ColorBuffer image "
-            "size requirements (0x%lx)",
-            screenBufferProps.allocationSize, pMemReqs->size);
-        return false;
-    }
-    // Use the actual allocationSize for VkDeviceMemory object creation
-    pInfo->size = screenBufferProps.allocationSize;
 #endif
 
 #ifdef __APPLE__
@@ -2506,9 +2506,19 @@ static bool createVkColorBufferLocked(uint32_t width, uint32_t height, GLenum in
 
     infoPtr->memory.size = infoPtr->memReqs.size;
 
+    // validMemoryTypeBits starts with the imageMemory requirements
+    infoPtr->memory.validMemoryTypeBits = infoPtr->memReqs.memoryTypeBits;
+
+    if (extMemHandleInfo) {
+        if (!updateExternalMemoryInfo(extMemHandleInfo, &infoPtr->memReqs, &infoPtr->memory)) {
+            ERR("Failed to update external memory info for ColorBuffer: %d\n", colorBufferHandle);
+            return false;
+        }
+    }
+
     // Determine memory type.
     infoPtr->memory.typeIndex =
-        getValidMemoryTypeIndex(infoPtr->memReqs.memoryTypeBits, infoPtr->memoryProperty);
+        getValidMemoryTypeIndex(infoPtr->memory.validMemoryTypeBits, infoPtr->memoryProperty);
 
     const VkFormat imageVkFormat = infoPtr->imageCreateInfoShallow.format;
     VERBOSE(
@@ -2524,10 +2534,6 @@ static bool createVkColorBufferLocked(uint32_t width, uint32_t height, GLenum in
 
     Optional<VkImage> dedicatedImage = useDedicated ? Optional<VkImage>(infoPtr->image) : kNullopt;
     if (extMemHandleInfo) {
-        if (!updateExternalMemoryInfo(extMemHandleInfo, &infoPtr->memReqs, &infoPtr->memory)) {
-            ERR("Failed to update external memory info for ColorBuffer: %d\n", colorBufferHandle);
-            return false;
-        }
         VkMemoryDedicatedAllocateInfo dedicatedInfo = {
             VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO,
             nullptr,
