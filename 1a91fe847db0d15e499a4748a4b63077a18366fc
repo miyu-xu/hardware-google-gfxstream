@@ -1,0 +1,86 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "141694ed_41f7d4e5",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 3486280
+      },
+      "writtenOn": "2025-01-29T22:45:03Z",
+      "side": 1,
+      "message": "NIT: 6)",
+      "range": {
+        "startLine": 176,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 2
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "ea5bd5b4_6bd481a2",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "README.md",
+              "range": {
+                "startLine": 176,
+                "startChar": 0,
+                "endLine": 177,
+                "endChar": 0
+              },
+              "replacement": "6) Improving display virtualization\n"
+            }
+          ]
+        }
+      ],
+      "revId": "1a91fe847db0d15e499a4748a4b63077a18366fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09e74927_a669f825",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 3486280
+      },
+      "writtenOn": "2025-01-29T22:45:03Z",
+      "side": 1,
+      "message": "NIT: reach out",
+      "range": {
+        "startLine": 178,
+        "startChar": 7,
+        "endLine": 178,
+        "endChar": 13
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "769e06cd_2350e8d6",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "README.md",
+              "range": {
+                "startLine": 178,
+                "startChar": 0,
+                "endLine": 179,
+                "endChar": 0
+              },
+              "replacement": "Please reach out to your local gfxstreamist today if you are interested!\n"
+            }
+          ]
+        }
+      ],
+      "revId": "1a91fe847db0d15e499a4748a4b63077a18366fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
