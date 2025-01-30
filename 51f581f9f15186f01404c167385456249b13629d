@@ -1,0 +1,68 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbb0733b_2182f12c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-01-30T18:03:14Z",
+      "side": 1,
+      "message": "BUG\u003d?\nTEST\u003d?",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 0
+      },
+      "revId": "51f581f9f15186f01404c167385456249b13629d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3603788_70aa1ede",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2326,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-01-30T18:03:14Z",
+      "side": 1,
+      "message": "nit: the  other way around is more common",
+      "range": {
+        "startLine": 2326,
+        "startChar": 8,
+        "endLine": 2326,
+        "endChar": 91
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "469ff280_7566c8cf",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkCommonOperations.cpp",
+              "range": {
+                "startLine": 2326,
+                "startChar": 0,
+                "endLine": 2327,
+                "endChar": 0
+              },
+              "replacement": "    if (extMemHandleInfo-\u003estreamHandleType \u003d\u003d STREAM_HANDLE_TYPE_PLATFORM_SCREEN_BUFFER_QNX) {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "51f581f9f15186f01404c167385456249b13629d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
