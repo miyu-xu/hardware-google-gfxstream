@@ -111,6 +111,46 @@
       },
       "revId": "51f581f9f15186f01404c167385456249b13629d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45fde8ad_1d709983",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2499,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-30T22:02:32Z",
+      "side": 1,
+      "message": "Calculating `memReqs` once around here would  also fix the possible discrepancy on `size` values stored.",
+      "range": {
+        "startLine": 2496,
+        "startChar": 0,
+        "endLine": 2499,
+        "endChar": 5
+      },
+      "revId": "51f581f9f15186f01404c167385456249b13629d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a2634d96_7275f086",
+        "filename": "host/vulkan/VkCommonOperations.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-30T22:02:32Z",
+      "side": 1,
+      "message": "\u00270\u0027 would be a better initial value here, but more importantly, can\u0027t we avoid storing this by computing the valid memory types outside of `updateExternalMemoryInfo` call and assign it once?",
+      "revId": "51f581f9f15186f01404c167385456249b13629d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
