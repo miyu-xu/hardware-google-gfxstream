@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "dfbde544_8051554d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-30T15:13:55Z",
+      "side": 1,
+      "message": "nit: typo",
+      "revId": "4286158ec3b7ad211a3811a7cc638d92815a0f00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "13e774cc_83b36f5b",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 6
