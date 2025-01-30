@@ -1177,6 +1177,9 @@ class VkDecoderGlobalState::Impl {
         // lock.
         {
             std::lock_guard<std::recursive_mutex> lock(mLock);
+            InstanceInfo info = mInstanceInfo[instance];
+            INFO("Destory VkInstance:%p for application:%s engine:%s.", instance,
+                    info.applicationName.c_str(), info.engineName.c_str());
             std::vector<VkDevice> devicesToDestroy;
 
             for (auto it : mDeviceToPhysicalDevice) {
