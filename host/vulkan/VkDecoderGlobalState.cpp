@@ -410,7 +410,7 @@ class VkDecoderGlobalState::Impl {
 
     // Resets all internal tracking info.
     // Assumes that the heavyweight cleanup operations have already happened.
-    void clearLocked() {
+    void clearLocked() REQUIRES(mMutex) {
         mInstanceInfo.clear();
         mPhysdevInfo.clear();
         mDeviceInfo.clear();
@@ -1184,7 +1184,7 @@ class VkDecoderGlobalState::Impl {
         return VK_SUCCESS;
     }
 
-    void processDelayedRemovesForDevice(VkDevice device) {
+    void processDelayedRemovesForDevice(VkDevice device) EXCLUDES(mMutex) {
         sBoxedHandleManager.processDelayedRemoves(device);
     }
 
@@ -2383,7 +2383,7 @@ class VkDecoderGlobalState::Impl {
         delete_VkDevice(deviceInfo.boxed);
     }
 
-    void destroyDeviceLocked(VkDevice device, const VkAllocationCallbacks* pAllocator) {
+    void destroyDeviceLocked(VkDevice device, const VkAllocationCallbacks* pAllocator) REQUIRES(mMutex) {
         auto deviceInfoIt = mDeviceInfo.find(device);
         if (deviceInfoIt == mDeviceInfo.end()) return;
 
@@ -2403,6 +2403,7 @@ class VkDecoderGlobalState::Impl {
         processDelayedRemovesForDevice(device);
 
         std::lock_guard<std::mutex> lock(mMutex);
+
         destroyDeviceLocked(device, pAllocator);
     }
 
@@ -2467,7 +2468,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void destroyBufferLocked(VkDevice device, VulkanDispatch* deviceDispatch, VkBuffer buffer,
-                             const VkAllocationCallbacks* pAllocator) {
+                             const VkAllocationCallbacks* pAllocator) REQUIRES(mMutex) {
         auto bufferInfoIt = mBufferInfo.find(buffer);
         if (bufferInfoIt == mBufferInfo.end()) return;
         auto& bufferInfo = bufferInfoIt->second;
@@ -2488,7 +2489,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void setBufferMemoryBindInfoLocked(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
-                                       VkDeviceSize memoryOffset) {
+                                       VkDeviceSize memoryOffset) REQUIRES(mMutex) {
         auto* bufferInfo = android::base::find(mBufferInfo, buffer);
         if (!bufferInfo) return;
         bufferInfo->memory = memory;
@@ -3839,7 +3840,7 @@ class VkDecoderGlobalState::Impl {
                                        uint32_t descriptorWriteCount,
                                        const VkWriteDescriptorSet* pDescriptorWrites,
                                        uint32_t descriptorCopyCount,
-                                       const VkCopyDescriptorSet* pDescriptorCopies) {
+                                       const VkCopyDescriptorSet* pDescriptorCopies) REQUIRES(mMutex) {
         for (uint32_t writeIdx = 0; writeIdx < descriptorWriteCount; writeIdx++) {
             const VkWriteDescriptorSet& descriptorWrite = pDescriptorWrites[writeIdx];
             auto ite = mDescriptorSetInfo.find(descriptorWrite.dstSet);
@@ -7573,7 +7574,7 @@ class VkDecoderGlobalState::Impl {
         const uint64_t* pDescriptorSetPoolIds, const uint32_t* pDescriptorSetWhichPool,
         const uint32_t* pDescriptorSetPendingAllocation,
         const uint32_t* pDescriptorWriteStartingIndices, uint32_t pendingDescriptorWriteCount,
-        const VkWriteDescriptorSet* pPendingDescriptorWrites) {
+        const VkWriteDescriptorSet* pPendingDescriptorWrites) REQUIRES(mMutex) {
         std::vector<VkDescriptorSet> setsToUpdate(descriptorSetCount, nullptr);
 
         bool didAlloc = false;
@@ -8716,7 +8717,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void extractDeviceAndDependenciesLocked(VkDevice device,
-                                            InstanceObjects::DeviceObjects& deviceObjects) {
+                                            InstanceObjects::DeviceObjects& deviceObjects) REQUIRES(mMutex) {
         extractInfosWithDeviceInto(device, mBufferInfo, deviceObjects.buffers);
         extractInfosWithDeviceInto(device, mCommandBufferInfo, deviceObjects.commandBuffers);
         extractInfosWithDeviceInto(device, mCommandPoolInfo, deviceObjects.commandPools);
@@ -8739,7 +8740,7 @@ class VkDecoderGlobalState::Impl {
         extractInfosWithDeviceInto(device, mShaderModuleInfo, deviceObjects.shaderModules);
     }
 
-    void extractInstanceAndDependenciesLocked(VkInstance instance, InstanceObjects& objects) {
+    void extractInstanceAndDependenciesLocked(VkInstance instance, InstanceObjects& objects) REQUIRES(mMutex) {
         auto instanceInfoIt = mInstanceInfo.find(instance);
         if (instanceInfoIt == mInstanceInfo.end()) return;
         auto& instanceInfo = instanceInfoIt->second;
@@ -9201,7 +9202,7 @@ class VkDecoderGlobalState::Impl {
     std::unordered_map<VkPhysicalDevice, VkInstance> mPhysicalDeviceToInstance;
 
     // Device objects
-    std::unordered_map<VkBuffer, BufferInfo> mBufferInfo;
+    std::unordered_map<VkBuffer, BufferInfo> mBufferInfo GUARDED_BY(mMutex);
     std::unordered_map<VkCommandBuffer, CommandBufferInfo> mCommandBufferInfo;
     std::unordered_map<VkCommandPool, CommandPoolInfo> mCommandPoolInfo;
     std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo;
