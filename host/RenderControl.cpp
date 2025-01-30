@@ -1539,9 +1539,14 @@ static void rcSetProcessMetadata(char* key, RenderControlByte* valuePtr, uint32_
     if (strcmp(key, "process_name") == 0) {
         // We know this is a c formatted string
         tInfo->m_processName = std::string((char*) valuePtr);
+        fprintf(stderr, "%s %d process name is %s\n", __func__, __LINE__, valuePtr);
 
         GFXSTREAM_TRACE_NAME_TRACK(GFXSTREAM_TRACE_TRACK_FOR_CURRENT_THREAD(),
                                    *tInfo->m_processName);
+    } else if (strcmp(key, "process_id") == 0) {
+        // We know this is a c formatted string
+        tInfo->m_processId = std::string((char*) valuePtr);
+        fprintf(stderr, "%s %d process id is %s\n", __func__, __LINE__, valuePtr);
     }
 }
 
