@@ -63,6 +63,30 @@
       ],
       "revId": "51f581f9f15186f01404c167385456249b13629d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72da1e3a_b675a3c5",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 2326,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-01-30T18:13:00Z",
+      "side": 1,
+      "message": "Fix applied. \n\nBut FYI, this is way I was taught 😊 Although it looks weird, when you do it that way against a constant, you\u0027ll get a compilation error if you ever miss the second \"\u003d\" in your equivalency statement.",
+      "parentUuid": "e3603788_70aa1ede",
+      "range": {
+        "startLine": 2326,
+        "startChar": 8,
+        "endLine": 2326,
+        "endChar": 91
+      },
+      "revId": "51f581f9f15186f01404c167385456249b13629d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
