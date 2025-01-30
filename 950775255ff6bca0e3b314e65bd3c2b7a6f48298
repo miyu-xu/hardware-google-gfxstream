@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce387271_a8366994",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 2191,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-01-30T23:56:16Z",
+      "side": 1,
+      "message": "Can this be pushed into the new helper?",
+      "range": {
+        "startLine": 2191,
+        "startChar": 24,
+        "endLine": 2191,
+        "endChar": 54
+      },
+      "revId": "950775255ff6bca0e3b314e65bd3c2b7a6f48298",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
