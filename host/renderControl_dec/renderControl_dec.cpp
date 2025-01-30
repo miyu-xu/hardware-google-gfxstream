@@ -705,7 +705,7 @@ size_t renderControl_decoder_context_t::decode(void *buf, size_t len, IOStream *
 				ChecksumCalculatorThreadInfo::validOrDie(checksumCalc, ptr, 8 + 8, ptr + 8 + 8, checksumSize,
 					"renderControl_decoder_context_t::decode, OP_rcSetPuid: GL checksumCalculator failure\n");
 			}
-			DECODER_DEBUG_LOG("renderControl(%p): rcSetPuid(puid:0x%016lx )", stream, var_puid);
+			fprintf(stderr, "%s %d renderControl(%p): rcSetPuid(puid:0x%016lx )\n", __func__, __LINE__, stream, var_puid);
 			this->rcSetPuid(var_puid);
 			SET_LASTCALL("rcSetPuid");
 			android::base::endTrace();
@@ -1432,7 +1432,7 @@ size_t renderControl_decoder_context_t::decode(void *buf, size_t len, IOStream *
 				ChecksumCalculatorThreadInfo::validOrDie(checksumCalc, ptr, 8 + 4 + size_key + 4 + size_valuePtr + 4, ptr + 8 + 4 + size_key + 4 + size_valuePtr + 4, checksumSize,
 					"renderControl_decoder_context_t::decode, OP_rcSetProcessMetadata: GL checksumCalculator failure\n");
 			}
-			DECODER_DEBUG_LOG("renderControl(%p): rcSetProcessMetadata(key:%p(%u) valuePtr:%p(%u) valueSize:0x%08x )", stream, (char*)(inptr_key.get()), size_key, (RenderControlByte*)(inptr_valuePtr.get()), size_valuePtr, var_valueSize);
+			fprintf(stderr, "renderControl(%p): rcSetProcessMetadata(key:%s(%u) valuePtr:%s(%u) valueSize:0x%08x )\n", stream, (char*)(inptr_key.get()), size_key, (RenderControlByte*)(inptr_valuePtr.get()), size_valuePtr, var_valueSize);
 			this->rcSetProcessMetadata((char*)(inptr_key.get()), (RenderControlByte*)(inptr_valuePtr.get()), var_valueSize);
 			SET_LASTCALL("rcSetProcessMetadata");
 			android::base::endTrace();
