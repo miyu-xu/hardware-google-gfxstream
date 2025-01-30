@@ -91,6 +91,9 @@ RenderThread::RenderThread(RenderChannelImpl* channel,
       mRunInLimitedMode(android::base::getCpuCoreCount() < kMinThreadsToRunUnlimited),
       mContextId(virtioGpuContextId)
 {
+    fprintf(stderr, "%s %d context id 0x%llx\n", __func__, __LINE__, (unsigned long long)
+            mContextId);
+
     if (loadStream) {
         const bool success = loadStream->getByte();
         if (success) {
