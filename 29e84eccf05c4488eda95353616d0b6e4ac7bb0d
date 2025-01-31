@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e50513be_f6df7da5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-31T10:42:42Z",
+      "side": 1,
+      "message": "Suggested edit:\n```\nRemove memReqs from Buffer/ColorBuffer structures\n\nmemReqs does not have to be stored in global BufferVk/ColorBufferVk\ninformation.\n\nBug: N/A\nTest: build\nChange-Id: I8ec021273ea54cf7aa8758e42ac6f4779718c978\n```",
+      "revId": "29e84eccf05c4488eda95353616d0b6e4ac7bb0d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
