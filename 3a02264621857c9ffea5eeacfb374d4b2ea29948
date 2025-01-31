@@ -16,6 +16,24 @@
       "message": "Code changes lgtm, please provide title, bug and test sections with your changes to ease the reviews. Using repo start/upload flow with existing commit hooks should actually warn about this, but maybe we should also put some lint checks.",
       "revId": "3a02264621857c9ffea5eeacfb374d4b2ea29948",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5328f2d_115d0a71",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-01-31T17:06:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1ac3b00_c3101894",
+      "revId": "3a02264621857c9ffea5eeacfb374d4b2ea29948",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
