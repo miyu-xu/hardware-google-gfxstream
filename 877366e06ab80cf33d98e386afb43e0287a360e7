@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "795f3a98_52a0ff28",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-31T11:58:49Z",
+      "side": 1,
+      "message": "Bpassing the buildifier lint error as it\u0027s is not related to the changes in the CL but some external updates. Created a separate tracker (b/393530334) for fixing it separately.",
+      "revId": "877366e06ab80cf33d98e386afb43e0287a360e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
