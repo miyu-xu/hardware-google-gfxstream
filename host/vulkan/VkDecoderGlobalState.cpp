@@ -7806,7 +7806,7 @@ class VkDecoderGlobalState::Impl {
         for (uint32_t i = 0; i < count; i++) {
             VkImageCreateInfo& imageCreateInfo =
                 const_cast<VkImageCreateInfo&>(pImageCreateInfos[i]);
-            const VkExternalMemoryImageCreateInfo* pExternalMemoryImageCi =
+            VkExternalMemoryImageCreateInfo* pExternalMemoryImageCi =
                 vk_find_struct<VkExternalMemoryImageCreateInfo>(&imageCreateInfo);
             bool importAndroidHardwareBuffer =
                 pExternalMemoryImageCi &&
@@ -7814,6 +7814,12 @@ class VkDecoderGlobalState::Impl {
                  VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID);
             const VkNativeBufferANDROID* pNativeBufferANDROID =
                 vk_find_struct<VkNativeBufferANDROID>(&imageCreateInfo);
+
+            // TODO: Check OPAQUE_FD is supported
+            if (pExternalMemoryImageCi && pExternalMemoryImageCi->handleTypes &
+                                              VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT) {
+                pExternalMemoryImageCi->handleTypes |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+            }
 
             // If the VkImage is going to bind to a ColorBuffer, we have to make sure the VkImage
             // that backs the ColorBuffer is created with identical parameters. From the spec: If
