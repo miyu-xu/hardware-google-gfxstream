@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4630d54e_d4f80c93",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1569,
+      "author": {
+        "id": 1986680
+      },
+      "writtenOn": "2025-01-31T14:00:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ea97bccd_f1d675d2",
+      "range": {
+        "startLine": 1560,
+        "startChar": 0,
+        "endLine": 1569,
+        "endChar": 0
+      },
+      "revId": "8665d27b04566eb37b56584b7912f09b9bb08521",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a4489a30_8d0387db",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-01-30T02:51:18Z",
       "side": 1,
       "message": "move this to the guest",
+      "range": {
+        "startLine": 1649,
+        "startChar": 0,
+        "endLine": 1662,
+        "endChar": 0
+      },
+      "revId": "8665d27b04566eb37b56584b7912f09b9bb08521",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af4e033d_c59dbb2f",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1662,
+      "author": {
+        "id": 1986680
+      },
+      "writtenOn": "2025-01-31T14:00:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4489a30_8d0387db",
       "range": {
         "startLine": 1649,
         "startChar": 0,
