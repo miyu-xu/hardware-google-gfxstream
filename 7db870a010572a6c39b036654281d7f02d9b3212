@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c8f9bd2c_02e098b5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-31T17:39:51Z",
+      "side": 1,
+      "message": "Seems like they are not used at all, feel free to -1 if there are some eternal use cases for these..",
+      "revId": "7db870a010572a6c39b036654281d7f02d9b3212",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
