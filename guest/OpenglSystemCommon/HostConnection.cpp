@@ -26,6 +26,26 @@
 using gfxstream::guest::ChecksumCalculator;
 using gfxstream::guest::IOStream;
 
+namespace {
+void get_self_process_name(char* name) {
+
+    char filename[256] = "/proc/self/cmdline";
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+          return;
+    } else {
+        if (fgets(name, 1024, file) == NULL) {
+            fclose(file);
+            return;
+        }
+
+        // Remove trailing newline
+        name[strcspn(name, "\n")] = 0;
+
+        fclose(file);
+    }
+}
+}
 #ifdef GOLDFISH_NO_GL
 struct gl_client_context_t {
     int placeholder;
@@ -364,6 +384,20 @@ ExtendedRCEncoderContext *HostConnection::rcEncoder()
         rcEnc->queryVersion();
 
         rcEnc->rcSetPuid(rcEnc, getPuid());
+        if(0){
+            char pname[] = "pid";
+            char pval[64] = {};
+            snprintf(pval, sizeof(pval), "%d", getpid());
+            rcEnc->rcSetProcessMetadata(rcEnc, (char*)pname, (char*)pval, strlen(pval)+1);
+        }
+        if(0){
+            char pname[] = "name";
+            char pval[1024] = {};
+            get_self_process_name(pval);
+            rcEnc->rcSetProcessMetadata(rcEnc, (char*)pname, (char*)pval, strlen(pval)+1);
+        }
+
+
     }
     return m_rcEnc.get();
 }
