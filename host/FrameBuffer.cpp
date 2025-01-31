@@ -59,6 +59,7 @@
 #include "host-common/logging.h"
 #include "host-common/misc.h"
 #include "host-common/opengl/misc.h"
+#include "host-common/emugl_vm_operations.h"
 #include "host-common/vm_operations.h"
 #include "render-utils/MediaNative.h"
 #include "vulkan/DisplayVk.h"
@@ -1719,6 +1720,14 @@ bool FrameBuffer::updateColorBufferFromFrameworkFormat(HandleType p_colorbuffer,
 
     (*c).second.cb->updateFromBytes(x, y, width, height, fwkFormat, format, type, pixels, metadata);
     return true;
+}
+
+void FrameBuffer::handleVulkanDeviceLost() {
+        auto* tInfo = RenderThreadInfo::get();
+        if (tInfo->m_processName.has_value()) {
+            std::string process_name = tInfo->m_processName.value();
+            get_emugl_vm_operations().handleVulkanDeviceLost(process_name.c_str());
+        }
 }
 
 bool FrameBuffer::getColorBufferInfo(
