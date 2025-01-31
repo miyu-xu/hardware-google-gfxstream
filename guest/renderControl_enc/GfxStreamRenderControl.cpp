@@ -14,11 +14,27 @@
 #endif
 
 constexpr const auto kEglProp = "ro.hardware.egl";
+constexpr const auto kFileNameLength = 256;
+constexpr const auto kProcessNameLength = 1024;
 
 static uint64_t sProcUID = 0;
 static std::mutex sNeedInitMutex;
 static bool sNeedInit = true;
 static gfxstream::guest::IOStream* sProcessStream = nullptr;
+
+namespace {
+void get_self_process_name(char* name) {
+    char filename[kFileNameLength] = "/proc/self/cmdline";
+    FILE* file = fopen(filename, "r");
+    if (file != NULL) {
+        if (fgets(name, kProcessNameLength, file) == NULL) {
+            // Remove trailing newline
+            name[strcspn(name, "\n")] = 0;
+        }
+        fclose(file);
+    }
+}
+}  // namespace
 
 GfxStreamTransportType renderControlGetTransport() {
 #if defined(__Fuchsia__) || defined(LINUX_GUEST_BUILD)
@@ -118,6 +134,12 @@ int32_t renderControlInit(GfxStreamConnectionManager* mgr, void* vkInfo) {
         rcEnc->queryVersion();
 
         rcEnc->rcSetPuid(rcEnc, puid);
+        {
+            char pname[] = "process_name";
+            char pval[kProcessNameLength] = {};
+            get_self_process_name(pval);
+            rcEnc->rcSetProcessMetadata(rcEnc, (char*)pname, (char*)pval, strlen(pval) + 1);
+        }
 
         if (vkInfo) {
             rcEnc->setVulkanFeatureInfo(vkInfo);
