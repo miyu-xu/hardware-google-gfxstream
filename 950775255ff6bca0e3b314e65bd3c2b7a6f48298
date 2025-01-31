@@ -22,6 +22,30 @@
       },
       "revId": "950775255ff6bca0e3b314e65bd3c2b7a6f48298",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "887c4309_9149c6fa",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 2191,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-01-31T10:51:25Z",
+      "side": 1,
+      "message": "I think we should abort at this point, rather than trying to recover dynamically and make `features.VulkanVirtualQueue.enabled` ground truth for this by removing `mHasVirtualGraphicsQueue` as well. I think we should avoid getting `QueueInfo` to check the helper everytime we unbox a queue. I\u0027ll upload a new patchset with those changes.",
+      "parentUuid": "ce387271_a8366994",
+      "range": {
+        "startLine": 2191,
+        "startChar": 24,
+        "endLine": 2191,
+        "endChar": 54
+      },
+      "revId": "950775255ff6bca0e3b314e65bd3c2b7a6f48298",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
