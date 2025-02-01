@@ -7680,7 +7680,8 @@ class VkDecoderGlobalState::Impl {
 
     void on_DeviceLost() {
         m_emu->deviceLostHelper.onDeviceLost();
-        GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
+        FrameBuffer::getFB()->handleVulkanDeviceLost();
+        // GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
     }
 
     void on_CheckOutOfMemory(VkResult result, uint32_t opCode, const VkDecoderContext& context,

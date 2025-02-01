@@ -393,6 +393,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     ~FrameBuffer();
 
+    void handleVulkanDeviceLost();
+
     void onSave(android::base::Stream* stream,
                 const android::snapshot::ITextureSaverPtr& textureSaver);
     bool onLoad(android::base::Stream* stream,

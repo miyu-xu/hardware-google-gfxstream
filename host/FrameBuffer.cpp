@@ -55,6 +55,7 @@
 #include "gfxstream/host/Tracing.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/crash_reporter.h"
+#include "host-common/emugl_vm_operations.h"
 #include "host-common/feature_control.h"
 #include "host-common/logging.h"
 #include "host-common/misc.h"
@@ -1719,6 +1720,20 @@ bool FrameBuffer::updateColorBufferFromFrameworkFormat(HandleType p_colorbuffer,
 
     (*c).second.cb->updateFromBytes(x, y, width, height, fwkFormat, format, type, pixels, metadata);
     return true;
+}
+
+void FrameBuffer::handleVulkanDeviceLost() {
+    auto* tInfo = RenderThreadInfo::get();
+    if (tInfo->m_processName.has_value()) {
+        std::string process_name = tInfo->m_processName.value();
+        // for deqp: com.drawelements.deqp:testercore
+        // remove the ":testercore" for deqp
+        auto position = process_name.find(":");
+        if (position != std::string::npos) {
+            process_name = process_name.substr(0, position);
+        }
+        get_emugl_vm_operations().handleVulkanDeviceLost(process_name.c_str());
+    }
 }
 
 bool FrameBuffer::getColorBufferInfo(
