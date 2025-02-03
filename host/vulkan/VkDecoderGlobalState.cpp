@@ -397,6 +397,10 @@ class VkDecoderGlobalState::Impl {
         mLogging = android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1";
         mVerbosePrints = android::base::getEnvironmentVariable("ANDROID_EMUGL_VERBOSE") == "1";
 
+        // Temporary env var setting to be able to debug vulkan snapshot issues on various apps
+        mEnableSnapshotAllApps =
+            android::base::getEnvironmentVariable("ANDROID_EMU_VK_SNAPSHOT_ALL_APPS") == "1";
+
         if (get_emugl_address_space_device_control_ops().control_get_hw_funcs &&
             get_emugl_address_space_device_control_ops().control_get_hw_funcs()) {
             mUseOldMemoryCleanupPath = 0 == get_emugl_address_space_device_control_ops()
@@ -1153,17 +1157,21 @@ class VkDecoderGlobalState::Impl {
         INFO("Created VkInstance:%p for application:%s engine:%s.", *pInstance,
              info.applicationName.c_str(), info.engineName.c_str());
 
+        bool snapshotSupported = false;
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_SUPPORT
         // TODO: bug 129484301
-        if (!m_emu->features.VulkanSnapshots.enabled ||
-            (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
-             kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
+        if (m_emu->features.VulkanSnapshots.enabled) {
+            // Conditionally allow apps and engines
+            snapshotSupported = mEnableSnapshotAllApps ||
+                (kSnapshotAppAllowList.find(info.applicationName) != kSnapshotAppAllowList.end() ||
+                 kSnapshotEngineAllowList.find(info.engineName) != kSnapshotEngineAllowList.end());
+        }
+#endif
+        if (!snapshotSupported) {
             get_emugl_vm_operations().setSkipSnapshotSave(true);
             get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
         }
-#else
-        get_emugl_vm_operations().setSkipSnapshotSave(true);
-#endif
+
         // Box it up
         VkInstance boxed = new_boxed_VkInstance(*pInstance, nullptr, true /* own dispatch */);
         init_vulkan_dispatch_from_instance(m_vk, *pInstance, dispatch_VkInstance(boxed));
@@ -9050,6 +9058,7 @@ class VkDecoderGlobalState::Impl {
     bool mLogging = false;
     bool mVerbosePrints = false;
     bool mUseOldMemoryCleanupPath = false;
+    bool mEnableSnapshotAllApps = false;
 
     std::recursive_mutex mLock;
 
