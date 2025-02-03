@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc5ea6b5_b2418ad0",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 7682,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-03T20:52:49Z",
+      "side": 1,
+      "message": "Not sure if `FrameBuffer` class is better suited for vm ops but if we\u0027ll go with this design, I think the implementation can live under `DeviceLostHelper::onDeviceLost`.",
+      "revId": "173d5303684b53439c4a31335ecb791dc63e10dc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
