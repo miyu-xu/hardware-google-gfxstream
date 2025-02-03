@@ -16,6 +16,24 @@
       "message": "This function can be made a a bit safer for argument size and error handling wise, but I think the question is, can we do the same application force-stop request over the `puid` value that\u0027s already being given?",
       "revId": "50a7941f80587b7d30d3836cd1c00e1c49e601c4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3583863b_a5fbf887",
+        "filename": "guest/renderControl_enc/GfxStreamRenderControl.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-02-03T22:08:25Z",
+      "side": 1,
+      "message": "Thanks Serdar,\n\nwe don\u0027t have permission to kill puid, only rooted device can do that. I have done\nquite some experimentation but none of them work due to selinux violation.\nhowever, let me know if you are aware of some better way.",
+      "parentUuid": "02d0b6a1_2e5abca8",
+      "revId": "50a7941f80587b7d30d3836cd1c00e1c49e601c4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
