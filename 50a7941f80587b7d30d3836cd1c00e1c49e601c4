@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02d0b6a1_2e5abca8",
+        "filename": "guest/renderControl_enc/GfxStreamRenderControl.cpp",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-03T20:38:41Z",
+      "side": 1,
+      "message": "This function can be made a a bit safer for argument size and error handling wise, but I think the question is, can we do the same application force-stop request over the `puid` value that\u0027s already being given?",
+      "revId": "50a7941f80587b7d30d3836cd1c00e1c49e601c4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
