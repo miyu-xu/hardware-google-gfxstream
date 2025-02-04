@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47a22839_5a381b34",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-02-04T17:06:46Z",
+      "side": 1,
+      "message": "Commit message on both changes needs to be better:\n\n```\ngfxstream: \u003csingle line statement\u003e\n\n\u003cMore detailed message, possibly multi-line\u003e\n\nBUG\u003d310909958\nTEST\u003dRun internal application successfully\n```",
+      "revId": "354544681376ed65145e6b2c4094c1b7586558f0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
