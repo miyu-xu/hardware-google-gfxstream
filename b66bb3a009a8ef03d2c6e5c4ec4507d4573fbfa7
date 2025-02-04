@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e5437ff_9fdd6ae8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-02-04T16:27:42Z",
+      "side": 1,
+      "message": "Thanks for the feedback, Serdar and Jason.\nI have updated the cl, according to feedback from Jason.\nplease take a look again, I think it is still useful information to send\nto the host side for debugging purpose, at least, regardless of how we\nhandle the device lost later on.\n\nin addition, for goldfish, the puid does not seem to be correct, and it appears\nto be some id associated with refcount that obtained from host.\n\nwe can add another field \"process_id\" so not to cause regression, any thoughts?",
+      "revId": "b66bb3a009a8ef03d2c6e5c4ec4507d4573fbfa7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
