@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e99da34_8b1e01f9",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1510,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-02-04T18:26:06Z",
+      "side": 1,
+      "message": "`getDefaultExternalMemoryHandleType?`",
+      "range": {
+        "startLine": 1510,
+        "startChar": 16,
+        "endLine": 1510,
+        "endChar": 60
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "f3cf4009_95940dca",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 1508,
+                "startChar": 0,
+                "endLine": 1509,
+                "endChar": 0
+              },
+              "replacement": "        if (extImageFormatInfo-\u003ehandleType \u003d\u003d VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT \u0026\u0026\n            m_emu-\u003efeatures.VulkanAllocateHostMemory.enabled) {\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 1510,
+                "startChar": 0,
+                "endLine": 1511,
+                "endChar": 0
+              },
+              "replacement": "                getDefaultExternalMemoryHandleType();\n"
+            }
+          ]
+        }
+      ],
+      "revId": "9f7acb075867cb7602b2f7780aff6d7f55d2e309",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc283d9b_2abe526d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 7828,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-02-04T18:26:06Z",
+      "side": 1,
+      "message": "`getDefaultExternalMemoryHandleType`?",
+      "range": {
+        "startLine": 7828,
+        "startChar": 16,
+        "endLine": 7828,
+        "endChar": 99
+      },
+      "revId": "9f7acb075867cb7602b2f7780aff6d7f55d2e309",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
