@@ -21294,6 +21294,27 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
                 break;
             }
+            case OP_vkTraceAsyncGOOGLE: {
+                GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
+                                      "VkDecoder vkTraceAsyncGOOGLE");
+                uint64_t id;
+                memcpy((uint64_t*)&id, *readStreamPtrPtr, sizeof(uint64_t));
+                *readStreamPtrPtr += sizeof(uint64_t);
+                if (m_logCalls) {
+                    fprintf(stderr, "stream %p: call vkTraceAsyncGOOGLE 0x%llx \n", ioStream,
+                            (unsigned long long)id);
+                }
+                m_state->on_vkTraceAsyncGOOGLE(&m_pool, snapshotApiCallInfo, id);
+                vkStream->unsetHandleMapping();
+                if (m_snapshotsEnabled) {
+                    m_state->snapshot()->vkTraceAsyncGOOGLE(&m_pool, snapshotApiCallInfo, packet,
+                                                            packetLen, id);
+                }
+                vkReadStream->clearPool();
+                if (m_queueSubmitWithCommandsEnabled)
+                    seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
+                break;
+            }
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
             case OP_vkCmdTraceRaysKHR: {
