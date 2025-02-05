@@ -52,6 +52,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5927ae41_80c6c45b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 1510,
+      "author": {
+        "id": 1986680
+      },
+      "writtenOn": "2025-02-05T10:26:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5e99da34_8b1e01f9",
+      "range": {
+        "startLine": 1510,
+        "startChar": 16,
+        "endLine": 1510,
+        "endChar": 60
+      },
+      "revId": "9f7acb075867cb7602b2f7780aff6d7f55d2e309",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc283d9b_2abe526d",
@@ -65,6 +89,30 @@
       "writtenOn": "2025-02-04T18:26:06Z",
       "side": 1,
       "message": "`getDefaultExternalMemoryHandleType`?",
+      "range": {
+        "startLine": 7828,
+        "startChar": 16,
+        "endLine": 7828,
+        "endChar": 99
+      },
+      "revId": "9f7acb075867cb7602b2f7780aff6d7f55d2e309",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ccf2ff2e_5de1aeb7",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 7828,
+      "author": {
+        "id": 1986680
+      },
+      "writtenOn": "2025-02-05T10:26:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc283d9b_2abe526d",
       "range": {
         "startLine": 7828,
         "startChar": 16,
