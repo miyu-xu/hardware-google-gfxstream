@@ -834,6 +834,9 @@ class VkDecoderGlobalState {
                                                         VkQueue queue, uint32_t waitSemaphoreCount,
                                                         const VkSemaphore* pWaitSemaphores,
                                                         VkImage image);
+
+    void on_vkTraceAsyncGOOGLE(android::base::BumpPool* pool, VkSnapshotApiCallInfo* snapshotInfo, uint64_t id);
+
     VkResult on_vkQueuePresentKHR(android::base::BumpPool* pool,
                                   VkSnapshotApiCallInfo* snapshotInfo, VkQueue queue,
                                   const VkPresentInfoKHR* pPresentInfo);

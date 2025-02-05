@@ -3934,6 +3934,8 @@ class VkDecoderSnapshot::Impl {
                               const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                               VkResult input_result, VkDevice device, VkSemaphore semaphore,
                               uint64_t syncId) {}
+    void vkTraceAsyncGOOGLE(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
+                            const uint8_t* apiCallPacket, size_t apiCallPacketSize, uint64_t id) {}
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
     void vkCmdTraceRaysKHR(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
@@ -7738,6 +7740,14 @@ void VkDecoderSnapshot::vkGetSemaphoreGOOGLE(android::base::BumpPool* pool,
                                              VkSemaphore semaphore, uint64_t syncId) {
     mImpl->vkGetSemaphoreGOOGLE(pool, apiCallInfo, apiCallPacket, apiCallPacketSize, input_result,
                                 device, semaphore, syncId);
+}
+#endif
+#ifdef VK_GOOGLE_gfxstream
+void VkDecoderSnapshot::vkTraceAsyncGOOGLE(android::base::BumpPool* pool,
+                                           VkSnapshotApiCallInfo* apiCallInfo,
+                                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
+                                           uint64_t id) {
+    mImpl->vkTraceAsyncGOOGLE(pool, apiCallInfo, apiCallPacket, apiCallPacketSize, id);
 }
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
