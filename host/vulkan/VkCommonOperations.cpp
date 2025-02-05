@@ -3815,6 +3815,7 @@ VkExternalMemoryHandleTypeFlags transformExternalMemoryHandleTypeFlags_tohost(
     // Transform Android/Fuchsia/Linux bits to host bits.
     if (bits & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT) {
         res &= ~VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+        res |= getDefaultExternalMemoryHandleType();
     }
 
 #ifdef _WIN32
