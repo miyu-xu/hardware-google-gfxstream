@@ -62,6 +62,12 @@ AEMU_EXPORT int android_startOpenglesRenderer(int width, int height,
 
 AEMU_EXPORT bool android_asyncReadbackSupported();
 
+/**
+  example usage case
+  clean up some vulkan app before saving
+**/
+AEMU_EXPORT void android_getVulkanApps(int* numOfVulkanApps, char** vulkanAppNames);
+
 /* See the description in render_api.h. */
 typedef void (*OnPostFunc)(void* context, uint32_t displayId, int width,
                            int height, int ydir, int format, int type,

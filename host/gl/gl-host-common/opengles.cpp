@@ -125,6 +125,12 @@ int android_initOpenglesEmulation() {
         << "Not meant to call android_initOpenglesEmulation in the new build.";
 }
 
+void android_getVulkanApps(int* numOfVulkanApps, char** vulkanAppNames) {
+    I("%s %d: getting vulkan apps");
+    *numOfVulkanApps = 1;
+    vulkanAppNames[0] = strdup("com.android.examples");
+}
+
 int
 android_startOpenglesRenderer(int width, int height,
                               bool guestPhoneApi, int guestApiLevel,

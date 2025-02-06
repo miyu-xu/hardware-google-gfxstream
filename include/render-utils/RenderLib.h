@@ -111,6 +111,8 @@ public:
                                      bool useSubWindow, bool egl2egl) = 0;
 
     virtual OnLastColorBufferRef getOnLastColorBufferRef() = 0;
+    
+    virtual void getVulkanAppNames(int* numApps, char** appNames) = 0;
 };
 
 using RenderLibPtr = std::unique_ptr<RenderLib>;

@@ -63,6 +63,7 @@ public:
                                      bool egl2egl) override;
 
     OnLastColorBufferRef getOnLastColorBufferRef() override;
+    void getVulkanAppNames(int* numApps, char** appNames) override;
 
 private:
     DISALLOW_COPY_ASSIGN_AND_MOVE(RenderLibImpl);

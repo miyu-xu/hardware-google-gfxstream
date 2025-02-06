@@ -147,4 +147,11 @@ OnLastColorBufferRef RenderLibImpl::getOnLastColorBufferRef() {
     return (OnLastColorBufferRef)impl_onLastCbRef;
 }
 
+void RenderLibImpl::getVulkanAppNames(int* numApps, char** appNames) {
+    fprintf(stderr, "%s %d: getting vulkan apps\n", __func__, __LINE__);
+    *numApps = 1;
+    appNames[0] = strdup("com.android.examples");
+
+}
+
 }  // namespace gfxstream

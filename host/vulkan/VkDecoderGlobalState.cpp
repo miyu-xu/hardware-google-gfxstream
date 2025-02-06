@@ -504,6 +504,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void save(android::base::Stream* stream) {
+        return;
         std::lock_guard<std::recursive_mutex> lock(mLock);
 
         mSnapshotState = SnapshotState::Saving;
@@ -760,6 +761,7 @@ class VkDecoderGlobalState::Impl {
 
     void load(android::base::Stream* stream, GfxApiLogger& gfxLogger,
               HealthMonitor<>* healthMonitor) {
+        return;
         // assume that we already destroyed all instances
         // from FrameBuffer's onLoad method.
 
@@ -1158,8 +1160,8 @@ class VkDecoderGlobalState::Impl {
         if (!m_emu->features.VulkanSnapshots.enabled ||
             (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
              kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
-            get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
+            //get_emugl_vm_operations().setSkipSnapshotSave(true);
+            //get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
         }
 #else
         get_emugl_vm_operations().setSkipSnapshotSave(true);
