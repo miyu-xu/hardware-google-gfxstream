@@ -442,7 +442,8 @@
 #define OP_glBlendFuncSeparateiEXT 					2484
 #define OP_glColorMaskiEXT 					2485
 #define OP_glIsEnablediEXT 					2486
-#define OP_last 					2487
+#define OP_glTraceAsyncGOOGLE 					2487
+#define OP_last 					2488
 
 
 #endif

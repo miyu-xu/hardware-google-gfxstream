@@ -449,6 +449,7 @@ struct gl2_client_context_t {
 	glBlendFuncSeparateiEXT_client_proc_t glBlendFuncSeparateiEXT;
 	glColorMaskiEXT_client_proc_t glColorMaskiEXT;
 	glIsEnablediEXT_client_proc_t glIsEnablediEXT;
+	glTraceAsyncGOOGLE_client_proc_t glTraceAsyncGOOGLE;
 	virtual ~gl2_client_context_t() {}
 
 	typedef gl2_client_context_t *CONTEXT_ACCESSOR_TYPE(void);

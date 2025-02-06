@@ -1517,3 +1517,6 @@ glColorMaskiEXT
     flag custom_decoder
 glIsEnablediEXT
     flag custom_decoder
+
+glTraceAsyncGOOGLE
+    flag custom_decoder

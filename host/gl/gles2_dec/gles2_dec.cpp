@@ -9744,6 +9744,23 @@ size_t gles2_decoder_context_t::decode(void *buf, size_t len, IOStream *stream, 
 			android::base::endTrace();
 			break;
 		}
+		case OP_glTraceAsyncGOOGLE: {
+			android::base::beginTrace("glTraceAsyncGOOGLE decode");
+			GLuint64 var_flowId = Unpack<GLuint64,uint64_t>(ptr + 8);
+			if (useChecksum) {
+				ChecksumCalculatorThreadInfo::validOrDie(checksumCalc, ptr, 8 + 8, ptr + 8 + 8, checksumSize,
+					"gles2_decoder_context_t::decode, OP_glTraceAsyncGOOGLE: GL checksumCalculator failure\n");
+			}
+			#ifdef CHECK_GL_ERRORS
+			GLint err = this->glGetError();
+			if (err) fprintf(stderr, "gles2 Error (pre-call): 0x%X before glTraceAsyncGOOGLE\n", err);
+			#endif
+			DECODER_DEBUG_LOG("gles2(%p): glTraceAsyncGOOGLE(flowId:0x%016lx )", stream, var_flowId);
+			this->glTraceAsyncGOOGLE_dec(this, var_flowId);
+			SET_LASTCALL("glTraceAsyncGOOGLE");
+			android::base::endTrace();
+			break;
+		}
 		default:
 			return ptr - (unsigned char*)buf;
 		} //switch

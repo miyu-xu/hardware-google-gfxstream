@@ -12693,6 +12693,33 @@ GLboolean glIsEnablediEXT_enc(void *self , GLenum cap, GLuint index)
 	return retval;
 }
 
+void glTraceAsyncGOOGLE_enc(void *self , GLuint64 flowId)
+{
+	ENCODER_DEBUG_LOG("glTraceAsyncGOOGLE(flowId:0x%016lx)", flowId);
+	AEMU_SCOPED_TRACE("glTraceAsyncGOOGLE encode");
+
+	gl2_encoder_context_t *ctx = (gl2_encoder_context_t *)self;
+	IOStream *stream = ctx->m_stream;
+	gfxstream::guest::ChecksumCalculator *checksumCalculator = ctx->m_checksumCalculator;
+	bool useChecksum = checksumCalculator->getVersion() > 0;
+
+	 unsigned char *ptr;
+	 unsigned char *buf;
+	 const size_t sizeWithoutChecksum = 8 + 8;
+	 const size_t checksumSize = checksumCalculator->checksumByteSize();
+	 const size_t totalSize = sizeWithoutChecksum + checksumSize;
+	buf = stream->alloc(totalSize);
+	ptr = buf;
+	int tmp = OP_glTraceAsyncGOOGLE;memcpy(ptr, &tmp, 4); ptr += 4;
+	memcpy(ptr, &totalSize, 4);  ptr += 4;
+
+		memcpy(ptr, &flowId, 8); ptr += 8;
+
+	if (useChecksum) checksumCalculator->addBuffer(buf, ptr-buf);
+	if (useChecksum) checksumCalculator->writeChecksum(ptr, checksumSize); ptr += checksumSize;
+
+}
+
 }  // namespace
 
 gl2_encoder_context_t::gl2_encoder_context_t(IOStream *stream, ChecksumCalculator *checksumCalculator)
@@ -13139,5 +13166,6 @@ gl2_encoder_context_t::gl2_encoder_context_t(IOStream *stream, ChecksumCalculato
 	this->glBlendFuncSeparateiEXT = &glBlendFuncSeparateiEXT_enc;
 	this->glColorMaskiEXT = &glColorMaskiEXT_enc;
 	this->glIsEnablediEXT = &glIsEnablediEXT_enc;
+	this->glTraceAsyncGOOGLE = &glTraceAsyncGOOGLE_enc;
 }
 

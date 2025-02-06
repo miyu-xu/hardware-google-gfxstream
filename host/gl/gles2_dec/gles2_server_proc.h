@@ -562,6 +562,8 @@ typedef void (gles2_APIENTRY *glColorMaskiEXT_server_proc_t) (void *ctx, GLuint,
 typedef void (gles2_APIENTRY *glColorMaskiEXT_dec_server_proc_t) (GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
 typedef GLboolean (gles2_APIENTRY *glIsEnablediEXT_server_proc_t) (void *ctx, GLenum, GLuint);
 typedef GLboolean (gles2_APIENTRY *glIsEnablediEXT_dec_server_proc_t) (GLenum, GLuint);
+typedef void (gles2_APIENTRY *glTraceAsyncGOOGLE_server_proc_t) (void *ctx, GLuint64);
+typedef void (gles2_APIENTRY *glTraceAsyncGOOGLE_dec_server_proc_t) (GLuint64);
 
 
 #endif

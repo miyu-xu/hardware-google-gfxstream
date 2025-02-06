@@ -15,13 +15,13 @@
 */
 
 #include "GLESv2Decoder.h"
-#include "OpenGLESDispatch/GLESv2Dispatch.h"
 
 #include "aemu/base/synchronization/Lock.h"
-
+#include "gfxstream/host/Tracing.h"
+#include "host-common/dma_device.h"
 #include "host-common/emugl_vm_operations.h"
 #include "host-common/vm_operations.h"
-#include "host-common/dma_device.h"
+#include "OpenGLESDispatch/GLESv2Dispatch.h"
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -286,6 +286,8 @@ int GLESv2Decoder::initGL(get_proc_func_t getProcFunc, void *getProcFuncData)
     OVERRIDE_DEC(glBlendFuncSeparateiEXT);
     OVERRIDE_DEC(glColorMaskiEXT);
     OVERRIDE_DEC(glIsEnablediEXT);
+
+    OVERRIDE_DEC(glTraceAsyncGOOGLE);
 
     return 0;
 
@@ -995,6 +997,11 @@ GLboolean GLESv2Decoder::s_glIsShader(void* self, GLuint shader) {
 GLboolean GLESv2Decoder::s_glIsProgram(void* self, GLuint program) {
     SNAPSHOT_PROGRAM_NAME(program);
     return ctx->glIsProgram(program);
+}
+
+void GLESv2Decoder::s_glTraceAsyncGOOGLE(void* self, GLuint64 flowId) {
+    GFXSTREAM_TRACE_EVENT_INSTANT(GFXSTREAM_TRACE_DECODER_CATEGORY, "glTraceAsyncGOOGLE",
+                                  GFXSTREAM_TRACE_FLOW_GLOBAL(id), "flow id", id);
 }
 
 SNAPSHOT_SHADER_CALL(glCompileShader, (void* self,  GLuint shader), (shader))

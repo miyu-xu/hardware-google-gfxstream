@@ -272,6 +272,8 @@ private:
                                                 GLboolean green,
                                   GLboolean blue, GLboolean alpha);
     static GLboolean gles2_APIENTRY s_glIsEnablediEXT(void* self, GLenum cap, GLuint index);
+
+    static void gles2_APIENTRY s_glTraceAsyncGOOGLE(void* self, GLuint64 flowId);
 };
 
 }  // namespace gl

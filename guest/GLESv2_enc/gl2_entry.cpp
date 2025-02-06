@@ -444,6 +444,7 @@ extern "C" {
 	void glBlendFuncSeparateiEXT(GLuint index, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
 	void glColorMaskiEXT(GLuint index, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 	GLboolean glIsEnablediEXT(GLenum cap, GLuint index);
+	void glTraceAsyncGOOGLE(GLuint64 flowId);
 };
 
 #ifndef GET_CONTEXT
@@ -3121,5 +3122,11 @@ GLboolean glIsEnablediEXT(GLenum cap, GLuint index)
 {
 	GET_CONTEXT;
 	return ctx->glIsEnablediEXT(ctx, cap, index);
+}
+
+void glTraceAsyncGOOGLE(GLuint64 flowId)
+{
+	GET_CONTEXT;
+	ctx->glTraceAsyncGOOGLE(ctx, flowId);
 }
 

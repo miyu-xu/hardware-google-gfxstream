@@ -251,32 +251,32 @@ GL_ENTRY(void, glFlushMappedBufferRangeAEMU, GLenum target, GLintptr offset, GLs
 ## to update the host with the new buffer contents:
 ## glMapBufferRange / glUnmapBuffer:
 ## Guest:                    | Encoder:                           | Host:
-## void* x = glMapBuffer...  |                                    |          
-##                           | glMapBufferRangeAEMU_enc...        |                                             
+## void* x = glMapBuffer...  |                                    |
+##                           | glMapBufferRangeAEMU_enc...        |
 ##                           |                                    | void* hostptr = glMapBufferRange...
 ##                           |                                    | memcpy(mapped, hostptr, sz)
-##                           | stream->readback(mapped, sz)       |                            
-##                           | glMapBufferRangeAEMU_enc exit      |                            
-## x holds host GPU contents |                                    |          
-## <operations on x>         |                                    |           
-## glUnmapBuffer...          |                                    |           
-##                           | glUnmapBufferAEMU_enc...           |           
-##                           | stream->writeFully(x, sz)          |           
+##                           | stream->readback(mapped, sz)       |
+##                           | glMapBufferRangeAEMU_enc exit      |
+## x holds host GPU contents |                                    |
+## <operations on x>         |                                    |
+## glUnmapBuffer...          |                                    |
+##                           | glUnmapBufferAEMU_enc...           |
+##                           | stream->writeFully(x, sz)          |
 ##                           |                                    | memcpy(hostptr, x, sz)
 ##                           |                                    | glUnmapBuffer
 ## glMapBufferRange / glFlushMappedBufferRange:
 ## Guest:                    | Encoder:                           | Host:
-## void* x = glMapBuffer...  |                                    |          
-##                           | glMapBufferRangeAEMU_enc...        |                                             
+## void* x = glMapBuffer...  |                                    |
+##                           | glMapBufferRangeAEMU_enc...        |
 ##                           |                                    | void* hostptr = glMapBufferRange...
 ##                           |                                    | memcpy(mapped, hostptr, sz)
-##                           | stream->readback(mapped, sz)       |                            
-##                           | glMapBufferRangeAEMU_enc exit      |                            
-## x holds host GPU contents |                                    |          
-## <operations on x>         |                                    |           
-## glFlushMappedBufferRange..|                                    |           
-##                           | glFlushMappedBufferRangeAEMU...    |           
-##                           | stream->writeFully(flushedrange... |           
+##                           | stream->readback(mapped, sz)       |
+##                           | glMapBufferRangeAEMU_enc exit      |
+## x holds host GPU contents |                                    |
+## <operations on x>         |                                    |
+## glFlushMappedBufferRange..|                                    |
+##                           | glFlushMappedBufferRangeAEMU...    |
+##                           | stream->writeFully(flushedrange... |
 ##                           |                                    | memcpy(hostptr + offset, flushedrange, length)
 ##                           |                                    | glFlushMappedBufferRange
 ## Make sure to store the binded range when mapped, I bet there is some dEQP test that checks this sort of thing :)
@@ -520,7 +520,7 @@ GL_ENTRY(void, glGetProgramResourceiv, GLuint program, GLenum programInterface, 
 GL_ENTRY(GLuint, glGetProgramResourceIndex, GLuint program, GLenum programInterface, const char * name)
 GL_ENTRY(GLint, glGetProgramResourceLocation, GLuint program, GLenum programInterface, const char * name)
 GL_ENTRY(void, glGetProgramResourceName, GLuint program, GLenum programInterface, GLuint index, GLsizei bufSize, GLsizei * length, char * name)
- 
+
 # Compute shaders. Should just work if everything else does.
 GL_ENTRY(void, glBindImageTexture, GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format)
 GL_ENTRY(void, glDispatchCompute, GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z)
@@ -557,7 +557,7 @@ GL_ENTRY(void, glGetMultisamplefv, GLenum pname, GLuint index, GLfloat *val)
 GL_ENTRY(void, glFramebufferParameteri, GLenum target, GLenum pname, GLint param)
 GL_ENTRY(void, glGetFramebufferParameteriv, GLenum target, GLenum pname, GLint * params)
 
-# Texture LOD queries    
+# Texture LOD queries
 # Already used in Translator's validations, just need encoder.
 GL_ENTRY(void, glGetTexLevelParameterfv, GLenum target, GLint level, GLenum pname, GLfloat * params)
 GL_ENTRY(void, glGetTexLevelParameteriv, GLenum target, GLint level, GLenum pname, GLint * params)
@@ -606,3 +606,5 @@ GL_ENTRY(void, glBlendFunciEXT, GLuint index, GLenum sfactor, GLenum dfactor);
 GL_ENTRY(void, glBlendFuncSeparateiEXT, GLuint index, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
 GL_ENTRY(void, glColorMaskiEXT, GLuint index, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 GL_ENTRY(GLboolean, glIsEnablediEXT, GLenum cap, GLuint index);
+
+GL_ENTRY(void, glTraceAsyncGOOGLE, GLuint64 flowId);

@@ -449,6 +449,7 @@ int gl2_client_context_t::initDispatchByName(void *(*getProc)(const char *, void
 	glBlendFuncSeparateiEXT = (glBlendFuncSeparateiEXT_client_proc_t) getProc("glBlendFuncSeparateiEXT", userData);
 	glColorMaskiEXT = (glColorMaskiEXT_client_proc_t) getProc("glColorMaskiEXT", userData);
 	glIsEnablediEXT = (glIsEnablediEXT_client_proc_t) getProc("glIsEnablediEXT", userData);
+	glTraceAsyncGOOGLE = (glTraceAsyncGOOGLE_client_proc_t) getProc("glTraceAsyncGOOGLE", userData);
 	return 0;
 }
 

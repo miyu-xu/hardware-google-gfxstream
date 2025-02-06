@@ -5946,7 +5946,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void on_vkTraceAsyncGOOGLE(android::base::BumpPool*, VkSnapshotApiCallInfo*, uint64_t id) {
-        GFXSTREAM_TRACE_EVENT_INSTANT(GFXSTREAM_TRACE_DEFAULT_CATEGORY, "vkTraceAsyncGOOGLE",
+        GFXSTREAM_TRACE_EVENT_INSTANT(GFXSTREAM_TRACE_DECODER_CATEGORY, "vkTraceAsyncGOOGLE",
                                       GFXSTREAM_TRACE_FLOW_GLOBAL(id), "flow id", id);
     }
 

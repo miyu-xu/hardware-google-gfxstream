@@ -560,6 +560,8 @@ struct gles2_server_context_t {
 	glColorMaskiEXT_server_proc_t glColorMaskiEXT_dec;
 	glIsEnablediEXT_dec_server_proc_t glIsEnablediEXT;
 	glIsEnablediEXT_server_proc_t glIsEnablediEXT_dec;
+	glTraceAsyncGOOGLE_dec_server_proc_t glTraceAsyncGOOGLE;
+	glTraceAsyncGOOGLE_server_proc_t glTraceAsyncGOOGLE_dec;
 	virtual ~gles2_server_context_t() {}
 	int initDispatchByName( void *(*getProc)(const char *name, void *userData), void *userData);
 };
