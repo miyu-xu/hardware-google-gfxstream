@@ -460,6 +460,18 @@ static const QAndroidVmOperations sQAndroidVmOperations =
                         "skipped\n");
                 return false;
             },
+        .vulkanInstanceRegister =
+            [](uint64_t id, const char* name) {
+                DEBUG_LOG(stderr,
+                          "goldfish-opengl vm ops: register Vulkan instance "
+                          "skipped\n");
+            },
+        .vulkanInstanceUnregister =
+            [](uint64_t id) {
+                DEBUG_LOG(stderr,
+                          "goldfish-opengl vm ops: unregister Vulkan instance "
+                          "skipped\n");
+            },
 #endif
 };
 
