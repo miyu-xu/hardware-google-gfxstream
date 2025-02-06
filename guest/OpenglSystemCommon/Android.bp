@@ -132,6 +132,9 @@ cc_library_shared {
                 "libnativewindow",
                 "libsync",
             ],
+            static_libs: [
+                "libperfetto_client_experimental",
+            ],
         },
     },
 }
