@@ -1158,9 +1158,10 @@ class VkDecoderGlobalState::Impl {
         if (!m_emu->features.VulkanSnapshots.enabled ||
             (kSnapshotAppAllowList.find(info.applicationName) == kSnapshotAppAllowList.end() &&
              kSnapshotEngineAllowList.find(info.engineName) == kSnapshotEngineAllowList.end())) {
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
+            // get_emugl_vm_operations().setSkipSnapshotSave(true);
             get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_APP);
         }
+        FrameBuffer::getFB()->registerVulkanInstance((uint64_t)*pInstance, info.engineName.c_str());
 #else
         get_emugl_vm_operations().setSkipSnapshotSave(true);
 #endif
@@ -2821,7 +2822,7 @@ class VkDecoderGlobalState::Impl {
                 fprintf(stderr,
                     "vkBindImageMemory2 with more than 1 bindInfoCount not supporting snapshot");
             }
-            get_emugl_vm_operations().setSkipSnapshotSave(true);
+            // get_emugl_vm_operations().setSkipSnapshotSave(true);
             get_emugl_vm_operations().setSkipSnapshotSaveReason(SNAPSHOT_SKIP_UNSUPPORTED_VK_API);
         }
 #endif
@@ -8869,6 +8870,9 @@ class VkDecoderGlobalState::Impl {
         m_vk->vkDestroyInstance(instance, nullptr);
         INFO("Destroyed VkInstance:%p for application:%s engine:%s.", instance,
              instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str());
+#ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_SUPPORT
+        FrameBuffer::getFB()->unregisterVulkanInstance((uint64_t)instance);
+#endif
         delete_VkInstance(instanceInfo.boxed);
         LOG_CALLS_VERBOSE("destroyInstanceObjects: finished.");
     }
