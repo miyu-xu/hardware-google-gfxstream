@@ -69,6 +69,24 @@
       "parentUuid": "40116f42_094328d1",
       "revId": "4286158ec3b7ad211a3811a7cc638d92815a0f00",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "954ab504_d50c67d3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-06T16:02:27Z",
+      "side": 1,
+      "message": "Per b/393621519, QA does not have enough bandwidth.",
+      "parentUuid": "7e957ac1_ec40b12f",
+      "revId": "4286158ec3b7ad211a3811a7cc638d92815a0f00",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
