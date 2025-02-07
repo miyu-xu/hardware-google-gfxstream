@@ -529,6 +529,7 @@ static std::vector<VkEmulation::ImageSupportInfo> getBasicImageSupportList() {
          VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT | VK_IMAGE_CREATE_EXTENDED_USAGE_BIT},
 
         {VK_FORMAT_R5G6B5_UNORM_PACK16},
+        {VK_FORMAT_A1R5G5B5_UNORM_PACK16},
 
         {VK_FORMAT_R16G16B16A16_SFLOAT},
         {VK_FORMAT_R16G16B16_SFLOAT},
@@ -2133,11 +2134,15 @@ static bool isFormatVulkanCompatible(GLenum internalFormat) {
     VkFormat vkFormat = glFormat2VkFormat(internalFormat);
 
     for (const auto& supportInfo : sVkEmulation->imageSupportInfo) {
-        if (supportInfo.format == vkFormat && supportInfo.supported) {
-            return true;
+        if (supportInfo.format == vkFormat) {
+            // Format found, return support info
+            return supportInfo.supported;
         }
     }
 
+    // Format not found, additional query should be added for support info list
+    WARN("%s cannot find support info for vkFormat=%s[%d] (internalFormat=%d)", __func__,
+            string_VkFormat(vkFormat), vkFormat, internalFormat);
     return false;
 }
 
