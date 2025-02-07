@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b65065b0_476cb0ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-07T13:49:05Z",
+      "side": 1,
+      "message": "For future reference: \n```\n12:20:35(23:29.48) bld | The following tests FAILED:\n12:20:35(23:29.24) bld | 787 - VulkanFrameBufferTest.VkColorBufferWithoutMemoryProperties (Subprocess aborted)\n12:20:35(23:29.94) bld | 788 - VulkanFrameBufferTest.VkColorBufferWithMemoryPropertyFlags (Subprocess aborted)\n```",
+      "revId": "3071ea9a84e530ea39effa291a5c48cc30b6c548",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
