@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0
+#define DEBUG  1
 
 #if DEBUG
 #define D(...)  printf(__VA_ARGS__)
@@ -278,6 +278,10 @@ bool emuglConfig_init(EmuglConfig* config,
         gpu_mode = "swiftshader_indirect";
     }
 
+    if (gpu_mode && !strcmp("lavapipe", gpu_mode)) {
+        use_host_vulkan = false;
+    }
+
     if (!bitness) {
         bitness = 64;
     }
@@ -352,7 +356,7 @@ bool emuglConfig_init(EmuglConfig* config,
     // to desktop GL, 'guest' does not use host-side emulation,
     // anything else must be checked against existing host-side backends.
     if (!gpu_mode ||
-        (strcmp(gpu_mode, "host") != 0 && strcmp(gpu_mode, "guest") != 0)) {
+            (strcmp(gpu_mode, "host") != 0 && strcmp(gpu_mode, "guest") != 0 && strcmp(gpu_mode, "lavapipe") != 0)) {
         const std::vector<std::string>& backends = sBackendList->names();
         if (!gpu_mode || !stringVectorContains(backends, gpu_mode)) {
             std::string error = StringFormat(
@@ -399,6 +403,11 @@ void emuglConfig_setupEnv(const EmuglConfig* config) {
         android::base::setEnvironmentVariable("ANDROID_EMU_VK_ICD", "swiftshader");
     }
 
+    if (emuglConfig_get_user_gpu_option() == "lavapipe") {
+        android::base::setEnvironmentVariable("ANDROID_EMU_VK_ICD", "lavapipe");
+    }
+
+
     if (!config->enabled) {
         // There is no real GPU emulation. As a special case, define
         // SDL_RENDER_DRIVER to 'software' to ensure that the
@@ -430,7 +439,8 @@ void emuglConfig_setupEnv(const EmuglConfig* config) {
     }
 
     if (!strcmp(config->backend, "angle_indirect")
-            || !strcmp(config->backend, "swiftshader_indirect")) {
+            || !strcmp(config->backend, "swiftshader_indirect")
+            || !strcmp(config->backend, "lavapipe")) {
         android::base::setEnvironmentVariable("ANDROID_EGL_ON_EGL", "1");
         return;
     }
