@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e9989bc_967ba688",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 1155,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-07T18:52:28Z",
+      "side": 1,
+      "message": "Could you add a new callback to `hardware/google/gfxstream/host/backend/include/gfxstream/host/BackendCallbacks.h`, register the new callback around [here](https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/host/FrameBuffer.cpp;drc\u003d2172a60e4392f4444b18d9d8df992598102139b1;l\u003d322) with effectively the content of `FrameBuffer::registerVulkanInstance`, and have this spot call ` m_emu-\u003ecallbacks.registerVulkanInstance()` ? At some point, I still want to break the circular dependency between `FrameBuffer` and the VK backend. For now, I would like to avoid adding new dependencies.",
+      "range": {
+        "startLine": 1154,
+        "startChar": 8,
+        "endLine": 1155,
+        "endChar": 83
+      },
+      "revId": "30f1755b635d787ddf23ed82fd5eeb19c5454d1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
