@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3ae834a_95a7a478",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-07T13:41:38Z",
+      "side": 1,
+      "message": "looks like aosp/3150402 caused some failures in the tests that do not check hardware caps for allocating resources, i\u0027ll make some changes to fix it.",
+      "revId": "55dd3ad16840f3ee4f51a534b3b86aa152b2f932",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
