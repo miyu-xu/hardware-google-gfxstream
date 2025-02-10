@@ -7781,6 +7781,28 @@ class VkDecoderGlobalState::Impl {
                                    /* waitAll */ false, timeout);
     }
 
+<<<<<<< PATCH SET (5ae29d Remove unused getFenceStatus function)
+||||||| BASE
+    VkResult getFenceStatus(VkFence boxed_fence) {
+        VkFence fence = unbox_VkFence(boxed_fence);
+        VkDevice device;
+        VulkanDispatch* vk;
+        {
+            std::lock_guard<std::recursive_mutex> lock(mLock);
+            if (fence == VK_NULL_HANDLE || mFenceInfo.find(fence) == mFenceInfo.end()) {
+                // No fence, could be a semaphore.
+                // TODO: Async get status for semaphores
+                return VK_SUCCESS;
+            }
+
+            device = mFenceInfo[fence].device;
+            vk = mFenceInfo[fence].vk;
+        }
+
+        return vk->vkGetFenceStatus(device, fence);
+    }
+
+=======
     VkResult getFenceStatus(VkFence boxed_fence) {
         VkFence fence = unbox_VkFence(boxed_fence);
         VkDevice device;
@@ -7800,6 +7822,7 @@ class VkDecoderGlobalState::Impl {
         return vk->vkGetFenceStatus(device, fence);
     }
 
+>>>>>>> BASE      (03b575 Merge "Passthrough tracking for fence status and wait functi)
     AsyncResult registerQsriCallback(VkImage boxed_image, VkQsriTimeline::Callback callback) {
         std::lock_guard<std::mutex> lock(mMutex);
 
@@ -10590,10 +10613,6 @@ void VkDecoderGlobalState::on_CheckOutOfMemory(VkResult result, uint32_t opCode,
 
 VkResult VkDecoderGlobalState::waitForFence(VkFence boxed_fence, uint64_t timeout) {
     return mImpl->waitForFence(boxed_fence, timeout);
-}
-
-VkResult VkDecoderGlobalState::getFenceStatus(VkFence boxed_fence) {
-    return mImpl->getFenceStatus(boxed_fence);
 }
 
 AsyncResult VkDecoderGlobalState::registerQsriCallback(VkImage image,
