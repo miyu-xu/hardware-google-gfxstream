@@ -3486,10 +3486,8 @@ class VkDecoderGlobalState::Impl {
 
         // External fences are just slated for recycling. This addresses known
         // behavior where the guest might destroy the fence prematurely. b/228221208
-        if (fenceInfo.external) {
-            if (allowExternalFenceRecycling) {
-                deviceInfo.externalFencePool->add(fence);
-            }
+        if (fenceInfo.external && allowExternalFenceRecycling) {
+            deviceInfo.externalFencePool->add(fence);
             return DestroyFenceStatus::kRecycled;
         }
 
