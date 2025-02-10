@@ -2515,7 +2515,13 @@ static bool createVkColorBufferLocked(uint32_t width, uint32_t height, GLenum in
     infoPtr->memoryProperty = infoPtr->memoryProperty & (VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT |
                                                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
-    infoPtr->memory.size = memReqs.size;
+    // vkBindImageMemory requires the size to be at least VkMemoryReqauirements::size, so let's make
+    // sure to allocate a size big enough and also kPageSize aligned.
+    // infoPtr->memory.size = memReqs.size;
+    // This is just a quick test to fix the VVL and see if it does anything. Can optimize later.
+    // Just allocate two more pages for now.
+    infoPtr->memory.size = memReqs.size + (kPageSize * 2);
+    WARN("%s: requiredSize=%lu imageSize=%lu", __func__, memReqs.size, infoPtr->memory.size);
 
     // Determine memory type.
     infoPtr->memory.typeIndex =
@@ -2572,6 +2578,8 @@ static bool createVkColorBufferLocked(uint32_t width, uint32_t height, GLenum in
     infoPtr->memory.bindOffset =
         infoPtr->memory.pageOffset ? kPageSize - infoPtr->memory.pageOffset : 0u;
 
+    WARN("%s: mappedPtr=%p pageOffset=%lu bindOffset=%lu", __func__,
+         infoPtr->memory.mappedPtr, infoPtr->memory.pageOffset, infoPtr->memory.bindOffset);
     VkResult bindImageMemoryRes = vk->vkBindImageMemory(
         sVkEmulation->device, infoPtr->image, infoPtr->memory.memory, infoPtr->memory.bindOffset);
 
