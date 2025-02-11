@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "96d9c4d0_75f97cfa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-11T16:52:51Z",
+      "side": 1,
+      "message": "Internal link to the example incorrect logging messages: https://android-build.corp.google.com/test_investigate/invocation/I24800010364670535/test/TR13829622361920009/",
+      "revId": "03a53049915f3cd20296af447b77451f4534b504",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
