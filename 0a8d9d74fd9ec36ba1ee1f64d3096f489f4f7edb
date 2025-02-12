@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "01174c3a_9468a6e2",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 7742,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-02-12T18:24:04Z",
+      "side": 1,
+      "message": "I am not against this CL since I don\u0027t have the full context on why we need it, and I don\u0027t think this CL introduces new bugs.\n\nJFYI, the old implementation was only used to handle the VkFence where the guest exports a sync fd, i.e. `vkGetFenceFdKHR`. It was never intended to cover the guest `vkWaitForFences` case. The guest application should guarantee the synchronization between `vkWaitForFences` and `vkQueueSubmit`. And Vulkan spec doesn\u0027t require host synchronization between `vkWaitForFences` calls, so we don\u0027t need synchronization between the host `vkWaitForFences` that implements the guest `vkGetFenceFdKHR`(this function), and the host `vkWaitForFences` that implements the guest `vkWaitForFencces`(because on the host, they are essentially 2 `vkWaitForFences`).",
+      "revId": "0a8d9d74fd9ec36ba1ee1f64d3096f489f4f7edb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98623133_cf0495f1",
