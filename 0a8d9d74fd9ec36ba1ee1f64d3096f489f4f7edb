@@ -22,6 +22,47 @@
       },
       "revId": "0a8d9d74fd9ec36ba1ee1f64d3096f489f4f7edb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72cee67e_e8276641",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-02-12T18:12:32Z",
+      "side": 1,
+      "message": "this seems redundant, and causing confusion,\ndo we really use that state?",
+      "range": {
+        "startLine": 312,
+        "startChar": 8,
+        "endLine": 312,
+        "endChar": 16
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "60ab3743_a9ab57b2",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderInternalStructs.h",
+              "range": {
+                "startLine": 312,
+                "startChar": 0,
+                "endLine": 313,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "0a8d9d74fd9ec36ba1ee1f64d3096f489f4f7edb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
