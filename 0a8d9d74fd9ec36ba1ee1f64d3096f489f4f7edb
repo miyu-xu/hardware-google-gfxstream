@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "745abd05_63a753be",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 7742,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-13T12:27:40Z",
+      "side": 1,
+      "message": "Thanks! We\u0027re getting some random hangs on waits when `vkGetFenceFdKHR` is used from the guest side on Windows. It\u0027s hard to say if this fixes all the issues at this point due to the randomness of the problem, but adding these entry points and using the same structure will also help re-landing changes necessary to remove waitforfences call at the end of queue submissions for vulkan to gles flush operations.",
+      "parentUuid": "01174c3a_9468a6e2",
+      "revId": "0a8d9d74fd9ec36ba1ee1f64d3096f489f4f7edb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98623133_cf0495f1",
@@ -31,6 +49,30 @@
       "writtenOn": "2025-02-12T16:40:33Z",
       "side": 1,
       "message": "just qq: will this case create device lost error ?",
+      "range": {
+        "startLine": 7788,
+        "startChar": 22,
+        "endLine": 7792,
+        "endChar": 25
+      },
+      "revId": "0a8d9d74fd9ec36ba1ee1f64d3096f489f4f7edb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cdb5de9d_71e7cf3b",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 7792,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-13T12:27:40Z",
+      "side": 1,
+      "message": "Fences should be externally synced, this should never happen on a valid application. We could return device lost here as well, better to do that and similar graceful error handling changes later.",
+      "parentUuid": "98623133_cf0495f1",
       "range": {
         "startLine": 7788,
         "startChar": 22,
@@ -78,6 +120,30 @@
           ]
         }
       ],
+      "revId": "0a8d9d74fd9ec36ba1ee1f64d3096f489f4f7edb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69d89075_2fa27887",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-13T12:27:40Z",
+      "side": 1,
+      "message": "Right, although didn\u0027t want to change the available states with this one. I\u0027ll probably remove this state tracking altogether for adding support for multithreaded vulkan to gles copies on submissions, before triggering the fence.",
+      "parentUuid": "72cee67e_e8276641",
+      "range": {
+        "startLine": 312,
+        "startChar": 8,
+        "endLine": 312,
+        "endChar": 16
+      },
       "revId": "0a8d9d74fd9ec36ba1ee1f64d3096f489f4f7edb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
