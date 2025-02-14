@@ -42,12 +42,6 @@ struct BackendCallbacks {
     using ScheduleAsyncWorkFunc =
         std::function<CancelableFuture(std::function<void()> work, std::string description)>;
     ScheduleAsyncWorkFunc scheduleAsyncWork;
-
-    using RegisterVulkanInstanceFunc = std::function<void(uint64_t id, const char* appName)>;
-    RegisterVulkanInstanceFunc registerVulkanInstance;
-
-    using UnregisterVulkanInstanceFunc = std::function<void(uint64_t id)>;
-    UnregisterVulkanInstanceFunc unregisterVulkanInstance;
 };
 
 }  // namespace host
