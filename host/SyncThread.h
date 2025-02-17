@@ -136,7 +136,8 @@ class SyncThread : public android::base::Thread {
     // |doSyncThreadCmd| execute the actual task. These run on the sync thread.
     void doSyncThreadCmd(Command&& command, ThreadPool::WorkerId);
 
-    static int doSyncWaitVk(VkFence, std::function<void()> onComplete);
+    static int doSyncWaitVk(vk::VkDecoderGlobalState* decoder, VkFence,
+                            std::function<void()> onComplete);
 
     // EGL objects / object handles specific to
     // a sync thread.
