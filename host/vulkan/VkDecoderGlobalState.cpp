@@ -9337,7 +9337,7 @@ VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::I
 
 VkDecoderGlobalState::~VkDecoderGlobalState() = default;
 
-static VkDecoderGlobalState* sGlobalDecoderState = nullptr;
+static thread_local VkDecoderGlobalState* sGlobalDecoderState = nullptr;
 
 // static
 VkDecoderGlobalState* VkDecoderGlobalState::get() {
