@@ -357,6 +357,12 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
                 },
             .unregisterVulkanInstance =
                 [fb = fb.get()](uint64_t id) { fb->unregisterVulkanInstance(id); },
+            .getGuestProcessId =
+                []() {
+                    RenderThreadInfo* tInfo = RenderThreadInfo::get();
+                    uint64_t puid = tInfo->m_puid;
+                    return puid;
+                },
         };
         vkEmu = vk::createGlobalVkEmulation(vkDispatch, callbacks, fb->m_features);
         if (!vkEmu) {

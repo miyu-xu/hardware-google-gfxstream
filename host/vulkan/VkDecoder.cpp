@@ -79,6 +79,7 @@ class VkDecoder::Impl {
           m_queueSubmitWithCommandsEnabled(
               m_state->getFeatures().VulkanQueueSubmitWithCommands.enabled),
           m_snapshotsEnabled(m_state->snapshotsEnabled()) {}
+    ~Impl() { VkDecoderGlobalState::reset(); }
     VulkanStream* stream() { return &m_vkStream; }
     VulkanMemReadingStream* readStream() { return &m_vkMemReadingStream; }
 
