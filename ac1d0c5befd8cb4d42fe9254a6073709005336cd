@@ -34,6 +34,24 @@
       "parentUuid": "55ef3009_31d8f11e",
       "revId": "ac1d0c5befd8cb4d42fe9254a6073709005336cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe04fdbc_6ffba303",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-18T22:38:12Z",
+      "side": 1,
+      "message": "Please include at least a `Bug: \u003c\u003e` clause and ideally also a short discription of the issue in the commit message.",
+      "parentUuid": "a9d8a8e9_99e97773",
+      "revId": "ac1d0c5befd8cb4d42fe9254a6073709005336cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
