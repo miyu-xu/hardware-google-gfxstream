@@ -16,6 +16,24 @@
       "message": "Creating this so I can generate a presubmit build to verify",
       "revId": "ac1d0c5befd8cb4d42fe9254a6073709005336cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9d8a8e9_99e97773",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1692260
+      },
+      "writtenOn": "2025-02-18T22:32:54Z",
+      "side": 1,
+      "message": "I\u0027ve verified this revert resolves the issue.",
+      "parentUuid": "55ef3009_31d8f11e",
+      "revId": "ac1d0c5befd8cb4d42fe9254a6073709005336cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
