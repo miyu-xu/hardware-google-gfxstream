@@ -20,12 +20,10 @@
 #include <malloc.h>
 #endif
 
-#include <stdlib.h>
-
-#include <condition_variable>
 #include <mutex>
 #include <optional>
 #include <set>
+#include <stdlib.h>
 #include <string>
 #include <unordered_map>
 
@@ -303,13 +301,13 @@ struct FenceInfo {
     VkFence boxed = VK_NULL_HANDLE;
     VulkanDispatch* vk = nullptr;
 
-    std::mutex mutex;
-    std::condition_variable cv;
+    android::base::StaticLock lock;
+    android::base::ConditionVariable cv;
 
     enum class State {
-        kNotWaitable,   // Newly created or reset
-        kWaitable,      // A submission is made, or created as signaled
-        kWaiting,       // Fence waitable status is acknowledged
+        kWaitable,
+        kNotWaitable,
+        kWaiting,
     };
     State state = State::kNotWaitable;
 
