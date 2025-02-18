@@ -1653,6 +1653,16 @@ class VkDecoderSnapshot::Impl {
             // commandBuffer is already boxed, no need to box again
             VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
             mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
+
+            if (pRenderPassBegin->renderPass != VK_NULL_HANDLE) {
+                mReconstruction.addHandleDependency((const uint64_t*)(&apiCallHandle), 1,
+                    (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkRenderPass(pRenderPassBegin->renderPass));
+            }
+            if (pRenderPassBegin->framebuffer != VK_NULL_HANDLE) {
+                mReconstruction.addHandleDependency((const uint64_t*)(&apiCallHandle), 1,
+                    (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkFramebuffer(pRenderPassBegin->framebuffer));
+            }
+
         }
     }
     void vkCmdNextSubpass(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
