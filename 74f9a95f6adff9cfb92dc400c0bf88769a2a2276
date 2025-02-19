@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c02800dc_253a73a5",
+        "filename": "host/vulkan/VulkanDispatch.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-19T17:24:24Z",
+      "side": 1,
+      "message": "are we going to use a different file name for arm64? Maybe we should rename it to `lvp_icd.json` to avoid a divergence here?",
+      "revId": "74f9a95f6adff9cfb92dc400c0bf88769a2a2276",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
