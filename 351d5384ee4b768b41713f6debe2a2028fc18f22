@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d1592dd_c97e55f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-20T15:24:06Z",
+      "side": 1,
+      "message": "Can we test it with aosp/3501791 first before reverting this? It\u0027s expected that the CL could have caused issues when only some of the fences were in singalled state.",
+      "revId": "351d5384ee4b768b41713f6debe2a2028fc18f22",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
