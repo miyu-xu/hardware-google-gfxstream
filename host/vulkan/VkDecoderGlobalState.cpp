@@ -3628,7 +3628,8 @@ class VkDecoderGlobalState::Impl {
 
     void destroyDescriptorSetLayoutLocked(VkDevice device, VulkanDispatch* deviceDispatch,
                                           VkDescriptorSetLayout descriptorSetLayout,
-                                          const VkAllocationCallbacks* pAllocator) {
+                                          const VkAllocationCallbacks* pAllocator)
+        REQUIRES(mMutex) {
         auto descriptorSetLayoutInfoIt = mDescriptorSetLayoutInfo.find(descriptorSetLayout);
         if (descriptorSetLayoutInfoIt == mDescriptorSetLayoutInfo.end()) return;
         auto& descriptorSetLayoutInfo = descriptorSetLayoutInfoIt->second;
@@ -3701,7 +3702,7 @@ class VkDecoderGlobalState::Impl {
         for (auto it : descriptorPoolInfo.allocedSetsToBoxed) {
             auto unboxedSet = it.first;
             auto boxedSet = it.second;
-            mDescriptorSetInfo.erase(unboxedSet);
+            descriptorSetInfos.erase(unboxedSet);
             if (!m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                 delete_VkDescriptorSet(boxedSet);
             }
@@ -3742,7 +3743,7 @@ class VkDecoderGlobalState::Impl {
 
     void destroyDescriptorPoolLocked(VkDevice device, VulkanDispatch* deviceDispatch,
                                      VkDescriptorPool descriptorPool,
-                                     const VkAllocationCallbacks* pAllocator) {
+                                     const VkAllocationCallbacks* pAllocator) REQUIRES(mMutex) {
         auto descriptorPoolInfoIt = mDescriptorPoolInfo.find(descriptorPool);
         if (descriptorPoolInfoIt == mDescriptorPoolInfo.end()) return;
         auto& descriptorPoolInfo = descriptorPoolInfoIt->second;
@@ -3763,7 +3764,7 @@ class VkDecoderGlobalState::Impl {
         destroyDescriptorPoolLocked(device, deviceDispatch, descriptorPool, pAllocator);
     }
 
-    void resetDescriptorPoolInfoLocked(VkDescriptorPool descriptorPool) {
+    void resetDescriptorPoolInfoLocked(VkDescriptorPool descriptorPool) REQUIRES(mMutex) {
         auto descriptorPoolInfoIt = mDescriptorPoolInfo.find(descriptorPool);
         if (descriptorPoolInfoIt == mDescriptorPoolInfo.end()) return;
         auto& descriptorPoolInfo = descriptorPoolInfoIt->second;
@@ -3787,8 +3788,9 @@ class VkDecoderGlobalState::Impl {
         return VK_SUCCESS;
     }
 
-    void initDescriptorSetInfoLocked(VkDevice device, VkDescriptorPool pool, VkDescriptorSetLayout setLayout,
-                                     uint64_t boxedDescriptorSet, VkDescriptorSet descriptorSet) {
+    void initDescriptorSetInfoLocked(VkDevice device, VkDescriptorPool pool,
+                                     VkDescriptorSetLayout setLayout, uint64_t boxedDescriptorSet,
+                                     VkDescriptorSet descriptorSet) REQUIRES(mMutex) {
         auto* poolInfo = android::base::find(mDescriptorPoolInfo, pool);
         if (!poolInfo) {
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Cannot find poolInfo";
@@ -7567,11 +7569,9 @@ class VkDecoderGlobalState::Impl {
                                                     const VkDecoderContext& context) {
         // TODO : implement
     }
-    VkDescriptorSet getOrAllocateDescriptorSetFromPoolAndId(VulkanDispatch* vk, VkDevice device,
-                                                            VkDescriptorPool pool,
-                                                            VkDescriptorSetLayout setLayout,
-                                                            uint64_t poolId, uint32_t pendingAlloc,
-                                                            bool* didAlloc) {
+    VkDescriptorSet getOrAllocateDescriptorSetFromPoolAndIdLocked(
+        VulkanDispatch* vk, VkDevice device, VkDescriptorPool pool, VkDescriptorSetLayout setLayout,
+        uint64_t poolId, uint32_t pendingAlloc, bool* didAlloc) REQUIRES(mMutex) {
         auto* poolInfo = android::base::find(mDescriptorPoolInfo, pool);
         if (!poolInfo) {
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
@@ -7663,7 +7663,7 @@ class VkDecoderGlobalState::Impl {
             uint32_t whichPool = pDescriptorSetWhichPool[i];
             uint32_t pendingAlloc = pDescriptorSetPendingAllocation[i];
             bool didAllocThisTime;
-            setsToUpdate[i] = getOrAllocateDescriptorSetFromPoolAndId(
+            setsToUpdate[i] = getOrAllocateDescriptorSetFromPoolAndIdLocked(
                 vk, device, pDescriptorPools[whichPool], pDescriptorSetLayouts[i], poolId,
                 pendingAlloc, &didAllocThisTime);
 
@@ -9214,7 +9214,8 @@ class VkDecoderGlobalState::Impl {
         poolState.used -= binding.descriptorCount;
     }
 
-    VkResult validateDescriptorSetAllocLocked(const VkDescriptorSetAllocateInfo* pAllocateInfo) {
+    VkResult validateDescriptorSetAllocLocked(const VkDescriptorSetAllocateInfo* pAllocateInfo)
+        REQUIRES(mMutex) {
         auto* poolInfo = android::base::find(mDescriptorPoolInfo, pAllocateInfo->descriptorPool);
         if (!poolInfo) return VK_ERROR_INITIALIZATION_FAILED;
 
@@ -9290,9 +9291,12 @@ class VkDecoderGlobalState::Impl {
     std::unordered_map<VkBuffer, BufferInfo> mBufferInfo GUARDED_BY(mMutex);
     std::unordered_map<VkCommandBuffer, CommandBufferInfo> mCommandBufferInfo GUARDED_BY(mMutex);
     std::unordered_map<VkCommandPool, CommandPoolInfo> mCommandPoolInfo GUARDED_BY(mMutex);
-    std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo;
-    std::unordered_map<VkDescriptorSet, DescriptorSetInfo> mDescriptorSetInfo;
-    std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo;
+    std::unordered_map<VkDescriptorPool, DescriptorPoolInfo> mDescriptorPoolInfo GUARDED_BY(mMutex);
+    std::unordered_map<VkDescriptorSet, DescriptorSetInfo> mDescriptorSetInfo GUARDED_BY(mMutex);
+    std::unordered_map<VkDescriptorSetLayout, DescriptorSetLayoutInfo> mDescriptorSetLayoutInfo
+        GUARDED_BY(mMutex);
+    std::unordered_map<VkDescriptorUpdateTemplate, DescriptorUpdateTemplateInfo>
+        mDescriptorUpdateTemplateInfo GUARDED_BY(mMutex);
     std::unordered_map<VkDeviceMemory, MemoryInfo> mMemoryInfo GUARDED_BY(mMutex);
     std::unordered_map<VkFence, FenceInfo> mFenceInfo GUARDED_BY(mMutex);
     std::unordered_map<VkFramebuffer, FramebufferInfo> mFramebufferInfo GUARDED_BY(mMutex);
@@ -9319,8 +9323,6 @@ class VkDecoderGlobalState::Impl {
     }
     std::unordered_map<int, VkSemaphore> mExternalSemaphoresById;
 #endif
-    std::unordered_map<VkDescriptorUpdateTemplate, DescriptorUpdateTemplateInfo>
-        mDescriptorUpdateTemplateInfo;
 
     VkDecoderSnapshot mSnapshot;
 
