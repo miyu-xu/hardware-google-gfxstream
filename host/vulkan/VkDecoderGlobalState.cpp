@@ -452,7 +452,7 @@ class VkDecoderGlobalState::Impl {
 
     const gfxstream::host::FeatureSet& getFeatures() const { return m_emu->features; }
 
-    StateBlock createSnapshotStateBlock(VkDevice unboxed_device) {
+    StateBlock createSnapshotStateBlock(VkDevice unboxed_device) REQUIRES(mMutex) {
             const auto& device = unboxed_device;
             const auto& deviceInfo = android::base::find(mDeviceInfo, device);
             const auto physicalDevice = deviceInfo->physicalDevice;
@@ -1831,12 +1831,13 @@ class VkDecoderGlobalState::Impl {
         *pMemoryProperties = physicalDeviceMemoryHelper->getGuestMemoryProperties();
     }
 
-    void on_vkGetPhysicalDeviceMemoryProperties2(
-        android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
-        VkPhysicalDevice boxed_physicalDevice,
-        VkPhysicalDeviceMemoryProperties2* pMemoryProperties) {
+    void on_vkGetPhysicalDeviceMemoryProperties2(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
+                                                 VkPhysicalDevice boxed_physicalDevice,
+                                                 VkPhysicalDeviceMemoryProperties2* pMemoryProperties) {
         auto physicalDevice = unbox_VkPhysicalDevice(boxed_physicalDevice);
         auto vk = dispatch_VkPhysicalDevice(boxed_physicalDevice);
+
+        std::lock_guard<std::mutex> lock(mMutex);
 
         auto* physicalDeviceInfo = android::base::find(mPhysdevInfo, physicalDevice);
         if (!physicalDeviceInfo) return;
@@ -5835,7 +5836,7 @@ class VkDecoderGlobalState::Impl {
         return res;
     }
 
-    bool hasInstanceExtension(VkInstance instance, const std::string& name) {
+    bool hasInstanceExtension(VkInstance instance, const std::string& name) REQUIRES(mMutex) {
         auto* info = android::base::find(mInstanceInfo, instance);
         if (!info) return false;
 
@@ -9241,7 +9242,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     // Info tracking for vulkan objects
-    std::unordered_map<VkInstance, InstanceInfo> mInstanceInfo;
+    std::unordered_map<VkInstance, InstanceInfo> mInstanceInfo GUARDED_BY(mMutex);
     std::unordered_map<VkPhysicalDevice, PhysicalDeviceInfo> mPhysdevInfo;
     std::unordered_map<VkDevice, DeviceInfo> mDeviceInfo;
 
