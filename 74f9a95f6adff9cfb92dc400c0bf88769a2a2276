@@ -34,6 +34,24 @@
       "parentUuid": "c02800dc_253a73a5",
       "revId": "74f9a95f6adff9cfb92dc400c0bf88769a2a2276",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6d63e81_3e35d974",
+        "filename": "host/vulkan/VulkanDispatch.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-20T11:27:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb661457_090aaad7",
+      "revId": "74f9a95f6adff9cfb92dc400c0bf88769a2a2276",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
