@@ -7789,8 +7789,10 @@ class VkDecoderGlobalState::Impl {
                 // https://www.khronos.org/registry/vulkan/specs/1.2/html/vkspec.html#fundamentals-threadingbehavior
                 // https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/issues/519
 
-                // Current implementation does not respect waitAll here.
-                {
+                // vkWaitForFences should already be externally synced for queue submission.
+                // This conditional variable wait is mainly for calls made directly with
+                // `waitForFence` and is not supported when waitAll is false.
+                if (waitAll) {
                     std::unique_lock<std::mutex> lock(*fenceMutex);
                     cv->wait(lock, [this, fence] {
                         std::lock_guard<std::mutex> lock(mMutex);
@@ -7804,6 +7806,7 @@ class VkDecoderGlobalState::Impl {
                         // Should also allow 'kWaiting' stage as the user can call
                         // vkWaitForFences multiple times on the same fence.
                         if (fenceInfo->state == FenceInfo::State::kNotWaitable) {
+                            VERBOSE("Fence state is not waitable!");
                             return false;
                         }
                         fenceInfo->state = FenceInfo::State::kWaiting;
