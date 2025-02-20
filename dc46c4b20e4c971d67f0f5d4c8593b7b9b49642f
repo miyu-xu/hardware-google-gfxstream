@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3323a52_b7506e95",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-20T17:06:43Z",
+      "side": 1,
+      "message": "FYI, Andrew mentioned patchset3 didn\u0027t fix the issues, so I re-uploaded patchset1 to revert to the old behavior with other new changes.",
+      "revId": "dc46c4b20e4c971d67f0f5d4c8593b7b9b49642f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
