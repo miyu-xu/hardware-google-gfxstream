@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc56d088_3a9225e9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-24T22:35:34Z",
+      "side": 1,
+      "message": "(Build errors look like you just need to wait for https://chromium-review.googlesource.com/c/crosvm/crosvm/+/6288600 to be merged into AOSP.)",
+      "revId": "438938f7f312e8ef66f1c64c5f5f73e340a341bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
