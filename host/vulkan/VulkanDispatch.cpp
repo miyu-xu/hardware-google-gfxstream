@@ -38,7 +38,7 @@ static std::string icdJsonNameToProgramAndLauncherPaths(const std::string& icdFi
 #else
     const char* sep = ":";
 #endif
-    return pj({android::base::getProgramDirectory(), suffix}) + sep +
+    return pj({"/tmp", suffix}) + sep + pj({android::base::getProgramDirectory(), suffix}) + sep +
            pj({android::base::getLauncherDirectory(), suffix});
 }
 
@@ -63,7 +63,9 @@ static const char* getTestIcdFilename() {
 }
 
 static void initIcdPaths(bool forTesting) {
+    // XXX
     auto androidIcd = android::base::getEnvironmentVariable("ANDROID_EMU_VK_ICD");
+    printf("androidIcd=%s\n", androidIcd.c_str());
     if (androidIcd == "") {
         // Rely on user to set VK_DRIVER_FILES
         return;
@@ -90,6 +92,7 @@ static void initIcdPaths(bool forTesting) {
         }
         setIcdPaths("MoltenVK_icd.json");
 
+        printf("moltenvk icd\n");
         // Configure MoltenVK library with environment variables
         // 0: No logging.
         // 1: Log errors only.

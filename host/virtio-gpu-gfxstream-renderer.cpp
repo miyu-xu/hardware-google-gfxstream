@@ -574,7 +574,9 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     bool egl2eglByFlag = renderer_flags & STREAM_RENDERER_FLAGS_USE_EGL_BIT;
     bool enable_egl2egl = egl2eglByFlag || egl2eglByEnv;
     if (enable_egl2egl) {
+        printf("xxxxxxxx enable_egl2egl\n");
         android::base::setEnvironmentVariable("ANDROID_GFXSTREAM_EGL", "1");
+        //   XXX
         android::base::setEnvironmentVariable("ANDROID_EGL_ON_EGL", "1");
     }
 
@@ -582,7 +584,7 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
 
     android::featurecontrol::productFeatureOverride();
 
-    gfxstream::vk::vkDispatch(false /* don't use test ICD */);
+    // XXX move to lower: gfxstream::vk::vkDispatch(false /* don't use test ICD */);
 
     auto androidHw = aemu_get_android_hw();
 
@@ -597,25 +599,52 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     android::emulation::injectGraphicsAgents(android::emulation::GfxStreamGraphicsAgentFactory());
 #endif
 
-    emuglConfig_init(&config, true /* gpu enabled */, "auto",
-                     enable_egl2egl ? "swiftshader_indirect" : "host", 64, /* bitness */
-                     surfaceless,                                          /* no window */
-                     false,                                                /* blocklisted */
-                     false,                                                /* has guest renderer */
-                     WINSYS_GLESBACKEND_PREFERENCE_AUTO, true /* force host gpu vulkan */);
+    config.enabled = true;
+    config.bitness = 64;
+    config.use_backend = true;
+
+    config.use_host_vulkan = false;
+
+    char* gpu_mode = "swiftshader_indirect";
+
+    // gpu_mode = "host";
+    // config.use_host_vulkan = true;
+
+    printf("gpu mode %s\n", gpu_mode);
+
+    snprintf(config.backend, sizeof(config.backend), "%s", gpu_mode);
+    snprintf(config.status, sizeof(config.status), "GPU emulation enabled using '%s' mode",
+             gpu_mode);
+
+    // emuglConfig_init(&config, true /* gpu enabled */, "auto",
+    //                  enable_egl2egl ? "swiftshader_indirect" : "host", 64, /* bitness */
+    //                  surfaceless,                                          /* no window */
+    //                  false,                                                /* blocklisted */
+    //                  false,                                                /* has guest renderer
+    //                  */ WINSYS_GLESBACKEND_PREFERENCE_AUTO, true /* force host gpu vulkan */);
 
     emuglConfig_setupEnv(&config);
 
+    gfxstream::vk::vkDispatch(false /* don't use test ICD */);
+
+    printf("ANDROID_EMU_VK_ICD=%s\n",
+           android::base::getEnvironmentVariable("ANDROID_EMU_VK_ICD").c_str());
+    // android::base::setEnvironmentVariable("ANDROID_EMU_VK_ICD", "moltenvk");
+    // android::base::setEnvironmentVariable("ANGLE_DEFAULT_PLATFORM", "metal");
+
+    printf("XXXXXXXXXXXXXXXXXXXXX prepare\n");
     android_prepareOpenglesEmulation();
 
+    printf("setOpenglesEmulation\n");
     {
         static gfxstream::RenderLibPtr renderLibPtr = gfxstream::initLibrary();
         android_setOpenglesEmulation(renderLibPtr.get(), nullptr, nullptr);
     }
 
+    printf("startOpengles\n");
     int maj;
     int min;
-    android_startOpenglesRenderer(display_width, display_height, 1, 28, getGraphicsAgents()->vm,
+    android_startOpenglesRenderer(display_width, display_height, 1, 35, getGraphicsAgents()->vm,
                                   getGraphicsAgents()->emu, getGraphicsAgents()->multi_display,
                                   &features, &maj, &min);
 
@@ -623,6 +652,7 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     char* renderer = nullptr;
     char* version = nullptr;
 
+    printf("getOpenglesHardwareStrings\n");
     android_getOpenglesHardwareStrings(&vendor, &renderer, &version);
 
     stream_renderer_info("GL strings; [%s] [%s] [%s].", vendor, renderer, version);
@@ -639,6 +669,7 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
     android_opengles_pipe_set_recv_mode(2 /* virtio-gpu */);
     android_init_refcount_pipe();
 
+    // exit(0);  // TODO
     return 0;
 }
 

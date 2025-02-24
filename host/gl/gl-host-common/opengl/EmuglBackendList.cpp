@@ -1,34 +1,46 @@
-// Copyright 2020 The Android Open Source Project
+// Copyright 2015 The Android Open Source Project
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// This software is licensed under the terms of the GNU General Public
+// License version 2, as published by the Free Software Foundation, and
+// may be copied, distributed, and modified under those terms.
 //
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
 #include "host-common/opengl/EmuglBackendList.h"
 
+#include "aemu/base/Log.h"
 #include "aemu/base/StringFormat.h"
-#include "aemu/base/system/System.h"
+#include "host-common/opengl/EmuglBackendScanner.h"
 #include "aemu/base/files/PathUtils.h"
+
+#include <string_view>
 
 #define DEBUG 0
 
 #if DEBUG
 #  include <stdio.h>
-#  define D(...)  printf(__VA_ARGS__)
+#  define D(...)  dprint(__VA_ARGS__)
 #else
 #  define D(...)  ((void)0)
 #endif
 
 namespace android {
 namespace opengl {
+
+EmuglBackendList::EmuglBackendList(const char* execDir,
+                                   int programBitness) :
+        mDefaultName("auto"), mNames(), mProgramBitness(0), mExecDir(execDir) {
+    // Fix host bitness if needed.
+    if (!programBitness) {
+        programBitness = 64; //System::get()->getProgramBitness();
+    }
+    mProgramBitness = programBitness;
+
+    mNames = EmuglBackendScanner::scanDir(execDir, programBitness);
+}
 
 EmuglBackendList::EmuglBackendList(int programBitness,
                                    const std::vector<std::string>& names) :
@@ -45,14 +57,14 @@ bool EmuglBackendList::contains(const char* name) const {
 
 std::string EmuglBackendList::getLibDirPath(const char* name) {
     // remove the "_indirect" suffix
-    std::string suffix("_indirect");
+    static constexpr std::string_view suffix("_indirect");
     std::string nameNoSuffix(name);
     int nameNoSuffixLen = (int)nameNoSuffix.size() - (int)suffix.size();
     if (nameNoSuffixLen > 0 &&
         suffix == nameNoSuffix.c_str() + nameNoSuffixLen) {
         nameNoSuffix.erase(nameNoSuffixLen);
     }
-    return android::base::pj({mExecDir, "lib64", std::string("gles_%s") + nameNoSuffix});
+    return android::base::pj({mExecDir, "lib64", std::string("gles_") + nameNoSuffix});
 }
 
 #ifdef _WIN32
@@ -83,6 +95,11 @@ bool EmuglBackendList::getBackendLibPath(const char* name,
     std::string path = android::base::pj({
             getLibDirPath(name), std::string("lib") + libraryName + kLibSuffix});
 
+    if (!android::base::pathExists(path.c_str())) {
+        D("%s(name=%s lib=%s): File does not exist: %s\n",
+          __FUNCTION__, name, libraryName, path.c_str());
+        return false;
+    }
     *libPath = path;
     return true;
 }

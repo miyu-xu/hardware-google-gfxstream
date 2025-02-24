@@ -160,6 +160,9 @@ android_startOpenglesRenderer(int width, int height,
             goldfish_sync_register_trigger_wait,
             goldfish_sync_device_exists);
 
+    // See android/android-emu/android/opengles.cpp
+    // default: sRenderLib->setGrallocImplementation(MINIGBM);
+
     sRenderLib->setLogger(android_opengl_logger_write);
     sRenderLib->setGLObjectCounter(android::base::GLObjectCounter::get());
     emugl_dma_ops dma_ops;
@@ -172,8 +175,10 @@ android_startOpenglesRenderer(int width, int height,
     // sRenderLib->setUsageTracker(android::base::CpuUsage::get(),
     //                             android::base::MemoryTracker::get());
 
+    printf("initRenderer\n");
     const auto* features = reinterpret_cast<const gfxstream::host::FeatureSet*>(gfxstreamFeatures);
     sRenderer = sRenderLib->initRenderer(width, height, *features, sRendererUsesSubWindow, sEgl2egl);
+    printf("setOpenglesRenderer\n");
     android_setOpenglesRenderer(&sRenderer);
 
     // android::snapshot::Snapshotter::get().addOperationCallback(

@@ -22,6 +22,7 @@ cc_library(
         "-Wno-inconsistent-missing-override",
     ],
     defines = [
+        "USE_ANGLE_SHADER_PARSER",
         "BUILDING_EMUGL_COMMON_SHARED",
     ],
     includes = ["."],

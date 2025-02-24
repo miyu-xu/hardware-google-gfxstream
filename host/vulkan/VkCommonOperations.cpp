@@ -264,6 +264,7 @@ static bool extensionsSupported(const std::vector<VkExtensionProperties>& curren
     std::vector<bool> foundExts(wantedExtNames.size(), false);
 
     for (uint32_t i = 0; i < currentProps.size(); ++i) {
+        // ERR("Checking %s.", currentProps[i].extensionName);
         for (size_t j = 0; j < wantedExtNames.size(); ++j) {
             if (!strcmp(wantedExtNames[j], currentProps[i].extensionName)) {
                 foundExts[j] = true;
@@ -274,7 +275,7 @@ static bool extensionsSupported(const std::vector<VkExtensionProperties>& curren
     for (size_t i = 0; i < wantedExtNames.size(); ++i) {
         bool found = foundExts[i];
         if (!found) {
-            VERBOSE("%s not found, bailing.", wantedExtNames[i]);
+            ERR("%s not found, bailing.", wantedExtNames[i]);
             return false;
         }
     }
@@ -734,9 +735,20 @@ int getSelectedGpuIndex(const std::vector<VkEmulation::DeviceSupportInfo>& devic
     return selectedGpuIndex;
 }
 
+extern "C" {
+extern char** environ;
+void penv() {
+    char** s = environ;
+    for (; *s; ++s) {
+        ERR("env: %s", *s);
+    }
+}
+}
+
 VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
                                      gfxstream::host::BackendCallbacks callbacks,
                                      gfxstream::host::FeatureSet features) {
+    penv();
 // Downstream branches can provide abort logic or otherwise use result without a new macro
 #define VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, ...) \
     do {                                               \
@@ -808,6 +820,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     };
 #endif
 
+    ERR("WJH test");
     uint32_t instanceExtCount = 0;
     gvk->vkEnumerateInstanceExtensionProperties(nullptr, &instanceExtCount, nullptr);
     std::vector<VkExtensionProperties>& instanceExts = sVkEmulation->instanceExtensions;
@@ -836,7 +849,14 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 #endif
 
     VkInstanceCreateInfo instCi = {
-        VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, 0, 0, nullptr, 0, nullptr, 0, nullptr,
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pNext = 0,
+        .flags = 0,
+        .pApplicationInfo = nullptr,
+        .enabledLayerCount = 0,
+        .ppEnabledLayerNames = nullptr,
+        .enabledExtensionCount = 0,
+        .ppEnabledExtensionNames = nullptr,
     };
 
     std::unordered_set<const char*> selectedInstanceExtensionNames;
@@ -904,7 +924,13 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     instCi.ppEnabledExtensionNames = selectedInstanceExtensionNames_.data();
 
     VkApplicationInfo appInfo = {
-        VK_STRUCTURE_TYPE_APPLICATION_INFO, 0, "AEMU", 1, "AEMU", 1, VK_MAKE_VERSION(1, 0, 0),
+        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pNext = 0,
+        .pApplicationName = "AEMU",
+        .applicationVersion = 1,
+        .pEngineName = "AEMU",
+        .engineVersion = 1,
+        .apiVersion = VK_MAKE_VERSION(1, 0, 0),
     };
 
     instCi.pApplicationInfo = &appInfo;

@@ -41,6 +41,7 @@ static bool sEgl2EglSyncSafeToUse = false;
 }  // namespace
 
 void EglGlobalInfo::setEgl2Egl(EGLBoolean enable, bool nullEgl) {
+printf("XXXXXX set Egl2Egl %d\n", enable);
     if (nullEgl && enable == EGL_FALSE) {
         // No point in nullEgl backend for non egl2egl cases.
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER));
