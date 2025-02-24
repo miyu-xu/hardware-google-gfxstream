@@ -119,6 +119,7 @@ cc_library(
         "-fno-exceptions",
     ],
     defines = [
+	"QEMU_NEXT",
         "EMUGL_BUILD",
         "GFXSTREAM_ENABLE_HOST_GLES=1",
     ] + select({
