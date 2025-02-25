@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2a88eef_8aa43667",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-25T19:58:48Z",
+      "side": 1,
+      "message": "(bypass lint again after rebase since those warnings are for an existing problem)",
+      "revId": "587ad8ebdd3b5bc70e7023b26d7fc9f417a19a62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
