@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a37e5e6_7864d81b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-25T15:58:21Z",
+      "side": 1,
+      "message": "(bypass lint since those warnings are for an existing problem)",
+      "revId": "8be8b003414dfae8a420096a5b6bee8e31fe62a9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
