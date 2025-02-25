@@ -16,6 +16,24 @@
       "message": "fyi, this should be ok for bringing up the software rendering path with qemu next, but may start causing different issues on the GL codepath later on.",
       "revId": "60c7d619fd70adb056fc5711f808d368027066ce",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4bb8767_4aa288f4",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 3831493
+      },
+      "writtenOn": "2025-02-25T12:30:18Z",
+      "side": 1,
+      "message": "Ack, tq.",
+      "parentUuid": "26d84fa2_2a90a712",
+      "revId": "60c7d619fd70adb056fc5711f808d368027066ce",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
