@@ -363,11 +363,13 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     }
     auto* pbufferSurfaceGlPtr = pbufferSurfaceGl.get();
 
+    ERR("DisplaySurface() xxx");
     emulationGl->mPbufferSurface = std::make_unique<gfxstream::DisplaySurface>(
         /*width=*/1,
         /*height=*/1,
         std::move(pbufferSurfaceGl));
 
+    ERR("EmulatedEglConfigList()");
     emulationGl->mEmulatedEglConfigs =
         std::make_unique<EmulatedEglConfigList>(emulationGl->mEglDisplay,
                                                 emulationGl->mGlesDispatchMaxVersion,
@@ -462,14 +464,17 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
         emulationGl->mGlesVulkanInteropSupported = s_egl.eglQueryVulkanInteropSupportANDROID();
     }
 
+    ERR("TextureDraw()");
     emulationGl->mTextureDraw = std::make_unique<TextureDraw>();
     if (!emulationGl->mTextureDraw) {
         ERR("Failed to initialize TextureDraw.");
         return nullptr;
     }
 
+    ERR("CompositorGl()");
     emulationGl->mCompositorGl = std::make_unique<CompositorGl>(emulationGl->mTextureDraw.get());
 
+    ERR("DisplayGl()");
     emulationGl->mDisplayGl = std::make_unique<DisplayGl>(emulationGl->mTextureDraw.get());
 
     {
