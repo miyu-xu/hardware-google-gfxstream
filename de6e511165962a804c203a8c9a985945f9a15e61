@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "863d55fe_44a3ef3a",
+        "filename": "host/vulkan/VulkanBoxedHandles.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-02-25T01:11:53Z",
+      "side": 1,
+      "message": "this one seems confusing as it has lock but the unbox/try unbox does not hold lock",
+      "range": {
+        "startLine": 169,
+        "startChar": 6,
+        "endLine": 169,
+        "endChar": 64
+      },
+      "revId": "de6e511165962a804c203a8c9a985945f9a15e61",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
