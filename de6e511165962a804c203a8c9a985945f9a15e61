@@ -87,6 +87,30 @@
       },
       "revId": "de6e511165962a804c203a8c9a985945f9a15e61",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5a0a0aa_6bb5218a",
+        "filename": "host/vulkan/VulkanBoxedHandles.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-25T16:09:10Z",
+      "side": 1,
+      "message": "aosp/3508170 for that clean up",
+      "parentUuid": "d85e83ee_d94de706",
+      "range": {
+        "startLine": 169,
+        "startChar": 6,
+        "endLine": 169,
+        "endChar": 64
+      },
+      "revId": "de6e511165962a804c203a8c9a985945f9a15e61",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
