@@ -22,6 +22,30 @@
       },
       "revId": "de6e511165962a804c203a8c9a985945f9a15e61",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5234d0d6_0940d9b6",
+        "filename": "host/vulkan/VulkanBoxedHandles.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-25T02:13:48Z",
+      "side": 1,
+      "message": "That is a carryover from the current impl: https://cs.android.com/h/android/platform/superproject/main/+/main:hardware/google/gfxstream/host/vulkan/VkDecoderGlobalState.cpp;drc\u003d53b16ae9b8eb36e2c8b1f42a6f7c5a9982f0c143;l\u003d8329.\n\nIIUC, this is because `BoxedHandleManager` is a combination of a `HybridEntityManager` \"Store\" plus a reverse lookup map. Most of the \"boxed_*\" functions interact with just the \"Store\" which has all of the lock\u0027ing built into ` `HybridEntityManager` but the few functions which interact with the reverse lookup map have to use another lock. I will do another cleanup change shortly which replaces `getBoxedFromUnboxedLocked()` with a `getBoxedFromUnboxed()` and adds a `GUARDED_BY(mMutex)` on the reverse map.",
+      "parentUuid": "863d55fe_44a3ef3a",
+      "range": {
+        "startLine": 169,
+        "startChar": 6,
+        "endLine": 169,
+        "endChar": 64
+      },
+      "revId": "de6e511165962a804c203a8c9a985945f9a15e61",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
