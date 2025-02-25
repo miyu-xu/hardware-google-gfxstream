@@ -63,6 +63,30 @@
       },
       "revId": "de6e511165962a804c203a8c9a985945f9a15e61",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d85e83ee_d94de706",
+        "filename": "host/vulkan/VulkanBoxedHandles.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-02-25T04:16:58Z",
+      "side": 1,
+      "message": "thanks Jason, my comment is not related to this cl; but as a feedback of some\nuser of this interface. I think the lock should be moved into the boxedhandlemanager instead, so that user interface is cleaner, assuming all access\nis properly synced by the boxedhandlemanager already.\nagain, it is probably for another cl to clean this up.",
+      "parentUuid": "5234d0d6_0940d9b6",
+      "range": {
+        "startLine": 169,
+        "startChar": 6,
+        "endLine": 169,
+        "endChar": 64
+      },
+      "revId": "de6e511165962a804c203a8c9a985945f9a15e61",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
