@@ -75,10 +75,8 @@ static void initIcdPaths(bool forTesting) {
         android::base::setEnvironmentVariable("ANDROID_EMU_VK_ICD", testingICD);
         androidIcd = testingICD;
     }
-    if (androidIcd == "lavapipe") {
-        INFO("%s: ICD set to 'lavapipe', using Lavapipe ICD", __func__);
-        setIcdPaths("lvp_icd.x86_64.json");
-    } else if (androidIcd == "swiftshader") {
+
+    if (androidIcd == "swiftshader") {
         INFO("%s: ICD set to 'swiftshader', using Swiftshader ICD", __func__);
         setIcdPaths("vk_swiftshader_icd.json");
     } else {
