@@ -77,6 +77,7 @@ class VkDecoder::Impl {
           m_queueSubmitWithCommandsEnabled(
               m_state->getFeatures().VulkanQueueSubmitWithCommands.enabled),
           m_snapshotsEnabled(m_state->snapshotsEnabled()) {}
+   ~Impl() { VkDecoderGlobalState::reset(); }
     VulkanStream* stream() { return &m_vkStream; }
     VulkanMemReadingStream* readStream() { return &m_vkMemReadingStream; }
 
@@ -111,6 +112,9 @@ void VkDecoder::setForSnapshotLoad(bool forSnapshotLoad) {
 size_t VkDecoder::decode(void* buf, size_t bufsize, IOStream* stream,
                          const ProcessResources* processResources,
                          const VkDecoderContext& context) {
+    if (!mImpl) {
+        mImpl.reset(new VkDecoder::Impl());
+    }
     return mImpl->decode(buf, bufsize, stream, processResources, context);
 }
 

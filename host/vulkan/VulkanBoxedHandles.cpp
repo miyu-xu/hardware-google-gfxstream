@@ -148,7 +148,43 @@ BoxedHandle BoxedHandleManager::getBoxedFromUnboxed(UnboxedHandle unboxed) {
     return it->second;
 }
 
-BoxedHandleManager sBoxedHandleManager;
+static std::unique_ptr<BoxedHandleManager> gBoxedHandleManager;
+
+// process scoped "global state", shared among the threads of that process
+static std::mutex sBoxedHandleManagerMutex;
+static std::unordered_map<uint64_t, std::unique_ptr<BoxedHandleManager>> sBoxedHandleManagerMap;
+
+BoxedHandleManager& getBoxedHandleManager() {
+    std::lock_guard<std::mutex> lock(sBoxedHandleManagerMutex);
+    auto* emu = getGlobalVkEmulation();
+    uint64_t puid;
+    if (!emu->callbacks.getGuestProcessId(puid)) {
+        if (!gBoxedHandleManager) {
+            gBoxedHandleManager.reset(new BoxedHandleManager());
+            return *(gBoxedHandleManager.get());
+        }
+    }
+    if (sBoxedHandleManagerMap.find(puid) == sBoxedHandleManagerMap.end()) {
+        sBoxedHandleManagerMap[puid].reset(new BoxedHandleManager());
+    }
+    return *(sBoxedHandleManagerMap[puid].get());
+}
+
+void resetBoxedHandleManager() {
+    auto* emu = getGlobalVkEmulation();
+    uint64_t puid;
+    if (emu->callbacks.getGuestProcessId(puid)) {
+        std::lock_guard<std::mutex> lock(sBoxedHandleManagerMutex);
+        if (sBoxedHandleManagerMap.find(puid) != sBoxedHandleManagerMap.end()) {
+            sBoxedHandleManagerMap[puid].reset();
+            sBoxedHandleManagerMap.erase(puid);
+        }
+    }
+    else {
+        gBoxedHandleManager.reset();
+    }
+}
+
 
 template <typename VkObjectT>
 constexpr BoxedHandleTypeTag GetTag() {
@@ -344,7 +380,7 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
-    return (VkObjectT)sBoxedHandleManager.add(info, GetTag<VkObjectT>());
+    return (VkObjectT)getBoxedHandleManager().add(info, GetTag<VkObjectT>());
 }
 
 template <typename VkObjectT>
@@ -353,7 +389,7 @@ void delete_VkType(VkObjectT boxed) {
         return;
     }
 
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return;
     }
@@ -365,7 +401,7 @@ void delete_VkType(VkObjectT boxed) {
         info->readStream = nullptr;
     }
 
-    sBoxedHandleManager.remove((uint64_t)boxed);
+    getBoxedHandleManager().remove((uint64_t)boxed);
 }
 
 template <typename VkObjectT>
@@ -374,14 +410,14 @@ void delayed_delete_VkType(VkObjectT boxed, VkDevice device, std::function<void(
         return;
     }
 
-    sBoxedHandleManager.removeDelayed((uint64_t)boxed, device, std::move(callback));
+    getBoxedHandleManager().removeDelayed((uint64_t)boxed, device, std::move(callback));
 }
 
 // Custom unbox_* functions or GOLDFISH_VK_LIST_DISPATCHABLE_CUSTOM_UNBOX_HANDLE_TYPES
 // VkQueue objects can be virtual, meaning that multiple boxed queues can map into a single
 // physical queue on the host GPU. Some conversion is needed for unboxing to physical.
 VkQueue unbox_VkQueueImpl(VkQueue boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
     if (!info) {
         return VK_NULL_HANDLE;
     }
@@ -407,7 +443,7 @@ VkObjectT unbox_VkType(VkObjectT boxed) {
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
         unboxed = unbox_VkQueueImpl(boxed);
     } else {
-        BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+        BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
         if (info == nullptr) {
             if constexpr (std::is_same_v<VkObjectT, VkCommandBuffer> ||
                           std::is_same_v<VkObjectT, VkDevice> ||
@@ -445,7 +481,7 @@ VkObjectT try_unbox_VkType(VkObjectT boxed) {
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
         unboxed = unbox_VkQueueImpl(boxed);
     } else {
-        BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+        BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
         if (info != nullptr) {
             unboxed = (VkObjectT)info->underlying;
         }
@@ -464,19 +500,19 @@ VkObjectT unboxed_to_boxed_non_dispatchable_VkType(VkObjectT unboxed) {
         return VK_NULL_HANDLE;
     }
 
-    return (VkObjectT)sBoxedHandleManager.getBoxedFromUnboxed((uint64_t)(uintptr_t)unboxed);
+    return (VkObjectT)getBoxedHandleManager().getBoxedFromUnboxed((uint64_t)(uintptr_t)unboxed);
 }
 
 template <typename VkObjectT>
 void set_boxed_non_dispatchable_VkType(VkObjectT boxed, VkObjectT new_unboxed) {
     BoxedHandleInfo info;
     info.underlying = (uint64_t)new_unboxed;
-    sBoxedHandleManager.update((uint64_t)boxed, info, GetTag<VkObjectT>());
+    getBoxedHandleManager().update((uint64_t)boxed, info, GetTag<VkObjectT>());
 }
 
 template <typename VkObjectT>
 OrderMaintenanceInfo* get_order_maintenance_info_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return nullptr;
     }
@@ -492,7 +528,7 @@ OrderMaintenanceInfo* get_order_maintenance_info_VkType(VkObjectT boxed) {
 
 template <typename VkObjectT>
 VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return nullptr;
     }
@@ -506,7 +542,7 @@ VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
 
 template <typename VkObjectT>
 VulkanDispatch* get_dispatch_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         ERR("Failed to unbox %s %p", GetTypeStr<VkObjectT>(), boxed);
         return nullptr;
