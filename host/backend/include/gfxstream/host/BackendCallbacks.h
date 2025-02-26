@@ -48,6 +48,9 @@ struct BackendCallbacks {
 
     using UnregisterVulkanInstanceFunc = std::function<void(uint64_t id)>;
     UnregisterVulkanInstanceFunc unregisterVulkanInstance;
+
+    using GetGuestProcessIdFunc = std::function<bool(uint64_t&)>;
+    GetGuestProcessIdFunc getGuestProcessId;
 };
 
 }  // namespace host
