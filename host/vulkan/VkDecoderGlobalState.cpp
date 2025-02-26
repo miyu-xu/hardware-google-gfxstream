@@ -261,7 +261,7 @@ class VkDecoderGlobalState::Impl {
 #endif
         mDescriptorUpdateTemplateInfo.clear();
 
-        sBoxedHandleManager.clear();
+        resetBoxedHandleManager();
 
         mSnapshot.clear();
     }
@@ -444,7 +444,7 @@ class VkDecoderGlobalState::Impl {
             const DescriptorPoolInfo& poolInfo = mDescriptorPoolInfo[unboxedDescriptorPool];
 
             for (uint64_t poolId : poolInfo.poolIds) {
-                BoxedHandleInfo* setHandleInfo = sBoxedHandleManager.get(poolId);
+                BoxedHandleInfo* setHandleInfo = getBoxedHandleManager().get(poolId);
                 bool allocated = setHandleInfo->underlying != 0;
                 stream->putByte(allocated);
                 if (!allocated) {
@@ -621,7 +621,7 @@ class VkDecoderGlobalState::Impl {
             std::vector<uint8_t> decoderReplayBuffer;
             VkDecoderSnapshot::loadReplayBuffers(stream, &handleReplayBuffer, &decoderReplayBuffer);
 
-            sBoxedHandleManager.replayHandles(handleReplayBuffer);
+            getBoxedHandleManager().replayHandles(handleReplayBuffer);
 
             VkDecoder decoderForLoading;
             // A decoder that is set for snapshot load will load up the created handles first,
@@ -990,7 +990,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void processDelayedRemovesForDevice(VkDevice device) EXCLUDES(mMutex) {
-        sBoxedHandleManager.processDelayedRemoves(device);
+        getBoxedHandleManager().processDelayedRemoves(device);
     }
 
     void vkDestroyInstanceImpl(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
@@ -3541,7 +3541,7 @@ class VkDecoderGlobalState::Impl {
                 }
             } else {
                 for (auto poolId : descriptorPoolInfo.poolIds) {
-                    auto handleInfo = sBoxedHandleManager.get(poolId);
+                    auto handleInfo = getBoxedHandleManager().get(poolId);
                     if (handleInfo)
                         handleInfo->underlying = reinterpret_cast<uint64_t>(VK_NULL_HANDLE);
                 }
@@ -3707,7 +3707,7 @@ class VkDecoderGlobalState::Impl {
                     android::base::find(poolInfo->allocedSetsToBoxed, pDescriptorSets[i]);
                 if (!descSetAllocedEntry) continue;
 
-                auto handleInfo = sBoxedHandleManager.get((uint64_t)*descSetAllocedEntry);
+                auto handleInfo = getBoxedHandleManager().get((uint64_t)*descSetAllocedEntry);
                 if (handleInfo) {
                     if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                         handleInfo->underlying = reinterpret_cast<uint64_t>(VK_NULL_HANDLE);
@@ -7442,7 +7442,7 @@ class VkDecoderGlobalState::Impl {
                 << "descriptor pool " << pool << " not found ";
         }
 
-        BoxedHandleInfo* setHandleInfo = sBoxedHandleManager.get(poolId);
+        BoxedHandleInfo* setHandleInfo = getBoxedHandleManager().get(poolId);
 
         if (setHandleInfo->underlying) {
             if (pendingAlloc) {
@@ -8025,7 +8025,7 @@ class VkDecoderGlobalState::Impl {
     DEFINE_EXTERNAL_MEMORY_PROPERTIES_TRANSFORM(VkExternalBufferProperties)
 
     BoxedHandle newGlobalHandle(const BoxedHandleInfo& item, BoxedHandleTypeTag typeTag) {
-        return sBoxedHandleManager.add(item, typeTag);
+        return getBoxedHandleManager().add(item, typeTag);
     }
 
     VkDecoderSnapshot* snapshot() { return &mSnapshot; }
