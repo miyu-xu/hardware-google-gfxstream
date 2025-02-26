@@ -9106,19 +9106,40 @@ VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::I
 
 VkDecoderGlobalState::~VkDecoderGlobalState() = default;
 
-static VkDecoderGlobalState* sGlobalDecoderState = nullptr;
+static std::unique_ptr<VkDecoderGlobalState> sGlobalDecoderState;
+static std::mutex sGlobalDecoderStateMapMutex;
+static std::unordered_map<uint64_t, std::unique_ptr<VkDecoderGlobalState>> sGlobalDecoderStateMap;
 
 // static
 VkDecoderGlobalState* VkDecoderGlobalState::get() {
-    if (sGlobalDecoderState) return sGlobalDecoderState;
-    sGlobalDecoderState = new VkDecoderGlobalState;
-    return sGlobalDecoderState;
+    std::lock_guard<std::mutex> lock(sGlobalDecoderStateMapMutex);
+    auto* emu = getGlobalVkEmulation();
+    uint64_t puid;
+    if (!emu->callbacks.getGuestProcessId(puid)) {
+        if (!sGlobalDecoderState) {
+            sGlobalDecoderState.reset(new VkDecoderGlobalState());
+            return sGlobalDecoderState.get();
+        }
+    }
+    if (sGlobalDecoderStateMap.find(puid) == sGlobalDecoderStateMap.end()) {
+        sGlobalDecoderStateMap[puid].reset(new VkDecoderGlobalState());
+    }
+    return sGlobalDecoderStateMap[puid].get();
 }
 
 // static
 void VkDecoderGlobalState::reset() {
-    delete sGlobalDecoderState;
-    sGlobalDecoderState = nullptr;
+    auto* emu = getGlobalVkEmulation();
+    uint64_t puid;
+    if (emu->callbacks.getGuestProcessId(puid)) {
+        std::lock_guard<std::mutex> lock(sGlobalDecoderStateMapMutex);
+        if (sGlobalDecoderStateMap.find(puid) != sGlobalDecoderStateMap.end()) {
+            sGlobalDecoderStateMap[puid].reset();
+            sGlobalDecoderStateMap.erase(puid);
+        } else {
+            sGlobalDecoderState.reset();
+        }
+    }
 }
 
 // Snapshots
