@@ -34,6 +34,24 @@
       "parentUuid": "dc56d088_3a9225e9",
       "revId": "438938f7f312e8ef66f1c64c5f5f73e340a341bd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f572a225_fbb5163e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-26T16:25:18Z",
+      "side": 1,
+      "message": "The AVF folks do regular merges. It looks like that was merged in aosp/3506448. Trying out presumit now.",
+      "parentUuid": "4ca4cfe2_bcfb4d93",
+      "revId": "438938f7f312e8ef66f1c64c5f5f73e340a341bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
