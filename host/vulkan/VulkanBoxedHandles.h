@@ -38,6 +38,7 @@ enum BoxedHandleTypeTag {
 
     // additional generic tag
     Tag_VkGeneric = 1001,
+    Tag_VkMaxTypeTag = 0xFFFFFF,
 };
 
 using BoxedHandle = uint64_t;

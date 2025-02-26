@@ -277,6 +277,12 @@ constexpr BoxedHandleTypeTag GetTag() {
 }
 
 template <typename VkObjectT>
+BoxedHandleTypeTag GetTagPlusGlobalStateId() {
+    auto tag = GetTag<VkObjectT>();
+    return (BoxedHandleTypeTag)(tag + 0xBEEF00);
+}
+
+template <typename VkObjectT>
 constexpr const char* GetTypeStr() {
     if constexpr (std::is_same_v<VkObjectT, VkAccelerationStructureKHR>) {
         return "VkAccelerationStructureKHR";
@@ -380,7 +386,7 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
-    return (VkObjectT)getBoxedHandleManager().add(info, GetTag<VkObjectT>());
+    return (VkObjectT)getBoxedHandleManager().add(info, GetTagPlusGlobalStateId<VkObjectT>());
 }
 
 template <typename VkObjectT>
@@ -507,7 +513,7 @@ template <typename VkObjectT>
 void set_boxed_non_dispatchable_VkType(VkObjectT boxed, VkObjectT new_unboxed) {
     BoxedHandleInfo info;
     info.underlying = (uint64_t)new_unboxed;
-    getBoxedHandleManager().update((uint64_t)boxed, info, GetTag<VkObjectT>());
+    getBoxedHandleManager().update((uint64_t)boxed, info, GetTagPlusGlobalStateId<VkObjectT>());
 }
 
 template <typename VkObjectT>
