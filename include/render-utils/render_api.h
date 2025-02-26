@@ -30,9 +30,11 @@ ANDROID_BEGIN_HEADER
 
 namespace gfxstream {
 
+#ifdef __MINGW32__
+
+#else
 // Use KHRONOS_APICALL to control visibility, but do not use KHRONOS_APIENTRY
 // because we don't need the functions to be __stdcall on Win32.
-#define RENDER_APICALL  KHRONOS_APICALL
 #define RENDER_APIENTRY
 
 #define RENDER_API_DECLARE(return_type, func_name, signature, callargs) \
@@ -42,6 +44,7 @@ namespace gfxstream {
 LIST_RENDER_API_FUNCTIONS(RENDER_API_DECLARE)
 
 RENDER_APICALL RenderLibPtr RENDER_APIENTRY initLibrary();
+#endif // __MINGW32__
 
 }  // namespace gfxstream
 

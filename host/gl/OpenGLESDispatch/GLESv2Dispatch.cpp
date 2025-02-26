@@ -45,7 +45,11 @@ void gles2_unimplemented() {
 bool gles2_dispatch_init(GLESv2Dispatch* dispatch_table) {
     if (dispatch_table->initialized) return true;
 
+#ifdef __MINGW32__
+
+#else
     LIST_GLES2_FUNCTIONS(LOOKUP_SYMBOL_STATIC,LOOKUP_SYMBOL_STATIC)
+#endif // __MINGW32__
 
     dispatch_table->initialized = true;
     return true;

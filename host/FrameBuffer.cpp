@@ -2981,7 +2981,11 @@ bool FrameBuffer::invalidateColorBufferForVk(HandleType colorBufferHandle) {
     AutoLock mutex(m_lock);
     auto colorBuffer = findColorBuffer(colorBufferHandle);
     if (!colorBuffer) {
+#ifdef __MINGW32__
+
+#else
         VERBOSE("%s: Failed to find ColorBuffer:%d", __func__, colorBufferHandle);
+#endif // __MINGW32__
         return false;
     }
     return colorBuffer->invalidateForVk();
@@ -3033,7 +3037,11 @@ HandleType FrameBuffer::getEmulatedEglWindowSurfaceColorBufferHandle(HandleType 
 }
 
 void FrameBuffer::unregisterVulkanInstance(uint64_t id) const {
+#ifdef __MINGW32__
+
+#else
     get_emugl_vm_operations().vulkanInstanceUnregister(id);
+#endif // __MINGW32__
 }
 
 void FrameBuffer::registerVulkanInstance(uint64_t id, const char* appName) const {
@@ -3050,7 +3058,11 @@ void FrameBuffer::registerVulkanInstance(uint64_t id, const char* appName) const
     } else if(appName) {
         process_name = std::string(appName);
     }
+#ifdef __MINGW32__
+
+#else
     get_emugl_vm_operations().vulkanInstanceRegister(id, process_name.c_str());
+#endif // __MINGW32__
 }
 
 void FrameBuffer::createTrivialContext(HandleType shared, HandleType* contextOut,
@@ -3654,7 +3666,11 @@ bool FrameBuffer::flushColorBufferFromGl(HandleType colorBufferHandle) {
 bool FrameBuffer::invalidateColorBufferForGl(HandleType colorBufferHandle) {
     auto colorBuffer = findColorBuffer(colorBufferHandle);
     if (!colorBuffer) {
+#ifdef __MINGW32__
+
+#else
         VERBOSE("%s: Failed to find ColorBuffer:%d", __func__, colorBufferHandle);
+#endif // __MINGW32__
         return false;
     }
     return colorBuffer->invalidateForGl();

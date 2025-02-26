@@ -37,7 +37,11 @@
 #include <unordered_set>
 
 #include <stdio.h>
+#ifdef __MINGW32__
+#include <vector>
+#else
 #include <stdlib.h>
+#endif // __MINGW32__
 
 #define IS_TRUE(a) \
         do { if (!(a)) return NULL; } while (0)
