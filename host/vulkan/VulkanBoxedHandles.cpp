@@ -152,7 +152,19 @@ static std::unique_ptr<BoxedHandleManager> gBoxedHandleManager;
 
 // process scoped "global state", shared among the threads of that process
 static std::mutex sBoxedHandleManagerMutex;
+static std::mutex sVulkanHanldeToGlobalStateMutex;
 static std::unordered_map<uint64_t, std::unique_ptr<BoxedHandleManager>> sBoxedHandleManagerMap;
+static std::unordered_map<uint64_t, VkDecoderGlobalState*> sVulkanHanldeToGlobalStateMap;
+
+VkDecoderGlobalState* lookupDecoderGlobalStateByVulkanHandle(uint64_t handle) {
+    std::lock_guard<std::mutex> lock(sVulkanHanldeToGlobalStateMutex);
+    if (sVulkanHanldeToGlobalStateMap.find(handle) !=
+            sVulkanHanldeToGlobalStateMap.end()) {
+        return sVulkanHanldeToGlobalStateMap[handle];
+    } else {
+        return nullptr;
+    }
+}
 
 BoxedHandleManager& getBoxedHandleManager() {
     std::lock_guard<std::mutex> lock(sBoxedHandleManagerMutex);
