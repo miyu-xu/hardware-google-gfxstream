@@ -123,6 +123,7 @@ class BoxedHandleManager {
     std::deque<BoxedHandle> mHandleReplayQueue;
 };
 
+extern VkDecoderGlobalState* lookupDecoderGlobalStateByVulkanHandle(uint64_t handle);
 extern BoxedHandleManager& getBoxedHandleManager();
 extern void resetBoxedHandleManager();
 

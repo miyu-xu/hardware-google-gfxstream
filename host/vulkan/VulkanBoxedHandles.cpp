@@ -150,9 +150,32 @@ BoxedHandle BoxedHandleManager::getBoxedFromUnboxed(UnboxedHandle unboxed) {
 
 static std::unique_ptr<BoxedHandleManager> gBoxedHandleManager;
 
+constexpr uint64_t ID_BASE_OFFSET = 1;
+struct PuidHandle {
+    uint64_t puid;
+    uint64_t handle;
+    PuidHandle(uint64_t p, uint64_t h):
+        puid(p), handle(h) {}
+};
+
+static std::unordered_map<PuidHandle, uint64_t> gGlobalHandle;
+static std::mutex gGlobalHandleMutex;
+
 // process scoped "global state", shared among the threads of that process
 static std::mutex sBoxedHandleManagerMutex;
+static std::mutex sVulkanHanldeToGlobalStateMutex;
 static std::unordered_map<uint64_t, std::unique_ptr<BoxedHandleManager>> sBoxedHandleManagerMap;
+static std::unordered_map<uint64_t, VkDecoderGlobalState*> sVulkanHanldeToGlobalStateMap;
+
+VkDecoderGlobalState* lookupDecoderGlobalStateByVulkanHandle(uint64_t handle) {
+    std::lock_guard<std::mutex> lock(sVulkanHanldeToGlobalStateMutex);
+    if (sVulkanHanldeToGlobalStateMap.find(handle) !=
+            sVulkanHanldeToGlobalStateMap.end()) {
+        return sVulkanHanldeToGlobalStateMap[handle];
+    } else {
+        return nullptr;
+    }
+}
 
 BoxedHandleManager& getBoxedHandleManager() {
     std::lock_guard<std::mutex> lock(sBoxedHandleManagerMutex);
@@ -1194,8 +1217,17 @@ void set_boxed_non_dispatchable_VkEvent(VkEvent boxed, VkEvent new_unboxed) {
     set_boxed_non_dispatchable_VkType<VkEvent>(boxed, new_unboxed);
 }
 
+
+// to do handle this
 VkFence new_boxed_non_dispatchable_VkFence(VkFence unboxed) {
-    return new_boxed_VkType<VkFence>(unboxed);
+    auto boxedFence = new_boxed_VkType<VkFence>(unboxed);
+    // put this into the map and return an uniq id from the map
+    auto pp = PuidHandle(puid, boxedFence);
+    std::lock_guard<std::mutex> lock(gGlobalHandleMutex);
+    auto id = gGlobalHandle.size()+ID_BASE_OFFSET;
+    gGlobalHandle[pp] = id;
+    gGlobalHandleReverse[id] = pp;
+    return id;
 }
 
 void delete_VkFence(VkFence boxed) {
@@ -1207,7 +1239,14 @@ void delayed_delete_VkFence(VkFence boxed, VkDevice device, std::function<void()
 }
 
 VkFence unbox_VkFence(VkFence boxed) {
-    return unbox_VkType<VkFence>(boxed);
+    VkFence boxed2;
+    {
+        std::lock_guard<std::mutex> lock(gGlobalHandleMutex);
+        auto pp = gGlobalHandleReverse[vixed];
+        boxed2 = pp.handle;
+    }
+    auto unboxedFence = unbox_VkType<VkFence>(boxed2);
+    return unboxedFence;
 }
 
 VkFence try_unbox_VkFence(VkFence boxed) {
@@ -1250,6 +1289,7 @@ void set_boxed_non_dispatchable_VkFramebuffer(VkFramebuffer boxed, VkFramebuffer
     set_boxed_non_dispatchable_VkType<VkFramebuffer>(boxed, new_unboxed);
 }
 
+//todo change this
 VkImage new_boxed_non_dispatchable_VkImage(VkImage unboxed) {
     return new_boxed_VkType<VkImage>(unboxed);
 }
