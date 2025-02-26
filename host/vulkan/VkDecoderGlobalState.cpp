@@ -9114,6 +9114,7 @@ static std::unique_ptr<VkDecoderGlobalState> gGlobalDecoderState;
 // process scoped "global state", shared among the threads of that process
 static std::mutex sGlobalDecoderStateMapMutex;
 static std::unordered_map<uint64_t, std::unique_ptr<VkDecoderGlobalState>> sGlobalDecoderStateMap;
+static std::vector<VkDecoderGlobalState*> sGlobalDecoderStateVector(1024, nullptr);
 
 // static
 VkDecoderGlobalState* VkDecoderGlobalState::get() {
@@ -9121,13 +9122,23 @@ VkDecoderGlobalState* VkDecoderGlobalState::get() {
     auto* emu = getGlobalVkEmulation();
     uint64_t puid;
     if (!emu->callbacks.getGuestProcessId(puid)) {
+        INFO("%s %d could not get puid", __func__, __LINE__);
         if (!gGlobalDecoderState) {
             gGlobalDecoderState.reset(new VkDecoderGlobalState());
-            return gGlobalDecoderState.get();
+            sGlobalDecoderStateVector[0] = gGlobalDecoderState.get();
         }
+        return gGlobalDecoderState.get();
     }
     if (sGlobalDecoderStateMap.find(puid) == sGlobalDecoderStateMap.end()) {
         sGlobalDecoderStateMap[puid].reset(new VkDecoderGlobalState());
+        auto gsptr = sGlobalDecoderStateMap[puid].get();
+        for (int i=1; i < 1024; ++i) {
+            if (sGlobalDecoderStateVector[i] == nullptr) {
+                sGlobalDecoderStateVector[i] = gsptr;
+                INFO("%s %d get puid 0x%llx gsidx %d", __func__, __LINE__, (unsigned long long)puid, i);
+                gsptr->setGsIdx(i);
+            }
+        }
     }
     return sGlobalDecoderStateMap[puid].get();
 }
@@ -9139,12 +9150,19 @@ void VkDecoderGlobalState::reset() {
     if (emu->callbacks.getGuestProcessId(puid)) {
         std::lock_guard<std::mutex> lock(sGlobalDecoderStateMapMutex);
         if (sGlobalDecoderStateMap.find(puid) != sGlobalDecoderStateMap.end()) {
+            auto gsptr = sGlobalDecoderStateMap[puid].get();
+            if(sGlobalDecoderStateVector[gsptr->getGsIdx()] != gsptr) {
+                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                    << "corruption in sGlobalDecoderStateVector";
+            }
+            sGlobalDecoderStateVector[gsptr->getGsIdx()] = nullptr;
             sGlobalDecoderStateMap[puid].reset();
             sGlobalDecoderStateMap.erase(puid);
-        } else {
-            gGlobalDecoderState.reset();
         }
-    }
+    } else {
+            gGlobalDecoderState.reset();
+            sGlobalDecoderStateVector[0] = nullptr;
+        }
 }
 
 // Snapshots

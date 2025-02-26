@@ -87,6 +87,8 @@ class VkDecoderGlobalState {
     // bug 149997534
     bool vkCleanupEnabled() const;
 
+    void setGsIdx(int idx) { mGsIdx = idx;}
+    int getGsIdx() const { return mGsIdx;}
     void save(android::base::Stream* stream);
     void load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
               emugl::HealthMonitor<>* healthMonitor);
@@ -911,6 +913,7 @@ class VkDecoderGlobalState {
     LIST_TRANSFORMED_TYPES(DEFINE_TRANSFORMED_TYPE_PROTOTYPE)
 
    private:
+    int mGsIdx { 0 };
     class Impl;
     std::unique_ptr<Impl> mImpl;
 };
