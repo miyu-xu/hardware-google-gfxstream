@@ -22,6 +22,30 @@
       },
       "revId": "44da83f7a77a19349ef59788c8be9da5fd3f9e10",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6b0fb91_f0a79039",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-02-27T19:49:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc657c0e_e77ff6ff",
+      "range": {
+        "startLine": 52,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 35
+      },
+      "revId": "44da83f7a77a19349ef59788c8be9da5fd3f9e10",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
