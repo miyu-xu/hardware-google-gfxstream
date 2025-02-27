@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc657c0e_e77ff6ff",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-02-27T19:43:45Z",
+      "side": 1,
+      "message": "This one seems a little strange. What type is your deque impl using? Maybe just push the constant into the `DeviceOpTracker` header and do a \n\n```\nconstexpr const decltype(mPendingGarbage)::size_type kSizeLoggingThreshold \u003d 200;\n```\n\nor something?",
+      "range": {
+        "startLine": 52,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 35
+      },
+      "revId": "44da83f7a77a19349ef59788c8be9da5fd3f9e10",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
