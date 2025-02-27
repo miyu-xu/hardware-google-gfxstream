@@ -100,7 +100,7 @@ int ReadBuffer::getData(IOStream* stream, size_t minSize) {
         }
         readTotal += readNow;
         m_validData += readNow;
-    } while (readTotal < minSizeToRead);
+    } while (readTotal < (int)minSizeToRead);
 
     return readTotal;
 }
