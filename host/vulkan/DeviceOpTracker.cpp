@@ -27,7 +27,7 @@ namespace {
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
 
-constexpr const size_t kSizeLoggingThreshold = 200;
+constexpr const int kSizeLoggingThreshold = 200;
 constexpr const auto kSizeLoggingTimeThreshold = std::chrono::seconds(1);
 
 constexpr const auto kAutoDeleteTimeThreshold = std::chrono::seconds(5);
@@ -49,7 +49,7 @@ void DeviceOpTracker::AddPendingGarbage(DeviceOpWaitable waitable, VkFence fence
         .timepoint = std::chrono::system_clock::now(),
     });
 
-    if (mPendingGarbage.size() > kSizeLoggingThreshold) {
+    if ((int)mPendingGarbage.size() > kSizeLoggingThreshold) {
         WARN("VkDevice:%p has %d pending garbage objects.", mDevice, mPendingGarbage.size());
     }
 }
@@ -63,7 +63,7 @@ void DeviceOpTracker::AddPendingGarbage(DeviceOpWaitable waitable, VkSemaphore s
         .timepoint = std::chrono::system_clock::now(),
     });
 
-    if (mPendingGarbage.size() > kSizeLoggingThreshold) {
+    if ((int)mPendingGarbage.size() > kSizeLoggingThreshold) {
         WARN("VkDevice:%p has %d pending garbage objects.", mDevice, mPendingGarbage.size());
     }
 }
@@ -77,7 +77,7 @@ void DeviceOpTracker::Poll() {
                                         }),
                          mPollFunctions.end());
 
-    if (mPollFunctions.size() > kSizeLoggingThreshold) {
+    if ((int)mPollFunctions.size() > kSizeLoggingThreshold) {
         // Only report old-enough objects to avoid reporting lots of pending waitables
         // when many requests have been done in a small amount of time.
         const auto now = std::chrono::system_clock::now();
@@ -144,7 +144,7 @@ void DeviceOpTracker::PollAndProcessGarbage() {
 
         mPendingGarbage.erase(mPendingGarbage.begin(), firstPendingIt);
 
-        if (mPendingGarbage.size() > kSizeLoggingThreshold) {
+        if ((int)mPendingGarbage.size() > kSizeLoggingThreshold) {
             WARN("VkDevice:%p has %d pending garbage objects.", mDevice, mPendingGarbage.size());
         }
     }

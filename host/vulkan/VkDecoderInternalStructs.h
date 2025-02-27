@@ -63,7 +63,7 @@ class ExternalFencePool {
     void add(VkFence fence) {
         android::base::AutoLock lock(mLock);
         mPool.push_back(fence);
-        if (mPool.size() > mMaxSize) {
+        if ((int)mPool.size() > mMaxSize) {
             INFO("External fence pool for %p has increased to size %d", mDevice, mPool.size());
             mMaxSize = mPool.size();
         }
