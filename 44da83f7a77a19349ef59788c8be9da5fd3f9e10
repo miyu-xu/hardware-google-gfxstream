@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "812dc19a_b534bd25",
+        "filename": "host/vulkan/DeviceOpTracker.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-02-27T19:51:43Z",
+      "side": 1,
+      "message": "Acknowledged. Fixed in PS3.",
+      "parentUuid": "82e56f4e_f6e84738",
+      "range": {
+        "startLine": 30,
+        "startChar": 16,
+        "endLine": 30,
+        "endChar": 19
+      },
+      "revId": "44da83f7a77a19349ef59788c8be9da5fd3f9e10",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc657c0e_e77ff6ff",
