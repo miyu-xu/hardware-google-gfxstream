@@ -118,6 +118,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f848c212_fcccbb81",
+        "filename": "host/vulkan/SwapChainStateVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-02-27T19:54:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2145d94b_1c7c15dd",
+      "range": {
+        "startLine": 98,
+        "startChar": 9,
+        "endLine": 98,
+        "endChar": 13
+      },
+      "revId": "44da83f7a77a19349ef59788c8be9da5fd3f9e10",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4abf45e4_634c3548",
@@ -131,6 +155,24 @@
       "writtenOn": "2025-02-27T19:50:44Z",
       "side": 1,
       "message": "Can we change the type of `mMaxSize` to `size_t` instead of making this change?",
+      "revId": "44da83f7a77a19349ef59788c8be9da5fd3f9e10",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5751ccd_715ecd02",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-02-27T19:54:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4abf45e4_634c3548",
       "revId": "44da83f7a77a19349ef59788c8be9da5fd3f9e10",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
