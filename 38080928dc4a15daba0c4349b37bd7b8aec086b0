@@ -16,6 +16,24 @@
       "message": "JFYI, the host may fail in a bad way when handling guest tries to import Ycbcr AHBs into Vulkan. This can happen on applications with videos.\n\nThis is an FYI comment. Feel free to close it with Ack.",
       "revId": "38080928dc4a15daba0c4349b37bd7b8aec086b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "689d7636_d173856f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-02-27T20:16:32Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "5120b83c_a84d81bd",
+      "revId": "38080928dc4a15daba0c4349b37bd7b8aec086b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
