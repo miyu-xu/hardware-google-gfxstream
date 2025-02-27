@@ -105,7 +105,10 @@ class BoxedHandleManager {
 
     void clear();
 
+    void setId(int id) { mId = id;}
+    int getId() const { return mId;}
    private:
+    int mId {0};
     mutable Store mStore;
 
     std::mutex mMutex;
@@ -124,6 +127,7 @@ class BoxedHandleManager {
     std::deque<BoxedHandle> mHandleReplayQueue;
 };
 
+extern BoxedHandleManager& getBoxedHandleManager(int idx);
 extern BoxedHandleManager& getBoxedHandleManager();
 extern void resetBoxedHandleManager();
 

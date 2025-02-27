@@ -71,6 +71,7 @@ class VkDecoderGlobalState {
     // There should only be one instance of VkDecoderGlobalState per process
     // Note: currently not thread-safe
     static VkDecoderGlobalState* get();
+    static VkDecoderGlobalState* get(uint64_t handle);
 
     // For testing only - destroys the global instance of VkDecoderGlobalState.
     static void reset();

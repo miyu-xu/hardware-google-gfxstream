@@ -9115,6 +9115,13 @@ static std::unordered_map<uint64_t, std::unique_ptr<VkDecoderGlobalState>> sGlob
 static std::vector<VkDecoderGlobalState*> sGlobalDecoderStateVector(1024, nullptr);
 
 // static
+VkDecoderGlobalState* VkDecoderGlobalState::get(uint64_t handle) {
+    int index = handle >> (24 + 16 + 8);
+
+    std::lock_guard<std::mutex> lock(sGlobalDecoderStateMapMutex);
+    return sGlobalDecoderStateVector[index];
+}
+
 VkDecoderGlobalState* VkDecoderGlobalState::get() {
     std::lock_guard<std::mutex> lock(sGlobalDecoderStateMapMutex);
     auto* emu = getGlobalVkEmulation();
@@ -9135,6 +9142,7 @@ VkDecoderGlobalState* VkDecoderGlobalState::get() {
                 sGlobalDecoderStateVector[i] = gsptr;
                 INFO("%s %d get puid 0x%llx gsidx %d", __func__, __LINE__, (unsigned long long)puid, i);
                 gsptr->setGsIdx(i);
+                break;
             }
         }
     }
