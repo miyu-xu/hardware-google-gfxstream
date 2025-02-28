@@ -31,6 +31,7 @@
 #include "DisplayVk.h"
 #include "ExternalObjectManager.h"
 #include "FrameworkFormats.h"
+#include "VulkanBoxedHandles.h"
 #include "aemu/base/Optional.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "gfxstream/host/BackendCallbacks.h"
@@ -68,6 +69,12 @@ enum class AstcEmulationMode {
     Disabled,  // No ASTC emulation (ie: ASTC not supported unless the GPU supports it natively)
     Cpu,       // Decompress ASTC textures on the CPU
     Gpu,       // Decompress ASTC textures on the GPU
+};
+
+struct VkProcessState {
+    std::shared_ptr<VkDecoderGlobalState> mState;
+    std::shared_ptr<BoxedHandleManager> mBoxedHandleManager;
+    std::optional<uint64_t> mPuid = std::nullopt;
 };
 
 // Global state that holds a global Vulkan instance along with globally

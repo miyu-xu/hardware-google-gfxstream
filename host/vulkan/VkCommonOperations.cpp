@@ -100,6 +100,11 @@ static bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_
                                              uint32_t w, uint32_t h, const void* pixels,
                                              size_t inputPixelsSize);
 
+static void createGlobalStatesAndHandleManagers(int count, std::vector<VkProcessState> & processStates) {
+    for (int i=0; i < count; ++i) {
+    }
+}
+
 static std::optional<ExternalHandleInfo> dupExternalMemory(std::optional<ExternalHandleInfo> handleInfo) {
     if (!handleInfo) {
         ERR("dupExternalMemory: No external memory handle info provided to duplicate the external memory");
