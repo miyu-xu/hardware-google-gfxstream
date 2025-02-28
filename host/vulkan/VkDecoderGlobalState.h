@@ -620,6 +620,8 @@ class VkDecoderGlobalState {
     void on_vkDestroySemaphore(android::base::BumpPool* pool, VkSnapshotApiCallInfo* snapshotInfo,
                                VkDevice boxed_device, VkSemaphore semaphore,
                                const VkAllocationCallbacks* pAllocator);
+    VkResult on_vkWaitSemaphores(android::base::BumpPool* pool, VkSnapshotApiCallInfo* snapshotInfo,
+        VkDevice boxed_device, const VkSemaphoreWaitInfo* pWaitInfo, uint64_t timeout);
 
     VkResult on_vkCreateFence(android::base::BumpPool* pool, VkSnapshotApiCallInfo* snapshotInfo,
                               VkDevice device, const VkFenceCreateInfo* pCreateInfo,

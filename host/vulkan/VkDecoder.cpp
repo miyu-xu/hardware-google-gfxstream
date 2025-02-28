@@ -40,6 +40,7 @@
 #include "FrameBuffer.h"
 #include "VkDecoderGlobalState.h"
 #include "VkDecoderSnapshot.h"
+#include "VulkanBoxedHandles.h"
 #include "VulkanDispatch.h"
 #include "VulkanStream.h"
 #include "aemu/base/BumpPool.h"
@@ -125,9 +126,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
     if (len < 8) return 0;
     unsigned char* ptr = (unsigned char*)buf;
     const unsigned char* const end = (const unsigned char*)buf + len;
-    if (m_forSnapshotLoad) {
-        ptr += m_state->setCreatedHandlesForSnapshotLoad(ptr);
-    }
     while (end - ptr >= 8) {
         const uint8_t* packet = (const uint8_t*)ptr;
         uint32_t opcode = *(uint32_t*)ptr;
@@ -10565,14 +10563,11 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkDevice device;
                 const VkSemaphoreWaitInfo* pWaitInfo;
                 uint64_t timeout;
-                // Begin non wrapped dispatchable handle unboxing for device;
+                // Begin global wrapped dispatchable handle unboxing for device;
                 uint64_t cgen_var_0;
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
-                auto unboxed_device = unbox_VkDevice(device);
-                auto vk = dispatch_VkDevice(device);
-                // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pWaitInfo, sizeof(const VkSemaphoreWaitInfo));
                 reservedunmarshal_VkSemaphoreWaitInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                                                       (VkSemaphoreWaitInfo*)(pWaitInfo),
@@ -10591,8 +10586,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (m_queueSubmitWithCommandsEnabled)
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
                 VkResult vkWaitSemaphores_VkResult_return = (VkResult)0;
-                vkWaitSemaphores_VkResult_return =
-                    vk->vkWaitSemaphores(unboxed_device, pWaitInfo, timeout);
+                vkWaitSemaphores_VkResult_return = m_state->on_vkWaitSemaphores(
+                    &m_pool, snapshotApiCallInfo, device, pWaitInfo, timeout);
                 if ((vkWaitSemaphores_VkResult_return) == VK_ERROR_DEVICE_LOST)
                     m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkWaitSemaphores_VkResult_return, opcode, context);
@@ -21742,9 +21737,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
 
         ptr += packetLen;
         vkStream->clearPool();
-    }
-    if (m_forSnapshotLoad) {
-        m_state->clearCreatedHandlesForSnapshotLoad();
     }
     m_pool.freeAll();
     return ptr - (unsigned char*)buf;
