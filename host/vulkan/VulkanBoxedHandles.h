@@ -37,7 +37,8 @@ enum BoxedHandleTypeTag {
     GOLDFISH_VK_LIST_HANDLE_TYPES_BY_STAGE(DEFINE_BOXED_HANDLE_TYPE_TAG)
 
     // additional generic tag
-    Tag_VkGeneric = 1001,
+    Tag_VkGeneric = 0xFF,
+    Tag_VkMaxValue = 0xFFFFFF,
 };
 
 using BoxedHandle = uint64_t;
