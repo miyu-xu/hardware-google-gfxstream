@@ -207,11 +207,21 @@ static uint64_t hostBlobId = 0;
 // snapshot with virtio.
 static uint32_t kTemporaryContextIdForSnapshotLoading = 1;
 
+enum class SnapshotState {
+        Normal,
+        Saving,
+        Loading,
+};
+
+static SnapshotState mSnapshotState = SnapshotState::Normal;
+
 class VkDecoderGlobalState::Impl {
    public:
-    Impl()
+    Impl(VkDecoderGlobalState* parent)
         : m_vk(vkDispatch()),
           m_emu(getGlobalVkEmulation()),
+          m_parent_state(parent),
+          mSnapshot(parent),
           mRenderDocWithMultipleVkInstances(m_emu->guestRenderDoc.get()) {
         mSnapshotsEnabled = m_emu->features.VulkanSnapshots.enabled;
         mBatchedDescriptorSetUpdateEnabled =
@@ -261,9 +271,17 @@ class VkDecoderGlobalState::Impl {
 #endif
         mDescriptorUpdateTemplateInfo.clear();
 
-        sBoxedHandleManager.clear();
+        mBoxedHandleManager->clear();
 
         mSnapshot.clear();
+    }
+
+    void setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager) {
+        mBoxedHandleManager = BoxedHandleManager;
+    }
+    
+    std::shared_ptr<BoxedHandleManager> getBoxedHandleManager() {
+        return mBoxedHandleManager;
     }
 
     bool snapshotsEnabled() const { return mSnapshotsEnabled; }
@@ -272,7 +290,9 @@ class VkDecoderGlobalState::Impl {
 
     bool vkCleanupEnabled() const { return mVkCleanupEnabled; }
 
-    const gfxstream::host::FeatureSet& getFeatures() const { return m_emu->features; }
+    static const gfxstream::host::FeatureSet& getFeatures() {
+        return getGlobalVkEmulation()->features;
+    }
 
     StateBlock createSnapshotStateBlock(VkDevice unboxed_device) REQUIRES(mMutex) {
         const auto& device = unboxed_device;
@@ -444,7 +464,7 @@ class VkDecoderGlobalState::Impl {
             const DescriptorPoolInfo& poolInfo = mDescriptorPoolInfo[unboxedDescriptorPool];
 
             for (uint64_t poolId : poolInfo.poolIds) {
-                BoxedHandleInfo* setHandleInfo = sBoxedHandleManager.get(poolId);
+                BoxedHandleInfo* setHandleInfo = mBoxedHandleManager->get(poolId);
                 bool allocated = setHandleInfo->underlying != 0;
                 stream->putByte(allocated);
                 if (!allocated) {
@@ -621,7 +641,7 @@ class VkDecoderGlobalState::Impl {
             std::vector<uint8_t> decoderReplayBuffer;
             VkDecoderSnapshot::loadReplayBuffers(stream, &handleReplayBuffer, &decoderReplayBuffer);
 
-            sBoxedHandleManager.replayHandles(handleReplayBuffer);
+            mBoxedHandleManager->replayHandles(handleReplayBuffer);
 
             VkDecoder decoderForLoading;
             // A decoder that is set for snapshot load will load up the created handles first,
@@ -965,7 +985,7 @@ class VkDecoderGlobalState::Impl {
         m_emu->callbacks.registerVulkanInstance((uint64_t)*pInstance, info.applicationName.c_str());
 #endif
         // Box it up
-        VkInstance boxed = new_boxed_VkInstance(*pInstance, nullptr, true /* own dispatch */);
+        VkInstance boxed = mBoxedHandleManager->new_boxed_VkInstance(*pInstance, nullptr, true /* own dispatch */);
         init_vulkan_dispatch_from_instance(m_vk, *pInstance, dispatch_VkInstance(boxed));
         info.boxed = boxed;
 
@@ -990,7 +1010,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void processDelayedRemovesForDevice(VkDevice device) EXCLUDES(mMutex) {
-        sBoxedHandleManager.processDelayedRemoves(device);
+        mBoxedHandleManager->processDelayedRemoves(device);
     }
 
     void vkDestroyInstanceImpl(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
@@ -1142,7 +1162,7 @@ class VkDecoderGlobalState::Impl {
                 VALIDATE_NEW_HANDLE_INFO_ENTRY(mPhysdevInfo, physicalDevices[i]);
                 auto& physdevInfo = mPhysdevInfo[physicalDevices[i]];
                 physdevInfo.instance = instance;
-                physdevInfo.boxed = new_boxed_VkPhysicalDevice(physicalDevices[i], vk,
+                physdevInfo.boxed = mBoxedHandleManager->new_boxed_VkPhysicalDevice(physicalDevices[i], vk,
                                                                false /* does not own dispatch */);
 
                 vk->vkGetPhysicalDeviceProperties(physicalDevices[i], &physdevInfo.props);
@@ -1977,7 +1997,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         // First, get the dispatch table.
-        VkDevice boxedDevice = new_boxed_VkDevice(*pDevice, nullptr, true /* own dispatch */);
+        VkDevice boxedDevice = mBoxedHandleManager->new_boxed_VkDevice(*pDevice, nullptr, true /* own dispatch */);
 
         if (mLogging) {
             INFO("%s: init vulkan dispatch from device", __func__);
@@ -2054,7 +2074,7 @@ class VkDecoderGlobalState::Impl {
                     INFO("%s: get device queue (end)", __func__);
                 }
                 auto boxedQueue =
-                    new_boxed_VkQueue(physicalQueue, dispatch, false /* does not own dispatch */);
+                    mBoxedHandleManager->new_boxed_VkQueue(physicalQueue, dispatch, false /* does not own dispatch */);
                 extraHandles.push_back((uint64_t)boxedQueue);
 
                 VALIDATE_NEW_HANDLE_INFO_ENTRY(mQueueInfo, physicalQueue);
@@ -2088,7 +2108,7 @@ class VkDecoderGlobalState::Impl {
                         uint64_t virtualQueue64 = (physicalQueue64 | QueueInfo::kVirtualQueueBit);
                         VkQueue virtualQueue = reinterpret_cast<VkQueue>(virtualQueue64);
 
-                        auto boxedVirtualQueue = new_boxed_VkQueue(
+                        auto boxedVirtualQueue = mBoxedHandleManager->new_boxed_VkQueue(
                             virtualQueue, dispatch, false /* does not own dispatch */);
                         extraHandles.push_back((uint64_t)boxedVirtualQueue);
 
@@ -2292,7 +2312,7 @@ class VkDecoderGlobalState::Impl {
             bufInfo.device = device;
             bufInfo.usage = pCreateInfo->usage;
             bufInfo.size = pCreateInfo->size;
-            *pBuffer = new_boxed_non_dispatchable_VkBuffer(*pBuffer);
+            *pBuffer = mBoxedHandleManager->new_boxed_non_dispatchable_VkBuffer(*pBuffer);
         }
 
         return result;
@@ -2507,7 +2527,7 @@ class VkDecoderGlobalState::Impl {
         if (nativeBufferANDROID) imageInfo.anbInfo = std::move(anbInfo);
 
         if (boxImage) {
-            *pImage = new_boxed_non_dispatchable_VkImage(*pImage);
+            *pImage = mBoxedHandleManager->new_boxed_non_dispatchable_VkImage(*pImage);
         }
         return createRes;
     }
@@ -2796,7 +2816,7 @@ class VkDecoderGlobalState::Impl {
                                                        *imageViewInfo.boundColorBuffer);
         }
 
-        *pView = new_boxed_non_dispatchable_VkImageView(*pView);
+        *pView = mBoxedHandleManager->new_boxed_non_dispatchable_VkImageView(*pView);
         return result;
     }
 
@@ -2855,7 +2875,7 @@ class VkDecoderGlobalState::Impl {
              pCreateInfo->borderColor == VK_BORDER_COLOR_FLOAT_CUSTOM_EXT ||
              pCreateInfo->borderColor == VK_BORDER_COLOR_INT_CUSTOM_EXT);
 
-        *pSampler = new_boxed_non_dispatchable_VkSampler(*pSampler);
+        *pSampler = mBoxedHandleManager->new_boxed_non_dispatchable_VkSampler(*pSampler);
 
         return result;
     }
@@ -3011,7 +3031,7 @@ class VkDecoderGlobalState::Impl {
         auto& semaphoreInfo = mSemaphoreInfo[*pSemaphore];
         semaphoreInfo.device = device;
 
-        *pSemaphore = new_boxed_non_dispatchable_VkSemaphore(*pSemaphore);
+        *pSemaphore = mBoxedHandleManager->new_boxed_non_dispatchable_VkSemaphore(*pSemaphore);
 
         return res;
     }
@@ -3071,7 +3091,7 @@ class VkDecoderGlobalState::Impl {
             fenceInfo.device = device;
             fenceInfo.vk = vk;
 
-            *pFence = new_boxed_non_dispatchable_VkFence(*pFence);
+            *pFence = mBoxedHandleManager->new_boxed_non_dispatchable_VkFence(*pFence);
             fenceInfo.boxed = *pFence;
             fenceInfo.external = exportSyncFd;
 
@@ -3434,7 +3454,7 @@ class VkDecoderGlobalState::Impl {
             VALIDATE_NEW_HANDLE_INFO_ENTRY(mDescriptorSetLayoutInfo, *pSetLayout);
             auto& info = mDescriptorSetLayoutInfo[*pSetLayout];
             info.device = device;
-            *pSetLayout = new_boxed_non_dispatchable_VkDescriptorSetLayout(*pSetLayout);
+            *pSetLayout = mBoxedHandleManager->new_boxed_non_dispatchable_VkDescriptorSetLayout(*pSetLayout);
             info.boxed = *pSetLayout;
 
             info.createInfo = *pCreateInfo;
@@ -3492,7 +3512,7 @@ class VkDecoderGlobalState::Impl {
             VALIDATE_NEW_HANDLE_INFO_ENTRY(mDescriptorPoolInfo, *pDescriptorPool);
             auto& info = mDescriptorPoolInfo[*pDescriptorPool];
             info.device = device;
-            *pDescriptorPool = new_boxed_non_dispatchable_VkDescriptorPool(*pDescriptorPool);
+            *pDescriptorPool = mBoxedHandleManager->new_boxed_non_dispatchable_VkDescriptorPool(*pDescriptorPool);
             info.boxed = *pDescriptorPool;
             info.createInfo = *pCreateInfo;
             info.maxSets = pCreateInfo->maxSets;
@@ -3509,7 +3529,7 @@ class VkDecoderGlobalState::Impl {
             if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                 for (uint32_t i = 0; i < pCreateInfo->maxSets; ++i) {
                     info.poolIds.push_back(
-                        (uint64_t)new_boxed_non_dispatchable_VkDescriptorSet(VK_NULL_HANDLE));
+                        (uint64_t)mBoxedHandleManager->new_boxed_non_dispatchable_VkDescriptorSet(VK_NULL_HANDLE));
                 }
                 if (snapshotsEnabled() && snapshotInfo) {
                     snapshotInfo->addOrderedBoxedHandlesCreatedByCall(info.poolIds.data(),
@@ -3541,7 +3561,7 @@ class VkDecoderGlobalState::Impl {
                 }
             } else {
                 for (auto poolId : descriptorPoolInfo.poolIds) {
-                    auto handleInfo = sBoxedHandleManager.get(poolId);
+                    auto handleInfo = mBoxedHandleManager->get(poolId);
                     if (handleInfo)
                         handleInfo->underlying = reinterpret_cast<uint64_t>(VK_NULL_HANDLE);
                 }
@@ -3672,7 +3692,7 @@ class VkDecoderGlobalState::Impl {
 
             for (uint32_t i = 0; i < pAllocateInfo->descriptorSetCount; ++i) {
                 auto unboxed = pDescriptorSets[i];
-                pDescriptorSets[i] = new_boxed_non_dispatchable_VkDescriptorSet(pDescriptorSets[i]);
+                pDescriptorSets[i] = mBoxedHandleManager->new_boxed_non_dispatchable_VkDescriptorSet(pDescriptorSets[i]);
                 initDescriptorSetInfoLocked(device, pAllocateInfo->descriptorPool,
                                             pAllocateInfo->pSetLayouts[i],
                                             (uint64_t)(pDescriptorSets[i]), unboxed);
@@ -3707,7 +3727,7 @@ class VkDecoderGlobalState::Impl {
                     android::base::find(poolInfo->allocedSetsToBoxed, pDescriptorSets[i]);
                 if (!descSetAllocedEntry) continue;
 
-                auto handleInfo = sBoxedHandleManager.get((uint64_t)*descSetAllocedEntry);
+                auto handleInfo = mBoxedHandleManager->get((uint64_t)*descSetAllocedEntry);
                 if (handleInfo) {
                     if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                         handleInfo->underlying = reinterpret_cast<uint64_t>(VK_NULL_HANDLE);
@@ -3992,7 +4012,7 @@ class VkDecoderGlobalState::Impl {
         auto& shaderModuleInfo = mShaderModuleInfo[*pShaderModule];
         shaderModuleInfo.device = device;
 
-        *pShaderModule = new_boxed_non_dispatchable_VkShaderModule(*pShaderModule);
+        *pShaderModule = mBoxedHandleManager->new_boxed_non_dispatchable_VkShaderModule(*pShaderModule);
 
         return result;
     }
@@ -4046,7 +4066,7 @@ class VkDecoderGlobalState::Impl {
         auto& pipelineCacheInfo = mPipelineCacheInfo[*pPipelineCache];
         pipelineCacheInfo.device = device;
 
-        *pPipelineCache = new_boxed_non_dispatchable_VkPipelineCache(*pPipelineCache);
+        *pPipelineCache = mBoxedHandleManager->new_boxed_non_dispatchable_VkPipelineCache(*pPipelineCache);
 
         return result;
     }
@@ -4101,7 +4121,7 @@ class VkDecoderGlobalState::Impl {
         auto& pipelineLayoutInfo = mPipelineLayoutInfo[*pPipelineLayout];
         pipelineLayoutInfo.device = device;
 
-        *pPipelineLayout = new_boxed_non_dispatchable_VkPipelineLayout(*pPipelineLayout);
+        *pPipelineLayout = mBoxedHandleManager->new_boxed_non_dispatchable_VkPipelineLayout(*pPipelineLayout);
 
         return result;
     }
@@ -4163,7 +4183,7 @@ class VkDecoderGlobalState::Impl {
             auto& pipelineInfo = mPipelineInfo[pPipelines[i]];
             pipelineInfo.device = device;
 
-            pPipelines[i] = new_boxed_non_dispatchable_VkPipeline(pPipelines[i]);
+            pPipelines[i] = mBoxedHandleManager->new_boxed_non_dispatchable_VkPipeline(pPipelines[i]);
         }
 
         return result;
@@ -4194,7 +4214,7 @@ class VkDecoderGlobalState::Impl {
             auto& pipelineInfo = mPipelineInfo[pPipelines[i]];
             pipelineInfo.device = device;
 
-            pPipelines[i] = new_boxed_non_dispatchable_VkPipeline(pPipelines[i]);
+            pPipelines[i] = mBoxedHandleManager->new_boxed_non_dispatchable_VkPipeline(pPipelines[i]);
         }
 
         return result;
@@ -5525,7 +5545,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         if (!hostVisible) {
-            *pMemory = new_boxed_non_dispatchable_VkDeviceMemory(*pMemory);
+            *pMemory = mBoxedHandleManager->new_boxed_non_dispatchable_VkDeviceMemory(*pMemory);
             return result;
         }
 
@@ -5576,7 +5596,7 @@ class VkDecoderGlobalState::Impl {
             memoryInfo.privateMemory = privateMemory;
         }
 
-        *pMemory = new_boxed_non_dispatchable_VkDeviceMemory(*pMemory);
+        *pMemory = mBoxedHandleManager->new_boxed_non_dispatchable_VkDeviceMemory(*pMemory);
 
         return result;
     }
@@ -5673,10 +5693,11 @@ class VkDecoderGlobalState::Impl {
                m_emu->features.VirtioGpuNext.enabled;
     }
 
-    HostFeatureSupport getHostFeatureSupport() const {
+    static HostFeatureSupport getHostFeatureSupport() {
         HostFeatureSupport res;
 
-        if (!m_vk) return res;
+        auto mvk = vkDispatch();
+        if (!mvk) return res;
 
         auto emu = getGlobalVkEmulation();
 
@@ -6072,7 +6093,7 @@ class VkDecoderGlobalState::Impl {
             mCommandBufferInfo[pCommandBuffers[i]].device = device;
             mCommandBufferInfo[pCommandBuffers[i]].debugUtilsHelper = deviceInfo->debugUtilsHelper;
             mCommandBufferInfo[pCommandBuffers[i]].cmdPool = pAllocateInfo->commandPool;
-            auto boxed = new_boxed_VkCommandBuffer(pCommandBuffers[i], vk,
+            auto boxed = mBoxedHandleManager->new_boxed_VkCommandBuffer(pCommandBuffers[i], vk,
                                                    false /* does not own dispatch */);
             mCommandBufferInfo[pCommandBuffers[i]].boxed = boxed;
 
@@ -6101,7 +6122,7 @@ class VkDecoderGlobalState::Impl {
         auto& cmdPoolInfo = mCommandPoolInfo[*pCommandPool];
         cmdPoolInfo.device = device;
 
-        *pCommandPool = new_boxed_non_dispatchable_VkCommandPool(*pCommandPool);
+        *pCommandPool = mBoxedHandleManager->new_boxed_non_dispatchable_VkCommandPool(*pCommandPool);
         cmdPoolInfo.boxed = *pCommandPool;
 
         return result;
@@ -6575,7 +6596,7 @@ class VkDecoderGlobalState::Impl {
             registerDescriptorUpdateTemplate(*pDescriptorUpdateTemplate,
                                              descriptorUpdateTemplateInfo);
             *pDescriptorUpdateTemplate =
-                new_boxed_non_dispatchable_VkDescriptorUpdateTemplate(*pDescriptorUpdateTemplate);
+                mBoxedHandleManager->new_boxed_non_dispatchable_VkDescriptorUpdateTemplate(*pDescriptorUpdateTemplate);
         }
 
         return res;
@@ -6599,7 +6620,7 @@ class VkDecoderGlobalState::Impl {
             registerDescriptorUpdateTemplate(*pDescriptorUpdateTemplate,
                                              descriptorUpdateTemplateInfo);
             *pDescriptorUpdateTemplate =
-                new_boxed_non_dispatchable_VkDescriptorUpdateTemplate(*pDescriptorUpdateTemplate);
+                mBoxedHandleManager->new_boxed_non_dispatchable_VkDescriptorUpdateTemplate(*pDescriptorUpdateTemplate);
         }
 
         return res;
@@ -6949,7 +6970,7 @@ class VkDecoderGlobalState::Impl {
         auto& renderPassInfo = mRenderPassInfo[*pRenderPass];
         renderPassInfo.device = device;
 
-        *pRenderPass = new_boxed_non_dispatchable_VkRenderPass(*pRenderPass);
+        *pRenderPass = mBoxedHandleManager->new_boxed_non_dispatchable_VkRenderPass(*pRenderPass);
 
         return res;
     }
@@ -6972,7 +6993,7 @@ class VkDecoderGlobalState::Impl {
         auto& renderPassInfo = mRenderPassInfo[*pRenderPass];
         renderPassInfo.device = device;
 
-        *pRenderPass = new_boxed_non_dispatchable_VkRenderPass(*pRenderPass);
+        *pRenderPass = mBoxedHandleManager->new_boxed_non_dispatchable_VkRenderPass(*pRenderPass);
 
         return res;
     }
@@ -7121,7 +7142,7 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
-        *pFramebuffer = new_boxed_non_dispatchable_VkFramebuffer(*pFramebuffer);
+        *pFramebuffer = mBoxedHandleManager->new_boxed_non_dispatchable_VkFramebuffer(*pFramebuffer);
 
         return result;
     }
@@ -7442,7 +7463,7 @@ class VkDecoderGlobalState::Impl {
                 << "descriptor pool " << pool << " not found ";
         }
 
-        BoxedHandleInfo* setHandleInfo = sBoxedHandleManager.get(poolId);
+        BoxedHandleInfo* setHandleInfo = mBoxedHandleManager->get(poolId);
 
         if (setHandleInfo->underlying) {
             if (pendingAlloc) {
@@ -7581,7 +7602,7 @@ class VkDecoderGlobalState::Impl {
         const VkSamplerYcbcrConversionCreateInfo* pCreateInfo,
         const VkAllocationCallbacks* pAllocator, VkSamplerYcbcrConversion* pYcbcrConversion) {
         if (m_emu->enableYcbcrEmulation && !m_emu->deviceInfo.supportsSamplerYcbcrConversion) {
-            *pYcbcrConversion = new_boxed_non_dispatchable_VkSamplerYcbcrConversion(
+            *pYcbcrConversion = mBoxedHandleManager->new_boxed_non_dispatchable_VkSamplerYcbcrConversion(
                 (VkSamplerYcbcrConversion)((uintptr_t)0xffff0000ull));
             return VK_SUCCESS;
         }
@@ -7592,7 +7613,7 @@ class VkDecoderGlobalState::Impl {
         if (res != VK_SUCCESS) {
             return res;
         }
-        *pYcbcrConversion = new_boxed_non_dispatchable_VkSamplerYcbcrConversion(*pYcbcrConversion);
+        *pYcbcrConversion = mBoxedHandleManager->new_boxed_non_dispatchable_VkSamplerYcbcrConversion(*pYcbcrConversion);
         return VK_SUCCESS;
     }
 
@@ -7654,8 +7675,8 @@ class VkDecoderGlobalState::Impl {
         return VK_SUCCESS;
     }
 
-    void on_DeviceLost() {
-        m_emu->deviceLostHelper.onDeviceLost();
+    static void on_DeviceLost() {
+        getGlobalVkEmulation()->deviceLostHelper.onDeviceLost();
         GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
     }
 
@@ -8027,12 +8048,11 @@ class VkDecoderGlobalState::Impl {
     DEFINE_EXTERNAL_MEMORY_PROPERTIES_TRANSFORM(VkExternalBufferProperties)
 
     BoxedHandle newGlobalHandle(const BoxedHandleInfo& item, BoxedHandleTypeTag typeTag) {
-        return sBoxedHandleManager.add(item, typeTag);
+        return mBoxedHandleManager->add(item, typeTag);
     }
 
     VkDecoderSnapshot* snapshot() { return &mSnapshot; }
 
-    bool isSnapshotCurrentlyLoading() const { return mSnapshotState == SnapshotState::Loading; }
 
    private:
     bool isEmulatedInstanceExtension(const char* name) const {
@@ -8879,6 +8899,7 @@ class VkDecoderGlobalState::Impl {
 
     VulkanDispatch* m_vk;
     VkEmulation* m_emu;
+    VkDecoderGlobalState* m_parent_state;
     emugl::RenderDocWithMultipleVkInstances* mRenderDocWithMultipleVkInstances = nullptr;
     bool mSnapshotsEnabled = false;
     bool mBatchedDescriptorSetUpdateEnabled = false;
@@ -9032,13 +9053,6 @@ class VkDecoderGlobalState::Impl {
 #endif
 
     VkDecoderSnapshot mSnapshot;
-    enum class SnapshotState {
-        Normal,
-        Saving,
-        Loading,
-    };
-    SnapshotState mSnapshotState = SnapshotState::Normal;
-
     // NOTE: Only present during snapshot loading. This is needed to associate
     // `VkDevice`s with Virtio GPU context ids because API calls are not currently
     // replayed on the "same" RenderThread which originally made the API call so
@@ -9102,41 +9116,54 @@ class VkDecoderGlobalState::Impl {
 
     std::unordered_map<LinearImageCreateInfo, LinearImageProperties, LinearImageCreateInfo::Hash>
         mLinearImageProperties GUARDED_BY(mMutex);
+
+    std::shared_ptr<BoxedHandleManager> mBoxedHandleManager;
 };
 
-VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl()) {}
+
+VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl(this)) {}
 
 VkDecoderGlobalState::~VkDecoderGlobalState() = default;
 
 static VkDecoderGlobalState* sGlobalDecoderState = nullptr;
 
-// static
-VkDecoderGlobalState* VkDecoderGlobalState::get() {
+
+VkDecoderGlobalState* VkDecoderGlobalState::getForTest() {
     if (sGlobalDecoderState) return sGlobalDecoderState;
     sGlobalDecoderState = new VkDecoderGlobalState;
     return sGlobalDecoderState;
 }
 
-// static
-void VkDecoderGlobalState::reset() {
-    delete sGlobalDecoderState;
-    sGlobalDecoderState = nullptr;
+std::shared_ptr<VkDecoderGlobalState> VkDecoderGlobalState::get(uint64_t handle) {
+    return getVkDecoderGlobalStateForVkHandle(handle);
+}
+
+
+void VkDecoderGlobalState::resetForTest() {
+delete sGlobalDecoderState;
+sGlobalDecoderState = nullptr;
 }
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
 bool VkDecoderGlobalState::batchedDescriptorSetUpdateEnabled() const { return mImpl->batchedDescriptorSetUpdateEnabled(); }
 
+void VkDecoderGlobalState::setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager)
+    { return mImpl->setBoxedHandleManager(BoxedHandleManager); }
+
+std::shared_ptr<BoxedHandleManager> VkDecoderGlobalState::getBoxedHandleManager()
+    { return mImpl->getBoxedHandleManager(); }
+
 uint64_t VkDecoderGlobalState::newGlobalVkGenericHandle() {
     BoxedHandleInfo item;                                                    \
     return mImpl->newGlobalHandle(item, Tag_VkGeneric);
 }
 
-bool VkDecoderGlobalState::isSnapshotCurrentlyLoading() const {
-    return mImpl->isSnapshotCurrentlyLoading();
+bool VkDecoderGlobalState::isSnapshotCurrentlyLoading() {
+    return mSnapshotState == SnapshotState::Loading;
 }
 
-const gfxstream::host::FeatureSet& VkDecoderGlobalState::getFeatures() const { return mImpl->getFeatures(); }
+const gfxstream::host::FeatureSet& VkDecoderGlobalState::getFeatures() { return Impl::getFeatures(); }
 
 bool VkDecoderGlobalState::vkCleanupEnabled() const { return mImpl->vkCleanupEnabled(); }
 
@@ -9840,8 +9867,8 @@ VkDeviceSize VkDecoderGlobalState::getDeviceMemorySize(VkDeviceMemory memory) {
 
 bool VkDecoderGlobalState::usingDirectMapping() const { return mImpl->usingDirectMapping(); }
 
-VkDecoderGlobalState::HostFeatureSupport VkDecoderGlobalState::getHostFeatureSupport() const {
-    return mImpl->getHostFeatureSupport();
+VkDecoderGlobalState::HostFeatureSupport VkDecoderGlobalState::getHostFeatureSupport() {
+    return VkDecoderGlobalState::Impl::getHostFeatureSupport();
 }
 
 // VK_ANDROID_native_buffer
@@ -10387,7 +10414,7 @@ VkResult VkDecoderGlobalState::on_vkEnumeratePhysicalDeviceGroupsKHR(
         pool, snapshotInfo, instance, pPhysicalDeviceGroupCount, pPhysicalDeviceGroupProperties);
 }
 
-void VkDecoderGlobalState::on_DeviceLost() { mImpl->on_DeviceLost(); }
+void VkDecoderGlobalState::on_DeviceLost() { VkDecoderGlobalState::Impl::on_DeviceLost(); }
 
 void VkDecoderGlobalState::on_CheckOutOfMemory(VkResult result, uint32_t opCode,
                                                const VkDecoderContext& context,
