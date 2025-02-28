@@ -31,6 +31,7 @@
 #include "DisplayVk.h"
 #include "ExternalObjectManager.h"
 #include "FrameworkFormats.h"
+#include "VulkanBoxedHandles.h"
 #include "aemu/base/Optional.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "gfxstream/host/BackendCallbacks.h"
@@ -70,6 +71,14 @@ enum class AstcEmulationMode {
     Gpu,       // Decompress ASTC textures on the GPU
 };
 
+struct VkProcessState {
+    std::shared_ptr<VkDecoderGlobalState> mState;
+    std::shared_ptr<BoxedHandleManager> mBoxedHandleManager;
+    std::optional<uint64_t> mPuid = std::nullopt;
+};
+
+std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalState(uint64_t puid);
+
 // Global state that holds a global Vulkan instance along with globally
 // exported memory allocations + images. This is in order to service things
 // like AndroidHardwareBuffer/FuchsiaImagePipeHandle. Each such allocation is
@@ -79,6 +88,8 @@ enum class AstcEmulationMode {
 struct VkEmulation {
     // Whether initialization succeeded.
     bool live = false;
+
+    std::vector<VkProcessState> mProcessStates;
 
     gfxstream::host::BackendCallbacks callbacks;
 
