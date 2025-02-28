@@ -100,6 +100,15 @@ static bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_
                                              uint32_t w, uint32_t h, const void* pixels,
                                              size_t inputPixelsSize);
 
+static void createGlobalStatesAndHandleManagers(int count, std::vector<VkProcessState> & processStates) {
+    processStates.resize(count);
+    for (int i=0; i < count; ++i) {
+        processStates[i].mState = std::make_shared<VkDecoderGlobalState>();
+        processStates[i].mBoxedHandleManager = std::make_shared<BoxedHandleManager>();
+        processStates[i].mState->setBoxedHandleManager(processStates[i].mBoxedHandleManager);
+    }
+}
+
 static std::optional<ExternalHandleInfo> dupExternalMemory(std::optional<ExternalHandleInfo> handleInfo) {
     if (!handleInfo) {
         ERR("dupExternalMemory: No external memory handle info provided to duplicate the external memory");
@@ -754,6 +763,10 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     }
 
     sVkEmulation = new VkEmulation;
+    
+    // allocate 128 process state
+    createGlobalStatesAndHandleManagers(128, sVkEmulation->mProcessStates);
+
     sVkEmulation->callbacks = callbacks;
     sVkEmulation->features = features;
 
