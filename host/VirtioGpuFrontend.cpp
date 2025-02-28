@@ -987,6 +987,16 @@ inline const GoldfishPipeServiceOps* VirtioGpuFrontend::ensureAndGetServiceOps()
     return mServiceOps;
 }
 
+int VirtioGpuFrontend::suspend() {
+    stream_renderer_info("Suspending Gfxstream.");
+    return 0;
+}
+
+int VirtioGpuFrontend::resume() {
+    stream_renderer_info("Resuming Gfxstream.");
+    return 0;
+}
+
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
 
 static constexpr const char kSnapshotBasenameAsg[] = "gfxstream_asg.bin";

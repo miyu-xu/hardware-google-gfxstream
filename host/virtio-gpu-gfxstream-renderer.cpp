@@ -409,9 +409,7 @@ VG_EXPORT int stream_renderer_vulkan_info(uint32_t res_handle,
 VG_EXPORT int stream_renderer_suspend() {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY, "stream_renderer_suspend()");
 
-    // TODO: move pauseAllPreSave() here after kumquat updated.
-
-    return 0;
+    return sFrontend()->suspend();
 }
 
 VG_EXPORT int stream_renderer_snapshot(const char* dir) {
@@ -439,9 +437,7 @@ VG_EXPORT int stream_renderer_restore(const char* dir) {
 VG_EXPORT int stream_renderer_resume() {
     GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_STREAM_RENDERER_CATEGORY, "stream_renderer_resume()");
 
-    // TODO: move resumeAll() here after kumquat updated.
-
-    return 0;
+    return sFrontend()->resume();
 }
 
 static const GoldfishPipeServiceOps goldfish_pipe_service_ops = {
