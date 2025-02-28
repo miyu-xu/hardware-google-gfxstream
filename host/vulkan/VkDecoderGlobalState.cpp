@@ -266,6 +266,14 @@ class VkDecoderGlobalState::Impl {
         mSnapshot.clear();
     }
 
+    void setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager) {
+        mBoxedHandleManager = BoxedHandleManager;
+    }
+    
+    std::shared_ptr<BoxedHandleManager> getBoxedHandleManager() {
+        return mBoxedHandleManager;
+    }
+
     bool snapshotsEnabled() const { return mSnapshotsEnabled; }
 
     bool batchedDescriptorSetUpdateEnabled() const { return mBatchedDescriptorSetUpdateEnabled; }
@@ -9102,6 +9110,8 @@ class VkDecoderGlobalState::Impl {
 
     std::unordered_map<LinearImageCreateInfo, LinearImageProperties, LinearImageCreateInfo::Hash>
         mLinearImageProperties GUARDED_BY(mMutex);
+
+    std::shared_ptr<BoxedHandleManager> mBoxedHandleManager;
 };
 
 VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl()) {}
@@ -9126,6 +9136,12 @@ void VkDecoderGlobalState::reset() {
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
 bool VkDecoderGlobalState::batchedDescriptorSetUpdateEnabled() const { return mImpl->batchedDescriptorSetUpdateEnabled(); }
+
+void VkDecoderGlobalState::setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager)
+    { return mImpl->setBoxedHandleManager(BoxedHandleManager); }
+
+std::shared_ptr<BoxedHandleManager> VkDecoderGlobalState::getBoxedHandleManager()
+    { return mImpl->getBoxedHandleManager(); }
 
 uint64_t VkDecoderGlobalState::newGlobalVkGenericHandle() {
     BoxedHandleInfo item;                                                    \
