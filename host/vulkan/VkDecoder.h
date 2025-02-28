@@ -36,6 +36,7 @@
 #include <memory>
 
 #include "ProcessResources.h"
+#include "VkDecoderGlobalState.h"
 #include "VkDecoderContext.h"
 #include "vk_android_native_buffer_gfxstream.h"
 #include "vulkan_gfxstream.h"
@@ -61,9 +62,13 @@ class VkDecoder {
     size_t decode(void* buf, size_t bufsize, IOStream* stream,
                   const ProcessResources* processResources, const VkDecoderContext&);
 
+   void setVkDecoderGlobalState(std::shared_ptr<VkDecoderGlobalState> state);
+   std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalState();
+
    private:
     class Impl;
     std::unique_ptr<Impl> mImpl;
+    std::shared_ptr<VkDecoderGlobalState> m_state;
 };
 
 }  // namespace vk
