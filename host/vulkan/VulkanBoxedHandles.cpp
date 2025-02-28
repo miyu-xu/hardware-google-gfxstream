@@ -150,95 +150,6 @@ BoxedHandle BoxedHandleManager::getBoxedFromUnboxed(UnboxedHandle unboxed) {
 
 BoxedHandleManager sBoxedHandleManager;
 
-template <typename VkObjectT>
-constexpr BoxedHandleTypeTag GetTag() {
-    if constexpr (std::is_same_v<VkObjectT, VkAccelerationStructureKHR>) {
-        return Tag_VkAccelerationStructureKHR;
-    } else if constexpr (std::is_same_v<VkObjectT, VkAccelerationStructureNV>) {
-        return Tag_VkAccelerationStructureNV;
-    } else if constexpr (std::is_same_v<VkObjectT, VkBuffer>) {
-        return Tag_VkBuffer;
-    } else if constexpr (std::is_same_v<VkObjectT, VkBufferView>) {
-        return Tag_VkBufferView;
-    } else if constexpr (std::is_same_v<VkObjectT, VkCommandBuffer>) {
-        return Tag_VkCommandBuffer;
-    } else if constexpr (std::is_same_v<VkObjectT, VkCommandPool>) {
-        return Tag_VkCommandPool;
-    } else if constexpr (std::is_same_v<VkObjectT, VkCuFunctionNVX>) {
-        return Tag_VkCuFunctionNVX;
-    } else if constexpr (std::is_same_v<VkObjectT, VkCuModuleNVX>) {
-        return Tag_VkCuModuleNVX;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDebugReportCallbackEXT>) {
-        return Tag_VkDebugReportCallbackEXT;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDebugUtilsMessengerEXT>) {
-        return Tag_VkDebugUtilsMessengerEXT;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorPool>) {
-        return Tag_VkDescriptorPool;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorSet>) {
-        return Tag_VkDescriptorSet;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorSetLayout>) {
-        return Tag_VkDescriptorSetLayout;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorUpdateTemplate>) {
-        return Tag_VkDescriptorUpdateTemplate;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDevice>) {
-        return Tag_VkDevice;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDeviceMemory>) {
-        return Tag_VkDeviceMemory;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDisplayKHR>) {
-        return Tag_VkDisplayKHR;
-    } else if constexpr (std::is_same_v<VkObjectT, VkDisplayModeKHR>) {
-        return Tag_VkDisplayModeKHR;
-    } else if constexpr (std::is_same_v<VkObjectT, VkEvent>) {
-        return Tag_VkEvent;
-    } else if constexpr (std::is_same_v<VkObjectT, VkFence>) {
-        return Tag_VkFence;
-    } else if constexpr (std::is_same_v<VkObjectT, VkFramebuffer>) {
-        return Tag_VkFramebuffer;
-    } else if constexpr (std::is_same_v<VkObjectT, VkImage>) {
-        return Tag_VkImage;
-    } else if constexpr (std::is_same_v<VkObjectT, VkImageView>) {
-        return Tag_VkImageView;
-    } else if constexpr (std::is_same_v<VkObjectT, VkIndirectCommandsLayoutNV>) {
-        return Tag_VkIndirectCommandsLayoutNV;
-    } else if constexpr (std::is_same_v<VkObjectT, VkInstance>) {
-        return Tag_VkInstance;
-    } else if constexpr (std::is_same_v<VkObjectT, VkMicromapEXT>) {
-        return Tag_VkMicromapEXT;
-    } else if constexpr (std::is_same_v<VkObjectT, VkPhysicalDevice>) {
-        return Tag_VkPhysicalDevice;
-    } else if constexpr (std::is_same_v<VkObjectT, VkPipeline>) {
-        return Tag_VkPipeline;
-    } else if constexpr (std::is_same_v<VkObjectT, VkPipelineCache>) {
-        return Tag_VkPipelineCache;
-    } else if constexpr (std::is_same_v<VkObjectT, VkPipelineLayout>) {
-        return Tag_VkPipelineLayout;
-    } else if constexpr (std::is_same_v<VkObjectT, VkPrivateDataSlot>) {
-        return Tag_VkPrivateDataSlot;
-    } else if constexpr (std::is_same_v<VkObjectT, VkQueryPool>) {
-        return Tag_VkQueryPool;
-    } else if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
-        return Tag_VkQueue;
-    } else if constexpr (std::is_same_v<VkObjectT, VkRenderPass>) {
-        return Tag_VkRenderPass;
-    } else if constexpr (std::is_same_v<VkObjectT, VkSampler>) {
-        return Tag_VkSampler;
-    } else if constexpr (std::is_same_v<VkObjectT, VkSamplerYcbcrConversion>) {
-        return Tag_VkSamplerYcbcrConversion;
-    } else if constexpr (std::is_same_v<VkObjectT, VkSemaphore>) {
-        return Tag_VkSemaphore;
-    } else if constexpr (std::is_same_v<VkObjectT, VkShaderModule>) {
-        return Tag_VkShaderModule;
-    } else if constexpr (std::is_same_v<VkObjectT, VkSurfaceKHR>) {
-        return Tag_VkSurfaceKHR;
-    } else if constexpr (std::is_same_v<VkObjectT, VkSwapchainKHR>) {
-        return Tag_VkSwapchainKHR;
-    } else if constexpr (std::is_same_v<VkObjectT, VkValidationCacheEXT>) {
-        return Tag_VkValidationCacheEXT;
-    } else {
-        static_assert(sizeof(VkObjectT) == 0,
-                      "Unhandled VkObjectT. Please update BoxedHandleTypeTag.");
-    }
-}
 
 template <typename VkObjectT>
 constexpr const char* GetTypeStr() {
@@ -330,8 +241,10 @@ constexpr const char* GetTypeStr() {
     }
 }
 
+/*
 template <typename VkObjectT>
-VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
+VkObjectT BoxedHandleManager::new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false)
+{
     BoxedHandleInfo info;
     info.underlying = (uint64_t)underlying;
     if (dispatchable) {
@@ -344,8 +257,10 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
-    return (VkObjectT)sBoxedHandleManager.add(info, GetTag<VkObjectT>());
+    return (VkObjectT)add(info, GetTag<VkObjectT>());
 }
+
+*/
 
 template <typename VkObjectT>
 void delete_VkType(VkObjectT boxed) {
@@ -388,7 +303,7 @@ VkQueue unbox_VkQueueImpl(VkQueue boxed) {
     const uint64_t unboxedQueue64 = info->underlying;
 
     // Use VulkanVirtualQueue directly to avoid locking for hasVirtualGraphicsQueue call.
-    if (VkDecoderGlobalState::get()->getFeatures().VulkanVirtualQueue.enabled) {
+    if (VkDecoderGlobalState::getFeatures().VulkanVirtualQueue.enabled) {
         // Clear virtual bit and unbox into the actual physical queue handle
         return (VkQueue)(unboxedQueue64 & ~QueueInfo::kVirtualQueueBit);
     }
@@ -498,7 +413,7 @@ VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
     }
 
     if (info->readStream == nullptr) {
-        info->readStream = sReadStreamRegistry.pop(VkDecoderGlobalState::get()->getFeatures());
+        info->readStream = sReadStreamRegistry.pop(VkDecoderGlobalState::getFeatures());
     }
 
     return info->readStream;
@@ -518,8 +433,8 @@ VulkanDispatch* get_dispatch_VkType(VkObjectT boxed) {
 //////////////             DISPATCHABLE TYPES                    //////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-VkInstance new_boxed_VkInstance(VkInstance unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
-    return new_boxed_VkType<VkInstance>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
+VkInstance BoxedHandleManager::new_boxed_VkInstance(VkInstance unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
+    return BoxedHandleManager::new_boxed_VkType<VkInstance>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
 }
 
 void delete_VkInstance(VkInstance boxed) {
@@ -550,8 +465,8 @@ VulkanDispatch* dispatch_VkInstance(VkInstance boxed) {
     return get_dispatch_VkType<VkInstance>(boxed);
 }
 
-VkPhysicalDevice new_boxed_VkPhysicalDevice(VkPhysicalDevice unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
-    return new_boxed_VkType<VkPhysicalDevice>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
+VkPhysicalDevice BoxedHandleManager::new_boxed_VkPhysicalDevice(VkPhysicalDevice unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
+    return BoxedHandleManager::new_boxed_VkType<VkPhysicalDevice>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
 }
 
 void delete_VkPhysicalDevice(VkPhysicalDevice boxed) {
@@ -582,8 +497,8 @@ VulkanDispatch* dispatch_VkPhysicalDevice(VkPhysicalDevice boxed) {
     return get_dispatch_VkType<VkPhysicalDevice>(boxed);
 }
 
-VkDevice new_boxed_VkDevice(VkDevice unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
-    return new_boxed_VkType<VkDevice>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
+VkDevice BoxedHandleManager::new_boxed_VkDevice(VkDevice unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
+    return BoxedHandleManager::new_boxed_VkType<VkDevice>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
 }
 
 void delete_VkDevice(VkDevice boxed) {
@@ -614,8 +529,8 @@ VulkanDispatch* dispatch_VkDevice(VkDevice boxed) {
     return get_dispatch_VkType<VkDevice>(boxed);
 }
 
-VkCommandBuffer new_boxed_VkCommandBuffer(VkCommandBuffer unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
-    return new_boxed_VkType<VkCommandBuffer>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
+VkCommandBuffer BoxedHandleManager::new_boxed_VkCommandBuffer(VkCommandBuffer unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
+    return BoxedHandleManager::new_boxed_VkType<VkCommandBuffer>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
 }
 
 void delete_VkCommandBuffer(VkCommandBuffer boxed) {
@@ -646,8 +561,8 @@ VulkanDispatch* dispatch_VkCommandBuffer(VkCommandBuffer boxed) {
     return get_dispatch_VkType<VkCommandBuffer>(boxed);
 }
 
-VkQueue new_boxed_VkQueue(VkQueue unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
-    return new_boxed_VkType<VkQueue>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
+VkQueue BoxedHandleManager::new_boxed_VkQueue(VkQueue unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
+    return BoxedHandleManager::new_boxed_VkType<VkQueue>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
 }
 
 void delete_VkQueue(VkQueue boxed) {
@@ -682,8 +597,8 @@ VulkanDispatch* dispatch_VkQueue(VkQueue boxed) {
 //////////////             NON DISPATCHABLE TYPES                //////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-VkAccelerationStructureKHR new_boxed_non_dispatchable_VkAccelerationStructureKHR(VkAccelerationStructureKHR unboxed) {
-    return new_boxed_VkType<VkAccelerationStructureKHR>(unboxed);
+VkAccelerationStructureKHR BoxedHandleManager::new_boxed_non_dispatchable_VkAccelerationStructureKHR(VkAccelerationStructureKHR unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkAccelerationStructureKHR>(unboxed);
 }
 
 void delete_VkAccelerationStructureKHR(VkAccelerationStructureKHR boxed) {
@@ -710,8 +625,8 @@ void set_boxed_non_dispatchable_VkAccelerationStructureKHR(VkAccelerationStructu
     set_boxed_non_dispatchable_VkType<VkAccelerationStructureKHR>(boxed, new_unboxed);
 }
 
-VkAccelerationStructureNV new_boxed_non_dispatchable_VkAccelerationStructureNV(VkAccelerationStructureNV unboxed) {
-    return new_boxed_VkType<VkAccelerationStructureNV>(unboxed);
+VkAccelerationStructureNV BoxedHandleManager::new_boxed_non_dispatchable_VkAccelerationStructureNV(VkAccelerationStructureNV unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkAccelerationStructureNV>(unboxed);
 }
 
 void delete_VkAccelerationStructureNV(VkAccelerationStructureNV boxed) {
@@ -738,8 +653,8 @@ void set_boxed_non_dispatchable_VkAccelerationStructureNV(VkAccelerationStructur
     set_boxed_non_dispatchable_VkType<VkAccelerationStructureNV>(boxed, new_unboxed);
 }
 
-VkBuffer new_boxed_non_dispatchable_VkBuffer(VkBuffer unboxed) {
-    return new_boxed_VkType<VkBuffer>(unboxed);
+VkBuffer BoxedHandleManager::new_boxed_non_dispatchable_VkBuffer(VkBuffer unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkBuffer>(unboxed);
 }
 
 void delete_VkBuffer(VkBuffer boxed) {
@@ -766,8 +681,8 @@ void set_boxed_non_dispatchable_VkBuffer(VkBuffer boxed, VkBuffer new_unboxed) {
     set_boxed_non_dispatchable_VkType<VkBuffer>(boxed, new_unboxed);
 }
 
-VkBufferView new_boxed_non_dispatchable_VkBufferView(VkBufferView unboxed) {
-    return new_boxed_VkType<VkBufferView>(unboxed);
+VkBufferView BoxedHandleManager::new_boxed_non_dispatchable_VkBufferView(VkBufferView unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkBufferView>(unboxed);
 }
 
 void delete_VkBufferView(VkBufferView boxed) {
@@ -794,8 +709,8 @@ void set_boxed_non_dispatchable_VkBufferView(VkBufferView boxed, VkBufferView ne
     set_boxed_non_dispatchable_VkType<VkBufferView>(boxed, new_unboxed);
 }
 
-VkCommandPool new_boxed_non_dispatchable_VkCommandPool(VkCommandPool unboxed) {
-    return new_boxed_VkType<VkCommandPool>(unboxed);
+VkCommandPool BoxedHandleManager::new_boxed_non_dispatchable_VkCommandPool(VkCommandPool unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkCommandPool>(unboxed);
 }
 
 void delete_VkCommandPool(VkCommandPool boxed) {
@@ -822,8 +737,8 @@ void set_boxed_non_dispatchable_VkCommandPool(VkCommandPool boxed, VkCommandPool
     set_boxed_non_dispatchable_VkType<VkCommandPool>(boxed, new_unboxed);
 }
 
-VkCuFunctionNVX new_boxed_non_dispatchable_VkCuFunctionNVX(VkCuFunctionNVX unboxed) {
-    return new_boxed_VkType<VkCuFunctionNVX>(unboxed);
+VkCuFunctionNVX BoxedHandleManager::new_boxed_non_dispatchable_VkCuFunctionNVX(VkCuFunctionNVX unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkCuFunctionNVX>(unboxed);
 }
 
 void delete_VkCuFunctionNVX(VkCuFunctionNVX boxed) {
@@ -850,8 +765,8 @@ void set_boxed_non_dispatchable_VkCuFunctionNVX(VkCuFunctionNVX boxed, VkCuFunct
     set_boxed_non_dispatchable_VkType<VkCuFunctionNVX>(boxed, new_unboxed);
 }
 
-VkCuModuleNVX new_boxed_non_dispatchable_VkCuModuleNVX(VkCuModuleNVX unboxed) {
-    return new_boxed_VkType<VkCuModuleNVX>(unboxed);
+VkCuModuleNVX BoxedHandleManager::new_boxed_non_dispatchable_VkCuModuleNVX(VkCuModuleNVX unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkCuModuleNVX>(unboxed);
 }
 
 void delete_VkCuModuleNVX(VkCuModuleNVX boxed) {
@@ -878,8 +793,8 @@ void set_boxed_non_dispatchable_VkCuModuleNVX(VkCuModuleNVX boxed, VkCuModuleNVX
     set_boxed_non_dispatchable_VkType<VkCuModuleNVX>(boxed, new_unboxed);
 }
 
-VkDebugReportCallbackEXT new_boxed_non_dispatchable_VkDebugReportCallbackEXT(VkDebugReportCallbackEXT unboxed) {
-    return new_boxed_VkType<VkDebugReportCallbackEXT>(unboxed);
+VkDebugReportCallbackEXT BoxedHandleManager::new_boxed_non_dispatchable_VkDebugReportCallbackEXT(VkDebugReportCallbackEXT unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDebugReportCallbackEXT>(unboxed);
 }
 
 void delete_VkDebugReportCallbackEXT(VkDebugReportCallbackEXT boxed) {
@@ -906,8 +821,8 @@ void set_boxed_non_dispatchable_VkDebugReportCallbackEXT(VkDebugReportCallbackEX
     set_boxed_non_dispatchable_VkType<VkDebugReportCallbackEXT>(boxed, new_unboxed);
 }
 
-VkDebugUtilsMessengerEXT new_boxed_non_dispatchable_VkDebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT unboxed) {
-    return new_boxed_VkType<VkDebugUtilsMessengerEXT>(unboxed);
+VkDebugUtilsMessengerEXT BoxedHandleManager::new_boxed_non_dispatchable_VkDebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDebugUtilsMessengerEXT>(unboxed);
 }
 
 void delete_VkDebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT boxed) {
@@ -934,8 +849,8 @@ void set_boxed_non_dispatchable_VkDebugUtilsMessengerEXT(VkDebugUtilsMessengerEX
     set_boxed_non_dispatchable_VkType<VkDebugUtilsMessengerEXT>(boxed, new_unboxed);
 }
 
-VkDescriptorPool new_boxed_non_dispatchable_VkDescriptorPool(VkDescriptorPool unboxed) {
-    return new_boxed_VkType<VkDescriptorPool>(unboxed);
+VkDescriptorPool BoxedHandleManager::new_boxed_non_dispatchable_VkDescriptorPool(VkDescriptorPool unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDescriptorPool>(unboxed);
 }
 
 void delete_VkDescriptorPool(VkDescriptorPool boxed) {
@@ -962,8 +877,8 @@ void set_boxed_non_dispatchable_VkDescriptorPool(VkDescriptorPool boxed, VkDescr
     set_boxed_non_dispatchable_VkType<VkDescriptorPool>(boxed, new_unboxed);
 }
 
-VkDescriptorSet new_boxed_non_dispatchable_VkDescriptorSet(VkDescriptorSet unboxed) {
-    return new_boxed_VkType<VkDescriptorSet>(unboxed);
+VkDescriptorSet BoxedHandleManager::new_boxed_non_dispatchable_VkDescriptorSet(VkDescriptorSet unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDescriptorSet>(unboxed);
 }
 
 void delete_VkDescriptorSet(VkDescriptorSet boxed) {
@@ -990,8 +905,8 @@ void set_boxed_non_dispatchable_VkDescriptorSet(VkDescriptorSet boxed, VkDescrip
     set_boxed_non_dispatchable_VkType<VkDescriptorSet>(boxed, new_unboxed);
 }
 
-VkDescriptorSetLayout new_boxed_non_dispatchable_VkDescriptorSetLayout(VkDescriptorSetLayout unboxed) {
-    return new_boxed_VkType<VkDescriptorSetLayout>(unboxed);
+VkDescriptorSetLayout BoxedHandleManager::new_boxed_non_dispatchable_VkDescriptorSetLayout(VkDescriptorSetLayout unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDescriptorSetLayout>(unboxed);
 }
 
 void delete_VkDescriptorSetLayout(VkDescriptorSetLayout boxed) {
@@ -1018,8 +933,8 @@ void set_boxed_non_dispatchable_VkDescriptorSetLayout(VkDescriptorSetLayout boxe
     set_boxed_non_dispatchable_VkType<VkDescriptorSetLayout>(boxed, new_unboxed);
 }
 
-VkDescriptorUpdateTemplate new_boxed_non_dispatchable_VkDescriptorUpdateTemplate(VkDescriptorUpdateTemplate unboxed) {
-    return new_boxed_VkType<VkDescriptorUpdateTemplate>(unboxed);
+VkDescriptorUpdateTemplate BoxedHandleManager::new_boxed_non_dispatchable_VkDescriptorUpdateTemplate(VkDescriptorUpdateTemplate unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDescriptorUpdateTemplate>(unboxed);
 }
 
 void delete_VkDescriptorUpdateTemplate(VkDescriptorUpdateTemplate boxed) {
@@ -1046,8 +961,8 @@ void set_boxed_non_dispatchable_VkDescriptorUpdateTemplate(VkDescriptorUpdateTem
     set_boxed_non_dispatchable_VkType<VkDescriptorUpdateTemplate>(boxed, new_unboxed);
 }
 
-VkDeviceMemory new_boxed_non_dispatchable_VkDeviceMemory(VkDeviceMemory unboxed) {
-    return new_boxed_VkType<VkDeviceMemory>(unboxed);
+VkDeviceMemory BoxedHandleManager::new_boxed_non_dispatchable_VkDeviceMemory(VkDeviceMemory unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDeviceMemory>(unboxed);
 }
 
 void delete_VkDeviceMemory(VkDeviceMemory boxed) {
@@ -1074,8 +989,8 @@ void set_boxed_non_dispatchable_VkDeviceMemory(VkDeviceMemory boxed, VkDeviceMem
     set_boxed_non_dispatchable_VkType<VkDeviceMemory>(boxed, new_unboxed);
 }
 
-VkDisplayKHR new_boxed_non_dispatchable_VkDisplayKHR(VkDisplayKHR unboxed) {
-    return new_boxed_VkType<VkDisplayKHR>(unboxed);
+VkDisplayKHR BoxedHandleManager::new_boxed_non_dispatchable_VkDisplayKHR(VkDisplayKHR unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDisplayKHR>(unboxed);
 }
 
 void delete_VkDisplayKHR(VkDisplayKHR boxed) {
@@ -1102,8 +1017,8 @@ void set_boxed_non_dispatchable_VkDisplayKHR(VkDisplayKHR boxed, VkDisplayKHR ne
     set_boxed_non_dispatchable_VkType<VkDisplayKHR>(boxed, new_unboxed);
 }
 
-VkDisplayModeKHR new_boxed_non_dispatchable_VkDisplayModeKHR(VkDisplayModeKHR unboxed) {
-    return new_boxed_VkType<VkDisplayModeKHR>(unboxed);
+VkDisplayModeKHR BoxedHandleManager::new_boxed_non_dispatchable_VkDisplayModeKHR(VkDisplayModeKHR unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkDisplayModeKHR>(unboxed);
 }
 
 void delete_VkDisplayModeKHR(VkDisplayModeKHR boxed) {
@@ -1130,8 +1045,8 @@ void set_boxed_non_dispatchable_VkDisplayModeKHR(VkDisplayModeKHR boxed, VkDispl
     set_boxed_non_dispatchable_VkType<VkDisplayModeKHR>(boxed, new_unboxed);
 }
 
-VkEvent new_boxed_non_dispatchable_VkEvent(VkEvent unboxed) {
-    return new_boxed_VkType<VkEvent>(unboxed);
+VkEvent BoxedHandleManager::new_boxed_non_dispatchable_VkEvent(VkEvent unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkEvent>(unboxed);
 }
 
 void delete_VkEvent(VkEvent boxed) {
@@ -1158,8 +1073,8 @@ void set_boxed_non_dispatchable_VkEvent(VkEvent boxed, VkEvent new_unboxed) {
     set_boxed_non_dispatchable_VkType<VkEvent>(boxed, new_unboxed);
 }
 
-VkFence new_boxed_non_dispatchable_VkFence(VkFence unboxed) {
-    return new_boxed_VkType<VkFence>(unboxed);
+VkFence BoxedHandleManager::new_boxed_non_dispatchable_VkFence(VkFence unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkFence>(unboxed);
 }
 
 void delete_VkFence(VkFence boxed) {
@@ -1186,8 +1101,8 @@ void set_boxed_non_dispatchable_VkFence(VkFence boxed, VkFence new_unboxed) {
     set_boxed_non_dispatchable_VkType<VkFence>(boxed, new_unboxed);
 }
 
-VkFramebuffer new_boxed_non_dispatchable_VkFramebuffer(VkFramebuffer unboxed) {
-    return new_boxed_VkType<VkFramebuffer>(unboxed);
+VkFramebuffer BoxedHandleManager::new_boxed_non_dispatchable_VkFramebuffer(VkFramebuffer unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkFramebuffer>(unboxed);
 }
 
 void delete_VkFramebuffer(VkFramebuffer boxed) {
@@ -1214,8 +1129,8 @@ void set_boxed_non_dispatchable_VkFramebuffer(VkFramebuffer boxed, VkFramebuffer
     set_boxed_non_dispatchable_VkType<VkFramebuffer>(boxed, new_unboxed);
 }
 
-VkImage new_boxed_non_dispatchable_VkImage(VkImage unboxed) {
-    return new_boxed_VkType<VkImage>(unboxed);
+VkImage BoxedHandleManager::new_boxed_non_dispatchable_VkImage(VkImage unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkImage>(unboxed);
 }
 
 void delete_VkImage(VkImage boxed) {
@@ -1242,8 +1157,8 @@ void set_boxed_non_dispatchable_VkImage(VkImage boxed, VkImage new_unboxed) {
     set_boxed_non_dispatchable_VkType<VkImage>(boxed, new_unboxed);
 }
 
-VkImageView new_boxed_non_dispatchable_VkImageView(VkImageView unboxed) {
-    return new_boxed_VkType<VkImageView>(unboxed);
+VkImageView BoxedHandleManager::new_boxed_non_dispatchable_VkImageView(VkImageView unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkImageView>(unboxed);
 }
 
 void delete_VkImageView(VkImageView boxed) {
@@ -1270,8 +1185,8 @@ void set_boxed_non_dispatchable_VkImageView(VkImageView boxed, VkImageView new_u
     set_boxed_non_dispatchable_VkType<VkImageView>(boxed, new_unboxed);
 }
 
-VkIndirectCommandsLayoutNV new_boxed_non_dispatchable_VkIndirectCommandsLayoutNV(VkIndirectCommandsLayoutNV unboxed) {
-    return new_boxed_VkType<VkIndirectCommandsLayoutNV>(unboxed);
+VkIndirectCommandsLayoutNV BoxedHandleManager::new_boxed_non_dispatchable_VkIndirectCommandsLayoutNV(VkIndirectCommandsLayoutNV unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkIndirectCommandsLayoutNV>(unboxed);
 }
 
 void delete_VkIndirectCommandsLayoutNV(VkIndirectCommandsLayoutNV boxed) {
@@ -1298,8 +1213,8 @@ void set_boxed_non_dispatchable_VkIndirectCommandsLayoutNV(VkIndirectCommandsLay
     set_boxed_non_dispatchable_VkType<VkIndirectCommandsLayoutNV>(boxed, new_unboxed);
 }
 
-VkMicromapEXT new_boxed_non_dispatchable_VkMicromapEXT(VkMicromapEXT unboxed) {
-    return new_boxed_VkType<VkMicromapEXT>(unboxed);
+VkMicromapEXT BoxedHandleManager::new_boxed_non_dispatchable_VkMicromapEXT(VkMicromapEXT unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkMicromapEXT>(unboxed);
 }
 
 void delete_VkMicromapEXT(VkMicromapEXT boxed) {
@@ -1326,8 +1241,8 @@ void set_boxed_non_dispatchable_VkMicromapEXT(VkMicromapEXT boxed, VkMicromapEXT
     set_boxed_non_dispatchable_VkType<VkMicromapEXT>(boxed, new_unboxed);
 }
 
-VkPipeline new_boxed_non_dispatchable_VkPipeline(VkPipeline unboxed) {
-    return new_boxed_VkType<VkPipeline>(unboxed);
+VkPipeline BoxedHandleManager::new_boxed_non_dispatchable_VkPipeline(VkPipeline unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkPipeline>(unboxed);
 }
 
 void delete_VkPipeline(VkPipeline boxed) {
@@ -1354,8 +1269,8 @@ void set_boxed_non_dispatchable_VkPipeline(VkPipeline boxed, VkPipeline new_unbo
     set_boxed_non_dispatchable_VkType<VkPipeline>(boxed, new_unboxed);
 }
 
-VkPipelineCache new_boxed_non_dispatchable_VkPipelineCache(VkPipelineCache unboxed) {
-    return new_boxed_VkType<VkPipelineCache>(unboxed);
+VkPipelineCache BoxedHandleManager::new_boxed_non_dispatchable_VkPipelineCache(VkPipelineCache unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkPipelineCache>(unboxed);
 }
 
 void delete_VkPipelineCache(VkPipelineCache boxed) {
@@ -1382,8 +1297,8 @@ void set_boxed_non_dispatchable_VkPipelineCache(VkPipelineCache boxed, VkPipelin
     set_boxed_non_dispatchable_VkType<VkPipelineCache>(boxed, new_unboxed);
 }
 
-VkPipelineLayout new_boxed_non_dispatchable_VkPipelineLayout(VkPipelineLayout unboxed) {
-    return new_boxed_VkType<VkPipelineLayout>(unboxed);
+VkPipelineLayout BoxedHandleManager::new_boxed_non_dispatchable_VkPipelineLayout(VkPipelineLayout unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkPipelineLayout>(unboxed);
 }
 
 void delete_VkPipelineLayout(VkPipelineLayout boxed) {
@@ -1410,8 +1325,8 @@ void set_boxed_non_dispatchable_VkPipelineLayout(VkPipelineLayout boxed, VkPipel
     set_boxed_non_dispatchable_VkType<VkPipelineLayout>(boxed, new_unboxed);
 }
 
-VkPrivateDataSlot new_boxed_non_dispatchable_VkPrivateDataSlot(VkPrivateDataSlot unboxed) {
-    return new_boxed_VkType<VkPrivateDataSlot>(unboxed);
+VkPrivateDataSlot BoxedHandleManager::new_boxed_non_dispatchable_VkPrivateDataSlot(VkPrivateDataSlot unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkPrivateDataSlot>(unboxed);
 }
 
 void delete_VkPrivateDataSlot(VkPrivateDataSlot boxed) {
@@ -1438,8 +1353,8 @@ void set_boxed_non_dispatchable_VkPrivateDataSlot(VkPrivateDataSlot boxed, VkPri
     set_boxed_non_dispatchable_VkType<VkPrivateDataSlot>(boxed, new_unboxed);
 }
 
-VkQueryPool new_boxed_non_dispatchable_VkQueryPool(VkQueryPool unboxed) {
-    return new_boxed_VkType<VkQueryPool>(unboxed);
+VkQueryPool BoxedHandleManager::new_boxed_non_dispatchable_VkQueryPool(VkQueryPool unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkQueryPool>(unboxed);
 }
 
 void delete_VkQueryPool(VkQueryPool boxed) {
@@ -1466,8 +1381,8 @@ void set_boxed_non_dispatchable_VkQueryPool(VkQueryPool boxed, VkQueryPool new_u
     set_boxed_non_dispatchable_VkType<VkQueryPool>(boxed, new_unboxed);
 }
 
-VkRenderPass new_boxed_non_dispatchable_VkRenderPass(VkRenderPass unboxed) {
-    return new_boxed_VkType<VkRenderPass>(unboxed);
+VkRenderPass BoxedHandleManager::new_boxed_non_dispatchable_VkRenderPass(VkRenderPass unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkRenderPass>(unboxed);
 }
 
 void delete_VkRenderPass(VkRenderPass boxed) {
@@ -1494,8 +1409,8 @@ void set_boxed_non_dispatchable_VkRenderPass(VkRenderPass boxed, VkRenderPass ne
     set_boxed_non_dispatchable_VkType<VkRenderPass>(boxed, new_unboxed);
 }
 
-VkSampler new_boxed_non_dispatchable_VkSampler(VkSampler unboxed) {
-    return new_boxed_VkType<VkSampler>(unboxed);
+VkSampler BoxedHandleManager::new_boxed_non_dispatchable_VkSampler(VkSampler unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkSampler>(unboxed);
 }
 
 void delete_VkSampler(VkSampler boxed) {
@@ -1522,8 +1437,8 @@ void set_boxed_non_dispatchable_VkSampler(VkSampler boxed, VkSampler new_unboxed
     set_boxed_non_dispatchable_VkType<VkSampler>(boxed, new_unboxed);
 }
 
-VkSamplerYcbcrConversion new_boxed_non_dispatchable_VkSamplerYcbcrConversion(VkSamplerYcbcrConversion unboxed) {
-    return new_boxed_VkType<VkSamplerYcbcrConversion>(unboxed);
+VkSamplerYcbcrConversion BoxedHandleManager::new_boxed_non_dispatchable_VkSamplerYcbcrConversion(VkSamplerYcbcrConversion unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkSamplerYcbcrConversion>(unboxed);
 }
 
 void delete_VkSamplerYcbcrConversion(VkSamplerYcbcrConversion boxed) {
@@ -1550,8 +1465,8 @@ void set_boxed_non_dispatchable_VkSamplerYcbcrConversion(VkSamplerYcbcrConversio
     set_boxed_non_dispatchable_VkType<VkSamplerYcbcrConversion>(boxed, new_unboxed);
 }
 
-VkSemaphore new_boxed_non_dispatchable_VkSemaphore(VkSemaphore unboxed) {
-    return new_boxed_VkType<VkSemaphore>(unboxed);
+VkSemaphore BoxedHandleManager::new_boxed_non_dispatchable_VkSemaphore(VkSemaphore unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkSemaphore>(unboxed);
 }
 
 void delete_VkSemaphore(VkSemaphore boxed) {
@@ -1578,8 +1493,8 @@ void set_boxed_non_dispatchable_VkSemaphore(VkSemaphore boxed, VkSemaphore new_u
     set_boxed_non_dispatchable_VkType<VkSemaphore>(boxed, new_unboxed);
 }
 
-VkShaderModule new_boxed_non_dispatchable_VkShaderModule(VkShaderModule unboxed) {
-    return new_boxed_VkType<VkShaderModule>(unboxed);
+VkShaderModule BoxedHandleManager::new_boxed_non_dispatchable_VkShaderModule(VkShaderModule unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkShaderModule>(unboxed);
 }
 
 void delete_VkShaderModule(VkShaderModule boxed) {
@@ -1606,8 +1521,8 @@ void set_boxed_non_dispatchable_VkShaderModule(VkShaderModule boxed, VkShaderMod
     set_boxed_non_dispatchable_VkType<VkShaderModule>(boxed, new_unboxed);
 }
 
-VkSurfaceKHR new_boxed_non_dispatchable_VkSurfaceKHR(VkSurfaceKHR unboxed) {
-    return new_boxed_VkType<VkSurfaceKHR>(unboxed);
+VkSurfaceKHR BoxedHandleManager::new_boxed_non_dispatchable_VkSurfaceKHR(VkSurfaceKHR unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkSurfaceKHR>(unboxed);
 }
 
 void delete_VkSurfaceKHR(VkSurfaceKHR boxed) {
@@ -1634,8 +1549,8 @@ void set_boxed_non_dispatchable_VkSurfaceKHR(VkSurfaceKHR boxed, VkSurfaceKHR ne
     set_boxed_non_dispatchable_VkType<VkSurfaceKHR>(boxed, new_unboxed);
 }
 
-VkSwapchainKHR new_boxed_non_dispatchable_VkSwapchainKHR(VkSwapchainKHR unboxed) {
-    return new_boxed_VkType<VkSwapchainKHR>(unboxed);
+VkSwapchainKHR BoxedHandleManager::new_boxed_non_dispatchable_VkSwapchainKHR(VkSwapchainKHR unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkSwapchainKHR>(unboxed);
 }
 
 void delete_VkSwapchainKHR(VkSwapchainKHR boxed) {
@@ -1662,8 +1577,8 @@ void set_boxed_non_dispatchable_VkSwapchainKHR(VkSwapchainKHR boxed, VkSwapchain
     set_boxed_non_dispatchable_VkType<VkSwapchainKHR>(boxed, new_unboxed);
 }
 
-VkValidationCacheEXT new_boxed_non_dispatchable_VkValidationCacheEXT(VkValidationCacheEXT unboxed) {
-    return new_boxed_VkType<VkValidationCacheEXT>(unboxed);
+VkValidationCacheEXT BoxedHandleManager::new_boxed_non_dispatchable_VkValidationCacheEXT(VkValidationCacheEXT unboxed) {
+    return BoxedHandleManager::new_boxed_VkType<VkValidationCacheEXT>(unboxed);
 }
 
 void delete_VkValidationCacheEXT(VkValidationCacheEXT boxed) {
