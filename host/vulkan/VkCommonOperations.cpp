@@ -100,6 +100,16 @@ static bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_
                                              uint32_t w, uint32_t h, const void* pixels,
                                              size_t inputPixelsSize);
 
+static void createGlobalStatesAndHandleManagers(int count, std::vector<VkProcessState> & processStates) {
+    processStates.resize(count);
+    for (int i=0; i < count; ++i) {
+        processStates[i].mState = std::make_shared<VkDecoderGlobalState>();
+        processStates[i].mState->setId(i);
+        processStates[i].mBoxedHandleManager = std::make_shared<BoxedHandleManager>();
+        processStates[i].mState->setBoxedHandleManager(processStates[i].mBoxedHandleManager);
+    }
+}
+
 static std::optional<ExternalHandleInfo> dupExternalMemory(std::optional<ExternalHandleInfo> handleInfo) {
     if (!handleInfo) {
         ERR("dupExternalMemory: No external memory handle info provided to duplicate the external memory");
@@ -754,6 +764,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     }
 
     sVkEmulation = new VkEmulation;
+    
     sVkEmulation->callbacks = callbacks;
     sVkEmulation->features = features;
 
@@ -1606,6 +1617,9 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 
     sVkEmulation->transferQueueCommandBufferPool.resize(0);
 
+    // allocate 128 process state
+    createGlobalStatesAndHandleManagers(128, sVkEmulation->mProcessStates);
+
     return sVkEmulation;
 }
 
@@ -2368,6 +2382,39 @@ static bool updateMemReqsForExtMem(std::optional<ExternalHandleInfo> extMemHandl
 // We should make it so the guest can only allocate external images/
 // buffers of one type index for image and one type index for buffer
 // to begin with, via filtering from the host.
+static constexpr const uint64_t kInvalidPUID = std::numeric_limits<uint64_t>::max();
+
+std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalStateById(int index) {
+    std::shared_ptr<VkDecoderGlobalState> emptyptr;
+    {
+        AutoLock lock(sVkEmulationLock);
+        if (index >= 0 && index < sVkEmulation->mProcessStates.size()) {
+            return sVkEmulation->mProcessStates[index].mState;
+        }
+    }
+    return emptyptr;
+}
+
+std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalState(uint64_t puid) {
+    std::shared_ptr<VkDecoderGlobalState> emptyptr;
+    if (puid > 0 && puid != kInvalidPUID) {
+        AutoLock lock(sVkEmulationLock);
+        for (int i = 0; i < sVkEmulation->mProcessStates.size(); ++i) {
+            if (sVkEmulation->mProcessStates[i].mPuid.has_value()) {
+                if (sVkEmulation->mProcessStates[i].mPuid.value() == puid) {
+                    return sVkEmulation->mProcessStates[i].mState;
+                }
+            }
+        }
+        for (int i = 0; i < sVkEmulation->mProcessStates.size(); ++i) {
+            if (!sVkEmulation->mProcessStates[i].mPuid.has_value()) {
+                sVkEmulation->mProcessStates[i].mPuid = puid;
+                return sVkEmulation->mProcessStates[i].mState;
+            }
+        }
+    }
+    return emptyptr;
+}
 
 static bool createVkColorBufferLocked(uint32_t width, uint32_t height, GLenum internalFormat,
                                       FrameworkFormat frameworkFormat, uint32_t colorBufferHandle,

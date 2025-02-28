@@ -21,11 +21,21 @@ namespace vk {
 
 static thread_local RenderThreadInfoVk* tlThreadInfo = nullptr;
 
+static std::string getThreadID() {
+    std::ostringstream ss;
+    ss << std::this_thread::get_id();
+    std::string result = ss.str();
+    return result;
+}
+
+
 RenderThreadInfoVk::RenderThreadInfoVk() {
     if (tlThreadInfo != nullptr) {
         GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
             << "Attempted to set thread local Vk render thread info twice.";
     }
+    fprintf(stderr, "tid %s %s %d RenderThreadInfoVk is %p\n", getThreadID().c_str(),
+            __func__, __LINE__, this);
     tlThreadInfo = this;
 }
 
