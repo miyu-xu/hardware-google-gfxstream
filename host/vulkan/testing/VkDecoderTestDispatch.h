@@ -28,7 +28,7 @@ class VkDecoderTestDispatch {
    public:
     VkDecoderTestDispatch(VulkanDispatch* vk, android::base::BumpPool* bp,
                           VkDecoderContext* decoderContext)
-        : mVk(vk), mDgs(VkDecoderGlobalState::get()), mBp(bp), mDecoderContext(decoderContext) {}
+        : mVk(vk), mDgs(VkDecoderGlobalState::getForTest()), mBp(bp), mDecoderContext(decoderContext) {}
 
     // Vulkan API wrappers - please keep sorted alphabetically
     //
