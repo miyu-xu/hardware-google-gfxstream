@@ -15,6 +15,7 @@
 #include "VulkanBoxedHandles.h"
 
 #include "VkDecoderGlobalState.h"
+#include "RenderThreadInfoVk.h"
 #include "VkDecoderInternalStructs.h"
 
 namespace gfxstream {
@@ -332,6 +333,11 @@ constexpr const char* GetTypeStr() {
 
 template <typename VkObjectT>
 VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
+    {
+//   RenderThreadInfo *tInfo = RenderThreadInfo::get();
+            auto* renderThreadInfo = RenderThreadInfoVk::get();
+ //   tInfo->m_puid = puid;
+    }
     BoxedHandleInfo info;
     info.underlying = (uint64_t)underlying;
     if (dispatchable) {
