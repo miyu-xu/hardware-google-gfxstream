@@ -28,7 +28,7 @@ class VkDecoderTestDispatch {
    public:
     VkDecoderTestDispatch(VulkanDispatch* vk, android::base::BumpPool* bp,
                           VkDecoderContext* decoderContext)
-        : mVk(vk), mDgs(VkDecoderGlobalState::get()), mBp(bp), mDecoderContext(decoderContext) {}
+        : mVk(vk), mDgs(VkDecoderGlobalState::getForTest()), mBp(bp), mDecoderContext(decoderContext) {}
 
     // Vulkan API wrappers - please keep sorted alphabetically
     //
@@ -229,7 +229,7 @@ class VkDecoderTestDispatch {
                                       commandBufferCount, pCommandBuffers);
         // Calling delete_VkCommandBuffer is normally done in the decoder, so we have to do it here.
         for (int i = 0; i < commandBufferCount; ++i) {
-            delete_VkCommandBuffer(unboxed_to_boxed_VkCommandBuffer(pCommandBuffers[i]));
+            delete_VkCommandBuffer(mDgs->getBoxedHandleManager()->unboxed_to_boxed_VkCommandBuffer(pCommandBuffers[i]));
         }
     }
 

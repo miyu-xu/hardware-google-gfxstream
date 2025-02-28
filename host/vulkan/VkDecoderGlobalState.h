@@ -26,6 +26,7 @@
 #include "VkSnapshotApiCall.h"
 #include "VulkanDispatch.h"
 #include "VulkanHandleMapping.h"
+#include "VulkanBoxedHandles.h"
 #include "aemu/base/AsyncResult.h"
 #include "aemu/base/HealthMonitor.h"
 #include "aemu/base/synchronization/Lock.h"
@@ -68,20 +69,25 @@ class VkDecoderGlobalState {
     VkDecoderGlobalState();
     ~VkDecoderGlobalState();
 
-    // There should only be one instance of VkDecoderGlobalState per process
+    // For Testing only:
     // Note: currently not thread-safe
-    static VkDecoderGlobalState* get();
+    static VkDecoderGlobalState* getForTest();
 
     // For testing only - destroys the global instance of VkDecoderGlobalState.
-    static void reset();
+    static void resetForTest();
+
+    static std::shared_ptr<VkDecoderGlobalState> get(uint64_t handle);
+
+    void setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager);
+    std::shared_ptr<BoxedHandleManager> getBoxedHandleManager();
 
     // Snapshot save/load
     bool snapshotsEnabled() const;
-    bool isSnapshotCurrentlyLoading() const;
+    static bool isSnapshotCurrentlyLoading();
 
     bool batchedDescriptorSetUpdateEnabled() const;
 
-    const gfxstream::host::FeatureSet& getFeatures() const;
+    static const gfxstream::host::FeatureSet& getFeatures();
 
     // Whether to clean up VK instance.
     // bug 149997534
@@ -500,7 +506,7 @@ class VkDecoderGlobalState {
         uint32_t vendorID = 0;
     };
 
-    HostFeatureSupport getHostFeatureSupport() const;
+    static HostFeatureSupport getHostFeatureSupport();
 
     // VK_ANDROID_native_buffer
     VkResult on_vkGetSwapchainGrallocUsageANDROID(android::base::BumpPool* pool,
@@ -854,7 +860,7 @@ class VkDecoderGlobalState {
         uint32_t* pPhysicalDeviceGroupCount,
         VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties);
 
-    void on_DeviceLost();
+    static void on_DeviceLost();
 
     void on_CheckOutOfMemory(VkResult result, uint32_t opCode, const VkDecoderContext& context,
                              std::optional<uint64_t> allocationSize = std::nullopt);
