@@ -34,6 +34,41 @@
       "parentUuid": "5120b83c_a84d81bd",
       "revId": "38080928dc4a15daba0c4349b37bd7b8aec086b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e853b089_ea2b9dcf",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2588,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-28T13:49:30Z",
+      "side": 1,
+      "message": "This should be looking into `supportsSamplerYcbcrConversion` instead.",
+      "fixSuggestions": [
+        {
+          "fixId": "a4edb2d2_7c432a8a",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkCommonOperations.cpp",
+              "range": {
+                "startLine": 2588,
+                "startChar": 0,
+                "endLine": 2589,
+                "endChar": 0
+              },
+              "replacement": "        if (!sVkEmulation-\u003edeviceInfo.supportsSamplerYcbcrConversion) {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "38080928dc4a15daba0c4349b37bd7b8aec086b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
