@@ -26,6 +26,7 @@
 #include "VkSnapshotApiCall.h"
 #include "VulkanDispatch.h"
 #include "VulkanHandleMapping.h"
+#include "VulkanBoxedHandles.h"
 #include "aemu/base/AsyncResult.h"
 #include "aemu/base/HealthMonitor.h"
 #include "aemu/base/synchronization/Lock.h"
@@ -73,7 +74,12 @@ class VkDecoderGlobalState {
     static VkDecoderGlobalState* get();
 
     // For testing only - destroys the global instance of VkDecoderGlobalState.
-    static void reset();
+    //static void reset();
+
+    static std::shared_ptr<VkDecoderGlobalState> get(uint64_t handle);
+
+    void setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager);
+    std::shared_ptr<BoxedHandleManager> getBoxedHandleManager();
 
     // Snapshot save/load
     bool snapshotsEnabled() const;
