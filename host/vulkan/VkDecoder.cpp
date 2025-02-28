@@ -65,10 +65,11 @@ using android::base::MetricEventDuplicateSequenceNum;
 
 class VkDecoder::Impl {
    public:
-    Impl()
+    Impl(std::shared_ptr<VkDecoderGlobalState> state)
         : m_logCalls(android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1"),
           m_vk(vkDispatch()),
-          m_state(VkDecoderGlobalState::get()),
+          m_state(state.get()),
+          m_shared_state(state),
           m_vkStream(nullptr, m_state->getFeatures()),
           m_vkMemReadingStream(nullptr, m_state->getFeatures()),
           m_boxedHandleCreateMapping(m_state),
@@ -90,6 +91,7 @@ class VkDecoder::Impl {
     bool m_forSnapshotLoad = false;
     VulkanDispatch* m_vk;
     VkDecoderGlobalState* m_state;
+    std::shared_ptr<VkDecoderGlobalState> m_shared_state;
     VulkanStream m_vkStream;
     VulkanMemReadingStream m_vkMemReadingStream;
     BoxedHandleCreateMapping m_boxedHandleCreateMapping;
@@ -100,7 +102,7 @@ class VkDecoder::Impl {
     const bool m_snapshotsEnabled = false;
 };
 
-VkDecoder::VkDecoder() : mImpl(new VkDecoder::Impl()) {}
+VkDecoder::VkDecoder() = default;
 
 VkDecoder::~VkDecoder() = default;
 
@@ -111,9 +113,19 @@ void VkDecoder::setForSnapshotLoad(bool forSnapshotLoad) {
 size_t VkDecoder::decode(void* buf, size_t bufsize, IOStream* stream,
                          const ProcessResources* processResources,
                          const VkDecoderContext& context) {
+    if (!mImpl) {
+        mImpl.reset(new VkDecoder::Impl(m_state));
+    }
     return mImpl->decode(buf, bufsize, stream, processResources, context);
 }
 
+void VkDecoder::setVkDecoderGlobalState(std::shared_ptr<VkDecoderGlobalState> state) {
+    m_state = state;
+}
+
+std::shared_ptr<VkDecoderGlobalState> VkDecoder::getVkDecoderGlobalState() {
+    return m_state;
+}
 // VkDecoder::Impl::decode to follow
 
 size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
@@ -4695,10 +4707,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device,
                             (unsigned long long)pipelineLayout, (unsigned long long)pAllocator);
                 }
-                std::function<void()> delayed_remove_callback = [device, pipelineLayout,
+                std::function<void()> delayed_remove_callback = [this, device, pipelineLayout,
                                                                  pAllocator]() {
-                    auto m_state = VkDecoderGlobalState::get();
-                    m_state->on_vkDestroyPipelineLayout(nullptr, nullptr, device, pipelineLayout,
+                    m_shared_state->on_vkDestroyPipelineLayout(nullptr, nullptr, device, pipelineLayout,
                                                         pAllocator);
                 };
                 vkStream->unsetHandleMapping();

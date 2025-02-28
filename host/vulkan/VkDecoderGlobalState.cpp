@@ -207,11 +207,21 @@ static uint64_t hostBlobId = 0;
 // snapshot with virtio.
 static uint32_t kTemporaryContextIdForSnapshotLoading = 1;
 
+enum class SnapshotState {
+        Normal,
+        Saving,
+        Loading,
+};
+
+static SnapshotState mSnapshotState = SnapshotState::Normal;
+
 class VkDecoderGlobalState::Impl {
    public:
-    Impl()
+    Impl(VkDecoderGlobalState* parent)
         : m_vk(vkDispatch()),
           m_emu(getGlobalVkEmulation()),
+          m_parent_state(parent),
+          mSnapshot(parent),
           mRenderDocWithMultipleVkInstances(m_emu->guestRenderDoc.get()) {
         mSnapshotsEnabled = m_emu->features.VulkanSnapshots.enabled;
         mBatchedDescriptorSetUpdateEnabled =
@@ -261,9 +271,17 @@ class VkDecoderGlobalState::Impl {
 #endif
         mDescriptorUpdateTemplateInfo.clear();
 
-        sBoxedHandleManager.clear();
+        mBoxedHandleManager->clear();
 
         mSnapshot.clear();
+    }
+
+    void setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager) {
+        mBoxedHandleManager = BoxedHandleManager;
+    }
+    
+    std::shared_ptr<BoxedHandleManager> getBoxedHandleManager() {
+        return mBoxedHandleManager;
     }
 
     bool snapshotsEnabled() const { return mSnapshotsEnabled; }
@@ -272,7 +290,9 @@ class VkDecoderGlobalState::Impl {
 
     bool vkCleanupEnabled() const { return mVkCleanupEnabled; }
 
-    const gfxstream::host::FeatureSet& getFeatures() const { return m_emu->features; }
+    static const gfxstream::host::FeatureSet& getFeatures() {
+        return getGlobalVkEmulation()->features;
+    }
 
     StateBlock createSnapshotStateBlock(VkDevice unboxed_device) REQUIRES(mMutex) {
         const auto& device = unboxed_device;
@@ -444,7 +464,7 @@ class VkDecoderGlobalState::Impl {
             const DescriptorPoolInfo& poolInfo = mDescriptorPoolInfo[unboxedDescriptorPool];
 
             for (uint64_t poolId : poolInfo.poolIds) {
-                BoxedHandleInfo* setHandleInfo = sBoxedHandleManager.get(poolId);
+                BoxedHandleInfo* setHandleInfo = mBoxedHandleManager->get(poolId);
                 bool allocated = setHandleInfo->underlying != 0;
                 stream->putByte(allocated);
                 if (!allocated) {
@@ -621,7 +641,7 @@ class VkDecoderGlobalState::Impl {
             std::vector<uint8_t> decoderReplayBuffer;
             VkDecoderSnapshot::loadReplayBuffers(stream, &handleReplayBuffer, &decoderReplayBuffer);
 
-            sBoxedHandleManager.replayHandles(handleReplayBuffer);
+            mBoxedHandleManager->replayHandles(handleReplayBuffer);
 
             VkDecoder decoderForLoading;
             // A decoder that is set for snapshot load will load up the created handles first,
@@ -990,7 +1010,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void processDelayedRemovesForDevice(VkDevice device) EXCLUDES(mMutex) {
-        sBoxedHandleManager.processDelayedRemoves(device);
+        mBoxedHandleManager->processDelayedRemoves(device);
     }
 
     void vkDestroyInstanceImpl(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
@@ -3541,7 +3561,7 @@ class VkDecoderGlobalState::Impl {
                 }
             } else {
                 for (auto poolId : descriptorPoolInfo.poolIds) {
-                    auto handleInfo = sBoxedHandleManager.get(poolId);
+                    auto handleInfo = mBoxedHandleManager->get(poolId);
                     if (handleInfo)
                         handleInfo->underlying = reinterpret_cast<uint64_t>(VK_NULL_HANDLE);
                 }
@@ -3707,7 +3727,7 @@ class VkDecoderGlobalState::Impl {
                     android::base::find(poolInfo->allocedSetsToBoxed, pDescriptorSets[i]);
                 if (!descSetAllocedEntry) continue;
 
-                auto handleInfo = sBoxedHandleManager.get((uint64_t)*descSetAllocedEntry);
+                auto handleInfo = mBoxedHandleManager->get((uint64_t)*descSetAllocedEntry);
                 if (handleInfo) {
                     if (m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled) {
                         handleInfo->underlying = reinterpret_cast<uint64_t>(VK_NULL_HANDLE);
@@ -5673,10 +5693,11 @@ class VkDecoderGlobalState::Impl {
                m_emu->features.VirtioGpuNext.enabled;
     }
 
-    HostFeatureSupport getHostFeatureSupport() const {
+    static HostFeatureSupport getHostFeatureSupport() {
         HostFeatureSupport res;
 
-        if (!m_vk) return res;
+        auto mvk = vkDispatch();
+        if (!mvk) return res;
 
         auto emu = getGlobalVkEmulation();
 
@@ -7442,7 +7463,7 @@ class VkDecoderGlobalState::Impl {
                 << "descriptor pool " << pool << " not found ";
         }
 
-        BoxedHandleInfo* setHandleInfo = sBoxedHandleManager.get(poolId);
+        BoxedHandleInfo* setHandleInfo = mBoxedHandleManager->get(poolId);
 
         if (setHandleInfo->underlying) {
             if (pendingAlloc) {
@@ -7654,8 +7675,8 @@ class VkDecoderGlobalState::Impl {
         return VK_SUCCESS;
     }
 
-    void on_DeviceLost() {
-        m_emu->deviceLostHelper.onDeviceLost();
+    static void on_DeviceLost() {
+        getGlobalVkEmulation()->deviceLostHelper.onDeviceLost();
         GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
     }
 
@@ -8027,12 +8048,11 @@ class VkDecoderGlobalState::Impl {
     DEFINE_EXTERNAL_MEMORY_PROPERTIES_TRANSFORM(VkExternalBufferProperties)
 
     BoxedHandle newGlobalHandle(const BoxedHandleInfo& item, BoxedHandleTypeTag typeTag) {
-        return sBoxedHandleManager.add(item, typeTag);
+        return mBoxedHandleManager->add(item, typeTag);
     }
 
     VkDecoderSnapshot* snapshot() { return &mSnapshot; }
 
-    bool isSnapshotCurrentlyLoading() const { return mSnapshotState == SnapshotState::Loading; }
 
    private:
     bool isEmulatedInstanceExtension(const char* name) const {
@@ -8879,6 +8899,7 @@ class VkDecoderGlobalState::Impl {
 
     VulkanDispatch* m_vk;
     VkEmulation* m_emu;
+    VkDecoderGlobalState* m_parent_state;
     emugl::RenderDocWithMultipleVkInstances* mRenderDocWithMultipleVkInstances = nullptr;
     bool mSnapshotsEnabled = false;
     bool mBatchedDescriptorSetUpdateEnabled = false;
@@ -9032,13 +9053,6 @@ class VkDecoderGlobalState::Impl {
 #endif
 
     VkDecoderSnapshot mSnapshot;
-    enum class SnapshotState {
-        Normal,
-        Saving,
-        Loading,
-    };
-    SnapshotState mSnapshotState = SnapshotState::Normal;
-
     // NOTE: Only present during snapshot loading. This is needed to associate
     // `VkDevice`s with Virtio GPU context ids because API calls are not currently
     // replayed on the "same" RenderThread which originally made the API call so
@@ -9102,41 +9116,54 @@ class VkDecoderGlobalState::Impl {
 
     std::unordered_map<LinearImageCreateInfo, LinearImageProperties, LinearImageCreateInfo::Hash>
         mLinearImageProperties GUARDED_BY(mMutex);
+
+    std::shared_ptr<BoxedHandleManager> mBoxedHandleManager;
 };
 
-VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl()) {}
+
+VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl(this)) {}
 
 VkDecoderGlobalState::~VkDecoderGlobalState() = default;
 
 static VkDecoderGlobalState* sGlobalDecoderState = nullptr;
 
-// static
-VkDecoderGlobalState* VkDecoderGlobalState::get() {
+
+VkDecoderGlobalState* VkDecoderGlobalState::getForTest() {
     if (sGlobalDecoderState) return sGlobalDecoderState;
     sGlobalDecoderState = new VkDecoderGlobalState;
     return sGlobalDecoderState;
 }
 
-// static
-void VkDecoderGlobalState::reset() {
-    delete sGlobalDecoderState;
-    sGlobalDecoderState = nullptr;
+std::shared_ptr<VkDecoderGlobalState> VkDecoderGlobalState::get(uint64_t handle) {
+    return getVkDecoderGlobalStateForVkHandle(handle);
+}
+
+
+void VkDecoderGlobalState::resetForTest() {
+delete sGlobalDecoderState;
+sGlobalDecoderState = nullptr;
 }
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
 bool VkDecoderGlobalState::batchedDescriptorSetUpdateEnabled() const { return mImpl->batchedDescriptorSetUpdateEnabled(); }
 
+void VkDecoderGlobalState::setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager)
+    { return mImpl->setBoxedHandleManager(BoxedHandleManager); }
+
+std::shared_ptr<BoxedHandleManager> VkDecoderGlobalState::getBoxedHandleManager()
+    { return mImpl->getBoxedHandleManager(); }
+
 uint64_t VkDecoderGlobalState::newGlobalVkGenericHandle() {
     BoxedHandleInfo item;                                                    \
     return mImpl->newGlobalHandle(item, Tag_VkGeneric);
 }
 
-bool VkDecoderGlobalState::isSnapshotCurrentlyLoading() const {
-    return mImpl->isSnapshotCurrentlyLoading();
+bool VkDecoderGlobalState::isSnapshotCurrentlyLoading() {
+    return mSnapshotState == SnapshotState::Loading;
 }
 
-const gfxstream::host::FeatureSet& VkDecoderGlobalState::getFeatures() const { return mImpl->getFeatures(); }
+const gfxstream::host::FeatureSet& VkDecoderGlobalState::getFeatures() { return Impl::getFeatures(); }
 
 bool VkDecoderGlobalState::vkCleanupEnabled() const { return mImpl->vkCleanupEnabled(); }
 
@@ -9840,8 +9867,8 @@ VkDeviceSize VkDecoderGlobalState::getDeviceMemorySize(VkDeviceMemory memory) {
 
 bool VkDecoderGlobalState::usingDirectMapping() const { return mImpl->usingDirectMapping(); }
 
-VkDecoderGlobalState::HostFeatureSupport VkDecoderGlobalState::getHostFeatureSupport() const {
-    return mImpl->getHostFeatureSupport();
+VkDecoderGlobalState::HostFeatureSupport VkDecoderGlobalState::getHostFeatureSupport() {
+    return VkDecoderGlobalState::Impl::getHostFeatureSupport();
 }
 
 // VK_ANDROID_native_buffer
@@ -10387,7 +10414,7 @@ VkResult VkDecoderGlobalState::on_vkEnumeratePhysicalDeviceGroupsKHR(
         pool, snapshotInfo, instance, pPhysicalDeviceGroupCount, pPhysicalDeviceGroupProperties);
 }
 
-void VkDecoderGlobalState::on_DeviceLost() { mImpl->on_DeviceLost(); }
+void VkDecoderGlobalState::on_DeviceLost() { VkDecoderGlobalState::Impl::on_DeviceLost(); }
 
 void VkDecoderGlobalState::on_CheckOutOfMemory(VkResult result, uint32_t opCode,
                                                const VkDecoderContext& context,

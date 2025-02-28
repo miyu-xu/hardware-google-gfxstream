@@ -324,17 +324,17 @@ static bool shouldEnableAsyncSwap(const gfxstream::host::FeatureSet& features) {
 static bool shouldEnableVulkan(const gfxstream::host::FeatureSet& features) {
     // TODO: Restrict further to devices supporting external memory.
     return features.Vulkan.enabled && vk::getGlobalVkEmulation() &&
-           vk::VkDecoderGlobalState::get()->getHostFeatureSupport().supportsVulkan;
+           vk::VkDecoderGlobalState::getHostFeatureSupport().supportsVulkan;
 }
 
 static bool shouldEnableDeferredVulkanCommands() {
-    auto supportInfo = vk::VkDecoderGlobalState::get()->getHostFeatureSupport();
+    auto supportInfo = vk::VkDecoderGlobalState::getHostFeatureSupport();
     return supportInfo.supportsVulkan &&
            supportInfo.useDeferredCommands;
 }
 
 static bool shouldEnableCreateResourcesWithRequirements() {
-    auto supportInfo = vk::VkDecoderGlobalState::get()->getHostFeatureSupport();
+    auto supportInfo = vk::VkDecoderGlobalState::getHostFeatureSupport();
     return supportInfo.supportsVulkan &&
            supportInfo.useCreateResourcesWithRequirements;
 }
