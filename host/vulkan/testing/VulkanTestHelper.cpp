@@ -90,7 +90,6 @@ void VulkanTestHelper::destroy() {
     mInstance = VK_NULL_HANDLE;
     mDebugMessenger = VK_NULL_HANDLE;
 
-    VkDecoderGlobalState::reset();
     teardownGlobalVkEmulation();
 }
 

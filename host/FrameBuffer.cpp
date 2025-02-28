@@ -2383,9 +2383,10 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
     }
 
     // Save Vulkan state
-    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
-        vk::VkDecoderGlobalState::get()->save(stream);
-    }
+// TODO: need to change how vulkan save is done
+//    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
+//        vk::VkDecoderGlobalState::get()->save(stream);
+//    }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     if (m_emulationGl) {
@@ -2666,12 +2667,12 @@ bool FrameBuffer::onLoad(Stream* stream,
     }
 
     // Restore Vulkan state
-    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
-        lock.unlock();
-        GfxApiLogger gfxLogger;
-        vk::VkDecoderGlobalState::get()->load(stream, gfxLogger, m_healthMonitor.get());
-        lock.lock();
-    }
+//    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
+//        lock.unlock();
+//        GfxApiLogger gfxLogger;
+//        vk::VkDecoderGlobalState::get()->load(stream, gfxLogger, m_healthMonitor.get());
+//        lock.lock();
+//    }
 
     repost(false);
 
