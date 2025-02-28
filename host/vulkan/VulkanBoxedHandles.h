@@ -31,15 +31,108 @@ namespace vk {
 
 #define DEFINE_BOXED_HANDLE_TYPE_TAG(type) Tag_##type,
 
+// the tag should be from 1 to 255
 enum BoxedHandleTypeTag {
     Tag_Invalid = 0,
 
     GOLDFISH_VK_LIST_HANDLE_TYPES_BY_STAGE(DEFINE_BOXED_HANDLE_TYPE_TAG)
 
     // additional generic tag
-    Tag_VkGeneric = 1001,
+    Tag_VkGeneric = 0xFF,
+
+    // max tag is 24bits
+    Tag_Max = 0xFFFFFF,
 };
 
+template <typename VkObjectT>
+constexpr BoxedHandleTypeTag GetTag() {
+    if constexpr (std::is_same_v<VkObjectT, VkAccelerationStructureKHR>) {
+        return Tag_VkAccelerationStructureKHR;
+    } else if constexpr (std::is_same_v<VkObjectT, VkAccelerationStructureNV>) {
+        return Tag_VkAccelerationStructureNV;
+    } else if constexpr (std::is_same_v<VkObjectT, VkBuffer>) {
+        return Tag_VkBuffer;
+    } else if constexpr (std::is_same_v<VkObjectT, VkBufferView>) {
+        return Tag_VkBufferView;
+    } else if constexpr (std::is_same_v<VkObjectT, VkCommandBuffer>) {
+        return Tag_VkCommandBuffer;
+    } else if constexpr (std::is_same_v<VkObjectT, VkCommandPool>) {
+        return Tag_VkCommandPool;
+    } else if constexpr (std::is_same_v<VkObjectT, VkCuFunctionNVX>) {
+        return Tag_VkCuFunctionNVX;
+    } else if constexpr (std::is_same_v<VkObjectT, VkCuModuleNVX>) {
+        return Tag_VkCuModuleNVX;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDebugReportCallbackEXT>) {
+        return Tag_VkDebugReportCallbackEXT;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDebugUtilsMessengerEXT>) {
+        return Tag_VkDebugUtilsMessengerEXT;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorPool>) {
+        return Tag_VkDescriptorPool;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorSet>) {
+        return Tag_VkDescriptorSet;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorSetLayout>) {
+        return Tag_VkDescriptorSetLayout;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDescriptorUpdateTemplate>) {
+        return Tag_VkDescriptorUpdateTemplate;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDevice>) {
+        return Tag_VkDevice;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDeviceMemory>) {
+        return Tag_VkDeviceMemory;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDisplayKHR>) {
+        return Tag_VkDisplayKHR;
+    } else if constexpr (std::is_same_v<VkObjectT, VkDisplayModeKHR>) {
+        return Tag_VkDisplayModeKHR;
+    } else if constexpr (std::is_same_v<VkObjectT, VkEvent>) {
+        return Tag_VkEvent;
+    } else if constexpr (std::is_same_v<VkObjectT, VkFence>) {
+        return Tag_VkFence;
+    } else if constexpr (std::is_same_v<VkObjectT, VkFramebuffer>) {
+        return Tag_VkFramebuffer;
+    } else if constexpr (std::is_same_v<VkObjectT, VkImage>) {
+        return Tag_VkImage;
+    } else if constexpr (std::is_same_v<VkObjectT, VkImageView>) {
+        return Tag_VkImageView;
+    } else if constexpr (std::is_same_v<VkObjectT, VkIndirectCommandsLayoutNV>) {
+        return Tag_VkIndirectCommandsLayoutNV;
+    } else if constexpr (std::is_same_v<VkObjectT, VkInstance>) {
+        return Tag_VkInstance;
+    } else if constexpr (std::is_same_v<VkObjectT, VkMicromapEXT>) {
+        return Tag_VkMicromapEXT;
+    } else if constexpr (std::is_same_v<VkObjectT, VkPhysicalDevice>) {
+        return Tag_VkPhysicalDevice;
+    } else if constexpr (std::is_same_v<VkObjectT, VkPipeline>) {
+        return Tag_VkPipeline;
+    } else if constexpr (std::is_same_v<VkObjectT, VkPipelineCache>) {
+        return Tag_VkPipelineCache;
+    } else if constexpr (std::is_same_v<VkObjectT, VkPipelineLayout>) {
+        return Tag_VkPipelineLayout;
+    } else if constexpr (std::is_same_v<VkObjectT, VkPrivateDataSlot>) {
+        return Tag_VkPrivateDataSlot;
+    } else if constexpr (std::is_same_v<VkObjectT, VkQueryPool>) {
+        return Tag_VkQueryPool;
+    } else if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
+        return Tag_VkQueue;
+    } else if constexpr (std::is_same_v<VkObjectT, VkRenderPass>) {
+        return Tag_VkRenderPass;
+    } else if constexpr (std::is_same_v<VkObjectT, VkSampler>) {
+        return Tag_VkSampler;
+    } else if constexpr (std::is_same_v<VkObjectT, VkSamplerYcbcrConversion>) {
+        return Tag_VkSamplerYcbcrConversion;
+    } else if constexpr (std::is_same_v<VkObjectT, VkSemaphore>) {
+        return Tag_VkSemaphore;
+    } else if constexpr (std::is_same_v<VkObjectT, VkShaderModule>) {
+        return Tag_VkShaderModule;
+    } else if constexpr (std::is_same_v<VkObjectT, VkSurfaceKHR>) {
+        return Tag_VkSurfaceKHR;
+    } else if constexpr (std::is_same_v<VkObjectT, VkSwapchainKHR>) {
+        return Tag_VkSwapchainKHR;
+    } else if constexpr (std::is_same_v<VkObjectT, VkValidationCacheEXT>) {
+        return Tag_VkValidationCacheEXT;
+    } else {
+        static_assert(sizeof(VkObjectT) == 0,
+                      "Unhandled VkObjectT. Please update BoxedHandleTypeTag.");
+    }
+}
 using BoxedHandle = uint64_t;
 using UnboxedHandle = uint64_t;
 
@@ -104,6 +197,47 @@ class BoxedHandleManager {
 
     void clear();
 
+    void setId(int id) {
+        mId = id;
+    }
+
+    template <typename VkObjectT>
+        VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false)
+{
+    BoxedHandleInfo info;
+    info.underlying = (uint64_t)underlying;
+    if (dispatchable) {
+        if (dispatch != nullptr) {
+            info.dispatch = dispatch;
+        } else {
+            info.dispatch = new VulkanDispatch();
+        }
+        info.ownDispatch = ownsDispatch;
+        info.ordMaintInfo = new OrderMaintenanceInfo();
+        info.readStream = nullptr;
+    }
+    return (VkObjectT)add(info, (BoxedHandleTypeTag)(GetTag<VkObjectT>() + (mId<<8)));
+}
+
+template <typename VkObjectT>
+VkObjectT unboxed_to_boxed_non_dispatchable_VkType(VkObjectT unboxed) {
+    if (unboxed == VK_NULL_HANDLE) {
+        return VK_NULL_HANDLE;
+    }
+    return (VkObjectT)getBoxedFromUnboxed((uint64_t)(uintptr_t)unboxed);
+}
+
+#define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
+    type new_boxed_##type(type underlying, VulkanDispatch* dispatch, bool ownDispatch); \
+    type unboxed_to_boxed_##type(type unboxed);
+
+#define DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL(type)                                  \
+    type new_boxed_non_dispatchable_##type(type underlying);                                 \
+    type unboxed_to_boxed_non_dispatchable_##type(type unboxed);
+
+GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL)
+GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL)
+
    private:
     mutable Store mStore;
 
@@ -121,16 +255,15 @@ class BoxedHandleManager {
     // be used when replaying commands.
     bool mHandleReplay = false;
     std::deque<BoxedHandle> mHandleReplayQueue;
+    int mId; // two bytes 0xABCD that will combie with tag
 };
 
-extern BoxedHandleManager sBoxedHandleManager;
+//extern BoxedHandleManager sBoxedHandleManager;
 
 #define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
-    type new_boxed_##type(type underlying, VulkanDispatch* dispatch, bool ownDispatch); \
     void delete_##type(type boxed);                                                     \
     type unbox_##type(type boxed);                                                      \
     type try_unbox_##type(type boxed);                                                  \
-    type unboxed_to_boxed_##type(type boxed);                                           \
     VulkanDispatch* dispatch_##type(type boxed);                                        \
     OrderMaintenanceInfo* ordmaint_##type(type boxed);                                  \
     VulkanMemReadingStream* readstream_##type(type boxed);
@@ -141,7 +274,6 @@ extern BoxedHandleManager sBoxedHandleManager;
     void delayed_delete_##type(type boxed, VkDevice device, std::function<void()> callback); \
     type unbox_##type(type boxed);                                                           \
     type try_unbox_##type(type boxed);                                                       \
-    type unboxed_to_boxed_non_dispatchable_##type(type boxed);                               \
     void set_boxed_non_dispatchable_##type(type boxed, type underlying);
 
 GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL)
