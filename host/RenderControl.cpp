@@ -1221,6 +1221,13 @@ static int rcDestroySyncKHR(uint64_t handle) {
     return 0;
 }
 
+static std::string getThreadID() {
+    std::ostringstream ss;
+    ss << std::this_thread::get_id();
+    std::string result = ss.str();
+    return result;
+}
+
 static void rcSetPuid(uint64_t puid) {
     if (puid == kInvalidPUID) {
         // The host process pipe implementation (GLProcessPipe) has been updated
@@ -1232,6 +1239,8 @@ static void rcSetPuid(uint64_t puid) {
 
     RenderThreadInfo *tInfo = RenderThreadInfo::get();
     tInfo->m_puid = puid;
+    fprintf(stderr, "tid %s puid %d 0x%llx\n", getThreadID().c_str(), (int)puid,
+            (unsigned long long)puid);
 }
 
 static int rcCompose(uint32_t bufferSize, void* buffer) {
