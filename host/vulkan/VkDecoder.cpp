@@ -65,10 +65,10 @@ using android::base::MetricEventDuplicateSequenceNum;
 
 class VkDecoder::Impl {
    public:
-    Impl()
+    Impl(VkDecoderGlobalState* state)
         : m_logCalls(android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1"),
           m_vk(vkDispatch()),
-          m_state(VkDecoderGlobalState::get()),
+          m_state(state),
           m_vkStream(nullptr, m_state->getFeatures()),
           m_vkMemReadingStream(nullptr, m_state->getFeatures()),
           m_boxedHandleCreateMapping(m_state),
@@ -100,7 +100,7 @@ class VkDecoder::Impl {
     const bool m_snapshotsEnabled = false;
 };
 
-VkDecoder::VkDecoder() : mImpl(new VkDecoder::Impl()) {}
+VkDecoder::VkDecoder() = default;
 
 VkDecoder::~VkDecoder() = default;
 
@@ -111,9 +111,19 @@ void VkDecoder::setForSnapshotLoad(bool forSnapshotLoad) {
 size_t VkDecoder::decode(void* buf, size_t bufsize, IOStream* stream,
                          const ProcessResources* processResources,
                          const VkDecoderContext& context) {
+    if (!mImpl) {
+        mImpl.reset(new VkDecoder::Impl(m_state.get()));
+    }
     return mImpl->decode(buf, bufsize, stream, processResources, context);
 }
 
+void VkDecoder::setVkDecoderGlobalState(std::shared_ptr<VkDecoderGlobalState> state) {
+    m_state = state;
+}
+
+std::shared_ptr<VkDecoderGlobalState> VkDecoder::getVkDecoderGlobalState() {
+    return m_state;
+}
 // VkDecoder::Impl::decode to follow
 
 size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
