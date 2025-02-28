@@ -113,6 +113,9 @@ class VirtioGpuFrontend {
     int exportFence(uint64_t fenceId, struct stream_renderer_handle* handle);
     int vulkanInfo(uint32_t res_handle, struct stream_renderer_vulkan_info* vulkan_info);
 
+    int suspend();
+    int resume();
+
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
     int snapshot(const char* directory);
     int restore(const char* directory);
