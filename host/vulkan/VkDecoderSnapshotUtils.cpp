@@ -15,11 +15,15 @@
 #include "vulkan/VkDecoderSnapshotUtils.h"
 
 #include "VkCommonOperations.h"
+#include "VkFormatUtils.h"
+#include "host-common/GfxstreamFatalError.h"
 
 namespace gfxstream {
 namespace vk {
-
 namespace {
+
+using emugl::ABORT_REASON_OTHER;
+using emugl::FatalError;
 
 uint32_t GetMemoryType(const PhysicalDeviceInfo& physicalDevice,
                        const VkMemoryRequirements& memoryRequirements,
@@ -39,102 +43,6 @@ uint32_t GetMemoryType(const PhysicalDeviceInfo& physicalDevice,
         << __LINE__ << ")";
 }
 
-uint32_t bytes_per_pixel(VkFormat format) {
-    switch (format) {
-        case VK_FORMAT_R8_UNORM:
-        case VK_FORMAT_R8_SNORM:
-        case VK_FORMAT_R8_USCALED:
-        case VK_FORMAT_R8_SSCALED:
-        case VK_FORMAT_R8_UINT:
-        case VK_FORMAT_R8_SINT:
-        case VK_FORMAT_R8_SRGB:
-        case VK_FORMAT_S8_UINT:
-            return 1;
-        case VK_FORMAT_R8G8_UNORM:
-        case VK_FORMAT_R8G8_SNORM:
-        case VK_FORMAT_R8G8_USCALED:
-        case VK_FORMAT_R8G8_SSCALED:
-        case VK_FORMAT_R8G8_UINT:
-        case VK_FORMAT_R8G8_SINT:
-        case VK_FORMAT_R8G8_SRGB:
-        case VK_FORMAT_D16_UNORM:
-            return 2;
-        case VK_FORMAT_R8G8B8_UNORM:
-        case VK_FORMAT_R8G8B8_SNORM:
-        case VK_FORMAT_R8G8B8_USCALED:
-        case VK_FORMAT_R8G8B8_SSCALED:
-        case VK_FORMAT_R8G8B8_UINT:
-        case VK_FORMAT_R8G8B8_SINT:
-        case VK_FORMAT_R8G8B8_SRGB:
-        case VK_FORMAT_B8G8R8_UNORM:
-        case VK_FORMAT_B8G8R8_SNORM:
-        case VK_FORMAT_B8G8R8_USCALED:
-        case VK_FORMAT_B8G8R8_SSCALED:
-        case VK_FORMAT_B8G8R8_UINT:
-        case VK_FORMAT_B8G8R8_SINT:
-        case VK_FORMAT_B8G8R8_SRGB:
-        case VK_FORMAT_D16_UNORM_S8_UINT:
-            return 3;
-        case VK_FORMAT_R8G8B8A8_UNORM:
-        case VK_FORMAT_R8G8B8A8_SNORM:
-        case VK_FORMAT_R8G8B8A8_USCALED:
-        case VK_FORMAT_R8G8B8A8_SSCALED:
-        case VK_FORMAT_R8G8B8A8_UINT:
-        case VK_FORMAT_R8G8B8A8_SINT:
-        case VK_FORMAT_R8G8B8A8_SRGB:
-        case VK_FORMAT_B8G8R8A8_UNORM:
-        case VK_FORMAT_B8G8R8A8_SNORM:
-        case VK_FORMAT_B8G8R8A8_USCALED:
-        case VK_FORMAT_B8G8R8A8_SSCALED:
-        case VK_FORMAT_B8G8R8A8_UINT:
-        case VK_FORMAT_B8G8R8A8_SINT:
-        case VK_FORMAT_B8G8R8A8_SRGB:
-        case VK_FORMAT_A8B8G8R8_UNORM_PACK32:
-        case VK_FORMAT_A8B8G8R8_SNORM_PACK32:
-        case VK_FORMAT_A8B8G8R8_USCALED_PACK32:
-        case VK_FORMAT_A8B8G8R8_SSCALED_PACK32:
-        case VK_FORMAT_A8B8G8R8_UINT_PACK32:
-        case VK_FORMAT_A8B8G8R8_SINT_PACK32:
-        case VK_FORMAT_A8B8G8R8_SRGB_PACK32:
-        case VK_FORMAT_A2R10G10B10_UNORM_PACK32:
-        case VK_FORMAT_A2R10G10B10_SNORM_PACK32:
-        case VK_FORMAT_A2R10G10B10_USCALED_PACK32:
-        case VK_FORMAT_A2R10G10B10_SSCALED_PACK32:
-        case VK_FORMAT_A2R10G10B10_UINT_PACK32:
-        case VK_FORMAT_A2R10G10B10_SINT_PACK32:
-        case VK_FORMAT_A2B10G10R10_UNORM_PACK32:
-        case VK_FORMAT_A2B10G10R10_SNORM_PACK32:
-        case VK_FORMAT_A2B10G10R10_USCALED_PACK32:
-        case VK_FORMAT_A2B10G10R10_SSCALED_PACK32:
-        case VK_FORMAT_A2B10G10R10_UINT_PACK32:
-        case VK_FORMAT_A2B10G10R10_SINT_PACK32:
-        case VK_FORMAT_D24_UNORM_S8_UINT:
-        case VK_FORMAT_R16G16_SFLOAT:
-        case VK_FORMAT_B10G11R11_UFLOAT_PACK32:
-        case VK_FORMAT_E5B9G9R9_UFLOAT_PACK32:
-        case VK_FORMAT_X8_D24_UNORM_PACK32:
-            return 4;
-        case VK_FORMAT_R16G16B16A16_SINT:
-        case VK_FORMAT_R16G16B16A16_SFLOAT:
-            return 8;
-        case VK_FORMAT_R32G32B32A32_SINT:
-        case VK_FORMAT_R32G32B32A32_SFLOAT:
-            return 16;
-        default:
-            GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
-                << "Unsupported VkFormat on snapshot save " << format << " " << __func__ << " ("
-                << __FILE__ << ":" << __LINE__ << ")";
-    }
-}
-
-VkExtent3D getMipmapExtent(VkExtent3D baseExtent, uint32_t mipLevel) {
-    return VkExtent3D{
-        .width = baseExtent.width >> mipLevel,
-        .height = baseExtent.height >> mipLevel,
-        .depth = baseExtent.depth,
-    };
-}
-
 }  // namespace
 
 #define _RUN_AND_CHECK(command)                                                             \
@@ -150,235 +58,220 @@ void saveImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     if (imageInfo->layout == VK_IMAGE_LAYOUT_UNDEFINED) {
         return;
     }
+
+    const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
+
     // TODO(b/333936705): snapshot multi-sample images
-    if (imageInfo->imageCreateInfoShallow.samples != VK_SAMPLE_COUNT_1_BIT) {
+    if (imageCreateInfo.samples != VK_SAMPLE_COUNT_1_BIT) {
         return;
     }
+
+    VkDeviceSize neededStagingBufferSize = 0;
+    std::vector<VkBufferImageCopy> neededCopies;
+    if (!getFormatTransferInfo(imageCreateInfo, &neededStagingBufferSize, &neededCopies)) {
+        ERR("Failed to save image content for snapshot.");
+        return;
+    }
+
     VulkanDispatch* dispatch = stateBlock->deviceDispatch;
-    const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
-    VkCommandBufferAllocateInfo allocInfo{
+
+    const VkBufferCreateInfo stagingBufferCreateInfo = {
+        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+        .size = neededStagingBufferSize,
+        .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+    };
+    VkBuffer stagingBuffer = VK_NULL_HANDLE;
+    _RUN_AND_CHECK(dispatch->vkCreateBuffer(stateBlock->device, &stagingBufferCreateInfo, nullptr,
+                                            &stagingBuffer));
+
+    VkMemoryRequirements stagingBufferMemoryRequirements{};
+    dispatch->vkGetBufferMemoryRequirements(stateBlock->device, stagingBuffer,
+                                            &stagingBufferMemoryRequirements);
+
+    const auto stagingBufferMemoryType =
+        GetMemoryType(*stateBlock->physicalDeviceInfo, stagingBufferMemoryRequirements,
+                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    // Staging memory
+    // TODO(b/323064243): reuse staging memory
+    const VkMemoryAllocateInfo stagingBufferMemoryAllocateInfo = {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+        .allocationSize = stagingBufferMemoryRequirements.size,
+        .memoryTypeIndex = stagingBufferMemoryType,
+    };
+    VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
+    _RUN_AND_CHECK(dispatch->vkAllocateMemory(stateBlock->device, &stagingBufferMemoryAllocateInfo,
+                                              nullptr, &stagingBufferMemory));
+    _RUN_AND_CHECK(
+        dispatch->vkBindBufferMemory(stateBlock->device, stagingBuffer, stagingBufferMemory, 0));
+
+    const VkCommandBufferAllocateInfo commandBufferAllocInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .commandPool = stateBlock->commandPool,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1,
     };
-    VkCommandBuffer commandBuffer;
-    _RUN_AND_CHECK(dispatch->vkAllocateCommandBuffers(stateBlock->device, &allocInfo,
+    VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+    _RUN_AND_CHECK(dispatch->vkAllocateCommandBuffers(stateBlock->device, &commandBufferAllocInfo,
                                                       &commandBuffer) != VK_SUCCESS);
-    VkFenceCreateInfo fenceCreateInfo{
+
+    const VkCommandBufferBeginInfo commandBufferBeginInfo = {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+    };
+    if (dispatch->vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo) != VK_SUCCESS) {
+        GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
+            << "Failed to start command buffer on snapshot save";
+    }
+
+    const VkImageLayout imageLayoutBeforeSave = imageInfo->layout;
+
+    const VkImageAspectFlags imageAspects =
+        imageCreateInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+            ? VK_IMAGE_ASPECT_STENCIL_BIT | VK_IMAGE_ASPECT_DEPTH_BIT
+            : VK_IMAGE_ASPECT_COLOR_BIT;
+
+    const VkImageMemoryBarrier imageToTransferSrcBarrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .pNext = nullptr,
+        .srcAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
+        .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+        .oldLayout = imageLayoutBeforeSave,
+        .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = image,
+        .subresourceRange =
+            VkImageSubresourceRange{
+                .aspectMask = imageAspects,
+                .baseMipLevel = 0,
+                .levelCount = imageCreateInfo.mipLevels,
+                .baseArrayLayer = 0,
+                .layerCount = imageCreateInfo.arrayLayers,
+            },
+    };
+    dispatch->vkCmdPipelineBarrier(commandBuffer,
+                                   /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                   /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                   /*dependencyFlags=*/0,
+                                   /*memoryBarrierCount=*/0,
+                                   /*pMemoryBarriers=*/nullptr,
+                                   /*bufferMemoryBarrierCount=*/0,
+                                   /*pBufferMemoryBarriers=*/nullptr,
+                                   /*imageMemoryBarrierCount=*/1,
+                                   /*pImageMemoryBarriers-*/ &imageToTransferSrcBarrier);
+
+    dispatch->vkCmdCopyImageToBuffer(commandBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                     stagingBuffer, static_cast<uint32_t>(neededCopies.size()),
+                                     neededCopies.data());
+
+    // Cannot really translate it back to VK_IMAGE_LAYOUT_PREINITIALIZED
+    if (imageLayoutBeforeSave != VK_IMAGE_LAYOUT_PREINITIALIZED) {
+        const VkImageMemoryBarrier imageToOriginalLayoutBarrier = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+            .pNext = nullptr,
+            .srcAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
+            .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+            .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            .newLayout = imageLayoutBeforeSave,
+            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .image = image,
+            .subresourceRange =
+                VkImageSubresourceRange{
+                    .aspectMask = imageAspects,
+                    .baseMipLevel = 0,
+                    .levelCount = imageCreateInfo.mipLevels,
+                    .baseArrayLayer = 0,
+                    .layerCount = imageCreateInfo.arrayLayers,
+                },
+        };
+        dispatch->vkCmdPipelineBarrier(commandBuffer,
+                                       /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                       /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                       /*dependencyFlags=*/0,
+                                       /*memoryBarrierCount=*/0,
+                                       /*pMemoryBarriers=*/nullptr,
+                                       /*bufferMemoryBarrierCount=*/0,
+                                       /*pBufferMemoryBarriers=*/nullptr,
+                                       /*imageMemoryBarrierCount=*/1,
+                                       /*pImageMemoryBarriers-*/ &imageToOriginalLayoutBarrier);
+    }
+
+    _RUN_AND_CHECK(dispatch->vkEndCommandBuffer(commandBuffer));
+
+    const VkFenceCreateInfo fenceCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
     };
-    VkFence fence;
+    VkFence fence = VK_NULL_HANDLE;
     _RUN_AND_CHECK(dispatch->vkCreateFence(stateBlock->device, &fenceCreateInfo, nullptr, &fence));
-    VkBufferCreateInfo bufferCreateInfo = {
-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = static_cast<VkDeviceSize>(
-            imageCreateInfo.extent.width * imageCreateInfo.extent.height *
-            imageCreateInfo.extent.depth * bytes_per_pixel(imageCreateInfo.format)),
-        .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-    };
-    VkBuffer readbackBuffer;
-    _RUN_AND_CHECK(
-        dispatch->vkCreateBuffer(stateBlock->device, &bufferCreateInfo, nullptr, &readbackBuffer));
 
-    VkMemoryRequirements readbackBufferMemoryRequirements{};
-    dispatch->vkGetBufferMemoryRequirements(stateBlock->device, readbackBuffer,
-                                            &readbackBufferMemoryRequirements);
-
-    const auto readbackBufferMemoryType =
-        GetMemoryType(*stateBlock->physicalDeviceInfo, readbackBufferMemoryRequirements,
-                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    // Staging memory
-    // TODO(b/323064243): reuse staging memory
-    VkMemoryAllocateInfo readbackBufferMemoryAllocateInfo = {
-        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-        .allocationSize = readbackBufferMemoryRequirements.size,
-        .memoryTypeIndex = readbackBufferMemoryType,
+    // Execute the command to copy image
+    const VkSubmitInfo submitInfo = {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &commandBuffer,
     };
-    VkDeviceMemory readbackMemory;
-    _RUN_AND_CHECK(dispatch->vkAllocateMemory(stateBlock->device, &readbackBufferMemoryAllocateInfo,
-                                              nullptr, &readbackMemory));
-    _RUN_AND_CHECK(
-        dispatch->vkBindBufferMemory(stateBlock->device, readbackBuffer, readbackMemory, 0));
+    _RUN_AND_CHECK(dispatch->vkQueueSubmit(stateBlock->queue, 1, &submitInfo, fence));
+    _RUN_AND_CHECK(dispatch->vkWaitForFences(stateBlock->device, 1, &fence, VK_TRUE, 3000000000L));
+    _RUN_AND_CHECK(dispatch->vkResetFences(stateBlock->device, 1, &fence));
 
     void* mapped = nullptr;
-    _RUN_AND_CHECK(dispatch->vkMapMemory(stateBlock->device, readbackMemory, 0, VK_WHOLE_SIZE,
+    _RUN_AND_CHECK(dispatch->vkMapMemory(stateBlock->device, stagingBufferMemory, 0, VK_WHOLE_SIZE,
                                          VkMemoryMapFlags{}, &mapped));
 
-    for (uint32_t mipLevel = 0; mipLevel < imageInfo->imageCreateInfoShallow.mipLevels;
-         mipLevel++) {
-        for (uint32_t arrayLayer = 0; arrayLayer < imageInfo->imageCreateInfoShallow.arrayLayers;
-             arrayLayer++) {
-            // TODO(b/323064243): reuse command buffers
-            VkCommandBufferBeginInfo beginInfo{
-                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-            };
-            if (dispatch->vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-                GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
-                    << "Failed to start command buffer on snapshot save";
-            }
+    stream->putBe32(/*successfully saved!*/ 1);
+    stream->putBe64(neededStagingBufferSize);
+    stream->write(mapped, neededStagingBufferSize);
 
-            // TODO(b/323059453): separate stencil and depth images properly
-            VkExtent3D mipmapExtent = getMipmapExtent(imageCreateInfo.extent, mipLevel);
-            VkImageAspectFlags aspects =
-                imageCreateInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-                    ? VK_IMAGE_ASPECT_STENCIL_BIT | VK_IMAGE_ASPECT_DEPTH_BIT
-                    : VK_IMAGE_ASPECT_COLOR_BIT;
-            VkImageLayout layoutBeforeSave = imageInfo->layout;
-            VkImageMemoryBarrier imgMemoryBarrier = {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                .pNext = nullptr,
-                .srcAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
-                .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
-                .oldLayout = layoutBeforeSave,
-                .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .image = image,
-                .subresourceRange = VkImageSubresourceRange{.aspectMask = aspects,
-                                                            .baseMipLevel = mipLevel,
-                                                            .levelCount = 1,
-                                                            .baseArrayLayer = arrayLayer,
-                                                            .layerCount = 1}};
+    dispatch->vkUnmapMemory(stateBlock->device, stagingBufferMemory);
 
-            dispatch->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-                                           VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
-                                           nullptr, 1, &imgMemoryBarrier);
-            VkBufferImageCopy region{
-                .bufferOffset = 0,
-                .bufferRowLength = 0,
-                .bufferImageHeight = 0,
-                .imageSubresource = VkImageSubresourceLayers{.aspectMask = aspects,
-                                                             .mipLevel = mipLevel,
-                                                             .baseArrayLayer = arrayLayer,
-                                                             .layerCount = 1},
-                .imageOffset =
-                    VkOffset3D{
-                        .x = 0,
-                        .y = 0,
-                        .z = 0,
-                    },
-                .imageExtent = mipmapExtent,
-            };
-            dispatch->vkCmdCopyImageToBuffer(commandBuffer, image,
-                                             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, readbackBuffer,
-                                             1, &region);
-
-            // Cannot really translate it back to VK_IMAGE_LAYOUT_PREINITIALIZED
-            if (layoutBeforeSave != VK_IMAGE_LAYOUT_PREINITIALIZED) {
-                imgMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-                imgMemoryBarrier.newLayout = layoutBeforeSave;
-                imgMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-                imgMemoryBarrier.dstAccessMask = ~VK_ACCESS_NONE_KHR;
-                dispatch->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-                                               VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
-                                               nullptr, 1, &imgMemoryBarrier);
-            }
-            _RUN_AND_CHECK(dispatch->vkEndCommandBuffer(commandBuffer));
-
-            // Execute the command to copy image
-            VkSubmitInfo submitInfo = {
-                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .commandBufferCount = 1,
-                .pCommandBuffers = &commandBuffer,
-            };
-            _RUN_AND_CHECK(dispatch->vkQueueSubmit(stateBlock->queue, 1, &submitInfo, fence));
-            _RUN_AND_CHECK(
-                dispatch->vkWaitForFences(stateBlock->device, 1, &fence, VK_TRUE, 3000000000L));
-            _RUN_AND_CHECK(dispatch->vkResetFences(stateBlock->device, 1, &fence));
-            size_t bytes = mipmapExtent.width * mipmapExtent.height * mipmapExtent.depth *
-                           bytes_per_pixel(imageCreateInfo.format);
-            stream->putBe64(bytes);
-            stream->write(mapped, bytes);
-        }
-    }
     dispatch->vkDestroyFence(stateBlock->device, fence, nullptr);
-    dispatch->vkUnmapMemory(stateBlock->device, readbackMemory);
-    dispatch->vkDestroyBuffer(stateBlock->device, readbackBuffer, nullptr);
-    dispatch->vkFreeMemory(stateBlock->device, readbackMemory, nullptr);
+    dispatch->vkDestroyBuffer(stateBlock->device, stagingBuffer, nullptr);
+    dispatch->vkFreeMemory(stateBlock->device, stagingBufferMemory, nullptr);
     dispatch->vkFreeCommandBuffers(stateBlock->device, stateBlock->commandPool, 1, &commandBuffer);
 }
 
 void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkImage image,
                       const ImageInfo* imageInfo) {
+    const bool saved = stream->getBe32() == 1;
+    if (!saved) {
+        WARN("Image was not saved to the snapshot, skipping loading...");
+        return;
+    }
+
+    const VkDeviceSize savedImageSize = static_cast<VkDeviceSize>(stream->getBe64());
+
+    const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
+
+    VkDeviceSize neededStagingBufferSize = 0;
+    std::vector<VkBufferImageCopy> neededCopies;
+    if (!getFormatTransferInfo(imageCreateInfo, &neededStagingBufferSize, &neededCopies)) {
+        ERR("Failed to save image content for snapshot.");
+        return;
+    }
+
+    if (savedImageSize != neededStagingBufferSize) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+            << "Snapshot saved image size does not match expected: actual saved size "
+            << savedImageSize << " vs expected " << neededStagingBufferSize;
+        return;
+    }
+
     if (imageInfo->layout == VK_IMAGE_LAYOUT_UNDEFINED) {
         return;
     }
+
     VulkanDispatch* dispatch = stateBlock->deviceDispatch;
-    const VkImageCreateInfo& imageCreateInfo = imageInfo->imageCreateInfoShallow;
-    VkCommandBufferAllocateInfo allocInfo{
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .commandPool = stateBlock->commandPool,
-        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-        .commandBufferCount = 1,
-    };
-    VkCommandBuffer commandBuffer;
-    _RUN_AND_CHECK(dispatch->vkAllocateCommandBuffers(stateBlock->device, &allocInfo,
-                                                      &commandBuffer) != VK_SUCCESS);
-    VkFenceCreateInfo fenceCreateInfo{
-        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-    };
-    VkFence fence;
-    _RUN_AND_CHECK(dispatch->vkCreateFence(stateBlock->device, &fenceCreateInfo, nullptr, &fence));
-    if (imageInfo->imageCreateInfoShallow.samples != VK_SAMPLE_COUNT_1_BIT) {
-        // Set the layout and quit
-        // TODO: resolve and save image content
-        VkImageAspectFlags aspects =
-            imageCreateInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-                ? VK_IMAGE_ASPECT_STENCIL_BIT | VK_IMAGE_ASPECT_DEPTH_BIT
-                : VK_IMAGE_ASPECT_COLOR_BIT;
-        VkImageMemoryBarrier imgMemoryBarrier = {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .pNext = nullptr,
-            .srcAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
-            .dstAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
-            .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-            .newLayout = imageInfo->layout,
-            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .image = image,
-            .subresourceRange = VkImageSubresourceRange{.aspectMask = aspects,
-                                                        .baseMipLevel = 0,
-                                                        .levelCount = VK_REMAINING_MIP_LEVELS,
-                                                        .baseArrayLayer = 0,
-                                                        .layerCount = VK_REMAINING_ARRAY_LAYERS}};
-        VkCommandBufferBeginInfo beginInfo{
-            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        };
-        _RUN_AND_CHECK(dispatch->vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS);
 
-        dispatch->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-                                       VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
-                                       nullptr, 1, &imgMemoryBarrier);
-
-        _RUN_AND_CHECK(dispatch->vkEndCommandBuffer(commandBuffer));
-
-        // Execute the command to copy image
-        VkSubmitInfo submitInfo = {
-            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-            .commandBufferCount = 1,
-            .pCommandBuffers = &commandBuffer,
-        };
-        _RUN_AND_CHECK(dispatch->vkQueueSubmit(stateBlock->queue, 1, &submitInfo, fence));
-        _RUN_AND_CHECK(
-            dispatch->vkWaitForFences(stateBlock->device, 1, &fence, VK_TRUE, 3000000000L));
-        dispatch->vkDestroyFence(stateBlock->device, fence, nullptr);
-        dispatch->vkFreeCommandBuffers(stateBlock->device, stateBlock->commandPool, 1,
-                                       &commandBuffer);
-        return;
-    }
-    VkBufferCreateInfo bufferCreateInfo = {
+    const VkBufferCreateInfo stagingBufferCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = static_cast<VkDeviceSize>(
-            imageCreateInfo.extent.width * imageCreateInfo.extent.height *
-            imageCreateInfo.extent.depth * bytes_per_pixel(imageCreateInfo.format)),
+        .size = neededStagingBufferSize,
         .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
-    VkBuffer stagingBuffer;
-    _RUN_AND_CHECK(
-        dispatch->vkCreateBuffer(stateBlock->device, &bufferCreateInfo, nullptr, &stagingBuffer));
+    VkBuffer stagingBuffer = VK_NULL_HANDLE;
+    _RUN_AND_CHECK(dispatch->vkCreateBuffer(stateBlock->device, &stagingBufferCreateInfo, nullptr,
+                                            &stagingBuffer));
 
     VkMemoryRequirements stagingBufferMemoryRequirements{};
     dispatch->vkGetBufferMemoryRequirements(stateBlock->device, stagingBuffer,
@@ -390,12 +283,12 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
 
     // Staging memory
     // TODO(b/323064243): reuse staging memory
-    VkMemoryAllocateInfo stagingBufferMemoryAllocateInfo = {
+    const VkMemoryAllocateInfo stagingBufferMemoryAllocateInfo = {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .allocationSize = stagingBufferMemoryRequirements.size,
         .memoryTypeIndex = stagingBufferMemoryType,
     };
-    VkDeviceMemory stagingMemory;
+    VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
     _RUN_AND_CHECK(dispatch->vkAllocateMemory(stateBlock->device, &stagingBufferMemoryAllocateInfo,
                                               nullptr, &stagingMemory));
     _RUN_AND_CHECK(
@@ -405,92 +298,119 @@ void loadImageContent(android::base::Stream* stream, StateBlock* stateBlock, VkI
     _RUN_AND_CHECK(dispatch->vkMapMemory(stateBlock->device, stagingMemory, 0, VK_WHOLE_SIZE,
                                          VkMemoryMapFlags{}, &mapped));
 
-    for (uint32_t mipLevel = 0; mipLevel < imageInfo->imageCreateInfoShallow.mipLevels;
-         mipLevel++) {
-        for (uint32_t arrayLayer = 0; arrayLayer < imageInfo->imageCreateInfoShallow.arrayLayers;
-             arrayLayer++) {
-            // TODO(b/323064243): reuse command buffers
-            VkCommandBufferBeginInfo beginInfo{
-                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-            };
-            if (dispatch->vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-                GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
-                    << "Failed to start command buffer on snapshot save";
-            }
+    stream->read(mapped, neededStagingBufferSize);
 
-            VkExtent3D mipmapExtent = getMipmapExtent(imageCreateInfo.extent, mipLevel);
-            size_t bytes = stream->getBe64();
-            stream->read(mapped, bytes);
-
-            VkImageAspectFlags aspects =
-                imageCreateInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-                    ? VK_IMAGE_ASPECT_STENCIL_BIT | VK_IMAGE_ASPECT_DEPTH_BIT
-                    : VK_IMAGE_ASPECT_COLOR_BIT;
-            VkImageMemoryBarrier imgMemoryBarrier = {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                .pNext = nullptr,
-                .srcAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
-                .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
-                .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-                .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .image = image,
-                .subresourceRange = VkImageSubresourceRange{.aspectMask = aspects,
-                                                            .baseMipLevel = mipLevel,
-                                                            .levelCount = 1,
-                                                            .baseArrayLayer = arrayLayer,
-                                                            .layerCount = 1}};
-
-            dispatch->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-                                           VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
-                                           nullptr, 1, &imgMemoryBarrier);
-
-            VkBufferImageCopy region{
-                .bufferOffset = 0,
-                .bufferRowLength = 0,
-                .bufferImageHeight = 0,
-                .imageSubresource = VkImageSubresourceLayers{.aspectMask = aspects,
-                                                             .mipLevel = mipLevel,
-                                                             .baseArrayLayer = arrayLayer,
-                                                             .layerCount = 1},
-                .imageOffset =
-                    VkOffset3D{
-                        .x = 0,
-                        .y = 0,
-                        .z = 0,
-                    },
-                .imageExtent = mipmapExtent,
-            };
-            dispatch->vkCmdCopyBufferToImage(commandBuffer, stagingBuffer, image,
-                                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-
-            // Cannot really translate it back to VK_IMAGE_LAYOUT_PREINITIALIZED
-            if (imageInfo->layout != VK_IMAGE_LAYOUT_PREINITIALIZED) {
-                imgMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-                imgMemoryBarrier.newLayout = imageInfo->layout;
-                imgMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-                imgMemoryBarrier.dstAccessMask = ~VK_ACCESS_NONE_KHR;
-                dispatch->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-                                               VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
-                                               nullptr, 1, &imgMemoryBarrier);
-            }
-            _RUN_AND_CHECK(dispatch->vkEndCommandBuffer(commandBuffer));
-
-            // Execute the command to copy image
-            VkSubmitInfo submitInfo = {
-                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .commandBufferCount = 1,
-                .pCommandBuffers = &commandBuffer,
-            };
-            _RUN_AND_CHECK(dispatch->vkQueueSubmit(stateBlock->queue, 1, &submitInfo, fence));
-            _RUN_AND_CHECK(
-                dispatch->vkWaitForFences(stateBlock->device, 1, &fence, VK_TRUE, 3000000000L));
-            _RUN_AND_CHECK(dispatch->vkResetFences(stateBlock->device, 1, &fence));
-        }
-    }
-    dispatch->vkDestroyFence(stateBlock->device, fence, nullptr);
     dispatch->vkUnmapMemory(stateBlock->device, stagingMemory);
+
+    const VkCommandBufferAllocateInfo commandBufferAllocateInfo = {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+        .commandPool = stateBlock->commandPool,
+        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+        .commandBufferCount = 1,
+    };
+    VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+    _RUN_AND_CHECK(dispatch->vkAllocateCommandBuffers(stateBlock->device,
+                                                      &commandBufferAllocateInfo,
+                                                      &commandBuffer) != VK_SUCCESS);
+
+    const VkCommandBufferBeginInfo beginInfo{
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+    };
+    _RUN_AND_CHECK(dispatch->vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS);
+
+    const VkImageAspectFlags imageAspects =
+        imageCreateInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+            ? VK_IMAGE_ASPECT_STENCIL_BIT | VK_IMAGE_ASPECT_DEPTH_BIT
+            : VK_IMAGE_ASPECT_COLOR_BIT;
+
+    const VkImageLayout imageLayoutBeforeLoad = imageInfo->layout;
+
+    const VkImageMemoryBarrier imageToTransferDstBarrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .pNext = nullptr,
+        .srcAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
+        .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+        .oldLayout = imageLayoutBeforeLoad,
+        .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = image,
+        .subresourceRange =
+            VkImageSubresourceRange{
+                .aspectMask = imageAspects,
+                .baseMipLevel = 0,
+                .levelCount = imageCreateInfo.mipLevels,
+                .baseArrayLayer = 0,
+                .layerCount = imageCreateInfo.arrayLayers,
+            },
+    };
+    dispatch->vkCmdPipelineBarrier(commandBuffer,
+                                   /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                   /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                   /*dependencyFlags=*/0,
+                                   /*memoryBarrierCount=*/0,
+                                   /*pMemoryBarriers=*/nullptr,
+                                   /*bufferMemoryBarrierCount=*/0,
+                                   /*pBufferMemoryBarriers=*/nullptr,
+                                   /*imageMemoryBarrierCount=*/1,
+                                   /*pImageMemoryBarriers-*/ &imageToTransferDstBarrier);
+
+    dispatch->vkCmdCopyImageToBuffer(commandBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                     stagingBuffer, static_cast<uint32_t>(neededCopies.size()),
+                                     neededCopies.data());
+
+    // Cannot really translate it back to VK_IMAGE_LAYOUT_PREINITIALIZED
+    if (imageLayoutBeforeLoad != VK_IMAGE_LAYOUT_PREINITIALIZED) {
+        const VkImageMemoryBarrier imageToOriginalLayoutBarrier = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+            .pNext = nullptr,
+            .srcAccessMask = static_cast<VkAccessFlags>(~VK_ACCESS_NONE_KHR),
+            .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+            .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            .newLayout = imageLayoutBeforeLoad,
+            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .image = image,
+            .subresourceRange =
+                VkImageSubresourceRange{
+                    .aspectMask = imageAspects,
+                    .baseMipLevel = 0,
+                    .levelCount = imageCreateInfo.mipLevels,
+                    .baseArrayLayer = 0,
+                    .layerCount = imageCreateInfo.arrayLayers,
+                },
+        };
+        dispatch->vkCmdPipelineBarrier(commandBuffer,
+                                       /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                       /*srcStageMask=*/VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                                       /*dependencyFlags=*/0,
+                                       /*memoryBarrierCount=*/0,
+                                       /*pMemoryBarriers=*/nullptr,
+                                       /*bufferMemoryBarrierCount=*/0,
+                                       /*pBufferMemoryBarriers=*/nullptr,
+                                       /*imageMemoryBarrierCount=*/1,
+                                       /*pImageMemoryBarriers-*/ &imageToOriginalLayoutBarrier);
+    }
+
+    _RUN_AND_CHECK(dispatch->vkEndCommandBuffer(commandBuffer));
+
+    const VkFenceCreateInfo fenceCreateInfo = {
+        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+    };
+    VkFence fence = VK_NULL_HANDLE;
+    _RUN_AND_CHECK(dispatch->vkCreateFence(stateBlock->device, &fenceCreateInfo, nullptr, &fence));
+
+    // Execute the command to copy image
+    const VkSubmitInfo submitInfo = {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &commandBuffer,
+    };
+    _RUN_AND_CHECK(dispatch->vkQueueSubmit(stateBlock->queue, 1, &submitInfo, fence));
+    _RUN_AND_CHECK(dispatch->vkWaitForFences(stateBlock->device, 1, &fence, VK_TRUE, 3000000000L));
+    _RUN_AND_CHECK(dispatch->vkResetFences(stateBlock->device, 1, &fence));
+
+    dispatch->vkDestroyFence(stateBlock->device, fence, nullptr);
     dispatch->vkDestroyBuffer(stateBlock->device, stagingBuffer, nullptr);
     dispatch->vkFreeMemory(stateBlock->device, stagingMemory, nullptr);
     dispatch->vkFreeCommandBuffers(stateBlock->device, stateBlock->commandPool, 1, &commandBuffer);
@@ -524,32 +444,32 @@ void saveBufferContent(android::base::Stream* stream, StateBlock* stateBlock, Vk
         .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
-    VkBuffer readbackBuffer;
+    VkBuffer stagingBuffer;
     _RUN_AND_CHECK(
-        dispatch->vkCreateBuffer(stateBlock->device, &bufferCreateInfo, nullptr, &readbackBuffer));
+        dispatch->vkCreateBuffer(stateBlock->device, &bufferCreateInfo, nullptr, &stagingBuffer));
 
-    VkMemoryRequirements readbackBufferMemoryRequirements{};
-    dispatch->vkGetBufferMemoryRequirements(stateBlock->device, readbackBuffer,
-                                            &readbackBufferMemoryRequirements);
+    VkMemoryRequirements stagingBufferMemoryRequirements{};
+    dispatch->vkGetBufferMemoryRequirements(stateBlock->device, stagingBuffer,
+                                            &stagingBufferMemoryRequirements);
 
-    const auto readbackBufferMemoryType =
-        GetMemoryType(*stateBlock->physicalDeviceInfo, readbackBufferMemoryRequirements,
+    const auto stagingBufferMemoryType =
+        GetMemoryType(*stateBlock->physicalDeviceInfo, stagingBufferMemoryRequirements,
                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     // Staging memory
     // TODO(b/323064243): reuse staging memory
-    VkMemoryAllocateInfo readbackBufferMemoryAllocateInfo = {
+    VkMemoryAllocateInfo stagingBufferMemoryAllocateInfo = {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-        .allocationSize = readbackBufferMemoryRequirements.size,
-        .memoryTypeIndex = readbackBufferMemoryType,
+        .allocationSize = stagingBufferMemoryRequirements.size,
+        .memoryTypeIndex = stagingBufferMemoryType,
     };
-    VkDeviceMemory readbackMemory;
-    _RUN_AND_CHECK(dispatch->vkAllocateMemory(stateBlock->device, &readbackBufferMemoryAllocateInfo,
-                                              nullptr, &readbackMemory));
+    VkDeviceMemory stagingBufferMemory;
+    _RUN_AND_CHECK(dispatch->vkAllocateMemory(stateBlock->device, &stagingBufferMemoryAllocateInfo,
+                                              nullptr, &stagingBufferMemory));
     _RUN_AND_CHECK(
-        dispatch->vkBindBufferMemory(stateBlock->device, readbackBuffer, readbackMemory, 0));
+        dispatch->vkBindBufferMemory(stateBlock->device, stagingBuffer, stagingBufferMemory, 0));
 
     void* mapped = nullptr;
-    _RUN_AND_CHECK(dispatch->vkMapMemory(stateBlock->device, readbackMemory, 0, VK_WHOLE_SIZE,
+    _RUN_AND_CHECK(dispatch->vkMapMemory(stateBlock->device, stagingBufferMemory, 0, VK_WHOLE_SIZE,
                                          VkMemoryMapFlags{}, &mapped));
 
     VkBufferCopy bufferCopy = {
@@ -565,14 +485,14 @@ void saveBufferContent(android::base::Stream* stream, StateBlock* stateBlock, Vk
         GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
             << "Failed to start command buffer on snapshot save";
     }
-    dispatch->vkCmdCopyBuffer(commandBuffer, buffer, readbackBuffer, 1, &bufferCopy);
+    dispatch->vkCmdCopyBuffer(commandBuffer, buffer, stagingBuffer, 1, &bufferCopy);
     VkBufferMemoryBarrier barrier{.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
                                   .pNext = nullptr,
                                   .srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
                                   .dstAccessMask = VK_ACCESS_HOST_READ_BIT,
                                   .srcQueueFamilyIndex = 0xFFFFFFFF,
                                   .dstQueueFamilyIndex = 0xFFFFFFFF,
-                                  .buffer = readbackBuffer,
+                                  .buffer = stagingBuffer,
                                   .offset = 0,
                                   .size = bufferInfo->size};
     dispatch->vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
@@ -593,9 +513,9 @@ void saveBufferContent(android::base::Stream* stream, StateBlock* stateBlock, Vk
     stream->write(mapped, bufferInfo->size);
 
     dispatch->vkDestroyFence(stateBlock->device, fence, nullptr);
-    dispatch->vkUnmapMemory(stateBlock->device, readbackMemory);
-    dispatch->vkDestroyBuffer(stateBlock->device, readbackBuffer, nullptr);
-    dispatch->vkFreeMemory(stateBlock->device, readbackMemory, nullptr);
+    dispatch->vkUnmapMemory(stateBlock->device, stagingBufferMemory);
+    dispatch->vkDestroyBuffer(stateBlock->device, stagingBuffer, nullptr);
+    dispatch->vkFreeMemory(stateBlock->device, stagingBufferMemory, nullptr);
     dispatch->vkFreeCommandBuffers(stateBlock->device, stateBlock->commandPool, 1, &commandBuffer);
 }
 

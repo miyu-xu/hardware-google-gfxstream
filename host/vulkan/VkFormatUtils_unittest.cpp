@@ -88,7 +88,7 @@ TEST(VkFormatUtilsTest, GetTransferInfoRGBA) {
     EXPECT_THAT(bufferCopySize, Eq(1024));
     ASSERT_THAT(bufferImageCopies, ElementsAre(EqsVkBufferImageCopy(VkBufferImageCopy{
                                        .bufferOffset = 0,
-                                       .bufferRowLength = 16,
+                                       .bufferRowLength = 0,
                                        .bufferImageHeight = 0,
                                        .imageSubresource =
                                            {
@@ -125,7 +125,7 @@ TEST(VkFormatUtilsTest, GetTransferInfoNV12OrNV21) {
     ASSERT_THAT(bufferImageCopies,
                 ElementsAre(EqsVkBufferImageCopy(VkBufferImageCopy{
                                 .bufferOffset = 0,
-                                .bufferRowLength = 16,
+                                .bufferRowLength = 0,
                                 .bufferImageHeight = 0,
                                 .imageSubresource =
                                     {
@@ -149,7 +149,7 @@ TEST(VkFormatUtilsTest, GetTransferInfoNV12OrNV21) {
                             }),
                             EqsVkBufferImageCopy(VkBufferImageCopy{
                                 .bufferOffset = 256,
-                                .bufferRowLength = 8,
+                                .bufferRowLength = 0,
                                 .bufferImageHeight = 0,
                                 .imageSubresource =
                                     {
@@ -186,7 +186,7 @@ TEST(VkFormatUtilsTest, GetTransferInfoYV12OrYV21) {
     ASSERT_THAT(bufferImageCopies,
                 ElementsAre(EqsVkBufferImageCopy(VkBufferImageCopy{
                                 .bufferOffset = 0,
-                                .bufferRowLength = 32,
+                                .bufferRowLength = 0,
                                 .bufferImageHeight = 0,
                                 .imageSubresource =
                                     {
@@ -210,7 +210,7 @@ TEST(VkFormatUtilsTest, GetTransferInfoYV12OrYV21) {
                             }),
                             EqsVkBufferImageCopy(VkBufferImageCopy{
                                 .bufferOffset = 1024,
-                                .bufferRowLength = 16,
+                                .bufferRowLength = 0,
                                 .bufferImageHeight = 0,
                                 .imageSubresource =
                                     {
@@ -234,7 +234,7 @@ TEST(VkFormatUtilsTest, GetTransferInfoYV12OrYV21) {
                             }),
                             EqsVkBufferImageCopy(VkBufferImageCopy{
                                 .bufferOffset = 1280,
-                                .bufferRowLength = 16,
+                                .bufferRowLength = 0,
                                 .bufferImageHeight = 0,
                                 .imageSubresource =
                                     {
@@ -256,6 +256,153 @@ TEST(VkFormatUtilsTest, GetTransferInfoYV12OrYV21) {
                                         .depth = 1,
                                     },
                             })));
+}
+
+TEST(VkFormatUtilsTest, GetTransferInfoRGBAMultipleMipsAndLayers) {
+    // Mip level 0: 16 x 16 * 4 BPP * 2 layers = 2048
+    // Mip level 1:  8 x  8 * 4 BPP * 2 layers =  512
+    // Mip level 2:  4 x  4 * 4 BPP * 2 layers =  128
+    // Mip level 3:  2 x  2 * 4 BPP * 2 layers =   32
+    // Mip level 4:  1 x  1 * 4 BPP * 2 layers =    8
+    //                                           ____
+    //                                           2720 total
+    const VkImageCreateInfo imageInfo = {
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .extent =
+            {
+                .width = 16,
+                .height = 16,
+                .depth = 1,
+            },
+        .mipLevels = 5,
+        .arrayLayers = 2,
+    };
+
+    VkDeviceSize bufferCopySize;
+    std::vector<VkBufferImageCopy> bufferImageCopies;
+    ASSERT_THAT(getFormatTransferInfo(imageInfo, &bufferCopySize, &bufferImageCopies), IsTrue());
+
+    EXPECT_THAT(bufferCopySize, Eq(2728));
+    ASSERT_THAT(bufferImageCopies, ElementsAre(EqsVkBufferImageCopy(VkBufferImageCopy{
+                                                   .bufferOffset = 0,
+                                                   .bufferRowLength = 0,
+                                                   .bufferImageHeight = 0,
+                                                   .imageSubresource =
+                                                       {
+                                                           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                           .mipLevel = 0,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 2,
+                                                       },
+                                                   .imageOffset =
+                                                       {
+                                                           .x = 0,
+                                                           .y = 0,
+                                                           .z = 0,
+                                                       },
+                                                   .imageExtent =
+                                                       {
+                                                           .width = 16,
+                                                           .height = 16,
+                                                           .depth = 1,
+                                                       },
+                                               }),
+                                               EqsVkBufferImageCopy(VkBufferImageCopy{
+                                                   .bufferOffset = 2048,
+                                                   .bufferRowLength = 0,
+                                                   .bufferImageHeight = 0,
+                                                   .imageSubresource =
+                                                       {
+                                                           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                           .mipLevel = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 2,
+                                                       },
+                                                   .imageOffset =
+                                                       {
+                                                           .x = 0,
+                                                           .y = 0,
+                                                           .z = 0,
+                                                       },
+                                                   .imageExtent =
+                                                       {
+                                                           .width = 8,
+                                                           .height = 8,
+                                                           .depth = 1,
+                                                       },
+                                               }),
+                                               EqsVkBufferImageCopy(VkBufferImageCopy{
+                                                   .bufferOffset = 2560,
+                                                   .bufferRowLength = 0,
+                                                   .bufferImageHeight = 0,
+                                                   .imageSubresource =
+                                                       {
+                                                           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                           .mipLevel = 2,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 2,
+                                                       },
+                                                   .imageOffset =
+                                                       {
+                                                           .x = 0,
+                                                           .y = 0,
+                                                           .z = 0,
+                                                       },
+                                                   .imageExtent =
+                                                       {
+                                                           .width = 4,
+                                                           .height = 4,
+                                                           .depth = 1,
+                                                       },
+                                               }),
+                                               EqsVkBufferImageCopy(VkBufferImageCopy{
+                                                   .bufferOffset = 2688,
+                                                   .bufferRowLength = 0,
+                                                   .bufferImageHeight = 0,
+                                                   .imageSubresource =
+                                                       {
+                                                           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                           .mipLevel = 3,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 2,
+                                                       },
+                                                   .imageOffset =
+                                                       {
+                                                           .x = 0,
+                                                           .y = 0,
+                                                           .z = 0,
+                                                       },
+                                                   .imageExtent =
+                                                       {
+                                                           .width = 2,
+                                                           .height = 2,
+                                                           .depth = 1,
+                                                       },
+                                               }),
+                                               EqsVkBufferImageCopy(VkBufferImageCopy{
+                                                   .bufferOffset = 2720,
+                                                   .bufferRowLength = 0,
+                                                   .bufferImageHeight = 0,
+                                                   .imageSubresource =
+                                                       {
+                                                           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                           .mipLevel = 4,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 2,
+                                                       },
+                                                   .imageOffset =
+                                                       {
+                                                           .x = 0,
+                                                           .y = 0,
+                                                           .z = 0,
+                                                       },
+                                                   .imageExtent =
+                                                       {
+                                                           .width = 1,
+                                                           .height = 1,
+                                                           .depth = 1,
+                                                       },
+                                               })));
 }
 
 }  // namespace
