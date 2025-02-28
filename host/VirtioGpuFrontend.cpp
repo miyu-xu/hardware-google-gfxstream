@@ -975,6 +975,22 @@ inline const GoldfishPipeServiceOps* VirtioGpuFrontend::ensureAndGetServiceOps()
     return mServiceOps;
 }
 
+int VirtioGpuFrontend::suspend() {
+    stream_renderer_info("Suspending Gfxstream.");
+
+    android_getOpenglesRenderer()->pauseAllPreSave();
+
+    return 0;
+}
+
+int VirtioGpuFrontend::resume() {
+    stream_renderer_info("Resuming Gfxstream.");
+
+    android_getOpenglesRenderer()->resumeAll();
+
+    return 0;
+}
+
 #ifdef GFXSTREAM_BUILD_WITH_SNAPSHOT_FRONTEND_SUPPORT
 
 static constexpr const char kSnapshotBasenameAsg[] = "gfxstream_asg.bin";
@@ -1061,8 +1077,6 @@ int VirtioGpuFrontend::snapshotAsg(const char* directory) {
 
 int VirtioGpuFrontend::snapshot(const char* directory) {
     stream_renderer_debug("directory:%s", directory);
-
-    android_getOpenglesRenderer()->pauseAllPreSave();
 
     int ret = snapshotRenderer(directory);
     if (ret) {
@@ -1226,8 +1240,6 @@ int VirtioGpuFrontend::restore(const char* directory) {
         stream_renderer_error("Failed to load snapshot: failed to load ASG device.");
         return ret;
     }
-
-    android_getOpenglesRenderer()->resumeAll();
 
     stream_renderer_debug("directory:%s - done!", directory);
     return 0;
