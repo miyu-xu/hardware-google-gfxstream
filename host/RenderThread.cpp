@@ -271,6 +271,13 @@ void RenderThread::setFinished() {
     }
 }
 
+static std::string getThreadID() {
+    std::ostringstream ss;
+    ss << std::this_thread::get_id();
+    std::string result = ss.str();
+    return result;
+}
+
 void RenderThread::waitForExitSignal() {
     AutoLock lock(mLock);
     GL_LOG("Waiting for exit signal RenderThread @%p", this);
@@ -512,15 +519,31 @@ intptr_t RenderThread::main() {
                     .healthMonitor = FrameBuffer::getFB()->getHealthMonitor(),
                     .metricsLogger = &metricsLogger,
                 };
-                last = tInfo->m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(), ioStream,
-                                                      processResources, context);
-                if (last > 0) {
-                    if (!processResources) {
-                        ERR("Processed some Vulkan packets without process resources created. "
-                            "That's problematic.");
+                RenderThreadInfo *tInfo = RenderThreadInfo::get();
+                // tInfo->m_puid;
+                // we have to do it later after m_puid is setup already
+                if (!tInfo->m_vkInfo->m_vkDec.getVkDecoderGlobalState()) {
+                    if (tInfo->m_puid > 0 && tInfo->m_puid != 0xffffffff) {
+                        auto gsptr = vk::getVkDecoderGlobalState(tInfo->m_puid);
+                        tInfo->m_vkInfo->m_vkDec.setVkDecoderGlobalState(gsptr);
+                        fprintf(stderr, "%s %d tid: %s stream %p puid 0x%llx\n", __func__, __LINE__,
+                                getThreadID().c_str(), ioStream, tInfo->m_puid);
                     }
-                    readBuf.consume(last);
-                    progress = true;
+                }
+
+                if (tInfo->m_vkInfo->m_vkDec.getVkDecoderGlobalState()) {
+                    fprintf(stderr, "%s %d tid: %s stream %p puid 0x%llx\n", __func__, __LINE__,
+                            getThreadID().c_str(), ioStream, tInfo->m_puid);
+                    last = tInfo->m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(),
+                                                           ioStream, processResources, context);
+                    if (last > 0) {
+                        if (!processResources) {
+                            ERR("Processed some Vulkan packets without process resources created. "
+                                "That's problematic.");
+                        }
+                        readBuf.consume(last);
+                        progress = true;
+                    }
                 }
             }
 
