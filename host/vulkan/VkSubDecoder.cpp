@@ -41,7 +41,7 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
     android::base::BumpPool* pool = readStream->pool();
     unsigned char* ptr = (unsigned char*)pData;
     const unsigned char* const end = (const unsigned char*)buf + dataSize;
-    VkDecoderGlobalState* globalstate = VkDecoderGlobalState::get();
+    VkDecoderGlobalState* globalstate = m_parent_state;
     while (end - ptr >= 8) {
         uint32_t opcode = *(uint32_t*)ptr;
         uint32_t packetLen = *(uint32_t*)(ptr + 4);
