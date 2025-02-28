@@ -372,6 +372,10 @@ bool getFormatTransferInfo(VkFormat format, uint32_t width, uint32_t height,
                            VkDeviceSize* outStagingBufferCopySize,
                            std::vector<VkBufferImageCopy>* outBufferImageCopies);
 
+bool getFormatTransferInfo(const VkImageCreateInfo& imageInfo,
+                           VkDeviceSize* outStagingBufferCopySize,
+                           std::vector<VkBufferImageCopy>* outBufferImageCopies);
+
 }  // namespace vk
 }  // namespace gfxstream
 

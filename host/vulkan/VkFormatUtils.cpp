@@ -140,61 +140,98 @@ const FormatPlaneLayouts* getFormatPlaneLayouts(VkFormat format) {
     return &it->second;
 }
 
-bool getFormatTransferInfo(VkFormat format, uint32_t width, uint32_t height,
+bool getFormatTransferInfo(const VkImageCreateInfo& imageInfo,
                            VkDeviceSize* outStagingBufferCopySize,
                            std::vector<VkBufferImageCopy>* outBufferImageCopies) {
-    const FormatPlaneLayouts* formatInfo = getFormatPlaneLayouts(format);
+    const FormatPlaneLayouts* formatInfo = getFormatPlaneLayouts(imageInfo.format);
     if (formatInfo == nullptr) {
-        ERR("Unhandled format: %s [%d]", string_VkFormat(format), format);
+        ERR("Unhandled format: %s [%d]", string_VkFormat(imageInfo.format), imageInfo.format);
         return false;
     }
 
-    const uint32_t alignedWidth = alignToPower2(width, formatInfo->horizontalAlignmentPixels);
-    const uint32_t alignedHeight = height;
-    uint32_t cumulativeOffset = 0;
-    uint32_t cumulativeSize = 0;
-    for (const FormatPlaneLayout& planeInfo : formatInfo->planeLayouts) {
-        const uint32_t planeOffset = cumulativeOffset;
-        const uint32_t planeWidth = alignedWidth / planeInfo.horizontalSubsampling;
-        const uint32_t planeHeight = alignedHeight / planeInfo.verticalSubsampling;
-        const uint32_t planeBpp = planeInfo.sampleIncrementBytes;
-        const uint32_t planeStrideTexels = planeWidth;
-        const uint32_t planeStrideBytes = planeStrideTexels * planeBpp;
-        const uint32_t planeSize = planeHeight * planeStrideBytes;
-        if (outBufferImageCopies) {
-            outBufferImageCopies->emplace_back(VkBufferImageCopy{
-                .bufferOffset = planeOffset,
-                .bufferRowLength = planeStrideTexels,
-                .bufferImageHeight = 0,
-                .imageSubresource =
-                    {
-                        .aspectMask = planeInfo.aspectMask,
-                        .mipLevel = 0,
-                        .baseArrayLayer = 0,
-                        .layerCount = 1,
-                    },
-                .imageOffset =
-                    {
-                        .x = 0,
-                        .y = 0,
-                        .z = 0,
-                    },
-                .imageExtent =
-                    {
-                        .width = planeWidth,
-                        .height = planeHeight,
-                        .depth = 1,
-                    },
-            });
-        }
-        cumulativeOffset += planeSize;
-        cumulativeSize += planeSize;
+    if (imageInfo.extent.depth != 1) {
+        ERR("Unhandled depth: %d", imageInfo.extent.depth);
+        return false;
     }
+
+    const uint32_t alignedWidth =
+        alignToPower2(imageInfo.extent.width, formatInfo->horizontalAlignmentPixels);
+    const uint32_t alignedHeight = imageInfo.extent.height;
+    const uint32_t alignedDepth = 1;
+    const uint32_t numMipLevels = imageInfo.mipLevels;
+    const uint32_t numArrayLayers = imageInfo.arrayLayers;
+
+    uint32_t cumulativeSize = 0;
+
+    for (uint32_t mipLevel = 0; mipLevel < numMipLevels; mipLevel++) {
+        const uint32_t mipLevelWidth = alignedWidth >> mipLevel;
+        const uint32_t mipLevelHeight = alignedHeight >> mipLevel;
+        const uint32_t mipLevelDepth = 1;
+
+        for (const FormatPlaneLayout& planeInfo : formatInfo->planeLayouts) {
+            const uint32_t currentMipPlaneWidth = alignedWidth / planeInfo.horizontalSubsampling;
+            const uint32_t currentMipPlaneHeight = alignedHeight / planeInfo.verticalSubsampling;
+            const uint32_t currentMipPlaneDepth = 1;
+
+            const uint32_t blockSize = planeInfo.sampleIncrementBytes;
+            const uint32_t rowExtent = currentMipPlaneWidth * blockSize;
+            const uint32_t sliceExtent = currentMipPlaneHeight * rowExtent;
+            const uint32_t layerExtent = currentMipPlaneDepth * sliceExtent;
+
+            if (outBufferImageCopies) {
+                outBufferImageCopies->emplace_back(VkBufferImageCopy{
+                    .bufferOffset = cumulativeSize,
+                    .bufferRowLength = /*indicates tightly packed*/ 0,
+                    .bufferImageHeight = /*indicates tightly packed*/ 0,
+                    .imageSubresource =
+                        {
+                            .aspectMask = planeInfo.aspectMask,
+                            .mipLevel = 0,
+                            .baseArrayLayer = 0,
+                            .layerCount = numArrayLayers,
+                        },
+                    .imageOffset =
+                        {
+                            .x = 0,
+                            .y = 0,
+                            .z = 0,
+                        },
+                    .imageExtent =
+                        {
+                            .width = currentMipPlaneWidth,
+                            .height = currentMipPlaneHeight,
+                            .depth = currentMipPlaneDepth,
+                        },
+                });
+            }
+
+            const uint32_t currentMipPlaneSize = numArrayLayers * layerExtent;
+            cumulativeSize += currentMipPlaneSize;
+        }
+    }
+
     if (outStagingBufferCopySize) {
         *outStagingBufferCopySize = cumulativeSize;
     }
 
     return true;
+}
+
+bool getFormatTransferInfo(VkFormat format, uint32_t width, uint32_t height,
+                           VkDeviceSize* outStagingBufferCopySize,
+                           std::vector<VkBufferImageCopy>* outBufferImageCopies) {
+    const VkImageCreateInfo imageInfo = {
+        .format = format,
+        .extent =
+            {
+                .width = width,
+                .height = height,
+                .depth = 1,
+            },
+        .mipLevels = 1,
+        .arrayLayers = 1,
+    };
+    return getFormatTransferInfo(imageInfo, outStagingBufferCopySize, outBufferImageCopies);
 }
 
 }  // namespace vk
