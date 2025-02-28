@@ -1,0 +1,49 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4afa48e_7b7bb81e",
+        "filename": "host/ReadBuffer.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-02-28T13:39:26Z",
+      "side": 1,
+      "message": "There are a few other casting to smaller types in this CL, but I think this one can actually hit the limits when reading the buffers, better to change readTotal to use size_t instead. Otherwise LGTM, thanks!",
+      "fixSuggestions": [
+        {
+          "fixId": "6e8f2972_2de38422",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/ReadBuffer.cpp",
+              "range": {
+                "startLine": 89,
+                "startChar": 0,
+                "endLine": 90,
+                "endChar": 0
+              },
+              "replacement": "    size_t readTotal \u003d 0;\n"
+            },
+            {
+              "path": "host/ReadBuffer.cpp",
+              "range": {
+                "startLine": 103,
+                "startChar": 0,
+                "endLine": 104,
+                "endChar": 0
+              },
+              "replacement": "    } while (readTotal \u003c minSizeToRead);\n"
+            }
+          ]
+        }
+      ],
+      "revId": "b144d9fef80b1a7fa88b453d58ff6258e14088be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
