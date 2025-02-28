@@ -512,6 +512,12 @@ intptr_t RenderThread::main() {
                     .healthMonitor = FrameBuffer::getFB()->getHealthMonitor(),
                     .metricsLogger = &metricsLogger,
                 };
+                RenderThreadInfo *tInfo = RenderThreadInfo::get();
+                // tInfo->m_puid;
+                // we have to do it later after m_puid is setup already
+                auto emu = vk::getGlobalVkEmulation();
+                // tInfo->m_vkInfo->m_vkDec.setVkDecoderGlobalState(em->getVkDecoderGlobalState(tInfo->m_puid));
+
                 last = tInfo->m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(), ioStream,
                                                       processResources, context);
                 if (last > 0) {
