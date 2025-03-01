@@ -271,6 +271,13 @@ void RenderThread::setFinished() {
     }
 }
 
+static std::string getThreadID() {
+    std::ostringstream ss;
+    ss << std::this_thread::get_id();
+    std::string result = ss.str();
+    return result;
+}
+
 void RenderThread::waitForExitSignal() {
     AutoLock lock(mLock);
     GL_LOG("Waiting for exit signal RenderThread @%p", this);
@@ -512,6 +519,8 @@ intptr_t RenderThread::main() {
                     .healthMonitor = FrameBuffer::getFB()->getHealthMonitor(),
                     .metricsLogger = &metricsLogger,
                 };
+                fprintf(stderr, "%s %d tid: %s stream %p puid 0x%llx\n",
+                        __func__, __LINE__, getThreadID().c_str(), ioStream, tInfo->m_puid);
                 last = tInfo->m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(), ioStream,
                                                       processResources, context);
                 if (last > 0) {
