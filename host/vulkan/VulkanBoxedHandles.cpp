@@ -339,7 +339,7 @@ static std::string getThreadID() {
 }
 
 template <typename VkObjectT>
-VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
+VkObjectT new_boxed_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
     uint32_t additionalTag = 0x0;
     {
 //   RenderThreadInfo *tInfo = RenderThreadInfo::get();
@@ -364,12 +364,17 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
-    auto boxed = (VkObjectT)sBoxedHandleManager.add(info,
+    auto boxed = (VkObjectT)pBoxedHandleManager->add(info,
             (BoxedHandleTypeTag)(GetTag<VkObjectT>() + additionalTag));
     fprintf(stderr, "tid %s unboxed 0x%llx to boxed 0x%llx\n",
             getThreadID().c_str(), (unsigned long long)underlying, (unsigned long long)boxed);
     auto vkboxed = (VkObjectT)boxed;
     return vkboxed;
+}
+
+template <typename VkObjectT>
+VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
+    return new_boxed_VkType<VkObjectT>(&sBoxedHandleManager, underlying, dispatchable, dispatch, ownsDispatch);
 }
 
 template <typename VkObjectT>
@@ -1713,6 +1718,13 @@ VkValidationCacheEXT unboxed_to_boxed_non_dispatchable_VkValidationCacheEXT(VkVa
 
 void set_boxed_non_dispatchable_VkValidationCacheEXT(VkValidationCacheEXT boxed, VkValidationCacheEXT new_unboxed) {
     set_boxed_non_dispatchable_VkType<VkValidationCacheEXT>(boxed, new_unboxed);
+}
+
+//VkInstance new_boxed_VkInstance(VkInstance unboxed, VulkanDispatch* dispatch, bool ownsDispatch) {
+//    return new_boxed_VkType<VkInstance>(unboxed, /*dispatchable=*/true, dispatch, ownsDispatch);
+// }
+VkInstance new_boxed_VkInstance(BoxedHandleManager* pBoxedHandleManager, VkInstance unboxed, VkInstance underlying, VulkanDispatch* dispatch, bool ownDispatch) {
+    return new_boxed_VkType<VkInstance>(pBoxedHandleManager, unboxed, true, dispatch, ownDispatch);
 }
 
 }  // namespace vk
