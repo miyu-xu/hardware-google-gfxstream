@@ -1793,6 +1793,64 @@ void set_boxed_non_dispatchable_VkValidationCacheEXT(VkValidationCacheEXT boxed,
 }
 
 // new interface that takes ptr to BoxedHandleManager
+#define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DEFINE(type)                                        \
+    type new_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type underlying,              \
+                          VulkanDispatch* dispatch, bool ownDispatch) {                          \
+        return new_boxed_VkType<type>(pBoxedHandleManager, underlying, true, dispatch,           \
+                                      ownDispatch);                                              \
+    }                                                                                            \
+    void delete_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) {                    \
+        delete_VkType(pBoxedHandleManager, boxed);                                               \
+    }                                                                                            \
+    type unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) {                     \
+        return unbox_VkType<type>(pBoxedHandleManager, boxed);                                   \
+    }                                                                                            \
+    type try_unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) {                 \
+        return try_unbox_VkType<type>(pBoxedHandleManager, boxed);                               \
+    }                                                                                            \
+    type unboxed_to_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type unboxed) {        \
+        return unboxed_to_boxed_non_dispatchable_VkType<type>(pBoxedHandleManager, unboxed);     \
+    }                                                                                            \
+    VulkanDispatch* dispatch_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) {       \
+        return get_dispatch_VkType<type>(pBoxedHandleManager, boxed);                            \
+    }                                                                                            \
+    OrderMaintenanceInfo* ordmaint_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) { \
+        return get_order_maintenance_info_VkType<type>(pBoxedHandleManager, boxed);              \
+    }                                                                                            \
+    VulkanMemReadingStream* readstream_##type(BoxedHandleManager* pBoxedHandleManager,           \
+                                              type boxed) {                                      \
+        return get_read_stream_VkType<type>(pBoxedHandleManager, boxed);                         \
+    }
+
+#define DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DEFINE(type)                                   \
+    type new_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager,             \
+                                           type underlying) {                                   \
+        return new_boxed_VkType<type>(pBoxedHandleManager, underlying);                         \
+    }                                                                                           \
+    void delete_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) {                   \
+        delete_VkType(pBoxedHandleManager, boxed);                                              \
+    }                                                                                           \
+    void delayed_delete_##type(BoxedHandleManager* pBoxedHandleManager, type boxed,             \
+                               VkDevice device, std::function<void()> callback) {               \
+        delayed_delete_VkType(pBoxedHandleManager, boxed, device, std::move(callback));         \
+    }                                                                                           \
+    type unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) {                    \
+        return try_unbox_VkType<type>(pBoxedHandleManager, boxed);                              \
+    }                                                                                           \
+    type try_unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed) {                \
+        return try_unbox_VkType<type>(pBoxedHandleManager, boxed);                              \
+    }                                                                                           \
+    type unboxed_to_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager,      \
+                                                  type unboxed) {                               \
+        return unboxed_to_boxed_non_dispatchable_VkType<type>(pBoxedHandleManager, unboxed);    \
+    }                                                                                           \
+    void set_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager, type boxed, \
+                                           type underlying) {                                   \
+        set_boxed_non_dispatchable_VkType<type>(pBoxedHandleManager, boxed, underlying);        \
+    }
+
+GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DEFINE)
+GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DEFINE)
 
 }  // namespace vk
 }  // namespace gfxstream
