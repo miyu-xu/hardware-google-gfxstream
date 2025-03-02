@@ -148,5 +148,26 @@ extern BoxedHandleManager sBoxedHandleManager;
 GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL)
 GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL)
 
+#define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
+    type new_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type underlying, VulkanDispatch* dispatch, bool ownDispatch); \
+    void delete_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                                     \
+    type unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                                      \
+    type try_unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                                  \
+    type unboxed_to_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                           \
+    VulkanDispatch* dispatch_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                        \
+    OrderMaintenanceInfo* ordmaint_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                  \
+    VulkanMemReadingStream* readstream_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);
+
+#define DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL(type)                                  \
+    type new_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager, type underlying);                                 \
+    void delete_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                                          \
+    void delayed_delete_##type(BoxedHandleManager* pBoxedHandleManager, type boxed, VkDevice device, std::function<void()> callback); \
+    type unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                                           \
+    type try_unbox_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                                                       \
+    type unboxed_to_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager, type boxed);                               \
+    void set_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager, type boxed, type underlying);
+
+GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL)
+GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL)
 }  // namespace vk
 }  // namespace gfxstream
