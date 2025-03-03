@@ -2078,6 +2078,8 @@ class VkDecoderGlobalState::Impl {
                 physicalQueueInfo.queueFamilyIndex = index;
                 physicalQueueInfo.boxed = boxedQueue;
                 physicalQueueInfo.queueMutex = std::make_shared<std::mutex>();
+                physicalQueueInfo.pendingOps = std::make_shared<PhysicalQueuePendingOps>();
+                physicalQueueInfo.usingSharedPhysicalQueue = addVirtualQueue;
                 queues.push_back(physicalQueue);
 
                 deviceWithQueues.queues.push_back(DeviceLostHelper::QueueWithMutex{
@@ -2113,6 +2115,8 @@ class VkDecoderGlobalState::Impl {
                         virtualQueueInfo.queueFamilyIndex = physicalQueueInfo.queueFamilyIndex;
                         virtualQueueInfo.boxed = boxedVirtualQueue;
                         virtualQueueInfo.queueMutex = physicalQueueInfo.queueMutex;  // Shares the same lock!
+                        virtualQueueInfo.pendingOps = physicalQueueInfo.pendingOps;  // Shares the same pendingOps!
+                        physicalQueueInfo.usingSharedPhysicalQueue = true;
                         queues.push_back(virtualQueue);
                     }
                     i++;
@@ -2962,6 +2966,7 @@ class VkDecoderGlobalState::Impl {
         vk_struct_chain_iterator structChainIter = vk_make_chain_iterator(&localCreateInfo);
 
         bool timelineSemaphore = false;
+        uint64_t initialValue = 0;
 
         VkSemaphoreTypeCreateInfoKHR localSemaphoreTypeCreateInfo;
         if (const VkSemaphoreTypeCreateInfoKHR* semaphoreTypeCiPtr =
@@ -2972,6 +2977,7 @@ class VkDecoderGlobalState::Impl {
 
             if (localSemaphoreTypeCreateInfo.semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
                 timelineSemaphore = true;
+                initialValue = localSemaphoreTypeCreateInfo.initialValue;
             }
         }
 
@@ -3027,6 +3033,8 @@ class VkDecoderGlobalState::Impl {
         VALIDATE_NEW_HANDLE_INFO_ENTRY(mSemaphoreInfo, *pSemaphore);
         auto& semaphoreInfo = mSemaphoreInfo[*pSemaphore];
         semaphoreInfo.device = device;
+        semaphoreInfo.isTimelineSemaphore = timelineSemaphore;
+        semaphoreInfo.lastSignalValue = initialValue;
 
         *pSemaphore = new_boxed_non_dispatchable_VkSemaphore(*pSemaphore);
 
@@ -3370,12 +3378,101 @@ class VkDecoderGlobalState::Impl {
     }
 
     VkResult on_vkWaitSemaphores(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
-                             VkDevice boxed_device, const VkSemaphoreWaitInfo* pWaitInfo,
-                             uint64_t timeout) {
+                                 VkDevice boxed_device, const VkSemaphoreWaitInfo* pWaitInfo,
+                                 uint64_t timeout) {
         auto device = unbox_VkDevice(boxed_device);
         auto deviceDispatch = dispatch_VkDevice(boxed_device);
 
         return deviceDispatch->vkWaitSemaphores(device, pWaitInfo, timeout);
+    }
+
+    VkResult checkAndExecutePendingOps(QueueInfo& queueInfo) {
+        auto vk = dispatch_VkQueue(queueInfo.boxed);
+        VkQueue unboxed_queue = unbox_VkQueue(queueInfo.boxed);
+
+        std::vector<std::pair<VkSemaphore, uint64_t>> signalSemaphores;
+        auto& pendingCalls = queueInfo.pendingOps->submitCalls;
+        auto it = pendingCalls.begin();
+        while (it != pendingCalls.end()) {
+            auto& pendingSubmitCall = *it;
+            bool canBeCalledNow = safeToSubmit(pendingSubmitCall);
+
+            if (!canBeCalledNow) {
+                // Only increment if we didn't erase
+                ++it;
+                continue;
+            }
+
+            // It's now safe to submit this dispatch call
+            LOG_CALLS_VERBOSE("%s: executing deferred queue submission", __func__);
+
+            std::vector<VkSubmitInfo2> allSubmitInfo;
+            allSubmitInfo.reserve(pendingSubmitCall.submits.size());
+            for (auto& submit : pendingSubmitCall.submits) {
+                auto& submitInfo = submit.deepCopySubmitInfo;
+                // Update pointers with the actual data backing
+                // TODO0: use unique pointers to avoid data movement
+                submitInfo.pWaitSemaphoreInfos = submit.waitSemaphoreInfos.data();
+                submitInfo.pCommandBufferInfos = submit.commandBufferInfos.data();
+                submitInfo.pSignalSemaphoreInfos = submit.signalSemaphoreInfos.data();
+
+                allSubmitInfo.push_back(submitInfo);
+            }
+
+            // Remove it from the pending list, we're not using dispatchVkQueueSubmit
+            // and calling onSemaphoreSignalled in the end to avoid messing up with
+            // the iteration.
+            it = pendingCalls.erase(it);
+
+            VkResult res = vk->vkQueueSubmit2(unboxed_queue, allSubmitInfo.size(),
+                                              allSubmitInfo.data(), pendingSubmitCall.fence);
+            if (res != VK_SUCCESS) {
+                return res;
+            }
+
+            // We'll signal semaphores after the submission
+            for (int i = 0; i < allSubmitInfo.size(); i++) {
+                const auto& s = allSubmitInfo[i];
+                for (int j = 0; j < s.signalSemaphoreInfoCount; j++) {
+                    const VkSemaphoreSubmitInfo& signalInfo = s.pSignalSemaphoreInfos[j];
+                    signalSemaphores.push_back(
+                        std::make_pair(signalInfo.semaphore, signalInfo.value));
+                }
+            }
+        }
+
+        // Update status for signal semaphores
+        for (auto& iter : signalSemaphores) {
+            VkResult res = onSemaphoreSignalled(iter.first, iter.second);
+            if (res != VK_SUCCESS) {
+                return res;
+            }
+        }
+
+        return VK_SUCCESS;
+    }
+
+    // TODO00: rename onTimelineSemaphoreSignalledOnSharedQueue?
+    VkResult onSemaphoreSignalled(VkSemaphore semaphore, uint64_t value) {
+        {
+            std::lock_guard<std::mutex> lock(mMutex);
+            auto semaphoreInfo = android::base::find(mSemaphoreInfo, semaphore);
+            if (semaphoreInfo && semaphoreInfo->lastSignalValue < value) {
+                semaphoreInfo->lastSignalValue = value;
+            }
+        }
+
+        // Check if any pending calls can be executed now
+        //TODO000: required: std::lock_guard<std::mutex> lock(mMutex);
+        for (auto& queueInfo : mQueueInfo) {
+            // TODO00: optimize this, should not iterate through all the queues
+            VkResult res = checkAndExecutePendingOps(queueInfo.second);
+            if (res != VK_SUCCESS) {
+                return res;
+            }
+        }
+
+        return VK_SUCCESS;
     }
 
     VkResult on_vkSignalSemaphore(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
@@ -3383,7 +3480,12 @@ class VkDecoderGlobalState::Impl {
         auto device = unbox_VkDevice(boxed_device);
         auto deviceDispatch = dispatch_VkDevice(boxed_device);
 
-        return deviceDispatch->vkSignalSemaphore(device, pSignalInfo);
+        VkResult res = deviceDispatch->vkSignalSemaphore(device, pSignalInfo);
+        if (res != VK_SUCCESS) {
+            return res;
+        }
+
+        return onSemaphoreSignalled(pSignalInfo->semaphore, pSignalInfo->value);
     }
 
     enum class DestroyFenceStatus { kDestroyed, kRecycled };
@@ -6169,12 +6271,123 @@ class VkDecoderGlobalState::Impl {
 
     VkResult dispatchVkQueueSubmit(VulkanDispatch* vk, VkQueue unboxed_queue, uint32_t submitCount,
                                    const VkSubmitInfo* pSubmits, VkFence fence) {
-        return vk->vkQueueSubmit(unboxed_queue, submitCount, pSubmits, fence);
+        VkResult res = vk->vkQueueSubmit(unboxed_queue, submitCount, pSubmits, fence);
+        if (res != VK_SUCCESS) {
+            return res;
+        }
+
+        // Update status for signal semaphores
+        // TODO0: support VkTimelineSemaphoreSubmitInfo
+        for (uint32_t submitIndex = 0; submitIndex < submitCount; submitIndex++) {
+            for (int semaphoreIndex = 0;
+                 semaphoreIndex < getSignalSemaphoreCount(pSubmits[submitIndex]);
+                 semaphoreIndex++) {
+                VkSemaphore sem = getSignalSemaphore(pSubmits[submitIndex], semaphoreIndex);
+                res = onSemaphoreSignalled(sem, 1);
+                if (res != VK_SUCCESS) {
+                    return res;
+                }
+            }
+        }
+
+        return VK_SUCCESS;
+    }
+
+    // Check if all wait semaphores can be signalled
+    bool safeToSubmit(bool usingSharedPhysicalQueue, uint32_t submitCount,
+                      const VkSubmitInfo* pSubmits) {
+        // Deferring VkSubmitInfo is not supported
+        // TODO0: add support for handling VkTimelineSemaphoreSubmitInfo on pNext?
+        return true;
+    }
+
+    bool safeToSubmit(bool usingSharedPhysicalQueue, uint32_t submitCount,
+                      const VkSubmitInfo2* pSubmits) {
+        // Check any of the waits are depending on signal_after_wait behavior and should be
+        // deferred to avoid hangs when virtual queue is enabled with physical queue sharing.
+        if (!usingSharedPhysicalQueue) {
+            // When physical queue is not shared, it's app's responsibility to ensure correct
+            // signaling of the semaphores.
+            return true;
+        }
+
+        // TODO00: optimize binary semaphore handling, remove `inSubmissionSignalValues`
+        std::unordered_map<VkSemaphore, uint64_t> inSubmissionSignalValues;
+        for (uint32_t submitIndex = 0; submitIndex < submitCount; submitIndex++) {
+            const VkSubmitInfo2& submit = pSubmits[submitIndex];
+            for (uint32_t i = 0; i < submit.signalSemaphoreInfoCount; i++) {
+                auto& signalSemInfo = submit.pSignalSemaphoreInfos[i];
+                inSubmissionSignalValues[signalSemInfo.semaphore] = signalSemInfo.value; //TODO00: should only be filled when wait can be achieved
+            }
+        }
+
+        for (uint32_t submitIndex = 0; submitIndex < submitCount; submitIndex++) {
+            const VkSubmitInfo2& submit = pSubmits[submitIndex];
+
+            for (auto i = 0; i < submit.waitSemaphoreInfoCount; i++) {
+                auto& waitSemInfo = submit.pWaitSemaphoreInfos[i];
+
+                // TODO00: inefficient lock and lots of find calls!
+                std::lock_guard<std::mutex> lock(mMutex);
+                auto semaphoreInfo = android::base::find(mSemaphoreInfo, waitSemInfo.semaphore);
+                if (semaphoreInfo == nullptr) continue;
+
+                if ( semaphoreInfo->lastSignalValue < waitSemInfo.value) {
+                    // Also check if it'll be signalled within this submission call
+                    auto iter = inSubmissionSignalValues.find(waitSemInfo.semaphore);
+                    if (iter == inSubmissionSignalValues.end() ||
+                        iter->second != waitSemInfo.value) {
+                        // The semaphore is not signalled yet, submitting a wait is not safe
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    bool safeToSubmit(const PhysicalQueuePendingOps::DeferredSubmitCall& pendingSubmitCall) {
+        for (auto& pendingSubmit : pendingSubmitCall.submits) {
+            for (auto& waitInfo : pendingSubmit.waitSemaphoreInfos) {
+                const VkSemaphore sem = waitInfo.semaphore;
+                const uint64_t waitValue = waitInfo.value;
+
+                std::lock_guard<std::mutex> lock(mMutex);
+                SemaphoreInfo* semInfo = android::base::find(mSemaphoreInfo, sem);
+                if (!semInfo) {
+                    ERR("%s:%d - semaphore %p not found!", __func__, __LINE__, sem);
+                    continue;
+                }
+                if (semInfo->lastSignalValue < waitValue) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     VkResult dispatchVkQueueSubmit(VulkanDispatch* vk, VkQueue unboxed_queue, uint32_t submitCount,
                                    const VkSubmitInfo2* pSubmits, VkFence fence) {
-        return vk->vkQueueSubmit2(unboxed_queue, submitCount, pSubmits, fence);
+        VkResult res = vk->vkQueueSubmit2(unboxed_queue, submitCount, pSubmits, fence);
+        if (res != VK_SUCCESS) {
+            return res;
+        }
+
+        // Update status for signal semaphores
+        for (int i = 0; i < submitCount; i++) {
+            const auto& s = pSubmits[i];
+            for (int j = 0; j < s.signalSemaphoreInfoCount; j++) {
+                const VkSemaphoreSubmitInfo& signalSemaphoreInfo = s.pSignalSemaphoreInfos[j];
+                res = onSemaphoreSignalled(signalSemaphoreInfo.semaphore, signalSemaphoreInfo.value);
+                if (res != VK_SUCCESS) {
+                    return res;
+                }
+            }
+        }
+
+        return VK_SUCCESS;
     }
 
     int getCommandBufferCount(const VkSubmitInfo& submitInfo) {
@@ -6205,6 +6418,13 @@ class VkDecoderGlobalState::Impl {
     VkSemaphore getWaitSemaphore(const VkSubmitInfo2& pSubmit, int i) {
         return pSubmit.pWaitSemaphoreInfos[i].semaphore;
     }
+    uint64_t getWaitSemaphoreValue(const VkSubmitInfo& pSubmit, int i) {
+        //TODO0: add support for VkTimelineSemaphoreSubmitInfo
+        return 1;
+    }
+    uint64_t getWaitSemaphoreValue(const VkSubmitInfo2& pSubmit, int i) {
+        return pSubmit.pWaitSemaphoreInfos[i].value;
+    }
 
     uint32_t getSignalSemaphoreCount(const VkSubmitInfo& pSubmit) {
         return pSubmit.signalSemaphoreCount;
@@ -6217,6 +6437,13 @@ class VkDecoderGlobalState::Impl {
     }
     VkSemaphore getSignalSemaphore(const VkSubmitInfo2& pSubmit, int i) {
         return pSubmit.pSignalSemaphoreInfos[i].semaphore;
+    }
+    uint64_t getSignalSemaphoreValue(const VkSubmitInfo& pSubmit, int i) {
+        //TODO0: add support for VkTimelineSemaphoreSubmitInfo
+        return 1;
+    }
+    uint64_t getSignalSemaphoreValue(const VkSubmitInfo2& pSubmit, int i) {
+        return pSubmit.pSignalSemaphoreInfos[i].value;
     }
 
     template <typename VkSubmitInfoType>
@@ -6274,6 +6501,8 @@ class VkDecoderGlobalState::Impl {
 
         VkDevice device = VK_NULL_HANDLE;
         std::mutex* queueMutex = nullptr;
+        PhysicalQueuePendingOps* pendingOps = nullptr;
+        bool sharedQueue = false;
 
         {
             std::lock_guard<std::mutex> lock(mMutex);
@@ -6284,6 +6513,8 @@ class VkDecoderGlobalState::Impl {
             }
             device = queueInfo->device;
             queueMutex = queueInfo->queueMutex.get();
+            pendingOps = queueInfo->pendingOps.get();
+            sharedQueue = queueInfo->usingSharedPhysicalQueue;
         }
 
         // Unsafe to release when snapshot enabled.
@@ -6312,13 +6543,61 @@ class VkDecoderGlobalState::Impl {
             deviceInfo->deviceOpTracker->PollAndProcessGarbage();
         }
 
-        std::lock_guard<std::mutex> queueLock(*queueMutex);
-        auto result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
-
-        if (result != VK_SUCCESS) {
-            WARN("dispatchVkQueueSubmit failed: %s [%d]", string_VkResult(result), result);
-            return result;
+#ifdef DEBUG_TIMELINE_SEMAPHORES
+        // Enable this section to debug issues with signalling and waiting of timeline semaphores
+        INFO("%s: %p %d", __func__, queue, submitCount);
+        for (int i = 0; i < submitCount; i++) {
+            const auto& s = pSubmits[i];
+            for (int j = 0; j < getWaitSemaphoreCount(s); j++) {
+                INFO("%s: %p[%d] : waits %p %llu", __func__, queue, i, getWaitSemaphore(s, j),
+                     getWaitSemaphoreValue(s, j));
+            }
+            for (int j = 0; j < getSignalSemaphoreCount(s); j++) {
+                INFO("%s: %p[%d] : signals %p %llu", __func__, queue, i, getSignalSemaphore(s, j),
+                     getSignalSemaphoreValue(s, j));
+            }
         }
+#endif
+
+        // Dispatch only if it's safe
+        const bool canDispatch = safeToSubmit(sharedQueue, submitCount, pSubmits);
+
+        std::lock_guard<std::mutex> queueLock(*queueMutex);
+        if (canDispatch) {
+            auto result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
+            if (result != VK_SUCCESS) {
+                WARN("dispatchVkQueueSubmit failed: %s [%d]", string_VkResult(result), result);
+                return result;
+            }
+        } else {
+            // Special handling of submissions where the signalling will be done later.
+            // (E.g. dEQP-VK.synchronization2.timeline_semaphore.wait_before_signal.*)
+            // When a single physical queue is shared with VulkanVirtualQueue, signal
+            // cannot be processed as the wait operation blocks the queue. Here we defer
+            // the real submission until another queue submission with the necessary
+            // semaphore signaling is made.
+            // We cannot partially send some of the submissions, as that'd break the fence
+            // signalling, so we defer all the operations for this call.
+            // For other post-submit operations, we treat this submissions as if it has been
+            // sent to the GPU, because all the object lifetimes (e.g. semaphores, fences,
+            // command buffers) need to be managed correctly by the app side until actual
+            // GPU operation is started.
+            LOG_CALLS_VERBOSE("Deferring dispatch on queue %p, with fence %p", queue, usedFence);
+
+            PhysicalQueuePendingOps::DeferredSubmitCall deferredCall;
+            for (int i = 0; i < submitCount; i++) {
+                PhysicalQueuePendingOps::QueueSubmit2 deferredSubmit;
+                if (!deferredSubmit.convertFrom(pSubmits[i])) {
+                    // TODO0: should ideally be handled differently
+                    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                        << "Unsupported queue submission type detected!";
+                }
+                deferredCall.submits.push_back(deferredSubmit);
+            }
+            deferredCall.fence = fence;
+            pendingOps->submitCalls.emplace_back(deferredCall);
+        }
+
         {
             std::lock_guard<std::mutex> lock(mMutex);
             // Update image layouts
@@ -6376,7 +6655,10 @@ class VkDecoderGlobalState::Impl {
             }
         }
         if (!releasedColorBuffers.empty()) {
-            result = vk->vkWaitForFences(device, 1, &usedFence, VK_TRUE, /* 1 sec */ 1000000000L);
+            // TODO0: this is not safe when timeline semaphores are used! but presentation images do
+            // not support timeline semaphroes anyway? add a comment and error message
+            VkResult result =
+                vk->vkWaitForFences(device, 1, &usedFence, VK_TRUE, /* 1 sec */ 1000000000L);
             if (result != VK_SUCCESS) {
                 ERR("vkWaitForFences failed: %s [%d]", string_VkResult(result), result);
                 return result;
@@ -6387,7 +6669,7 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
-        return result;
+        return VK_SUCCESS;
     }
 
     VkResult on_vkQueueWaitIdle(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
