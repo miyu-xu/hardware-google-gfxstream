@@ -14,6 +14,7 @@
 
 #include "VulkanBoxedHandles.h"
 
+#include "RenderThreadInfoVk.h"
 #include "VkDecoderGlobalState.h"
 #include "VkDecoderInternalStructs.h"
 
@@ -332,6 +333,14 @@ constexpr const char* GetTypeStr() {
 
 template <typename VkObjectT>
 VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
+    uint32_t additionalTag = 0x0;
+    {
+        auto* renderThreadInfo = RenderThreadInfoVk::get();
+        if (renderThreadInfo) {
+            additionalTag = renderThreadInfo->m_vkDec.getVkDecoderGlobalState()->getId();
+        }
+        additionalTag = additionalTag << 8;  // left shift 8bit
+    }
     BoxedHandleInfo info;
     info.underlying = (uint64_t)underlying;
     if (dispatchable) {
@@ -344,7 +353,10 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
-    return (VkObjectT)sBoxedHandleManager.add(info, GetTag<VkObjectT>());
+    auto boxed = (VkObjectT)sBoxedHandleManager.add(
+        info, (BoxedHandleTypeTag)(GetTag<VkObjectT>() + additionalTag));
+    auto vkboxed = (VkObjectT)boxed;
+    return vkboxed;
 }
 
 template <typename VkObjectT>
