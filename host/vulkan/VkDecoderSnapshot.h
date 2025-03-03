@@ -51,10 +51,11 @@ class Stream;
 
 namespace gfxstream {
 namespace vk {
+class VkDecoderGlobalState;
 
 class VkDecoderSnapshot {
    public:
-    VkDecoderSnapshot();
+    VkDecoderSnapshot(VkDecoderGlobalState* state);
     ~VkDecoderSnapshot();
 
     void clear();
@@ -1904,6 +1905,7 @@ class VkDecoderSnapshot {
                                                 uint32_t pipelineStackSize);
 #endif
    private:
+    VkDecoderGlobalState* m_state;
     class Impl;
     std::unique_ptr<Impl> mImpl;
 };

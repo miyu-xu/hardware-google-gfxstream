@@ -20,6 +20,7 @@
 #include "ReadBuffer.h"
 #include "RenderChannelImpl.h"
 #include "RenderThreadInfo.h"
+#include "RenderThreadInfoVk.h"
 #include "RingStream.h"
 #include "VkDecoderContext.h"
 #include "aemu/base/HealthMonitor.h"
@@ -75,7 +76,7 @@ static bool getBenchmarkEnabledFromEnv() {
 
 // Start with a smaller buffer to not waste memory on a low-used render threads.
 static constexpr int kStreamBufferSize = 128 * 1024;
-
+static constexpr const uint64_t kInvalidPUID = std::numeric_limits<uint64_t>::max();
 // Requires this many threads on the system available to run unlimited.
 static constexpr int kMinThreadsToRunUnlimited = 5;
 
@@ -512,15 +513,32 @@ intptr_t RenderThread::main() {
                     .healthMonitor = FrameBuffer::getFB()->getHealthMonitor(),
                     .metricsLogger = &metricsLogger,
                 };
-                last = tInfo->m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(), ioStream,
-                                                      processResources, context);
-                if (last > 0) {
-                    if (!processResources) {
-                        ERR("Processed some Vulkan packets without process resources created. "
-                            "That's problematic.");
+                RenderThreadInfo* tInfo = RenderThreadInfo::get();
+                // we have to do it later after m_puid is setup already
+                if (!tInfo->m_vkInfo->m_vkDec.getVkDecoderGlobalState()) {
+                    if (vk::getGlobalVkEmulation()->features.VulkanSeparateGlobalState.enabled) {
+                        if (tInfo->m_puid && tInfo->m_puid != INVALID_CONTEXT_ID) {
+                            auto gsptr = vk::getVkDecoderGlobalState(tInfo->m_puid);
+                            auto* renderThreadInfo = vk::RenderThreadInfoVk::get();
+                            tInfo->m_vkInfo->m_vkDec.setVkDecoderGlobalState(gsptr);
+                        }
+                    } else {
+                        auto gsptr = vk::getVkDecoderGlobalStateById(0);
+                        tInfo->m_vkInfo->m_vkDec.setVkDecoderGlobalState(gsptr);
                     }
-                    readBuf.consume(last);
-                    progress = true;
+                }
+
+                if (tInfo->m_vkInfo->m_vkDec.getVkDecoderGlobalState()) {
+                    last = tInfo->m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(),
+                                                           ioStream, processResources, context);
+                    if (last > 0) {
+                        if (!processResources) {
+                            ERR("Processed some Vulkan packets without process resources created. "
+                                "That's problematic.");
+                        }
+                        readBuf.consume(last);
+                        progress = true;
+                    }
                 }
             }
 
