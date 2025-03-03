@@ -77,6 +77,8 @@ struct VkProcessState {
     std::optional<uint64_t> mPuid = std::nullopt;
 };
 
+extern std::shared_ptr<BoxedHandleManager> sBoxedHandleManagerPtr;
+
 std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalState(uint64_t puid);
 std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalStateById(int index);
 
