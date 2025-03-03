@@ -16,6 +16,24 @@
       "message": "this is not a cl for submit but for feedback eliciting :-)",
       "revId": "b0a61f6f6b73553ef766dfce1fb70f6ba742b29a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85a46808_f1ea5a64",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-03T13:33:39Z",
+      "side": 1,
+      "message": "Thanks Bo, this is a good initiative; separating the state tracking information will benefit to performance, but can we get any other benefits of this by adding puid into instanceInfo tracking while keeping the global locks? ie. when we want to get resources of a process, use InstanceInfo::puid to filter out. Maybe we should do that first before doing a rearchitecture here",
+      "parentUuid": "1a9360cf_3a4d84f3",
+      "revId": "b0a61f6f6b73553ef766dfce1fb70f6ba742b29a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
