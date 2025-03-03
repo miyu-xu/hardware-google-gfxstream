@@ -754,6 +754,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     }
 
     sVkEmulation = new VkEmulation;
+
     sVkEmulation->callbacks = callbacks;
     sVkEmulation->features = features;
 
@@ -1605,6 +1606,9 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     sVkEmulation->live = true;
 
     sVkEmulation->transferQueueCommandBufferPool.resize(0);
+
+    // allocate 128 process state
+    VkDecoderGlobalState::createGlobalStatesAndHandleManagers(128);
 
     return sVkEmulation;
 }
