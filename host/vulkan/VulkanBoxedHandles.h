@@ -124,7 +124,7 @@ class BoxedHandleManager {
     std::deque<BoxedHandle> mHandleReplayQueue;
 };
 
-extern BoxedHandleManager sBoxedHandleManager;
+//extern BoxedHandleManager* sBoxedHandleManager;
 
 #define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
     type new_boxed_##type(type underlying, VulkanDispatch* dispatch, bool ownDispatch); \

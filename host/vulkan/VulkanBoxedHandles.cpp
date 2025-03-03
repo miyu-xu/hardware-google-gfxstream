@@ -15,6 +15,7 @@
 #include "VulkanBoxedHandles.h"
 
 #include "VkDecoderGlobalState.h"
+#include "VkCommonOperations.h"
 #include "RenderThreadInfoVk.h"
 #include "VkDecoderInternalStructs.h"
 
@@ -149,7 +150,7 @@ BoxedHandle BoxedHandleManager::getBoxedFromUnboxed(UnboxedHandle unboxed) {
     return it->second;
 }
 
-BoxedHandleManager sBoxedHandleManager;
+//BoxedHandleManager sBoxedHandleManager;
 
 template <typename VkObjectT>
 constexpr BoxedHandleTypeTag GetTag() {
@@ -374,7 +375,7 @@ VkObjectT new_boxed_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT un
 
 template <typename VkObjectT>
 VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
-    return new_boxed_VkType<VkObjectT>(&sBoxedHandleManager, underlying, dispatchable, dispatch, ownsDispatch);
+    return new_boxed_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), underlying, dispatchable, dispatch, ownsDispatch);
 }
 
 template <typename VkObjectT>
@@ -400,7 +401,7 @@ void delete_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed) {
 
 template <typename VkObjectT>
 void delete_VkType(VkObjectT boxed) {
-    delete_VkType<VkObjectT>(&sBoxedHandleManager, boxed);
+    delete_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed);
 }
 
 template <typename VkObjectT>
@@ -415,7 +416,7 @@ void delayed_delete_VkType(BoxedHandleManager* pBoxedHandleManager,
 
 template <typename VkObjectT>
 void delayed_delete_VkType(VkObjectT boxed, VkDevice device, std::function<void()> callback) {
-    delayed_delete_VkType<VkObjectT>(&sBoxedHandleManager, boxed, device, std::move(callback));
+    delayed_delete_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed, device, std::move(callback));
 }
 
 // Custom unbox_* functions or GOLDFISH_VK_LIST_DISPATCHABLE_CUSTOM_UNBOX_HANDLE_TYPES
@@ -494,7 +495,7 @@ VkObjectT unbox_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed)
 
 template <typename VkObjectT>
 VkObjectT unbox_VkType(VkObjectT boxed) {
-    return unbox_VkType<VkObjectT>(&sBoxedHandleManager, boxed);
+    return unbox_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed);
 }
 
 template <typename VkObjectT>
@@ -523,7 +524,7 @@ VkObjectT try_unbox_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT bo
 
 template <typename VkObjectT>
 VkObjectT try_unbox_VkType(VkObjectT boxed) {
-    return try_unbox_VkType<VkObjectT>(&sBoxedHandleManager, boxed);
+    return try_unbox_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed);
 }
 
 template <typename VkObjectT>
@@ -542,7 +543,7 @@ VkObjectT unboxed_to_boxed_non_dispatchable_VkType(VkObjectT unboxed) {
         return VK_NULL_HANDLE;
     }
 
-    return unboxed_to_boxed_non_dispatchable_VkType<VkObjectT>(&sBoxedHandleManager, unboxed);
+    return unboxed_to_boxed_non_dispatchable_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), unboxed);
 }
 
 template <typename VkObjectT>
@@ -555,7 +556,7 @@ void set_boxed_non_dispatchable_VkType(BoxedHandleManager* pBoxedHandleManager,
 
 template <typename VkObjectT>
 void set_boxed_non_dispatchable_VkType(VkObjectT boxed, VkObjectT new_unboxed) {
-    set_boxed_non_dispatchable_VkType<VkObjectT>(&sBoxedHandleManager, boxed, new_unboxed);
+    set_boxed_non_dispatchable_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed, new_unboxed);
 }
 
 template <typename VkObjectT>
@@ -577,7 +578,7 @@ OrderMaintenanceInfo* get_order_maintenance_info_VkType(BoxedHandleManager* pBox
 
 template <typename VkObjectT>
 OrderMaintenanceInfo* get_order_maintenance_info_VkType(VkObjectT boxed) {
-    return get_order_maintenance_info_VkType<VkObjectT>(&sBoxedHandleManager, boxed);
+    return get_order_maintenance_info_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed);
 }
 
 template <typename VkObjectT>
@@ -597,7 +598,7 @@ VulkanMemReadingStream* get_read_stream_VkType(BoxedHandleManager* pBoxedHandleM
 
 template <typename VkObjectT>
 VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
-    return get_read_stream_VkType<VkObjectT>(&sBoxedHandleManager, boxed);
+    return get_read_stream_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed);
 }
 
 template <typename VkObjectT>
@@ -613,7 +614,7 @@ VulkanDispatch* get_dispatch_VkType(BoxedHandleManager* pBoxedHandleManager,
 
 template <typename VkObjectT>
 VulkanDispatch* get_dispatch_VkType(VkObjectT boxed) {
-    return get_dispatch_VkType<VkObjectT>(&sBoxedHandleManager, boxed);
+    return get_dispatch_VkType<VkObjectT>(sBoxedHandleManagerPtr.get(), boxed);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

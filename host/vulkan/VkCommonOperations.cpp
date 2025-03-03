@@ -95,6 +95,7 @@ const char* string_AstcEmulationMode(AstcEmulationMode mode) {
 static StaticMap<VkDevice, uint32_t> sKnownStagingTypeIndices;
 
 static android::base::StaticLock sVkEmulationLock;
+std::shared_ptr<BoxedHandleManager> sBoxedHandleManagerPtr;
 
 static bool updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, uint32_t x, uint32_t y,
                                              uint32_t w, uint32_t h, const void* pixels,
@@ -105,7 +106,7 @@ static void createGlobalStatesAndHandleManagers(int count, std::vector<VkProcess
     for (int i=0; i < count; ++i) {
         processStates[i].mState = std::make_shared<VkDecoderGlobalState>();
         processStates[i].mState->setId(i);
-        processStates[i].mBoxedHandleManager = std::make_shared<BoxedHandleManager>();
+        processStates[i].mBoxedHandleManager = sBoxedHandleManagerPtr;
         processStates[i].mState->setBoxedHandleManager(processStates[i].mBoxedHandleManager);
     }
 }
@@ -1617,6 +1618,7 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 
     sVkEmulation->transferQueueCommandBufferPool.resize(0);
 
+    sBoxedHandleManagerPtr = std::make_shared<BoxedHandleManager>();
     // allocate 128 process state
     createGlobalStatesAndHandleManagers(128, sVkEmulation->mProcessStates);
 
