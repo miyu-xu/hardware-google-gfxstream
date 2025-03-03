@@ -231,11 +231,81 @@ struct DeviceInfo {
     }
 };
 
+struct PhysicalQueuePendingOps {
+    // Wrapper structure to defer calls with VkSubmitInfo2
+    struct QueueSubmit2 {
+        bool convertFrom(const VkSubmitInfo& submit) {
+            // TODO(b/379862480): VkSubmitInfo is not supported for deferred submissions, this
+            // should not be called until we support VkTimelineSemaphoreSubmitInfo on pNext
+            return false;
+        }
+        bool convertFrom(const VkSubmitInfo2& submit) {
+
+            // TODO(b/379862480): Use real deep copy to support pNext
+            bool foundAnyPNext = false;
+            if (submit.pNext) {
+                foundAnyPNext = true;
+                return false;
+            }
+
+            waitSemaphoreInfos.resize(submit.commandBufferInfoCount);
+            for (uint32_t i = 0; i < submit.commandBufferInfoCount; i++) {
+                if (submit.pWaitSemaphoreInfos[i].pNext) {
+                    foundAnyPNext = true;
+                }
+                waitSemaphoreInfos[i] = submit.pWaitSemaphoreInfos[i];
+            }
+
+            commandBufferInfos.resize(submit.commandBufferInfoCount);
+            for (uint32_t i = 0; i < submit.commandBufferInfoCount; i++) {
+                if (submit.pCommandBufferInfos[i].pNext) {
+                    foundAnyPNext = true;
+                }
+                commandBufferInfos[i] = submit.pCommandBufferInfos[i];
+            }
+
+            signalSemaphoreInfos.resize(submit.commandBufferInfoCount);
+            for (uint32_t i = 0; i < submit.commandBufferInfoCount; i++) {
+                if (submit.pSignalSemaphoreInfos[i].pNext) {
+                    foundAnyPNext = true;
+                }
+                signalSemaphoreInfos[i] = submit.pSignalSemaphoreInfos[i];
+            }
+
+            if (foundAnyPNext) {
+                return false;
+            }
+
+            deepCopySubmitInfo = submit;
+            deepCopySubmitInfo.pWaitSemaphoreInfos = waitSemaphoreInfos.data();
+            deepCopySubmitInfo.pCommandBufferInfos = commandBufferInfos.data();
+            deepCopySubmitInfo.pSignalSemaphoreInfos = signalSemaphoreInfos.data();
+
+            return true;
+        }
+
+        VkSubmitInfo2 deepCopySubmitInfo;
+
+        std::vector<VkSemaphoreSubmitInfo> waitSemaphoreInfos;
+        std::vector<VkCommandBufferSubmitInfo> commandBufferInfos;
+        std::vector<VkSemaphoreSubmitInfo> signalSemaphoreInfos;
+    };
+
+    struct DeferredSubmitCall {
+        std::vector<QueueSubmit2> submits;
+        VkFence fence;
+    };
+
+    std::vector<DeferredSubmitCall> submitCalls;
+};
+
 struct QueueInfo {
     std::shared_ptr<std::mutex> queueMutex;
+    std::shared_ptr<PhysicalQueuePendingOps> pendingOps; // Only valid if shared
     VkDevice device;
     uint32_t queueFamilyIndex;
     VkQueue boxed = nullptr;
+    bool usingSharedPhysicalQueue = false;
 
     // In order to create a virtual queue handle, we use an offset to the physical
     // queue handle value. This assumes the new generated virtual handle value will
@@ -329,7 +399,11 @@ struct SemaphoreInfo {
     // upon before destruction (e.g. as part of a vkAcquireImageANDROID() call),
     // the waitable that tracking that host operation.
     std::optional<DeviceOpWaitable> latestUse;
+
+    uint64_t lastSignalValue = 0;
+    bool isTimelineSemaphore;
 };
+
 struct DescriptorSetLayoutInfo {
     VkDevice device = 0;
     VkDescriptorSetLayout boxed = 0;
