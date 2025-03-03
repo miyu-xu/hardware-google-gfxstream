@@ -309,7 +309,7 @@ void SyncThread::triggerWaitVkQsriWithCompletionCallback(VkImage vkImage, FenceC
        << reinterpret_cast<uintptr_t>(vkImage);
     sendAsync(
         [vkImage, cb = std::move(cb)](WorkerId) {
-            auto decoder = vk::VkDecoderGlobalState::get();
+            auto decoder = vk::VkDecoderGlobalState::getForVkHandle((uint64_t)vkImage);
             auto res = decoder->registerQsriCallback(vkImage, cb);
             // If registerQsriCallback does not schedule the callback, we still need to complete
             // the task, otherwise we may hit deadlocks on tasks on the same ring.
@@ -326,7 +326,7 @@ void SyncThread::triggerWaitVkQsri(VkImage vkImage, uint64_t timeline) {
        << " timeline=0x" << std::hex << timeline;
     sendAsync(
         [vkImage, timeline](WorkerId) {
-            auto decoder = vk::VkDecoderGlobalState::get();
+            auto decoder = vk::VkDecoderGlobalState::getForVkHandle((uint64_t)vkImage);
             auto res = decoder->registerQsriCallback(vkImage, [timeline](){
                  emugl::emugl_sync_timeline_inc(timeline, kTimelineInterval);
             });
@@ -436,7 +436,7 @@ void SyncThread::doSyncThreadCmd(Command&& command, WorkerId workerId) {
 int SyncThread::doSyncWaitVk(VkFence vkFence, std::function<void()> onComplete) {
     DPRINT("enter");
 
-    auto decoder = vk::VkDecoderGlobalState::get();
+    auto decoder = vk::VkDecoderGlobalState::getForVkHandle((uint64_t)vkFence);
     auto result = decoder->waitForFence(vkFence, kDefaultTimeoutNsecs);
     if (result == VK_TIMEOUT) {
         DPRINT("SYNC_WAIT_VK timeout: vkFence=%p", vkFence);

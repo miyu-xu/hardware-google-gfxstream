@@ -209,10 +209,12 @@ static uint32_t kTemporaryContextIdForSnapshotLoading = 1;
 
 class VkDecoderGlobalState::Impl {
    public:
-    Impl()
+    Impl(VkDecoderGlobalState* parent)
         : m_vk(vkDispatch()),
+          m_parent_state(parent),
           m_emu(getGlobalVkEmulation()),
-          mRenderDocWithMultipleVkInstances(m_emu->guestRenderDoc.get()) {
+          mRenderDocWithMultipleVkInstances(m_emu->guestRenderDoc.get()),
+          mSnapshot(parent) {
         mSnapshotsEnabled = m_emu->features.VulkanSnapshots.enabled;
         mBatchedDescriptorSetUpdateEnabled =
             m_emu->features.VulkanBatchedDescriptorSetUpdate.enabled;
@@ -265,6 +267,12 @@ class VkDecoderGlobalState::Impl {
 
         mSnapshot.clear();
     }
+
+    void setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager) {
+        mBoxedHandleManager = BoxedHandleManager;
+    }
+
+    std::shared_ptr<BoxedHandleManager> getBoxedHandleManager() { return mBoxedHandleManager; }
 
     bool snapshotsEnabled() const { return mSnapshotsEnabled; }
 
@@ -8878,6 +8886,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     VulkanDispatch* m_vk;
+    VkDecoderGlobalState* m_parent_state;
     VkEmulation* m_emu;
     emugl::RenderDocWithMultipleVkInstances* mRenderDocWithMultipleVkInstances = nullptr;
     bool mSnapshotsEnabled = false;
@@ -9102,30 +9111,112 @@ class VkDecoderGlobalState::Impl {
 
     std::unordered_map<LinearImageCreateInfo, LinearImageProperties, LinearImageCreateInfo::Hash>
         mLinearImageProperties GUARDED_BY(mMutex);
+
+    std::shared_ptr<BoxedHandleManager> mBoxedHandleManager;
 };
 
-VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl()) {}
+VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl(this)) {}
 
 VkDecoderGlobalState::~VkDecoderGlobalState() = default;
 
 static VkDecoderGlobalState* sGlobalDecoderState = nullptr;
 
+struct VkProcessState {
+    std::shared_ptr<VkDecoderGlobalState> mState;
+    std::shared_ptr<BoxedHandleManager> mBoxedHandleManager;
+    std::optional<uint64_t> mPuid = std::nullopt;
+};
+
+static android::base::StaticLock sProcessStatesLock;
+static std::vector<VkProcessState> sProcessStates;
+
+void VkDecoderGlobalState::createGlobalStatesAndHandleManagers(int count) {
+    AutoLock lock(sProcessStatesLock);
+    sProcessStates.resize(count);
+    for (int i = 0; i < count; ++i) {
+        sProcessStates[i].mState = std::make_shared<VkDecoderGlobalState>();
+        sProcessStates[i].mState->setId(i);
+        sProcessStates[i].mBoxedHandleManager = std::make_shared<BoxedHandleManager>();
+        sProcessStates[i].mState->setBoxedHandleManager(sProcessStates[i].mBoxedHandleManager);
+    }
+}
+
+std::shared_ptr<VkDecoderGlobalState> VkDecoderGlobalState::getVkDecoderGlobalStateById(int index) {
+    std::shared_ptr<VkDecoderGlobalState> emptyptr;
+    {
+        AutoLock lock(sProcessStatesLock);
+        if (index >= 0 && index < sProcessStates.size()) {
+            return sProcessStates[index].mState;
+        }
+    }
+    return emptyptr;
+}
+
+void VkDecoderGlobalState::resetVkDecoderGlobalStateById(int index) {
+    AutoLock lock(sProcessStatesLock);
+    if (index >= 0 && index < sProcessStates.size()) {
+        sProcessStates[index].mState = std::make_shared<VkDecoderGlobalState>();
+        sProcessStates[index].mState->setId(index);
+        auto handleMgr = std::make_shared<BoxedHandleManager>();
+        sProcessStates[index].mBoxedHandleManager = handleMgr;
+        sProcessStates[index].mState->setBoxedHandleManager(handleMgr);
+    }
+}
+
+std::shared_ptr<VkDecoderGlobalState> VkDecoderGlobalState::getVkDecoderGlobalState(uint64_t puid) {
+    AutoLock lock(sProcessStatesLock);
+    if (getGlobalVkEmulation()->features.VulkanSeparateGlobalState.enabled) {
+        std::shared_ptr<VkDecoderGlobalState> emptyptr;
+        for (int i = 1; i < sProcessStates.size(); ++i) {
+            if (sProcessStates[i].mPuid.has_value()) {
+                if (sProcessStates[i].mPuid.value() == puid) {
+                    return sProcessStates[i].mState;
+                }
+            }
+        }
+        for (int i = 1; i < sProcessStates.size(); ++i) {
+            if (!sProcessStates[i].mPuid.has_value()) {
+                sProcessStates[i].mPuid = puid;
+                return sProcessStates[i].mState;
+            }
+        }
+        return emptyptr;
+    } else {
+        return sProcessStates[0].mState;
+    }
+}
+
 // static
+std::shared_ptr<VkDecoderGlobalState> VkDecoderGlobalState::getForVkHandle(uint64_t handle) {
+    int index = (handle >> 48);
+    auto ptr = getVkDecoderGlobalStateById(index);
+    return ptr;
+}
+
 VkDecoderGlobalState* VkDecoderGlobalState::get() {
     if (sGlobalDecoderState) return sGlobalDecoderState;
-    sGlobalDecoderState = new VkDecoderGlobalState;
+    sGlobalDecoderState = getVkDecoderGlobalStateById(0).get();
     return sGlobalDecoderState;
 }
 
 // static
 void VkDecoderGlobalState::reset() {
-    delete sGlobalDecoderState;
     sGlobalDecoderState = nullptr;
+    resetVkDecoderGlobalStateById(0);
 }
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
 bool VkDecoderGlobalState::batchedDescriptorSetUpdateEnabled() const { return mImpl->batchedDescriptorSetUpdateEnabled(); }
+
+void VkDecoderGlobalState::setBoxedHandleManager(
+    std::shared_ptr<BoxedHandleManager> BoxedHandleManager) {
+    return mImpl->setBoxedHandleManager(BoxedHandleManager);
+}
+
+std::shared_ptr<BoxedHandleManager> VkDecoderGlobalState::getBoxedHandleManager() {
+    return mImpl->getBoxedHandleManager();
+}
 
 uint64_t VkDecoderGlobalState::newGlobalVkGenericHandle() {
     BoxedHandleInfo item;                                                    \

@@ -24,6 +24,7 @@
 #include "VkDecoderContext.h"
 #include "VkQsriTimeline.h"
 #include "VkSnapshotApiCall.h"
+#include "VulkanBoxedHandles.h"
 #include "VulkanDispatch.h"
 #include "VulkanHandleMapping.h"
 #include "aemu/base/AsyncResult.h"
@@ -71,9 +72,19 @@ class VkDecoderGlobalState {
     // There should only be one instance of VkDecoderGlobalState per process
     // Note: currently not thread-safe
     static VkDecoderGlobalState* get();
+    static void resetVkDecoderGlobalStateById(int index);
+    static void createGlobalStatesAndHandleManagers(int count);
+    static std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalState(uint64_t puid);
+    static std::shared_ptr<VkDecoderGlobalState> getVkDecoderGlobalStateById(int index);
+
+    // given a vk handle, get its glabal state where the handle is created from
+    static std::shared_ptr<VkDecoderGlobalState> getForVkHandle(uint64_t handle);
 
     // For testing only - destroys the global instance of VkDecoderGlobalState.
     static void reset();
+
+    void setBoxedHandleManager(std::shared_ptr<BoxedHandleManager> BoxedHandleManager);
+    std::shared_ptr<BoxedHandleManager> getBoxedHandleManager();
 
     // Snapshot save/load
     bool snapshotsEnabled() const;
@@ -884,6 +895,9 @@ class VkDecoderGlobalState {
     // Snapshot access
     VkDecoderSnapshot* snapshot();
 
+    void setId(int id) { mId = id; }
+    int getId() const { return mId; }
+
     // get a generic handle, this handle
     // currently is used to represent some
     // action related api call, such as
@@ -913,6 +927,7 @@ class VkDecoderGlobalState {
    private:
     class Impl;
     std::unique_ptr<Impl> mImpl;
+    int mId;
 };
 
 }  // namespace vk
