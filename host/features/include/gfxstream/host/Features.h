@@ -321,6 +321,12 @@ struct FeatureSet {
         "device properties for the guest queries.",
         &map,
     };
+    FeatureInfo VulkanSeparateGlobalState = {
+        "VulkanSeparateGlobalState",
+        "(Experimental) If enabled, each unique guest process will have its own VkDecoderGlobalState"
+        "device properties for the guest queries.",
+        &map,
+    };
 };
 struct FeatureDependencyHandler {
     FeatureDependencyHandler(const FeatureSet& set) : featureSetView(set){}
