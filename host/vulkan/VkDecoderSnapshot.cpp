@@ -49,7 +49,7 @@ namespace vk {
 
 class VkDecoderSnapshot::Impl {
    public:
-    Impl() {}
+    Impl(VkDecoderGlobalState* state) : m_state(state) {}
 
     void clear() {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
@@ -4007,12 +4007,13 @@ class VkDecoderSnapshot::Impl {
     }
 #endif
    private:
+    VkDecoderGlobalState* m_state;
     std::mutex mReconstructionMutex;
     VkReconstruction mReconstruction GUARDED_BY(mReconstructionMutex);
 };
 
-VkDecoderSnapshot::VkDecoderSnapshot() : mImpl(new VkDecoderSnapshot::Impl()) {}
-
+VkDecoderSnapshot::VkDecoderSnapshot(VkDecoderGlobalState* state)
+    : m_state(state), mImpl(new VkDecoderSnapshot::Impl(state)) {}
 void VkDecoderSnapshot::clear() { mImpl->clear(); }
 
 void VkDecoderSnapshot::saveReplayBuffers(android::base::Stream* stream) {
