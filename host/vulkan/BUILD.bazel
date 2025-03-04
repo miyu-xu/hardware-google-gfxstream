@@ -63,6 +63,7 @@ cc_library(
     deps = [
         # "//external/angle:angle-headers",
         "//hardware/google/aemu/snapshot:aemu-snapshot",
+        "//hardware/google/aemu/base:aemu-base",
         "//hardware/google/gfxstream/common/vulkan:gfxstream_vulkan_headers",
         "//hardware/google/gfxstream/host:gfxstream-compressedTextures",
         "//hardware/google/gfxstream/host:gfxstream_host_headers",
