@@ -124,7 +124,6 @@ class BoxedHandleManager {
     std::deque<BoxedHandle> mHandleReplayQueue;
 };
 
-extern BoxedHandleManager sBoxedHandleManager;
 
 #define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
     type new_boxed_##type(type underlying, VulkanDispatch* dispatch, bool ownDispatch); \
@@ -147,6 +146,22 @@ extern BoxedHandleManager sBoxedHandleManager;
 
 GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL)
 GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL)
+
+#define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL_2(type)                           \
+    type new_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type underlying, \
+                          VulkanDispatch* dispatch, bool ownDispatch);              \
+    type unboxed_to_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type unboxed);
+
+#define DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL_2(type)                                   \
+    type new_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager,             \
+                                           type underlying);                                    \
+    type unboxed_to_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager,      \
+                                                  type boxed);                                  \
+    void set_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager, type boxed, \
+                                           type underlying);
+
+GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL_2)
+GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL_2)
 
 }  // namespace vk
 }  // namespace gfxstream

@@ -113,15 +113,15 @@ GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(BOXED_NON_DISPATCHABLE_UNWRAP_IMP
         )
 
 // We only use the create/destroy mappings for non dispatchable handles.
-#define BOXED_NON_DISPATCHABLE_CREATE_IMPL(type_name)                                    \
-    MAKE_HANDLE_MAPPING_FOREACH(                                                         \
-        BoxedHandleCreateMapping,                                                        \
-        type_name,                                                                       \
-        handles[i] = new_boxed_non_dispatchable_##type_name(handles[i]); ,               \
-        handle_u64s[i] = (uint64_t)new_boxed_non_dispatchable_##type_name(handles[i]); , \
-        handles[i] = (type_name)new_boxed_non_dispatchable_##type_name(                  \
-            (type_name)(uintptr_t)handle_u64s[i]);                                       \
-        )
+#define BOXED_NON_DISPATCHABLE_CREATE_IMPL(type_name)                        \
+    MAKE_HANDLE_MAPPING_FOREACH(                                             \
+        BoxedHandleCreateMapping, type_name,                                 \
+        handles[i] = new_boxed_non_dispatchable_##type_name(                 \
+            m_state->getBoxedHandleManager().get(), handles[i]);             \
+        , handle_u64s[i] = (uint64_t)new_boxed_non_dispatchable_##type_name( \
+              m_state->getBoxedHandleManager().get(), handles[i]);           \
+        , handles[i] = (type_name)new_boxed_non_dispatchable_##type_name(    \
+              m_state->getBoxedHandleManager().get(), (type_name)(uintptr_t)handle_u64s[i]);)
 
 #define BOXED_NON_DISPATCHABLE_UNWRAP_AND_DELETE_IMPL(type_name)                           \
     MAKE_HANDLE_MAPPING_FOREACH(                                                           \
