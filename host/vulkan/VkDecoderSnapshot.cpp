@@ -49,7 +49,7 @@ namespace vk {
 
 class VkDecoderSnapshot::Impl {
    public:
-    Impl() {}
+    Impl(const gfxstream::host::FeatureSet& features) : mReconstruction(features) {}
 
     void clear() {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
@@ -62,7 +62,7 @@ class VkDecoderSnapshot::Impl {
     }
 
     static void loadReplayBuffers(android::base::Stream* stream,
-                                  std::vector<uint64_t>* outHandleBuffer,
+                                  std::vector<BoxedHandleReplayInfo>* outHandleBuffer,
                                   std::vector<uint8_t>* outDecoderBuffer) {
         VkReconstruction::loadReplayBuffers(stream, outHandleBuffer, outDecoderBuffer);
     }
@@ -4011,7 +4011,8 @@ class VkDecoderSnapshot::Impl {
     VkReconstruction mReconstruction GUARDED_BY(mReconstructionMutex);
 };
 
-VkDecoderSnapshot::VkDecoderSnapshot() : mImpl(new VkDecoderSnapshot::Impl()) {}
+VkDecoderSnapshot::VkDecoderSnapshot(const gfxstream::host::FeatureSet& features)
+    : mImpl(new VkDecoderSnapshot::Impl(features)) {}
 
 void VkDecoderSnapshot::clear() { mImpl->clear(); }
 
@@ -4021,7 +4022,7 @@ void VkDecoderSnapshot::saveReplayBuffers(android::base::Stream* stream) {
 
 /*static*/
 void VkDecoderSnapshot::loadReplayBuffers(android::base::Stream* stream,
-                                          std::vector<uint64_t>* outHandleBuffer,
+                                          std::vector<BoxedHandleReplayInfo>* outHandleBuffer,
                                           std::vector<uint8_t>* outDecoderBuffer) {
     VkDecoderSnapshot::Impl::loadReplayBuffers(stream, outHandleBuffer, outDecoderBuffer);
 }

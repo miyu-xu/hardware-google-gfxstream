@@ -212,7 +212,8 @@ class VkDecoderGlobalState::Impl {
     Impl(VkEmulation* emulation)
         : m_vk(vkDispatch()),
           m_vkEmulation(emulation),
-          mRenderDocWithMultipleVkInstances(m_vkEmulation->getRenderDoc()) {
+          mRenderDocWithMultipleVkInstances(m_vkEmulation->getRenderDoc()),
+          mSnapshot(m_vkEmulation->getFeatures()) {
         mSnapshotsEnabled = m_vkEmulation->getFeatures().VulkanSnapshots.enabled;
         mBatchedDescriptorSetUpdateEnabled =
             m_vkEmulation->getFeatures().VulkanBatchedDescriptorSetUpdate.enabled;
@@ -227,6 +228,8 @@ class VkDecoderGlobalState::Impl {
                                                 .control_get_hw_funcs()
                                                 ->getPhysAddrStartLocked();
         }
+
+        sBoxedHandleManager.setFeatures(m_vkEmulation->getFeatures());
     }
 
     ~Impl() = default;
@@ -617,7 +620,7 @@ class VkDecoderGlobalState::Impl {
         // Replay command stream:
         VERBOSE("snapshot load: replay command stream");
         {
-            std::vector<uint64_t> handleReplayBuffer;
+            std::vector<BoxedHandleReplayInfo> handleReplayBuffer;
             std::vector<uint8_t> decoderReplayBuffer;
             VkDecoderSnapshot::loadReplayBuffers(stream, &handleReplayBuffer, &decoderReplayBuffer);
 

@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "VulkanBoxedHandles.h"
 #include "aemu/base/containers/EntityManager.h"
 
 namespace gfxstream {
@@ -30,7 +31,7 @@ struct VkSnapshotApiCallInfo {
     std::vector<uint8_t> packet;
 
     // Book-keeping for which handles were created by this API
-    std::vector<uint64_t> createdHandles;
+    std::vector<BoxedHandle> createdHandles;
 
     // Extra boxed handles created for this API call that are not identifiable
     // solely from the API parameters itself. For example, the extra boxed `VkQueue`s
@@ -41,9 +42,9 @@ struct VkSnapshotApiCallInfo {
     // `VkSnapshotApiCallInfo` as an argument so the creation order of the boxed
     // handles in `createdHandles` is guaranteed to match the replay order. For now,
     // this relies on careful manual ordering.
-    std::vector<uint64_t> extraCreatedHandles;
+    std::vector<BoxedHandle> extraCreatedHandles;
 
-    void addOrderedBoxedHandlesCreatedByCall(const uint64_t* boxedHandles,
+    void addOrderedBoxedHandlesCreatedByCall(const BoxedHandle* boxedHandles,
                                              uint32_t boxedHandlesCount) {
         extraCreatedHandles.insert(extraCreatedHandles.end(), boxedHandles,
                                    boxedHandles + boxedHandlesCount);

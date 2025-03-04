@@ -278,6 +278,11 @@ struct FeatureSet {
         "If enabled, supports snapshotting the guest and host Vulkan state.",
         &map,
     };
+    FeatureInfo VulkanSnapshotsDebugging = {
+        "VulkanSnapshotsDebugging",
+        "If enabled, enables additional logging during snapshotting to aid debugging.",
+        &map,
+    };
     FeatureInfo VulkanUseDedicatedAhbMemoryType = {
         "VulkanUseDedicatedAhbMemoryType",
         "If enabled, emulates an additional memory type for AHardwareBuffer allocations "

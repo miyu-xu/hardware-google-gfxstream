@@ -25,6 +25,7 @@
 #include "aemu/base/containers/Lookup.h"
 #include "aemu/base/synchronization/ConditionVariable.h"
 #include "aemu/base/synchronization/Lock.h"
+#include "gfxstream/host/Features.h"
 
 namespace gfxstream {
 namespace vk {
@@ -42,6 +43,12 @@ enum BoxedHandleTypeTag {
 
 using BoxedHandle = uint64_t;
 using UnboxedHandle = uint64_t;
+
+struct BoxedHandleReplayInfo {
+    BoxedHandle boxed;
+    BoxedHandleTypeTag tag;
+    UnboxedHandle unboxed;
+};
 
 struct OrderMaintenanceInfo {
     uint32_t sequenceNumber = 0;
@@ -67,6 +74,7 @@ static void releaseOrderMaintInfo(OrderMaintenanceInfo* ord) {
 
 class BoxedHandleInfo {
    public:
+    BoxedHandleTypeTag tag;
     UnboxedHandle underlying;
     VulkanDispatch* dispatch = nullptr;
     bool ownDispatch = false;
@@ -76,6 +84,8 @@ class BoxedHandleInfo {
 
 class BoxedHandleManager {
    public:
+    void setFeatures(const gfxstream::host::FeatureSet& features) { mFeatures = features; }
+
     // The hybrid entity manager uses a sequence lock to protect access to
     // a working set of 16000 handles, allowing us to avoid using a regular
     // lock for those. Performance is degraded when going over this number,
@@ -100,11 +110,15 @@ class BoxedHandleManager {
     BoxedHandleInfo* get(BoxedHandle handle);
     BoxedHandle getBoxedFromUnboxed(UnboxedHandle unboxed);
 
-    void replayHandles(std::vector<BoxedHandle> handles);
+    std::vector<BoxedHandleReplayInfo> populateHandleReplay(
+        const std::vector<BoxedHandle>& handles);
+    void replayHandles(std::vector<BoxedHandleReplayInfo> handles);
 
     void clear();
 
    private:
+    gfxstream::host::FeatureSet mFeatures;
+
     mutable Store mStore;
 
     std::mutex mMutex;
@@ -120,7 +134,7 @@ class BoxedHandleManager {
     // This is useful for snapshot loading when a explicit set of handles should
     // be used when replaying commands.
     bool mHandleReplay = false;
-    std::deque<BoxedHandle> mHandleReplayQueue;
+    std::deque<BoxedHandleReplayInfo> mHandleReplayQueue;
 };
 
 extern BoxedHandleManager sBoxedHandleManager;

@@ -33,19 +33,8 @@ uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
 
 }  // namespace
 
-#define DEBUG_RECONSTRUCTION 0
-
-#if DEBUG_RECONSTRUCTION
-
-#define DEBUG_RECON(fmt, ...) INFO(fmt, ##__VA_ARGS__);
-
-#else
-
-#define DEBUG_RECON(fmt, ...)
-
-#endif
-
-VkReconstruction::VkReconstruction() = default;
+VkReconstruction::VkReconstruction(const gfxstream::host::FeatureSet& features)
+    : mFeatures(features) {};
 
 std::vector<VkReconstruction::HandleWithState> typeTagSortedHandles(
     const std::vector<VkReconstruction::HandleWithState>& handles) {
@@ -72,11 +61,10 @@ void VkReconstruction::clear() {
 }
 
 void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
-    DEBUG_RECON("start")
-
-#if DEBUG_RECONSTRUCTION
-    dump();
-#endif
+    if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+        INFO("VkReconstruction starting to save...");
+        dump();
+    }
 
     std::unordered_set<uint64_t> savedApis;
 
@@ -123,10 +111,6 @@ void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
                 if (!apiItem) continue;
                 if (savedApis.find(apiRef) != savedApis.end()) continue;
                 savedApis.insert(apiRef);
-#if DEBUG_RECONSTRUCTION
-                DEBUG_RECON("adding handle 0x%lx API 0x%lx op code %d", handle.first, apiRef,
-                            apiItem->opCode);
-#endif
                 nextApis.push_back(apiRef);
             }
         }
@@ -144,19 +128,25 @@ void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
         }
     }
 
-    DEBUG_RECON("total api trace size: %zu", totalApiTraceSize);
+    if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+        INFO("total api trace size: %zu", totalApiTraceSize);
+    }
 
-    std::vector<uint64_t> createdHandleBuffer;
-
+    std::vector<uint64_t> handlesToReplay;
     for (size_t i = 0; i < uniqApiRefsByTopoOrder.size(); ++i) {
         for (auto apiHandle : uniqApiRefsByTopoOrder[i]) {
             auto item = mApiCallManager.get(apiHandle);
             for (auto createdHandle : item->createdHandles) {
-                DEBUG_RECON("save handle: 0x%lx", createdHandle);
-                createdHandleBuffer.push_back(createdHandle);
+                if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+                    INFO("save handle: 0x%lx", createdHandle);
+                }
+                handlesToReplay.push_back(createdHandle);
             }
         }
     }
+
+    std::vector<BoxedHandleReplayInfo> handleReplayBuffer =
+        sBoxedHandleManager.populateHandleReplay(handlesToReplay);
 
     std::vector<uint8_t> apiTraceBuffer;
     apiTraceBuffer.resize(totalApiTraceSize);
@@ -167,29 +157,33 @@ void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
         for (auto apiHandle : uniqApiRefsByTopoOrder[i]) {
             auto item = mApiCallManager.get(apiHandle);
             // 4 bytes for opcode, and 4 bytes for saveBufferRaw's size field
-            DEBUG_RECON("saving api handle 0x%lx op code %d", apiHandle, GetOpcode(item));
+            if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+                INFO("saving api handle 0x%lx op code %d", apiHandle, GetOpcode(*item));
+            }
             memcpy(apiTracePtr, item->packet.data(), item->packet.size());
             apiTracePtr += item->packet.size();
         }
     }
 
-    DEBUG_RECON("created handle buffer size: %zu trace: %zu", createdHandleBuffer.size(),
-                apiTraceBuffer.size());
+    if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+        INFO("created handle buffer size: %zu trace: %zu", handleReplayBuffer.size(),
+             apiTraceBuffer.size());
+    }
 
-    android::base::saveBuffer(stream, createdHandleBuffer);
+    android::base::saveBuffer(stream, handleReplayBuffer);
     android::base::saveBuffer(stream, apiTraceBuffer);
+
+    if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+        INFO("VkReconstruction finished saving!");
+    }
 }
 
 /*static*/
 void VkReconstruction::loadReplayBuffers(android::base::Stream* stream,
-                                         std::vector<uint64_t>* outHandleBuffer,
+                                         std::vector<BoxedHandleReplayInfo>* outHandleBuffer,
                                          std::vector<uint8_t>* outDecoderBuffer) {
-    DEBUG_RECON("starting to unpack decoder replay buffer");
-
     android::base::loadBuffer(stream, outHandleBuffer);
     android::base::loadBuffer(stream, outDecoderBuffer);
-
-    DEBUG_RECON("finished unpacking decoder replay buffer");
 }
 
 VkSnapshotApiCallInfo* VkReconstruction::createApiCallInfo() {
@@ -212,8 +206,11 @@ void VkReconstruction::removeHandleFromApiInfo(VkSnapshotApiCallHandle h, uint64
     if (it != handles.end()) {
         handles.erase(it);
     }
-    DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
-                (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
+
+    if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+        INFO("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
+             (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
+    }
 }
 
 void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
@@ -305,7 +302,9 @@ void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
     if (!toAdd) return;
 
     for (uint32_t i = 0; i < count; ++i) {
-        DEBUG_RECON("add 0x%llx", (unsigned long long)toAdd[i]);
+        if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+            INFO("add 0x%llx", (unsigned long long)toAdd[i]);
+        }
         mHandleReconstructions.add(toAdd[i], HandleWithStateReconstruction());
     }
 }
@@ -314,7 +313,9 @@ void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, b
     if (!toRemove) return;
 
     for (uint32_t i = 0; i < count; ++i) {
-        DEBUG_RECON("remove 0x%llx", (unsigned long long)toRemove[i]);
+        if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+            INFO("remove 0x%llx", (unsigned long long)toRemove[i]);
+        }
         auto item = mHandleReconstructions.get(toRemove[i]);
         // Delete can happen in arbitrary order.
         // It might delete the parents before children, which will automatically remove
@@ -337,7 +338,9 @@ void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, b
                 forEachHandleDeleteApi(toRemove + i, 1);
                 mHandleReconstructions.remove(toRemove[i]);
             } else {
-                DEBUG_RECON("delay destroy of 0x%lx, TODO: actually destroy it", toRemove[i]);
+                if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+                    INFO("delay destroy of 0x%lx, TODO: actually destroy it", toRemove[i]);
+                }
                 item->delayed_destroy = true;
                 item->destroying = false;
             }
@@ -376,7 +379,10 @@ void VkReconstruction::forEachHandleAddApi(const uint64_t* toProcess, uint32_t c
         if (!item) continue;
 
         item->states[state].apiRefs.push_back(apiHandle);
-        DEBUG_RECON("handle 0x%lx state %d added api 0x%lx", toProcess[i], state, apiHandle);
+
+        if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+            INFO("handle 0x%lx state %d added api 0x%lx", toProcess[i], state, apiHandle);
+        }
     }
 }
 
@@ -384,9 +390,11 @@ void VkReconstruction::forEachHandleDeleteApi(const uint64_t* toProcess, uint32_
     if (!toProcess) return;
 
     for (uint32_t i = 0; i < count; ++i) {
-        DEBUG_RECON("deleting api for 0x%lx", toProcess[i]);
-        auto item = mHandleReconstructions.get(toProcess[i]);
+        if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+            INFO("deleting api for 0x%lx", toProcess[i]);
+        }
 
+        auto item = mHandleReconstructions.get(toProcess[i]);
         if (!item) continue;
 
         for (auto& state : item->states) {
@@ -415,7 +423,9 @@ void VkReconstruction::addHandleDependency(const uint64_t* handles, uint32_t cou
     auto parentItem = mHandleReconstructions.get(parentHandle);
 
     if (!parentItem) {
-        DEBUG_RECON("WARN: adding null parent item: 0x%lx", parentHandle);
+        if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+            INFO("WARN: adding null parent item: 0x%lx", parentHandle);
+        }
         return;
     }
     auto& parentItemState = parentItem->states[parentState];
@@ -428,8 +438,11 @@ void VkReconstruction::addHandleDependency(const uint64_t* handles, uint32_t cou
         parentItemState.childHandles.insert({handles[i], static_cast<HandleState>(childState)});
         childItem->states[childState].parentHandles.push_back(
             {parentHandle, static_cast<HandleState>(parentState)});
-        DEBUG_RECON("Child handle 0x%lx state %d depends on parent handle 0x%lx state %d",
-                    handles[i], childState, parentHandle, parentState);
+
+        if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+            INFO("Child handle 0x%lx state %d depends on parent handle 0x%lx state %d", handles[i],
+                 childState, parentHandle, parentState);
+        }
     }
 }
 
