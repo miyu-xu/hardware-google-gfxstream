@@ -33,6 +33,24 @@
       "message": "Zach, can you shed some light why this test failed and how to find the logs?",
       "revId": "17b41072605c410e51ff2313787208a5e34cf376",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a9cc427_3da45c1d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-04T23:39:16Z",
+      "side": 1,
+      "message": "(for posterity: over chat @bohu@google.com mentioned that @zachyu@google.com said the failure is infra mistake)",
+      "parentUuid": "1b257088_c886df17",
+      "revId": "17b41072605c410e51ff2313787208a5e34cf376",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
