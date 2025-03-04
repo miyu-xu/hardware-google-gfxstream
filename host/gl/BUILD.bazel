@@ -1,3 +1,5 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "objc_library")
+
 cc_library(
     name = "gles1_dec",
     srcs = [
@@ -166,6 +168,7 @@ cc_library(
     name = "gfxstream-gl-host-common",
     srcs = [
         "gl-host-common/opengl/EmuglBackendList.cpp",
+        "gl-host-common/opengl/EmuglBackendScanner.cpp",
         "gl-host-common/opengl/GLProcessPipe.cpp",
         "gl-host-common/opengl/GpuFrameBridge.cpp",
         "gl-host-common/opengl/OpenglEsPipe.cpp",
@@ -200,6 +203,7 @@ cc_library(
     deps = [
         "//hardware/google/aemu/snapshot:aemu-snapshot",
         "//hardware/google/gfxstream/common/opengl:gfxstream_opengl_headers",
+        "//hardware/google/gfxstream/common/vulkan:gfxstream_vulkan_headers",
         "//hardware/google/gfxstream/host/apigen-codec-common",
         "//hardware/google/gfxstream/host/features:gfxstream_features",
     ] + select({

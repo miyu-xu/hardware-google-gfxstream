@@ -780,6 +780,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
     do {                                               \
         (void)res; /* no-op of unused param*/          \
         ERR(__VA_ARGS__);                              \
+        abort();  \
         return nullptr;                                \
     } while (0)
 
