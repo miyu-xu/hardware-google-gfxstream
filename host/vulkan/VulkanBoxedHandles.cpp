@@ -149,8 +149,6 @@ BoxedHandle BoxedHandleManager::getBoxedFromUnboxed(UnboxedHandle unboxed) {
     return it->second;
 }
 
-BoxedHandleManager sBoxedHandleManager;
-
 template <typename VkObjectT>
 constexpr BoxedHandleTypeTag GetTag() {
     if constexpr (std::is_same_v<VkObjectT, VkAccelerationStructureKHR>) {
@@ -331,8 +329,14 @@ constexpr const char* GetTypeStr() {
     }
 }
 
+static BoxedHandleManager* getBoxedHandleManager(uint64_t boxed) {
+    return VkDecoderGlobalState::getForVkHandle(boxed)->getBoxedHandleManager().get();
+}
+
 template <typename VkObjectT>
-VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
+VkObjectT new_boxed_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT underlying,
+                           bool dispatchable = false, VulkanDispatch* dispatch = nullptr,
+                           bool ownsDispatch = false) {
     uint32_t additionalTag = 0x0;
     {
         auto* renderThreadInfo = RenderThreadInfoVk::get();
@@ -353,10 +357,17 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
-    auto boxed = (VkObjectT)sBoxedHandleManager.add(
+    auto boxed = (VkObjectT)pBoxedHandleManager->add(
         info, (BoxedHandleTypeTag)(GetTag<VkObjectT>() + additionalTag));
     auto vkboxed = (VkObjectT)boxed;
     return vkboxed;
+}
+
+template <typename VkObjectT>
+VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false,
+                           VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
+    return new_boxed_VkType<VkObjectT>(getBoxedHandleManager(0), underlying, dispatchable, dispatch,
+                                       ownsDispatch);
 }
 
 template <typename VkObjectT>
@@ -365,7 +376,7 @@ void delete_VkType(VkObjectT boxed) {
         return;
     }
 
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager((uint64_t)boxed)->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return;
     }
@@ -377,7 +388,7 @@ void delete_VkType(VkObjectT boxed) {
         info->readStream = nullptr;
     }
 
-    sBoxedHandleManager.remove((uint64_t)boxed);
+    getBoxedHandleManager((uint64_t)boxed)->remove((uint64_t)boxed);
 }
 
 template <typename VkObjectT>
@@ -386,14 +397,31 @@ void delayed_delete_VkType(VkObjectT boxed, VkDevice device, std::function<void(
         return;
     }
 
-    sBoxedHandleManager.removeDelayed((uint64_t)boxed, device, std::move(callback));
+    getBoxedHandleManager((uint64_t)boxed)
+        ->removeDelayed((uint64_t)boxed, device, std::move(callback));
 }
 
 // Custom unbox_* functions or GOLDFISH_VK_LIST_DISPATCHABLE_CUSTOM_UNBOX_HANDLE_TYPES
 // VkQueue objects can be virtual, meaning that multiple boxed queues can map into a single
 // physical queue on the host GPU. Some conversion is needed for unboxing to physical.
+VkQueue unbox_VkQueueImpl(BoxedHandleManager* pBoxedHandleManager, VkQueue boxed) {
+    BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
+    if (!info) {
+        return VK_NULL_HANDLE;
+    }
+    const uint64_t unboxedQueue64 = info->underlying;
+
+    // Use VulkanVirtualQueue directly to avoid locking for hasVirtualGraphicsQueue call.
+    if (VkDecoderGlobalState::get()->getFeatures().VulkanVirtualQueue.enabled) {
+        // Clear virtual bit and unbox into the actual physical queue handle
+        return (VkQueue)(unboxedQueue64 & ~QueueInfo::kVirtualQueueBit);
+    }
+
+    return (VkQueue)(unboxedQueue64);
+}
+
 VkQueue unbox_VkQueueImpl(VkQueue boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager((uint64_t)boxed)->get((uint64_t)(uintptr_t)boxed);
     if (!info) {
         return VK_NULL_HANDLE;
     }
@@ -417,9 +445,10 @@ VkObjectT unbox_VkType(VkObjectT boxed) {
     VkObjectT unboxed = VK_NULL_HANDLE;
 
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
-        unboxed = unbox_VkQueueImpl(boxed);
+        unboxed = unbox_VkQueueImpl(getBoxedHandleManager((uint64_t)boxed), boxed);
     } else {
-        BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+        BoxedHandleInfo* info =
+            getBoxedHandleManager((uint64_t)boxed)->get((uint64_t)(uintptr_t)boxed);
         if (info == nullptr) {
             if constexpr (std::is_same_v<VkObjectT, VkCommandBuffer> ||
                           std::is_same_v<VkObjectT, VkDevice> ||
@@ -455,9 +484,10 @@ VkObjectT try_unbox_VkType(VkObjectT boxed) {
     VkObjectT unboxed = VK_NULL_HANDLE;
 
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
-        unboxed = unbox_VkQueueImpl(boxed);
+        unboxed = unbox_VkQueueImpl(getBoxedHandleManager((uint64_t)boxed), boxed);
     } else {
-        BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+        BoxedHandleInfo* info =
+            getBoxedHandleManager((uint64_t)boxed)->get((uint64_t)(uintptr_t)boxed);
         if (info != nullptr) {
             unboxed = (VkObjectT)info->underlying;
         }
@@ -471,24 +501,40 @@ VkObjectT try_unbox_VkType(VkObjectT boxed) {
 }
 
 template <typename VkObjectT>
+VkObjectT unboxed_to_boxed_non_dispatchable_VkType(BoxedHandleManager* pBoxedHandleManager,
+                                                   VkObjectT unboxed) {
+    if (unboxed == VK_NULL_HANDLE) {
+        return VK_NULL_HANDLE;
+    }
+
+    return (VkObjectT)pBoxedHandleManager->getBoxedFromUnboxed((uint64_t)(uintptr_t)unboxed);
+}
+
+template <typename VkObjectT>
 VkObjectT unboxed_to_boxed_non_dispatchable_VkType(VkObjectT unboxed) {
     if (unboxed == VK_NULL_HANDLE) {
         return VK_NULL_HANDLE;
     }
 
-    return (VkObjectT)sBoxedHandleManager.getBoxedFromUnboxed((uint64_t)(uintptr_t)unboxed);
+    return unboxed_to_boxed_non_dispatchable_VkType<VkObjectT>(getBoxedHandleManager(0), unboxed);
+}
+
+template <typename VkObjectT>
+void set_boxed_non_dispatchable_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed,
+                                       VkObjectT new_unboxed) {
+    BoxedHandleInfo info;
+    info.underlying = (uint64_t)new_unboxed;
+    pBoxedHandleManager->update((uint64_t)boxed, info, GetTag<VkObjectT>());
 }
 
 template <typename VkObjectT>
 void set_boxed_non_dispatchable_VkType(VkObjectT boxed, VkObjectT new_unboxed) {
-    BoxedHandleInfo info;
-    info.underlying = (uint64_t)new_unboxed;
-    sBoxedHandleManager.update((uint64_t)boxed, info, GetTag<VkObjectT>());
+    set_boxed_non_dispatchable_VkType<VkObjectT>(getBoxedHandleManager(0), boxed, new_unboxed);
 }
 
 template <typename VkObjectT>
 OrderMaintenanceInfo* get_order_maintenance_info_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager((uint64_t)boxed)->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return nullptr;
     }
@@ -504,7 +550,7 @@ OrderMaintenanceInfo* get_order_maintenance_info_VkType(VkObjectT boxed) {
 
 template <typename VkObjectT>
 VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager((uint64_t)boxed)->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return nullptr;
     }
@@ -518,7 +564,7 @@ VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
 
 template <typename VkObjectT>
 VulkanDispatch* get_dispatch_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = getBoxedHandleManager((uint64_t)boxed)->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         ERR("Failed to unbox %s %p", GetTypeStr<VkObjectT>(), boxed);
         return nullptr;
@@ -1701,6 +1747,34 @@ VkValidationCacheEXT unboxed_to_boxed_non_dispatchable_VkValidationCacheEXT(VkVa
 void set_boxed_non_dispatchable_VkValidationCacheEXT(VkValidationCacheEXT boxed, VkValidationCacheEXT new_unboxed) {
     set_boxed_non_dispatchable_VkType<VkValidationCacheEXT>(boxed, new_unboxed);
 }
+
+// new interface that takes ptr to BoxedHandleManager
+#define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DEFINE(type)                                    \
+    type new_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type underlying,          \
+                          VulkanDispatch* dispatch, bool ownDispatch) {                      \
+        return new_boxed_VkType<type>(pBoxedHandleManager, underlying, true, dispatch,       \
+                                      ownDispatch);                                          \
+    }                                                                                        \
+    type unboxed_to_boxed_##type(BoxedHandleManager* pBoxedHandleManager, type unboxed) {    \
+        return unboxed_to_boxed_non_dispatchable_VkType<type>(pBoxedHandleManager, unboxed); \
+    }
+
+#define DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DEFINE(type)                                   \
+    type new_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager,             \
+                                           type underlying) {                                   \
+        return new_boxed_VkType<type>(pBoxedHandleManager, underlying);                         \
+    }                                                                                           \
+    type unboxed_to_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager,      \
+                                                  type unboxed) {                               \
+        return unboxed_to_boxed_non_dispatchable_VkType<type>(pBoxedHandleManager, unboxed);    \
+    }                                                                                           \
+    void set_boxed_non_dispatchable_##type(BoxedHandleManager* pBoxedHandleManager, type boxed, \
+                                           type underlying) {                                   \
+        set_boxed_non_dispatchable_VkType<type>(pBoxedHandleManager, boxed, underlying);        \
+    }
+
+GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DEFINE)
+GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DEFINE)
 
 }  // namespace vk
 }  // namespace gfxstream
