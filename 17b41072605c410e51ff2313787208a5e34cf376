@@ -51,6 +51,24 @@
       "parentUuid": "1b257088_c886df17",
       "revId": "17b41072605c410e51ff2313787208a5e34cf376",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9aec50c3_5784201a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1872231
+      },
+      "writtenOn": "2025-03-04T23:43:23Z",
+      "side": 1,
+      "message": "Yeah - you can click the link in the chip to see why it\u0027s failing: https://android-build.corp.google.com/test_investigate/invocation/I78600010373003980/test/TR60429651844659319/?blocking\u003dblocking\u0026status\u003dnone\n\nThe underlying test log says it\u0027s actually all passing: https://fusion2.corp.google.com/invocations/7c05208e-072d-477d-8766-59050a8b6e16/targets\n\nSo it make sense to ignore the failure.",
+      "parentUuid": "5a9cc427_3da45c1d",
+      "revId": "17b41072605c410e51ff2313787208a5e34cf376",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
