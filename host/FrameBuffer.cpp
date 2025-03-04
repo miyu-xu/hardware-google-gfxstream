@@ -351,12 +351,14 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
                         description);
                     return future;
                 },
+#ifdef CONFIG_AEMU
             .registerVulkanInstance =
                 [fb = fb.get()](uint64_t id, const char* appName) {
                     fb->registerVulkanInstance(id, appName);
                 },
             .unregisterVulkanInstance =
                 [fb = fb.get()](uint64_t id) { fb->unregisterVulkanInstance(id); },
+#endif
         };
         vkEmu = vk::createGlobalVkEmulation(vkDispatch, callbacks, fb->m_features);
         if (!vkEmu) {
@@ -3033,6 +3035,7 @@ HandleType FrameBuffer::getEmulatedEglWindowSurfaceColorBufferHandle(HandleType 
     return it->second;
 }
 
+#ifdef CONFIG_AEMU
 void FrameBuffer::unregisterVulkanInstance(uint64_t id) const {
     get_emugl_vm_operations().vulkanInstanceUnregister(id);
 }
@@ -3053,6 +3056,7 @@ void FrameBuffer::registerVulkanInstance(uint64_t id, const char* appName) const
     }
     get_emugl_vm_operations().vulkanInstanceRegister(id, process_name.c_str());
 }
+#endif
 
 void FrameBuffer::createTrivialContext(HandleType shared, HandleType* contextOut,
                                        HandleType* surfOut) {
