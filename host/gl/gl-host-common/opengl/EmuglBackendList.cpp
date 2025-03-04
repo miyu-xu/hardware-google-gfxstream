@@ -15,24 +15,35 @@
 #include "host-common/opengl/EmuglBackendList.h"
 
 #include "aemu/base/StringFormat.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/files/PathUtils.h"
+#include "aemu/base/system/System.h"
+#include "host-common/opengl/EmuglBackendScanner.h"
 
 #define DEBUG 0
 
 #if DEBUG
-#  include <stdio.h>
-#  define D(...)  printf(__VA_ARGS__)
+#include <stdio.h>
+#define D(...) printf(__VA_ARGS__)
 #else
-#  define D(...)  ((void)0)
+#define D(...) ((void)0)
 #endif
 
 namespace android {
 namespace opengl {
 
-EmuglBackendList::EmuglBackendList(int programBitness,
-                                   const std::vector<std::string>& names) :
-        mDefaultName("auto"), mNames(names), mProgramBitness(programBitness) { }
+EmuglBackendList::EmuglBackendList(const char* execDir, int programBitness)
+    : mDefaultName("auto"), mNames(), mProgramBitness(0), mExecDir(execDir) {
+    // Fix host bitness if needed.
+    if (!programBitness) {
+        programBitness = 64;
+    }
+    mProgramBitness = programBitness;
+
+    mNames = EmuglBackendScanner::scanDir(execDir, programBitness);
+}
+
+EmuglBackendList::EmuglBackendList(int programBitness, const std::vector<std::string>& names)
+    : mDefaultName("auto"), mNames(names), mProgramBitness(programBitness) {}
 
 bool EmuglBackendList::contains(const char* name) const {
     for (size_t n = 0; n < mNames.size(); ++n) {
@@ -48,11 +59,10 @@ std::string EmuglBackendList::getLibDirPath(const char* name) {
     std::string suffix("_indirect");
     std::string nameNoSuffix(name);
     int nameNoSuffixLen = (int)nameNoSuffix.size() - (int)suffix.size();
-    if (nameNoSuffixLen > 0 &&
-        suffix == nameNoSuffix.c_str() + nameNoSuffixLen) {
+    if (nameNoSuffixLen > 0 && suffix == nameNoSuffix.c_str() + nameNoSuffixLen) {
         nameNoSuffix.erase(nameNoSuffixLen);
     }
-    return android::base::pj({mExecDir, "lib64", std::string("gles_%s") + nameNoSuffix});
+    return android::base::pj({mExecDir, "lib64", std::string("gles_") + nameNoSuffix});
 }
 
 #ifdef _WIN32
@@ -63,10 +73,7 @@ static const char kLibSuffix[] = ".dylib";
 static const char kLibSuffix[] = ".so";
 #endif
 
-bool EmuglBackendList::getBackendLibPath(const char* name,
-                                         Library library,
-                                         std::string* libPath) {
-
+bool EmuglBackendList::getBackendLibPath(const char* name, Library library, std::string* libPath) {
     const char* libraryName = NULL;
     if (library == LIBRARY_EGL) {
         libraryName = "EGL";
@@ -80,8 +87,8 @@ bool EmuglBackendList::getBackendLibPath(const char* name,
         return false;
     }
 
-    std::string path = android::base::pj({
-            getLibDirPath(name), std::string("lib") + libraryName + kLibSuffix});
+    std::string path =
+        android::base::pj({getLibDirPath(name), std::string("lib") + libraryName + kLibSuffix});
 
     *libPath = path;
     return true;
