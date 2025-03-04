@@ -16,6 +16,24 @@
       "message": "The calls to these 2 seem to be guarded by [`GFXSTREAM_BUILD_WITH_SNAPSHOT_SUPPORT`](http://ac/hardware/google/gfxstream/host/vulkan/VkDecoderGlobalState.cpp?l\u003d963), should we use that instead?",
       "revId": "ef2c4750a5e2ced6b3db96ec62d7edc67e810d4c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62555c57_f979decc",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-03-04T16:16:27Z",
+      "side": 1,
+      "message": "AEMU is better.  We want to eventually enable snapshots everywhere, but not using libaemu.",
+      "parentUuid": "965c000b_7a313a28",
+      "revId": "ef2c4750a5e2ced6b3db96ec62d7edc67e810d4c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
