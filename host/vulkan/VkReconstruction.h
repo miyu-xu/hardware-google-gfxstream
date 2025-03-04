@@ -28,13 +28,13 @@ namespace vk {
 // reconstructing a Vulkan system state via trimmed API record and replay.
 class VkReconstruction {
    public:
-    VkReconstruction();
+    VkReconstruction(const gfxstream::host::FeatureSet& features);
 
     void clear();
 
     void saveReplayBuffers(android::base::Stream* stream);
     static void loadReplayBuffers(android::base::Stream* stream,
-                                  std::vector<uint64_t>* outHandleBuffer,
+                                  std::vector<BoxedHandleReplayInfo>* outHandleBuffer,
                                   std::vector<uint8_t>* outDecoderBuffer);
 
     enum HandleState { BEGIN = 0, CREATED = 0, BOUND_MEMORY = 1, HANDLE_STATE_COUNT };
@@ -126,6 +126,8 @@ class VkReconstruction {
 
    private:
     std::vector<uint64_t> getOrderedUniqueModifyApis() const;
+
+    const gfxstream::host::FeatureSet mFeatures;
 
     VkSnapshotApiCallManager mApiCallManager;
 

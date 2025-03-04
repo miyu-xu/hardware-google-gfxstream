@@ -21,6 +21,94 @@ namespace gfxstream {
 namespace vk {
 namespace {
 
+constexpr const char* GetTypeStrFromTag(BoxedHandleTypeTag tag) {
+    if (tag == Tag_VkAccelerationStructureKHR) {
+        return "VkAccelerationStructureKHR";
+    } else if (tag == Tag_VkAccelerationStructureNV) {
+        return "VkAccelerationStructureNV";
+    } else if (tag == Tag_VkBuffer) {
+        return "VkBuffer";
+    } else if (tag == Tag_VkBufferView) {
+        return "VkBufferView";
+    } else if (tag == Tag_VkCommandBuffer) {
+        return "VkCommandBuffer";
+    } else if (tag == Tag_VkCommandPool) {
+        return "VkCommandPool";
+    } else if (tag == Tag_VkCuFunctionNVX) {
+        return "VkCuFunctionNVX";
+    } else if (tag == Tag_VkCuModuleNVX) {
+        return "VkCuModuleNVX";
+    } else if (tag == Tag_VkDebugReportCallbackEXT) {
+        return "VkDebugReportCallbackEXT";
+    } else if (tag == Tag_VkDebugUtilsMessengerEXT) {
+        return "VkDebugUtilsMessengerEXT";
+    } else if (tag == Tag_VkDescriptorPool) {
+        return "VkDescriptorPool";
+    } else if (tag == Tag_VkDescriptorSet) {
+        return "VkDescriptorSet";
+    } else if (tag == Tag_VkDescriptorSetLayout) {
+        return "VkDescriptorSetLayout";
+    } else if (tag == Tag_VkDescriptorUpdateTemplate) {
+        return "VkDescriptorUpdateTemplate";
+    } else if (tag == Tag_VkDevice) {
+        return "VkDevice";
+    } else if (tag == Tag_VkDeviceMemory) {
+        return "VkDeviceMemory";
+    } else if (tag == Tag_VkDisplayKHR) {
+        return "VkDisplayKHR";
+    } else if (tag == Tag_VkDisplayModeKHR) {
+        return "VkDisplayModeKHR";
+    } else if (tag == Tag_VkEvent) {
+        return "VkEvent";
+    } else if (tag == Tag_VkFence) {
+        return "VkFence";
+    } else if (tag == Tag_VkFramebuffer) {
+        return "VkFramebuffer";
+    } else if (tag == Tag_VkImage) {
+        return "VkImage";
+    } else if (tag == Tag_VkImageView) {
+        return "VkImageView";
+    } else if (tag == Tag_VkIndirectCommandsLayoutNV) {
+        return "VkIndirectCommandsLayoutNV";
+    } else if (tag == Tag_VkInstance) {
+        return "VkInstance";
+    } else if (tag == Tag_VkMicromapEXT) {
+        return "VkMicromapEXT";
+    } else if (tag == Tag_VkPhysicalDevice) {
+        return "VkPhysicalDevice";
+    } else if (tag == Tag_VkPipeline) {
+        return "VkPipeline";
+    } else if (tag == Tag_VkPipelineCache) {
+        return "VkPipelineCache";
+    } else if (tag == Tag_VkPipelineLayout) {
+        return "VkPipelineLayout";
+    } else if (tag == Tag_VkPrivateDataSlot) {
+        return "VkPrivateDataSlot";
+    } else if (tag == Tag_VkQueryPool) {
+        return "VkQueryPool";
+    } else if (tag == Tag_VkQueue) {
+        return "VkQueue";
+    } else if (tag == Tag_VkRenderPass) {
+        return "VkRenderPass";
+    } else if (tag == Tag_VkSampler) {
+        return "VkSampler";
+    } else if (tag == Tag_VkSamplerYcbcrConversion) {
+        return "VkSamplerYcbcrConversion";
+    } else if (tag == Tag_VkSemaphore) {
+        return "VkSemaphore";
+    } else if (tag == Tag_VkShaderModule) {
+        return "VkShaderModule";
+    } else if (tag == Tag_VkSurfaceKHR) {
+        return "VkSurfaceKHR";
+    } else if (tag == Tag_VkSwapchainKHR) {
+        return "VkSwapchainKHR";
+    } else if (tag == Tag_VkValidationCacheEXT) {
+        return "VkValidationCacheEXT";
+    } else {
+        return "Unhandled BoxedHandleTypeTag";
+    }
+}
+
 struct ReadStreamRegistry {
     android::base::Lock mLock;
 
@@ -49,11 +137,42 @@ static ReadStreamRegistry sReadStreamRegistry;
 
 }  // namespace
 
-void BoxedHandleManager::replayHandles(std::vector<BoxedHandle> handles) {
+std::vector<BoxedHandleReplayInfo> BoxedHandleManager::populateHandleReplay(
+    const std::vector<BoxedHandle>& boxedHandles) {
+    std::vector<BoxedHandleReplayInfo> replayInfos;
+    replayInfos.reserve(boxedHandles.size());
+
+    for (const BoxedHandle boxedHandle : boxedHandles) {
+        const BoxedHandleInfo* boxedHandleInfo = this->get(boxedHandle);
+        if (boxedHandleInfo == nullptr) {
+            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                << "Failed to populate handle replay: failed to find boxed handle " << boxedHandle;
+        }
+
+        replayInfos.push_back(BoxedHandleReplayInfo{
+            .boxed = boxedHandle,
+            .tag = boxedHandleInfo->tag,
+            .unboxed = boxedHandleInfo->underlying,
+        });
+    }
+
+    if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+        INFO("BoxedHandleManager populated boxed handle replay infos:");
+        for (const auto& replayInfo : replayInfos) {
+            const auto* replayType = GetTypeStrFromTag(replayInfo.tag);
+            INFO("- boxed %s:%s from unboxed %s:%s.", replayType, replayInfo.boxed, replayType,
+                 replayInfo.unboxed);
+        }
+    }
+
+    return replayInfos;
+}
+
+void BoxedHandleManager::replayHandles(std::vector<BoxedHandleReplayInfo> infos) {
     mHandleReplay = true;
     mHandleReplayQueue.clear();
-    for (BoxedHandle handle : handles) {
-        mHandleReplayQueue.push_back(handle);
+    for (auto info : infos) {
+        mHandleReplayQueue.push_back(info);
     }
 }
 
@@ -67,11 +186,29 @@ BoxedHandle BoxedHandleManager::add(const BoxedHandleInfo& item, BoxedHandleType
     BoxedHandle handle;
 
     if (mHandleReplay) {
-        handle = mHandleReplayQueue.front();
+        BoxedHandleReplayInfo replay = mHandleReplayQueue.front();
         mHandleReplayQueue.pop_front();
         mHandleReplay = !mHandleReplayQueue.empty();
 
-        handle = (BoxedHandle)mStore.addFixed(handle, item, (size_t)tag);
+        if (replay.tag != tag) {
+            const auto* replayType = GetTypeStrFromTag(replay.tag);
+            const auto* currentType = GetTypeStrFromTag(tag);
+            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                << "BoxedHandleManager replay failure: expected to replay creation of "
+                << "boxed handle " << replayType << ":" << replay.boxed
+                << " (originally created for " << replayType << ":" << replay.unboxed
+                << ") but BoxedHandleManager was requested to create a boxed handle "
+                << " for " << currentType << ":" << item.underlying;
+        }
+        handle = (BoxedHandle)mStore.addFixed(replay.boxed, item, (size_t)tag);
+
+        if (mFeatures.VulkanSnapshotsDebugging.enabled) {
+            const auto* replayType = GetTypeStrFromTag(replay.tag);
+            INFO(
+                "BoxedHandleManager replay created boxed %s:%s for unboxed %s:%s (originally "
+                "unboxed %s:%s in snapshot).",
+                replayType, handle, replayType, item.underlying, replayType, replay.unboxed);
+        }
     } else {
         handle = (BoxedHandle)mStore.add(item, (size_t)tag);
     }
@@ -333,6 +470,7 @@ constexpr const char* GetTypeStr() {
 template <typename VkObjectT>
 VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, VulkanDispatch* dispatch = nullptr, bool ownsDispatch = false) {
     BoxedHandleInfo info;
+    info.tag = GetTag<VkObjectT>();
     info.underlying = (uint64_t)underlying;
     if (dispatchable) {
         if (dispatch != nullptr) {
@@ -344,6 +482,7 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
+
     return (VkObjectT)sBoxedHandleManager.add(info, GetTag<VkObjectT>());
 }
 

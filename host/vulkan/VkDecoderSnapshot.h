@@ -37,6 +37,7 @@
 
 #include "VkSnapshotApiCall.h"
 #include "aemu/base/HealthMonitor.h"
+#include "gfxstream/host/Features.h"
 #include "goldfish_vk_private_defs.h"
 #include "utils/GfxApiLogger.h"
 #include "vk_android_native_buffer_gfxstream.h"
@@ -54,14 +55,14 @@ namespace vk {
 
 class VkDecoderSnapshot {
    public:
-    VkDecoderSnapshot();
+    VkDecoderSnapshot(const gfxstream::host::FeatureSet& features);
     ~VkDecoderSnapshot();
 
     void clear();
 
     void saveReplayBuffers(android::base::Stream* stream);
     static void loadReplayBuffers(android::base::Stream* stream,
-                                  std::vector<uint64_t>* outHandleBuffer,
+                                  std::vector<BoxedHandleReplayInfo>* outHandleBuffer,
                                   std::vector<uint8_t>* outDecoderBuffer);
 
     VkSnapshotApiCallInfo* createApiCallInfo();
