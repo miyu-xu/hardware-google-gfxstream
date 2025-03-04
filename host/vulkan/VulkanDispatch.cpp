@@ -16,6 +16,7 @@
 
 #include "aemu/base/SharedLibrary.h"
 #include "aemu/base/files/PathUtils.h"
+#include "aemu/base/misc/StringUtils.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/system/System.h"
 #include "host-common/misc.h"
@@ -31,6 +32,18 @@ using android::base::pj;
 namespace gfxstream {
 namespace vk {
 
+static std::string getEnvLibrarySearchPath() {
+#if defined(__APPLE__)
+    return android::base::getEnvironmentVariable("DYLD_LIBRARY_PATH");
+#elif defined(__linux__)
+    return android::base::getEnvironmentVariable("LD_LIBRARY_PATH");
+#elif defined(_WIN32) || defined(_MSC_VER)
+    return std::string();
+#else
+#error Host operating system not supported
+#endif
+}
+
 static std::string icdJsonNameToProgramAndLauncherPaths(const std::string& icdFilename) {
     std::string suffix = pj({"lib64", "vulkan", icdFilename});
 #if defined(_WIN32)
@@ -38,8 +51,14 @@ static std::string icdJsonNameToProgramAndLauncherPaths(const std::string& icdFi
 #else
     const char* sep = ":";
 #endif
-    return pj({android::base::getProgramDirectory(), suffix}) + sep +
+    auto paths = pj({android::base::getProgramDirectory(), suffix}) + sep +
            pj({android::base::getLauncherDirectory(), suffix});
+    if (auto env_path = getEnvLibrarySearchPath(); !env_path.empty()) {
+       for (const std::string& part : android::base::Split(env_path, sep)) {
+         paths += sep + pj({part, icdFilename});
+       }
+    }
+    return paths;
 }
 
 static void setIcdPaths(const std::string& icdFilename) {
