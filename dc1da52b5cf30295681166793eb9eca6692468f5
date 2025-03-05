@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5240a86_365b259d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 935,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-05T21:10:58Z",
+      "side": 1,
+      "message": "Makes sense! If only we could dynamically detect that based on some test results, rather than keeping a list. But some of these issues are random and takes time to investigate actual source of the problem.",
+      "parentUuid": "c56e83ae_fe9c6ccb",
+      "range": {
+        "startLine": 933,
+        "startChar": 8,
+        "endLine": 935,
+        "endChar": 16
+      },
+      "revId": "dc1da52b5cf30295681166793eb9eca6692468f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a527620e_0638cf37",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "346ed588_478a9380",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 937,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-05T21:10:58Z",
+      "side": 1,
+      "message": "Fix applied. Thanks!",
+      "parentUuid": "a527620e_0638cf37",
+      "range": {
+        "startLine": 937,
+        "startChar": 43,
+        "endLine": 937,
+        "endChar": 44
+      },
+      "revId": "dc1da52b5cf30295681166793eb9eca6692468f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5d9a489a_78baed3c",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-03-05T20:39:17Z",
       "side": 1,
       "message": "```suggestion\n        const bool doLockEarly \u003d swiftshader;\n```",
+      "range": {
+        "startLine": 1933,
+        "startChar": 43,
+        "endLine": 1933,
+        "endChar": 44
+      },
+      "revId": "dc1da52b5cf30295681166793eb9eca6692468f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c32f47c1_2a59e9af",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1933,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-05T21:10:58Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "5d9a489a_78baed3c",
       "range": {
         "startLine": 1933,
         "startChar": 43,
