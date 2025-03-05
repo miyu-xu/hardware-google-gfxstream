@@ -38,8 +38,15 @@ struct RenderThreadInfoVk {
     void onSave(android::base::Stream* stream);
     bool onLoad(android::base::Stream* stream);
 
+    bool isLost() const {
+        return mIsLost;
+    }
+
     uint32_t ctx_id = 0;
     VkDecoder m_vkDec;
+
+    // Indicates fatal render thread error; Vulkan commands cannot continue.
+    bool mIsLost;
 };
 
 }  // namespace vk
