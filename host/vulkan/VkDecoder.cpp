@@ -267,8 +267,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkResult vkCreateInstance_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 vkCreateInstance_VkResult_return = m_state->on_vkCreateInstance(
                     &m_pool, snapshotApiCallInfo, pCreateInfo, pAllocator, pInstance);
-                if ((vkCreateInstance_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkCreateInstance_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 uint64_t cgen_var_2;
@@ -391,11 +389,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkEnumeratePhysicalDevices(&m_pool, snapshotApiCallInfo,
                                                                instance, pPhysicalDeviceCount,
                                                                pPhysicalDevices);
+                    m_state->on_CheckOutOfMemory(vkEnumeratePhysicalDevices_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkEnumeratePhysicalDevices_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkEnumeratePhysicalDevices_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pPhysicalDeviceCount;
@@ -588,12 +584,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkGetPhysicalDeviceImageFormatProperties(
                             &m_pool, snapshotApiCallInfo, physicalDevice, format, type, tiling,
                             usage, flags, pImageFormatProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPhysicalDeviceImageFormatProperties_VkResult_return, opcode, context);
                 }
-                if ((vkGetPhysicalDeviceImageFormatProperties_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkGetPhysicalDeviceImageFormatProperties_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 if (pImageFormatProperties) {
                     transform_fromhost_VkImageFormatProperties(
@@ -947,10 +940,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateDevice_VkResult_return =
                         m_state->on_vkCreateDevice(&m_pool, snapshotApiCallInfo, physicalDevice,
                                                    pCreateInfo, pAllocator, pDevice);
+                    m_state->on_CheckOutOfMemory(vkCreateDevice_VkResult_return, opcode, context);
                 }
-                if ((vkCreateDevice_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateDevice_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 uint64_t cgen_var_3;
                 static_assert(8 == sizeof(VkDevice),
@@ -1078,9 +1069,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkEnumerateInstanceExtensionProperties_VkResult_return =
                     m_state->on_vkEnumerateInstanceExtensionProperties(
                         &m_pool, snapshotApiCallInfo, pLayerName, pPropertyCount, pProperties);
-                if ((vkEnumerateInstanceExtensionProperties_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkEnumerateInstanceExtensionProperties_VkResult_return,
                                              opcode, context);
                 vkStream->unsetHandleMapping();
@@ -1201,11 +1189,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkEnumerateDeviceExtensionProperties(
                             &m_pool, snapshotApiCallInfo, physicalDevice, pLayerName,
                             pPropertyCount, pProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkEnumerateDeviceExtensionProperties_VkResult_return, opcode, context);
                 }
-                if ((vkEnumerateDeviceExtensionProperties_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkEnumerateDeviceExtensionProperties_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pPropertyCount;
@@ -1296,8 +1282,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     VK_ERROR_OUT_OF_HOST_MEMORY;
                 vkEnumerateInstanceLayerProperties_VkResult_return =
                     m_vk->vkEnumerateInstanceLayerProperties(pPropertyCount, pProperties);
-                if ((vkEnumerateInstanceLayerProperties_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkEnumerateInstanceLayerProperties_VkResult_return,
                                              opcode, context);
                 vkStream->unsetHandleMapping();
@@ -1402,11 +1386,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkEnumerateDeviceLayerProperties_VkResult_return =
                         vk->vkEnumerateDeviceLayerProperties(unboxed_physicalDevice, pPropertyCount,
                                                              pProperties);
+                    m_state->on_CheckOutOfMemory(vkEnumerateDeviceLayerProperties_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkEnumerateDeviceLayerProperties_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkEnumerateDeviceLayerProperties_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pPropertyCount;
@@ -1536,10 +1518,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkQueueSubmit_VkResult_return = m_state->on_vkQueueSubmit(
                         &m_pool, snapshotApiCallInfo, queue, submitCount, pSubmits, fence);
+                    m_state->on_CheckOutOfMemory(vkQueueSubmit_VkResult_return, opcode, context);
                 }
-                if ((vkQueueSubmit_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkQueueSubmit_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkQueueSubmit_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -1573,10 +1553,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkQueueWaitIdle_VkResult_return =
                         m_state->on_vkQueueWaitIdle(&m_pool, snapshotApiCallInfo, queue);
+                    m_state->on_CheckOutOfMemory(vkQueueWaitIdle_VkResult_return, opcode, context);
                 }
-                if ((vkQueueWaitIdle_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkQueueWaitIdle_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkQueueWaitIdle_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -1609,10 +1587,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkResult vkDeviceWaitIdle_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
                     vkDeviceWaitIdle_VkResult_return = vk->vkDeviceWaitIdle(unboxed_device);
+                    m_state->on_CheckOutOfMemory(vkDeviceWaitIdle_VkResult_return, opcode, context);
                 }
-                if ((vkDeviceWaitIdle_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkDeviceWaitIdle_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkDeviceWaitIdle_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -1677,12 +1653,10 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkAllocateMemory_VkResult_return = m_state->on_vkAllocateMemory(
                         &m_pool, snapshotApiCallInfo, device, pAllocateInfo, pAllocator, pMemory);
+                    m_state->on_CheckOutOfMemory(
+                        vkAllocateMemory_VkResult_return, opcode, context,
+                        std::make_optional<uint64_t>(pAllocateInfo->allocationSize));
                 }
-                if ((vkAllocateMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkAllocateMemory_VkResult_return, opcode, context,
-                    std::make_optional<uint64_t>(pAllocateInfo->allocationSize));
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pMemory;
                 vkStream->unsetHandleMapping();
@@ -1809,9 +1783,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkMapMemory_VkResult_return = m_state->on_vkMapMemory(
                         &m_pool, snapshotApiCallInfo, device, memory, offset, size, flags, ppData);
+                    m_state->on_CheckOutOfMemory(vkMapMemory_VkResult_return, opcode, context);
                 }
-                if ((vkMapMemory_VkResult_return) == VK_ERROR_DEVICE_LOST) m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkMapMemory_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)ppData;
@@ -1941,11 +1914,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkFlushMappedMemoryRanges_VkResult_return = vk->vkFlushMappedMemoryRanges(
                         unboxed_device, memoryRangeCount, pMemoryRanges);
+                    m_state->on_CheckOutOfMemory(vkFlushMappedMemoryRanges_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkFlushMappedMemoryRanges_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkFlushMappedMemoryRanges_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkFlushMappedMemoryRanges_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -2002,11 +1973,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkInvalidateMappedMemoryRanges_VkResult_return =
                         vk->vkInvalidateMappedMemoryRanges(unboxed_device, memoryRangeCount,
                                                            pMemoryRanges);
+                    m_state->on_CheckOutOfMemory(vkInvalidateMappedMemoryRanges_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkInvalidateMappedMemoryRanges_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkInvalidateMappedMemoryRanges_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkInvalidateMappedMemoryRanges_VkResult_return, sizeof(VkResult));
                 if (!m_state->usingDirectMapping()) {
@@ -2123,10 +2092,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkBindBufferMemory_VkResult_return = m_state->on_vkBindBufferMemory(
                         &m_pool, snapshotApiCallInfo, device, buffer, memory, memoryOffset);
+                    m_state->on_CheckOutOfMemory(vkBindBufferMemory_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkBindBufferMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkBindBufferMemory_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkBindBufferMemory_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -2174,10 +2142,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkBindImageMemory_VkResult_return = m_state->on_vkBindImageMemory(
                         &m_pool, snapshotApiCallInfo, device, image, memory, memoryOffset);
+                    m_state->on_CheckOutOfMemory(vkBindImageMemory_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkBindImageMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkBindImageMemory_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkBindImageMemory_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -2573,10 +2540,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkQueueBindSparse_VkResult_return = m_state->on_vkQueueBindSparse(
                         &m_pool, snapshotApiCallInfo, queue, bindInfoCount, pBindInfo, fence);
+                    m_state->on_CheckOutOfMemory(vkQueueBindSparse_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkQueueBindSparse_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkQueueBindSparse_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkQueueBindSparse_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -2639,10 +2605,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateFence_VkResult_return = m_state->on_vkCreateFence(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pFence);
+                    m_state->on_CheckOutOfMemory(vkCreateFence_VkResult_return, opcode, context);
                 }
-                if ((vkCreateFence_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateFence_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pFence;
                 vkStream->unsetHandleMapping();
@@ -2752,10 +2716,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkResetFences_VkResult_return = m_state->on_vkResetFences(
                         &m_pool, snapshotApiCallInfo, device, fenceCount, pFences);
+                    m_state->on_CheckOutOfMemory(vkResetFences_VkResult_return, opcode, context);
                 }
-                if ((vkResetFences_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkResetFences_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkResetFences_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -2792,10 +2754,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetFenceStatus_VkResult_return =
                         m_state->on_vkGetFenceStatus(&m_pool, snapshotApiCallInfo, device, fence);
+                    m_state->on_CheckOutOfMemory(vkGetFenceStatus_VkResult_return, opcode, context);
                 }
-                if ((vkGetFenceStatus_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetFenceStatus_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkGetFenceStatus_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -2854,10 +2814,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkWaitForFences_VkResult_return =
                         m_state->on_vkWaitForFences(&m_pool, snapshotApiCallInfo, device,
                                                     fenceCount, pFences, waitAll, timeout);
+                    m_state->on_CheckOutOfMemory(vkWaitForFences_VkResult_return, opcode, context);
                 }
-                if ((vkWaitForFences_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkWaitForFences_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkWaitForFences_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -2922,10 +2880,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateSemaphore_VkResult_return = m_state->on_vkCreateSemaphore(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pSemaphore);
+                    m_state->on_CheckOutOfMemory(vkCreateSemaphore_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateSemaphore_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateSemaphore_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pSemaphore;
                 vkStream->unsetHandleMapping();
@@ -3055,10 +3012,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateEvent_VkResult_return =
                         vk->vkCreateEvent(unboxed_device, pCreateInfo, pAllocator, pEvent);
+                    m_state->on_CheckOutOfMemory(vkCreateEvent_VkResult_return, opcode, context);
                 }
-                if ((vkCreateEvent_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateEvent_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin auto non dispatchable handle create for pEvent;
                 if (vkCreateEvent_VkResult_return == VK_SUCCESS)
@@ -3161,10 +3116,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkResult vkGetEventStatus_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
                     vkGetEventStatus_VkResult_return = vk->vkGetEventStatus(unboxed_device, event);
+                    m_state->on_CheckOutOfMemory(vkGetEventStatus_VkResult_return, opcode, context);
                 }
-                if ((vkGetEventStatus_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetEventStatus_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkGetEventStatus_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -3201,9 +3154,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkResult vkSetEvent_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
                     vkSetEvent_VkResult_return = vk->vkSetEvent(unboxed_device, event);
+                    m_state->on_CheckOutOfMemory(vkSetEvent_VkResult_return, opcode, context);
                 }
-                if ((vkSetEvent_VkResult_return) == VK_ERROR_DEVICE_LOST) m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkSetEvent_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkSetEvent_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -3239,10 +3191,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkResult vkResetEvent_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
                     vkResetEvent_VkResult_return = vk->vkResetEvent(unboxed_device, event);
+                    m_state->on_CheckOutOfMemory(vkResetEvent_VkResult_return, opcode, context);
                 }
-                if ((vkResetEvent_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkResetEvent_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkResetEvent_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -3310,10 +3260,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateQueryPool_VkResult_return =
                         vk->vkCreateQueryPool(unboxed_device, pCreateInfo, pAllocator, pQueryPool);
+                    m_state->on_CheckOutOfMemory(vkCreateQueryPool_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateQueryPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateQueryPool_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin auto non dispatchable handle create for pQueryPool;
                 if (vkCreateQueryPool_VkResult_return == VK_SUCCESS)
@@ -3448,11 +3397,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetQueryPoolResults_VkResult_return =
                         vk->vkGetQueryPoolResults(unboxed_device, queryPool, firstQuery, queryCount,
                                                   dataSize, pData, stride, flags);
+                    m_state->on_CheckOutOfMemory(vkGetQueryPoolResults_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkGetQueryPoolResults_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetQueryPoolResults_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((void*)pData, ((dataSize)) * sizeof(uint8_t));
                 vkStream->write(&vkGetQueryPoolResults_VkResult_return, sizeof(VkResult));
@@ -3518,10 +3465,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateBuffer_VkResult_return = m_state->on_vkCreateBuffer(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pBuffer);
+                    m_state->on_CheckOutOfMemory(vkCreateBuffer_VkResult_return, opcode, context);
                 }
-                if ((vkCreateBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateBuffer_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pBuffer;
                 vkStream->unsetHandleMapping();
@@ -3653,10 +3598,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateBufferView_VkResult_return =
                         vk->vkCreateBufferView(unboxed_device, pCreateInfo, pAllocator, pView);
+                    m_state->on_CheckOutOfMemory(vkCreateBufferView_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateBufferView_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateBufferView_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin auto non dispatchable handle create for pView;
                 if (vkCreateBufferView_VkResult_return == VK_SUCCESS)
@@ -3787,10 +3731,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateImage_VkResult_return = m_state->on_vkCreateImage(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pImage);
+                    m_state->on_CheckOutOfMemory(vkCreateImage_VkResult_return, opcode, context);
                 }
-                if ((vkCreateImage_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateImage_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pImage;
                 vkStream->unsetHandleMapping();
@@ -3983,10 +3925,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateImageView_VkResult_return = m_state->on_vkCreateImageView(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pView);
+                    m_state->on_CheckOutOfMemory(vkCreateImageView_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateImageView_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateImageView_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pView;
                 vkStream->unsetHandleMapping();
@@ -4118,10 +4059,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateShaderModule_VkResult_return =
                         m_state->on_vkCreateShaderModule(&m_pool, snapshotApiCallInfo, device,
                                                          pCreateInfo, pAllocator, pShaderModule);
+                    m_state->on_CheckOutOfMemory(vkCreateShaderModule_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateShaderModule_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateShaderModule_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pShaderModule;
                 vkStream->unsetHandleMapping();
@@ -4258,11 +4198,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreatePipelineCache_VkResult_return =
                         m_state->on_vkCreatePipelineCache(&m_pool, snapshotApiCallInfo, device,
                                                           pCreateInfo, pAllocator, pPipelineCache);
+                    m_state->on_CheckOutOfMemory(vkCreatePipelineCache_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreatePipelineCache_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreatePipelineCache_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pPipelineCache;
                 vkStream->unsetHandleMapping();
@@ -4397,11 +4335,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetPipelineCacheData_VkResult_return =
                         vk->vkGetPipelineCacheData(unboxed_device, pipelineCache, pDataSize, pData);
+                    m_state->on_CheckOutOfMemory(vkGetPipelineCacheData_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkGetPipelineCacheData_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetPipelineCacheData_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_4 = (uint64_t)(uintptr_t)pDataSize;
@@ -4474,11 +4410,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkMergePipelineCaches_VkResult_return = vk->vkMergePipelineCaches(
                         unboxed_device, dstCache, srcCacheCount, pSrcCaches);
+                    m_state->on_CheckOutOfMemory(vkMergePipelineCaches_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkMergePipelineCaches_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkMergePipelineCaches_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkMergePipelineCaches_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -4570,11 +4504,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateGraphicsPipelines(&m_pool, snapshotApiCallInfo, device,
                                                               pipelineCache, createInfoCount,
                                                               pCreateInfos, pAllocator, pPipelines);
+                    m_state->on_CheckOutOfMemory(vkCreateGraphicsPipelines_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateGraphicsPipelines_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateGraphicsPipelines_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pPipelines;
                 vkStream->unsetHandleMapping();
@@ -4678,11 +4610,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateComputePipelines_VkResult_return = m_state->on_vkCreateComputePipelines(
                         &m_pool, snapshotApiCallInfo, device, pipelineCache, createInfoCount,
                         pCreateInfos, pAllocator, pPipelines);
+                    m_state->on_CheckOutOfMemory(vkCreateComputePipelines_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateComputePipelines_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateComputePipelines_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pPipelines;
                 vkStream->unsetHandleMapping();
@@ -4819,11 +4749,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreatePipelineLayout_VkResult_return = m_state->on_vkCreatePipelineLayout(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
                         pPipelineLayout);
+                    m_state->on_CheckOutOfMemory(vkCreatePipelineLayout_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreatePipelineLayout_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreatePipelineLayout_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pPipelineLayout;
                 vkStream->unsetHandleMapping();
@@ -4964,10 +4892,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateSampler_VkResult_return = m_state->on_vkCreateSampler(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pSampler);
+                    m_state->on_CheckOutOfMemory(vkCreateSampler_VkResult_return, opcode, context);
                 }
-                if ((vkCreateSampler_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateSampler_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pSampler;
                 vkStream->unsetHandleMapping();
@@ -5103,11 +5029,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateDescriptorSetLayout(&m_pool, snapshotApiCallInfo,
                                                                 device, pCreateInfo, pAllocator,
                                                                 pSetLayout);
+                    m_state->on_CheckOutOfMemory(vkCreateDescriptorSetLayout_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkCreateDescriptorSetLayout_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateDescriptorSetLayout_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pSetLayout;
                 vkStream->unsetHandleMapping();
@@ -5246,11 +5170,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateDescriptorPool_VkResult_return = m_state->on_vkCreateDescriptorPool(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
                         pDescriptorPool);
+                    m_state->on_CheckOutOfMemory(vkCreateDescriptorPool_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateDescriptorPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateDescriptorPool_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pDescriptorPool;
                 vkStream->unsetHandleMapping();
@@ -5361,11 +5283,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkResetDescriptorPool_VkResult_return = m_state->on_vkResetDescriptorPool(
                         &m_pool, snapshotApiCallInfo, device, descriptorPool, flags);
+                    m_state->on_CheckOutOfMemory(vkResetDescriptorPool_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkResetDescriptorPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkResetDescriptorPool_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkResetDescriptorPool_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -5425,11 +5345,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkAllocateDescriptorSets_VkResult_return = m_state->on_vkAllocateDescriptorSets(
                         &m_pool, snapshotApiCallInfo, device, pAllocateInfo, pDescriptorSets);
+                    m_state->on_CheckOutOfMemory(vkAllocateDescriptorSets_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkAllocateDescriptorSets_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkAllocateDescriptorSets_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pDescriptorSets;
                 vkStream->unsetHandleMapping();
@@ -5520,10 +5438,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkFreeDescriptorSets_VkResult_return = m_state->on_vkFreeDescriptorSets(
                         &m_pool, snapshotApiCallInfo, device, descriptorPool, descriptorSetCount,
                         pDescriptorSets);
+                    m_state->on_CheckOutOfMemory(vkFreeDescriptorSets_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkFreeDescriptorSets_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkFreeDescriptorSets_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkFreeDescriptorSets_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -5664,10 +5581,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateFramebuffer_VkResult_return =
                         m_state->on_vkCreateFramebuffer(&m_pool, snapshotApiCallInfo, device,
                                                         pCreateInfo, pAllocator, pFramebuffer);
+                    m_state->on_CheckOutOfMemory(vkCreateFramebuffer_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateFramebuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateFramebuffer_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pFramebuffer;
                 vkStream->unsetHandleMapping();
@@ -5801,10 +5717,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateRenderPass_VkResult_return = m_state->on_vkCreateRenderPass(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pRenderPass);
+                    m_state->on_CheckOutOfMemory(vkCreateRenderPass_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateRenderPass_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateRenderPass_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pRenderPass;
                 vkStream->unsetHandleMapping();
@@ -5991,10 +5906,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateCommandPool_VkResult_return =
                         m_state->on_vkCreateCommandPool(&m_pool, snapshotApiCallInfo, device,
                                                         pCreateInfo, pAllocator, pCommandPool);
+                    m_state->on_CheckOutOfMemory(vkCreateCommandPool_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateCommandPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateCommandPool_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pCommandPool;
                 vkStream->unsetHandleMapping();
@@ -6104,10 +6018,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkResetCommandPool_VkResult_return = m_state->on_vkResetCommandPool(
                         &m_pool, snapshotApiCallInfo, device, commandPool, flags);
+                    m_state->on_CheckOutOfMemory(vkResetCommandPool_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkResetCommandPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkResetCommandPool_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkResetCommandPool_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -6167,11 +6080,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkAllocateCommandBuffers_VkResult_return = m_state->on_vkAllocateCommandBuffers(
                         &m_pool, snapshotApiCallInfo, device, pAllocateInfo, pCommandBuffers);
+                    m_state->on_CheckOutOfMemory(vkAllocateCommandBuffers_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkAllocateCommandBuffers_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkAllocateCommandBuffers_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 if (pAllocateInfo->commandBufferCount) {
                     uint64_t* cgen_var_2;
@@ -6302,10 +6213,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkBeginCommandBuffer_VkResult_return = m_state->on_vkBeginCommandBuffer(
                         &m_pool, snapshotApiCallInfo, commandBuffer, pBeginInfo, context);
+                    m_state->on_CheckOutOfMemory(vkBeginCommandBuffer_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkBeginCommandBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkBeginCommandBuffer_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkBeginCommandBuffer_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -6338,10 +6248,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkEndCommandBuffer_VkResult_return = m_state->on_vkEndCommandBuffer(
                         &m_pool, snapshotApiCallInfo, commandBuffer, context);
+                    m_state->on_CheckOutOfMemory(vkEndCommandBuffer_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkEndCommandBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkEndCommandBuffer_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkEndCommandBuffer_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -6378,10 +6287,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkResetCommandBuffer_VkResult_return = m_state->on_vkResetCommandBuffer(
                         &m_pool, snapshotApiCallInfo, commandBuffer, flags);
+                    m_state->on_CheckOutOfMemory(vkResetCommandBuffer_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkResetCommandBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkResetCommandBuffer_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkResetCommandBuffer_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -8756,8 +8664,6 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 VkResult vkEnumerateInstanceVersion_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 vkEnumerateInstanceVersion_VkResult_return = m_state->on_vkEnumerateInstanceVersion(
                     &m_pool, snapshotApiCallInfo, pApiVersion);
-                if ((vkEnumerateInstanceVersion_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkEnumerateInstanceVersion_VkResult_return, opcode,
                                              context);
                 vkStream->unsetHandleMapping();
@@ -8810,10 +8716,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkBindBufferMemory2_VkResult_return = m_state->on_vkBindBufferMemory2(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
+                    m_state->on_CheckOutOfMemory(vkBindBufferMemory2_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkBindBufferMemory2_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkBindBufferMemory2_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkBindBufferMemory2_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -8863,10 +8768,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkBindImageMemory2_VkResult_return = m_state->on_vkBindImageMemory2(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
+                    m_state->on_CheckOutOfMemory(vkBindImageMemory2_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkBindImageMemory2_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkBindImageMemory2_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkBindImageMemory2_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -9091,11 +8995,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkEnumeratePhysicalDeviceGroups(
                             &m_pool, snapshotApiCallInfo, instance, pPhysicalDeviceGroupCount,
                             pPhysicalDeviceGroupProperties);
+                    m_state->on_CheckOutOfMemory(vkEnumeratePhysicalDeviceGroups_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkEnumeratePhysicalDeviceGroups_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkEnumeratePhysicalDeviceGroups_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pPhysicalDeviceGroupCount;
@@ -9574,12 +9476,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkGetPhysicalDeviceImageFormatProperties2(
                             &m_pool, snapshotApiCallInfo, physicalDevice, pImageFormatInfo,
                             pImageFormatProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPhysicalDeviceImageFormatProperties2_VkResult_return, opcode, context);
                 }
-                if ((vkGetPhysicalDeviceImageFormatProperties2_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkGetPhysicalDeviceImageFormatProperties2_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 if (pImageFormatProperties) {
                     transform_fromhost_VkImageFormatProperties2(
@@ -10015,11 +9914,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateSamplerYcbcrConversion(&m_pool, snapshotApiCallInfo,
                                                                    device, pCreateInfo, pAllocator,
                                                                    pYcbcrConversion);
+                    m_state->on_CheckOutOfMemory(vkCreateSamplerYcbcrConversion_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkCreateSamplerYcbcrConversion_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateSamplerYcbcrConversion_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pYcbcrConversion;
                 vkStream->unsetHandleMapping();
@@ -10165,11 +10062,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateDescriptorUpdateTemplate(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
                             pDescriptorUpdateTemplate);
+                    m_state->on_CheckOutOfMemory(vkCreateDescriptorUpdateTemplate_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkCreateDescriptorUpdateTemplate_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateDescriptorUpdateTemplate_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pDescriptorUpdateTemplate;
                 vkStream->unsetHandleMapping();
@@ -10756,10 +10651,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateRenderPass2_VkResult_return = m_state->on_vkCreateRenderPass2(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pRenderPass);
+                    m_state->on_CheckOutOfMemory(vkCreateRenderPass2_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateRenderPass2_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateRenderPass2_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pRenderPass;
                 vkStream->unsetHandleMapping();
@@ -11004,11 +10898,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetSemaphoreCounterValue_VkResult_return =
                         vk->vkGetSemaphoreCounterValue(unboxed_device, semaphore, pValue);
+                    m_state->on_CheckOutOfMemory(vkGetSemaphoreCounterValue_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkGetSemaphoreCounterValue_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetSemaphoreCounterValue_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((uint64_t*)pValue, sizeof(uint64_t));
                 vkStream->write(&vkGetSemaphoreCounterValue_VkResult_return, sizeof(VkResult));
@@ -11056,10 +10948,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkWaitSemaphores_VkResult_return = m_state->on_vkWaitSemaphores(
                         &m_pool, snapshotApiCallInfo, device, pWaitInfo, timeout);
+                    m_state->on_CheckOutOfMemory(vkWaitSemaphores_VkResult_return, opcode, context);
                 }
-                if ((vkWaitSemaphores_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkWaitSemaphores_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkWaitSemaphores_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -11098,10 +10988,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkSignalSemaphore_VkResult_return = m_state->on_vkSignalSemaphore(
                         &m_pool, snapshotApiCallInfo, device, pSignalInfo);
+                    m_state->on_CheckOutOfMemory(vkSignalSemaphore_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkSignalSemaphore_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkSignalSemaphore_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkSignalSemaphore_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -11316,11 +11205,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetPhysicalDeviceToolProperties_VkResult_return =
                         vk->vkGetPhysicalDeviceToolProperties(unboxed_physicalDevice, pToolCount,
                                                               pToolProperties);
+                    m_state->on_CheckOutOfMemory(vkGetPhysicalDeviceToolProperties_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkGetPhysicalDeviceToolProperties_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetPhysicalDeviceToolProperties_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pToolCount;
@@ -11419,11 +11306,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreatePrivateDataSlot_VkResult_return = vk->vkCreatePrivateDataSlot(
                         unboxed_device, pCreateInfo, pAllocator, pPrivateDataSlot);
+                    m_state->on_CheckOutOfMemory(vkCreatePrivateDataSlot_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreatePrivateDataSlot_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreatePrivateDataSlot_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin auto non dispatchable handle create for pPrivateDataSlot;
                 if (vkCreatePrivateDataSlot_VkResult_return == VK_SUCCESS)
@@ -11546,10 +11431,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkSetPrivateData_VkResult_return = vk->vkSetPrivateData(
                         unboxed_device, objectType, objectHandle, privateDataSlot, data);
+                    m_state->on_CheckOutOfMemory(vkSetPrivateData_VkResult_return, opcode, context);
                 }
-                if ((vkSetPrivateData_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkSetPrivateData_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkSetPrivateData_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -11893,10 +11776,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkQueueSubmit2_VkResult_return = m_state->on_vkQueueSubmit2(
                         &m_pool, snapshotApiCallInfo, queue, submitCount, pSubmits, fence);
+                    m_state->on_CheckOutOfMemory(vkQueueSubmit2_VkResult_return, opcode, context);
                 }
-                if ((vkQueueSubmit2_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkQueueSubmit2_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkQueueSubmit2_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -13142,10 +13023,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateSwapchainKHR_VkResult_return = vk->vkCreateSwapchainKHR(
                         unboxed_device, pCreateInfo, pAllocator, pSwapchain);
+                    m_state->on_CheckOutOfMemory(vkCreateSwapchainKHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateSwapchainKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateSwapchainKHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin auto non dispatchable handle create for pSwapchain;
                 if (vkCreateSwapchainKHR_VkResult_return == VK_SUCCESS)
@@ -13293,11 +13173,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetSwapchainImagesKHR_VkResult_return = vk->vkGetSwapchainImagesKHR(
                         unboxed_device, swapchain, pSwapchainImageCount, pSwapchainImages);
+                    m_state->on_CheckOutOfMemory(vkGetSwapchainImagesKHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkGetSwapchainImagesKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetSwapchainImagesKHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_4 = (uint64_t)(uintptr_t)pSwapchainImageCount;
@@ -13380,11 +13258,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkAcquireNextImageKHR_VkResult_return = vk->vkAcquireNextImageKHR(
                         unboxed_device, swapchain, timeout, semaphore, fence, pImageIndex);
+                    m_state->on_CheckOutOfMemory(vkAcquireNextImageKHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkAcquireNextImageKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkAcquireNextImageKHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((uint32_t*)pImageIndex, sizeof(uint32_t));
                 vkStream->write(&vkAcquireNextImageKHR_VkResult_return, sizeof(VkResult));
@@ -13426,10 +13302,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkQueuePresentKHR_VkResult_return = m_state->on_vkQueuePresentKHR(
                         &m_pool, snapshotApiCallInfo, queue, pPresentInfo);
+                    m_state->on_CheckOutOfMemory(vkQueuePresentKHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkQueuePresentKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkQueuePresentKHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkQueuePresentKHR_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -13482,12 +13357,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return =
                         vk->vkGetDeviceGroupPresentCapabilitiesKHR(unboxed_device,
                                                                    pDeviceGroupPresentCapabilities);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return, opcode, context);
                 }
-                if ((vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 if (pDeviceGroupPresentCapabilities) {
                     transform_fromhost_VkDeviceGroupPresentCapabilitiesKHR(
@@ -13554,12 +13426,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetDeviceGroupSurfacePresentModesKHR_VkResult_return =
                         vk->vkGetDeviceGroupSurfacePresentModesKHR(unboxed_device, surface, pModes);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetDeviceGroupSurfacePresentModesKHR_VkResult_return, opcode, context);
                 }
-                if ((vkGetDeviceGroupSurfacePresentModesKHR_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetDeviceGroupSurfacePresentModesKHR_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pModes;
@@ -13648,12 +13517,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetPhysicalDevicePresentRectanglesKHR_VkResult_return =
                         vk->vkGetPhysicalDevicePresentRectanglesKHR(unboxed_physicalDevice, surface,
                                                                     pRectCount, pRects);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPhysicalDevicePresentRectanglesKHR_VkResult_return, opcode, context);
                 }
-                if ((vkGetPhysicalDevicePresentRectanglesKHR_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkGetPhysicalDevicePresentRectanglesKHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_4 = (uint64_t)(uintptr_t)pRectCount;
@@ -13730,11 +13596,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkAcquireNextImage2KHR_VkResult_return =
                         vk->vkAcquireNextImage2KHR(unboxed_device, pAcquireInfo, pImageIndex);
+                    m_state->on_CheckOutOfMemory(vkAcquireNextImage2KHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkAcquireNextImage2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkAcquireNextImage2KHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((uint32_t*)pImageIndex, sizeof(uint32_t));
                 vkStream->write(&vkAcquireNextImage2KHR_VkResult_return, sizeof(VkResult));
@@ -14024,12 +13888,10 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkGetPhysicalDeviceImageFormatProperties2KHR(
                             &m_pool, snapshotApiCallInfo, physicalDevice, pImageFormatInfo,
                             pImageFormatProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPhysicalDeviceImageFormatProperties2KHR_VkResult_return, opcode,
+                        context);
                 }
-                if ((vkGetPhysicalDeviceImageFormatProperties2KHR_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkGetPhysicalDeviceImageFormatProperties2KHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 if (pImageFormatProperties) {
                     transform_fromhost_VkImageFormatProperties2(
@@ -14536,11 +14398,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkImportSemaphoreFdKHR_VkResult_return = m_state->on_vkImportSemaphoreFdKHR(
                         &m_pool, snapshotApiCallInfo, device, pImportSemaphoreFdInfo);
+                    m_state->on_CheckOutOfMemory(vkImportSemaphoreFdKHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkImportSemaphoreFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkImportSemaphoreFdKHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkImportSemaphoreFdKHR_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -14588,10 +14448,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetSemaphoreFdKHR_VkResult_return = m_state->on_vkGetSemaphoreFdKHR(
                         &m_pool, snapshotApiCallInfo, device, pGetFdInfo, pFd);
+                    m_state->on_CheckOutOfMemory(vkGetSemaphoreFdKHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkGetSemaphoreFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetSemaphoreFdKHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((int*)pFd, sizeof(int));
                 vkStream->write(&vkGetSemaphoreFdKHR_VkResult_return, sizeof(VkResult));
@@ -14669,11 +14528,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateDescriptorUpdateTemplateKHR(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
                             pDescriptorUpdateTemplate);
+                    m_state->on_CheckOutOfMemory(
+                        vkCreateDescriptorUpdateTemplateKHR_VkResult_return, opcode, context);
                 }
-                if ((vkCreateDescriptorUpdateTemplateKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateDescriptorUpdateTemplateKHR_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pDescriptorUpdateTemplate;
                 vkStream->unsetHandleMapping();
@@ -14875,11 +14732,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreateRenderPass2KHR_VkResult_return = m_state->on_vkCreateRenderPass2KHR(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pRenderPass);
+                    m_state->on_CheckOutOfMemory(vkCreateRenderPass2KHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreateRenderPass2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateRenderPass2KHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pRenderPass;
                 vkStream->unsetHandleMapping();
@@ -15148,10 +15003,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkImportFenceFdKHR_VkResult_return =
                         vk->vkImportFenceFdKHR(unboxed_device, pImportFenceFdInfo);
+                    m_state->on_CheckOutOfMemory(vkImportFenceFdKHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkImportFenceFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkImportFenceFdKHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkImportFenceFdKHR_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -15201,10 +15055,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetFenceFdKHR_VkResult_return =
                         vk->vkGetFenceFdKHR(unboxed_device, pGetFdInfo, pFd);
+                    m_state->on_CheckOutOfMemory(vkGetFenceFdKHR_VkResult_return, opcode, context);
                 }
-                if ((vkGetFenceFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetFenceFdKHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((int*)pFd, sizeof(int));
                 vkStream->write(&vkGetFenceFdKHR_VkResult_return, sizeof(VkResult));
@@ -15518,11 +15370,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateSamplerYcbcrConversionKHR(&m_pool, snapshotApiCallInfo,
                                                                       device, pCreateInfo,
                                                                       pAllocator, pYcbcrConversion);
+                    m_state->on_CheckOutOfMemory(vkCreateSamplerYcbcrConversionKHR_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkCreateSamplerYcbcrConversionKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateSamplerYcbcrConversionKHR_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pYcbcrConversion;
                 vkStream->unsetHandleMapping();
@@ -15647,11 +15497,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkBindBufferMemory2KHR_VkResult_return = m_state->on_vkBindBufferMemory2KHR(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
+                    m_state->on_CheckOutOfMemory(vkBindBufferMemory2KHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkBindBufferMemory2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkBindBufferMemory2KHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkBindBufferMemory2KHR_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -15701,11 +15549,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkBindImageMemory2KHR_VkResult_return = m_state->on_vkBindImageMemory2KHR(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
+                    m_state->on_CheckOutOfMemory(vkBindImageMemory2KHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkBindImageMemory2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkBindImageMemory2KHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkBindImageMemory2KHR_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -15995,11 +15841,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetPipelineExecutablePropertiesKHR_VkResult_return =
                         vk->vkGetPipelineExecutablePropertiesKHR(unboxed_device, pPipelineInfo,
                                                                  pExecutableCount, pProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPipelineExecutablePropertiesKHR_VkResult_return, opcode, context);
                 }
-                if ((vkGetPipelineExecutablePropertiesKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetPipelineExecutablePropertiesKHR_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pExecutableCount;
@@ -16114,11 +15958,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetPipelineExecutableStatisticsKHR_VkResult_return =
                         vk->vkGetPipelineExecutableStatisticsKHR(unboxed_device, pExecutableInfo,
                                                                  pStatisticCount, pStatistics);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPipelineExecutableStatisticsKHR_VkResult_return, opcode, context);
                 }
-                if ((vkGetPipelineExecutableStatisticsKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetPipelineExecutableStatisticsKHR_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pStatisticCount;
@@ -16242,13 +16084,10 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         vk->vkGetPipelineExecutableInternalRepresentationsKHR(
                             unboxed_device, pExecutableInfo, pInternalRepresentationCount,
                             pInternalRepresentations);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return, opcode,
+                        context);
                 }
-                if ((vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return, opcode,
-                    context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pInternalRepresentationCount;
@@ -16577,10 +16416,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkQueueSubmit2KHR_VkResult_return =
                         vk->vkQueueSubmit2KHR(unboxed_queue, submitCount, pSubmits, fence);
+                    m_state->on_CheckOutOfMemory(vkQueueSubmit2KHR_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkQueueSubmit2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkQueueSubmit2KHR_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkQueueSubmit2KHR_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -17544,11 +17382,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetSwapchainGrallocUsageANDROID_VkResult_return =
                         m_state->on_vkGetSwapchainGrallocUsageANDROID(
                             &m_pool, snapshotApiCallInfo, device, format, imageUsage, grallocUsage);
+                    m_state->on_CheckOutOfMemory(vkGetSwapchainGrallocUsageANDROID_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkGetSwapchainGrallocUsageANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetSwapchainGrallocUsageANDROID_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((int*)grallocUsage, sizeof(int));
                 vkStream->write(&vkGetSwapchainGrallocUsageANDROID_VkResult_return,
@@ -17607,11 +17443,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkAcquireImageANDROID_VkResult_return =
                         m_state->on_vkAcquireImageANDROID(&m_pool, snapshotApiCallInfo, device,
                                                           image, nativeFenceFd, semaphore, fence);
+                    m_state->on_CheckOutOfMemory(vkAcquireImageANDROID_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkAcquireImageANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkAcquireImageANDROID_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkAcquireImageANDROID_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -17686,11 +17520,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkQueueSignalReleaseImageANDROID(
                             &m_pool, snapshotApiCallInfo, queue, waitSemaphoreCount,
                             pWaitSemaphores, image, pNativeFenceFd);
+                    m_state->on_CheckOutOfMemory(vkQueueSignalReleaseImageANDROID_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkQueueSignalReleaseImageANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkQueueSignalReleaseImageANDROID_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((int*)pNativeFenceFd, sizeof(int));
                 vkStream->write(&vkQueueSignalReleaseImageANDROID_VkResult_return,
@@ -17756,11 +17588,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkGetSwapchainGrallocUsage2ANDROID(
                             &m_pool, snapshotApiCallInfo, device, format, imageUsage,
                             swapchainImageUsage, grallocConsumerUsage, grallocProducerUsage);
+                    m_state->on_CheckOutOfMemory(vkGetSwapchainGrallocUsage2ANDROID_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkGetSwapchainGrallocUsage2ANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetSwapchainGrallocUsage2ANDROID_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((uint64_t*)grallocConsumerUsage, sizeof(uint64_t));
                 vkStream->write((uint64_t*)grallocProducerUsage, sizeof(uint64_t));
@@ -17841,11 +17671,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateDebugReportCallbackEXT_VkResult_return =
                         vk->vkCreateDebugReportCallbackEXT(unboxed_instance, pCreateInfo,
                                                            pAllocator, pCallback);
+                    m_state->on_CheckOutOfMemory(vkCreateDebugReportCallbackEXT_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkCreateDebugReportCallbackEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateDebugReportCallbackEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin auto non dispatchable handle create for pCallback;
                 if (vkCreateDebugReportCallbackEXT_VkResult_return == VK_SUCCESS)
@@ -18414,11 +18242,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkSetDebugUtilsObjectNameEXT_VkResult_return =
                         vk->vkSetDebugUtilsObjectNameEXT(unboxed_device, pNameInfo);
+                    m_state->on_CheckOutOfMemory(vkSetDebugUtilsObjectNameEXT_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkSetDebugUtilsObjectNameEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkSetDebugUtilsObjectNameEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkSetDebugUtilsObjectNameEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -18461,11 +18287,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkSetDebugUtilsObjectTagEXT_VkResult_return =
                         vk->vkSetDebugUtilsObjectTagEXT(unboxed_device, pTagInfo);
+                    m_state->on_CheckOutOfMemory(vkSetDebugUtilsObjectTagEXT_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkSetDebugUtilsObjectTagEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkSetDebugUtilsObjectTagEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkSetDebugUtilsObjectTagEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -18757,11 +18581,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkCreateDebugUtilsMessengerEXT_VkResult_return =
                         vk->vkCreateDebugUtilsMessengerEXT(unboxed_instance, pCreateInfo,
                                                            pAllocator, pMessenger);
+                    m_state->on_CheckOutOfMemory(vkCreateDebugUtilsMessengerEXT_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkCreateDebugUtilsMessengerEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateDebugUtilsMessengerEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 // Begin auto non dispatchable handle create for pMessenger;
                 if (vkCreateDebugUtilsMessengerEXT_VkResult_return == VK_SUCCESS)
@@ -18945,12 +18767,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetImageDrmFormatModifierPropertiesEXT_VkResult_return =
                         vk->vkGetImageDrmFormatModifierPropertiesEXT(unboxed_device, image,
                                                                      pProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetImageDrmFormatModifierPropertiesEXT_VkResult_return, opcode, context);
                 }
-                if ((vkGetImageDrmFormatModifierPropertiesEXT_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkGetImageDrmFormatModifierPropertiesEXT_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 if (pProperties) {
                     transform_fromhost_VkImageDrmFormatModifierPropertiesEXT(
@@ -19022,11 +18841,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetMemoryHostPointerPropertiesEXT_VkResult_return =
                         vk->vkGetMemoryHostPointerPropertiesEXT(
                             unboxed_device, handleType, pHostPointer, pMemoryHostPointerProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetMemoryHostPointerPropertiesEXT_VkResult_return, opcode, context);
                 }
-                if ((vkGetMemoryHostPointerPropertiesEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetMemoryHostPointerPropertiesEXT_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 if (pMemoryHostPointerProperties) {
                     transform_fromhost_VkMemoryHostPointerPropertiesEXT(
@@ -19114,11 +18931,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetPhysicalDeviceToolPropertiesEXT_VkResult_return =
                         vk->vkGetPhysicalDeviceToolPropertiesEXT(unboxed_physicalDevice, pToolCount,
                                                                  pToolProperties);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetPhysicalDeviceToolPropertiesEXT_VkResult_return, opcode, context);
                 }
-                if ((vkGetPhysicalDeviceToolPropertiesEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetPhysicalDeviceToolPropertiesEXT_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pToolCount;
@@ -19762,11 +19577,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCopyMemoryToImageEXT_VkResult_return =
                         vk->vkCopyMemoryToImageEXT(unboxed_device, pCopyMemoryToImageInfo);
+                    m_state->on_CheckOutOfMemory(vkCopyMemoryToImageEXT_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCopyMemoryToImageEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCopyMemoryToImageEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkCopyMemoryToImageEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -19811,11 +19624,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCopyImageToMemoryEXT_VkResult_return =
                         vk->vkCopyImageToMemoryEXT(unboxed_device, pCopyImageToMemoryInfo);
+                    m_state->on_CheckOutOfMemory(vkCopyImageToMemoryEXT_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCopyImageToMemoryEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCopyImageToMemoryEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkCopyImageToMemoryEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -19860,11 +19671,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCopyImageToImageEXT_VkResult_return =
                         vk->vkCopyImageToImageEXT(unboxed_device, pCopyImageToImageInfo);
+                    m_state->on_CheckOutOfMemory(vkCopyImageToImageEXT_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCopyImageToImageEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCopyImageToImageEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkCopyImageToImageEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -19918,11 +19727,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkTransitionImageLayoutEXT_VkResult_return = vk->vkTransitionImageLayoutEXT(
                         unboxed_device, transitionCount, pTransitions);
+                    m_state->on_CheckOutOfMemory(vkTransitionImageLayoutEXT_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkTransitionImageLayoutEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkTransitionImageLayoutEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkTransitionImageLayoutEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -20035,11 +19842,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkReleaseSwapchainImagesEXT_VkResult_return =
                         vk->vkReleaseSwapchainImagesEXT(unboxed_device, pReleaseInfo);
+                    m_state->on_CheckOutOfMemory(vkReleaseSwapchainImagesEXT_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkReleaseSwapchainImagesEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkReleaseSwapchainImagesEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkReleaseSwapchainImagesEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -20112,11 +19917,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkCreatePrivateDataSlotEXT_VkResult_return = vk->vkCreatePrivateDataSlotEXT(
                         unboxed_device, pCreateInfo, pAllocator, pPrivateDataSlot);
+                    m_state->on_CheckOutOfMemory(vkCreatePrivateDataSlotEXT_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkCreatePrivateDataSlotEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreatePrivateDataSlotEXT_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 uint64_t cgen_var_3;
                 vkStream->handleMapping()->mapHandles_VkPrivateDataSlot_u64(pPrivateDataSlot,
@@ -20227,10 +20030,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkSetPrivateDataEXT_VkResult_return = vk->vkSetPrivateDataEXT(
                         unboxed_device, objectType, objectHandle, privateDataSlot, data);
+                    m_state->on_CheckOutOfMemory(vkSetPrivateDataEXT_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkSetPrivateDataEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkSetPrivateDataEXT_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkSetPrivateDataEXT_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -20569,11 +20371,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return =
                         m_state->on_vkMapMemoryIntoAddressSpaceGOOGLE(&m_pool, snapshotApiCallInfo,
                                                                       device, memory, pAddress);
+                    m_state->on_CheckOutOfMemory(vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pAddress;
@@ -20967,11 +20767,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateImageWithRequirementsGOOGLE(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pImage,
                             pMemoryRequirements);
+                    m_state->on_CheckOutOfMemory(
+                        vkCreateImageWithRequirementsGOOGLE_VkResult_return, opcode, context);
                 }
-                if ((vkCreateImageWithRequirementsGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateImageWithRequirementsGOOGLE_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pImage;
                 vkStream->unsetHandleMapping();
@@ -21070,11 +20868,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkCreateBufferWithRequirementsGOOGLE(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pBuffer,
                             pMemoryRequirements);
+                    m_state->on_CheckOutOfMemory(
+                        vkCreateBufferWithRequirementsGOOGLE_VkResult_return, opcode, context);
                 }
-                if ((vkCreateBufferWithRequirementsGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateBufferWithRequirementsGOOGLE_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // Begin manual non dispatchable handle create for pBuffer;
                 vkStream->unsetHandleMapping();
@@ -21172,11 +20968,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         m_state->on_vkGetMemoryHostAddressInfoGOOGLE(&m_pool, snapshotApiCallInfo,
                                                                      device, memory, pAddress,
                                                                      pSize, pHostmemId);
+                    m_state->on_CheckOutOfMemory(vkGetMemoryHostAddressInfoGOOGLE_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkGetMemoryHostAddressInfoGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetMemoryHostAddressInfoGOOGLE_VkResult_return,
-                                             opcode, context);
                 vkStream->unsetHandleMapping();
                 // WARNING PTR CHECK
                 uint64_t cgen_var_5 = (uint64_t)(uintptr_t)pAddress;
@@ -21255,11 +21049,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkFreeMemorySyncGOOGLE_VkResult_return = m_state->on_vkFreeMemorySyncGOOGLE(
                         &m_pool, snapshotApiCallInfo, device, memory, pAllocator);
+                    m_state->on_CheckOutOfMemory(vkFreeMemorySyncGOOGLE_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkFreeMemorySyncGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkFreeMemorySyncGOOGLE_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkFreeMemorySyncGOOGLE_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -21929,10 +21721,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetBlobGOOGLE_VkResult_return =
                         m_state->on_vkGetBlobGOOGLE(&m_pool, snapshotApiCallInfo, device, memory);
+                    m_state->on_CheckOutOfMemory(vkGetBlobGOOGLE_VkResult_return, opcode, context);
                 }
-                if ((vkGetBlobGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetBlobGOOGLE_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkGetBlobGOOGLE_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -22209,10 +21999,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (CC_LIKELY(vk)) {
                     vkGetSemaphoreGOOGLE_VkResult_return = m_state->on_vkGetSemaphoreGOOGLE(
                         &m_pool, snapshotApiCallInfo, device, semaphore, syncId);
+                    m_state->on_CheckOutOfMemory(vkGetSemaphoreGOOGLE_VkResult_return, opcode,
+                                                 context);
                 }
-                if ((vkGetSemaphoreGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkGetSemaphoreGOOGLE_VkResult_return, opcode, context);
                 vkStream->unsetHandleMapping();
                 vkStream->write(&vkGetSemaphoreGOOGLE_VkResult_return, sizeof(VkResult));
                 vkStream->commitWrite();
@@ -22407,11 +22196,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         vk->vkCreateRayTracingPipelinesKHR(unboxed_device, deferredOperation,
                                                            pipelineCache, createInfoCount,
                                                            pCreateInfos, pAllocator, pPipelines);
+                    m_state->on_CheckOutOfMemory(vkCreateRayTracingPipelinesKHR_VkResult_return,
+                                                 opcode, context);
                 }
-                if ((vkCreateRayTracingPipelinesKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(vkCreateRayTracingPipelinesKHR_VkResult_return, opcode,
-                                             context);
                 vkStream->unsetHandleMapping();
                 if (((createInfoCount))) {
                     uint64_t* cgen_var_5;
@@ -22481,13 +22268,10 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkGetRayTracingCaptureReplayShaderGroupHandlesKHR_VkResult_return =
                         vk->vkGetRayTracingCaptureReplayShaderGroupHandlesKHR(
                             unboxed_device, pipeline, firstGroup, groupCount, dataSize, pData);
+                    m_state->on_CheckOutOfMemory(
+                        vkGetRayTracingCaptureReplayShaderGroupHandlesKHR_VkResult_return, opcode,
+                        context);
                 }
-                if ((vkGetRayTracingCaptureReplayShaderGroupHandlesKHR_VkResult_return) ==
-                    VK_ERROR_DEVICE_LOST)
-                    m_state->on_DeviceLost();
-                m_state->on_CheckOutOfMemory(
-                    vkGetRayTracingCaptureReplayShaderGroupHandlesKHR_VkResult_return, opcode,
-                    context);
                 vkStream->unsetHandleMapping();
                 vkStream->write((void*)pData, ((dataSize)) * sizeof(uint8_t));
                 vkStream->write(&vkGetRayTracingCaptureReplayShaderGroupHandlesKHR_VkResult_return,

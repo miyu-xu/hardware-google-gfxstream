@@ -28,6 +28,7 @@
 #include "VkDecoderGlobalState.h"
 #include "VkEmulatedPhysicalDeviceMemory.h"
 #include "VkFormatUtils.h"
+#include "VulkanBoxedHandles.h"
 #include "VulkanDispatch.h"
 #include "aemu/base/Optional.h"
 #include "aemu/base/Tracing.h"
@@ -1862,6 +1863,9 @@ VkEmulation::getRepresentativeColorBufferMemoryTypeInfo() const {
 }
 
 void VkEmulation::onVkDeviceLost() { VkDecoderGlobalState::get()->on_DeviceLost(); }
+void VkEmulation::onVkFatalError(const char* errorMessage) {
+    VkDecoderGlobalState::get()->on_FatalError(errorMessage);
+}
 
 std::unique_ptr<gfxstream::DisplaySurface> VkEmulation::createDisplaySurface(
     FBNativeWindowType window, uint32_t width, uint32_t height) {
