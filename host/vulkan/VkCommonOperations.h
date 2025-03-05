@@ -177,6 +177,7 @@ class VkEmulation {
     RepresentativeColorBufferMemoryTypeInfo getRepresentativeColorBufferMemoryTypeInfo() const;
 
     void onVkDeviceLost();
+    void onVkFatalError(const char* errorMessage);
 
     VkExternalMemoryHandleTypeFlagBits getDefaultExternalMemoryHandleType();
 

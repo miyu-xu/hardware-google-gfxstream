@@ -27,9 +27,13 @@ RenderThreadInfoVk::RenderThreadInfoVk() {
             << "Attempted to set thread local Vk render thread info twice.";
     }
     tlThreadInfo = this;
+
+    mIsLost = false;
 }
 
-RenderThreadInfoVk::~RenderThreadInfoVk() { tlThreadInfo = nullptr; }
+RenderThreadInfoVk::~RenderThreadInfoVk() {
+    tlThreadInfo = nullptr;
+}
 
 RenderThreadInfoVk* RenderThreadInfoVk::get() { return tlThreadInfo; }
 

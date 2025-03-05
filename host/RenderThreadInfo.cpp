@@ -116,6 +116,12 @@ bool RenderThreadInfo::onLoad(Stream* stream) {
         if (!m_vkInfo->onLoad(stream)) {
             return false;
         }
+
+        // TODO(b/383272733): Mark the thread resources as lost for VulkanSnapshots
+        if (FrameBuffer::getFB()->getFeatures().VulkanSnapshots.enabled) {
+            INFO("%s: Marking vk thread info as lost for VulkanSnapshots", __func__);
+            m_vkInfo->mIsLost = true;
+        }
     }
 
     return true;
