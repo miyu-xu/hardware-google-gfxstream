@@ -1,0 +1,39 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28c84b2d_4908948e",
+        "filename": "host/vulkan/VulkanDispatch.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-05T11:09:52Z",
+      "side": 1,
+      "message": "this should be `part`?",
+      "fixSuggestions": [
+        {
+          "fixId": "b5aed47e_081097d8",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VulkanDispatch.cpp",
+              "range": {
+                "startLine": 58,
+                "startChar": 0,
+                "endLine": 59,
+                "endChar": 0
+              },
+              "replacement": "         paths +\u003d sep + pj({part, icdFilename});\n"
+            }
+          ]
+        }
+      ],
+      "revId": "43e07cbb4bdcf0160be4b7dede9b3b0f6d645123",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
