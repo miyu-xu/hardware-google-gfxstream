@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47ce7709_bc548b43",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-03-05T15:00:34Z",
+      "side": 1,
+      "message": "most of the tests are passing, but some\nsnapshot related one is failing, not sure how to fix it yet, at the moment\n\n\nNo test results.\nstream_renderer_log [error]: [hardware/google/gfxstream/host/virtio-gpu-gfxstream-renderer.cpp(733)] int (anonymous namespace)::parseGfxstreamFeatures(const int, const std::string \u0026, gfxstream::host::FeatureSet \u0026) Gfxstream feature VulkanSnapshots enabled\nstream_renderer_log [info]: [hardware/google/gfxstream/host/virtio-gpu-gfxstream-renderer.cpp(936)] stream_renderer_init Gfxstream features:\n...\nMESA: info: virtgpu backend not enabling VIRTGPU_KUMQUAT_PARAM_CREATE_GUEST_HANDLE\nMESA: error: DRM_IOCTL_VIRTGPU_KUMQUAT_GET_CAPS failed with Success\nI0305 12:11:45.812219   14350 VkDecoderGlobalState.cpp:974] Created VkInstance:0x7fcdb4028590 for application:Basic/WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg engine:Gfxstream Testing Engine.",
+      "revId": "f0766ccce8e15772c1b47ac5272b2b0a336492f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
