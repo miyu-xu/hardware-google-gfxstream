@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a527620e_0638cf37",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 937,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-05T20:39:17Z",
+      "side": 1,
+      "message": "```suggestion\n        const bool doLockEarly \u003d swiftshader;\n```",
+      "range": {
+        "startLine": 937,
+        "startChar": 43,
+        "endLine": 937,
+        "endChar": 44
+      },
+      "revId": "dc1da52b5cf30295681166793eb9eca6692468f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d9a489a_78baed3c",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1933,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-05T20:39:17Z",
+      "side": 1,
+      "message": "```suggestion\n        const bool doLockEarly \u003d swiftshader;\n```",
+      "range": {
+        "startLine": 1933,
+        "startChar": 43,
+        "endLine": 1933,
+        "endChar": 44
+      },
+      "revId": "dc1da52b5cf30295681166793eb9eca6692468f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
