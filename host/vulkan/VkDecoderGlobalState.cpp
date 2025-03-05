@@ -149,6 +149,24 @@ void validateNewHandleInfoEntry(const std::unordered_map<T, K>& vkObjectMap, con
     }
 }
 
+#define VALIDATE_DEVICE_INFO(deviceInfo, deviceHandle, errorReturn)                     \
+    if (!deviceInfo) {                                                                  \
+        WARN("%s: Cannot find device info for handle %p", __func__, deviceHandle);      \
+        return errorReturn;                                                             \
+    }                                                                                   \
+    if (deviceInfo->isLost()) {                                                         \
+        WARN("%s: Requested device(%p) is lost. Application: %s, Engine: %s", __func__, \
+             deviceHandle, deviceInfo->debugInfo.applicationName.c_str(),               \
+             deviceInfo->debugInfo.engineName.c_str());                                 \
+        return errorReturn;                                                             \
+    }
+
+#define VALIDATE_DISPATCH(dispatch_obj, errorReturn)      \
+    if (!dispatch_obj) {                                  \
+        WARN("%s: dispatcher cannot be used!", __func__); \
+        return errorReturn;                               \
+    }
+
 VK_EXT_SYNC_HANDLE dupExternalSync(VK_EXT_SYNC_HANDLE h) {
 #ifdef _WIN32
     auto myProcessHandle = GetCurrentProcess();
@@ -350,6 +368,16 @@ class VkDecoderGlobalState::Impl {
                 stream->putBe64(reinterpret_cast<uint64_t>(device));
                 stream->putBe32(contextId);
             }
+        }
+
+        // TODO(b/383272733): Temporary environment variable to be able to
+        // save/load minimal snapshots without any state information
+        const bool skipVulkanSnapshots =
+            (android::base::getEnvironmentVariable("ANDROID_EMU_VK_SKIP_SNAPSHOT_DATA") == "1");
+        if (skipVulkanSnapshots) {
+            ERR("%s: Vulkan snapshots are skipped!", __func__);
+            mSnapshotState = SnapshotState::Normal;
+            return;
         }
 
         VERBOSE("snapshot save: replay command stream");
@@ -612,6 +640,16 @@ class VkDecoderGlobalState::Impl {
                 (*mSnapshotLoadVkDeviceToVirtioCpuContextId)[reinterpret_cast<VkDevice>(device)] =
                     contextId;
             }
+        }
+
+        // TODO(b/383272733): Temporary environment variable to be able to
+        // save/load minimal snapshots without any state information
+        const bool skipVulkanSnapshots =
+            (android::base::getEnvironmentVariable("ANDROID_EMU_VK_SKIP_SNAPSHOT_DATA") == "1");
+        if (skipVulkanSnapshots) {
+            ERR("%s: Vulkan snapshots are skipped!", __func__);
+            mSnapshotState = SnapshotState::Normal;
+            return;
         }
 
         // Replay command stream:
@@ -1994,12 +2032,11 @@ class VkDecoderGlobalState::Impl {
         // First, get the dispatch table.
         VkDevice boxedDevice = new_boxed_VkDevice(*pDevice, nullptr, true /* own dispatch */);
 
-        if (mLogging) {
-            INFO("%s: init vulkan dispatch from device", __func__);
-        }
-
+        LOG_CALLS_VERBOSE("%s: init vulkan dispatch from device", __func__);
         VulkanDispatch* dispatch = dispatch_VkDevice(boxedDevice);
         init_vulkan_dispatch_from_device(vk, *pDevice, dispatch);
+        LOG_CALLS_VERBOSE("%s: init vulkan dispatch from device (end)", __func__);
+
         if (m_vkEmulation->debugUtilsEnabled()) {
             deviceInfo.debugUtilsHelper = DebugUtilsHelper::withUtilsEnabled(*pDevice, dispatch);
         }
@@ -2008,11 +2045,6 @@ class VkDecoderGlobalState::Impl {
             std::make_unique<ExternalFencePool<VulkanDispatch>>(dispatch, *pDevice);
 
         deviceInfo.deviceOpTracker = std::make_shared<DeviceOpTracker>(*pDevice, dispatch);
-
-        if (mLogging) {
-            INFO("%s: init vulkan dispatch from device (end)", __func__);
-        }
-
         deviceInfo.boxed = boxedDevice;
 
         DeviceLostHelper::DeviceWithQueues deviceWithQueues = {
@@ -2035,6 +2067,11 @@ class VkDecoderGlobalState::Impl {
             auto* renderThreadInfo = RenderThreadInfoVk::get();
             deviceInfo.virtioGpuContextId = renderThreadInfo->ctx_id;
         }
+
+        // Set information for debugging and error reporting
+        deviceInfo.debugInfo.applicationName = instanceInfo.applicationName;
+        deviceInfo.debugInfo.engineName = instanceInfo.engineName;
+        deviceInfo.debugInfo.createInfoShallow = vk_make_orphan_copy(*pCreateInfo);
 
         // Next, get information about the queue families used by this device.
         std::unordered_map<uint32_t, uint32_t> queueFamilyIndexCounts;
@@ -2449,9 +2486,7 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::mutex> lock(mMutex);
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        if (!deviceInfo) {
-            return VK_ERROR_OUT_OF_HOST_MEMORY;
-        }
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_OUT_OF_HOST_MEMORY)
 
         if (deviceInfo->imageFormats.find(pCreateInfo->format) == deviceInfo->imageFormats.end()) {
             VERBOSE("gfxstream_texture_format_manifest: %s [%d]", string_VkFormat(pCreateInfo->format), pCreateInfo->format);
@@ -2637,7 +2672,7 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::mutex> lock(mMutex);
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        if (!deviceInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_OUT_OF_HOST_MEMORY)
 
         auto* memoryInfo = android::base::find(mMemoryInfo, memory);
         if (!memoryInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -2700,7 +2735,7 @@ class VkDecoderGlobalState::Impl {
             std::lock_guard<std::mutex> lock(mMutex);
 
             auto* deviceInfo = android::base::find(mDeviceInfo, device);
-            if (!deviceInfo) return VK_ERROR_UNKNOWN;
+            VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_UNKNOWN)
 
             for (uint32_t i = 0; i < bindInfoCount; i++) {
                 auto* imageInfo = android::base::find(mImageInfo, pBindInfos[i].image);
@@ -2738,7 +2773,7 @@ class VkDecoderGlobalState::Impl {
             std::lock_guard<std::mutex> lock(mMutex);
 
             auto* deviceInfo = android::base::find(mDeviceInfo, device);
-            if (!deviceInfo) return VK_ERROR_UNKNOWN;
+            VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_UNKNOWN)
 
             for (uint32_t i = 0; i < bindInfoCount; i++) {
                 auto* memoryInfo = android::base::find(mMemoryInfo, pBindInfos[i].memory);
@@ -2770,8 +2805,9 @@ class VkDecoderGlobalState::Impl {
 
         std::lock_guard<std::mutex> lock(mMutex);
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_OUT_OF_HOST_MEMORY);
         auto* imageInfo = android::base::find(mImageInfo, pCreateInfo->image);
-        if (!deviceInfo || !imageInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        if (!imageInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
         VkImageViewCreateInfo createInfo;
         bool needEmulatedAlpha = false;
         if (deviceInfo->needEmulatedDecompression(pCreateInfo->format)) {
@@ -2995,10 +3031,7 @@ class VkDecoderGlobalState::Impl {
             {
                 std::lock_guard<std::mutex> lock(mMutex);
                 auto* deviceInfo = android::base::find(mDeviceInfo, device);
-
-                if (!deviceInfo) {
-                    return VK_ERROR_DEVICE_LOST;
-                }
+                VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_DEVICE_LOST);
 
                 if (deviceInfo->externalFenceInfo.supportedBinarySemaphoreHandleTypes &
                     VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
@@ -3061,7 +3094,8 @@ class VkDecoderGlobalState::Impl {
             {
                 std::lock_guard<std::mutex> lock(mMutex);
                 auto* deviceInfo = android::base::find(mDeviceInfo, device);
-                if (!deviceInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+                VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_OUT_OF_HOST_MEMORY);
+
                 externalFencePool = deviceInfo->externalFencePool.get();
             }
             *pFence = externalFencePool->pop(&localCreateInfo);
@@ -3171,7 +3205,8 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::mutex> lock(mMutex);
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        if (!deviceInfo) return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_OUT_OF_DEVICE_MEMORY);
+
         for (auto fence : externalFences) {
             VkFence replacement = deviceInfo->externalFencePool->pop(&createInfo);
             if (replacement == VK_NULL_HANDLE) {
@@ -3287,10 +3322,7 @@ class VkDecoderGlobalState::Impl {
         {
             std::lock_guard<std::mutex> lock(mMutex);
             auto* deviceInfo = android::base::find(mDeviceInfo, device);
-
-            if (!deviceInfo) {
-                return VK_ERROR_DEVICE_LOST;
-            }
+            VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_DEVICE_LOST);
 
             if (deviceInfo->externalFenceInfo.supportedBinarySemaphoreHandleTypes &
                 VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
@@ -4167,6 +4199,11 @@ class VkDecoderGlobalState::Impl {
                                     const VkAllocationCallbacks* pAllocator) {
         auto device = unbox_VkDevice(boxed_device);
         auto deviceDispatch = dispatch_VkDevice(boxed_device);
+
+        if (!deviceDispatch) {
+            WARN("%s: delayed operation failed due to lost device!", __func__);
+            return;
+        }
 
         std::lock_guard<std::mutex> lock(mMutex);
         destroyPipelineLayoutLocked(device, deviceDispatch, pipelineLayout, pAllocator);
@@ -5570,7 +5607,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        if (!deviceInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_OUT_OF_HOST_MEMORY);
 
         // If gfxstream needs to be able to read from this memory, needToMap should be true.
         // When external blobs are off, we always want to map HOST_VISIBLE memory. Because, we run
@@ -5800,7 +5837,7 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::mutex> lock(mMutex);
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        if (!deviceInfo) return VK_ERROR_INITIALIZATION_FAILED;
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_INITIALIZATION_FAILED);
 
         auto* imageInfo = android::base::find(mImageInfo, image);
         if (!imageInfo) return VK_ERROR_INITIALIZATION_FAILED;
@@ -5808,7 +5845,7 @@ class VkDecoderGlobalState::Impl {
         VkQueue defaultQueue;
         uint32_t defaultQueueFamilyIndex;
         std::mutex* defaultQueueMutex;
-        if (!getDefaultQueueForDeviceLocked(device, &defaultQueue, &defaultQueueFamilyIndex,
+        if (!getDefaultQueueForDeviceLocked(deviceInfo, &defaultQueue, &defaultQueueFamilyIndex,
                                             &defaultQueueMutex)) {
             INFO("%s: can't get the default q", __func__);
             return VK_ERROR_INITIALIZATION_FAILED;
@@ -6052,10 +6089,11 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::mutex> lock(mMutex);
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_UNKNOWN);
+
         auto* commandPoolInfo = android::base::find(mCommandPoolInfo, pAllocateInfo->commandPool);
-        if (!deviceInfo || !commandPoolInfo) {
-            ERR("Cannot allocate command buffers, dependency not found! (%p, %p)", deviceInfo,
-                commandPoolInfo);
+        if (!commandPoolInfo) {
+            ERR("Cannot allocate command buffers, dependency not found!");
             return VK_ERROR_UNKNOWN;
         }
 
@@ -6225,6 +6263,7 @@ class VkDecoderGlobalState::Impl {
                               const VkSubmitInfoType* pSubmits, VkFence fence) {
         auto queue = unbox_VkQueue(boxed_queue);
         auto vk = dispatch_VkQueue(boxed_queue);
+        VALIDATE_DISPATCH(vk, VK_ERROR_DEVICE_LOST);
 
         std::unordered_set<HandleType> acquiredColorBuffers;
         std::unordered_set<HandleType> releasedColorBuffers;
@@ -6298,7 +6337,8 @@ class VkDecoderGlobalState::Impl {
             std::lock_guard<std::mutex> lock(mMutex);
 
             auto* deviceInfo = android::base::find(mDeviceInfo, device);
-            if (!deviceInfo) return VK_ERROR_INITIALIZATION_FAILED;
+            VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_DEVICE_LOST);
+
             DeviceOpBuilder builder(*deviceInfo->deviceOpTracker);
 
             if (VK_NULL_HANDLE == usedFence) {
@@ -6395,7 +6435,7 @@ class VkDecoderGlobalState::Impl {
         auto queue = unbox_VkQueue(boxed_queue);
         auto vk = dispatch_VkQueue(boxed_queue);
 
-        if (!queue) return VK_SUCCESS;
+        if (!queue || !vk) return VK_SUCCESS;
 
         std::mutex* queueMutex;
         {
@@ -6892,7 +6932,7 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::mutex> lock(mMutex);
 
         auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        if (!deviceInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        VALIDATE_DEVICE_INFO(deviceInfo, device, VK_ERROR_OUT_OF_HOST_MEMORY);
         if (deviceInfo->emulateTextureEtc2 || deviceInfo->emulateTextureAstc) {
             for (uint32_t i = 0; i < pCreateInfo->attachmentCount; i++) {
                 if (deviceInfo->needEmulatedDecompression(pCreateInfo->pAttachments[i].format)) {
@@ -7011,9 +7051,11 @@ class VkDecoderGlobalState::Impl {
                                  VkSubpassContents contents) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
-        if (registerRenderPassBeginInfo(commandBuffer, pRenderPassBegin)) {
-            vk->vkCmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents);
+        if (!registerRenderPassBeginInfo(commandBuffer, pRenderPassBegin)) {
+            return on_FatalError("registerRenderPassBeginInfo failed!");
         }
+
+        vk->vkCmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents);
     }
 
     void on_vkCmdBeginRenderPass2(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
@@ -7022,9 +7064,11 @@ class VkDecoderGlobalState::Impl {
                                   const VkSubpassBeginInfo* pSubpassBeginInfo) {
         auto commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         auto vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
-        if (registerRenderPassBeginInfo(commandBuffer, pRenderPassBegin)) {
-            vk->vkCmdBeginRenderPass2(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
+        if (!registerRenderPassBeginInfo(commandBuffer, pRenderPassBegin)) {
+            return on_FatalError("registerRenderPassBeginInfo failed!");
         }
+
+        vk->vkCmdBeginRenderPass2(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     }
 
     void on_vkCmdBeginRenderPass2KHR(android::base::BumpPool* pool,
@@ -7630,17 +7674,72 @@ class VkDecoderGlobalState::Impl {
 
     void on_DeviceLost() {
         m_vkEmulation->getDeviceLostHelper().onDeviceLost();
-        GFXSTREAM_ABORT(FatalError(VK_ERROR_DEVICE_LOST));
+
+        // Raise fatal error for this render thread, this will ensure no further
+        // vulkan operations will be forwared to the lost device
+        on_FatalError("Device Lost");
+    }
+
+    void on_FatalError(const char* errorMessage) {
+        // Graceful recovery mode is opt-in for now, it'll become opt-out once stabilized
+        // TODO(b/383272733): make it default
+        bool tryRecoverFatalError =
+            android::base::getEnvironmentVariable("ANDROID_EMU_VK_RECOVER_FATAL_ERRORS") == "1";
+        if (!tryRecoverFatalError) {
+            VERBOSE(
+                "Use 'ANDROID_EMU_VK_RECOVER_FATAL_ERRORS=1' to try handling fatal errors without "
+                "crashing. (Experimental)");
+            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+                << errorMessage;
+        }
+
+        WARN("%s: '%s'", __func__, errorMessage);
+
+        // Handle fatal errors by marking the render thread as 'lost', this will
+        // make the dispatcher for this thread invalid and any further vulkan commands
+        // will start producing errors without actually going to underlying device.
+        auto* renderThreadInfo = RenderThreadInfoVk::get();
+        if (!renderThreadInfo || !renderThreadInfo->mIsLost) {
+            // Already lost..
+            return;
+        }
+
+        ERR("Fatal error on render thread: %u, marking devices as lost!", renderThreadInfo->ctx_id);
+
+
+        // Mark this render thread as dead and do no allow any more commands
+        renderThreadInfo->mIsLost = true;
+
+        std::lock_guard<std::mutex> lock(mMutex);
+        int numDevicesLost = 0;
+        for (auto& [device, deviceInfo] : mDeviceInfo) {
+            if (deviceInfo.virtioGpuContextId == renderThreadInfo->ctx_id) {
+                VERBOSE("%s: marking device %p as lost, applicationName='%s', engineName='%s'",
+                        __func__, device, deviceInfo.debugInfo.applicationName.c_str(),
+                        deviceInfo.debugInfo.engineName.c_str());
+
+                // TODO: we should ideally put the device into a cleanup queue, as
+                // regular cleanup calls would fail due to invalid dispatchers
+                deviceInfo.setLost();
+
+                numDevicesLost++;
+            }
+        }
+        INFO("%s: %d devices are marked as lost", __func__, numDevicesLost);
     }
 
     void on_CheckOutOfMemory(VkResult result, uint32_t opCode, const VkDecoderContext& context,
                              std::optional<uint64_t> allocationSize = std::nullopt) {
         if (result == VK_ERROR_OUT_OF_HOST_MEMORY || result == VK_ERROR_OUT_OF_DEVICE_MEMORY ||
             result == VK_ERROR_OUT_OF_POOL_MEMORY) {
-            context.metricsLogger->logMetricEvent(
-                MetricEventVulkanOutOfMemory{.vkResultCode = result,
-                                             .opCode = std::make_optional(opCode),
-                                             .allocationSize = allocationSize});
+            if (context.metricsLogger) {
+                context.metricsLogger->logMetricEvent(
+                    MetricEventVulkanOutOfMemory{.vkResultCode = result,
+                                                 .opCode = std::make_optional(opCode),
+                                                 .allocationSize = allocationSize});
+            } else {
+                WARN("%s: failed to log OOM metric, metricsLogger is not available", __func__);
+            }
         }
     }
 
@@ -8181,11 +8280,8 @@ class VkDecoderGlobalState::Impl {
         return res;
     }
 
-    bool getDefaultQueueForDeviceLocked(VkDevice device, VkQueue* queue, uint32_t* queueFamilyIndex,
+    bool getDefaultQueueForDeviceLocked(DeviceInfo* deviceInfo, VkQueue* queue, uint32_t* queueFamilyIndex,
                                         std::mutex** queueMutex) REQUIRES(mMutex) {
-        auto* deviceInfo = android::base::find(mDeviceInfo, device);
-        if (!deviceInfo) return false;
-
         auto zeroIt = deviceInfo->queues.find(0);
         if (zeroIt == deviceInfo->queues.end() || zeroIt->second.empty()) {
             // Get the first queue / queueFamilyIndex
@@ -9082,6 +9178,12 @@ void VkDecoderGlobalState::initialize(VkEmulation* emulation) {
             << "Attempted to re-initialize VkDecoderGlobalState.";
     }
     sGlobalDecoderState = new VkDecoderGlobalState(emulation);
+
+    // Set fatal error callback for handling unboxing errors
+    sBoxedHandleManager.setFatalErrorCallback(
+        [state = sGlobalDecoderState](const char* errorMessage) {
+            state->on_FatalError(errorMessage);
+        });
 }
 
 // static
@@ -10378,6 +10480,9 @@ VkResult VkDecoderGlobalState::on_vkEnumeratePhysicalDeviceGroupsKHR(
 }
 
 void VkDecoderGlobalState::on_DeviceLost() { mImpl->on_DeviceLost(); }
+void VkDecoderGlobalState::on_FatalError(const char* errorMessage) {
+    mImpl->on_FatalError(errorMessage);
+}
 
 void VkDecoderGlobalState::on_CheckOutOfMemory(VkResult result, uint32_t opCode,
                                                const VkDecoderContext& context,
