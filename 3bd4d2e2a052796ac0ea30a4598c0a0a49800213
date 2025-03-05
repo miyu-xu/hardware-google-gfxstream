@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b50d713_a833fce9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-03-05T19:41:00Z",
+      "side": 1,
+      "message": "Can you add a CONFIG_AEMU around this check?  Some non-AEMU use cases are unlikely to run into this issue.",
+      "revId": "3bd4d2e2a052796ac0ea30a4598c0a0a49800213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
