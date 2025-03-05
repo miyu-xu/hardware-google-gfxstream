@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c56e83ae_fe9c6ccb",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 935,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-05T20:43:05Z",
+      "side": 1,
+      "message": "Side thought: perhaps we should start collecting a `DriverWorkaround_` section in `gfxstream::host::FeatureSet` instead of querying this everytime. Can start to do things like\n\n```\nvoid VkEmulation::create(...) {\n   ...\n\n   GFXSTREAM_SET_FEATURE_ON_CONDITION(\n       \u0026features, \n       DriverWorkaroundEnableInstanceCreationLock,\n       IsSwiftShader(deviceInfo) || IsAmd(deviceInfo));\n       \n   ...\n}\n```",
+      "range": {
+        "startLine": 933,
+        "startChar": 8,
+        "endLine": 935,
+        "endChar": 16
+      },
+      "revId": "dc1da52b5cf30295681166793eb9eca6692468f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a527620e_0638cf37",
