@@ -16,6 +16,7 @@
 
 #include "VkDecoderGlobalState.h"
 #include "VkDecoderInternalStructs.h"
+#include "RenderThreadInfoVk.h" // for checking validity of dispatch objects
 
 namespace gfxstream {
 namespace vk {
@@ -56,6 +57,20 @@ void BoxedHandleManager::replayHandles(std::vector<BoxedHandle> handles) {
         mHandleReplayQueue.push_back(handle);
     }
 }
+
+void BoxedHandleManager::setFatalErrorCallback(std::function<void(const char*)> callback) {
+    fatalErrorCallback = callback;
+}
+
+void BoxedHandleManager::onFatalError(const char* errorString) {
+    if (sBoxedHandleManager.fatalErrorCallback) {
+        sBoxedHandleManager.fatalErrorCallback(errorString);
+    } else {
+        // No callback is given, abort..
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << errorString;
+    }
+}
+
 
 void BoxedHandleManager::clear() {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -134,7 +149,15 @@ void BoxedHandleManager::processDelayedRemoves(VkDevice device) {
 }
 
 BoxedHandleInfo* BoxedHandleManager::get(BoxedHandle handle) {
-    return (BoxedHandleInfo*)mStore.get_const(handle);
+
+    if (!handle) {
+        return nullptr;
+    }
+    BoxedHandleInfo* ret = (BoxedHandleInfo*)mStore.get_const(handle);
+    if (!ret) {
+        VERBOSE("Failed to get boxed handle 0x%llx!", __func__, handle);
+    }
+    return ret;
 }
 
 BoxedHandle BoxedHandleManager::getBoxedFromUnboxed(UnboxedHandle unboxed) {
@@ -418,12 +441,11 @@ VkObjectT unbox_VkType(VkObjectT boxed) {
             } else if constexpr (std::is_same_v<VkObjectT, VkFence>) {
                 // TODO: investigate.
             } else {
-                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-                        << "Failed to unbox "
-                        << GetTypeStr<VkObjectT>()
-                        << " "
-                        << boxed
-                        << ", not found.";
+                std::stringstream errorMsg;
+                errorMsg << "Failed to unbox "
+                         << GetTypeStr<VkObjectT>()
+                         << std::hex << boxed;
+                sBoxedHandleManager.onFatalError(errorMsg.str().c_str());
             }
             unboxed = VK_NULL_HANDLE;
         } else {
@@ -506,6 +528,13 @@ VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
 
 template <typename VkObjectT>
 VulkanDispatch* get_dispatch_VkType(VkObjectT boxed) {
+    if (boxed == VK_NULL_HANDLE) {
+        return VK_NULL_HANDLE;
+    }
+    if (RenderThreadInfoVk::get() && RenderThreadInfoVk::get()->isLost()) {
+        WARN("%s:%d - unboxing handle after a device lost", __func__, __LINE__);
+        return nullptr;
+    }
     BoxedHandleInfo* info = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         ERR("Failed to unbox %s %p", GetTypeStr<VkObjectT>(), boxed);

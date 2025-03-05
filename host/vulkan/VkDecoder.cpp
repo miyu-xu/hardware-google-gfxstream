@@ -266,7 +266,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pInstance);
                 }
                 VkResult vkCreateInstance_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateInstance_VkResult_return = m_state->on_vkCreateInstance(
                         &m_pool, snapshotApiCallInfo, pCreateInfo, pAllocator, pInstance);
                 }
@@ -320,7 +325,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkDestroyInstance 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)instance, (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyInstance(&m_pool, snapshotApiCallInfo, instance,
                                                   pAllocator);
                 }
@@ -389,7 +399,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pPhysicalDevices);
                 }
                 VkResult vkEnumeratePhysicalDevices_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEnumeratePhysicalDevices_VkResult_return =
                         m_state->on_vkEnumeratePhysicalDevices(&m_pool, snapshotApiCallInfo,
                                                                instance, pPhysicalDeviceCount,
@@ -462,7 +477,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pFeatures);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceFeatures(&m_pool, snapshotApiCallInfo,
                                                             physicalDevice, pFeatures);
                 }
@@ -515,7 +535,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)format, (unsigned long long)pFormatProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceFormatProperties(
                         &m_pool, snapshotApiCallInfo, physicalDevice, format, pFormatProperties);
                 }
@@ -586,7 +611,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPhysicalDeviceImageFormatProperties_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPhysicalDeviceImageFormatProperties_VkResult_return =
                         m_state->on_vkGetPhysicalDeviceImageFormatProperties(
                             &m_pool, snapshotApiCallInfo, physicalDevice, format, type, tiling,
@@ -646,7 +676,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceProperties(&m_pool, snapshotApiCallInfo,
                                                               physicalDevice, pProperties);
                 }
@@ -726,7 +761,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pQueueFamilyPropertyCount,
                             (unsigned long long)pQueueFamilyProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceQueueFamilyProperties(
                         &m_pool, snapshotApiCallInfo, physicalDevice, pQueueFamilyPropertyCount,
                         pQueueFamilyProperties);
@@ -798,7 +838,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pMemoryProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceMemoryProperties(
                         &m_pool, snapshotApiCallInfo, physicalDevice, pMemoryProperties);
                 }
@@ -841,7 +886,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 PFN_vkVoidFunction vkGetInstanceProcAddr_PFN_vkVoidFunction_return =
                     (PFN_vkVoidFunction)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetInstanceProcAddr_PFN_vkVoidFunction_return =
                         vk->vkGetInstanceProcAddr(unboxed_instance, pName);
                 }
@@ -879,7 +929,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 PFN_vkVoidFunction vkGetDeviceProcAddr_PFN_vkVoidFunction_return =
                     (PFN_vkVoidFunction)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetDeviceProcAddr_PFN_vkVoidFunction_return =
                         vk->vkGetDeviceProcAddr(unboxed_device, pName);
                 }
@@ -946,7 +1001,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pDevice);
                 }
                 VkResult vkCreateDevice_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateDevice_VkResult_return =
                         m_state->on_vkCreateDevice(&m_pool, snapshotApiCallInfo, physicalDevice,
                                                    pCreateInfo, pAllocator, pDevice);
@@ -1002,7 +1062,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkDestroyDevice 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)device, (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyDevice(&m_pool, snapshotApiCallInfo, device, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -1078,7 +1143,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkEnumerateInstanceExtensionProperties_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEnumerateInstanceExtensionProperties_VkResult_return =
                         vk->vkEnumerateInstanceExtensionProperties(pLayerName, pPropertyCount,
                                                                    pProperties);
@@ -1201,7 +1271,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkEnumerateDeviceExtensionProperties_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEnumerateDeviceExtensionProperties_VkResult_return =
                         m_state->on_vkEnumerateDeviceExtensionProperties(
                             &m_pool, snapshotApiCallInfo, physicalDevice, pLayerName,
@@ -1298,7 +1373,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pProperties);
                 }
                 VkResult vkEnumerateInstanceLayerProperties_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEnumerateInstanceLayerProperties_VkResult_return =
                         vk->vkEnumerateInstanceLayerProperties(pPropertyCount, pProperties);
                 }
@@ -1403,7 +1483,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pPropertyCount, (unsigned long long)pProperties);
                 }
                 VkResult vkEnumerateDeviceLayerProperties_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEnumerateDeviceLayerProperties_VkResult_return =
                         vk->vkEnumerateDeviceLayerProperties(unboxed_physicalDevice, pPropertyCount,
                                                              pProperties);
@@ -1482,7 +1567,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)queueFamilyIndex,
                         (unsigned long long)queueIndex, (unsigned long long)pQueue);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetDeviceQueue(&m_pool, snapshotApiCallInfo, device,
                                                  queueFamilyIndex, queueIndex, pQueue);
                 }
@@ -1538,7 +1628,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSubmits, (unsigned long long)fence);
                 }
                 VkResult vkQueueSubmit_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkQueueSubmit_VkResult_return = m_state->on_vkQueueSubmit(
                         &m_pool, snapshotApiCallInfo, queue, submitCount, pSubmits, fence);
                 }
@@ -1575,7 +1670,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (m_queueSubmitWithCommandsEnabled)
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
                 VkResult vkQueueWaitIdle_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkQueueWaitIdle_VkResult_return =
                         m_state->on_vkQueueWaitIdle(&m_pool, snapshotApiCallInfo, queue);
                 }
@@ -1612,7 +1712,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (m_queueSubmitWithCommandsEnabled)
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
                 VkResult vkDeviceWaitIdle_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkDeviceWaitIdle_VkResult_return = vk->vkDeviceWaitIdle(unboxed_device);
                 }
                 if ((vkDeviceWaitIdle_VkResult_return) == VK_ERROR_DEVICE_LOST)
@@ -1679,7 +1784,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pMemory);
                 }
                 VkResult vkAllocateMemory_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkAllocateMemory_VkResult_return = m_state->on_vkAllocateMemory(
                         &m_pool, snapshotApiCallInfo, device, pAllocateInfo, pAllocator, pMemory);
                 }
@@ -1750,7 +1860,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)memory,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkFreeMemory(&m_pool, snapshotApiCallInfo, device, memory,
                                              pAllocator);
                 }
@@ -1811,7 +1926,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)flags, (unsigned long long)ppData);
                 }
                 VkResult vkMapMemory_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkMapMemory_VkResult_return = m_state->on_vkMapMemory(
                         &m_pool, snapshotApiCallInfo, device, memory, offset, size, flags, ppData);
                 }
@@ -1855,7 +1975,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkUnmapMemory 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)device, (unsigned long long)memory);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkUnmapMemory(&m_pool, snapshotApiCallInfo, device, memory);
                 }
                 vkStream->unsetHandleMapping();
@@ -1943,7 +2068,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     }
                 }
                 VkResult vkFlushMappedMemoryRanges_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkFlushMappedMemoryRanges_VkResult_return = vk->vkFlushMappedMemoryRanges(
                         unboxed_device, memoryRangeCount, pMemoryRanges);
                 }
@@ -2002,7 +2132,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pMemoryRanges);
                 }
                 VkResult vkInvalidateMappedMemoryRanges_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkInvalidateMappedMemoryRanges_VkResult_return =
                         vk->vkInvalidateMappedMemoryRanges(unboxed_device, memoryRangeCount,
                                                            pMemoryRanges);
@@ -2076,7 +2211,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)memory,
                             (unsigned long long)pCommittedMemoryInBytes);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceMemoryCommitment(unboxed_device, memory,
                                                     pCommittedMemoryInBytes);
                 }
@@ -2124,7 +2264,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)memory, (unsigned long long)memoryOffset);
                 }
                 VkResult vkBindBufferMemory_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBindBufferMemory_VkResult_return = m_state->on_vkBindBufferMemory(
                         &m_pool, snapshotApiCallInfo, device, buffer, memory, memoryOffset);
                 }
@@ -2175,7 +2320,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)memory, (unsigned long long)memoryOffset);
                 }
                 VkResult vkBindImageMemory_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBindImageMemory_VkResult_return = m_state->on_vkBindImageMemory(
                         &m_pool, snapshotApiCallInfo, device, image, memory, memoryOffset);
                 }
@@ -2227,7 +2377,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)buffer,
                             (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetBufferMemoryRequirements(&m_pool, snapshotApiCallInfo, device,
                                                               buffer, pMemoryRequirements);
                 }
@@ -2281,7 +2436,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)image,
                             (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetImageMemoryRequirements(&m_pool, snapshotApiCallInfo, device,
                                                              image, pMemoryRequirements);
                 }
@@ -2370,7 +2530,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSparseMemoryRequirementCount,
                             (unsigned long long)pSparseMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetImageSparseMemoryRequirements(unboxed_device, image,
                                                            pSparseMemoryRequirementCount,
                                                            pSparseMemoryRequirements);
@@ -2492,7 +2657,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)tiling, (unsigned long long)pPropertyCount,
                             (unsigned long long)pProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceSparseImageFormatProperties(
                         unboxed_physicalDevice, format, type, samples, usage, tiling,
                         pPropertyCount, pProperties);
@@ -2574,7 +2744,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBindInfo, (unsigned long long)fence);
                 }
                 VkResult vkQueueBindSparse_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkQueueBindSparse_VkResult_return = m_state->on_vkQueueBindSparse(
                         &m_pool, snapshotApiCallInfo, queue, bindInfoCount, pBindInfo, fence);
                 }
@@ -2640,7 +2815,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pFence);
                 }
                 VkResult vkCreateFence_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateFence_VkResult_return = m_state->on_vkCreateFence(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pFence);
                 }
@@ -2707,7 +2887,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)fence,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyFence(&m_pool, snapshotApiCallInfo, device, fence,
                                                pAllocator);
                 }
@@ -2753,7 +2938,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pFences);
                 }
                 VkResult vkResetFences_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkResetFences_VkResult_return = m_state->on_vkResetFences(
                         &m_pool, snapshotApiCallInfo, device, fenceCount, pFences);
                 }
@@ -2793,7 +2983,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)device, (unsigned long long)fence);
                 }
                 VkResult vkGetFenceStatus_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetFenceStatus_VkResult_return =
                         m_state->on_vkGetFenceStatus(&m_pool, snapshotApiCallInfo, device, fence);
                 }
@@ -2854,7 +3049,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (m_queueSubmitWithCommandsEnabled)
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
                 VkResult vkWaitForFences_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkWaitForFences_VkResult_return =
                         m_state->on_vkWaitForFences(&m_pool, snapshotApiCallInfo, device,
                                                     fenceCount, pFences, waitAll, timeout);
@@ -2923,7 +3123,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pSemaphore);
                 }
                 VkResult vkCreateSemaphore_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateSemaphore_VkResult_return = m_state->on_vkCreateSemaphore(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pSemaphore);
                 }
@@ -2992,7 +3197,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)semaphore,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroySemaphore(&m_pool, snapshotApiCallInfo, device, semaphore,
                                                    pAllocator);
                 }
@@ -3056,7 +3266,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pEvent);
                 }
                 VkResult vkCreateEvent_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateEvent_VkResult_return =
                         vk->vkCreateEvent(unboxed_device, pCreateInfo, pAllocator, pEvent);
                 }
@@ -3126,7 +3341,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)event,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroyEvent(unboxed_device, event, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -3163,7 +3383,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)device, (unsigned long long)event);
                 }
                 VkResult vkGetEventStatus_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetEventStatus_VkResult_return = vk->vkGetEventStatus(unboxed_device, event);
                 }
                 if ((vkGetEventStatus_VkResult_return) == VK_ERROR_DEVICE_LOST)
@@ -3203,7 +3428,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)device, (unsigned long long)event);
                 }
                 VkResult vkSetEvent_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkSetEvent_VkResult_return = vk->vkSetEvent(unboxed_device, event);
                 }
                 if ((vkSetEvent_VkResult_return) == VK_ERROR_DEVICE_LOST) m_state->on_DeviceLost();
@@ -3241,7 +3471,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)device, (unsigned long long)event);
                 }
                 VkResult vkResetEvent_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkResetEvent_VkResult_return = vk->vkResetEvent(unboxed_device, event);
                 }
                 if ((vkResetEvent_VkResult_return) == VK_ERROR_DEVICE_LOST)
@@ -3311,7 +3546,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pQueryPool);
                 }
                 VkResult vkCreateQueryPool_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateQueryPool_VkResult_return =
                         vk->vkCreateQueryPool(unboxed_device, pCreateInfo, pAllocator, pQueryPool);
                 }
@@ -3383,7 +3623,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)queryPool,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroyQueryPool(unboxed_device, queryPool, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -3448,7 +3693,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)stride, (unsigned long long)flags);
                 }
                 VkResult vkGetQueryPoolResults_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetQueryPoolResults_VkResult_return =
                         vk->vkGetQueryPoolResults(unboxed_device, queryPool, firstQuery, queryCount,
                                                   dataSize, pData, stride, flags);
@@ -3519,7 +3769,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pBuffer);
                 }
                 VkResult vkCreateBuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateBuffer_VkResult_return = m_state->on_vkCreateBuffer(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pBuffer);
                 }
@@ -3587,7 +3842,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)buffer,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyBuffer(&m_pool, snapshotApiCallInfo, device, buffer,
                                                 pAllocator);
                 }
@@ -3654,7 +3914,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pView);
                 }
                 VkResult vkCreateBufferView_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateBufferView_VkResult_return =
                         vk->vkCreateBufferView(unboxed_device, pCreateInfo, pAllocator, pView);
                 }
@@ -3726,7 +3991,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)bufferView,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroyBufferView(unboxed_device, bufferView, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -3788,7 +4058,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pImage);
                 }
                 VkResult vkCreateImage_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateImage_VkResult_return = m_state->on_vkCreateImage(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pImage);
                 }
@@ -3855,7 +4130,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)image,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyImage(&m_pool, snapshotApiCallInfo, device, image,
                                                pAllocator);
                 }
@@ -3914,7 +4194,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)image,
                             (unsigned long long)pSubresource, (unsigned long long)pLayout);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetImageSubresourceLayout(unboxed_device, image, pSubresource, pLayout);
                 }
                 vkStream->unsetHandleMapping();
@@ -3984,7 +4269,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pView);
                 }
                 VkResult vkCreateImageView_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateImageView_VkResult_return = m_state->on_vkCreateImageView(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pView);
                 }
@@ -4052,7 +4342,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)imageView,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyImageView(&m_pool, snapshotApiCallInfo, device, imageView,
                                                    pAllocator);
                 }
@@ -4118,7 +4413,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pShaderModule);
                 }
                 VkResult vkCreateShaderModule_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateShaderModule_VkResult_return =
                         m_state->on_vkCreateShaderModule(&m_pool, snapshotApiCallInfo, device,
                                                          pCreateInfo, pAllocator, pShaderModule);
@@ -4192,7 +4492,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)shaderModule,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyShaderModule(&m_pool, snapshotApiCallInfo, device,
                                                       shaderModule, pAllocator);
                 }
@@ -4258,7 +4563,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pPipelineCache);
                 }
                 VkResult vkCreatePipelineCache_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreatePipelineCache_VkResult_return =
                         m_state->on_vkCreatePipelineCache(&m_pool, snapshotApiCallInfo, device,
                                                           pCreateInfo, pAllocator, pPipelineCache);
@@ -4332,7 +4642,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pipelineCache,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyPipelineCache(&m_pool, snapshotApiCallInfo, device,
                                                        pipelineCache, pAllocator);
                 }
@@ -4398,7 +4713,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pDataSize, (unsigned long long)pData);
                 }
                 VkResult vkGetPipelineCacheData_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPipelineCacheData_VkResult_return =
                         vk->vkGetPipelineCacheData(unboxed_device, pipelineCache, pDataSize, pData);
                 }
@@ -4475,7 +4795,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)srcCacheCount, (unsigned long long)pSrcCaches);
                 }
                 VkResult vkMergePipelineCaches_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkMergePipelineCaches_VkResult_return = vk->vkMergePipelineCaches(
                         unboxed_device, dstCache, srcCacheCount, pSrcCaches);
                 }
@@ -4569,7 +4894,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pPipelines);
                 }
                 VkResult vkCreateGraphicsPipelines_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateGraphicsPipelines_VkResult_return =
                         m_state->on_vkCreateGraphicsPipelines(&m_pool, snapshotApiCallInfo, device,
                                                               pipelineCache, createInfoCount,
@@ -4678,7 +5008,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pPipelines);
                 }
                 VkResult vkCreateComputePipelines_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateComputePipelines_VkResult_return = m_state->on_vkCreateComputePipelines(
                         &m_pool, snapshotApiCallInfo, device, pipelineCache, createInfoCount,
                         pCreateInfos, pAllocator, pPipelines);
@@ -4753,7 +5088,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pipeline,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyPipeline(&m_pool, snapshotApiCallInfo, device, pipeline,
                                                   pAllocator);
                 }
@@ -4819,7 +5159,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pPipelineLayout);
                 }
                 VkResult vkCreatePipelineLayout_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreatePipelineLayout_VkResult_return = m_state->on_vkCreatePipelineLayout(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
                         pPipelineLayout);
@@ -4898,7 +5243,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 std::function<void()> delayed_remove_callback = [vk, device, pipelineLayout,
                                                                  pAllocator]() {
                     auto m_state = VkDecoderGlobalState::get();
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                    if (vk) {
+||||||| BASE
+=======
                     if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                         m_state->on_vkDestroyPipelineLayout(nullptr, nullptr, device,
                                                             pipelineLayout, pAllocator);
                     }
@@ -4965,7 +5315,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pSampler);
                 }
                 VkResult vkCreateSampler_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateSampler_VkResult_return = m_state->on_vkCreateSampler(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pSampler);
                 }
@@ -5033,7 +5388,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)sampler,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroySampler(&m_pool, snapshotApiCallInfo, device, sampler,
                                                  pAllocator);
                 }
@@ -5102,7 +5462,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pSetLayout);
                 }
                 VkResult vkCreateDescriptorSetLayout_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateDescriptorSetLayout_VkResult_return =
                         m_state->on_vkCreateDescriptorSetLayout(&m_pool, snapshotApiCallInfo,
                                                                 device, pCreateInfo, pAllocator,
@@ -5180,7 +5545,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)descriptorSetLayout,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyDescriptorSetLayout(&m_pool, snapshotApiCallInfo, device,
                                                              descriptorSetLayout, pAllocator);
                 }
@@ -5246,7 +5616,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pDescriptorPool);
                 }
                 VkResult vkCreateDescriptorPool_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateDescriptorPool_VkResult_return = m_state->on_vkCreateDescriptorPool(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
                         pDescriptorPool);
@@ -5320,7 +5695,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device,
                             (unsigned long long)descriptorPool, (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyDescriptorPool(&m_pool, snapshotApiCallInfo, device,
                                                         descriptorPool, pAllocator);
                 }
@@ -5362,7 +5742,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)descriptorPool, (unsigned long long)flags);
                 }
                 VkResult vkResetDescriptorPool_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkResetDescriptorPool_VkResult_return = m_state->on_vkResetDescriptorPool(
                         &m_pool, snapshotApiCallInfo, device, descriptorPool, flags);
                 }
@@ -5426,7 +5811,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pDescriptorSets);
                 }
                 VkResult vkAllocateDescriptorSets_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkAllocateDescriptorSets_VkResult_return = m_state->on_vkAllocateDescriptorSets(
                         &m_pool, snapshotApiCallInfo, device, pAllocateInfo, pDescriptorSets);
                 }
@@ -5520,7 +5910,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pDescriptorSets);
                 }
                 VkResult vkFreeDescriptorSets_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkFreeDescriptorSets_VkResult_return = m_state->on_vkFreeDescriptorSets(
                         &m_pool, snapshotApiCallInfo, device, descriptorPool, descriptorSetCount,
                         pDescriptorSets);
@@ -5597,7 +5992,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)descriptorCopyCount,
                             (unsigned long long)pDescriptorCopies);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkUpdateDescriptorSets(&m_pool, snapshotApiCallInfo, device,
                                                        descriptorWriteCount, pDescriptorWrites,
                                                        descriptorCopyCount, pDescriptorCopies);
@@ -5664,7 +6064,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pFramebuffer);
                 }
                 VkResult vkCreateFramebuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateFramebuffer_VkResult_return =
                         m_state->on_vkCreateFramebuffer(&m_pool, snapshotApiCallInfo, device,
                                                         pCreateInfo, pAllocator, pFramebuffer);
@@ -5736,7 +6141,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)framebuffer,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyFramebuffer(&m_pool, snapshotApiCallInfo, device,
                                                      framebuffer, pAllocator);
                 }
@@ -5802,7 +6212,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pRenderPass);
                 }
                 VkResult vkCreateRenderPass_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateRenderPass_VkResult_return = m_state->on_vkCreateRenderPass(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pRenderPass);
                 }
@@ -5872,7 +6287,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)renderPass,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyRenderPass(&m_pool, snapshotApiCallInfo, device,
                                                     renderPass, pAllocator);
                 }
@@ -5921,7 +6341,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)renderPass,
                             (unsigned long long)pGranularity);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetRenderAreaGranularity(unboxed_device, renderPass, pGranularity);
                 }
                 vkStream->unsetHandleMapping();
@@ -5991,7 +6416,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pCommandPool);
                 }
                 VkResult vkCreateCommandPool_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateCommandPool_VkResult_return =
                         m_state->on_vkCreateCommandPool(&m_pool, snapshotApiCallInfo, device,
                                                         pCreateInfo, pAllocator, pCommandPool);
@@ -6063,7 +6493,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)commandPool,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyCommandPool(&m_pool, snapshotApiCallInfo, device,
                                                      commandPool, pAllocator);
                 }
@@ -6105,7 +6540,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)flags);
                 }
                 VkResult vkResetCommandPool_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkResetCommandPool_VkResult_return = m_state->on_vkResetCommandPool(
                         &m_pool, snapshotApiCallInfo, device, commandPool, flags);
                 }
@@ -6168,7 +6608,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCommandBuffers);
                 }
                 VkResult vkAllocateCommandBuffers_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkAllocateCommandBuffers_VkResult_return = m_state->on_vkAllocateCommandBuffers(
                         &m_pool, snapshotApiCallInfo, device, pAllocateInfo, pCommandBuffers);
                 }
@@ -6256,7 +6701,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)commandBufferCount,
                             (unsigned long long)pCommandBuffers);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkFreeCommandBuffers(&m_pool, snapshotApiCallInfo, device,
                                                      commandPool, commandBufferCount,
                                                      pCommandBuffers);
@@ -6303,7 +6753,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBeginInfo);
                 }
                 VkResult vkBeginCommandBuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBeginCommandBuffer_VkResult_return = m_state->on_vkBeginCommandBuffer(
                         &m_pool, snapshotApiCallInfo, commandBuffer, pBeginInfo, context);
                 }
@@ -6339,7 +6794,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)commandBuffer);
                 }
                 VkResult vkEndCommandBuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEndCommandBuffer_VkResult_return = m_state->on_vkEndCommandBuffer(
                         &m_pool, snapshotApiCallInfo, commandBuffer, context);
                 }
@@ -6379,7 +6839,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)flags);
                 }
                 VkResult vkResetCommandBuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkResetCommandBuffer_VkResult_return = m_state->on_vkResetCommandBuffer(
                         &m_pool, snapshotApiCallInfo, commandBuffer, flags);
                 }
@@ -6424,7 +6889,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pipelineBindPoint, (unsigned long long)pipeline);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdBindPipeline(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                   pipelineBindPoint, pipeline);
                 }
@@ -6477,7 +6947,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)firstViewport, (unsigned long long)viewportCount,
                             (unsigned long long)pViewports);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetViewport(unboxed_commandBuffer, firstViewport, viewportCount,
                                          pViewports);
                 }
@@ -6529,7 +7004,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)firstScissor, (unsigned long long)scissorCount,
                             (unsigned long long)pScissors);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetScissor(unboxed_commandBuffer, firstScissor, scissorCount,
                                         pScissors);
                 }
@@ -6564,7 +7044,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdSetLineWidth 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)lineWidth);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLineWidth(unboxed_commandBuffer, lineWidth);
                 }
                 vkStream->unsetHandleMapping();
@@ -6607,7 +7092,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)depthBiasClamp,
                             (unsigned long long)depthBiasSlopeFactor);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBias(unboxed_commandBuffer, depthBiasConstantFactor,
                                           depthBiasClamp, depthBiasSlopeFactor);
                 }
@@ -6643,7 +7133,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)blendConstants);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetBlendConstants(unboxed_commandBuffer, blendConstants);
                 }
                 vkStream->unsetHandleMapping();
@@ -6681,7 +7176,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)minDepthBounds, (unsigned long long)maxDepthBounds);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBounds(unboxed_commandBuffer, minDepthBounds, maxDepthBounds);
                 }
                 vkStream->unsetHandleMapping();
@@ -6721,7 +7221,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)faceMask, (unsigned long long)compareMask);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilCompareMask(unboxed_commandBuffer, faceMask, compareMask);
                 }
                 vkStream->unsetHandleMapping();
@@ -6761,7 +7266,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)faceMask, (unsigned long long)writeMask);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilWriteMask(unboxed_commandBuffer, faceMask, writeMask);
                 }
                 vkStream->unsetHandleMapping();
@@ -6801,7 +7311,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)faceMask, (unsigned long long)reference);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilReference(unboxed_commandBuffer, faceMask, reference);
                 }
                 vkStream->unsetHandleMapping();
@@ -6876,7 +7391,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dynamicOffsetCount,
                             (unsigned long long)pDynamicOffsets);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdBindDescriptorSets(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                         pipelineBindPoint, layout, firstSet,
                                                         descriptorSetCount, pDescriptorSets,
@@ -6924,7 +7444,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)buffer,
                             (unsigned long long)offset, (unsigned long long)indexType);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindIndexBuffer(unboxed_commandBuffer, buffer, offset, indexType);
                 }
                 vkStream->unsetHandleMapping();
@@ -6983,7 +7508,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)firstBinding, (unsigned long long)bindingCount,
                             (unsigned long long)pBuffers, (unsigned long long)pOffsets);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindVertexBuffers(unboxed_commandBuffer, firstBinding, bindingCount,
                                                pBuffers, pOffsets);
                 }
@@ -7029,7 +7559,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)vertexCount, (unsigned long long)instanceCount,
                             (unsigned long long)firstVertex, (unsigned long long)firstInstance);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDraw(unboxed_commandBuffer, vertexCount, instanceCount, firstVertex,
                                   firstInstance);
                 }
@@ -7081,7 +7616,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)firstIndex, (unsigned long long)vertexOffset,
                             (unsigned long long)firstInstance);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndexed(unboxed_commandBuffer, indexCount, instanceCount,
                                          firstIndex, vertexOffset, firstInstance);
                 }
@@ -7131,7 +7671,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)offset, (unsigned long long)drawCount,
                         (unsigned long long)stride);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndirect(unboxed_commandBuffer, buffer, offset, drawCount, stride);
                 }
                 vkStream->unsetHandleMapping();
@@ -7180,7 +7725,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)offset, (unsigned long long)drawCount,
                             (unsigned long long)stride);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndexedIndirect(unboxed_commandBuffer, buffer, offset, drawCount,
                                                  stride);
                 }
@@ -7222,7 +7772,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)groupCountX, (unsigned long long)groupCountY,
                             (unsigned long long)groupCountZ);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDispatch(unboxed_commandBuffer, groupCountX, groupCountY, groupCountZ);
                 }
                 vkStream->unsetHandleMapping();
@@ -7262,7 +7817,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)buffer,
                             (unsigned long long)offset);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDispatchIndirect(unboxed_commandBuffer, buffer, offset);
                 }
                 vkStream->unsetHandleMapping();
@@ -7321,7 +7881,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)srcBuffer, (unsigned long long)dstBuffer,
                             (unsigned long long)regionCount, (unsigned long long)pRegions);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdCopyBuffer(unboxed_commandBuffer, srcBuffer, dstBuffer, regionCount,
                                         pRegions);
                 }
@@ -7385,7 +7950,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dstImage, (unsigned long long)dstImageLayout,
                             (unsigned long long)regionCount, (unsigned long long)pRegions);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyImage(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                srcImage, srcImageLayout, dstImage, dstImageLayout,
                                                regionCount, pRegions);
@@ -7456,7 +8026,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)regionCount, (unsigned long long)pRegions,
                             (unsigned long long)filter);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBlitImage(unboxed_commandBuffer, srcImage, srcImageLayout, dstImage,
                                        dstImageLayout, regionCount, pRegions, filter);
                 }
@@ -7521,7 +8096,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dstImageLayout, (unsigned long long)regionCount,
                             (unsigned long long)pRegions);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyBufferToImage(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                        srcBuffer, dstImage, dstImageLayout,
                                                        regionCount, pRegions, context);
@@ -7587,7 +8167,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dstBuffer, (unsigned long long)regionCount,
                             (unsigned long long)pRegions);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyImageToBuffer(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                        srcImage, srcImageLayout, dstBuffer,
                                                        regionCount, pRegions);
@@ -7639,7 +8224,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)dstOffset, (unsigned long long)dataSize,
                         (unsigned long long)pData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdUpdateBuffer(unboxed_commandBuffer, dstBuffer, dstOffset, dataSize,
                                           pData);
                 }
@@ -7688,7 +8278,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dstBuffer, (unsigned long long)dstOffset,
                             (unsigned long long)size, (unsigned long long)data);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdFillBuffer(unboxed_commandBuffer, dstBuffer, dstOffset, size, data);
                 }
                 vkStream->unsetHandleMapping();
@@ -7755,7 +8350,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)imageLayout, (unsigned long long)pColor,
                             (unsigned long long)rangeCount, (unsigned long long)pRanges);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdClearColorImage(unboxed_commandBuffer, image, imageLayout, pColor,
                                              rangeCount, pRanges);
                 }
@@ -7825,7 +8425,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)imageLayout, (unsigned long long)pDepthStencil,
                             (unsigned long long)rangeCount, (unsigned long long)pRanges);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdClearDepthStencilImage(unboxed_commandBuffer, image, imageLayout,
                                                     pDepthStencil, rangeCount, pRanges);
                 }
@@ -7892,7 +8497,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)attachmentCount, (unsigned long long)pAttachments,
                             (unsigned long long)rectCount, (unsigned long long)pRects);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdClearAttachments(unboxed_commandBuffer, attachmentCount, pAttachments,
                                               rectCount, pRects);
                 }
@@ -7961,7 +8571,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dstImage, (unsigned long long)dstImageLayout,
                             (unsigned long long)regionCount, (unsigned long long)pRegions);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResolveImage(unboxed_commandBuffer, srcImage, srcImageLayout, dstImage,
                                           dstImageLayout, regionCount, pRegions);
                 }
@@ -8002,7 +8617,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)event,
                             (unsigned long long)stageMask);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetEvent(unboxed_commandBuffer, event, stageMask);
                 }
                 vkStream->unsetHandleMapping();
@@ -8042,7 +8662,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)event,
                             (unsigned long long)stageMask);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetEvent(unboxed_commandBuffer, event, stageMask);
                 }
                 vkStream->unsetHandleMapping();
@@ -8159,7 +8784,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)imageMemoryBarrierCount,
                             (unsigned long long)pImageMemoryBarriers);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWaitEvents(unboxed_commandBuffer, eventCount, pEvents, srcStageMask,
                                         dstStageMask, memoryBarrierCount, pMemoryBarriers,
                                         bufferMemoryBarrierCount, pBufferMemoryBarriers,
@@ -8268,7 +8898,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)imageMemoryBarrierCount,
                             (unsigned long long)pImageMemoryBarriers);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdPipelineBarrier(
                         &m_pool, snapshotApiCallInfo, commandBuffer, srcStageMask, dstStageMask,
                         dependencyFlags, memoryBarrierCount, pMemoryBarriers,
@@ -8320,7 +8955,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)commandBuffer, (unsigned long long)queryPool,
                         (unsigned long long)query, (unsigned long long)flags);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginQuery(unboxed_commandBuffer, queryPool, query, flags);
                 }
                 vkStream->unsetHandleMapping();
@@ -8360,7 +9000,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)queryPool, (unsigned long long)query);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndQuery(unboxed_commandBuffer, queryPool, query);
                 }
                 vkStream->unsetHandleMapping();
@@ -8405,7 +9050,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)queryPool, (unsigned long long)firstQuery,
                             (unsigned long long)queryCount);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetQueryPool(unboxed_commandBuffer, queryPool, firstQuery,
                                             queryCount);
                 }
@@ -8453,7 +9103,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pipelineStage, (unsigned long long)queryPool,
                             (unsigned long long)query);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteTimestamp(unboxed_commandBuffer, pipelineStage, queryPool, query);
                 }
                 vkStream->unsetHandleMapping();
@@ -8516,7 +9171,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dstOffset, (unsigned long long)stride,
                             (unsigned long long)flags);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdCopyQueryPoolResults(unboxed_commandBuffer, queryPool, firstQuery,
                                                   queryCount, dstBuffer, dstOffset, stride, flags);
                 }
@@ -8572,7 +9232,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)stageFlags, (unsigned long long)offset,
                             (unsigned long long)size, (unsigned long long)pValues);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdPushConstants(unboxed_commandBuffer, layout, stageFlags, offset, size,
                                            pValues);
                 }
@@ -8615,7 +9280,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pRenderPassBegin, (unsigned long long)contents);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdBeginRenderPass(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                      pRenderPassBegin, contents);
                 }
@@ -8650,7 +9320,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdNextSubpass 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)contents);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdNextSubpass(unboxed_commandBuffer, contents);
                 }
                 vkStream->unsetHandleMapping();
@@ -8680,7 +9355,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdEndRenderPass 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderPass(unboxed_commandBuffer);
                 }
                 vkStream->unsetHandleMapping();
@@ -8727,7 +9407,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)commandBufferCount,
                             (unsigned long long)pCommandBuffers);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdExecuteCommands(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                      commandBufferCount, pCommandBuffers);
                 }
@@ -8758,7 +9443,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)pApiVersion);
                 }
                 VkResult vkEnumerateInstanceVersion_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEnumerateInstanceVersion_VkResult_return =
                         m_state->on_vkEnumerateInstanceVersion(&m_pool, snapshotApiCallInfo,
                                                                pApiVersion);
@@ -8814,7 +9504,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBindInfos);
                 }
                 VkResult vkBindBufferMemory2_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBindBufferMemory2_VkResult_return = m_state->on_vkBindBufferMemory2(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
                 }
@@ -8867,7 +9562,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBindInfos);
                 }
                 VkResult vkBindImageMemory2_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBindImageMemory2_VkResult_return = m_state->on_vkBindImageMemory2(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
                 }
@@ -8924,7 +9624,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)remoteDeviceIndex,
                             (unsigned long long)pPeerMemoryFeatures);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceGroupPeerMemoryFeatures(unboxed_device, heapIndex,
                                                            localDeviceIndex, remoteDeviceIndex,
                                                            pPeerMemoryFeatures);
@@ -8963,7 +9668,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdSetDeviceMask 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)deviceMask);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDeviceMask(unboxed_commandBuffer, deviceMask);
                 }
                 vkStream->unsetHandleMapping();
@@ -9016,7 +9726,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)baseGroupZ, (unsigned long long)groupCountX,
                             (unsigned long long)groupCountY, (unsigned long long)groupCountZ);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDispatchBase(unboxed_commandBuffer, baseGroupX, baseGroupY, baseGroupZ,
                                           groupCountX, groupCountY, groupCountZ);
                 }
@@ -9092,7 +9807,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pPhysicalDeviceGroupProperties);
                 }
                 VkResult vkEnumeratePhysicalDeviceGroups_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEnumeratePhysicalDeviceGroups_VkResult_return =
                         m_state->on_vkEnumeratePhysicalDeviceGroups(
                             &m_pool, snapshotApiCallInfo, instance, pPhysicalDeviceGroupCount,
@@ -9181,7 +9901,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                             (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetImageMemoryRequirements2(&m_pool, snapshotApiCallInfo, device,
                                                               pInfo, pMemoryRequirements);
                 }
@@ -9240,7 +9965,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                         (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetBufferMemoryRequirements2(&m_pool, snapshotApiCallInfo, device,
                                                                pInfo, pMemoryRequirements);
                 }
@@ -9334,7 +10064,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSparseMemoryRequirementCount,
                             (unsigned long long)pSparseMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetImageSparseMemoryRequirements2(unboxed_device, pInfo,
                                                             pSparseMemoryRequirementCount,
                                                             pSparseMemoryRequirements);
@@ -9407,7 +10142,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pFeatures);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceFeatures2(&m_pool, snapshotApiCallInfo,
                                                              physicalDevice, pFeatures);
                 }
@@ -9456,7 +10196,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceProperties2(&m_pool, snapshotApiCallInfo,
                                                                physicalDevice, pProperties);
                 }
@@ -9510,7 +10255,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)format, (unsigned long long)pFormatProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceFormatProperties2(
                         &m_pool, snapshotApiCallInfo, physicalDevice, format, pFormatProperties);
                 }
@@ -9575,7 +10325,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPhysicalDeviceImageFormatProperties2_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPhysicalDeviceImageFormatProperties2_VkResult_return =
                         m_state->on_vkGetPhysicalDeviceImageFormatProperties2(
                             &m_pool, snapshotApiCallInfo, physicalDevice, pImageFormatInfo,
@@ -9666,7 +10421,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pQueueFamilyPropertyCount,
                             (unsigned long long)pQueueFamilyProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceQueueFamilyProperties2(
                         &m_pool, snapshotApiCallInfo, physicalDevice, pQueueFamilyPropertyCount,
                         pQueueFamilyProperties);
@@ -9738,7 +10498,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pMemoryProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceMemoryProperties2(
                         &m_pool, snapshotApiCallInfo, physicalDevice, pMemoryProperties);
                 }
@@ -9829,7 +10594,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pFormatInfo, (unsigned long long)pPropertyCount,
                             (unsigned long long)pProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceSparseImageFormatProperties2(
                         unboxed_physicalDevice, pFormatInfo, pPropertyCount, pProperties);
                 }
@@ -9898,7 +10668,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)commandPool,
                             (unsigned long long)flags);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkTrimCommandPool(unboxed_device, commandPool, flags);
                 }
                 vkStream->unsetHandleMapping();
@@ -9942,7 +10717,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pQueueInfo,
                             (unsigned long long)pQueue);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetDeviceQueue2(&m_pool, snapshotApiCallInfo, device, pQueueInfo,
                                                   pQueue);
                 }
@@ -10015,7 +10795,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pYcbcrConversion);
                 }
                 VkResult vkCreateSamplerYcbcrConversion_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateSamplerYcbcrConversion_VkResult_return =
                         m_state->on_vkCreateSamplerYcbcrConversion(&m_pool, snapshotApiCallInfo,
                                                                    device, pCreateInfo, pAllocator,
@@ -10093,7 +10878,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)ycbcrConversion,
                         (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroySamplerYcbcrConversion(
                         &m_pool, snapshotApiCallInfo, device, ycbcrConversion, pAllocator);
                 }
@@ -10164,7 +10954,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pDescriptorUpdateTemplate);
                 }
                 VkResult vkCreateDescriptorUpdateTemplate_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateDescriptorUpdateTemplate_VkResult_return =
                         m_state->on_vkCreateDescriptorUpdateTemplate(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
@@ -10246,7 +11041,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)descriptorUpdateTemplate,
                         (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyDescriptorUpdateTemplate(
                         &m_pool, snapshotApiCallInfo, device, descriptorUpdateTemplate, pAllocator);
                 }
@@ -10305,7 +11105,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)descriptorUpdateTemplate,
                             (unsigned long long)pData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkUpdateDescriptorSetWithTemplate(unboxed_device, descriptorSet,
                                                           descriptorUpdateTemplate, pData);
                 }
@@ -10367,7 +11172,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pExternalBufferInfo,
                             (unsigned long long)pExternalBufferProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceExternalBufferProperties(
                         unboxed_physicalDevice, pExternalBufferInfo, pExternalBufferProperties);
                 }
@@ -10435,7 +11245,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pExternalFenceInfo,
                             (unsigned long long)pExternalFenceProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceExternalFenceProperties(
                         unboxed_physicalDevice, pExternalFenceInfo, pExternalFenceProperties);
                 }
@@ -10501,7 +11316,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pExternalSemaphoreInfo,
                             (unsigned long long)pExternalSemaphoreProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceExternalSemaphoreProperties(
                         &m_pool, snapshotApiCallInfo, physicalDevice, pExternalSemaphoreInfo,
                         pExternalSemaphoreProperties);
@@ -10565,7 +11385,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)pCreateInfo,
                         (unsigned long long)pSupport);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDescriptorSetLayoutSupport(unboxed_device, pCreateInfo, pSupport);
                 }
                 vkStream->unsetHandleMapping();
@@ -10632,7 +11457,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)countBufferOffset, (unsigned long long)maxDrawCount,
                             (unsigned long long)stride);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndirectCount(unboxed_commandBuffer, buffer, offset, countBuffer,
                                                countBufferOffset, maxDrawCount, stride);
                 }
@@ -10691,7 +11521,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)countBufferOffset, (unsigned long long)maxDrawCount,
                             (unsigned long long)stride);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndexedIndirectCount(unboxed_commandBuffer, buffer, offset,
                                                       countBuffer, countBufferOffset, maxDrawCount,
                                                       stride);
@@ -10757,7 +11592,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pRenderPass);
                 }
                 VkResult vkCreateRenderPass2_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateRenderPass2_VkResult_return = m_state->on_vkCreateRenderPass2(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pRenderPass);
                 }
@@ -10822,7 +11662,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pRenderPassBegin,
                             (unsigned long long)pSubpassBeginInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdBeginRenderPass2(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                       pRenderPassBegin, pSubpassBeginInfo);
                 }
@@ -10874,7 +11719,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSubpassBeginInfo,
                             (unsigned long long)pSubpassEndInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdNextSubpass2(unboxed_commandBuffer, pSubpassBeginInfo,
                                           pSubpassEndInfo);
                 }
@@ -10916,7 +11766,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pSubpassEndInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderPass2(unboxed_commandBuffer, pSubpassEndInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -10960,7 +11815,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)queryPool,
                             (unsigned long long)firstQuery, (unsigned long long)queryCount);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkResetQueryPool(unboxed_device, queryPool, firstQuery, queryCount);
                 }
                 vkStream->unsetHandleMapping();
@@ -11005,7 +11865,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pValue);
                 }
                 VkResult vkGetSemaphoreCounterValue_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetSemaphoreCounterValue_VkResult_return =
                         vk->vkGetSemaphoreCounterValue(unboxed_device, semaphore, pValue);
                 }
@@ -11057,7 +11922,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (m_queueSubmitWithCommandsEnabled)
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
                 VkResult vkWaitSemaphores_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkWaitSemaphores_VkResult_return = m_state->on_vkWaitSemaphores(
                         &m_pool, snapshotApiCallInfo, device, pWaitInfo, timeout);
                 }
@@ -11099,7 +11969,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)device, (unsigned long long)pSignalInfo);
                 }
                 VkResult vkSignalSemaphore_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkSignalSemaphore_VkResult_return = m_state->on_vkSignalSemaphore(
                         &m_pool, snapshotApiCallInfo, device, pSignalInfo);
                 }
@@ -11146,7 +12021,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkDeviceAddress vkGetBufferDeviceAddress_VkDeviceAddress_return =
                     (VkDeviceAddress)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetBufferDeviceAddress_VkDeviceAddress_return =
                         vk->vkGetBufferDeviceAddress(unboxed_device, pInfo);
                 }
@@ -11191,7 +12071,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo);
                 }
                 uint64_t vkGetBufferOpaqueCaptureAddress_uint64_t_return = (uint64_t)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetBufferOpaqueCaptureAddress_uint64_t_return =
                         vk->vkGetBufferOpaqueCaptureAddress(unboxed_device, pInfo);
                 }
@@ -11237,7 +12122,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)pInfo);
                 }
                 uint64_t vkGetDeviceMemoryOpaqueCaptureAddress_uint64_t_return = (uint64_t)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetDeviceMemoryOpaqueCaptureAddress_uint64_t_return =
                         vk->vkGetDeviceMemoryOpaqueCaptureAddress(unboxed_device, pInfo);
                 }
@@ -11315,7 +12205,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pToolCount, (unsigned long long)pToolProperties);
                 }
                 VkResult vkGetPhysicalDeviceToolProperties_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPhysicalDeviceToolProperties_VkResult_return =
                         vk->vkGetPhysicalDeviceToolProperties(unboxed_physicalDevice, pToolCount,
                                                               pToolProperties);
@@ -11419,7 +12314,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pAllocator, (unsigned long long)pPrivateDataSlot);
                 }
                 VkResult vkCreatePrivateDataSlot_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreatePrivateDataSlot_VkResult_return = vk->vkCreatePrivateDataSlot(
                         unboxed_device, pCreateInfo, pAllocator, pPrivateDataSlot);
                 }
@@ -11495,7 +12395,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device,
                             (unsigned long long)privateDataSlot, (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroyPrivateDataSlot(unboxed_device, privateDataSlot, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -11546,7 +12451,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)data);
                 }
                 VkResult vkSetPrivateData_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkSetPrivateData_VkResult_return = vk->vkSetPrivateData(
                         unboxed_device, objectType, objectHandle, privateDataSlot, data);
                 }
@@ -11605,7 +12515,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)objectHandle, (unsigned long long)privateDataSlot,
                         (unsigned long long)pData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPrivateData(unboxed_device, objectType, objectHandle, privateDataSlot,
                                          pData);
                 }
@@ -11653,7 +12568,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)event,
                             (unsigned long long)pDependencyInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetEvent2(unboxed_commandBuffer, event, pDependencyInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -11694,7 +12614,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)event,
                             (unsigned long long)stageMask);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetEvent2(unboxed_commandBuffer, event, stageMask);
                 }
                 vkStream->unsetHandleMapping();
@@ -11756,7 +12681,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)commandBuffer, (unsigned long long)eventCount,
                         (unsigned long long)pEvents, (unsigned long long)pDependencyInfos);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWaitEvents2(unboxed_commandBuffer, eventCount, pEvents,
                                          pDependencyInfos);
                 }
@@ -11796,7 +12726,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pDependencyInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdPipelineBarrier2(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                       pDependencyInfo);
                 }
@@ -11843,7 +12778,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)stage,
                             (unsigned long long)queryPool, (unsigned long long)query);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteTimestamp2(unboxed_commandBuffer, stage, queryPool, query);
                 }
                 vkStream->unsetHandleMapping();
@@ -11893,7 +12833,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSubmits, (unsigned long long)fence);
                 }
                 VkResult vkQueueSubmit2_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkQueueSubmit2_VkResult_return = m_state->on_vkQueueSubmit2(
                         &m_pool, snapshotApiCallInfo, queue, submitCount, pSubmits, fence);
                 }
@@ -11939,7 +12884,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdCopyBuffer2 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)pCopyBufferInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdCopyBuffer2(unboxed_commandBuffer, pCopyBufferInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -11976,7 +12926,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdCopyImage2 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)pCopyImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyImage2(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                 pCopyImageInfo);
                 }
@@ -12016,7 +12971,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pCopyBufferToImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyBufferToImage2(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                         pCopyBufferToImageInfo, context);
                 }
@@ -12057,7 +13017,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pCopyImageToBufferInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyImageToBuffer2(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                         pCopyImageToBufferInfo);
                 }
@@ -12097,7 +13062,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdBlitImage2 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)pBlitImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBlitImage2(unboxed_commandBuffer, pBlitImageInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -12137,7 +13107,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)commandBuffer,
                             (unsigned long long)pResolveImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResolveImage2(unboxed_commandBuffer, pResolveImageInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -12177,7 +13152,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pRenderingInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginRendering(unboxed_commandBuffer, pRenderingInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -12208,7 +13188,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdEndRendering 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRendering(unboxed_commandBuffer);
                 }
                 vkStream->unsetHandleMapping();
@@ -12241,7 +13226,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdSetCullMode 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)cullMode);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetCullMode(unboxed_commandBuffer, cullMode);
                 }
                 vkStream->unsetHandleMapping();
@@ -12274,7 +13264,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdSetFrontFace 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)frontFace);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetFrontFace(unboxed_commandBuffer, frontFace);
                 }
                 vkStream->unsetHandleMapping();
@@ -12309,7 +13304,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)primitiveTopology);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveTopology(unboxed_commandBuffer, primitiveTopology);
                 }
                 vkStream->unsetHandleMapping();
@@ -12357,7 +13357,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)viewportCount, (unsigned long long)pViewports);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetViewportWithCount(unboxed_commandBuffer, viewportCount, pViewports);
                 }
                 vkStream->unsetHandleMapping();
@@ -12404,7 +13409,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)scissorCount, (unsigned long long)pScissors);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetScissorWithCount(unboxed_commandBuffer, scissorCount, pScissors);
                 }
                 vkStream->unsetHandleMapping();
@@ -12496,7 +13506,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBuffers, (unsigned long long)pOffsets,
                             (unsigned long long)pSizes, (unsigned long long)pStrides);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindVertexBuffers2(unboxed_commandBuffer, firstBinding, bindingCount,
                                                 pBuffers, pOffsets, pSizes, pStrides);
                 }
@@ -12532,7 +13547,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthTestEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthTestEnable(unboxed_commandBuffer, depthTestEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -12567,7 +13587,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthWriteEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthWriteEnable(unboxed_commandBuffer, depthWriteEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -12602,7 +13627,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthCompareOp);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthCompareOp(unboxed_commandBuffer, depthCompareOp);
                 }
                 vkStream->unsetHandleMapping();
@@ -12638,7 +13668,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthBoundsTestEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBoundsTestEnable(unboxed_commandBuffer, depthBoundsTestEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -12673,7 +13708,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)stencilTestEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilTestEnable(unboxed_commandBuffer, stencilTestEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -12725,7 +13765,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)passOp, (unsigned long long)depthFailOp,
                             (unsigned long long)compareOp);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilOp(unboxed_commandBuffer, faceMask, failOp, passOp,
                                           depthFailOp, compareOp);
                 }
@@ -12762,7 +13807,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)rasterizerDiscardEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetRasterizerDiscardEnable(unboxed_commandBuffer,
                                                         rasterizerDiscardEnable);
                 }
@@ -12798,7 +13848,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthBiasEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBiasEnable(unboxed_commandBuffer, depthBiasEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -12834,7 +13889,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)primitiveRestartEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveRestartEnable(unboxed_commandBuffer,
                                                        primitiveRestartEnable);
                 }
@@ -12888,7 +13948,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                             (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceBufferMemoryRequirements(unboxed_device, pInfo,
                                                             pMemoryRequirements);
                 }
@@ -12949,7 +14014,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                             (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceImageMemoryRequirements(unboxed_device, pInfo,
                                                            pMemoryRequirements);
                 }
@@ -13042,7 +14112,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSparseMemoryRequirementCount,
                             (unsigned long long)pSparseMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceImageSparseMemoryRequirements(unboxed_device, pInfo,
                                                                  pSparseMemoryRequirementCount,
                                                                  pSparseMemoryRequirements);
@@ -13142,7 +14217,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pSwapchain);
                 }
                 VkResult vkCreateSwapchainKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateSwapchainKHR_VkResult_return = vk->vkCreateSwapchainKHR(
                         unboxed_device, pCreateInfo, pAllocator, pSwapchain);
                 }
@@ -13216,7 +14296,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)swapchain,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroySwapchainKHR(unboxed_device, swapchain, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -13293,7 +14378,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pSwapchainImages);
                 }
                 VkResult vkGetSwapchainImagesKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetSwapchainImagesKHR_VkResult_return = vk->vkGetSwapchainImagesKHR(
                         unboxed_device, swapchain, pSwapchainImageCount, pSwapchainImages);
                 }
@@ -13380,7 +14470,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)fence, (unsigned long long)pImageIndex);
                 }
                 VkResult vkAcquireNextImageKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkAcquireNextImageKHR_VkResult_return = vk->vkAcquireNextImageKHR(
                         unboxed_device, swapchain, timeout, semaphore, fence, pImageIndex);
                 }
@@ -13426,7 +14521,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)queue, (unsigned long long)pPresentInfo);
                 }
                 VkResult vkQueuePresentKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkQueuePresentKHR_VkResult_return = m_state->on_vkQueuePresentKHR(
                         &m_pool, snapshotApiCallInfo, queue, pPresentInfo);
                 }
@@ -13481,7 +14581,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return =
                         vk->vkGetDeviceGroupPresentCapabilitiesKHR(unboxed_device,
                                                                    pDeviceGroupPresentCapabilities);
@@ -13554,7 +14659,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetDeviceGroupSurfacePresentModesKHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetDeviceGroupSurfacePresentModesKHR_VkResult_return =
                         vk->vkGetDeviceGroupSurfacePresentModesKHR(unboxed_device, surface, pModes);
                 }
@@ -13647,7 +14757,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPhysicalDevicePresentRectanglesKHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPhysicalDevicePresentRectanglesKHR_VkResult_return =
                         vk->vkGetPhysicalDevicePresentRectanglesKHR(unboxed_physicalDevice, surface,
                                                                     pRectCount, pRects);
@@ -13730,7 +14845,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pImageIndex);
                 }
                 VkResult vkAcquireNextImage2KHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkAcquireNextImage2KHR_VkResult_return =
                         vk->vkAcquireNextImage2KHR(unboxed_device, pAcquireInfo, pImageIndex);
                 }
@@ -13780,7 +14900,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pRenderingInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginRenderingKHR(unboxed_commandBuffer, pRenderingInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -13811,7 +14936,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdEndRenderingKHR 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderingKHR(unboxed_commandBuffer);
                 }
                 vkStream->unsetHandleMapping();
@@ -13854,7 +14984,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pFeatures);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceFeatures2KHR(&m_pool, snapshotApiCallInfo,
                                                                 physicalDevice, pFeatures);
                 }
@@ -13903,7 +15038,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)pProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceProperties2KHR(&m_pool, snapshotApiCallInfo,
                                                                   physicalDevice, pProperties);
                 }
@@ -13957,7 +15097,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)physicalDevice,
                             (unsigned long long)format, (unsigned long long)pFormatProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceFormatProperties2KHR(
                         &m_pool, snapshotApiCallInfo, physicalDevice, format, pFormatProperties);
                 }
@@ -14022,7 +15167,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPhysicalDeviceImageFormatProperties2KHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPhysicalDeviceImageFormatProperties2KHR_VkResult_return =
                         m_state->on_vkGetPhysicalDeviceImageFormatProperties2KHR(
                             &m_pool, snapshotApiCallInfo, physicalDevice, pImageFormatInfo,
@@ -14115,7 +15265,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pQueueFamilyPropertyCount,
                             (unsigned long long)pQueueFamilyProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceQueueFamilyProperties2KHR(
                         unboxed_physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
                 }
@@ -14187,7 +15342,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)physicalDevice,
                         (unsigned long long)pMemoryProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceMemoryProperties2KHR(
                         &m_pool, snapshotApiCallInfo, physicalDevice, pMemoryProperties);
                 }
@@ -14279,7 +15439,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pFormatInfo, (unsigned long long)pPropertyCount,
                             (unsigned long long)pProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceSparseImageFormatProperties2KHR(
                         unboxed_physicalDevice, pFormatInfo, pPropertyCount, pProperties);
                 }
@@ -14350,7 +15515,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)commandPool,
                             (unsigned long long)flags);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkTrimCommandPoolKHR(unboxed_device, commandPool, flags);
                 }
                 vkStream->unsetHandleMapping();
@@ -14413,7 +15583,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pExternalBufferInfo,
                             (unsigned long long)pExternalBufferProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceExternalBufferPropertiesKHR(
                         unboxed_physicalDevice, pExternalBufferInfo, pExternalBufferProperties);
                 }
@@ -14484,7 +15659,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pExternalSemaphoreInfo,
                             (unsigned long long)pExternalSemaphoreProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetPhysicalDeviceExternalSemaphorePropertiesKHR(
                         &m_pool, snapshotApiCallInfo, physicalDevice, pExternalSemaphoreInfo,
                         pExternalSemaphoreProperties);
@@ -14536,7 +15716,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pImportSemaphoreFdInfo);
                 }
                 VkResult vkImportSemaphoreFdKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkImportSemaphoreFdKHR_VkResult_return = m_state->on_vkImportSemaphoreFdKHR(
                         &m_pool, snapshotApiCallInfo, device, pImportSemaphoreFdInfo);
                 }
@@ -14588,7 +15773,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pFd);
                 }
                 VkResult vkGetSemaphoreFdKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetSemaphoreFdKHR_VkResult_return = m_state->on_vkGetSemaphoreFdKHR(
                         &m_pool, snapshotApiCallInfo, device, pGetFdInfo, pFd);
                 }
@@ -14666,7 +15856,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pDescriptorUpdateTemplate);
                 }
                 VkResult vkCreateDescriptorUpdateTemplateKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateDescriptorUpdateTemplateKHR_VkResult_return =
                         m_state->on_vkCreateDescriptorUpdateTemplateKHR(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator,
@@ -14748,7 +15943,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)descriptorUpdateTemplate,
                             (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroyDescriptorUpdateTemplateKHR(
                         &m_pool, snapshotApiCallInfo, device, descriptorUpdateTemplate, pAllocator);
                 }
@@ -14807,7 +16007,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)descriptorUpdateTemplate,
                             (unsigned long long)pData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkUpdateDescriptorSetWithTemplateKHR(unboxed_device, descriptorSet,
                                                              descriptorUpdateTemplate, pData);
                 }
@@ -14874,7 +16079,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pRenderPass);
                 }
                 VkResult vkCreateRenderPass2KHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateRenderPass2KHR_VkResult_return = m_state->on_vkCreateRenderPass2KHR(
                         &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pRenderPass);
                 }
@@ -14941,7 +16151,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pRenderPassBegin,
                             (unsigned long long)pSubpassBeginInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdBeginRenderPass2KHR(&m_pool, snapshotApiCallInfo,
                                                          commandBuffer, pRenderPassBegin,
                                                          pSubpassBeginInfo);
@@ -14994,7 +16209,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSubpassBeginInfo,
                             (unsigned long long)pSubpassEndInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdNextSubpass2KHR(unboxed_commandBuffer, pSubpassBeginInfo,
                                              pSubpassEndInfo);
                 }
@@ -15036,7 +16256,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pSubpassEndInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderPass2KHR(unboxed_commandBuffer, pSubpassEndInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -15095,7 +16320,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pExternalFenceInfo,
                             (unsigned long long)pExternalFenceProperties);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPhysicalDeviceExternalFencePropertiesKHR(
                         unboxed_physicalDevice, pExternalFenceInfo, pExternalFenceProperties);
                 }
@@ -15147,7 +16377,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)device, (unsigned long long)pImportFenceFdInfo);
                 }
                 VkResult vkImportFenceFdKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkImportFenceFdKHR_VkResult_return =
                         vk->vkImportFenceFdKHR(unboxed_device, pImportFenceFdInfo);
                 }
@@ -15200,7 +16435,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pFd);
                 }
                 VkResult vkGetFenceFdKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetFenceFdKHR_VkResult_return =
                         vk->vkGetFenceFdKHR(unboxed_device, pGetFdInfo, pFd);
                 }
@@ -15260,7 +16500,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                         (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetImageMemoryRequirements2KHR(
                         &m_pool, snapshotApiCallInfo, device, pInfo, pMemoryRequirements);
                 }
@@ -15319,7 +16564,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                         (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetBufferMemoryRequirements2KHR(
                         &m_pool, snapshotApiCallInfo, device, pInfo, pMemoryRequirements);
                 }
@@ -15413,7 +16663,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSparseMemoryRequirementCount,
                             (unsigned long long)pSparseMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetImageSparseMemoryRequirements2KHR(unboxed_device, pInfo,
                                                                pSparseMemoryRequirementCount,
                                                                pSparseMemoryRequirements);
@@ -15514,7 +16769,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pYcbcrConversion);
                 }
                 VkResult vkCreateSamplerYcbcrConversionKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateSamplerYcbcrConversionKHR_VkResult_return =
                         m_state->on_vkCreateSamplerYcbcrConversionKHR(&m_pool, snapshotApiCallInfo,
                                                                       device, pCreateInfo,
@@ -15593,7 +16853,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device,
                             (unsigned long long)ycbcrConversion, (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkDestroySamplerYcbcrConversionKHR(
                         &m_pool, snapshotApiCallInfo, device, ycbcrConversion, pAllocator);
                 }
@@ -15645,7 +16910,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBindInfos);
                 }
                 VkResult vkBindBufferMemory2KHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBindBufferMemory2KHR_VkResult_return = m_state->on_vkBindBufferMemory2KHR(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
                 }
@@ -15699,7 +16969,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBindInfos);
                 }
                 VkResult vkBindImageMemory2KHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBindImageMemory2KHR_VkResult_return = m_state->on_vkBindImageMemory2KHR(
                         &m_pool, snapshotApiCallInfo, device, bindInfoCount, pBindInfos);
                 }
@@ -15762,7 +17037,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pCreateInfo,
                             (unsigned long long)pSupport);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDescriptorSetLayoutSupportKHR(unboxed_device, pCreateInfo, pSupport);
                 }
                 vkStream->unsetHandleMapping();
@@ -15812,7 +17092,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkDeviceAddress vkGetBufferDeviceAddressKHR_VkDeviceAddress_return =
                     (VkDeviceAddress)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetBufferDeviceAddressKHR_VkDeviceAddress_return =
                         vk->vkGetBufferDeviceAddressKHR(unboxed_device, pInfo);
                 }
@@ -15857,7 +17142,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo);
                 }
                 uint64_t vkGetBufferOpaqueCaptureAddressKHR_uint64_t_return = (uint64_t)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetBufferOpaqueCaptureAddressKHR_uint64_t_return =
                         vk->vkGetBufferOpaqueCaptureAddressKHR(unboxed_device, pInfo);
                 }
@@ -15904,7 +17194,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device, (unsigned long long)pInfo);
                 }
                 uint64_t vkGetDeviceMemoryOpaqueCaptureAddressKHR_uint64_t_return = (uint64_t)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetDeviceMemoryOpaqueCaptureAddressKHR_uint64_t_return =
                         vk->vkGetDeviceMemoryOpaqueCaptureAddressKHR(unboxed_device, pInfo);
                 }
@@ -15992,7 +17287,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPipelineExecutablePropertiesKHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPipelineExecutablePropertiesKHR_VkResult_return =
                         vk->vkGetPipelineExecutablePropertiesKHR(unboxed_device, pPipelineInfo,
                                                                  pExecutableCount, pProperties);
@@ -16111,7 +17411,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPipelineExecutableStatisticsKHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPipelineExecutableStatisticsKHR_VkResult_return =
                         vk->vkGetPipelineExecutableStatisticsKHR(unboxed_device, pExecutableInfo,
                                                                  pStatisticCount, pStatistics);
@@ -16238,7 +17543,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return =
                         vk->vkGetPipelineExecutableInternalRepresentationsKHR(
                             unboxed_device, pExecutableInfo, pInternalRepresentationCount,
@@ -16328,7 +17638,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)event,
                             (unsigned long long)pDependencyInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetEvent2KHR(unboxed_commandBuffer, event, pDependencyInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -16369,7 +17684,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)event,
                             (unsigned long long)stageMask);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetEvent2KHR(unboxed_commandBuffer, event, stageMask);
                 }
                 vkStream->unsetHandleMapping();
@@ -16432,7 +17752,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)eventCount, (unsigned long long)pEvents,
                             (unsigned long long)pDependencyInfos);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWaitEvents2KHR(unboxed_commandBuffer, eventCount, pEvents,
                                             pDependencyInfos);
                 }
@@ -16474,7 +17799,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pDependencyInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdPipelineBarrier2KHR(unboxed_commandBuffer, pDependencyInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -16521,7 +17851,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)commandBuffer, (unsigned long long)stage,
                         (unsigned long long)queryPool, (unsigned long long)query);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteTimestamp2KHR(unboxed_commandBuffer, stage, queryPool, query);
                 }
                 vkStream->unsetHandleMapping();
@@ -16575,7 +17910,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSubmits, (unsigned long long)fence);
                 }
                 VkResult vkQueueSubmit2KHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkQueueSubmit2KHR_VkResult_return =
                         vk->vkQueueSubmit2KHR(unboxed_queue, submitCount, pSubmits, fence);
                 }
@@ -16631,7 +17971,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)dstBuffer, (unsigned long long)dstOffset,
                             (unsigned long long)marker);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteBufferMarker2AMD(unboxed_commandBuffer, stage, dstBuffer,
                                                    dstOffset, marker);
                 }
@@ -16701,7 +18046,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCheckpointDataCount,
                             (unsigned long long)pCheckpointData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetQueueCheckpointData2NV(unboxed_queue, pCheckpointDataCount,
                                                     pCheckpointData);
                 }
@@ -16772,7 +18122,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pCopyBufferInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdCopyBuffer2KHR(unboxed_commandBuffer, pCopyBufferInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -16809,7 +18164,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdCopyImage2KHR 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)pCopyImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyImage2KHR(&m_pool, snapshotApiCallInfo, commandBuffer,
                                                    pCopyImageInfo);
                 }
@@ -16850,7 +18210,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pCopyBufferToImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyBufferToImage2KHR(&m_pool, snapshotApiCallInfo,
                                                            commandBuffer, pCopyBufferToImageInfo,
                                                            context);
@@ -16892,7 +18257,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pCopyImageToBufferInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCmdCopyImageToBuffer2KHR(&m_pool, snapshotApiCallInfo,
                                                            commandBuffer, pCopyImageToBufferInfo);
                 }
@@ -16932,7 +18302,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdBlitImage2KHR 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)pBlitImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBlitImage2KHR(unboxed_commandBuffer, pBlitImageInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -16973,7 +18348,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pResolveImageInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResolveImage2KHR(unboxed_commandBuffer, pResolveImageInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -17028,7 +18408,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                             (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceBufferMemoryRequirementsKHR(unboxed_device, pInfo,
                                                                pMemoryRequirements);
                 }
@@ -17089,7 +18474,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                             (unsigned long long)pMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceImageMemoryRequirementsKHR(unboxed_device, pInfo,
                                                               pMemoryRequirements);
                 }
@@ -17182,7 +18572,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pSparseMemoryRequirementCount,
                             (unsigned long long)pSparseMemoryRequirements);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceImageSparseMemoryRequirementsKHR(unboxed_device, pInfo,
                                                                     pSparseMemoryRequirementCount,
                                                                     pSparseMemoryRequirements);
@@ -17265,7 +18660,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)offset, (unsigned long long)size,
                             (unsigned long long)indexType);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindIndexBuffer2KHR(unboxed_commandBuffer, buffer, offset, size,
                                                  indexType);
                 }
@@ -17318,7 +18718,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)device,
                         (unsigned long long)pRenderingAreaInfo, (unsigned long long)pGranularity);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetRenderingAreaGranularityKHR(unboxed_device, pRenderingAreaInfo,
                                                          pGranularity);
                 }
@@ -17378,7 +18783,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pInfo,
                             (unsigned long long)pLayout);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetDeviceImageSubresourceLayoutKHR(unboxed_device, pInfo, pLayout);
                 }
                 vkStream->unsetHandleMapping();
@@ -17442,7 +18852,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)image,
                             (unsigned long long)pSubresource, (unsigned long long)pLayout);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetImageSubresourceLayout2KHR(unboxed_device, image, pSubresource,
                                                         pLayout);
                 }
@@ -17492,7 +18907,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)lineStippleFactor,
                             (unsigned long long)lineStipplePattern);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLineStippleKHR(unboxed_commandBuffer, lineStippleFactor,
                                                lineStipplePattern);
                 }
@@ -17540,7 +18960,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)imageUsage, (unsigned long long)grallocUsage);
                 }
                 VkResult vkGetSwapchainGrallocUsageANDROID_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetSwapchainGrallocUsageANDROID_VkResult_return =
                         m_state->on_vkGetSwapchainGrallocUsageANDROID(
                             &m_pool, snapshotApiCallInfo, device, format, imageUsage, grallocUsage);
@@ -17603,7 +19028,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)fence);
                 }
                 VkResult vkAcquireImageANDROID_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkAcquireImageANDROID_VkResult_return =
                         m_state->on_vkAcquireImageANDROID(&m_pool, snapshotApiCallInfo, device,
                                                           image, nativeFenceFd, semaphore, fence);
@@ -17680,7 +19110,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pNativeFenceFd);
                 }
                 VkResult vkQueueSignalReleaseImageANDROID_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkQueueSignalReleaseImageANDROID_VkResult_return =
                         m_state->on_vkQueueSignalReleaseImageANDROID(
                             &m_pool, snapshotApiCallInfo, queue, waitSemaphoreCount,
@@ -17749,7 +19184,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)grallocProducerUsage);
                 }
                 VkResult vkGetSwapchainGrallocUsage2ANDROID_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetSwapchainGrallocUsage2ANDROID_VkResult_return =
                         m_state->on_vkGetSwapchainGrallocUsage2ANDROID(
                             &m_pool, snapshotApiCallInfo, device, format, imageUsage,
@@ -17834,7 +19274,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pCallback);
                 }
                 VkResult vkCreateDebugReportCallbackEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateDebugReportCallbackEXT_VkResult_return =
                         vk->vkCreateDebugReportCallbackEXT(unboxed_instance, pCreateInfo,
                                                            pAllocator, pCallback);
@@ -17914,7 +19359,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)instance, (unsigned long long)callback,
                         (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroyDebugReportCallbackEXT(unboxed_instance, callback, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -17973,7 +19423,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)location, (unsigned long long)messageCode,
                             (unsigned long long)pLayerPrefix, (unsigned long long)pMessage);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDebugReportMessageEXT(unboxed_instance, flags, objectType, object,
                                                 location, messageCode, pLayerPrefix, pMessage);
                 }
@@ -18048,7 +19503,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBuffers, (unsigned long long)pOffsets,
                             (unsigned long long)pSizes);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindTransformFeedbackBuffersEXT(unboxed_commandBuffer, firstBinding,
                                                              bindingCount, pBuffers, pOffsets,
                                                              pSizes);
@@ -18125,7 +19585,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCounterBuffers,
                             (unsigned long long)pCounterBufferOffsets);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginTransformFeedbackEXT(unboxed_commandBuffer, firstCounterBuffer,
                                                        counterBufferCount, pCounterBuffers,
                                                        pCounterBufferOffsets);
@@ -18203,7 +19668,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCounterBuffers,
                             (unsigned long long)pCounterBufferOffsets);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndTransformFeedbackEXT(unboxed_commandBuffer, firstCounterBuffer,
                                                      counterBufferCount, pCounterBuffers,
                                                      pCounterBufferOffsets);
@@ -18257,7 +19727,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)queryPool, (unsigned long long)query,
                             (unsigned long long)flags, (unsigned long long)index);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginQueryIndexedEXT(unboxed_commandBuffer, queryPool, query, flags,
                                                   index);
                 }
@@ -18304,7 +19779,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)commandBuffer, (unsigned long long)queryPool,
                         (unsigned long long)query, (unsigned long long)index);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndQueryIndexedEXT(unboxed_commandBuffer, queryPool, query, index);
                 }
                 vkStream->unsetHandleMapping();
@@ -18362,7 +19842,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)counterBufferOffset,
                             (unsigned long long)counterOffset, (unsigned long long)vertexStride);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndirectByteCountEXT(
                         unboxed_commandBuffer, instanceCount, firstInstance, counterBuffer,
                         counterBufferOffset, counterOffset, vertexStride);
@@ -18408,7 +19893,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pNameInfo);
                 }
                 VkResult vkSetDebugUtilsObjectNameEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkSetDebugUtilsObjectNameEXT_VkResult_return =
                         vk->vkSetDebugUtilsObjectNameEXT(unboxed_device, pNameInfo);
                 }
@@ -18455,7 +19945,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pTagInfo);
                 }
                 VkResult vkSetDebugUtilsObjectTagEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkSetDebugUtilsObjectTagEXT_VkResult_return =
                         vk->vkSetDebugUtilsObjectTagEXT(unboxed_device, pTagInfo);
                 }
@@ -18502,7 +19997,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             "stream %p: call vkQueueBeginDebugUtilsLabelEXT 0x%llx 0x%llx \n",
                             ioStream, (unsigned long long)queue, (unsigned long long)pLabelInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkQueueBeginDebugUtilsLabelEXT(unboxed_queue, pLabelInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -18531,7 +20031,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkQueueEndDebugUtilsLabelEXT 0x%llx \n",
                             ioStream, (unsigned long long)queue);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkQueueEndDebugUtilsLabelEXT(unboxed_queue);
                 }
                 vkStream->unsetHandleMapping();
@@ -18570,7 +20075,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             "stream %p: call vkQueueInsertDebugUtilsLabelEXT 0x%llx 0x%llx \n",
                             ioStream, (unsigned long long)queue, (unsigned long long)pLabelInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkQueueInsertDebugUtilsLabelEXT(unboxed_queue, pLabelInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -18610,7 +20120,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pLabelInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginDebugUtilsLabelEXT(unboxed_commandBuffer, pLabelInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -18640,7 +20155,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdEndDebugUtilsLabelEXT 0x%llx \n",
                             ioStream, (unsigned long long)commandBuffer);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndDebugUtilsLabelEXT(unboxed_commandBuffer);
                 }
                 vkStream->unsetHandleMapping();
@@ -18681,7 +20201,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pLabelInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdInsertDebugUtilsLabelEXT(unboxed_commandBuffer, pLabelInfo);
                 }
                 vkStream->unsetHandleMapping();
@@ -18749,7 +20274,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator, (unsigned long long)pMessenger);
                 }
                 VkResult vkCreateDebugUtilsMessengerEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateDebugUtilsMessengerEXT_VkResult_return =
                         vk->vkCreateDebugUtilsMessengerEXT(unboxed_instance, pCreateInfo,
                                                            pAllocator, pMessenger);
@@ -18829,7 +20359,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)instance, (unsigned long long)messenger,
                         (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroyDebugUtilsMessengerEXT(unboxed_instance, messenger, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -18882,7 +20417,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)messageSeverity, (unsigned long long)messageTypes,
                             (unsigned long long)pCallbackData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkSubmitDebugUtilsMessageEXT(unboxed_instance, messageSeverity,
                                                      messageTypes, pCallbackData);
                 }
@@ -18937,7 +20477,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetImageDrmFormatModifierPropertiesEXT_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetImageDrmFormatModifierPropertiesEXT_VkResult_return =
                         vk->vkGetImageDrmFormatModifierPropertiesEXT(unboxed_device, image,
                                                                      pProperties);
@@ -19013,7 +20558,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pMemoryHostPointerProperties);
                 }
                 VkResult vkGetMemoryHostPointerPropertiesEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetMemoryHostPointerPropertiesEXT_VkResult_return =
                         vk->vkGetMemoryHostPointerPropertiesEXT(
                             unboxed_device, handleType, pHostPointer, pMemoryHostPointerProperties);
@@ -19105,7 +20655,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetPhysicalDeviceToolPropertiesEXT_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetPhysicalDeviceToolPropertiesEXT_VkResult_return =
                         vk->vkGetPhysicalDeviceToolPropertiesEXT(unboxed_physicalDevice, pToolCount,
                                                                  pToolProperties);
@@ -19183,7 +20738,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)lineStippleFactor,
                             (unsigned long long)lineStipplePattern);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLineStippleEXT(unboxed_commandBuffer, lineStippleFactor,
                                                lineStipplePattern);
                 }
@@ -19221,7 +20781,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)cullMode);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetCullModeEXT(unboxed_commandBuffer, cullMode);
                 }
                 vkStream->unsetHandleMapping();
@@ -19255,7 +20820,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)frontFace);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetFrontFaceEXT(unboxed_commandBuffer, frontFace);
                 }
                 vkStream->unsetHandleMapping();
@@ -19290,7 +20860,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)primitiveTopology);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveTopologyEXT(unboxed_commandBuffer, primitiveTopology);
                 }
                 vkStream->unsetHandleMapping();
@@ -19338,7 +20913,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)viewportCount, (unsigned long long)pViewports);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetViewportWithCountEXT(unboxed_commandBuffer, viewportCount,
                                                      pViewports);
                 }
@@ -19386,7 +20966,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)scissorCount, (unsigned long long)pScissors);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetScissorWithCountEXT(unboxed_commandBuffer, scissorCount, pScissors);
                 }
                 vkStream->unsetHandleMapping();
@@ -19478,7 +21063,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBuffers, (unsigned long long)pOffsets,
                             (unsigned long long)pSizes, (unsigned long long)pStrides);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindVertexBuffers2EXT(unboxed_commandBuffer, firstBinding,
                                                    bindingCount, pBuffers, pOffsets, pSizes,
                                                    pStrides);
@@ -19515,7 +21105,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthTestEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthTestEnableEXT(unboxed_commandBuffer, depthTestEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -19550,7 +21145,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthWriteEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthWriteEnableEXT(unboxed_commandBuffer, depthWriteEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -19585,7 +21185,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthCompareOp);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthCompareOpEXT(unboxed_commandBuffer, depthCompareOp);
                 }
                 vkStream->unsetHandleMapping();
@@ -19621,7 +21226,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthBoundsTestEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBoundsTestEnableEXT(unboxed_commandBuffer,
                                                          depthBoundsTestEnable);
                 }
@@ -19657,7 +21267,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)stencilTestEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilTestEnableEXT(unboxed_commandBuffer, stencilTestEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -19709,7 +21324,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)passOp, (unsigned long long)depthFailOp,
                             (unsigned long long)compareOp);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilOpEXT(unboxed_commandBuffer, faceMask, failOp, passOp,
                                              depthFailOp, compareOp);
                 }
@@ -19754,7 +21374,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCopyMemoryToImageInfo);
                 }
                 VkResult vkCopyMemoryToImageEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCopyMemoryToImageEXT_VkResult_return =
                         vk->vkCopyMemoryToImageEXT(unboxed_device, pCopyMemoryToImageInfo);
                 }
@@ -19803,7 +21428,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCopyImageToMemoryInfo);
                 }
                 VkResult vkCopyImageToMemoryEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCopyImageToMemoryEXT_VkResult_return =
                         vk->vkCopyImageToMemoryEXT(unboxed_device, pCopyImageToMemoryInfo);
                 }
@@ -19852,7 +21482,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCopyImageToImageInfo);
                 }
                 VkResult vkCopyImageToImageEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCopyImageToImageEXT_VkResult_return =
                         vk->vkCopyImageToImageEXT(unboxed_device, pCopyImageToImageInfo);
                 }
@@ -19910,7 +21545,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)transitionCount, (unsigned long long)pTransitions);
                 }
                 VkResult vkTransitionImageLayoutEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkTransitionImageLayoutEXT_VkResult_return = vk->vkTransitionImageLayoutEXT(
                         unboxed_device, transitionCount, pTransitions);
                 }
@@ -19976,7 +21616,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)image,
                             (unsigned long long)pSubresource, (unsigned long long)pLayout);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetImageSubresourceLayout2EXT(unboxed_device, image, pSubresource,
                                                         pLayout);
                 }
@@ -20027,7 +21672,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pReleaseInfo);
                 }
                 VkResult vkReleaseSwapchainImagesEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkReleaseSwapchainImagesEXT_VkResult_return =
                         vk->vkReleaseSwapchainImagesEXT(unboxed_device, pReleaseInfo);
                 }
@@ -20104,7 +21754,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pAllocator, (unsigned long long)pPrivateDataSlot);
                 }
                 VkResult vkCreatePrivateDataSlotEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreatePrivateDataSlotEXT_VkResult_return = vk->vkCreatePrivateDataSlotEXT(
                         unboxed_device, pCreateInfo, pAllocator, pPrivateDataSlot);
                 }
@@ -20169,7 +21824,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device,
                             (unsigned long long)privateDataSlot, (unsigned long long)pAllocator);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkDestroyPrivateDataSlotEXT(unboxed_device, privateDataSlot, pAllocator);
                 }
                 vkStream->unsetHandleMapping();
@@ -20219,7 +21879,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)data);
                 }
                 VkResult vkSetPrivateDataEXT_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkSetPrivateDataEXT_VkResult_return = vk->vkSetPrivateDataEXT(
                         unboxed_device, objectType, objectHandle, privateDataSlot, data);
                 }
@@ -20278,7 +21943,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)objectHandle, (unsigned long long)privateDataSlot,
                         (unsigned long long)pData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkGetPrivateDataEXT(unboxed_device, objectType, objectHandle,
                                             privateDataSlot, pData);
                 }
@@ -20319,7 +21989,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)patchControlPoints);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPatchControlPointsEXT(unboxed_commandBuffer, patchControlPoints);
                 }
                 vkStream->unsetHandleMapping();
@@ -20355,7 +22030,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)rasterizerDiscardEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetRasterizerDiscardEnableEXT(unboxed_commandBuffer,
                                                            rasterizerDiscardEnable);
                 }
@@ -20391,7 +22071,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)depthBiasEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBiasEnableEXT(unboxed_commandBuffer, depthBiasEnable);
                 }
                 vkStream->unsetHandleMapping();
@@ -20425,7 +22110,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkCmdSetLogicOpEXT 0x%llx 0x%llx \n", ioStream,
                             (unsigned long long)commandBuffer, (unsigned long long)logicOp);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLogicOpEXT(unboxed_commandBuffer, logicOp);
                 }
                 vkStream->unsetHandleMapping();
@@ -20460,7 +22150,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)primitiveRestartEnable);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveRestartEnableEXT(unboxed_commandBuffer,
                                                           primitiveRestartEnable);
                 }
@@ -20506,7 +22201,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)attachmentCount,
                             (unsigned long long)pColorWriteEnables);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetColorWriteEnableEXT(unboxed_commandBuffer, attachmentCount,
                                                     pColorWriteEnables);
                 }
@@ -20559,7 +22259,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (unsigned long long)pAddress);
                 }
                 VkResult vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return =
                         m_state->on_vkMapMemoryIntoAddressSpaceGOOGLE(&m_pool, snapshotApiCallInfo,
                                                                       device, memory, pAddress);
@@ -20732,7 +22437,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pImageInfos, (unsigned long long)pBufferInfos,
                             (unsigned long long)pBufferViews);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkUpdateDescriptorSetWithTemplateSizedGOOGLE(
                         &m_pool, snapshotApiCallInfo, device, descriptorSet,
                         descriptorUpdateTemplate, imageInfoCount, bufferInfoCount, bufferViewCount,
@@ -20778,7 +22488,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)pBeginInfo);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkBeginCommandBufferAsyncGOOGLE(&m_pool, snapshotApiCallInfo,
                                                                 commandBuffer, pBeginInfo, context);
                 }
@@ -20807,7 +22522,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkEndCommandBufferAsyncGOOGLE 0x%llx \n",
                             ioStream, (unsigned long long)commandBuffer);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkEndCommandBufferAsyncGOOGLE(&m_pool, snapshotApiCallInfo,
                                                               commandBuffer, context);
                 }
@@ -20841,7 +22561,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             "stream %p: call vkResetCommandBufferAsyncGOOGLE 0x%llx 0x%llx \n",
                             ioStream, (unsigned long long)commandBuffer, (unsigned long long)flags);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkResetCommandBufferAsyncGOOGLE(&m_pool, snapshotApiCallInfo,
                                                                 commandBuffer, flags);
                 }
@@ -20878,7 +22603,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)commandBuffer,
                             (unsigned long long)needHostSync, (unsigned long long)sequenceNumber);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCommandBufferHostSyncGOOGLE(
                         &m_pool, snapshotApiCallInfo, commandBuffer, needHostSync, sequenceNumber);
                 }
@@ -20955,7 +22685,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pMemoryRequirements);
                 }
                 VkResult vkCreateImageWithRequirementsGOOGLE_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateImageWithRequirementsGOOGLE_VkResult_return =
                         m_state->on_vkCreateImageWithRequirementsGOOGLE(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pImage,
@@ -21058,7 +22793,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkCreateBufferWithRequirementsGOOGLE_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateBufferWithRequirementsGOOGLE_VkResult_return =
                         m_state->on_vkCreateBufferWithRequirementsGOOGLE(
                             &m_pool, snapshotApiCallInfo, device, pCreateInfo, pAllocator, pBuffer,
@@ -21159,7 +22899,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pHostmemId);
                 }
                 VkResult vkGetMemoryHostAddressInfoGOOGLE_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetMemoryHostAddressInfoGOOGLE_VkResult_return =
                         m_state->on_vkGetMemoryHostAddressInfoGOOGLE(&m_pool, snapshotApiCallInfo,
                                                                      device, memory, pAddress,
@@ -21244,7 +22989,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pAllocator);
                 }
                 VkResult vkFreeMemorySyncGOOGLE_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkFreeMemorySyncGOOGLE_VkResult_return = m_state->on_vkFreeMemorySyncGOOGLE(
                         &m_pool, snapshotApiCallInfo, device, memory, pAllocator);
                 }
@@ -21288,7 +23038,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)queue, (unsigned long long)needHostSync,
                             (unsigned long long)sequenceNumber);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueHostSyncGOOGLE(&m_pool, snapshotApiCallInfo, queue,
                                                       needHostSync, sequenceNumber);
                 }
@@ -21340,7 +23095,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)queue, (unsigned long long)submitCount,
                         (unsigned long long)pSubmits, (unsigned long long)fence);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueSubmitAsyncGOOGLE(&m_pool, snapshotApiCallInfo, queue,
                                                          submitCount, pSubmits, fence);
                 }
@@ -21369,7 +23129,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     fprintf(stderr, "stream %p: call vkQueueWaitIdleAsyncGOOGLE 0x%llx \n",
                             ioStream, (unsigned long long)queue);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueWaitIdleAsyncGOOGLE(&m_pool, snapshotApiCallInfo, queue);
                 }
                 vkStream->unsetHandleMapping();
@@ -21421,7 +23186,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)queue, (unsigned long long)bindInfoCount,
                             (unsigned long long)pBindInfo, (unsigned long long)fence);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueBindSparseAsyncGOOGLE(&m_pool, snapshotApiCallInfo, queue,
                                                              bindInfoCount, pBindInfo, fence);
                 }
@@ -21468,7 +23238,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)format,
                             (unsigned long long)pOffset, (unsigned long long)pRowPitchAlignment);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetLinearImageLayoutGOOGLE(&m_pool, snapshotApiCallInfo, device,
                                                              format, pOffset, pRowPitchAlignment);
                 }
@@ -21524,7 +23299,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             ioStream, (unsigned long long)device, (unsigned long long)pCreateInfo,
                             (unsigned long long)pOffset, (unsigned long long)pRowPitchAlignment);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkGetLinearImageLayout2GOOGLE(&m_pool, snapshotApiCallInfo, device,
                                                               pCreateInfo, pOffset,
                                                               pRowPitchAlignment);
@@ -21576,7 +23356,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 if (m_queueSubmitWithCommandsEnabled)
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueFlushCommandsGOOGLE(&m_pool, snapshotApiCallInfo, queue,
                                                            commandBuffer, dataSize, pData, context);
                 }
@@ -21693,7 +23478,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pendingDescriptorWriteCount,
                             (unsigned long long)pPendingDescriptorWrites);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueCommitDescriptorSetUpdatesGOOGLE(
                         &m_pool, snapshotApiCallInfo, queue, descriptorPoolCount, pDescriptorPools,
                         descriptorSetCount, pSetLayouts, pDescriptorSetPoolIds,
@@ -21758,7 +23548,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)descriptorPool, (unsigned long long)pPoolIdCount,
                             (unsigned long long)pPoolIds);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkCollectDescriptorPoolIdsGOOGLE(&m_pool, snapshotApiCallInfo,
                                                                  device, descriptorPool,
                                                                  pPoolIdCount, pPoolIds);
@@ -21828,7 +23623,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)waitSemaphoreCount,
                             (unsigned long long)pWaitSemaphores, (unsigned long long)image);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueSignalReleaseImageANDROIDAsyncGOOGLE(
                         &m_pool, snapshotApiCallInfo, queue, waitSemaphoreCount, pWaitSemaphores,
                         image);
@@ -21881,7 +23681,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)deviceMemory, (unsigned long long)dataOffset,
                             (unsigned long long)dataSize);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueFlushCommandsFromAuxMemoryGOOGLE(
                         &m_pool, snapshotApiCallInfo, queue, commandBuffer, deviceMemory,
                         dataOffset, dataSize, context);
@@ -21918,7 +23723,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)device, (unsigned long long)memory);
                 }
                 VkResult vkGetBlobGOOGLE_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetBlobGOOGLE_VkResult_return =
                         m_state->on_vkGetBlobGOOGLE(&m_pool, snapshotApiCallInfo, device, memory);
                 }
@@ -22098,7 +23908,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pBufferViews,
                             (unsigned long long)pInlineUniformBlockData);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkUpdateDescriptorSetWithTemplateSized2GOOGLE(
                         &m_pool, snapshotApiCallInfo, device, descriptorSet,
                         descriptorUpdateTemplate, imageInfoCount, bufferInfoCount, bufferViewCount,
@@ -22158,7 +23973,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)queue, (unsigned long long)submitCount,
                         (unsigned long long)pSubmits, (unsigned long long)fence);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     m_state->on_vkQueueSubmitAsync2GOOGLE(&m_pool, snapshotApiCallInfo, queue,
                                                           submitCount, pSubmits, fence);
                 }
@@ -22198,7 +24018,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)syncId);
                 }
                 VkResult vkGetSemaphoreGOOGLE_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetSemaphoreGOOGLE_VkResult_return = m_state->on_vkGetSemaphoreGOOGLE(
                         &m_pool, snapshotApiCallInfo, device, semaphore, syncId);
                 }
@@ -22296,7 +24121,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)width, (unsigned long long)height,
                             (unsigned long long)depth);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdTraceRaysKHR(unboxed_commandBuffer, pRaygenShaderBindingTable,
                                           pMissShaderBindingTable, pHitShaderBindingTable,
                                           pCallableShaderBindingTable, width, height, depth);
@@ -22393,7 +24223,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pPipelines);
                 }
                 VkResult vkCreateRayTracingPipelinesKHR_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkCreateRayTracingPipelinesKHR_VkResult_return =
                         vk->vkCreateRayTracingPipelinesKHR(unboxed_device, deferredOperation,
                                                            pipelineCache, createInfoCount,
@@ -22468,7 +24303,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkResult vkGetRayTracingCaptureReplayShaderGroupHandlesKHR_VkResult_return =
                     VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetRayTracingCaptureReplayShaderGroupHandlesKHR_VkResult_return =
                         vk->vkGetRayTracingCaptureReplayShaderGroupHandlesKHR(
                             unboxed_device, pipeline, firstGroup, groupCount, dataSize, pData);
@@ -22565,7 +24405,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pCallableShaderBindingTable,
                             (unsigned long long)indirectDeviceAddress);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdTraceRaysIndirectKHR(
                         unboxed_commandBuffer, pRaygenShaderBindingTable, pMissShaderBindingTable,
                         pHitShaderBindingTable, pCallableShaderBindingTable, indirectDeviceAddress);
@@ -22615,7 +24460,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 VkDeviceSize vkGetRayTracingShaderGroupStackSizeKHR_VkDeviceSize_return =
                     (VkDeviceSize)0;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkGetRayTracingShaderGroupStackSizeKHR_VkDeviceSize_return =
                         vk->vkGetRayTracingShaderGroupStackSizeKHR(unboxed_device, pipeline, group,
                                                                    groupShader);
@@ -22658,7 +24508,12 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         ioStream, (unsigned long long)commandBuffer,
                         (unsigned long long)pipelineStackSize);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetRayTracingPipelineStackSizeKHR(unboxed_commandBuffer,
                                                                pipelineStackSize);
                 }

@@ -75,7 +75,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         globalstate, (VkCommandBufferBeginInfo*)(pBeginInfo));
                 }
                 VkResult vkBeginCommandBuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkBeginCommandBuffer_VkResult_return = this->on_vkBeginCommandBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pBeginInfo,
                         context);
@@ -89,7 +94,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkEndCommandBuffer");
                 VkResult vkEndCommandBuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkEndCommandBuffer_VkResult_return = this->on_vkEndCommandBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), context);
                 }
@@ -106,7 +116,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                        sizeof(VkCommandBufferResetFlags));
                 *readStreamPtrPtr += sizeof(VkCommandBufferResetFlags);
                 VkResult vkResetCommandBuffer_VkResult_return = VK_ERROR_DEVICE_LOST;
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vkResetCommandBuffer_VkResult_return = this->on_vkResetCommandBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), flags);
                 }
@@ -127,7 +142,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkPipeline*)&pipeline = (VkPipeline)unbox_VkPipeline((VkPipeline)(*&cgen_var_0));
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdBindPipeline(pool, nullptr,
                                                (VkCommandBuffer)(boxed_dispatchHandle),
                                                pipelineBindPoint, pipeline);
@@ -160,7 +180,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkViewport(globalstate, (VkViewport*)(pViewports + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetViewport((VkCommandBuffer)dispatchHandle, firstViewport,
                                          viewportCount, pViewports);
                 }
@@ -192,7 +217,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkRect2D(globalstate, (VkRect2D*)(pScissors + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetScissor((VkCommandBuffer)dispatchHandle, firstScissor, scissorCount,
                                         pScissors);
                 }
@@ -204,7 +234,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 float lineWidth;
                 memcpy((float*)&lineWidth, *readStreamPtrPtr, sizeof(float));
                 *readStreamPtrPtr += sizeof(float);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLineWidth((VkCommandBuffer)dispatchHandle, lineWidth);
                 }
                 break;
@@ -221,7 +256,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(float);
                 memcpy((float*)&depthBiasSlopeFactor, *readStreamPtrPtr, sizeof(float));
                 *readStreamPtrPtr += sizeof(float);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBias((VkCommandBuffer)dispatchHandle, depthBiasConstantFactor,
                                           depthBiasClamp, depthBiasSlopeFactor);
                 }
@@ -233,7 +273,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 float blendConstants[4];
                 memcpy((float*)blendConstants, *readStreamPtrPtr, 4 * sizeof(const float));
                 *readStreamPtrPtr += 4 * sizeof(const float);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetBlendConstants((VkCommandBuffer)dispatchHandle, blendConstants);
                 }
                 break;
@@ -247,7 +292,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(float);
                 memcpy((float*)&maxDepthBounds, *readStreamPtrPtr, sizeof(float));
                 *readStreamPtrPtr += sizeof(float);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBounds((VkCommandBuffer)dispatchHandle, minDepthBounds,
                                             maxDepthBounds);
                 }
@@ -263,7 +313,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilFaceFlags);
                 memcpy((uint32_t*)&compareMask, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilCompareMask((VkCommandBuffer)dispatchHandle, faceMask,
                                                    compareMask);
                 }
@@ -279,7 +334,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilFaceFlags);
                 memcpy((uint32_t*)&writeMask, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilWriteMask((VkCommandBuffer)dispatchHandle, faceMask,
                                                  writeMask);
                 }
@@ -295,7 +355,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilFaceFlags);
                 memcpy((uint32_t*)&reference, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilReference((VkCommandBuffer)dispatchHandle, faceMask,
                                                  reference);
                 }
@@ -353,7 +418,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((uint32_t*)pDynamicOffsets, *readStreamPtrPtr,
                        ((dynamicOffsetCount)) * sizeof(const uint32_t));
                 *readStreamPtrPtr += ((dynamicOffsetCount)) * sizeof(const uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdBindDescriptorSets(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pipelineBindPoint,
                         layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount,
@@ -375,7 +445,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((VkIndexType*)&indexType, *readStreamPtrPtr, sizeof(VkIndexType));
                 *readStreamPtrPtr += sizeof(VkIndexType);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindIndexBuffer((VkCommandBuffer)dispatchHandle, buffer, offset,
                                              indexType);
                 }
@@ -418,7 +493,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkDeviceSize*)pOffsets, *readStreamPtrPtr,
                        ((bindingCount)) * sizeof(const VkDeviceSize));
                 *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindVertexBuffers((VkCommandBuffer)dispatchHandle, firstBinding,
                                                bindingCount, pBuffers, pOffsets);
                 }
@@ -438,7 +518,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&firstInstance, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDraw((VkCommandBuffer)dispatchHandle, vertexCount, instanceCount,
                                   firstVertex, firstInstance);
                 }
@@ -462,7 +547,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(int32_t);
                 memcpy((uint32_t*)&firstInstance, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndexed((VkCommandBuffer)dispatchHandle, indexCount, instanceCount,
                                          firstIndex, vertexOffset, firstInstance);
                 }
@@ -485,7 +575,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndirect((VkCommandBuffer)dispatchHandle, buffer, offset,
                                           drawCount, stride);
                 }
@@ -508,7 +603,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndexedIndirect((VkCommandBuffer)dispatchHandle, buffer, offset,
                                                  drawCount, stride);
                 }
@@ -526,7 +626,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&groupCountZ, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDispatch((VkCommandBuffer)dispatchHandle, groupCountX, groupCountY,
                                       groupCountZ);
                 }
@@ -543,7 +648,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *(VkBuffer*)&buffer = (VkBuffer)unbox_VkBuffer((VkBuffer)(*&cgen_var_0));
                 memcpy((VkDeviceSize*)&offset, *readStreamPtrPtr, sizeof(VkDeviceSize));
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDispatchIndirect((VkCommandBuffer)dispatchHandle, buffer, offset);
                 }
                 break;
@@ -581,7 +691,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkBufferCopy(globalstate, (VkBufferCopy*)(pRegions + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdCopyBuffer((VkCommandBuffer)dispatchHandle, srcBuffer, dstBuffer,
                                         regionCount, pRegions);
                 }
@@ -626,7 +741,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkImageCopy(globalstate, (VkImageCopy*)(pRegions + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyImage(pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle),
                                             srcImage, srcImageLayout, dstImage, dstImageLayout,
                                             regionCount, pRegions);
@@ -675,7 +795,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkImageBlit(globalstate, (VkImageBlit*)(pRegions + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBlitImage((VkCommandBuffer)dispatchHandle, srcImage, srcImageLayout,
                                        dstImage, dstImageLayout, regionCount, pRegions, filter);
                 }
@@ -719,7 +844,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                                                            (VkBufferImageCopy*)(pRegions + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyBufferToImage(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), srcBuffer, dstImage,
                         dstImageLayout, regionCount, pRegions, context);
@@ -764,7 +894,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                                                            (VkBufferImageCopy*)(pRegions + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyImageToBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), srcImage,
                         srcImageLayout, dstBuffer, regionCount, pRegions);
@@ -794,7 +929,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 }
                 memcpy((void*)pData, *readStreamPtrPtr, ((dataSize)) * sizeof(const uint8_t));
                 *readStreamPtrPtr += ((dataSize)) * sizeof(const uint8_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdUpdateBuffer((VkCommandBuffer)dispatchHandle, dstBuffer, dstOffset,
                                           dataSize, pData);
                 }
@@ -817,7 +957,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((uint32_t*)&data, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdFillBuffer((VkCommandBuffer)dispatchHandle, dstBuffer, dstOffset, size,
                                         data);
                 }
@@ -864,7 +1009,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkImageSubresourceRange*)(pRanges + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdClearColorImage((VkCommandBuffer)dispatchHandle, image, imageLayout,
                                              pColor, rangeCount, pRanges);
                 }
@@ -913,7 +1063,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkImageSubresourceRange*)(pRanges + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdClearDepthStencilImage((VkCommandBuffer)dispatchHandle, image,
                                                     imageLayout, pDepthStencil, rangeCount,
                                                     pRanges);
@@ -964,7 +1119,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkClearRect(globalstate, (VkClearRect*)(pRects + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdClearAttachments((VkCommandBuffer)dispatchHandle, attachmentCount,
                                               pAttachments, rectCount, pRects);
                 }
@@ -1011,7 +1171,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                                                         (VkImageResolve*)(pRegions + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResolveImage((VkCommandBuffer)dispatchHandle, srcImage, srcImageLayout,
                                           dstImage, dstImageLayout, regionCount, pRegions);
                 }
@@ -1029,7 +1194,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetEvent((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
                 break;
@@ -1046,7 +1216,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetEvent((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
                 break;
@@ -1150,7 +1325,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkImageMemoryBarrier*)(pImageMemoryBarriers + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWaitEvents(
                         (VkCommandBuffer)dispatchHandle, eventCount, pEvents, srcStageMask,
                         dstStageMask, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
@@ -1241,7 +1421,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkImageMemoryBarrier*)(pImageMemoryBarriers + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdPipelineBarrier(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), srcStageMask,
                         dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers,
@@ -1266,7 +1451,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkQueryControlFlags*)&flags, *readStreamPtrPtr,
                        sizeof(VkQueryControlFlags));
                 *readStreamPtrPtr += sizeof(VkQueryControlFlags);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginQuery((VkCommandBuffer)dispatchHandle, queryPool, query, flags);
                 }
                 break;
@@ -1283,7 +1473,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndQuery((VkCommandBuffer)dispatchHandle, queryPool, query);
                 }
                 break;
@@ -1303,7 +1498,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&queryCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetQueryPool((VkCommandBuffer)dispatchHandle, queryPool, firstQuery,
                                             queryCount);
                 }
@@ -1325,7 +1525,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteTimestamp((VkCommandBuffer)dispatchHandle, pipelineStage,
                                             queryPool, query);
                 }
@@ -1360,7 +1565,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((VkQueryResultFlags*)&flags, *readStreamPtrPtr, sizeof(VkQueryResultFlags));
                 *readStreamPtrPtr += sizeof(VkQueryResultFlags);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyQueryPoolResults(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), queryPool,
                         firstQuery, queryCount, dstBuffer, dstOffset, stride, flags);
@@ -1395,7 +1605,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 }
                 memcpy((void*)pValues, *readStreamPtrPtr, ((size)) * sizeof(const uint8_t));
                 *readStreamPtrPtr += ((size)) * sizeof(const uint8_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdPushConstants((VkCommandBuffer)dispatchHandle, layout, stageFlags,
                                            offset, size, pValues);
                 }
@@ -1417,7 +1632,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkRenderPassBeginInfo(
                         globalstate, (VkRenderPassBeginInfo*)(pRenderPassBegin));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdBeginRenderPass(pool, nullptr,
                                                   (VkCommandBuffer)(boxed_dispatchHandle),
                                                   pRenderPassBegin, contents);
@@ -1430,7 +1650,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkSubpassContents contents;
                 memcpy((VkSubpassContents*)&contents, *readStreamPtrPtr, sizeof(VkSubpassContents));
                 *readStreamPtrPtr += sizeof(VkSubpassContents);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdNextSubpass((VkCommandBuffer)dispatchHandle, contents);
                 }
                 break;
@@ -1438,7 +1663,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndRenderPass: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndRenderPass");
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderPass((VkCommandBuffer)dispatchHandle);
                 }
                 break;
@@ -1468,7 +1698,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                                    : VK_NULL_HANDLE;
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdExecuteCommands(pool, nullptr,
                                                   (VkCommandBuffer)(boxed_dispatchHandle),
                                                   commandBufferCount, pCommandBuffers);
@@ -1483,7 +1718,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 uint32_t deviceMask;
                 memcpy((uint32_t*)&deviceMask, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDeviceMask((VkCommandBuffer)dispatchHandle, deviceMask);
                 }
                 break;
@@ -1509,7 +1749,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&groupCountZ, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDispatchBase((VkCommandBuffer)dispatchHandle, baseGroupX, baseGroupY,
                                           baseGroupZ, groupCountX, groupCountY, groupCountZ);
                 }
@@ -1542,7 +1787,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndirectCount((VkCommandBuffer)dispatchHandle, buffer, offset,
                                                countBuffer, countBufferOffset, maxDrawCount,
                                                stride);
@@ -1574,7 +1824,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndexedIndirectCount((VkCommandBuffer)dispatchHandle, buffer,
                                                       offset, countBuffer, countBufferOffset,
                                                       maxDrawCount, stride);
@@ -1604,7 +1859,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassBeginInfo(globalstate,
                                                         (VkSubpassBeginInfo*)(pSubpassBeginInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdBeginRenderPass2(pool, nullptr,
                                                    (VkCommandBuffer)(boxed_dispatchHandle),
                                                    pRenderPassBegin, pSubpassBeginInfo);
@@ -1634,7 +1894,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdNextSubpass2((VkCommandBuffer)dispatchHandle, pSubpassBeginInfo,
                                           pSubpassEndInfo);
                 }
@@ -1653,7 +1918,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderPass2((VkCommandBuffer)dispatchHandle, pSubpassEndInfo);
                 }
                 break;
@@ -1678,7 +1948,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetEvent2((VkCommandBuffer)dispatchHandle, event, pDependencyInfo);
                 }
                 break;
@@ -1695,7 +1970,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags2*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags2));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags2);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetEvent2((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
                 break;
@@ -1742,7 +2022,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkDependencyInfo*)(pDependencyInfos + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWaitEvents2((VkCommandBuffer)dispatchHandle, eventCount, pEvents,
                                          pDependencyInfos);
                 }
@@ -1761,7 +2046,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdPipelineBarrier2(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pDependencyInfo);
                 }
@@ -1783,7 +2073,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteTimestamp2((VkCommandBuffer)dispatchHandle, stage, queryPool,
                                              query);
                 }
@@ -1802,7 +2097,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyBufferInfo2(globalstate,
                                                        (VkCopyBufferInfo2*)(pCopyBufferInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdCopyBuffer2((VkCommandBuffer)dispatchHandle, pCopyBufferInfo);
                 }
                 break;
@@ -1820,7 +2120,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyImageInfo2(globalstate,
                                                       (VkCopyImageInfo2*)(pCopyImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyImage2(pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle),
                                              pCopyImageInfo);
                 }
@@ -1839,7 +2144,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyBufferToImageInfo2(
                         globalstate, (VkCopyBufferToImageInfo2*)(pCopyBufferToImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyBufferToImage2(pool, nullptr,
                                                      (VkCommandBuffer)(boxed_dispatchHandle),
                                                      pCopyBufferToImageInfo, context);
@@ -1859,7 +2169,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyImageToBufferInfo2(
                         globalstate, (VkCopyImageToBufferInfo2*)(pCopyImageToBufferInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyImageToBuffer2(pool, nullptr,
                                                      (VkCommandBuffer)(boxed_dispatchHandle),
                                                      pCopyImageToBufferInfo);
@@ -1879,7 +2194,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkBlitImageInfo2(globalstate,
                                                       (VkBlitImageInfo2*)(pBlitImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBlitImage2((VkCommandBuffer)dispatchHandle, pBlitImageInfo);
                 }
                 break;
@@ -1897,7 +2217,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkResolveImageInfo2(globalstate,
                                                          (VkResolveImageInfo2*)(pResolveImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResolveImage2((VkCommandBuffer)dispatchHandle, pResolveImageInfo);
                 }
                 break;
@@ -1915,7 +2240,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkRenderingInfo(globalstate,
                                                      (VkRenderingInfo*)(pRenderingInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginRendering((VkCommandBuffer)dispatchHandle, pRenderingInfo);
                 }
                 break;
@@ -1923,7 +2253,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndRendering: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndRendering");
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRendering((VkCommandBuffer)dispatchHandle);
                 }
                 break;
@@ -1934,7 +2269,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCullModeFlags cullMode;
                 memcpy((VkCullModeFlags*)&cullMode, *readStreamPtrPtr, sizeof(VkCullModeFlags));
                 *readStreamPtrPtr += sizeof(VkCullModeFlags);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetCullMode((VkCommandBuffer)dispatchHandle, cullMode);
                 }
                 break;
@@ -1945,7 +2285,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkFrontFace frontFace;
                 memcpy((VkFrontFace*)&frontFace, *readStreamPtrPtr, sizeof(VkFrontFace));
                 *readStreamPtrPtr += sizeof(VkFrontFace);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetFrontFace((VkCommandBuffer)dispatchHandle, frontFace);
                 }
                 break;
@@ -1957,7 +2302,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPrimitiveTopology*)&primitiveTopology, *readStreamPtrPtr,
                        sizeof(VkPrimitiveTopology));
                 *readStreamPtrPtr += sizeof(VkPrimitiveTopology);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveTopology((VkCommandBuffer)dispatchHandle,
                                                   primitiveTopology);
                 }
@@ -1986,7 +2336,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkViewport(globalstate, (VkViewport*)(pViewports + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetViewportWithCount((VkCommandBuffer)dispatchHandle, viewportCount,
                                                   pViewports);
                 }
@@ -2015,7 +2370,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkRect2D(globalstate, (VkRect2D*)(pScissors + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetScissorWithCount((VkCommandBuffer)dispatchHandle, scissorCount,
                                                  pScissors);
                 }
@@ -2100,7 +2460,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((bindingCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindVertexBuffers2((VkCommandBuffer)dispatchHandle, firstBinding,
                                                 bindingCount, pBuffers, pOffsets, pSizes, pStrides);
                 }
@@ -2112,7 +2477,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthTestEnable;
                 memcpy((VkBool32*)&depthTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthTestEnable((VkCommandBuffer)dispatchHandle, depthTestEnable);
                 }
                 break;
@@ -2123,7 +2493,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthWriteEnable;
                 memcpy((VkBool32*)&depthWriteEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthWriteEnable((VkCommandBuffer)dispatchHandle, depthWriteEnable);
                 }
                 break;
@@ -2134,7 +2509,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCompareOp depthCompareOp;
                 memcpy((VkCompareOp*)&depthCompareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthCompareOp((VkCommandBuffer)dispatchHandle, depthCompareOp);
                 }
                 break;
@@ -2145,7 +2525,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBoundsTestEnable;
                 memcpy((VkBool32*)&depthBoundsTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBoundsTestEnable((VkCommandBuffer)dispatchHandle,
                                                       depthBoundsTestEnable);
                 }
@@ -2157,7 +2542,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 stencilTestEnable;
                 memcpy((VkBool32*)&stencilTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilTestEnable((VkCommandBuffer)dispatchHandle,
                                                   stencilTestEnable);
                 }
@@ -2182,7 +2572,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilOp);
                 memcpy((VkCompareOp*)&compareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilOp((VkCommandBuffer)dispatchHandle, faceMask, failOp, passOp,
                                           depthFailOp, compareOp);
                 }
@@ -2194,7 +2589,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 rasterizerDiscardEnable;
                 memcpy((VkBool32*)&rasterizerDiscardEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetRasterizerDiscardEnable((VkCommandBuffer)dispatchHandle,
                                                         rasterizerDiscardEnable);
                 }
@@ -2206,7 +2606,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBiasEnable;
                 memcpy((VkBool32*)&depthBiasEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBiasEnable((VkCommandBuffer)dispatchHandle, depthBiasEnable);
                 }
                 break;
@@ -2217,7 +2622,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 primitiveRestartEnable;
                 memcpy((VkBool32*)&primitiveRestartEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveRestartEnable((VkCommandBuffer)dispatchHandle,
                                                        primitiveRestartEnable);
                 }
@@ -2238,7 +2648,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkRenderingInfo(globalstate,
                                                      (VkRenderingInfo*)(pRenderingInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginRenderingKHR((VkCommandBuffer)dispatchHandle, pRenderingInfo);
                 }
                 break;
@@ -2246,7 +2661,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndRenderingKHR: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndRenderingKHR");
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderingKHR((VkCommandBuffer)dispatchHandle);
                 }
                 break;
@@ -2276,7 +2696,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassBeginInfo(globalstate,
                                                         (VkSubpassBeginInfo*)(pSubpassBeginInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdBeginRenderPass2KHR(pool, nullptr,
                                                       (VkCommandBuffer)(boxed_dispatchHandle),
                                                       pRenderPassBegin, pSubpassBeginInfo);
@@ -2306,7 +2731,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdNextSubpass2KHR((VkCommandBuffer)dispatchHandle, pSubpassBeginInfo,
                                              pSubpassEndInfo);
                 }
@@ -2325,7 +2755,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndRenderPass2KHR((VkCommandBuffer)dispatchHandle, pSubpassEndInfo);
                 }
                 break;
@@ -2350,7 +2785,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetEvent2KHR((VkCommandBuffer)dispatchHandle, event, pDependencyInfo);
                 }
                 break;
@@ -2367,7 +2807,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags2*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags2));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags2);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResetEvent2KHR((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
                 break;
@@ -2414,7 +2859,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkDependencyInfo*)(pDependencyInfos + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWaitEvents2KHR((VkCommandBuffer)dispatchHandle, eventCount, pEvents,
                                             pDependencyInfos);
                 }
@@ -2433,7 +2883,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdPipelineBarrier2KHR((VkCommandBuffer)dispatchHandle, pDependencyInfo);
                 }
                 break;
@@ -2454,7 +2909,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteTimestamp2KHR((VkCommandBuffer)dispatchHandle, stage, queryPool,
                                                 query);
                 }
@@ -2478,7 +2938,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((uint32_t*)&marker, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdWriteBufferMarker2AMD((VkCommandBuffer)dispatchHandle, stage,
                                                    dstBuffer, dstOffset, marker);
                 }
@@ -2499,7 +2964,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyBufferInfo2(globalstate,
                                                        (VkCopyBufferInfo2*)(pCopyBufferInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdCopyBuffer2KHR((VkCommandBuffer)dispatchHandle, pCopyBufferInfo);
                 }
                 break;
@@ -2517,7 +2987,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyImageInfo2(globalstate,
                                                       (VkCopyImageInfo2*)(pCopyImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyImage2KHR(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pCopyImageInfo);
                 }
@@ -2536,7 +3011,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyBufferToImageInfo2(
                         globalstate, (VkCopyBufferToImageInfo2*)(pCopyBufferToImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyBufferToImage2KHR(pool, nullptr,
                                                         (VkCommandBuffer)(boxed_dispatchHandle),
                                                         pCopyBufferToImageInfo, context);
@@ -2556,7 +3036,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyImageToBufferInfo2(
                         globalstate, (VkCopyImageToBufferInfo2*)(pCopyImageToBufferInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCmdCopyImageToBuffer2KHR(pool, nullptr,
                                                         (VkCommandBuffer)(boxed_dispatchHandle),
                                                         pCopyImageToBufferInfo);
@@ -2576,7 +3061,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkBlitImageInfo2(globalstate,
                                                       (VkBlitImageInfo2*)(pBlitImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBlitImage2KHR((VkCommandBuffer)dispatchHandle, pBlitImageInfo);
                 }
                 break;
@@ -2594,7 +3084,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkResolveImageInfo2(globalstate,
                                                          (VkResolveImageInfo2*)(pResolveImageInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdResolveImage2KHR((VkCommandBuffer)dispatchHandle, pResolveImageInfo);
                 }
                 break;
@@ -2618,7 +3113,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((VkIndexType*)&indexType, *readStreamPtrPtr, sizeof(VkIndexType));
                 *readStreamPtrPtr += sizeof(VkIndexType);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindIndexBuffer2KHR((VkCommandBuffer)dispatchHandle, buffer, offset,
                                                  size, indexType);
                 }
@@ -2635,7 +3135,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint16_t*)&lineStipplePattern, *readStreamPtrPtr, sizeof(uint16_t));
                 *readStreamPtrPtr += sizeof(uint16_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLineStippleKHR((VkCommandBuffer)dispatchHandle, lineStippleFactor,
                                                lineStipplePattern);
                 }
@@ -2697,7 +3202,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((bindingCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindTransformFeedbackBuffersEXT((VkCommandBuffer)dispatchHandle,
                                                              firstBinding, bindingCount, pBuffers,
                                                              pOffsets, pSizes);
@@ -2755,7 +3265,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((counterBufferCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((counterBufferCount)) * sizeof(const VkDeviceSize);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginTransformFeedbackEXT((VkCommandBuffer)dispatchHandle,
                                                        firstCounterBuffer, counterBufferCount,
                                                        pCounterBuffers, pCounterBufferOffsets);
@@ -2813,7 +3328,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((counterBufferCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((counterBufferCount)) * sizeof(const VkDeviceSize);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndTransformFeedbackEXT((VkCommandBuffer)dispatchHandle,
                                                      firstCounterBuffer, counterBufferCount,
                                                      pCounterBuffers, pCounterBufferOffsets);
@@ -2839,7 +3359,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkQueryControlFlags);
                 memcpy((uint32_t*)&index, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginQueryIndexedEXT((VkCommandBuffer)dispatchHandle, queryPool, query,
                                                   flags, index);
                 }
@@ -2860,7 +3385,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&index, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndQueryIndexedEXT((VkCommandBuffer)dispatchHandle, queryPool, query,
                                                 index);
                 }
@@ -2890,7 +3420,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&vertexStride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdDrawIndirectByteCountEXT(
                         (VkCommandBuffer)dispatchHandle, instanceCount, firstInstance,
                         counterBuffer, counterBufferOffset, counterOffset, vertexStride);
@@ -2912,7 +3447,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDebugUtilsLabelEXT(globalstate,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBeginDebugUtilsLabelEXT((VkCommandBuffer)dispatchHandle, pLabelInfo);
                 }
                 break;
@@ -2920,7 +3460,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndDebugUtilsLabelEXT: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndDebugUtilsLabelEXT");
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdEndDebugUtilsLabelEXT((VkCommandBuffer)dispatchHandle);
                 }
                 break;
@@ -2938,7 +3483,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDebugUtilsLabelEXT(globalstate,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdInsertDebugUtilsLabelEXT((VkCommandBuffer)dispatchHandle, pLabelInfo);
                 }
                 break;
@@ -2954,7 +3504,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint16_t*)&lineStipplePattern, *readStreamPtrPtr, sizeof(uint16_t));
                 *readStreamPtrPtr += sizeof(uint16_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLineStippleEXT((VkCommandBuffer)dispatchHandle, lineStippleFactor,
                                                lineStipplePattern);
                 }
@@ -2968,7 +3523,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCullModeFlags cullMode;
                 memcpy((VkCullModeFlags*)&cullMode, *readStreamPtrPtr, sizeof(VkCullModeFlags));
                 *readStreamPtrPtr += sizeof(VkCullModeFlags);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetCullModeEXT((VkCommandBuffer)dispatchHandle, cullMode);
                 }
                 break;
@@ -2979,7 +3539,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkFrontFace frontFace;
                 memcpy((VkFrontFace*)&frontFace, *readStreamPtrPtr, sizeof(VkFrontFace));
                 *readStreamPtrPtr += sizeof(VkFrontFace);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetFrontFaceEXT((VkCommandBuffer)dispatchHandle, frontFace);
                 }
                 break;
@@ -2991,7 +3556,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPrimitiveTopology*)&primitiveTopology, *readStreamPtrPtr,
                        sizeof(VkPrimitiveTopology));
                 *readStreamPtrPtr += sizeof(VkPrimitiveTopology);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveTopologyEXT((VkCommandBuffer)dispatchHandle,
                                                      primitiveTopology);
                 }
@@ -3020,7 +3590,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkViewport(globalstate, (VkViewport*)(pViewports + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetViewportWithCountEXT((VkCommandBuffer)dispatchHandle, viewportCount,
                                                      pViewports);
                 }
@@ -3049,7 +3624,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkRect2D(globalstate, (VkRect2D*)(pScissors + i));
                     }
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetScissorWithCountEXT((VkCommandBuffer)dispatchHandle, scissorCount,
                                                     pScissors);
                 }
@@ -3134,7 +3714,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((bindingCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdBindVertexBuffers2EXT((VkCommandBuffer)dispatchHandle, firstBinding,
                                                    bindingCount, pBuffers, pOffsets, pSizes,
                                                    pStrides);
@@ -3147,7 +3732,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthTestEnable;
                 memcpy((VkBool32*)&depthTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthTestEnableEXT((VkCommandBuffer)dispatchHandle,
                                                    depthTestEnable);
                 }
@@ -3159,7 +3749,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthWriteEnable;
                 memcpy((VkBool32*)&depthWriteEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthWriteEnableEXT((VkCommandBuffer)dispatchHandle,
                                                     depthWriteEnable);
                 }
@@ -3171,7 +3766,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCompareOp depthCompareOp;
                 memcpy((VkCompareOp*)&depthCompareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthCompareOpEXT((VkCommandBuffer)dispatchHandle, depthCompareOp);
                 }
                 break;
@@ -3182,7 +3782,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBoundsTestEnable;
                 memcpy((VkBool32*)&depthBoundsTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBoundsTestEnableEXT((VkCommandBuffer)dispatchHandle,
                                                          depthBoundsTestEnable);
                 }
@@ -3194,7 +3799,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 stencilTestEnable;
                 memcpy((VkBool32*)&stencilTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilTestEnableEXT((VkCommandBuffer)dispatchHandle,
                                                      stencilTestEnable);
                 }
@@ -3219,7 +3829,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilOp);
                 memcpy((VkCompareOp*)&compareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetStencilOpEXT((VkCommandBuffer)dispatchHandle, faceMask, failOp,
                                              passOp, depthFailOp, compareOp);
                 }
@@ -3233,7 +3848,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 uint32_t patchControlPoints;
                 memcpy((uint32_t*)&patchControlPoints, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPatchControlPointsEXT((VkCommandBuffer)dispatchHandle,
                                                       patchControlPoints);
                 }
@@ -3245,7 +3865,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 rasterizerDiscardEnable;
                 memcpy((VkBool32*)&rasterizerDiscardEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetRasterizerDiscardEnableEXT((VkCommandBuffer)dispatchHandle,
                                                            rasterizerDiscardEnable);
                 }
@@ -3257,7 +3882,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBiasEnable;
                 memcpy((VkBool32*)&depthBiasEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetDepthBiasEnableEXT((VkCommandBuffer)dispatchHandle,
                                                    depthBiasEnable);
                 }
@@ -3269,7 +3899,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkLogicOp logicOp;
                 memcpy((VkLogicOp*)&logicOp, *readStreamPtrPtr, sizeof(VkLogicOp));
                 *readStreamPtrPtr += sizeof(VkLogicOp);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetLogicOpEXT((VkCommandBuffer)dispatchHandle, logicOp);
                 }
                 break;
@@ -3280,7 +3915,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 primitiveRestartEnable;
                 memcpy((VkBool32*)&primitiveRestartEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetPrimitiveRestartEnableEXT((VkCommandBuffer)dispatchHandle,
                                                           primitiveRestartEnable);
                 }
@@ -3305,7 +3945,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkBool32*)pColorWriteEnables, *readStreamPtrPtr,
                        ((attachmentCount)) * sizeof(const VkBool32));
                 *readStreamPtrPtr += ((attachmentCount)) * sizeof(const VkBool32);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetColorWriteEnableEXT((VkCommandBuffer)dispatchHandle,
                                                     attachmentCount, pColorWriteEnables);
                 }
@@ -3326,7 +3971,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCommandBufferBeginInfo(
                         globalstate, (VkCommandBufferBeginInfo*)(pBeginInfo));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkBeginCommandBufferAsyncGOOGLE(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pBeginInfo,
                         context);
@@ -3336,7 +3986,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkEndCommandBufferAsyncGOOGLE: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkEndCommandBufferAsyncGOOGLE");
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkEndCommandBufferAsyncGOOGLE(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), context);
                 }
@@ -3349,7 +4004,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkCommandBufferResetFlags*)&flags, *readStreamPtrPtr,
                        sizeof(VkCommandBufferResetFlags));
                 *readStreamPtrPtr += sizeof(VkCommandBufferResetFlags);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkResetCommandBufferAsyncGOOGLE(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), flags);
                 }
@@ -3364,7 +4024,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&sequenceNumber, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     this->on_vkCommandBufferHostSyncGOOGLE(pool, nullptr,
                                                            (VkCommandBuffer)(boxed_dispatchHandle),
                                                            needHostSync, sequenceNumber);
@@ -3432,7 +4097,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         globalstate,
                         (VkStridedDeviceAddressRegionKHR*)(pCallableShaderBindingTable));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdTraceRaysKHR((VkCommandBuffer)dispatchHandle,
                                           pRaygenShaderBindingTable, pMissShaderBindingTable,
                                           pHitShaderBindingTable, pCallableShaderBindingTable,
@@ -3494,7 +4164,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         globalstate,
                         (VkStridedDeviceAddressRegionKHR*)(pCallableShaderBindingTable));
                 }
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdTraceRaysIndirectKHR(
                         (VkCommandBuffer)dispatchHandle, pRaygenShaderBindingTable,
                         pMissShaderBindingTable, pHitShaderBindingTable,
@@ -3508,7 +4183,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 uint32_t pipelineStackSize;
                 memcpy((uint32_t*)&pipelineStackSize, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+<<<<<<< PATCH SET (b6b910 Better handling of fatal Vulkan errors)
+                if (vk) {
+||||||| BASE
+=======
                 if (CC_LIKELY(vk)) {
+>>>>>>> BASE      (9e610b Update generated code for dispatcher checks)
                     vk->vkCmdSetRayTracingPipelineStackSizeKHR((VkCommandBuffer)dispatchHandle,
                                                                pipelineStackSize);
                 }
