@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e6a1b68_819cc8a1",
+        "filename": "host/vulkan/VulkanDispatch.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-05T15:44:04Z",
+      "side": 1,
+      "message": "I am not sure if actually we need this change, to explicitly give full path here. We normally use `addLibrarySearchDir` before trying to load the libraries to add any paths(e.g. lib64) into *_LIBRARY_PATH, and `dlopen` should automatically look into those folders for the search? @jansene@google.com, any ideas?",
+      "revId": "e240bc83fc0d8da8b55e30dcdaa6cf23a93321b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
