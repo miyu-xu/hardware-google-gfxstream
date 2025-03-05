@@ -16,6 +16,24 @@
       "message": "Can you add a CONFIG_AEMU around this check?  Some non-AEMU use cases are unlikely to run into this issue.",
       "revId": "3bd4d2e2a052796ac0ea30a4598c0a0a49800213",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d9dfa6f_76c6cd93",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-05T21:18:11Z",
+      "side": 1,
+      "message": "Done. Good point, it\u0027s highly likely that most AMD on linux users would encounter the validation errors as I was using a pretty recent card and driver, but maybe it\u0027s not that critical for some cases.",
+      "parentUuid": "4b50d713_a833fce9",
+      "revId": "3bd4d2e2a052796ac0ea30a4598c0a0a49800213",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
