@@ -16,6 +16,24 @@
       "message": "I am not sure if actually we need this change, to explicitly give full path here. We normally use `addLibrarySearchDir` before trying to load the libraries to add any paths(e.g. lib64) into *_LIBRARY_PATH, and `dlopen` should automatically look into those folders for the search? @jansene@google.com, any ideas?",
       "revId": "e240bc83fc0d8da8b55e30dcdaa6cf23a93321b4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93fa5f75_7e5de044",
+        "filename": "host/vulkan/VulkanDispatch.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 3831493
+      },
+      "writtenOn": "2025-03-05T16:09:53Z",
+      "side": 1,
+      "message": "We had a chat IRL and suggested that I should not hijack LD_LIBRARY_PATH for these non-library json files. I will investigate fixing launcher directory to point to the right place or create a new dedicated env var if not.",
+      "parentUuid": "2e6a1b68_819cc8a1",
+      "revId": "e240bc83fc0d8da8b55e30dcdaa6cf23a93321b4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
