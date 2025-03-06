@@ -7456,24 +7456,10 @@ class VkDecoderGlobalState::Impl {
                                          VkSnapshotApiCallInfo* snapshotInfo, VkDevice boxed_device,
                                          VkFormat format, VkDeviceSize* pOffset,
                                          VkDeviceSize* pRowPitchAlignment) {
-        VkDeviceSize offset = 0u;
-        VkDeviceSize rowPitchAlignment = UINT_MAX;
+        if (mPerFormatLinearImageProperties.find(format) == mPerFormatLinearImageProperties.end()) {
+            VkDeviceSize offset = 0u;
+            VkDeviceSize rowPitchAlignment = UINT_MAX;
 
-        bool needToPopulate = false;
-        {
-            std::lock_guard<std::mutex> lock(mMutex);
-
-            auto it = mPerFormatLinearImageProperties.find(format);
-            if (it == mPerFormatLinearImageProperties.end()) {
-                needToPopulate = true;
-            } else {
-                const auto& properties = it->second;
-                offset = properties.offset;
-                rowPitchAlignment = properties.rowPitchAlignment;
-            }
-        }
-
-        if (needToPopulate) {
             for (uint32_t width = 64; width <= 256; width++) {
                 LinearImageCreateInfo linearImageCreateInfo = {
                     .extent =
@@ -7497,9 +7483,6 @@ class VkDecoderGlobalState::Impl {
                 offset = currOffset;
                 rowPitchAlignment = std::min(currRowPitchAlignment, rowPitchAlignment);
             }
-
-            std::lock_guard<std::mutex> lock(mMutex);
-
             mPerFormatLinearImageProperties[format] = LinearImageProperties{
                 .offset = offset,
                 .rowPitchAlignment = rowPitchAlignment,
@@ -7507,42 +7490,23 @@ class VkDecoderGlobalState::Impl {
         }
 
         if (pOffset) {
-            *pOffset = offset;
+            *pOffset = mPerFormatLinearImageProperties[format].offset;
         }
         if (pRowPitchAlignment) {
-            *pRowPitchAlignment = rowPitchAlignment;
+            *pRowPitchAlignment = mPerFormatLinearImageProperties[format].rowPitchAlignment;
         }
     }
 
     void on_vkGetLinearImageLayout2GOOGLE(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
                                           VkDevice boxed_device,
                                           const VkImageCreateInfo* pCreateInfo,
-                                          VkDeviceSize* pOffset, VkDeviceSize* pRowPitchAlignment)
-        EXCLUDES(mMutex) {
-        VkDeviceSize offset = 0u;
-        VkDeviceSize rowPitchAlignment = UINT_MAX;
-
+                                          VkDeviceSize* pOffset, VkDeviceSize* pRowPitchAlignment) {
         LinearImageCreateInfo linearImageCreateInfo = {
             .extent = pCreateInfo->extent,
             .format = pCreateInfo->format,
             .usage = pCreateInfo->usage,
         };
-
-        bool needToPopulate = false;
-        {
-            std::lock_guard<std::mutex> lock(mMutex);
-
-            auto it = mLinearImageProperties.find(linearImageCreateInfo);
-            if (it == mLinearImageProperties.end()) {
-                needToPopulate = true;
-            } else {
-                const auto& properties = it->second;
-                offset = properties.offset;
-                rowPitchAlignment = properties.rowPitchAlignment;
-            }
-        }
-
-        if (needToPopulate) {
+        if (mLinearImageProperties.find(linearImageCreateInfo) == mLinearImageProperties.end()) {
             auto device = unbox_VkDevice(boxed_device);
             auto vk = dispatch_VkDevice(boxed_device);
 
@@ -7570,8 +7534,6 @@ class VkDecoderGlobalState::Impl {
             uint64_t rowPitch = subresourceLayout.rowPitch;
             VkDeviceSize rowPitchAlignment = rowPitch & (~rowPitch + 1);
 
-            std::lock_guard<std::mutex> lock(mMutex);
-
             mLinearImageProperties[linearImageCreateInfo] = {
                 .offset = offset,
                 .rowPitchAlignment = rowPitchAlignment,
@@ -7579,10 +7541,10 @@ class VkDecoderGlobalState::Impl {
         }
 
         if (pOffset != nullptr) {
-            *pOffset = offset;
+            *pOffset = mLinearImageProperties[linearImageCreateInfo].offset;
         }
         if (pRowPitchAlignment != nullptr) {
-            *pRowPitchAlignment = rowPitchAlignment;
+            *pRowPitchAlignment = mLinearImageProperties[linearImageCreateInfo].rowPitchAlignment;
         }
     }
 
@@ -9432,11 +9394,10 @@ class VkDecoderGlobalState::Impl {
     };
 
     // TODO(liyl): Remove after removing the old vkGetLinearImageLayoutGOOGLE.
-    std::unordered_map<VkFormat, LinearImageProperties> mPerFormatLinearImageProperties
-        GUARDED_BY(mMutex);
+    std::unordered_map<VkFormat, LinearImageProperties> mPerFormatLinearImageProperties;
 
     std::unordered_map<LinearImageCreateInfo, LinearImageProperties, LinearImageCreateInfo::Hash>
-        mLinearImageProperties GUARDED_BY(mMutex);
+        mLinearImageProperties;
 };
 
 VkDecoderGlobalState::VkDecoderGlobalState() : mImpl(new VkDecoderGlobalState::Impl()) {}
