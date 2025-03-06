@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "83d79a5c_7c32bf50",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 22
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-06T00:03:08Z",
+      "side": 1,
+      "message": "One high level comment just for this specific implementation in the meantime while we are discussing b/399145158#comment8 and b/399145158#comment9.",
+      "revId": "04e2409b9dd295029dc17379d6ba5420dfde872b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "488dc2bc_0f0639f1",
+        "filename": "host/RenderThread.cpp",
+        "patchSetId": 22
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-06T00:03:08Z",
+      "side": 1,
+      "message": "Instead of having a bunch of extra initalization code here and an extra set of global variables (`sProcessStates` the like in `VkDecoderGlobalState.cpp`), could we put these into `hardware/google/gfxstream/host/ProcessResources.h` ?\n\nI am imaging that something like \n\n```\nclass FrameBuffer {\n  ...\n private:\n  ...\n \n  std::shared_ptr\u003cVkDecoderGlobalState\u003e mGlobalVulkanState;\n};\n\nvoid FrameBuffer::initialize() {\n   ...\n   \n   \u003cnear the rest of the VK stuff\u003e\n   \n   if (fb-\u003em_features.Vulkan.enabled) {\n     m_globalVulkanState \u003d VkDecoderGlobalState::create();\n   }\n   \n   ...\n}\n```\n\nThen, update\n\n```\nvoid FrameBuffer::createGraphicsProcessResources(uint64_t puid) {\n\n    ...\n   \n    std::shared_ptr\u003cVkDecoderGlobalState\u003e vk;\n    if (m_features.Vulkan.enabled) {\n        if (m_features.VulkanSeparateGlobalState.enabled) {\n            vk \u003d VkDecoderGlobalState::create( ... );\n        } else {\n            vk \u003d m_globalVulkanState;\n        }\n        if (!vk) {\n           ABORT() \u003c\u003c \"Failed to get vk state\";\n        }\n   }\n   \n   ... ProcessResources::create(std::move(vk)) ...\n      \n   ...\n}\n```\n\nand then `RenderThread` can continue to use the existing `ProcessResources` without having to do any additional initialization and doesn\u0027t need to know about the feature.",
+      "range": {
+        "startLine": 517,
+        "startChar": 16,
+        "endLine": 547,
+        "endChar": 17
+      },
+      "revId": "04e2409b9dd295029dc17379d6ba5420dfde872b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
