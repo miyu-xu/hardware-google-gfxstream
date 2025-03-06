@@ -39,6 +39,29 @@
       },
       "revId": "04e2409b9dd295029dc17379d6ba5420dfde872b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d87a13ef_74e3e376",
+        "filename": "host/SyncThread.cpp",
+        "patchSetId": 22
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-06T00:52:52Z",
+      "side": 1,
+      "message": "Ahh, I just remember that you told me that this was the reason for putting the `VkDecoderGlobalState` in the handle bits. \n\nIIUC, `ProcessResources` may be [associated with the virtio gpu context id already](https://cs.android.com/h/android/platform/superproject/main/+/main:hardware/google/gfxstream/host/VirtioGpuContext.cpp;drc\u003d64c4c0403e3bf8eccc843bce2afebf6b2ae5af87;l\u003d42) (we should probably update the argument to not be named `puid`). With that, you could update the callers of the wait functions ([here](https://cs.android.com/android/platform/superproject/main/+/main:hardware/google/gfxstream/host/VirtioGpuFrontend.cpp;l\u003d337)) to pass along the context id (from `cmd-\u003ectx_id`) and then `FrameBuffer::asyncWaitForGpuVulkanWithCb()` can lookup the `ProcessResources` from the `m_procOwnedResources` map.",
+      "range": {
+        "startLine": 312,
+        "startChar": 12,
+        "endLine": 312,
+        "endChar": 87
+      },
+      "revId": "04e2409b9dd295029dc17379d6ba5420dfde872b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
