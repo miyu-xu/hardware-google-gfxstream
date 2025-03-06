@@ -16,6 +16,29 @@
       "message": "most of the tests are passing, but some\nsnapshot related one is failing, not sure how to fix it yet, at the moment\n\n\nNo test results.\nstream_renderer_log [error]: [hardware/google/gfxstream/host/virtio-gpu-gfxstream-renderer.cpp(733)] int (anonymous namespace)::parseGfxstreamFeatures(const int, const std::string \u0026, gfxstream::host::FeatureSet \u0026) Gfxstream feature VulkanSnapshots enabled\nstream_renderer_log [info]: [hardware/google/gfxstream/host/virtio-gpu-gfxstream-renderer.cpp(936)] stream_renderer_init Gfxstream features:\n...\nMESA: info: virtgpu backend not enabling VIRTGPU_KUMQUAT_PARAM_CREATE_GUEST_HANDLE\nMESA: error: DRM_IOCTL_VIRTGPU_KUMQUAT_GET_CAPS failed with Success\nI0305 12:11:45.812219   14350 VkDecoderGlobalState.cpp:974] Created VkInstance:0x7fcdb4028590 for application:Basic/WithoutGlWithVkSampleCount1WithFeatures_VulkanSnapshots_OverVirtioGpuAsg engine:Gfxstream Testing Engine.",
       "revId": "f0766ccce8e15772c1b47ac5272b2b0a336492f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59b60300_60a941e2",
+        "filename": "host/vulkan/VulkanBoxedHandles.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-06T00:18:42Z",
+      "side": 1,
+      "message": "Similar to the comment https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/3518851/comment/488dc2bc_0f0639f1/ , instead of changing the boxed handle bit scheme and having to have like a table of `VkDecoderGlobalState`s, could we instead just pass the `BoxedHandleManager` down through the `VkDecoder` and into all of the boxed handle functions? \n\n`VkDecoder` should have the `BoxedHandleManager` available via `m_state-\u003egetHandleManager()`.\n\nThe functions in `hardware/google/gfxstream/host/vulkan/VulkanHandleMapping.cpp` also already have `m_state` and should be able to use `m_state-\u003egetHandleManager()`.\n\nThe functions in `hardware/google/gfxstream/host/vulkan/VkDecoderGlobalState` will be able to use `mBoxedHandleManager` directly.",
+      "range": {
+        "startLine": 332,
+        "startChar": 0,
+        "endLine": 334,
+        "endChar": 1
+      },
+      "revId": "f0766ccce8e15772c1b47ac5272b2b0a336492f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
