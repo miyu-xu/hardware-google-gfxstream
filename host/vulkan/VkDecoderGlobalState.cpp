@@ -9084,30 +9084,19 @@ VkDecoderGlobalState::VkDecoderGlobalState(VkEmulation* emulation)
 
 VkDecoderGlobalState::~VkDecoderGlobalState() = default;
 
-static VkDecoderGlobalState* sGlobalDecoderState = nullptr;
-
 // static
-void VkDecoderGlobalState::initialize(VkEmulation* emulation) {
-    if (sGlobalDecoderState) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-            << "Attempted to re-initialize VkDecoderGlobalState.";
-    }
-    sGlobalDecoderState = new VkDecoderGlobalState(emulation);
+std::shared_ptr<VkDecoderGlobalState> VkDecoderGlobalState::create(VkEmulation* emulation) {
+    auto sharedGS = std::make_shared<VkDecoderGlobalState>(emulation);
+    return sharedGS;
 }
 
 // static
 VkDecoderGlobalState* VkDecoderGlobalState::get() {
-    if (!sGlobalDecoderState) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "VkDecoderGlobalState not initialized.";
-    }
-    return sGlobalDecoderState;
+    FrameBuffer::getFB()->getDefaultVulkanGlobalState().get();
 }
 
 // static
-void VkDecoderGlobalState::reset() {
-    delete sGlobalDecoderState;
-    sGlobalDecoderState = nullptr;
-}
+void VkDecoderGlobalState::reset() { FrameBuffer::getFB()->getDefaultVulkanGlobalState().reset(); }
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }
