@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a6d61e9_0d88e049",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 8045,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-03-07T17:35:18Z",
+      "side": 1,
+      "message": "optional nit: we usually only use the k prefix for a const or constexpr variable[1].\n\n[1]: https://google.github.io/styleguide/cppguide.html#Constant_Names",
+      "range": {
+        "startLine": 8045,
+        "startChar": 33,
+        "endLine": 8045,
+        "endChar": 34
+      },
+      "revId": "211ad37fb40a72aec115a4727b9d2f5ba9cdb58d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
