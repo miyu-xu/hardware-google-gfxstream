@@ -945,6 +945,11 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     std::unordered_map<void*, PlatformEglContextInfo> m_platformEglContexts;
 #endif
+
+    // the default vulkan global state, when the VulkanSeparateGlobalState
+    // feature is not enabled
+    class VkDecoderGlobalState;
+    std::shared_ptr<VkDecoderGlobalState> mDefaultVulkanGlobalState;
 };
 
 }  // namespace gfxstream
