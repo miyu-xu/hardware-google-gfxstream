@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5281a970_8342b17a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-03-07T16:03:41Z",
+      "side": 1,
+      "message": "This fixes our \"use host VK_EXT_IMAGE_DRM_FORMAT_MODIFIER extension\" flow from a Linux guest, specifically when using Vulkan WSI (which may or may not actually enable the extensing in the logical device creation from the guest).",
+      "revId": "2a090d7a32baa52db7b72a907cb1fc9d73b3cf40",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
