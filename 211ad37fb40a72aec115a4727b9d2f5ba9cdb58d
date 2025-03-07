@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1d72c555_fdc0ee9b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-03-07T17:37:20Z",
+      "side": 1,
+      "message": "Commit message nit:\n\n\"\n[one-line statement]\n\n[longer statement]\"",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 0
+      },
+      "revId": "211ad37fb40a72aec115a4727b9d2f5ba9cdb58d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8a6d61e9_0d88e049",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
