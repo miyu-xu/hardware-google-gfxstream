@@ -18,7 +18,9 @@
 
 #include <atomic>
 #include <memory>
+
 #include "aemu/base/Compiler.h"
+#include "vulkan/VkDecoderGlobalState.h"
 
 namespace gfxstream {
 
@@ -26,8 +28,9 @@ class ProcessResources {
    public:
     // We only allow ProcessResources to be created on the heap, because the pointer to
     // mSequenceNumber shouldn't change until ProcessResources is destroyed.
-    static std::unique_ptr<ProcessResources> create() {
-        return std::unique_ptr<ProcessResources>(new ProcessResources());
+    static std::unique_ptr<ProcessResources> create(
+        std::shared_ptr<vk::VkDecoderGlobalState> sharedGS) {
+        return std::unique_ptr<ProcessResources>(new ProcessResources(sharedGS));
     }
     DISALLOW_COPY_ASSIGN_AND_MOVE(ProcessResources);
 
@@ -35,8 +38,10 @@ class ProcessResources {
     std::atomic<uint32_t>* getSequenceNumberPtr() const { return &mSequenceNumber; }
 
    private:
-    ProcessResources() : mSequenceNumber(0) {}
+    ProcessResources(std::shared_ptr<vk::VkDecoderGlobalState> sharedGS)
+        : mSequenceNumber(0), mShardVulkanGlobalState(sharedGS) {}
     mutable std::atomic<uint32_t> mSequenceNumber;
+    std::shared_ptr<vk::VkDecoderGlobalState> mShardVulkanGlobalState;
 };
 
 }  // namespace gfxstream

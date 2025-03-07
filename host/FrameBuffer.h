@@ -86,6 +86,7 @@
 #include "snapshot/common.h"
 #include "utils/RenderDoc.h"
 #include "vulkan/vk_util.h"
+#include "vulkan/VkDecoderGlobalState.h"
 
 namespace gfxstream {
 namespace vk {
@@ -945,6 +946,14 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     std::unordered_map<void*, PlatformEglContextInfo> m_platformEglContexts;
 #endif
+
+    // the default vulkan global state, when the VulkanSeparateGlobalState
+    // feature is not enabled
+    std::shared_ptr<vk::VkDecoderGlobalState> m_defaultVulkanGlobalState;
+public:
+    std::shared_ptr<vk::VkDecoderGlobalState> getDefaultVulkanGlobalState() {
+        return m_defaultVulkanGlobalState;
+    }
 };
 
 }  // namespace gfxstream
