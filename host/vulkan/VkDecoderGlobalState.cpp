@@ -9092,11 +9092,24 @@ std::shared_ptr<VkDecoderGlobalState> VkDecoderGlobalState::create(VkEmulation* 
 
 // static
 VkDecoderGlobalState* VkDecoderGlobalState::get() {
-    FrameBuffer::getFB()->getDefaultVulkanGlobalState().get();
+    if (FrameBuffer::getFB()) {
+        auto sharedGS = FrameBuffer::getFB()->getDefaultVulkanGlobalState();
+        if (sharedGS) {
+            return sharedGS.get();
+        }
+    }
+    abort();
 }
 
 // static
-void VkDecoderGlobalState::reset() { FrameBuffer::getFB()->getDefaultVulkanGlobalState().reset(); }
+void VkDecoderGlobalState::reset() {
+    if (FrameBuffer::getFB()) {
+        auto sharedGS = FrameBuffer::getFB()->getDefaultVulkanGlobalState();
+        if (sharedGS) {
+            sharedGS.reset();
+        }
+    }
+}
 
 // Snapshots
 bool VkDecoderGlobalState::snapshotsEnabled() const { return mImpl->snapshotsEnabled(); }

@@ -365,6 +365,12 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
         }
 
         fb->m_defaultVulkanGlobalState = vk::VkDecoderGlobalState::create(fb->m_emulationVk.get());
+        if (fb->m_defaultVulkanGlobalState) {
+            ERR("creating global VkDecoderGlobalState 0x%p", fb->m_defaultVulkanGlobalState.get());
+        } else {
+            ERR("cannot global VkDecoderGlobalState 0x%p", vk::VkDecoderGlobalState::get());
+            abort();
+        }
     }
     if (fb->m_emulationVk) {
         fb->m_vulkanEnabled = true;
