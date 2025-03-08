@@ -343,19 +343,20 @@ void delete_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed) {
 }
 
 template <typename VkObjectT>
-void delayed_delete_VkType(VkObjectT boxed, VkDevice device, std::function<void()> callback) {
+void delayed_delete_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed,
+                           VkDevice device, std::function<void()> callback) {
     if (boxed == VK_NULL_HANDLE) {
         return;
     }
 
-    getBoxedHandleManager().removeDelayed((uint64_t)boxed, device, std::move(callback));
+    pBoxedHandleManager->removeDelayed((uint64_t)boxed, device, std::move(callback));
 }
 
 // Custom unbox_* functions or GOLDFISH_VK_LIST_DISPATCHABLE_CUSTOM_UNBOX_HANDLE_TYPES
 // VkQueue objects can be virtual, meaning that multiple boxed queues can map into a single
 // physical queue on the host GPU. Some conversion is needed for unboxing to physical.
-VkQueue unbox_VkQueueImpl(VkQueue boxed) {
-    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
+VkQueue unbox_VkQueueImpl(BoxedHandleManager* pBoxedHandleManager, VkQueue boxed) {
+    BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
     if (!info) {
         return VK_NULL_HANDLE;
     }
@@ -379,7 +380,7 @@ VkObjectT unbox_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed)
     VkObjectT unboxed = VK_NULL_HANDLE;
 
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
-        unboxed = unbox_VkQueueImpl(boxed);
+        unboxed = unbox_VkQueueImpl(pBoxedHandleManager, boxed);
     } else {
         BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
         if (info == nullptr) {
@@ -417,7 +418,7 @@ VkObjectT try_unbox_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT bo
     VkObjectT unboxed = VK_NULL_HANDLE;
 
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
-        unboxed = unbox_VkQueueImpl(boxed);
+        unboxed = unbox_VkQueueImpl(pBoxedHandleManager, boxed);
     } else {
         BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
         if (info != nullptr) {
@@ -570,6 +571,10 @@ void set_boxed_non_dispatchable_VkType(BoxedHandleManager* pBoxedHandleManager, 
     }                                                                                             \
     type BoxedHandleManager::unboxed_to_boxed_non_dispatchable_##type(type unboxed) {             \
         return unboxed_to_boxed_non_dispatchable_VkType<type>(this, unboxed);                     \
+    }                                                                                             \
+    void BoxedHandleManager::delayed_delete_##type(type boxed, VkDevice device,                   \
+                                                   std::function<void()> callback) {              \
+        delayed_delete_VkType<type>(this, boxed, device, std::move(callback));                    \
     }                                                                                             \
     void BoxedHandleManager::set_boxed_non_dispatchable_##type(type boxed, type underlying) {     \
         set_boxed_non_dispatchable_VkType<type>(this, boxed, underlying);                         \
