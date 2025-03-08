@@ -72,6 +72,7 @@ class VkDecoder::Impl {
           m_vk(vkDispatch()),
           m_state(VkDecoderGlobalState::get()),
           mBoxedHandleManager(VkDecoderGlobalState::get()->getBoxedHandleManager()),
+          mUnMarshal(mBoxedHandleManager),
           m_vkStream(nullptr, m_state->getFeatures()),
           m_vkMemReadingStream(nullptr, m_state->getFeatures()),
           m_boxedHandleCreateMapping(m_state),
@@ -94,6 +95,7 @@ class VkDecoder::Impl {
     VulkanDispatch* m_vk;
     VkDecoderGlobalState* m_state;
     BoxedHandleManager&  mBoxedHandleManager;
+    MyUnMarshal mUnMarshal;
     VulkanStream m_vkStream;
     VulkanMemReadingStream m_vkMemReadingStream;
     BoxedHandleCreateMapping m_boxedHandleCreateMapping;
@@ -233,16 +235,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 const VkAllocationCallbacks* pAllocator;
                 VkInstance* pInstance;
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkInstanceCreateInfo));
-                reservedunmarshal_VkInstanceCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkInstanceCreateInfo*)(pCreateInfo),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkInstanceCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkInstanceCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -307,7 +309,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -449,9 +451,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pFeatures;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFeatures, sizeof(VkPhysicalDeviceFeatures));
-                reservedunmarshal_VkPhysicalDeviceFeatures(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                           (VkPhysicalDeviceFeatures*)(pFeatures),
-                                                           readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceFeatures(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkPhysicalDeviceFeatures*)(pFeatures), readStreamPtrPtr);
                 if (pFeatures) {
                     transform_tohost_VkPhysicalDeviceFeatures(
                         m_state, (VkPhysicalDeviceFeatures*)(pFeatures));
@@ -500,9 +502,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pFormatProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFormatProperties, sizeof(VkFormatProperties));
-                reservedunmarshal_VkFormatProperties(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkFormatProperties*)(pFormatProperties),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkFormatProperties(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkFormatProperties*)(pFormatProperties), readStreamPtrPtr);
                 if (pFormatProperties) {
                     transform_tohost_VkFormatProperties(m_state,
                                                         (VkFormatProperties*)(pFormatProperties));
@@ -567,7 +569,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pImageFormatProperties,
                                     sizeof(VkImageFormatProperties));
-                reservedunmarshal_VkImageFormatProperties(
+                mUnMarshal.reservedunmarshal_VkImageFormatProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageFormatProperties*)(pImageFormatProperties), readStreamPtrPtr);
                 if (pImageFormatProperties) {
@@ -632,7 +634,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pProperties, sizeof(VkPhysicalDeviceProperties));
-                reservedunmarshal_VkPhysicalDeviceProperties(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceProperties*)(pProperties), readStreamPtrPtr);
                 if (pProperties) {
@@ -703,7 +705,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pQueueFamilyProperties,
                         (*(pQueueFamilyPropertyCount)) * sizeof(VkQueueFamilyProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pQueueFamilyPropertyCount)); ++i) {
-                        reservedunmarshal_VkQueueFamilyProperties(
+                        mUnMarshal.reservedunmarshal_VkQueueFamilyProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkQueueFamilyProperties*)(pQueueFamilyProperties + i),
                             readStreamPtrPtr);
@@ -784,7 +786,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryProperties,
                                     sizeof(VkPhysicalDeviceMemoryProperties));
-                reservedunmarshal_VkPhysicalDeviceMemoryProperties(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceMemoryProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceMemoryProperties*)(pMemoryProperties), readStreamPtrPtr);
                 if (pMemoryProperties) {
@@ -910,16 +912,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkPhysicalDevice)(VkPhysicalDevice)((VkPhysicalDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkPhysicalDevice(physicalDevice);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkDeviceCreateInfo));
-                reservedunmarshal_VkDeviceCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkDeviceCreateInfo*)(pCreateInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDeviceCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDeviceCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -989,7 +991,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -1055,7 +1057,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pProperties,
                                         (*(pPropertyCount)) * sizeof(VkExtensionProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                        reservedunmarshal_VkExtensionProperties(
+                        mUnMarshal.reservedunmarshal_VkExtensionProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkExtensionProperties*)(pProperties + i), readStreamPtrPtr);
                     }
@@ -1175,7 +1177,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pProperties,
                                         (*(pPropertyCount)) * sizeof(VkExtensionProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                        reservedunmarshal_VkExtensionProperties(
+                        mUnMarshal.reservedunmarshal_VkExtensionProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkExtensionProperties*)(pProperties + i), readStreamPtrPtr);
                     }
@@ -1275,7 +1277,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pProperties,
                                         (*(pPropertyCount)) * sizeof(VkLayerProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                        reservedunmarshal_VkLayerProperties(
+                        mUnMarshal.reservedunmarshal_VkLayerProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkLayerProperties*)(pProperties + i), readStreamPtrPtr);
                     }
@@ -1378,7 +1380,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pProperties,
                                         (*(pPropertyCount)) * sizeof(VkLayerProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                        reservedunmarshal_VkLayerProperties(
+                        mUnMarshal.reservedunmarshal_VkLayerProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkLayerProperties*)(pProperties + i), readStreamPtrPtr);
                     }
@@ -1517,8 +1519,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pSubmits,
                                     ((submitCount)) * sizeof(const VkSubmitInfo));
                 for (uint32_t i = 0; i < (uint32_t)((submitCount)); ++i) {
-                    reservedunmarshal_VkSubmitInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkSubmitInfo*)(pSubmits + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkSubmitInfo(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubmitInfo*)(pSubmits + i),
+                        readStreamPtrPtr);
                 }
                 uint64_t cgen_var_1;
                 memcpy((uint64_t*)&cgen_var_1, *readStreamPtrPtr, 1 * 8);
@@ -1640,16 +1643,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pAllocateInfo, sizeof(const VkMemoryAllocateInfo));
-                reservedunmarshal_VkMemoryAllocateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkMemoryAllocateInfo*)(pAllocateInfo),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkMemoryAllocateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkMemoryAllocateInfo*)(pAllocateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -1734,7 +1737,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -1884,9 +1887,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pMemoryRanges,
                                     ((memoryRangeCount)) * sizeof(const VkMappedMemoryRange));
                 for (uint32_t i = 0; i < (uint32_t)((memoryRangeCount)); ++i) {
-                    reservedunmarshal_VkMappedMemoryRange(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkMappedMemoryRange*)(pMemoryRanges + i),
-                                                          readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkMappedMemoryRange(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkMappedMemoryRange*)(pMemoryRanges + i), readStreamPtrPtr);
                 }
                 if (pMemoryRanges) {
                     for (uint32_t i = 0; i < (uint32_t)((memoryRangeCount)); ++i) {
@@ -1981,9 +1984,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pMemoryRanges,
                                     ((memoryRangeCount)) * sizeof(const VkMappedMemoryRange));
                 for (uint32_t i = 0; i < (uint32_t)((memoryRangeCount)); ++i) {
-                    reservedunmarshal_VkMappedMemoryRange(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkMappedMemoryRange*)(pMemoryRanges + i),
-                                                          readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkMappedMemoryRange(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkMappedMemoryRange*)(pMemoryRanges + i), readStreamPtrPtr);
                 }
                 if (pMemoryRanges) {
                     for (uint32_t i = 0; i < (uint32_t)((memoryRangeCount)); ++i) {
@@ -2212,9 +2215,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements));
-                reservedunmarshal_VkMemoryRequirements(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkMemoryRequirements*)(pMemoryRequirements),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkMemoryRequirements*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pMemoryRequirements) {
                     transform_tohost_VkMemoryRequirements(
                         m_state, (VkMemoryRequirements*)(pMemoryRequirements));
@@ -2266,9 +2269,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements));
-                reservedunmarshal_VkMemoryRequirements(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkMemoryRequirements*)(pMemoryRequirements),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkMemoryRequirements*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pMemoryRequirements) {
                     transform_tohost_VkMemoryRequirements(
                         m_state, (VkMemoryRequirements*)(pMemoryRequirements));
@@ -2344,7 +2347,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                                         (*(pSparseMemoryRequirementCount)) *
                                             sizeof(VkSparseImageMemoryRequirements));
                     for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount)); ++i) {
-                        reservedunmarshal_VkSparseImageMemoryRequirements(
+                        mUnMarshal.reservedunmarshal_VkSparseImageMemoryRequirements(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageMemoryRequirements*)(pSparseMemoryRequirements + i),
                             readStreamPtrPtr);
@@ -2467,7 +2470,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pProperties,
                         (*(pPropertyCount)) * sizeof(VkSparseImageFormatProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                        reservedunmarshal_VkSparseImageFormatProperties(
+                        mUnMarshal.reservedunmarshal_VkSparseImageFormatProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageFormatProperties*)(pProperties + i), readStreamPtrPtr);
                     }
@@ -2551,9 +2554,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pBindInfo,
                                     ((bindInfoCount)) * sizeof(const VkBindSparseInfo));
                 for (uint32_t i = 0; i < (uint32_t)((bindInfoCount)); ++i) {
-                    reservedunmarshal_VkBindSparseInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkBindSparseInfo*)(pBindInfo + i),
-                                                       readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkBindSparseInfo(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkBindSparseInfo*)(pBindInfo + i), readStreamPtrPtr);
                 }
                 uint64_t cgen_var_1;
                 memcpy((uint64_t*)&cgen_var_1, *readStreamPtrPtr, 1 * 8);
@@ -2605,16 +2608,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkFenceCreateInfo));
-                reservedunmarshal_VkFenceCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkFenceCreateInfo*)(pCreateInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkFenceCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkFenceCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -2692,7 +2695,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -2886,16 +2889,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkSemaphoreCreateInfo));
-                reservedunmarshal_VkSemaphoreCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkSemaphoreCreateInfo*)(pCreateInfo),
-                                                        readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSemaphoreCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSemaphoreCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -2977,7 +2980,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3021,16 +3024,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkEventCreateInfo));
-                reservedunmarshal_VkEventCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkEventCreateInfo*)(pCreateInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkEventCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkEventCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3111,7 +3114,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3274,16 +3277,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkQueryPoolCreateInfo));
-                reservedunmarshal_VkQueryPoolCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkQueryPoolCreateInfo*)(pCreateInfo),
-                                                        readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkQueryPoolCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkQueryPoolCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3368,7 +3371,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3483,16 +3486,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkBufferCreateInfo));
-                reservedunmarshal_VkBufferCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkBufferCreateInfo*)(pCreateInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkBufferCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBufferCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3572,7 +3575,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3617,16 +3620,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkBufferViewCreateInfo));
-                reservedunmarshal_VkBufferViewCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                         (VkBufferViewCreateInfo*)(pCreateInfo),
-                                                         readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkBufferViewCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkBufferViewCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3711,7 +3714,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3752,16 +3755,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkImageCreateInfo));
-                reservedunmarshal_VkImageCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkImageCreateInfo*)(pCreateInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkImageCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3840,7 +3843,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -3889,15 +3892,15 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 1 * 8;
                 *(VkImage*)&image = (VkImage)mBoxedHandleManager.unbox_VkImage((VkImage)(*&cgen_var_1));
                 vkReadStream->alloc((void**)&pSubresource, sizeof(const VkImageSubresource));
-                reservedunmarshal_VkImageSubresource(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkImageSubresource*)(pSubresource),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkImageSubresource(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageSubresource*)(pSubresource),
+                    readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pLayout;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pLayout, sizeof(VkSubresourceLayout));
-                reservedunmarshal_VkSubresourceLayout(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkSubresourceLayout*)(pLayout),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubresourceLayout(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubresourceLayout*)(pLayout),
+                    readStreamPtrPtr);
                 if (pSubresource) {
                     transform_tohost_VkImageSubresource(m_state,
                                                         (VkImageSubresource*)(pSubresource));
@@ -3947,16 +3950,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkImageViewCreateInfo));
-                reservedunmarshal_VkImageViewCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkImageViewCreateInfo*)(pCreateInfo),
-                                                        readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkImageViewCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageViewCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4037,7 +4040,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4080,16 +4083,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkShaderModuleCreateInfo));
-                reservedunmarshal_VkShaderModuleCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                           (VkShaderModuleCreateInfo*)(pCreateInfo),
-                                                           readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkShaderModuleCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkShaderModuleCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4177,7 +4180,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4220,7 +4223,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkPipelineCacheCreateInfo));
-                reservedunmarshal_VkPipelineCacheCreateInfo(
+                mUnMarshal.reservedunmarshal_VkPipelineCacheCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPipelineCacheCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -4229,7 +4232,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4316,7 +4319,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4521,7 +4524,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pCreateInfos,
                     ((createInfoCount)) * sizeof(const VkGraphicsPipelineCreateInfo));
                 for (uint32_t i = 0; i < (uint32_t)((createInfoCount)); ++i) {
-                    reservedunmarshal_VkGraphicsPipelineCreateInfo(
+                    mUnMarshal.reservedunmarshal_VkGraphicsPipelineCreateInfo(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkGraphicsPipelineCreateInfo*)(pCreateInfos + i), readStreamPtrPtr);
                 }
@@ -4531,7 +4534,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4630,7 +4633,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pCreateInfos,
                     ((createInfoCount)) * sizeof(const VkComputePipelineCreateInfo));
                 for (uint32_t i = 0; i < (uint32_t)((createInfoCount)); ++i) {
-                    reservedunmarshal_VkComputePipelineCreateInfo(
+                    mUnMarshal.reservedunmarshal_VkComputePipelineCreateInfo(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkComputePipelineCreateInfo*)(pCreateInfos + i), readStreamPtrPtr);
                 }
@@ -4640,7 +4643,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4738,7 +4741,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4781,7 +4784,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkPipelineLayoutCreateInfo));
-                reservedunmarshal_VkPipelineLayoutCreateInfo(
+                mUnMarshal.reservedunmarshal_VkPipelineLayoutCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPipelineLayoutCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -4790,7 +4793,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4879,7 +4882,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -4928,16 +4931,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkSamplerCreateInfo));
-                reservedunmarshal_VkSamplerCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkSamplerCreateInfo*)(pCreateInfo),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSamplerCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSamplerCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5018,7 +5021,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5062,7 +5065,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkDescriptorSetLayoutCreateInfo));
-                reservedunmarshal_VkDescriptorSetLayoutCreateInfo(
+                mUnMarshal.reservedunmarshal_VkDescriptorSetLayoutCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorSetLayoutCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -5071,7 +5074,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5163,7 +5166,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5208,7 +5211,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkDescriptorPoolCreateInfo));
-                reservedunmarshal_VkDescriptorPoolCreateInfo(
+                mUnMarshal.reservedunmarshal_VkDescriptorPoolCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorPoolCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -5217,7 +5220,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5304,7 +5307,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5395,7 +5398,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pAllocateInfo,
                                     sizeof(const VkDescriptorSetAllocateInfo));
-                reservedunmarshal_VkDescriptorSetAllocateInfo(
+                mUnMarshal.reservedunmarshal_VkDescriptorSetAllocateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorSetAllocateInfo*)(pAllocateInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pDescriptorSets;
@@ -5560,7 +5563,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pDescriptorWrites,
                                     ((descriptorWriteCount)) * sizeof(const VkWriteDescriptorSet));
                 for (uint32_t i = 0; i < (uint32_t)((descriptorWriteCount)); ++i) {
-                    reservedunmarshal_VkWriteDescriptorSet(
+                    mUnMarshal.reservedunmarshal_VkWriteDescriptorSet(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkWriteDescriptorSet*)(pDescriptorWrites + i), readStreamPtrPtr);
                 }
@@ -5569,7 +5572,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pDescriptorCopies,
                                     ((descriptorCopyCount)) * sizeof(const VkCopyDescriptorSet));
                 for (uint32_t i = 0; i < (uint32_t)((descriptorCopyCount)); ++i) {
-                    reservedunmarshal_VkCopyDescriptorSet(
+                    mUnMarshal.reservedunmarshal_VkCopyDescriptorSet(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkCopyDescriptorSet*)(pDescriptorCopies + i), readStreamPtrPtr);
                 }
@@ -5626,16 +5629,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkFramebufferCreateInfo));
-                reservedunmarshal_VkFramebufferCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkFramebufferCreateInfo*)(pCreateInfo),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkFramebufferCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkFramebufferCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5721,7 +5724,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5764,16 +5767,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkRenderPassCreateInfo));
-                reservedunmarshal_VkRenderPassCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                         (VkRenderPassCreateInfo*)(pCreateInfo),
-                                                         readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderPassCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkRenderPassCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5857,7 +5860,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -5908,8 +5911,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pGranularity;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pGranularity, sizeof(VkExtent2D));
-                reservedunmarshal_VkExtent2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                             (VkExtent2D*)(pGranularity), readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkExtent2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                                                        (VkExtent2D*)(pGranularity),
+                                                        readStreamPtrPtr);
                 if (pGranularity) {
                     transform_tohost_VkExtent2D(m_state, (VkExtent2D*)(pGranularity));
                 }
@@ -5953,16 +5957,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkCommandPoolCreateInfo));
-                reservedunmarshal_VkCommandPoolCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkCommandPoolCreateInfo*)(pCreateInfo),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkCommandPoolCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkCommandPoolCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -6048,7 +6052,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -6137,7 +6141,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pAllocateInfo,
                                     sizeof(const VkCommandBufferAllocateInfo));
-                reservedunmarshal_VkCommandBufferAllocateInfo(
+                mUnMarshal.reservedunmarshal_VkCommandBufferAllocateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCommandBufferAllocateInfo*)(pAllocateInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pCommandBuffers;
@@ -6288,9 +6292,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pBeginInfo, sizeof(const VkCommandBufferBeginInfo));
-                reservedunmarshal_VkCommandBufferBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                           (VkCommandBufferBeginInfo*)(pBeginInfo),
-                                                           readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkCommandBufferBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkCommandBufferBeginInfo*)(pBeginInfo), readStreamPtrPtr);
                 if (pBeginInfo) {
                     transform_tohost_VkCommandBufferBeginInfo(
                         m_state, (VkCommandBufferBeginInfo*)(pBeginInfo));
@@ -6460,8 +6464,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pViewports,
                                     ((viewportCount)) * sizeof(const VkViewport));
                 for (uint32_t i = 0; i < (uint32_t)((viewportCount)); ++i) {
-                    reservedunmarshal_VkViewport(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                 (VkViewport*)(pViewports + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkViewport(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkViewport*)(pViewports + i),
+                        readStreamPtrPtr);
                 }
                 if (pViewports) {
                     for (uint32_t i = 0; i < (uint32_t)((viewportCount)); ++i) {
@@ -6512,8 +6517,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pScissors, ((scissorCount)) * sizeof(const VkRect2D));
                 for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
-                    reservedunmarshal_VkRect2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                               (VkRect2D*)(pScissors + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkRect2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                                                          (VkRect2D*)(pScissors + i),
+                                                          readStreamPtrPtr);
                 }
                 if (pScissors) {
                     for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
@@ -7304,8 +7310,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pRegions,
                                     ((regionCount)) * sizeof(const VkBufferCopy));
                 for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
-                    reservedunmarshal_VkBufferCopy(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkBufferCopy*)(pRegions + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkBufferCopy(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBufferCopy*)(pRegions + i),
+                        readStreamPtrPtr);
                 }
                 if (pRegions) {
                     for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
@@ -7366,8 +7373,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pRegions, ((regionCount)) * sizeof(const VkImageCopy));
                 for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
-                    reservedunmarshal_VkImageCopy(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                  (VkImageCopy*)(pRegions + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkImageCopy(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageCopy*)(pRegions + i),
+                        readStreamPtrPtr);
                 }
                 if (pRegions) {
                     for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
@@ -7434,8 +7442,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pRegions, ((regionCount)) * sizeof(const VkImageBlit));
                 for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
-                    reservedunmarshal_VkImageBlit(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                  (VkImageBlit*)(pRegions + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkImageBlit(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageBlit*)(pRegions + i),
+                        readStreamPtrPtr);
                 }
                 memcpy((VkFilter*)&filter, *readStreamPtrPtr, sizeof(VkFilter));
                 *readStreamPtrPtr += sizeof(VkFilter);
@@ -7500,9 +7509,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pRegions,
                                     ((regionCount)) * sizeof(const VkBufferImageCopy));
                 for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
-                    reservedunmarshal_VkBufferImageCopy(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkBufferImageCopy*)(pRegions + i),
-                                                        readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkBufferImageCopy(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkBufferImageCopy*)(pRegions + i), readStreamPtrPtr);
                 }
                 if (pRegions) {
                     for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
@@ -7566,9 +7575,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pRegions,
                                     ((regionCount)) * sizeof(const VkBufferImageCopy));
                 for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
-                    reservedunmarshal_VkBufferImageCopy(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkBufferImageCopy*)(pRegions + i),
-                                                        readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkBufferImageCopy(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkBufferImageCopy*)(pRegions + i), readStreamPtrPtr);
                 }
                 if (pRegions) {
                     for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
@@ -7725,14 +7734,15 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 memcpy((VkImageLayout*)&imageLayout, *readStreamPtrPtr, sizeof(VkImageLayout));
                 *readStreamPtrPtr += sizeof(VkImageLayout);
                 vkReadStream->alloc((void**)&pColor, sizeof(const VkClearColorValue));
-                reservedunmarshal_VkClearColorValue(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkClearColorValue*)(pColor), readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkClearColorValue(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkClearColorValue*)(pColor),
+                    readStreamPtrPtr);
                 memcpy((uint32_t*)&rangeCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pRanges,
                                     ((rangeCount)) * sizeof(const VkImageSubresourceRange));
                 for (uint32_t i = 0; i < (uint32_t)((rangeCount)); ++i) {
-                    reservedunmarshal_VkImageSubresourceRange(
+                    mUnMarshal.reservedunmarshal_VkImageSubresourceRange(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkImageSubresourceRange*)(pRanges + i), readStreamPtrPtr);
                 }
@@ -7793,7 +7803,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 memcpy((VkImageLayout*)&imageLayout, *readStreamPtrPtr, sizeof(VkImageLayout));
                 *readStreamPtrPtr += sizeof(VkImageLayout);
                 vkReadStream->alloc((void**)&pDepthStencil, sizeof(const VkClearDepthStencilValue));
-                reservedunmarshal_VkClearDepthStencilValue(
+                mUnMarshal.reservedunmarshal_VkClearDepthStencilValue(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkClearDepthStencilValue*)(pDepthStencil), readStreamPtrPtr);
                 memcpy((uint32_t*)&rangeCount, *readStreamPtrPtr, sizeof(uint32_t));
@@ -7801,7 +7811,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pRanges,
                                     ((rangeCount)) * sizeof(const VkImageSubresourceRange));
                 for (uint32_t i = 0; i < (uint32_t)((rangeCount)); ++i) {
-                    reservedunmarshal_VkImageSubresourceRange(
+                    mUnMarshal.reservedunmarshal_VkImageSubresourceRange(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkImageSubresourceRange*)(pRanges + i), readStreamPtrPtr);
                 }
@@ -7860,16 +7870,17 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pAttachments,
                                     ((attachmentCount)) * sizeof(const VkClearAttachment));
                 for (uint32_t i = 0; i < (uint32_t)((attachmentCount)); ++i) {
-                    reservedunmarshal_VkClearAttachment(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkClearAttachment*)(pAttachments + i),
-                                                        readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkClearAttachment(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkClearAttachment*)(pAttachments + i), readStreamPtrPtr);
                 }
                 memcpy((uint32_t*)&rectCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pRects, ((rectCount)) * sizeof(const VkClearRect));
                 for (uint32_t i = 0; i < (uint32_t)((rectCount)); ++i) {
-                    reservedunmarshal_VkClearRect(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                  (VkClearRect*)(pRects + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkClearRect(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkClearRect*)(pRects + i),
+                        readStreamPtrPtr);
                 }
                 if (pAttachments) {
                     for (uint32_t i = 0; i < (uint32_t)((attachmentCount)); ++i) {
@@ -7941,9 +7952,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pRegions,
                                     ((regionCount)) * sizeof(const VkImageResolve));
                 for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
-                    reservedunmarshal_VkImageResolve(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkImageResolve*)(pRegions + i),
-                                                     readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkImageResolve(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageResolve*)(pRegions + i),
+                        readStreamPtrPtr);
                 }
                 if (pRegions) {
                     for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
@@ -8101,9 +8112,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pMemoryBarriers,
                                     ((memoryBarrierCount)) * sizeof(const VkMemoryBarrier));
                 for (uint32_t i = 0; i < (uint32_t)((memoryBarrierCount)); ++i) {
-                    reservedunmarshal_VkMemoryBarrier(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkMemoryBarrier*)(pMemoryBarriers + i),
-                                                      readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkMemoryBarrier(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkMemoryBarrier*)(pMemoryBarriers + i), readStreamPtrPtr);
                 }
                 memcpy((uint32_t*)&bufferMemoryBarrierCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
@@ -8111,7 +8122,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pBufferMemoryBarriers,
                     ((bufferMemoryBarrierCount)) * sizeof(const VkBufferMemoryBarrier));
                 for (uint32_t i = 0; i < (uint32_t)((bufferMemoryBarrierCount)); ++i) {
-                    reservedunmarshal_VkBufferMemoryBarrier(
+                    mUnMarshal.reservedunmarshal_VkBufferMemoryBarrier(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkBufferMemoryBarrier*)(pBufferMemoryBarriers + i), readStreamPtrPtr);
                 }
@@ -8121,7 +8132,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pImageMemoryBarriers,
                     ((imageMemoryBarrierCount)) * sizeof(const VkImageMemoryBarrier));
                 for (uint32_t i = 0; i < (uint32_t)((imageMemoryBarrierCount)); ++i) {
-                    reservedunmarshal_VkImageMemoryBarrier(
+                    mUnMarshal.reservedunmarshal_VkImageMemoryBarrier(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkImageMemoryBarrier*)(pImageMemoryBarriers + i), readStreamPtrPtr);
                 }
@@ -8210,9 +8221,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pMemoryBarriers,
                                     ((memoryBarrierCount)) * sizeof(const VkMemoryBarrier));
                 for (uint32_t i = 0; i < (uint32_t)((memoryBarrierCount)); ++i) {
-                    reservedunmarshal_VkMemoryBarrier(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkMemoryBarrier*)(pMemoryBarriers + i),
-                                                      readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkMemoryBarrier(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkMemoryBarrier*)(pMemoryBarriers + i), readStreamPtrPtr);
                 }
                 memcpy((uint32_t*)&bufferMemoryBarrierCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
@@ -8220,7 +8231,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pBufferMemoryBarriers,
                     ((bufferMemoryBarrierCount)) * sizeof(const VkBufferMemoryBarrier));
                 for (uint32_t i = 0; i < (uint32_t)((bufferMemoryBarrierCount)); ++i) {
-                    reservedunmarshal_VkBufferMemoryBarrier(
+                    mUnMarshal.reservedunmarshal_VkBufferMemoryBarrier(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkBufferMemoryBarrier*)(pBufferMemoryBarriers + i), readStreamPtrPtr);
                 }
@@ -8230,7 +8241,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pImageMemoryBarriers,
                     ((imageMemoryBarrierCount)) * sizeof(const VkImageMemoryBarrier));
                 for (uint32_t i = 0; i < (uint32_t)((imageMemoryBarrierCount)); ++i) {
-                    reservedunmarshal_VkImageMemoryBarrier(
+                    mUnMarshal.reservedunmarshal_VkImageMemoryBarrier(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkImageMemoryBarrier*)(pImageMemoryBarriers + i), readStreamPtrPtr);
                 }
@@ -8599,9 +8610,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pRenderPassBegin, sizeof(const VkRenderPassBeginInfo));
-                reservedunmarshal_VkRenderPassBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkRenderPassBeginInfo*)(pRenderPassBegin),
-                                                        readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderPassBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkRenderPassBeginInfo*)(pRenderPassBegin), readStreamPtrPtr);
                 memcpy((VkSubpassContents*)&contents, *readStreamPtrPtr, sizeof(VkSubpassContents));
                 *readStreamPtrPtr += sizeof(VkSubpassContents);
                 if (pRenderPassBegin) {
@@ -8793,7 +8804,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pBindInfos,
                                     ((bindInfoCount)) * sizeof(const VkBindBufferMemoryInfo));
                 for (uint32_t i = 0; i < (uint32_t)((bindInfoCount)); ++i) {
-                    reservedunmarshal_VkBindBufferMemoryInfo(
+                    mUnMarshal.reservedunmarshal_VkBindBufferMemoryInfo(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkBindBufferMemoryInfo*)(pBindInfos + i), readStreamPtrPtr);
                 }
@@ -8846,7 +8857,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pBindInfos,
                                     ((bindInfoCount)) * sizeof(const VkBindImageMemoryInfo));
                 for (uint32_t i = 0; i < (uint32_t)((bindInfoCount)); ++i) {
-                    reservedunmarshal_VkBindImageMemoryInfo(
+                    mUnMarshal.reservedunmarshal_VkBindImageMemoryInfo(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkBindImageMemoryInfo*)(pBindInfos + i), readStreamPtrPtr);
                 }
@@ -9062,7 +9073,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pPhysicalDeviceGroupProperties,
                         (*(pPhysicalDeviceGroupCount)) * sizeof(VkPhysicalDeviceGroupProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPhysicalDeviceGroupCount)); ++i) {
-                        reservedunmarshal_VkPhysicalDeviceGroupProperties(
+                        mUnMarshal.reservedunmarshal_VkPhysicalDeviceGroupProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkPhysicalDeviceGroupProperties*)(pPhysicalDeviceGroupProperties + i),
                             readStreamPtrPtr);
@@ -9154,13 +9165,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkImageMemoryRequirementsInfo2));
-                reservedunmarshal_VkImageMemoryRequirementsInfo2(
+                mUnMarshal.reservedunmarshal_VkImageMemoryRequirementsInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageMemoryRequirementsInfo2*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -9212,13 +9223,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkBufferMemoryRequirementsInfo2));
-                reservedunmarshal_VkBufferMemoryRequirementsInfo2(
+                mUnMarshal.reservedunmarshal_VkBufferMemoryRequirementsInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkBufferMemoryRequirementsInfo2*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -9275,7 +9286,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo,
                                     sizeof(const VkImageSparseMemoryRequirementsInfo2));
-                reservedunmarshal_VkImageSparseMemoryRequirementsInfo2(
+                mUnMarshal.reservedunmarshal_VkImageSparseMemoryRequirementsInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageSparseMemoryRequirementsInfo2*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pSparseMemoryRequirementCount;
@@ -9302,7 +9313,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                                         (*(pSparseMemoryRequirementCount)) *
                                             sizeof(VkSparseImageMemoryRequirements2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount)); ++i) {
-                        reservedunmarshal_VkSparseImageMemoryRequirements2(
+                        mUnMarshal.reservedunmarshal_VkSparseImageMemoryRequirements2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i),
                             readStreamPtrPtr);
@@ -9391,7 +9402,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pFeatures;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFeatures, sizeof(VkPhysicalDeviceFeatures2));
-                reservedunmarshal_VkPhysicalDeviceFeatures2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceFeatures2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceFeatures2*)(pFeatures), readStreamPtrPtr);
                 if (pFeatures) {
@@ -9439,7 +9450,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pProperties, sizeof(VkPhysicalDeviceProperties2));
-                reservedunmarshal_VkPhysicalDeviceProperties2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceProperties2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceProperties2*)(pProperties), readStreamPtrPtr);
                 if (pProperties) {
@@ -9492,9 +9503,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pFormatProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFormatProperties, sizeof(VkFormatProperties2));
-                reservedunmarshal_VkFormatProperties2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkFormatProperties2*)(pFormatProperties),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkFormatProperties2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkFormatProperties2*)(pFormatProperties), readStreamPtrPtr);
                 if (pFormatProperties) {
                     transform_tohost_VkFormatProperties2(m_state,
                                                          (VkFormatProperties2*)(pFormatProperties));
@@ -9543,14 +9554,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkPhysicalDevice(physicalDevice);
                 vkReadStream->alloc((void**)&pImageFormatInfo,
                                     sizeof(const VkPhysicalDeviceImageFormatInfo2));
-                reservedunmarshal_VkPhysicalDeviceImageFormatInfo2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceImageFormatInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceImageFormatInfo2*)(pImageFormatInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pImageFormatProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pImageFormatProperties,
                                     sizeof(VkImageFormatProperties2));
-                reservedunmarshal_VkImageFormatProperties2(
+                mUnMarshal.reservedunmarshal_VkImageFormatProperties2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageFormatProperties2*)(pImageFormatProperties), readStreamPtrPtr);
                 if (pImageFormatInfo) {
@@ -9640,7 +9651,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pQueueFamilyProperties,
                         (*(pQueueFamilyPropertyCount)) * sizeof(VkQueueFamilyProperties2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pQueueFamilyPropertyCount)); ++i) {
-                        reservedunmarshal_VkQueueFamilyProperties2(
+                        mUnMarshal.reservedunmarshal_VkQueueFamilyProperties2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkQueueFamilyProperties2*)(pQueueFamilyProperties + i),
                             readStreamPtrPtr);
@@ -9721,7 +9732,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryProperties,
                                     sizeof(VkPhysicalDeviceMemoryProperties2));
-                reservedunmarshal_VkPhysicalDeviceMemoryProperties2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceMemoryProperties2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceMemoryProperties2*)(pMemoryProperties), readStreamPtrPtr);
                 if (pMemoryProperties) {
@@ -9775,7 +9786,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for physicalDevice;
                 vkReadStream->alloc((void**)&pFormatInfo,
                                     sizeof(const VkPhysicalDeviceSparseImageFormatInfo2));
-                reservedunmarshal_VkPhysicalDeviceSparseImageFormatInfo2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceSparseImageFormatInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceSparseImageFormatInfo2*)(pFormatInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pPropertyCount;
@@ -9800,7 +9811,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pProperties,
                         (*(pPropertyCount)) * sizeof(VkSparseImageFormatProperties2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                        reservedunmarshal_VkSparseImageFormatProperties2(
+                        mUnMarshal.reservedunmarshal_VkSparseImageFormatProperties2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageFormatProperties2*)(pProperties + i), readStreamPtrPtr);
                     }
@@ -9920,9 +9931,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pQueueInfo, sizeof(const VkDeviceQueueInfo2));
-                reservedunmarshal_VkDeviceQueueInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkDeviceQueueInfo2*)(pQueueInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDeviceQueueInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDeviceQueueInfo2*)(pQueueInfo),
+                    readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pQueue;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pQueue, sizeof(VkQueue));
@@ -9973,7 +9984,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkSamplerYcbcrConversionCreateInfo));
-                reservedunmarshal_VkSamplerYcbcrConversionCreateInfo(
+                mUnMarshal.reservedunmarshal_VkSamplerYcbcrConversionCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkSamplerYcbcrConversionCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -9982,7 +9993,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -10075,7 +10086,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -10121,7 +10132,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkDescriptorUpdateTemplateCreateInfo));
-                reservedunmarshal_VkDescriptorUpdateTemplateCreateInfo(
+                mUnMarshal.reservedunmarshal_VkDescriptorUpdateTemplateCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorUpdateTemplateCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -10130,7 +10141,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -10228,7 +10239,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -10335,14 +10346,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for physicalDevice;
                 vkReadStream->alloc((void**)&pExternalBufferInfo,
                                     sizeof(const VkPhysicalDeviceExternalBufferInfo));
-                reservedunmarshal_VkPhysicalDeviceExternalBufferInfo(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceExternalBufferInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceExternalBufferInfo*)(pExternalBufferInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pExternalBufferProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pExternalBufferProperties,
                                     sizeof(VkExternalBufferProperties));
-                reservedunmarshal_VkExternalBufferProperties(
+                mUnMarshal.reservedunmarshal_VkExternalBufferProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalBufferProperties*)(pExternalBufferProperties), readStreamPtrPtr);
                 if (pExternalBufferInfo) {
@@ -10407,14 +10418,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for physicalDevice;
                 vkReadStream->alloc((void**)&pExternalFenceInfo,
                                     sizeof(const VkPhysicalDeviceExternalFenceInfo));
-                reservedunmarshal_VkPhysicalDeviceExternalFenceInfo(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceExternalFenceInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceExternalFenceInfo*)(pExternalFenceInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pExternalFenceProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pExternalFenceProperties,
                                     sizeof(VkExternalFenceProperties));
-                reservedunmarshal_VkExternalFenceProperties(
+                mUnMarshal.reservedunmarshal_VkExternalFenceProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalFenceProperties*)(pExternalFenceProperties), readStreamPtrPtr);
                 if (pExternalFenceInfo) {
@@ -10471,7 +10482,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkPhysicalDevice(physicalDevice);
                 vkReadStream->alloc((void**)&pExternalSemaphoreInfo,
                                     sizeof(const VkPhysicalDeviceExternalSemaphoreInfo));
-                reservedunmarshal_VkPhysicalDeviceExternalSemaphoreInfo(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceExternalSemaphoreInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceExternalSemaphoreInfo*)(pExternalSemaphoreInfo),
                     readStreamPtrPtr);
@@ -10479,7 +10490,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pExternalSemaphoreProperties,
                                     sizeof(VkExternalSemaphoreProperties));
-                reservedunmarshal_VkExternalSemaphoreProperties(
+                mUnMarshal.reservedunmarshal_VkExternalSemaphoreProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalSemaphoreProperties*)(pExternalSemaphoreProperties),
                     readStreamPtrPtr);
@@ -10539,13 +10550,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkDescriptorSetLayoutCreateInfo));
-                reservedunmarshal_VkDescriptorSetLayoutCreateInfo(
+                mUnMarshal.reservedunmarshal_VkDescriptorSetLayoutCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorSetLayoutCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pSupport;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pSupport, sizeof(VkDescriptorSetLayoutSupport));
-                reservedunmarshal_VkDescriptorSetLayoutSupport(
+                mUnMarshal.reservedunmarshal_VkDescriptorSetLayoutSupport(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorSetLayoutSupport*)(pSupport), readStreamPtrPtr);
                 if (pCreateInfo) {
@@ -10719,16 +10730,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkRenderPassCreateInfo2));
-                reservedunmarshal_VkRenderPassCreateInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkRenderPassCreateInfo2*)(pCreateInfo),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderPassCreateInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkRenderPassCreateInfo2*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -10799,13 +10810,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pRenderPassBegin, sizeof(const VkRenderPassBeginInfo));
-                reservedunmarshal_VkRenderPassBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkRenderPassBeginInfo*)(pRenderPassBegin),
-                                                        readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderPassBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkRenderPassBeginInfo*)(pRenderPassBegin), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pSubpassBeginInfo, sizeof(const VkSubpassBeginInfo));
-                reservedunmarshal_VkSubpassBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkSubpassBeginInfo*)(pSubpassBeginInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkSubpassBeginInfo*)(pSubpassBeginInfo), readStreamPtrPtr);
                 if (pRenderPassBegin) {
                     transform_tohost_VkRenderPassBeginInfo(
                         m_state, (VkRenderPassBeginInfo*)(pRenderPassBegin));
@@ -10851,13 +10862,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pSubpassBeginInfo, sizeof(const VkSubpassBeginInfo));
-                reservedunmarshal_VkSubpassBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkSubpassBeginInfo*)(pSubpassBeginInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkSubpassBeginInfo*)(pSubpassBeginInfo), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pSubpassEndInfo, sizeof(const VkSubpassEndInfo));
-                reservedunmarshal_VkSubpassEndInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkSubpassEndInfo*)(pSubpassEndInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassEndInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubpassEndInfo*)(pSubpassEndInfo),
+                    readStreamPtrPtr);
                 if (pSubpassBeginInfo) {
                     transform_tohost_VkSubpassBeginInfo(m_state,
                                                         (VkSubpassBeginInfo*)(pSubpassBeginInfo));
@@ -10902,9 +10913,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pSubpassEndInfo, sizeof(const VkSubpassEndInfo));
-                reservedunmarshal_VkSubpassEndInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkSubpassEndInfo*)(pSubpassEndInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassEndInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubpassEndInfo*)(pSubpassEndInfo),
+                    readStreamPtrPtr);
                 if (pSubpassEndInfo) {
                     transform_tohost_VkSubpassEndInfo(m_state,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
@@ -11038,9 +11049,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pWaitInfo, sizeof(const VkSemaphoreWaitInfo));
-                reservedunmarshal_VkSemaphoreWaitInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkSemaphoreWaitInfo*)(pWaitInfo),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSemaphoreWaitInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSemaphoreWaitInfo*)(pWaitInfo),
+                    readStreamPtrPtr);
                 memcpy((uint64_t*)&timeout, *readStreamPtrPtr, sizeof(uint64_t));
                 *readStreamPtrPtr += sizeof(uint64_t);
                 if (pWaitInfo) {
@@ -11085,9 +11096,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pSignalInfo, sizeof(const VkSemaphoreSignalInfo));
-                reservedunmarshal_VkSemaphoreSignalInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkSemaphoreSignalInfo*)(pSignalInfo),
-                                                        readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSemaphoreSignalInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSemaphoreSignalInfo*)(pSignalInfo),
+                    readStreamPtrPtr);
                 if (pSignalInfo) {
                     transform_tohost_VkSemaphoreSignalInfo(m_state,
                                                            (VkSemaphoreSignalInfo*)(pSignalInfo));
@@ -11131,7 +11142,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkBufferDeviceAddressInfo));
-                reservedunmarshal_VkBufferDeviceAddressInfo(
+                mUnMarshal.reservedunmarshal_VkBufferDeviceAddressInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBufferDeviceAddressInfo*)(pInfo),
                     readStreamPtrPtr);
                 if (pInfo) {
@@ -11176,7 +11187,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkBufferDeviceAddressInfo));
-                reservedunmarshal_VkBufferDeviceAddressInfo(
+                mUnMarshal.reservedunmarshal_VkBufferDeviceAddressInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBufferDeviceAddressInfo*)(pInfo),
                     readStreamPtrPtr);
                 if (pInfo) {
@@ -11221,7 +11232,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo,
                                     sizeof(const VkDeviceMemoryOpaqueCaptureAddressInfo));
-                reservedunmarshal_VkDeviceMemoryOpaqueCaptureAddressInfo(
+                mUnMarshal.reservedunmarshal_VkDeviceMemoryOpaqueCaptureAddressInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceMemoryOpaqueCaptureAddressInfo*)(pInfo), readStreamPtrPtr);
                 if (pInfo) {
@@ -11291,7 +11302,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pToolProperties,
                                         (*(pToolCount)) * sizeof(VkPhysicalDeviceToolProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pToolCount)); ++i) {
-                        reservedunmarshal_VkPhysicalDeviceToolProperties(
+                        mUnMarshal.reservedunmarshal_VkPhysicalDeviceToolProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkPhysicalDeviceToolProperties*)(pToolProperties + i),
                             readStreamPtrPtr);
@@ -11381,7 +11392,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkPrivateDataSlotCreateInfo));
-                reservedunmarshal_VkPrivateDataSlotCreateInfo(
+                mUnMarshal.reservedunmarshal_VkPrivateDataSlotCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPrivateDataSlotCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -11390,7 +11401,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -11480,7 +11491,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -11640,9 +11651,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 1 * 8;
                 *(VkEvent*)&event = (VkEvent)mBoxedHandleManager.unbox_VkEvent((VkEvent)(*&cgen_var_1));
                 vkReadStream->alloc((void**)&pDependencyInfo, sizeof(const VkDependencyInfo));
-                reservedunmarshal_VkDependencyInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkDependencyInfo*)(pDependencyInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDependencyInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDependencyInfo*)(pDependencyInfo),
+                    readStreamPtrPtr);
                 if (pDependencyInfo) {
                     transform_tohost_VkDependencyInfo(m_state,
                                                       (VkDependencyInfo*)(pDependencyInfo));
@@ -11739,9 +11750,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pDependencyInfos,
                                     ((eventCount)) * sizeof(const VkDependencyInfo));
                 for (uint32_t i = 0; i < (uint32_t)((eventCount)); ++i) {
-                    reservedunmarshal_VkDependencyInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkDependencyInfo*)(pDependencyInfos + i),
-                                                       readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkDependencyInfo(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkDependencyInfo*)(pDependencyInfos + i), readStreamPtrPtr);
                 }
                 if (pDependencyInfos) {
                     for (uint32_t i = 0; i < (uint32_t)((eventCount)); ++i) {
@@ -11783,9 +11794,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pDependencyInfo, sizeof(const VkDependencyInfo));
-                reservedunmarshal_VkDependencyInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkDependencyInfo*)(pDependencyInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDependencyInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDependencyInfo*)(pDependencyInfo),
+                    readStreamPtrPtr);
                 if (pDependencyInfo) {
                     transform_tohost_VkDependencyInfo(m_state,
                                                       (VkDependencyInfo*)(pDependencyInfo));
@@ -11873,9 +11884,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pSubmits,
                                     ((submitCount)) * sizeof(const VkSubmitInfo2));
                 for (uint32_t i = 0; i < (uint32_t)((submitCount)); ++i) {
-                    reservedunmarshal_VkSubmitInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkSubmitInfo2*)(pSubmits + i),
-                                                    readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkSubmitInfo2(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubmitInfo2*)(pSubmits + i),
+                        readStreamPtrPtr);
                 }
                 uint64_t cgen_var_1;
                 memcpy((uint64_t*)&cgen_var_1, *readStreamPtrPtr, 1 * 8);
@@ -11927,9 +11938,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pCopyBufferInfo, sizeof(const VkCopyBufferInfo2));
-                reservedunmarshal_VkCopyBufferInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkCopyBufferInfo2*)(pCopyBufferInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkCopyBufferInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkCopyBufferInfo2*)(pCopyBufferInfo),
+                    readStreamPtrPtr);
                 if (pCopyBufferInfo) {
                     transform_tohost_VkCopyBufferInfo2(m_state,
                                                        (VkCopyBufferInfo2*)(pCopyBufferInfo));
@@ -11965,9 +11976,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pCopyImageInfo, sizeof(const VkCopyImageInfo2));
-                reservedunmarshal_VkCopyImageInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkCopyImageInfo2*)(pCopyImageInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkCopyImageInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkCopyImageInfo2*)(pCopyImageInfo),
+                    readStreamPtrPtr);
                 if (pCopyImageInfo) {
                     transform_tohost_VkCopyImageInfo2(m_state, (VkCopyImageInfo2*)(pCopyImageInfo));
                 }
@@ -12003,7 +12014,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pCopyBufferToImageInfo,
                                     sizeof(const VkCopyBufferToImageInfo2));
-                reservedunmarshal_VkCopyBufferToImageInfo2(
+                mUnMarshal.reservedunmarshal_VkCopyBufferToImageInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCopyBufferToImageInfo2*)(pCopyBufferToImageInfo), readStreamPtrPtr);
                 if (pCopyBufferToImageInfo) {
@@ -12044,7 +12055,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pCopyImageToBufferInfo,
                                     sizeof(const VkCopyImageToBufferInfo2));
-                reservedunmarshal_VkCopyImageToBufferInfo2(
+                mUnMarshal.reservedunmarshal_VkCopyImageToBufferInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCopyImageToBufferInfo2*)(pCopyImageToBufferInfo), readStreamPtrPtr);
                 if (pCopyImageToBufferInfo) {
@@ -12086,9 +12097,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pBlitImageInfo, sizeof(const VkBlitImageInfo2));
-                reservedunmarshal_VkBlitImageInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkBlitImageInfo2*)(pBlitImageInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkBlitImageInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBlitImageInfo2*)(pBlitImageInfo),
+                    readStreamPtrPtr);
                 if (pBlitImageInfo) {
                     transform_tohost_VkBlitImageInfo2(m_state, (VkBlitImageInfo2*)(pBlitImageInfo));
                 }
@@ -12124,9 +12135,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pResolveImageInfo, sizeof(const VkResolveImageInfo2));
-                reservedunmarshal_VkResolveImageInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkResolveImageInfo2*)(pResolveImageInfo),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkResolveImageInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkResolveImageInfo2*)(pResolveImageInfo), readStreamPtrPtr);
                 if (pResolveImageInfo) {
                     transform_tohost_VkResolveImageInfo2(m_state,
                                                          (VkResolveImageInfo2*)(pResolveImageInfo));
@@ -12165,9 +12176,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pRenderingInfo, sizeof(const VkRenderingInfo));
-                reservedunmarshal_VkRenderingInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                  (VkRenderingInfo*)(pRenderingInfo),
-                                                  readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderingInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkRenderingInfo*)(pRenderingInfo),
+                    readStreamPtrPtr);
                 if (pRenderingInfo) {
                     transform_tohost_VkRenderingInfo(m_state, (VkRenderingInfo*)(pRenderingInfo));
                 }
@@ -12342,8 +12353,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pViewports,
                                     ((viewportCount)) * sizeof(const VkViewport));
                 for (uint32_t i = 0; i < (uint32_t)((viewportCount)); ++i) {
-                    reservedunmarshal_VkViewport(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                 (VkViewport*)(pViewports + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkViewport(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkViewport*)(pViewports + i),
+                        readStreamPtrPtr);
                 }
                 if (pViewports) {
                     for (uint32_t i = 0; i < (uint32_t)((viewportCount)); ++i) {
@@ -12389,8 +12401,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pScissors, ((scissorCount)) * sizeof(const VkRect2D));
                 for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
-                    reservedunmarshal_VkRect2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                               (VkRect2D*)(pScissors + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkRect2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                                                          (VkRect2D*)(pScissors + i),
+                                                          readStreamPtrPtr);
                 }
                 if (pScissors) {
                     for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
@@ -12863,13 +12876,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkDeviceBufferMemoryRequirements));
-                reservedunmarshal_VkDeviceBufferMemoryRequirements(
+                mUnMarshal.reservedunmarshal_VkDeviceBufferMemoryRequirements(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceBufferMemoryRequirements*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -12924,13 +12937,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkDeviceImageMemoryRequirements));
-                reservedunmarshal_VkDeviceImageMemoryRequirements(
+                mUnMarshal.reservedunmarshal_VkDeviceImageMemoryRequirements(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceImageMemoryRequirements*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -12986,7 +12999,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkDeviceImageMemoryRequirements));
-                reservedunmarshal_VkDeviceImageMemoryRequirements(
+                mUnMarshal.reservedunmarshal_VkDeviceImageMemoryRequirements(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceImageMemoryRequirements*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pSparseMemoryRequirementCount;
@@ -13013,7 +13026,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                                         (*(pSparseMemoryRequirementCount)) *
                                             sizeof(VkSparseImageMemoryRequirements2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount)); ++i) {
-                        reservedunmarshal_VkSparseImageMemoryRequirements2(
+                        mUnMarshal.reservedunmarshal_VkSparseImageMemoryRequirements2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i),
                             readStreamPtrPtr);
@@ -13105,16 +13118,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkSwapchainCreateInfoKHR));
-                reservedunmarshal_VkSwapchainCreateInfoKHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                           (VkSwapchainCreateInfoKHR*)(pCreateInfo),
-                                                           readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSwapchainCreateInfoKHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkSwapchainCreateInfoKHR*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -13202,7 +13215,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -13414,9 +13427,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkQueue*)&queue = (VkQueue)(VkQueue)((VkQueue)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkQueue(queue);
                 vkReadStream->alloc((void**)&pPresentInfo, sizeof(const VkPresentInfoKHR));
-                reservedunmarshal_VkPresentInfoKHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkPresentInfoKHR*)(pPresentInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkPresentInfoKHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkPresentInfoKHR*)(pPresentInfo),
+                    readStreamPtrPtr);
                 if (pPresentInfo) {
                     transform_tohost_VkPresentInfoKHR(m_state, (VkPresentInfoKHR*)(pPresentInfo));
                 }
@@ -13462,7 +13475,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pDeviceGroupPresentCapabilities,
                                     sizeof(VkDeviceGroupPresentCapabilitiesKHR));
-                reservedunmarshal_VkDeviceGroupPresentCapabilitiesKHR(
+                mUnMarshal.reservedunmarshal_VkDeviceGroupPresentCapabilitiesKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceGroupPresentCapabilitiesKHR*)(pDeviceGroupPresentCapabilities),
                     readStreamPtrPtr);
@@ -13625,8 +13638,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (pRects) {
                     vkReadStream->alloc((void**)&pRects, (*(pRectCount)) * sizeof(VkRect2D));
                     for (uint32_t i = 0; i < (uint32_t)(*(pRectCount)); ++i) {
-                        reservedunmarshal_VkRect2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkRect2D*)(pRects + i), readStreamPtrPtr);
+                        mUnMarshal.reservedunmarshal_VkRect2D(
+                            vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkRect2D*)(pRects + i),
+                            readStreamPtrPtr);
                     }
                 }
                 if (pRectCount) {
@@ -13710,7 +13724,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pAcquireInfo, sizeof(const VkAcquireNextImageInfoKHR));
-                reservedunmarshal_VkAcquireNextImageInfoKHR(
+                mUnMarshal.reservedunmarshal_VkAcquireNextImageInfoKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkAcquireNextImageInfoKHR*)(pAcquireInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pImageIndex;
@@ -13768,9 +13782,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pRenderingInfo, sizeof(const VkRenderingInfo));
-                reservedunmarshal_VkRenderingInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                  (VkRenderingInfo*)(pRenderingInfo),
-                                                  readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderingInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkRenderingInfo*)(pRenderingInfo),
+                    readStreamPtrPtr);
                 if (pRenderingInfo) {
                     transform_tohost_VkRenderingInfo(m_state, (VkRenderingInfo*)(pRenderingInfo));
                 }
@@ -13840,7 +13854,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pFeatures;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFeatures, sizeof(VkPhysicalDeviceFeatures2));
-                reservedunmarshal_VkPhysicalDeviceFeatures2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceFeatures2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceFeatures2*)(pFeatures), readStreamPtrPtr);
                 if (pFeatures) {
@@ -13889,7 +13903,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pProperties, sizeof(VkPhysicalDeviceProperties2));
-                reservedunmarshal_VkPhysicalDeviceProperties2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceProperties2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceProperties2*)(pProperties), readStreamPtrPtr);
                 if (pProperties) {
@@ -13942,9 +13956,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pFormatProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFormatProperties, sizeof(VkFormatProperties2));
-                reservedunmarshal_VkFormatProperties2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkFormatProperties2*)(pFormatProperties),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkFormatProperties2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkFormatProperties2*)(pFormatProperties), readStreamPtrPtr);
                 if (pFormatProperties) {
                     transform_tohost_VkFormatProperties2(m_state,
                                                          (VkFormatProperties2*)(pFormatProperties));
@@ -13993,14 +14007,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkPhysicalDevice(physicalDevice);
                 vkReadStream->alloc((void**)&pImageFormatInfo,
                                     sizeof(const VkPhysicalDeviceImageFormatInfo2));
-                reservedunmarshal_VkPhysicalDeviceImageFormatInfo2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceImageFormatInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceImageFormatInfo2*)(pImageFormatInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pImageFormatProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pImageFormatProperties,
                                     sizeof(VkImageFormatProperties2));
-                reservedunmarshal_VkImageFormatProperties2(
+                mUnMarshal.reservedunmarshal_VkImageFormatProperties2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageFormatProperties2*)(pImageFormatProperties), readStreamPtrPtr);
                 if (pImageFormatInfo) {
@@ -14092,7 +14106,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pQueueFamilyProperties,
                         (*(pQueueFamilyPropertyCount)) * sizeof(VkQueueFamilyProperties2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pQueueFamilyPropertyCount)); ++i) {
-                        reservedunmarshal_VkQueueFamilyProperties2(
+                        mUnMarshal.reservedunmarshal_VkQueueFamilyProperties2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkQueueFamilyProperties2*)(pQueueFamilyProperties + i),
                             readStreamPtrPtr);
@@ -14172,7 +14186,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryProperties,
                                     sizeof(VkPhysicalDeviceMemoryProperties2));
-                reservedunmarshal_VkPhysicalDeviceMemoryProperties2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceMemoryProperties2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceMemoryProperties2*)(pMemoryProperties), readStreamPtrPtr);
                 if (pMemoryProperties) {
@@ -14228,7 +14242,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for physicalDevice;
                 vkReadStream->alloc((void**)&pFormatInfo,
                                     sizeof(const VkPhysicalDeviceSparseImageFormatInfo2));
-                reservedunmarshal_VkPhysicalDeviceSparseImageFormatInfo2(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceSparseImageFormatInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceSparseImageFormatInfo2*)(pFormatInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pPropertyCount;
@@ -14253,7 +14267,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pProperties,
                         (*(pPropertyCount)) * sizeof(VkSparseImageFormatProperties2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pPropertyCount)); ++i) {
-                        reservedunmarshal_VkSparseImageFormatProperties2(
+                        mUnMarshal.reservedunmarshal_VkSparseImageFormatProperties2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageFormatProperties2*)(pProperties + i), readStreamPtrPtr);
                     }
@@ -14382,14 +14396,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for physicalDevice;
                 vkReadStream->alloc((void**)&pExternalBufferInfo,
                                     sizeof(const VkPhysicalDeviceExternalBufferInfo));
-                reservedunmarshal_VkPhysicalDeviceExternalBufferInfo(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceExternalBufferInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceExternalBufferInfo*)(pExternalBufferInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pExternalBufferProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pExternalBufferProperties,
                                     sizeof(VkExternalBufferProperties));
-                reservedunmarshal_VkExternalBufferProperties(
+                mUnMarshal.reservedunmarshal_VkExternalBufferProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalBufferProperties*)(pExternalBufferProperties), readStreamPtrPtr);
                 if (pExternalBufferInfo) {
@@ -14455,7 +14469,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkPhysicalDevice(physicalDevice);
                 vkReadStream->alloc((void**)&pExternalSemaphoreInfo,
                                     sizeof(const VkPhysicalDeviceExternalSemaphoreInfo));
-                reservedunmarshal_VkPhysicalDeviceExternalSemaphoreInfo(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceExternalSemaphoreInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceExternalSemaphoreInfo*)(pExternalSemaphoreInfo),
                     readStreamPtrPtr);
@@ -14463,7 +14477,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pExternalSemaphoreProperties,
                                     sizeof(VkExternalSemaphoreProperties));
-                reservedunmarshal_VkExternalSemaphoreProperties(
+                mUnMarshal.reservedunmarshal_VkExternalSemaphoreProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalSemaphoreProperties*)(pExternalSemaphoreProperties),
                     readStreamPtrPtr);
@@ -14522,7 +14536,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pImportSemaphoreFdInfo,
                                     sizeof(const VkImportSemaphoreFdInfoKHR));
-                reservedunmarshal_VkImportSemaphoreFdInfoKHR(
+                mUnMarshal.reservedunmarshal_VkImportSemaphoreFdInfoKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImportSemaphoreFdInfoKHR*)(pImportSemaphoreFdInfo), readStreamPtrPtr);
                 if (pImportSemaphoreFdInfo) {
@@ -14569,9 +14583,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pGetFdInfo, sizeof(const VkSemaphoreGetFdInfoKHR));
-                reservedunmarshal_VkSemaphoreGetFdInfoKHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkSemaphoreGetFdInfoKHR*)(pGetFdInfo),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSemaphoreGetFdInfoKHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkSemaphoreGetFdInfoKHR*)(pGetFdInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pFd;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFd, sizeof(int));
@@ -14625,7 +14639,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkDescriptorUpdateTemplateCreateInfo));
-                reservedunmarshal_VkDescriptorUpdateTemplateCreateInfo(
+                mUnMarshal.reservedunmarshal_VkDescriptorUpdateTemplateCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorUpdateTemplateCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -14634,7 +14648,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -14732,7 +14746,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -14838,16 +14852,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkRenderPassCreateInfo2));
-                reservedunmarshal_VkRenderPassCreateInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkRenderPassCreateInfo2*)(pCreateInfo),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderPassCreateInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkRenderPassCreateInfo2*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -14919,13 +14933,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pRenderPassBegin, sizeof(const VkRenderPassBeginInfo));
-                reservedunmarshal_VkRenderPassBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                        (VkRenderPassBeginInfo*)(pRenderPassBegin),
-                                                        readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkRenderPassBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkRenderPassBeginInfo*)(pRenderPassBegin), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pSubpassBeginInfo, sizeof(const VkSubpassBeginInfo));
-                reservedunmarshal_VkSubpassBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkSubpassBeginInfo*)(pSubpassBeginInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkSubpassBeginInfo*)(pSubpassBeginInfo), readStreamPtrPtr);
                 if (pRenderPassBegin) {
                     transform_tohost_VkRenderPassBeginInfo(
                         m_state, (VkRenderPassBeginInfo*)(pRenderPassBegin));
@@ -14973,13 +14987,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pSubpassBeginInfo, sizeof(const VkSubpassBeginInfo));
-                reservedunmarshal_VkSubpassBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkSubpassBeginInfo*)(pSubpassBeginInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkSubpassBeginInfo*)(pSubpassBeginInfo), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pSubpassEndInfo, sizeof(const VkSubpassEndInfo));
-                reservedunmarshal_VkSubpassEndInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkSubpassEndInfo*)(pSubpassEndInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassEndInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubpassEndInfo*)(pSubpassEndInfo),
+                    readStreamPtrPtr);
                 if (pSubpassBeginInfo) {
                     transform_tohost_VkSubpassBeginInfo(m_state,
                                                         (VkSubpassBeginInfo*)(pSubpassBeginInfo));
@@ -15024,9 +15038,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pSubpassEndInfo, sizeof(const VkSubpassEndInfo));
-                reservedunmarshal_VkSubpassEndInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkSubpassEndInfo*)(pSubpassEndInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubpassEndInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubpassEndInfo*)(pSubpassEndInfo),
+                    readStreamPtrPtr);
                 if (pSubpassEndInfo) {
                     transform_tohost_VkSubpassEndInfo(m_state,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
@@ -15069,14 +15083,14 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for physicalDevice;
                 vkReadStream->alloc((void**)&pExternalFenceInfo,
                                     sizeof(const VkPhysicalDeviceExternalFenceInfo));
-                reservedunmarshal_VkPhysicalDeviceExternalFenceInfo(
+                mUnMarshal.reservedunmarshal_VkPhysicalDeviceExternalFenceInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPhysicalDeviceExternalFenceInfo*)(pExternalFenceInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pExternalFenceProperties;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pExternalFenceProperties,
                                     sizeof(VkExternalFenceProperties));
-                reservedunmarshal_VkExternalFenceProperties(
+                mUnMarshal.reservedunmarshal_VkExternalFenceProperties(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkExternalFenceProperties*)(pExternalFenceProperties), readStreamPtrPtr);
                 if (pExternalFenceInfo) {
@@ -15135,7 +15149,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pImportFenceFdInfo,
                                     sizeof(const VkImportFenceFdInfoKHR));
-                reservedunmarshal_VkImportFenceFdInfoKHR(
+                mUnMarshal.reservedunmarshal_VkImportFenceFdInfoKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImportFenceFdInfoKHR*)(pImportFenceFdInfo), readStreamPtrPtr);
                 if (pImportFenceFdInfo) {
@@ -15182,9 +15196,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pGetFdInfo, sizeof(const VkFenceGetFdInfoKHR));
-                reservedunmarshal_VkFenceGetFdInfoKHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkFenceGetFdInfoKHR*)(pGetFdInfo),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkFenceGetFdInfoKHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkFenceGetFdInfoKHR*)(pGetFdInfo),
+                    readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pFd;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pFd, sizeof(int));
@@ -15236,13 +15250,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkImageMemoryRequirementsInfo2));
-                reservedunmarshal_VkImageMemoryRequirementsInfo2(
+                mUnMarshal.reservedunmarshal_VkImageMemoryRequirementsInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageMemoryRequirementsInfo2*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -15295,13 +15309,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkBufferMemoryRequirementsInfo2));
-                reservedunmarshal_VkBufferMemoryRequirementsInfo2(
+                mUnMarshal.reservedunmarshal_VkBufferMemoryRequirementsInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkBufferMemoryRequirementsInfo2*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -15358,7 +15372,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo,
                                     sizeof(const VkImageSparseMemoryRequirementsInfo2));
-                reservedunmarshal_VkImageSparseMemoryRequirementsInfo2(
+                mUnMarshal.reservedunmarshal_VkImageSparseMemoryRequirementsInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageSparseMemoryRequirementsInfo2*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pSparseMemoryRequirementCount;
@@ -15385,7 +15399,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                                         (*(pSparseMemoryRequirementCount)) *
                                             sizeof(VkSparseImageMemoryRequirements2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount)); ++i) {
-                        reservedunmarshal_VkSparseImageMemoryRequirements2(
+                        mUnMarshal.reservedunmarshal_VkSparseImageMemoryRequirements2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i),
                             readStreamPtrPtr);
@@ -15476,7 +15490,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkSamplerYcbcrConversionCreateInfo));
-                reservedunmarshal_VkSamplerYcbcrConversionCreateInfo(
+                mUnMarshal.reservedunmarshal_VkSamplerYcbcrConversionCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkSamplerYcbcrConversionCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -15485,7 +15499,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -15579,7 +15593,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -15629,7 +15643,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pBindInfos,
                                     ((bindInfoCount)) * sizeof(const VkBindBufferMemoryInfo));
                 for (uint32_t i = 0; i < (uint32_t)((bindInfoCount)); ++i) {
-                    reservedunmarshal_VkBindBufferMemoryInfo(
+                    mUnMarshal.reservedunmarshal_VkBindBufferMemoryInfo(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkBindBufferMemoryInfo*)(pBindInfos + i), readStreamPtrPtr);
                 }
@@ -15684,7 +15698,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pBindInfos,
                                     ((bindInfoCount)) * sizeof(const VkBindImageMemoryInfo));
                 for (uint32_t i = 0; i < (uint32_t)((bindInfoCount)); ++i) {
-                    reservedunmarshal_VkBindImageMemoryInfo(
+                    mUnMarshal.reservedunmarshal_VkBindImageMemoryInfo(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkBindImageMemoryInfo*)(pBindInfos + i), readStreamPtrPtr);
                 }
@@ -15739,13 +15753,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkDescriptorSetLayoutCreateInfo));
-                reservedunmarshal_VkDescriptorSetLayoutCreateInfo(
+                mUnMarshal.reservedunmarshal_VkDescriptorSetLayoutCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorSetLayoutCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pSupport;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pSupport, sizeof(VkDescriptorSetLayoutSupport));
-                reservedunmarshal_VkDescriptorSetLayoutSupport(
+                mUnMarshal.reservedunmarshal_VkDescriptorSetLayoutSupport(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDescriptorSetLayoutSupport*)(pSupport), readStreamPtrPtr);
                 if (pCreateInfo) {
@@ -15800,7 +15814,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkBufferDeviceAddressInfo));
-                reservedunmarshal_VkBufferDeviceAddressInfo(
+                mUnMarshal.reservedunmarshal_VkBufferDeviceAddressInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBufferDeviceAddressInfo*)(pInfo),
                     readStreamPtrPtr);
                 if (pInfo) {
@@ -15845,7 +15859,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkBufferDeviceAddressInfo));
-                reservedunmarshal_VkBufferDeviceAddressInfo(
+                mUnMarshal.reservedunmarshal_VkBufferDeviceAddressInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBufferDeviceAddressInfo*)(pInfo),
                     readStreamPtrPtr);
                 if (pInfo) {
@@ -15891,7 +15905,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo,
                                     sizeof(const VkDeviceMemoryOpaqueCaptureAddressInfo));
-                reservedunmarshal_VkDeviceMemoryOpaqueCaptureAddressInfo(
+                mUnMarshal.reservedunmarshal_VkDeviceMemoryOpaqueCaptureAddressInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceMemoryOpaqueCaptureAddressInfo*)(pInfo), readStreamPtrPtr);
                 if (pInfo) {
@@ -15941,9 +15955,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pPipelineInfo, sizeof(const VkPipelineInfoKHR));
-                reservedunmarshal_VkPipelineInfoKHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkPipelineInfoKHR*)(pPipelineInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkPipelineInfoKHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkPipelineInfoKHR*)(pPipelineInfo),
+                    readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pExecutableCount;
                 vkReadStream->unsetHandleMapping();
                 // WARNING PTR CHECK
@@ -15966,7 +15980,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pProperties,
                         (*(pExecutableCount)) * sizeof(VkPipelineExecutablePropertiesKHR));
                     for (uint32_t i = 0; i < (uint32_t)(*(pExecutableCount)); ++i) {
-                        reservedunmarshal_VkPipelineExecutablePropertiesKHR(
+                        mUnMarshal.reservedunmarshal_VkPipelineExecutablePropertiesKHR(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkPipelineExecutablePropertiesKHR*)(pProperties + i),
                             readStreamPtrPtr);
@@ -16060,7 +16074,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pExecutableInfo,
                                     sizeof(const VkPipelineExecutableInfoKHR));
-                reservedunmarshal_VkPipelineExecutableInfoKHR(
+                mUnMarshal.reservedunmarshal_VkPipelineExecutableInfoKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPipelineExecutableInfoKHR*)(pExecutableInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pStatisticCount;
@@ -16085,7 +16099,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                         (void**)&pStatistics,
                         (*(pStatisticCount)) * sizeof(VkPipelineExecutableStatisticKHR));
                     for (uint32_t i = 0; i < (uint32_t)(*(pStatisticCount)); ++i) {
-                        reservedunmarshal_VkPipelineExecutableStatisticKHR(
+                        mUnMarshal.reservedunmarshal_VkPipelineExecutableStatisticKHR(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkPipelineExecutableStatisticKHR*)(pStatistics + i), readStreamPtrPtr);
                     }
@@ -16180,7 +16194,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pExecutableInfo,
                                     sizeof(const VkPipelineExecutableInfoKHR));
-                reservedunmarshal_VkPipelineExecutableInfoKHR(
+                mUnMarshal.reservedunmarshal_VkPipelineExecutableInfoKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPipelineExecutableInfoKHR*)(pExecutableInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pInternalRepresentationCount;
@@ -16207,7 +16221,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                                         (*(pInternalRepresentationCount)) *
                                             sizeof(VkPipelineExecutableInternalRepresentationKHR));
                     for (uint32_t i = 0; i < (uint32_t)(*(pInternalRepresentationCount)); ++i) {
-                        reservedunmarshal_VkPipelineExecutableInternalRepresentationKHR(
+                        mUnMarshal.reservedunmarshal_VkPipelineExecutableInternalRepresentationKHR(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkPipelineExecutableInternalRepresentationKHR*)(pInternalRepresentations +
                                                                              i),
@@ -16317,9 +16331,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 1 * 8;
                 *(VkEvent*)&event = (VkEvent)mBoxedHandleManager.unbox_VkEvent((VkEvent)(*&cgen_var_1));
                 vkReadStream->alloc((void**)&pDependencyInfo, sizeof(const VkDependencyInfo));
-                reservedunmarshal_VkDependencyInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkDependencyInfo*)(pDependencyInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDependencyInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDependencyInfo*)(pDependencyInfo),
+                    readStreamPtrPtr);
                 if (pDependencyInfo) {
                     transform_tohost_VkDependencyInfo(m_state,
                                                       (VkDependencyInfo*)(pDependencyInfo));
@@ -16416,9 +16430,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pDependencyInfos,
                                     ((eventCount)) * sizeof(const VkDependencyInfo));
                 for (uint32_t i = 0; i < (uint32_t)((eventCount)); ++i) {
-                    reservedunmarshal_VkDependencyInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkDependencyInfo*)(pDependencyInfos + i),
-                                                       readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkDependencyInfo(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkDependencyInfo*)(pDependencyInfos + i), readStreamPtrPtr);
                 }
                 if (pDependencyInfos) {
                     for (uint32_t i = 0; i < (uint32_t)((eventCount)); ++i) {
@@ -16463,9 +16477,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pDependencyInfo, sizeof(const VkDependencyInfo));
-                reservedunmarshal_VkDependencyInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkDependencyInfo*)(pDependencyInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDependencyInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDependencyInfo*)(pDependencyInfo),
+                    readStreamPtrPtr);
                 if (pDependencyInfo) {
                     transform_tohost_VkDependencyInfo(m_state,
                                                       (VkDependencyInfo*)(pDependencyInfo));
@@ -16556,9 +16570,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pSubmits,
                                     ((submitCount)) * sizeof(const VkSubmitInfo2));
                 for (uint32_t i = 0; i < (uint32_t)((submitCount)); ++i) {
-                    reservedunmarshal_VkSubmitInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkSubmitInfo2*)(pSubmits + i),
-                                                    readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkSubmitInfo2(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubmitInfo2*)(pSubmits + i),
+                        readStreamPtrPtr);
                 }
                 uint64_t cgen_var_1;
                 memcpy((uint64_t*)&cgen_var_1, *readStreamPtrPtr, 1 * 8);
@@ -16682,7 +16696,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pCheckpointData,
                                         (*(pCheckpointDataCount)) * sizeof(VkCheckpointData2NV));
                     for (uint32_t i = 0; i < (uint32_t)(*(pCheckpointDataCount)); ++i) {
-                        reservedunmarshal_VkCheckpointData2NV(
+                        mUnMarshal.reservedunmarshal_VkCheckpointData2NV(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkCheckpointData2NV*)(pCheckpointData + i), readStreamPtrPtr);
                     }
@@ -16761,9 +16775,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pCopyBufferInfo, sizeof(const VkCopyBufferInfo2));
-                reservedunmarshal_VkCopyBufferInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkCopyBufferInfo2*)(pCopyBufferInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkCopyBufferInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkCopyBufferInfo2*)(pCopyBufferInfo),
+                    readStreamPtrPtr);
                 if (pCopyBufferInfo) {
                     transform_tohost_VkCopyBufferInfo2(m_state,
                                                        (VkCopyBufferInfo2*)(pCopyBufferInfo));
@@ -16800,9 +16814,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pCopyImageInfo, sizeof(const VkCopyImageInfo2));
-                reservedunmarshal_VkCopyImageInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkCopyImageInfo2*)(pCopyImageInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkCopyImageInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkCopyImageInfo2*)(pCopyImageInfo),
+                    readStreamPtrPtr);
                 if (pCopyImageInfo) {
                     transform_tohost_VkCopyImageInfo2(m_state, (VkCopyImageInfo2*)(pCopyImageInfo));
                 }
@@ -16839,7 +16853,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pCopyBufferToImageInfo,
                                     sizeof(const VkCopyBufferToImageInfo2));
-                reservedunmarshal_VkCopyBufferToImageInfo2(
+                mUnMarshal.reservedunmarshal_VkCopyBufferToImageInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCopyBufferToImageInfo2*)(pCopyBufferToImageInfo), readStreamPtrPtr);
                 if (pCopyBufferToImageInfo) {
@@ -16881,7 +16895,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pCopyImageToBufferInfo,
                                     sizeof(const VkCopyImageToBufferInfo2));
-                reservedunmarshal_VkCopyImageToBufferInfo2(
+                mUnMarshal.reservedunmarshal_VkCopyImageToBufferInfo2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCopyImageToBufferInfo2*)(pCopyImageToBufferInfo), readStreamPtrPtr);
                 if (pCopyImageToBufferInfo) {
@@ -16923,9 +16937,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pBlitImageInfo, sizeof(const VkBlitImageInfo2));
-                reservedunmarshal_VkBlitImageInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkBlitImageInfo2*)(pBlitImageInfo),
-                                                   readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkBlitImageInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBlitImageInfo2*)(pBlitImageInfo),
+                    readStreamPtrPtr);
                 if (pBlitImageInfo) {
                     transform_tohost_VkBlitImageInfo2(m_state, (VkBlitImageInfo2*)(pBlitImageInfo));
                 }
@@ -16962,9 +16976,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pResolveImageInfo, sizeof(const VkResolveImageInfo2));
-                reservedunmarshal_VkResolveImageInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                      (VkResolveImageInfo2*)(pResolveImageInfo),
-                                                      readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkResolveImageInfo2(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkResolveImageInfo2*)(pResolveImageInfo), readStreamPtrPtr);
                 if (pResolveImageInfo) {
                     transform_tohost_VkResolveImageInfo2(m_state,
                                                          (VkResolveImageInfo2*)(pResolveImageInfo));
@@ -17005,13 +17019,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkDeviceBufferMemoryRequirements));
-                reservedunmarshal_VkDeviceBufferMemoryRequirements(
+                mUnMarshal.reservedunmarshal_VkDeviceBufferMemoryRequirements(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceBufferMemoryRequirements*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -17066,13 +17080,13 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkDeviceImageMemoryRequirements));
-                reservedunmarshal_VkDeviceImageMemoryRequirements(
+                mUnMarshal.reservedunmarshal_VkDeviceImageMemoryRequirements(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceImageMemoryRequirements*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements2));
-                reservedunmarshal_VkMemoryRequirements2(
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements2(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryRequirements2*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pInfo) {
@@ -17128,7 +17142,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkDeviceImageMemoryRequirements));
-                reservedunmarshal_VkDeviceImageMemoryRequirements(
+                mUnMarshal.reservedunmarshal_VkDeviceImageMemoryRequirements(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceImageMemoryRequirements*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pSparseMemoryRequirementCount;
@@ -17155,7 +17169,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                                         (*(pSparseMemoryRequirementCount)) *
                                             sizeof(VkSparseImageMemoryRequirements2));
                     for (uint32_t i = 0; i < (uint32_t)(*(pSparseMemoryRequirementCount)); ++i) {
-                        reservedunmarshal_VkSparseImageMemoryRequirements2(
+                        mUnMarshal.reservedunmarshal_VkSparseImageMemoryRequirements2(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkSparseImageMemoryRequirements2*)(pSparseMemoryRequirements + i),
                             readStreamPtrPtr);
@@ -17297,14 +17311,15 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pRenderingAreaInfo,
                                     sizeof(const VkRenderingAreaInfoKHR));
-                reservedunmarshal_VkRenderingAreaInfoKHR(
+                mUnMarshal.reservedunmarshal_VkRenderingAreaInfoKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkRenderingAreaInfoKHR*)(pRenderingAreaInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pGranularity;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pGranularity, sizeof(VkExtent2D));
-                reservedunmarshal_VkExtent2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                             (VkExtent2D*)(pGranularity), readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkExtent2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                                                        (VkExtent2D*)(pGranularity),
+                                                        readStreamPtrPtr);
                 if (pRenderingAreaInfo) {
                     transform_tohost_VkRenderingAreaInfoKHR(
                         m_state, (VkRenderingAreaInfoKHR*)(pRenderingAreaInfo));
@@ -17355,15 +17370,15 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pInfo, sizeof(const VkDeviceImageSubresourceInfoKHR));
-                reservedunmarshal_VkDeviceImageSubresourceInfoKHR(
+                mUnMarshal.reservedunmarshal_VkDeviceImageSubresourceInfoKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDeviceImageSubresourceInfoKHR*)(pInfo), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pLayout;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pLayout, sizeof(VkSubresourceLayout2KHR));
-                reservedunmarshal_VkSubresourceLayout2KHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkSubresourceLayout2KHR*)(pLayout),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubresourceLayout2KHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubresourceLayout2KHR*)(pLayout),
+                    readStreamPtrPtr);
                 if (pInfo) {
                     transform_tohost_VkDeviceImageSubresourceInfoKHR(
                         m_state, (VkDeviceImageSubresourceInfoKHR*)(pInfo));
@@ -17419,15 +17434,15 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 1 * 8;
                 *(VkImage*)&image = (VkImage)mBoxedHandleManager.unbox_VkImage((VkImage)(*&cgen_var_1));
                 vkReadStream->alloc((void**)&pSubresource, sizeof(const VkImageSubresource2KHR));
-                reservedunmarshal_VkImageSubresource2KHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                         (VkImageSubresource2KHR*)(pSubresource),
-                                                         readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkImageSubresource2KHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkImageSubresource2KHR*)(pSubresource), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pLayout;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pLayout, sizeof(VkSubresourceLayout2KHR));
-                reservedunmarshal_VkSubresourceLayout2KHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkSubresourceLayout2KHR*)(pLayout),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubresourceLayout2KHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubresourceLayout2KHR*)(pLayout),
+                    readStreamPtrPtr);
                 if (pSubresource) {
                     transform_tohost_VkImageSubresource2KHR(
                         m_state, (VkImageSubresource2KHR*)(pSubresource));
@@ -17800,7 +17815,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for instance;
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkDebugReportCallbackCreateInfoEXT));
-                reservedunmarshal_VkDebugReportCallbackCreateInfoEXT(
+                mUnMarshal.reservedunmarshal_VkDebugReportCallbackCreateInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDebugReportCallbackCreateInfoEXT*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -17809,7 +17824,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -17904,7 +17919,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -18401,7 +18416,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pNameInfo,
                                     sizeof(const VkDebugUtilsObjectNameInfoEXT));
-                reservedunmarshal_VkDebugUtilsObjectNameInfoEXT(
+                mUnMarshal.reservedunmarshal_VkDebugUtilsObjectNameInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDebugUtilsObjectNameInfoEXT*)(pNameInfo), readStreamPtrPtr);
                 if (pNameInfo) {
@@ -18448,7 +18463,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pTagInfo, sizeof(const VkDebugUtilsObjectTagInfoEXT));
-                reservedunmarshal_VkDebugUtilsObjectTagInfoEXT(
+                mUnMarshal.reservedunmarshal_VkDebugUtilsObjectTagInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDebugUtilsObjectTagInfoEXT*)(pTagInfo), readStreamPtrPtr);
                 if (pTagInfo) {
@@ -18495,9 +18510,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkQueue(queue);
                 // End manual dispatchable handle unboxing for queue;
                 vkReadStream->alloc((void**)&pLabelInfo, sizeof(const VkDebugUtilsLabelEXT));
-                reservedunmarshal_VkDebugUtilsLabelEXT(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkDebugUtilsLabelEXT*)(pLabelInfo),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDebugUtilsLabelEXT(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDebugUtilsLabelEXT*)(pLabelInfo),
+                    readStreamPtrPtr);
                 if (pLabelInfo) {
                     transform_tohost_VkDebugUtilsLabelEXT(m_state,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
@@ -18563,9 +18578,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkQueue(queue);
                 // End manual dispatchable handle unboxing for queue;
                 vkReadStream->alloc((void**)&pLabelInfo, sizeof(const VkDebugUtilsLabelEXT));
-                reservedunmarshal_VkDebugUtilsLabelEXT(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkDebugUtilsLabelEXT*)(pLabelInfo),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDebugUtilsLabelEXT(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDebugUtilsLabelEXT*)(pLabelInfo),
+                    readStreamPtrPtr);
                 if (pLabelInfo) {
                     transform_tohost_VkDebugUtilsLabelEXT(m_state,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
@@ -18603,9 +18618,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pLabelInfo, sizeof(const VkDebugUtilsLabelEXT));
-                reservedunmarshal_VkDebugUtilsLabelEXT(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkDebugUtilsLabelEXT*)(pLabelInfo),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDebugUtilsLabelEXT(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDebugUtilsLabelEXT*)(pLabelInfo),
+                    readStreamPtrPtr);
                 if (pLabelInfo) {
                     transform_tohost_VkDebugUtilsLabelEXT(m_state,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
@@ -18673,9 +18688,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pLabelInfo, sizeof(const VkDebugUtilsLabelEXT));
-                reservedunmarshal_VkDebugUtilsLabelEXT(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkDebugUtilsLabelEXT*)(pLabelInfo),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkDebugUtilsLabelEXT(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkDebugUtilsLabelEXT*)(pLabelInfo),
+                    readStreamPtrPtr);
                 if (pLabelInfo) {
                     transform_tohost_VkDebugUtilsLabelEXT(m_state,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
@@ -18716,7 +18731,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for instance;
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkDebugUtilsMessengerCreateInfoEXT));
-                reservedunmarshal_VkDebugUtilsMessengerCreateInfoEXT(
+                mUnMarshal.reservedunmarshal_VkDebugUtilsMessengerCreateInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDebugUtilsMessengerCreateInfoEXT*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -18725,7 +18740,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -18820,7 +18835,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -18873,7 +18888,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += sizeof(VkDebugUtilsMessageTypeFlagsEXT);
                 vkReadStream->alloc((void**)&pCallbackData,
                                     sizeof(const VkDebugUtilsMessengerCallbackDataEXT));
-                reservedunmarshal_VkDebugUtilsMessengerCallbackDataEXT(
+                mUnMarshal.reservedunmarshal_VkDebugUtilsMessengerCallbackDataEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkDebugUtilsMessengerCallbackDataEXT*)(pCallbackData), readStreamPtrPtr);
                 if (pCallbackData) {
@@ -18927,7 +18942,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pProperties,
                                     sizeof(VkImageDrmFormatModifierPropertiesEXT));
-                reservedunmarshal_VkImageDrmFormatModifierPropertiesEXT(
+                mUnMarshal.reservedunmarshal_VkImageDrmFormatModifierPropertiesEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkImageDrmFormatModifierPropertiesEXT*)(pProperties), readStreamPtrPtr);
                 if (pProperties) {
@@ -19002,7 +19017,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryHostPointerProperties,
                                     sizeof(VkMemoryHostPointerPropertiesEXT));
-                reservedunmarshal_VkMemoryHostPointerPropertiesEXT(
+                mUnMarshal.reservedunmarshal_VkMemoryHostPointerPropertiesEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkMemoryHostPointerPropertiesEXT*)(pMemoryHostPointerProperties),
                     readStreamPtrPtr);
@@ -19089,7 +19104,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pToolProperties,
                                         (*(pToolCount)) * sizeof(VkPhysicalDeviceToolProperties));
                     for (uint32_t i = 0; i < (uint32_t)(*(pToolCount)); ++i) {
-                        reservedunmarshal_VkPhysicalDeviceToolProperties(
+                        mUnMarshal.reservedunmarshal_VkPhysicalDeviceToolProperties(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkPhysicalDeviceToolProperties*)(pToolProperties + i),
                             readStreamPtrPtr);
@@ -19331,8 +19346,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pViewports,
                                     ((viewportCount)) * sizeof(const VkViewport));
                 for (uint32_t i = 0; i < (uint32_t)((viewportCount)); ++i) {
-                    reservedunmarshal_VkViewport(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                 (VkViewport*)(pViewports + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkViewport(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkViewport*)(pViewports + i),
+                        readStreamPtrPtr);
                 }
                 if (pViewports) {
                     for (uint32_t i = 0; i < (uint32_t)((viewportCount)); ++i) {
@@ -19379,8 +19395,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += sizeof(uint32_t);
                 vkReadStream->alloc((void**)&pScissors, ((scissorCount)) * sizeof(const VkRect2D));
                 for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
-                    reservedunmarshal_VkRect2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                               (VkRect2D*)(pScissors + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkRect2D(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                                                          (VkRect2D*)(pScissors + i),
+                                                          readStreamPtrPtr);
                 }
                 if (pScissors) {
                     for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
@@ -19748,7 +19765,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCopyMemoryToImageInfo,
                                     sizeof(const VkCopyMemoryToImageInfoEXT));
-                reservedunmarshal_VkCopyMemoryToImageInfoEXT(
+                mUnMarshal.reservedunmarshal_VkCopyMemoryToImageInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCopyMemoryToImageInfoEXT*)(pCopyMemoryToImageInfo), readStreamPtrPtr);
                 if (pCopyMemoryToImageInfo) {
@@ -19797,7 +19814,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCopyImageToMemoryInfo,
                                     sizeof(const VkCopyImageToMemoryInfoEXT));
-                reservedunmarshal_VkCopyImageToMemoryInfoEXT(
+                mUnMarshal.reservedunmarshal_VkCopyImageToMemoryInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCopyImageToMemoryInfoEXT*)(pCopyImageToMemoryInfo), readStreamPtrPtr);
                 if (pCopyImageToMemoryInfo) {
@@ -19846,7 +19863,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCopyImageToImageInfo,
                                     sizeof(const VkCopyImageToImageInfoEXT));
-                reservedunmarshal_VkCopyImageToImageInfoEXT(
+                mUnMarshal.reservedunmarshal_VkCopyImageToImageInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkCopyImageToImageInfoEXT*)(pCopyImageToImageInfo), readStreamPtrPtr);
                 if (pCopyImageToImageInfo) {
@@ -19900,7 +19917,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pTransitions,
                     ((transitionCount)) * sizeof(const VkHostImageLayoutTransitionInfoEXT));
                 for (uint32_t i = 0; i < (uint32_t)((transitionCount)); ++i) {
-                    reservedunmarshal_VkHostImageLayoutTransitionInfoEXT(
+                    mUnMarshal.reservedunmarshal_VkHostImageLayoutTransitionInfoEXT(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkHostImageLayoutTransitionInfoEXT*)(pTransitions + i), readStreamPtrPtr);
                 }
@@ -19959,15 +19976,15 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 1 * 8;
                 *(VkImage*)&image = (VkImage)mBoxedHandleManager.unbox_VkImage((VkImage)(*&cgen_var_1));
                 vkReadStream->alloc((void**)&pSubresource, sizeof(const VkImageSubresource2KHR));
-                reservedunmarshal_VkImageSubresource2KHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                         (VkImageSubresource2KHR*)(pSubresource),
-                                                         readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkImageSubresource2KHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkImageSubresource2KHR*)(pSubresource), readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pLayout;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pLayout, sizeof(VkSubresourceLayout2KHR));
-                reservedunmarshal_VkSubresourceLayout2KHR(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                          (VkSubresourceLayout2KHR*)(pLayout),
-                                                          readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkSubresourceLayout2KHR(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubresourceLayout2KHR*)(pLayout),
+                    readStreamPtrPtr);
                 if (pSubresource) {
                     transform_tohost_VkImageSubresource2KHR(
                         m_state, (VkImageSubresource2KHR*)(pSubresource));
@@ -20022,7 +20039,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pReleaseInfo,
                                     sizeof(const VkReleaseSwapchainImagesInfoEXT));
-                reservedunmarshal_VkReleaseSwapchainImagesInfoEXT(
+                mUnMarshal.reservedunmarshal_VkReleaseSwapchainImagesInfoEXT(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkReleaseSwapchainImagesInfoEXT*)(pReleaseInfo), readStreamPtrPtr);
                 if (pReleaseInfo) {
@@ -20074,7 +20091,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for device;
                 vkReadStream->alloc((void**)&pCreateInfo,
                                     sizeof(const VkPrivateDataSlotCreateInfo));
-                reservedunmarshal_VkPrivateDataSlotCreateInfo(
+                mUnMarshal.reservedunmarshal_VkPrivateDataSlotCreateInfo(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkPrivateDataSlotCreateInfo*)(pCreateInfo), readStreamPtrPtr);
                 // WARNING PTR CHECK
@@ -20083,7 +20100,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -20162,7 +20179,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -20676,7 +20693,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pImageInfos,
                                         ((imageInfoCount)) * sizeof(const VkDescriptorImageInfo));
                     for (uint32_t i = 0; i < (uint32_t)((imageInfoCount)); ++i) {
-                        reservedunmarshal_VkDescriptorImageInfo(
+                        mUnMarshal.reservedunmarshal_VkDescriptorImageInfo(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkDescriptorImageInfo*)(pImageInfos + i), readStreamPtrPtr);
                     }
@@ -20689,7 +20706,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pBufferInfos,
                                         ((bufferInfoCount)) * sizeof(const VkDescriptorBufferInfo));
                     for (uint32_t i = 0; i < (uint32_t)((bufferInfoCount)); ++i) {
-                        reservedunmarshal_VkDescriptorBufferInfo(
+                        mUnMarshal.reservedunmarshal_VkDescriptorBufferInfo(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkDescriptorBufferInfo*)(pBufferInfos + i), readStreamPtrPtr);
                     }
@@ -20773,9 +20790,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (VkCommandBuffer)(VkCommandBuffer)((VkCommandBuffer)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkCommandBuffer(commandBuffer);
                 vkReadStream->alloc((void**)&pBeginInfo, sizeof(const VkCommandBufferBeginInfo));
-                reservedunmarshal_VkCommandBufferBeginInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                           (VkCommandBufferBeginInfo*)(pBeginInfo),
-                                                           readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkCommandBufferBeginInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkCommandBufferBeginInfo*)(pBeginInfo), readStreamPtrPtr);
                 if (pBeginInfo) {
                     transform_tohost_VkCommandBufferBeginInfo(
                         m_state, (VkCommandBufferBeginInfo*)(pBeginInfo));
@@ -20916,16 +20933,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkImageCreateInfo));
-                reservedunmarshal_VkImageCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkImageCreateInfo*)(pCreateInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkImageCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -20939,9 +20956,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements));
-                reservedunmarshal_VkMemoryRequirements(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkMemoryRequirements*)(pMemoryRequirements),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkMemoryRequirements*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pCreateInfo) {
                     m_state->transformImpl_VkImageCreateInfo_tohost(pCreateInfo, 1);
                     transform_tohost_VkImageCreateInfo(m_state, (VkImageCreateInfo*)(pCreateInfo));
@@ -21019,16 +21036,16 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkBufferCreateInfo));
-                reservedunmarshal_VkBufferCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                     (VkBufferCreateInfo*)(pCreateInfo),
-                                                     readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkBufferCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkBufferCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -21042,9 +21059,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // Begin manual dispatchable handle unboxing for pMemoryRequirements;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pMemoryRequirements, sizeof(VkMemoryRequirements));
-                reservedunmarshal_VkMemoryRequirements(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkMemoryRequirements*)(pMemoryRequirements),
-                                                       readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkMemoryRequirements(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                    (VkMemoryRequirements*)(pMemoryRequirements), readStreamPtrPtr);
                 if (pCreateInfo) {
                     transform_tohost_VkBufferCreateInfo(m_state,
                                                         (VkBufferCreateInfo*)(pCreateInfo));
@@ -21239,7 +21256,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -21331,8 +21348,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pSubmits,
                                     ((submitCount)) * sizeof(const VkSubmitInfo));
                 for (uint32_t i = 0; i < (uint32_t)((submitCount)); ++i) {
-                    reservedunmarshal_VkSubmitInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                   (VkSubmitInfo*)(pSubmits + i), readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkSubmitInfo(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubmitInfo*)(pSubmits + i),
+                        readStreamPtrPtr);
                 }
                 uint64_t cgen_var_1;
                 memcpy((uint64_t*)&cgen_var_1, *readStreamPtrPtr, 1 * 8);
@@ -21410,9 +21428,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pBindInfo,
                                     ((bindInfoCount)) * sizeof(const VkBindSparseInfo));
                 for (uint32_t i = 0; i < (uint32_t)((bindInfoCount)); ++i) {
-                    reservedunmarshal_VkBindSparseInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                       (VkBindSparseInfo*)(pBindInfo + i),
-                                                       readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkBindSparseInfo(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
+                        (VkBindSparseInfo*)(pBindInfo + i), readStreamPtrPtr);
                 }
                 uint64_t cgen_var_1;
                 memcpy((uint64_t*)&cgen_var_1, *readStreamPtrPtr, 1 * 8);
@@ -21510,9 +21528,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *(VkDevice*)&device = (VkDevice)(VkDevice)((VkDevice)(*&cgen_var_0));
                 auto vk = mBoxedHandleManager.dispatch_VkDevice(device);
                 vkReadStream->alloc((void**)&pCreateInfo, sizeof(const VkImageCreateInfo));
-                reservedunmarshal_VkImageCreateInfo(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkImageCreateInfo*)(pCreateInfo),
-                                                    readStreamPtrPtr);
+                mUnMarshal.reservedunmarshal_VkImageCreateInfo(
+                    vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkImageCreateInfo*)(pCreateInfo),
+                    readStreamPtrPtr);
                 // Begin manual dispatchable handle unboxing for pOffset;
                 vkReadStream->unsetHandleMapping();
                 vkReadStream->alloc((void**)&pOffset, sizeof(VkDeviceSize));
@@ -21678,7 +21696,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pPendingDescriptorWrites,
                     ((pendingDescriptorWriteCount)) * sizeof(const VkWriteDescriptorSet));
                 for (uint32_t i = 0; i < (uint32_t)((pendingDescriptorWriteCount)); ++i) {
-                    reservedunmarshal_VkWriteDescriptorSet(
+                    mUnMarshal.reservedunmarshal_VkWriteDescriptorSet(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkWriteDescriptorSet*)(pPendingDescriptorWrites + i), readStreamPtrPtr);
                 }
@@ -22031,7 +22049,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pImageInfos,
                                         ((imageInfoCount)) * sizeof(const VkDescriptorImageInfo));
                     for (uint32_t i = 0; i < (uint32_t)((imageInfoCount)); ++i) {
-                        reservedunmarshal_VkDescriptorImageInfo(
+                        mUnMarshal.reservedunmarshal_VkDescriptorImageInfo(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkDescriptorImageInfo*)(pImageInfos + i), readStreamPtrPtr);
                     }
@@ -22044,7 +22062,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     vkReadStream->alloc((void**)&pBufferInfos,
                                         ((bufferInfoCount)) * sizeof(const VkDescriptorBufferInfo));
                     for (uint32_t i = 0; i < (uint32_t)((bufferInfoCount)); ++i) {
-                        reservedunmarshal_VkDescriptorBufferInfo(
+                        mUnMarshal.reservedunmarshal_VkDescriptorBufferInfo(
                             vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                             (VkDescriptorBufferInfo*)(pBufferInfos + i), readStreamPtrPtr);
                     }
@@ -22148,9 +22166,9 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 vkReadStream->alloc((void**)&pSubmits,
                                     ((submitCount)) * sizeof(const VkSubmitInfo2));
                 for (uint32_t i = 0; i < (uint32_t)((submitCount)); ++i) {
-                    reservedunmarshal_VkSubmitInfo2(vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
-                                                    (VkSubmitInfo2*)(pSubmits + i),
-                                                    readStreamPtrPtr);
+                    mUnMarshal.reservedunmarshal_VkSubmitInfo2(
+                        vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM, (VkSubmitInfo2*)(pSubmits + i),
+                        readStreamPtrPtr);
                 }
                 uint64_t cgen_var_1;
                 memcpy((uint64_t*)&cgen_var_1, *readStreamPtrPtr, 1 * 8);
@@ -22252,23 +22270,23 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pRaygenShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pRaygenShaderBindingTable),
                     readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pMissShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pMissShaderBindingTable), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pHitShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pHitShaderBindingTable), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pCallableShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pCallableShaderBindingTable),
                     readStreamPtrPtr);
@@ -22355,7 +22373,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     (void**)&pCreateInfos,
                     ((createInfoCount)) * sizeof(const VkRayTracingPipelineCreateInfoKHR));
                 for (uint32_t i = 0; i < (uint32_t)((createInfoCount)); ++i) {
-                    reservedunmarshal_VkRayTracingPipelineCreateInfoKHR(
+                    mUnMarshal.reservedunmarshal_VkRayTracingPipelineCreateInfoKHR(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkRayTracingPipelineCreateInfoKHR*)(pCreateInfos + i), readStreamPtrPtr);
                 }
@@ -22365,7 +22383,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 8;
                 if (pAllocator) {
                     vkReadStream->alloc((void**)&pAllocator, sizeof(const VkAllocationCallbacks));
-                    reservedunmarshal_VkAllocationCallbacks(
+                    mUnMarshal.reservedunmarshal_VkAllocationCallbacks(
                         vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                         (VkAllocationCallbacks*)(pAllocator), readStreamPtrPtr);
                 }
@@ -22526,23 +22544,23 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 // End manual dispatchable handle unboxing for commandBuffer;
                 vkReadStream->alloc((void**)&pRaygenShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pRaygenShaderBindingTable),
                     readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pMissShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pMissShaderBindingTable), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pHitShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pHitShaderBindingTable), readStreamPtrPtr);
                 vkReadStream->alloc((void**)&pCallableShaderBindingTable,
                                     sizeof(const VkStridedDeviceAddressRegionKHR));
-                reservedunmarshal_VkStridedDeviceAddressRegionKHR(
+                mUnMarshal.reservedunmarshal_VkStridedDeviceAddressRegionKHR(
                     vkReadStream, VK_STRUCTURE_TYPE_MAX_ENUM,
                     (VkStridedDeviceAddressRegionKHR*)(pCallableShaderBindingTable),
                     readStreamPtrPtr);
