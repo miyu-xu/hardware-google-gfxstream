@@ -322,12 +322,12 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
 }
 
 template <typename VkObjectT>
-void delete_VkType(VkObjectT boxed) {
+void delete_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed) {
     if (boxed == VK_NULL_HANDLE) {
         return;
     }
 
-    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
+    BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return;
     }
@@ -449,8 +449,9 @@ void set_boxed_non_dispatchable_VkType(VkObjectT boxed, VkObjectT new_unboxed) {
 }
 
 template <typename VkObjectT>
-OrderMaintenanceInfo* get_order_maintenance_info_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
+OrderMaintenanceInfo* get_order_maintenance_info_VkType(BoxedHandleManager* pBoxedHandleManager,
+                                                        VkObjectT boxed) {
+    BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return nullptr;
     }
@@ -465,14 +466,15 @@ OrderMaintenanceInfo* get_order_maintenance_info_VkType(VkObjectT boxed) {
 }
 
 template <typename VkObjectT>
-VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
+VulkanMemReadingStream* get_read_stream_VkType(BoxedHandleManager* pBoxedHandleManager,
+                                               VkObjectT boxed) {
+    BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         return nullptr;
     }
 
     if (info->readStream == nullptr) {
-        info->readStream = getBoxedHandleManager().sReadStreamRegistry.pop(
+        info->readStream = pBoxedHandleManager->sReadStreamRegistry.pop(
             VkDecoderGlobalState::get()->getFeatures());
     }
 
@@ -480,8 +482,8 @@ VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
 }
 
 template <typename VkObjectT>
-VulkanDispatch* get_dispatch_VkType(VkObjectT boxed) {
-    BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
+VulkanDispatch* get_dispatch_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed) {
+    BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
     if (info == nullptr) {
         ERR("Failed to unbox %s %p", GetTypeStr<VkObjectT>(), boxed);
         return nullptr;
@@ -535,9 +537,21 @@ void set_boxed_non_dispatchable_VkType(BoxedHandleManager* pBoxedHandleManager, 
                                               bool ownDispatch) {                                 \
         return new_boxed_VkType<type>(this, underlying, true, dispatch, ownDispatch);             \
     }                                                                                             \
+    void BoxedHandleManager::delete_##type(type boxed) {                                          \
+        return delete_VkType<type>(this, boxed);                                                  \
+    }                                                                                             \
     type BoxedHandleManager::unbox_##type(type boxed) { return unbox_VkType<type>(this, boxed); } \
     type BoxedHandleManager::try_unbox_##type(type boxed) {                                       \
         return try_unbox_VkType<type>(this, boxed);                                               \
+    }                                                                                             \
+    VulkanDispatch* BoxedHandleManager::dispatch_##type(type boxed) {                             \
+        return get_dispatch_VkType<type>(this, boxed);                                            \
+    }                                                                                             \
+    OrderMaintenanceInfo* BoxedHandleManager::ordmaint_##type(type boxed) {                       \
+        return get_order_maintenance_info_VkType<type>(this, boxed);                              \
+    }                                                                                             \
+    VulkanMemReadingStream* BoxedHandleManager::readstream_##type(type boxed) {                   \
+        return get_read_stream_VkType<type>(this, boxed);                                         \
     }                                                                                             \
     type BoxedHandleManager::unboxed_to_boxed_##type(type unboxed) {                              \
         return unboxed_to_boxed_non_dispatchable_VkType<type>(this, unboxed);                     \
@@ -550,6 +564,9 @@ void set_boxed_non_dispatchable_VkType(BoxedHandleManager* pBoxedHandleManager, 
     type BoxedHandleManager::unbox_##type(type boxed) { return unbox_VkType<type>(this, boxed); } \
     type BoxedHandleManager::try_unbox_##type(type boxed) {                                       \
         return try_unbox_VkType<type>(this, boxed);                                               \
+    }                                                                                             \
+    void BoxedHandleManager::delete_##type(type boxed) {                                          \
+        return delete_VkType<type>(this, boxed);                                                  \
     }                                                                                             \
     type BoxedHandleManager::unboxed_to_boxed_non_dispatchable_##type(type unboxed) {             \
         return unboxed_to_boxed_non_dispatchable_VkType<type>(this, unboxed);                     \
