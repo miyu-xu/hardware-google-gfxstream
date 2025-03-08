@@ -573,10 +573,12 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
 
 void FrameBuffer::finalize() {
     FrameBuffer* fb = s_theFrameBuffer;
-    s_theFrameBuffer = nullptr;
     if (fb) {
         delete fb;
     }
+    // the callbacks might need to access
+    // getFB(), so wait till the end
+    s_theFrameBuffer = nullptr;
 }
 
 FrameBuffer::FrameBuffer(int p_width, int p_height, gfxstream::host::FeatureSet features, bool useSubWindow)
