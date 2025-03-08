@@ -209,10 +209,11 @@ static uint32_t kTemporaryContextIdForSnapshotLoading = 1;
 
 class VkDecoderGlobalState::Impl {
    public:
-    Impl(VkEmulation* emulation)
+    Impl(VkEmulation* emulation, VkDecoderGlobalState* state)
         : m_vk(vkDispatch()),
           m_vkEmulation(emulation),
-          mRenderDocWithMultipleVkInstances(m_vkEmulation->getRenderDoc()) {
+          mRenderDocWithMultipleVkInstances(m_vkEmulation->getRenderDoc()),
+        mSnapshot(state){
         mSnapshotsEnabled = m_vkEmulation->getFeatures().VulkanSnapshots.enabled;
         mBatchedDescriptorSetUpdateEnabled =
             m_vkEmulation->getFeatures().VulkanBatchedDescriptorSetUpdate.enabled;
@@ -9090,7 +9091,7 @@ BoxedHandleManager& VkDecoderGlobalState::getBoxedHandleManager() {
 }
 
 VkDecoderGlobalState::VkDecoderGlobalState(VkEmulation* emulation)
-    : mImpl(new VkDecoderGlobalState::Impl(emulation)) {}
+    : mImpl(new VkDecoderGlobalState::Impl(emulation, this)) {}
 
 VkDecoderGlobalState::~VkDecoderGlobalState() = default;
 

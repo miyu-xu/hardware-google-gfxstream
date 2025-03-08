@@ -41,8 +41,8 @@ class VulkanHandleMapping {
 
     GOLDFISH_VK_LIST_HANDLE_TYPES(DECLARE_HANDLE_MAP_PURE_VIRTUAL_METHOD)
    protected:
-    VkDecoderGlobalState* m_state;
-    BoxedHandleManager& mBoxedHandleManager;
+    VkDecoderGlobalState* m_state {nullptr};
+    BoxedHandleManager* mBoxedHandleManager {nullptr};
 };
 
 #define DECLARE_HANDLE_MAP_OVERRIDE(type)                                                            \

@@ -49,7 +49,7 @@ namespace vk {
 
 class VkDecoderSnapshot::Impl {
    public:
-    Impl():m_state(VkDecoderGlobalState::get()),
+    Impl(VkDecoderGlobalState* state):m_state(state),
     mBoxedHandleManager(m_state->getBoxedHandleManager()){}
 
     void clear() {
@@ -4013,7 +4013,8 @@ class VkDecoderSnapshot::Impl {
     VkReconstruction mReconstruction GUARDED_BY(mReconstructionMutex);
 };
 
-VkDecoderSnapshot::VkDecoderSnapshot() : mImpl(new VkDecoderSnapshot::Impl()) {}
+VkDecoderSnapshot::VkDecoderSnapshot(VkDecoderGlobalState* state) :
+    mImpl(new VkDecoderSnapshot::Impl(state)),mState(state) {}
 
 void VkDecoderSnapshot::clear() { mImpl->clear(); }
 
