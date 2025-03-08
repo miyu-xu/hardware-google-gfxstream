@@ -42,6 +42,8 @@
 namespace gfxstream {
 namespace vk {
 
+#if 0
+
 void reservedmarshal_extension_struct(VulkanStream* vkStream, VkStructureType rootType,
                                       const void* structExtension, uint8_t** ptr);
 
@@ -16440,5 +16442,6 @@ void reservedunmarshal_extension_struct(VulkanStream* vkStream, VkStructureType 
     }
 }
 
+#endif
 }  // namespace vk
 }  // namespace gfxstream

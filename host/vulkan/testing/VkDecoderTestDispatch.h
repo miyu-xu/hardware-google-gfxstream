@@ -28,7 +28,7 @@ class VkDecoderTestDispatch {
    public:
     VkDecoderTestDispatch(VulkanDispatch* vk, android::base::BumpPool* bp,
                           VkDecoderContext* decoderContext)
-        : mVk(vk), mDgs(VkDecoderGlobalState::get()), mBp(bp), mDecoderContext(decoderContext) {}
+        : mVk(vk), mDgs(VkDecoderGlobalState::get()), mBoxedHandleManager(mDgs->getBoxedHandleManager()), mBp(bp), mDecoderContext(decoderContext) {}
 
     // Vulkan API wrappers - please keep sorted alphabetically
     //
@@ -56,29 +56,29 @@ class VkDecoderTestDispatch {
 
     VkResult vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
                                 VkDeviceSize memoryOffset) {
-        return mDgs->on_vkBindBufferMemory(mBp, nullptr, device, unbox_VkBuffer(buffer),
-                                           unbox_VkDeviceMemory(memory), memoryOffset);
+        return mDgs->on_vkBindBufferMemory(mBp, nullptr, device, mBoxedHandleManager.unbox_VkBuffer(buffer),
+                                           mBoxedHandleManager.unbox_VkDeviceMemory(memory), memoryOffset);
     }
 
     VkResult vkBindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory,
                                VkDeviceSize memoryOffset) {
-        return mDgs->on_vkBindImageMemory(mBp, nullptr, device, unbox_VkImage(image),
-                                          unbox_VkDeviceMemory(memory), memoryOffset);
+        return mDgs->on_vkBindImageMemory(mBp, nullptr, device, mBoxedHandleManager.unbox_VkImage(image),
+                                          mBoxedHandleManager.unbox_VkDeviceMemory(memory), memoryOffset);
     }
 
     void vkCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcImage,
                         VkImageLayout srcImageLayout, VkImage dstImage,
                         VkImageLayout dstImageLayout, uint32_t regionCount,
                         const VkImageBlit* pRegions, VkFilter filter) {
-        return mVk->vkCmdBlitImage(unbox_VkCommandBuffer(commandBuffer), unbox_VkImage(srcImage),
-                                   srcImageLayout, unbox_VkImage(dstImage), dstImageLayout,
+        return mVk->vkCmdBlitImage(mBoxedHandleManager.unbox_VkCommandBuffer(commandBuffer), mBoxedHandleManager.unbox_VkImage(srcImage),
+                                   srcImageLayout, mBoxedHandleManager.unbox_VkImage(dstImage), dstImageLayout,
                                    regionCount, pRegions, filter);
     }
     void vkCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage,
                                 VkImageLayout dstImageLayout, uint32_t regionCount,
                                 const VkBufferImageCopy* pRegions) {
-        mDgs->on_vkCmdCopyBufferToImage(mBp, nullptr, commandBuffer, unbox_VkBuffer(srcBuffer),
-                                        unbox_VkImage(dstImage), dstImageLayout, regionCount,
+        mDgs->on_vkCmdCopyBufferToImage(mBp, nullptr, commandBuffer, mBoxedHandleManager.unbox_VkBuffer(srcBuffer),
+                                        mBoxedHandleManager.unbox_VkImage(dstImage), dstImageLayout, regionCount,
                                         pRegions, *mDecoderContext);
     }
 
@@ -86,8 +86,8 @@ class VkDecoderTestDispatch {
                         VkImageLayout srcImageLayout, VkImage dstImage,
                         VkImageLayout dstImageLayout, uint32_t regionCount,
                         const VkImageCopy* pRegions) {
-        mDgs->on_vkCmdCopyImage(mBp, nullptr, commandBuffer, unbox_VkImage(srcImage),
-                                srcImageLayout, unbox_VkImage(dstImage), dstImageLayout,
+        mDgs->on_vkCmdCopyImage(mBp, nullptr, commandBuffer, mBoxedHandleManager.unbox_VkImage(srcImage),
+                                srcImageLayout, mBoxedHandleManager.unbox_VkImage(dstImage), dstImageLayout,
                                 regionCount, pRegions);
     }
 
@@ -112,8 +112,8 @@ class VkDecoderTestDispatch {
     void vkCmdCopyImageToBuffer(VkCommandBuffer commandBuffer, VkImage srcImage,
                                 VkImageLayout srcImageLayout, VkBuffer dstBuffer,
                                 uint32_t regionCount, const VkBufferImageCopy* pRegions) {
-        mDgs->on_vkCmdCopyImageToBuffer(mBp, nullptr, commandBuffer, unbox_VkImage(srcImage),
-                                        srcImageLayout, unbox_VkBuffer(dstBuffer), regionCount,
+        mDgs->on_vkCmdCopyImageToBuffer(mBp, nullptr, commandBuffer, mBoxedHandleManager.unbox_VkImage(srcImage),
+                                        srcImageLayout, mBoxedHandleManager.unbox_VkBuffer(dstBuffer), regionCount,
                                         pRegions);
     }
 
@@ -133,7 +133,7 @@ class VkDecoderTestDispatch {
                                             const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
                                             const VkAllocationCallbacks* pAllocator,
                                             VkDebugUtilsMessengerEXT* pDebugMessenger) {
-        instance = unbox_VkInstance(instance);
+        instance = mBoxedHandleManager.unbox_VkInstance(instance);
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)mVk->vkGetInstanceProcAddr(
             instance, "vkCreateDebugUtilsMessengerEXT");
         if (func != nullptr) {
@@ -167,21 +167,21 @@ class VkDecoderTestDispatch {
 
     void vkDestroyBuffer(VkDevice device, VkBuffer buffer,
                          const VkAllocationCallbacks* pAllocator) {
-        mDgs->on_vkDestroyBuffer(mBp, nullptr, device, unbox_VkBuffer(buffer), pAllocator);
-        delete_VkBuffer(buffer);
+        mDgs->on_vkDestroyBuffer(mBp, nullptr, device, mBoxedHandleManager.unbox_VkBuffer(buffer), pAllocator);
+        mBoxedHandleManager.delete_VkBuffer(buffer);
     }
 
     void vkDestroyCommandPool(VkDevice device, VkCommandPool commandPool,
                               const VkAllocationCallbacks* pAllocator) {
-        mDgs->on_vkDestroyCommandPool(mBp, nullptr, device, unbox_VkCommandPool(commandPool),
+        mDgs->on_vkDestroyCommandPool(mBp, nullptr, device, mBoxedHandleManager.unbox_VkCommandPool(commandPool),
                                       pAllocator);
-        delete_VkCommandPool(commandPool);
+        mBoxedHandleManager.delete_VkCommandPool(commandPool);
     }
 
     void vkDestroyDebugUtilsMessengerEXT(VkInstance instance,
                                          VkDebugUtilsMessengerEXT debugMessenger,
                                          const VkAllocationCallbacks* pAllocator) {
-        instance = unbox_VkInstance(instance);
+        instance = mBoxedHandleManager.unbox_VkInstance(instance);
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)mVk->vkGetInstanceProcAddr(
             instance, "vkDestroyDebugUtilsMessengerEXT");
         if (func != nullptr) {
@@ -194,14 +194,14 @@ class VkDecoderTestDispatch {
     }
 
     void vkDestroyImage(VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
-        mDgs->on_vkDestroyImage(mBp, nullptr, device, unbox_VkImage(image), pAllocator);
-        delete_VkImage(image);
+        mDgs->on_vkDestroyImage(mBp, nullptr, device, mBoxedHandleManager.unbox_VkImage(image), pAllocator);
+        mBoxedHandleManager.delete_VkImage(image);
     }
 
     void vkDestroyImageView(VkDevice device, VkImageView imageView,
                             const VkAllocationCallbacks* pAllocator) {
-        mDgs->on_vkDestroyImageView(mBp, nullptr, device, unbox_VkImageView(imageView), pAllocator);
-        delete_VkImageView(imageView);
+        mDgs->on_vkDestroyImageView(mBp, nullptr, device, mBoxedHandleManager.unbox_VkImageView(imageView), pAllocator);
+        mBoxedHandleManager.delete_VkImageView(imageView);
     }
 
     void vkDestroyInstance(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
@@ -225,23 +225,23 @@ class VkDecoderTestDispatch {
 
     void vkFreeCommandBuffers(VkDevice device, VkCommandPool commandPool,
                               uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
-        mDgs->on_vkFreeCommandBuffers(mBp, nullptr, device, unbox_VkCommandPool(commandPool),
+        mDgs->on_vkFreeCommandBuffers(mBp, nullptr, device, mBoxedHandleManager.unbox_VkCommandPool(commandPool),
                                       commandBufferCount, pCommandBuffers);
         // Calling delete_VkCommandBuffer is normally done in the decoder, so we have to do it here.
         for (int i = 0; i < commandBufferCount; ++i) {
-            delete_VkCommandBuffer(unboxed_to_boxed_VkCommandBuffer(pCommandBuffers[i]));
+            mBoxedHandleManager.delete_VkCommandBuffer(mBoxedHandleManager.unboxed_to_boxed_VkCommandBuffer(pCommandBuffers[i]));
         }
     }
 
     void vkFreeMemory(VkDevice device, VkDeviceMemory memory,
                       const VkAllocationCallbacks* pAllocator) {
-        mDgs->on_vkFreeMemory(mBp, nullptr, device, unbox_VkDeviceMemory(memory), pAllocator);
-        delete_VkDeviceMemory(memory);
+        mDgs->on_vkFreeMemory(mBp, nullptr, device, mBoxedHandleManager.unbox_VkDeviceMemory(memory), pAllocator);
+        mBoxedHandleManager.delete_VkDeviceMemory(memory);
     }
 
     void vkGetBufferMemoryRequirements(VkDevice device, VkBuffer buffer,
                                        VkMemoryRequirements* pMemoryRequirements) {
-        mVk->vkGetBufferMemoryRequirements(unbox_VkDevice(device), unbox_VkBuffer(buffer),
+        mVk->vkGetBufferMemoryRequirements(mBoxedHandleManager.unbox_VkDevice(device), mBoxedHandleManager.unbox_VkBuffer(buffer),
                                            pMemoryRequirements);
     }
 
@@ -252,7 +252,7 @@ class VkDecoderTestDispatch {
 
     void vkGetImageMemoryRequirements(VkDevice device, VkImage image,
                                       VkMemoryRequirements* pMemoryRequirements) {
-        mDgs->on_vkGetImageMemoryRequirements(mBp, nullptr, device, unbox_VkImage(image),
+        mDgs->on_vkGetImageMemoryRequirements(mBp, nullptr, device, mBoxedHandleManager.unbox_VkImage(image),
                                               pMemoryRequirements);
     }
 
@@ -277,30 +277,31 @@ class VkDecoderTestDispatch {
     }
 
     VkResult vkDeviceWaitIdle(VkDevice device) {
-        return mVk->vkDeviceWaitIdle(unbox_VkDevice(device));
+        return mVk->vkDeviceWaitIdle(mBoxedHandleManager.unbox_VkDevice(device));
     }
 
     void vkGetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice,
                                                   uint32_t* pQueueFamilyPropertyCount,
                                                   VkQueueFamilyProperties* pQueueFamilyProperties) {
-        mVk->vkGetPhysicalDeviceQueueFamilyProperties(unbox_VkPhysicalDevice(physicalDevice),
+        mVk->vkGetPhysicalDeviceQueueFamilyProperties(mBoxedHandleManager.unbox_VkPhysicalDevice(physicalDevice),
                                                       pQueueFamilyPropertyCount,
                                                       pQueueFamilyProperties);
     }
 
     VkResult vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset,
                          VkDeviceSize size, VkMemoryMapFlags flags, void** ppData) {
-        return mDgs->on_vkMapMemory(mBp, nullptr, device, unbox_VkDeviceMemory(memory), offset,
+        return mDgs->on_vkMapMemory(mBp, nullptr, device, mBoxedHandleManager.unbox_VkDeviceMemory(memory), offset,
                                     size, flags, ppData);
     }
 
     void vkUnmapMemory(VkDevice device, VkDeviceMemory memory) {
-        mDgs->on_vkUnmapMemory(mBp, nullptr, device, unbox_VkDeviceMemory(memory));
+        mDgs->on_vkUnmapMemory(mBp, nullptr, device, mBoxedHandleManager.unbox_VkDeviceMemory(memory));
     }
 
    private:
     VulkanDispatch* mVk;
     VkDecoderGlobalState* mDgs;
+    BoxedHandleManager& mBoxedHandleManager;
     android::base::BumpPool* mBp;
     VkDecoderContext* mDecoderContext;
 };

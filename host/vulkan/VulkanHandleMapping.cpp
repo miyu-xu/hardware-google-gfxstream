@@ -22,6 +22,11 @@
 namespace gfxstream {
 namespace vk {
 
+VulkanHandleMapping::VulkanHandleMapping(VkDecoderGlobalState* state) : m_state(state),
+    mBoxedHandleManager(state->getBoxedHandleManager())
+    {
+}
+
 #define DEFAULT_HANDLE_MAP_DEFINE(type)                                                            \
     void DefaultHandleMapping::mapHandles_##type(type*, size_t) { return; }                        \
     void DefaultHandleMapping::mapHandles_##type##_u64(const type* handles, uint64_t* handle_u64s, \
@@ -62,18 +67,18 @@ GOLDFISH_VK_LIST_HANDLE_TYPES(DEFAULT_HANDLE_MAP_DEFINE)
         BoxedHandleUnwrapMapping,                                                                  \
         type_name,                                                                                 \
         if (handles[i]) {                                                                          \
-            handles[i] = unbox_##type_name(handles[i]);                                            \
+            handles[i] = mBoxedHandleManager.unbox_##type_name(handles[i]);                                            \
         } else {                                                                                   \
             handles[i] = (type_name) nullptr;                                                      \
         }                                                                                          \
         ,                                                                                          \
         if (handles[i]) {                                                                          \
-            handle_u64s[i] = (uint64_t)unbox_##type_name(handles[i]);                              \
+            handle_u64s[i] = (uint64_t)mBoxedHandleManager.unbox_##type_name(handles[i]);                              \
         } else {                                                                                   \
             handle_u64s[i] = 0;                                                                    \
         },                                                                                         \
         if (handle_u64s[i]) {                                                                      \
-            handles[i] = unbox_##type_name((type_name)(uintptr_t)handle_u64s[i]);                  \
+            handles[i] = mBoxedHandleManager.unbox_##type_name((type_name)(uintptr_t)handle_u64s[i]);                  \
         } else {                                                                                   \
             handles[i] = (type_name) nullptr;                                                      \
         })
@@ -83,18 +88,18 @@ GOLDFISH_VK_LIST_HANDLE_TYPES(DEFAULT_HANDLE_MAP_DEFINE)
         BoxedHandleUnwrapMapping,                                                                  \
         type_name,                                                                                 \
         if (handles[i]) {                                                                          \
-            handles[i] = unbox_##type_name(handles[i]);                                            \
+            handles[i] = mBoxedHandleManager.unbox_##type_name(handles[i]);                                            \
         } else {                                                                                   \
             handles[i] = (type_name) nullptr;                                                      \
         }                                                                                          \
         ,                                                                                          \
         if (handles[i]) {                                                                          \
-            handle_u64s[i] = (uint64_t)unbox_##type_name(handles[i]);                              \
+            handle_u64s[i] = (uint64_t)mBoxedHandleManager.unbox_##type_name(handles[i]);                              \
         } else {                                                                                   \
             handle_u64s[i] = 0;                                                                    \
         },                                                                                         \
         if (handle_u64s[i]) {                                                                      \
-            handles[i] = unbox_##type_name((type_name)(uintptr_t)handle_u64s[i]);                  \
+            handles[i] = mBoxedHandleManager.unbox_##type_name((type_name)(uintptr_t)handle_u64s[i]);                  \
         } else {                                                                                   \
             handles[i] = (type_name) nullptr;                                                      \
         })
@@ -117,9 +122,9 @@ GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(BOXED_NON_DISPATCHABLE_UNWRAP_IMP
     MAKE_HANDLE_MAPPING_FOREACH(                                                         \
         BoxedHandleCreateMapping,                                                        \
         type_name,                                                                       \
-        handles[i] = new_boxed_non_dispatchable_##type_name(handles[i]); ,               \
-        handle_u64s[i] = (uint64_t)new_boxed_non_dispatchable_##type_name(handles[i]); , \
-        handles[i] = (type_name)new_boxed_non_dispatchable_##type_name(                  \
+        handles[i] = mBoxedHandleManager.new_boxed_non_dispatchable_##type_name(handles[i]); ,               \
+        handle_u64s[i] = (uint64_t)mBoxedHandleManager.new_boxed_non_dispatchable_##type_name(handles[i]); , \
+        handles[i] = (type_name)mBoxedHandleManager.new_boxed_non_dispatchable_##type_name(                  \
             (type_name)(uintptr_t)handle_u64s[i]);                                       \
         )
 
@@ -129,7 +134,7 @@ GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(BOXED_NON_DISPATCHABLE_UNWRAP_IMP
         type_name,                                                                         \
         if (handles[i]) {                                                                  \
             auto boxed = handles[i];                                                       \
-            handles[i] = unbox_##type_name(handles[i]);                                    \
+            handles[i] = mBoxedHandleManager.unbox_##type_name(handles[i]);                                    \
             delete_##type_name(boxed);                                                     \
         } else {                                                                           \
             handles[i] = (type_name) nullptr;                                              \
@@ -137,14 +142,14 @@ GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(BOXED_NON_DISPATCHABLE_UNWRAP_IMP
         ,                                                                                  \
         if (handles[i]) {                                                                  \
             auto boxed = handles[i];                                                       \
-            handle_u64s[i] = (uint64_t)unbox_##type_name(handles[i]);                      \
+            handle_u64s[i] = (uint64_t)mBoxedHandleManager.unbox_##type_name(handles[i]);                      \
             delete_##type_name(boxed);                                                     \
         } else {                                                                           \
             handle_u64s[i] = 0;                                                            \
         },                                                                                 \
         if (handle_u64s[i]) {                                                              \
             auto boxed = (type_name)(uintptr_t)handle_u64s[i];                             \
-            handles[i] = unbox_##type_name((type_name)(uintptr_t)handle_u64s[i]);          \
+            handles[i] = mBoxedHandleManager.unbox_##type_name((type_name)(uintptr_t)handle_u64s[i]);          \
             delete_##type_name(boxed);                                                     \
         } else {                                                                           \
             handles[i] = (type_name) nullptr;                                              \

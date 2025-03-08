@@ -25,10 +25,11 @@ namespace gfxstream {
 namespace vk {
 
 class VkDecoderGlobalState;
+class BoxedHandleManager;
 
 class VulkanHandleMapping {
    public:
-    VulkanHandleMapping(VkDecoderGlobalState* state) : m_state(state) {}
+    VulkanHandleMapping(VkDecoderGlobalState* state);
     virtual ~VulkanHandleMapping() {}
 
 #define DECLARE_HANDLE_MAP_PURE_VIRTUAL_METHOD(type)                                 \
@@ -41,6 +42,7 @@ class VulkanHandleMapping {
     GOLDFISH_VK_LIST_HANDLE_TYPES(DECLARE_HANDLE_MAP_PURE_VIRTUAL_METHOD)
    protected:
     VkDecoderGlobalState* m_state;
+    BoxedHandleManager& mBoxedHandleManager;
 };
 
 #define DECLARE_HANDLE_MAP_OVERRIDE(type)                                                            \
