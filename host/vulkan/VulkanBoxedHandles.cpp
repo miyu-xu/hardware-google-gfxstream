@@ -371,7 +371,7 @@ VkQueue unbox_VkQueueImpl(VkQueue boxed) {
 }
 
 template <typename VkObjectT>
-VkObjectT unbox_VkType(VkObjectT boxed) {
+VkObjectT unbox_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed) {
     if (boxed == VK_NULL_HANDLE) {
         return VK_NULL_HANDLE;
     }
@@ -381,7 +381,7 @@ VkObjectT unbox_VkType(VkObjectT boxed) {
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
         unboxed = unbox_VkQueueImpl(boxed);
     } else {
-        BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
+        BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
         if (info == nullptr) {
             if constexpr (std::is_same_v<VkObjectT, VkCommandBuffer> ||
                           std::is_same_v<VkObjectT, VkDevice> ||
@@ -409,7 +409,7 @@ VkObjectT unbox_VkType(VkObjectT boxed) {
 }
 
 template <typename VkObjectT>
-VkObjectT try_unbox_VkType(VkObjectT boxed) {
+VkObjectT try_unbox_VkType(BoxedHandleManager* pBoxedHandleManager, VkObjectT boxed) {
     if (boxed == VK_NULL_HANDLE) {
         return VK_NULL_HANDLE;
     }
@@ -419,7 +419,7 @@ VkObjectT try_unbox_VkType(VkObjectT boxed) {
     if constexpr (std::is_same_v<VkObjectT, VkQueue>) {
         unboxed = unbox_VkQueueImpl(boxed);
     } else {
-        BoxedHandleInfo* info = getBoxedHandleManager().get((uint64_t)(uintptr_t)boxed);
+        BoxedHandleInfo* info = pBoxedHandleManager->get((uint64_t)(uintptr_t)boxed);
         if (info != nullptr) {
             unboxed = (VkObjectT)info->underlying;
         }
@@ -530,28 +530,32 @@ void set_boxed_non_dispatchable_VkType(BoxedHandleManager* pBoxedHandleManager, 
 
 // bohu-TODO
 // new interface that takes ptr to BoxedHandleManager
-#define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DEFINE(type)                                    \
-    type BoxedHandleManager::new_boxed_##type(type underlying,          \
-                          VulkanDispatch* dispatch, bool ownDispatch) {                      \
-        return new_boxed_VkType<type>(this, underlying, true, dispatch,       \
-                                      ownDispatch);                                          \
-    }                                                                                        \
-    type BoxedHandleManager::unboxed_to_boxed_##type(type unboxed) {    \
-        return unboxed_to_boxed_non_dispatchable_VkType<type>(this, unboxed); \
+#define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DEFINE(type)                                         \
+    type BoxedHandleManager::new_boxed_##type(type underlying, VulkanDispatch* dispatch,          \
+                                              bool ownDispatch) {                                 \
+        return new_boxed_VkType<type>(this, underlying, true, dispatch, ownDispatch);             \
+    }                                                                                             \
+    type BoxedHandleManager::unbox_##type(type boxed) { return unbox_VkType<type>(this, boxed); } \
+    type BoxedHandleManager::try_unbox_##type(type boxed) {                                       \
+        return try_unbox_VkType<type>(this, boxed);                                               \
+    }                                                                                             \
+    type BoxedHandleManager::unboxed_to_boxed_##type(type unboxed) {                              \
+        return unboxed_to_boxed_non_dispatchable_VkType<type>(this, unboxed);                     \
     }
 
-#define DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DEFINE(type)                                   \
-    type BoxedHandleManager::new_boxed_non_dispatchable_##type(             \
-                                           type underlying) {                                   \
-        return new_boxed_VkType<type>(this, underlying);                         \
-    }                                                                                           \
-    type BoxedHandleManager::unboxed_to_boxed_non_dispatchable_##type(      \
-                                                  type unboxed) {                               \
-        return unboxed_to_boxed_non_dispatchable_VkType<type>(this, unboxed);    \
-    }                                                                                           \
-    void BoxedHandleManager::set_boxed_non_dispatchable_##type(type boxed, \
-                                           type underlying) {                                   \
-        set_boxed_non_dispatchable_VkType<type>(this, boxed, underlying);        \
+#define DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DEFINE(type)                                     \
+    type BoxedHandleManager::new_boxed_non_dispatchable_##type(type underlying) {                 \
+        return new_boxed_VkType<type>(this, underlying);                                          \
+    }                                                                                             \
+    type BoxedHandleManager::unbox_##type(type boxed) { return unbox_VkType<type>(this, boxed); } \
+    type BoxedHandleManager::try_unbox_##type(type boxed) {                                       \
+        return try_unbox_VkType<type>(this, boxed);                                               \
+    }                                                                                             \
+    type BoxedHandleManager::unboxed_to_boxed_non_dispatchable_##type(type unboxed) {             \
+        return unboxed_to_boxed_non_dispatchable_VkType<type>(this, unboxed);                     \
+    }                                                                                             \
+    void BoxedHandleManager::set_boxed_non_dispatchable_##type(type boxed, type underlying) {     \
+        set_boxed_non_dispatchable_VkType<type>(this, boxed, underlying);                         \
     }
 
 GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DEFINE)
