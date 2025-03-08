@@ -148,7 +148,6 @@ class BoxedHandleManager {
 
    public:
     ReadStreamRegistry sReadStreamRegistry;
-};
 
 #define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
     type new_boxed_##type(type underlying, VulkanDispatch* dispatch, bool ownDispatch); \
@@ -172,5 +171,6 @@ class BoxedHandleManager {
 GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL)
 GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL)
 
+};
 }  // namespace vk
 }  // namespace gfxstream
