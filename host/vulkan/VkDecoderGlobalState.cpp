@@ -630,7 +630,8 @@ class VkDecoderGlobalState::Impl {
             TrivialStream trivialStream;
 
             // TODO: This needs to be the puid seqno ptr
-            auto resources = ProcessResources::create();
+            auto resources =
+                ProcessResources::create(FrameBuffer::getFB()->getDefaultVulkanGlobalState());
             VkDecoderContext context = {
                 .processName = nullptr,
                 .gfxApiLogger = &gfxLogger,

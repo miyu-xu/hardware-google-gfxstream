@@ -1464,7 +1464,10 @@ void FrameBuffer::createGraphicsProcessResources(uint64_t puid) {
     bool inserted = false;
     {
         AutoLock mutex(m_procOwnedResourcesLock);
-        inserted = m_procOwnedResources.try_emplace(puid, ProcessResources::create()).second;
+        inserted = m_procOwnedResources
+                       .try_emplace(puid, ProcessResources::create(vk::VkDecoderGlobalState::create(
+                                              m_emulationVk.get())))
+                       .second;
     }
     if (!inserted) {
         WARN("Failed to create process resource for puid %" PRIu64 ".", puid);
@@ -2615,7 +2618,8 @@ bool FrameBuffer::onLoad(Stream* stream,
         for (size_t i = 0; i < resourceCount; i++) {
             uint64_t puid = stream->getBe64();
             uint32_t sequenceNumber = stream->getBe32();
-            std::unique_ptr<ProcessResources> processResources = ProcessResources::create();
+            std::unique_ptr<ProcessResources> processResources =
+                ProcessResources::create(vk::VkDecoderGlobalState::create(m_emulationVk.get()));
             processResources->getSequenceNumberPtr()->store(sequenceNumber);
             {
                 AutoLock mutex(m_procOwnedResourcesLock);
