@@ -19,35 +19,6 @@
 
 namespace gfxstream {
 namespace vk {
-namespace {
-
-struct ReadStreamRegistry {
-    android::base::Lock mLock;
-
-    std::vector<VulkanMemReadingStream*> freeStreams;
-
-    ReadStreamRegistry() { freeStreams.reserve(100); };
-
-    VulkanMemReadingStream* pop(const gfxstream::host::FeatureSet& features) {
-        android::base::AutoLock lock(mLock);
-        if (freeStreams.empty()) {
-            return new VulkanMemReadingStream(nullptr, features);
-        } else {
-            VulkanMemReadingStream* res = freeStreams.back();
-            freeStreams.pop_back();
-            return res;
-        }
-    }
-
-    void push(VulkanMemReadingStream* stream) {
-        android::base::AutoLock lock(mLock);
-        freeStreams.push_back(stream);
-    }
-};
-
-static ReadStreamRegistry sReadStreamRegistry;
-
-}  // namespace
 
 void BoxedHandleManager::replayHandles(std::vector<BoxedHandle> handles) {
     mHandleReplay = true;
@@ -363,7 +334,7 @@ void delete_VkType(VkObjectT boxed) {
     releaseOrderMaintInfo(info->ordMaintInfo);
 
     if (info->readStream) {
-        sReadStreamRegistry.push(info->readStream);
+        getBoxedHandleManager().sReadStreamRegistry.push(info->readStream);
         info->readStream = nullptr;
     }
 
@@ -500,7 +471,8 @@ VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
     }
 
     if (info->readStream == nullptr) {
-        info->readStream = sReadStreamRegistry.pop(VkDecoderGlobalState::get()->getFeatures());
+        info->readStream = getBoxedHandleManager().sReadStreamRegistry.pop(
+            VkDecoderGlobalState::get()->getFeatures());
     }
 
     return info->readStream;

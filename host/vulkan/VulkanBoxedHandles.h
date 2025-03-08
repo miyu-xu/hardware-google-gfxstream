@@ -121,6 +121,33 @@ class BoxedHandleManager {
     // be used when replaying commands.
     bool mHandleReplay = false;
     std::deque<BoxedHandle> mHandleReplayQueue;
+
+    struct ReadStreamRegistry {
+        android::base::Lock mLock;
+
+        std::vector<VulkanMemReadingStream*> freeStreams;
+
+        ReadStreamRegistry() { freeStreams.reserve(100); };
+
+        VulkanMemReadingStream* pop(const gfxstream::host::FeatureSet& features) {
+            android::base::AutoLock lock(mLock);
+            if (freeStreams.empty()) {
+                return new VulkanMemReadingStream(nullptr, features);
+            } else {
+                VulkanMemReadingStream* res = freeStreams.back();
+                freeStreams.pop_back();
+                return res;
+            }
+        }
+
+        void push(VulkanMemReadingStream* stream) {
+            android::base::AutoLock lock(mLock);
+            freeStreams.push_back(stream);
+        }
+    };
+
+   public:
+    ReadStreamRegistry sReadStreamRegistry;
 };
 
 #define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
