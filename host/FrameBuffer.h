@@ -81,10 +81,11 @@
 #define FB_MAX_SWAP_INTERVAL 7
 
 #include "render-utils/Renderer.h"
-#include "render-utils/virtio_gpu_ops.h"
 #include "render-utils/render_api.h"
+#include "render-utils/virtio_gpu_ops.h"
 #include "snapshot/common.h"
 #include "utils/RenderDoc.h"
+#include "vulkan/VkDecoderGlobalState.h"
 #include "vulkan/vk_util.h"
 
 namespace gfxstream {
@@ -945,6 +946,15 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     std::unordered_map<void*, PlatformEglContextInfo> m_platformEglContexts;
 #endif
+
+    // the default vulkan global state, when the VulkanSeparateGlobalState
+    // feature is not enabled
+    std::shared_ptr<vk::VkDecoderGlobalState> m_defaultVulkanGlobalState;
+
+   public:
+    std::shared_ptr<vk::VkDecoderGlobalState> getDefaultVulkanGlobalState() {
+        return m_defaultVulkanGlobalState;
+    }
 };
 
 }  // namespace gfxstream

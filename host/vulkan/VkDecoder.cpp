@@ -70,7 +70,7 @@ class VkDecoder::Impl {
     Impl()
         : m_logCalls(android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1"),
           m_vk(vkDispatch()),
-          m_state(VkDecoderGlobalState::get()),
+          m_state(FrameBuffer::getFB()->getDefaultVulkanGlobalState().get()),
           m_vkStream(nullptr, m_state->getFeatures()),
           m_vkMemReadingStream(nullptr, m_state->getFeatures()),
           m_boxedHandleCreateMapping(m_state),
@@ -4893,7 +4893,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 }
                 std::function<void()> delayed_remove_callback = [vk, device, pipelineLayout,
                                                                  pAllocator]() {
-                    auto m_state = VkDecoderGlobalState::get();
+                    auto m_state = FrameBuffer::getFB()->getDefaultVulkanGlobalState();
                     if (CC_LIKELY(vk)) {
                         m_state->on_vkDestroyPipelineLayout(nullptr, nullptr, device,
                                                             pipelineLayout, pAllocator);

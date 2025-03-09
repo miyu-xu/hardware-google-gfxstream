@@ -14,6 +14,7 @@
 
 #include "VulkanBoxedHandles.h"
 
+#include "FrameBuffer.h"
 #include "VkDecoderGlobalState.h"
 #include "VkDecoderInternalStructs.h"
 
@@ -388,7 +389,10 @@ VkQueue unbox_VkQueueImpl(VkQueue boxed) {
     const uint64_t unboxedQueue64 = info->underlying;
 
     // Use VulkanVirtualQueue directly to avoid locking for hasVirtualGraphicsQueue call.
-    if (VkDecoderGlobalState::get()->getFeatures().VulkanVirtualQueue.enabled) {
+    if (FrameBuffer::getFB()
+            ->getDefaultVulkanGlobalState()
+            ->getFeatures()
+            .VulkanVirtualQueue.enabled) {
         // Clear virtual bit and unbox into the actual physical queue handle
         return (VkQueue)(unboxedQueue64 & ~QueueInfo::kVirtualQueueBit);
     }
@@ -498,7 +502,8 @@ VulkanMemReadingStream* get_read_stream_VkType(VkObjectT boxed) {
     }
 
     if (info->readStream == nullptr) {
-        info->readStream = sReadStreamRegistry.pop(VkDecoderGlobalState::get()->getFeatures());
+        info->readStream = sReadStreamRegistry.pop(
+            FrameBuffer::getFB()->getDefaultVulkanGlobalState()->getFeatures());
     }
 
     return info->readStream;
