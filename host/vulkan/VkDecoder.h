@@ -53,9 +53,10 @@ class IOStream;
 namespace gfxstream {
 namespace vk {
 
+class VkDecoderGlobalState;
 class VkDecoder {
    public:
-    VkDecoder();
+    VkDecoder(VkDecoderGlobalState* state);
     ~VkDecoder();
     void setForSnapshotLoad(bool forSnapshotLoad);
     size_t decode(void* buf, size_t bufsize, IOStream* stream,
@@ -63,6 +64,7 @@ class VkDecoder {
 
    private:
     class Impl;
+    VkDecoderGlobalState* m_state;
     std::unique_ptr<Impl> mImpl;
 };
 

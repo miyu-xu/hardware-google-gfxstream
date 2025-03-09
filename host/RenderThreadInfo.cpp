@@ -111,7 +111,7 @@ bool RenderThreadInfo::onLoad(Stream* stream) {
     const bool loadVkInfo = stream->getBe32() == 1;
     if (loadVkInfo) {
         if (!m_vkInfo) {
-            m_vkInfo.emplace();
+            m_vkInfo.emplace(FrameBuffer::getFB()->getDefaultVulkanGlobalState().get());
         }
         if (!m_vkInfo->onLoad(stream)) {
             return false;
