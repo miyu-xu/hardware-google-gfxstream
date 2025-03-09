@@ -35,6 +35,7 @@
 
 #include <mutex>
 
+#include "FrameBuffer.h"
 #include "VkDecoderGlobalState.h"
 #include "VkReconstruction.h"
 #include "VulkanBoxedHandles.h"
@@ -840,7 +841,7 @@ class VkDecoderSnapshot::Impl {
                                 const VkCopyDescriptorSet* pDescriptorCopies) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
         // pDescriptorWrites action
-        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        VkDecoderGlobalState* m_state = FrameBuffer::getFB()->getDefaultVulkanGlobalState().get();
         if (m_state->batchedDescriptorSetUpdateEnabled()) {
             return;
         }

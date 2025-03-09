@@ -14,10 +14,11 @@
 
 #pragma once
 
+#include "FrameBuffer.h"
+#include "VulkanBoxedHandles.h"
 #include "goldfish_vk_dispatch.h"
 #include "vulkan/VkDecoderGlobalState.h"
 #include "vulkan/vulkan.h"
-#include "VulkanBoxedHandles.h"
 
 namespace gfxstream {
 namespace vk {
@@ -28,7 +29,10 @@ class VkDecoderTestDispatch {
    public:
     VkDecoderTestDispatch(VulkanDispatch* vk, android::base::BumpPool* bp,
                           VkDecoderContext* decoderContext)
-        : mVk(vk), mDgs(VkDecoderGlobalState::get()), mBp(bp), mDecoderContext(decoderContext) {}
+        : mVk(vk),
+          mDgs(FrameBuffer::getFB()->getDefaultVulkanGlobalState().get()),
+          mBp(bp),
+          mDecoderContext(decoderContext) {}
 
     // Vulkan API wrappers - please keep sorted alphabetically
     //

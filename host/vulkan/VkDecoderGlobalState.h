@@ -69,11 +69,10 @@ class VkDecoderGlobalState {
     VkDecoderGlobalState(VkEmulation* emulation);
     ~VkDecoderGlobalState();
 
-    static void initialize(VkEmulation* emulation);
+    static std::shared_ptr<VkDecoderGlobalState> create(VkEmulation* emulation);
 
     // There should only be one instance of VkDecoderGlobalState per process
     // Note: currently not thread-safe
-    static VkDecoderGlobalState* get();
 
     // For testing only - destroys the global instance of VkDecoderGlobalState.
     static void reset();
