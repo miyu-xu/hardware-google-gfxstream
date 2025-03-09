@@ -25,6 +25,7 @@
 #include <sstream>
 #include <unordered_set>
 
+#include "FrameBuffer.h"
 #include "VkDecoderGlobalState.h"
 #include "VkEmulatedPhysicalDeviceMemory.h"
 #include "VkFormatUtils.h"
@@ -1861,7 +1862,9 @@ VkEmulation::getRepresentativeColorBufferMemoryTypeInfo() const {
     return mRepresentativeColorBufferMemoryTypeInfo;
 }
 
-void VkEmulation::onVkDeviceLost() { VkDecoderGlobalState::get()->on_DeviceLost(); }
+void VkEmulation::onVkDeviceLost() {
+    FrameBuffer::getFB()->getDefaultVulkanGlobalState()->on_DeviceLost();
+}
 
 std::unique_ptr<gfxstream::DisplaySurface> VkEmulation::createDisplaySurface(
     FBNativeWindowType window, uint32_t width, uint32_t height) {
@@ -3268,7 +3271,8 @@ bool VkEmulation::updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, u
     mDebugUtilsHelper.cmdBeginDebugLabel(
         mCommandBuffer, "updateColorBufferFromBytes(ColorBuffer:%d)", colorBufferHandle);
 
-    const bool isSnapshotLoad = VkDecoderGlobalState::get()->isSnapshotCurrentlyLoading();
+    const bool isSnapshotLoad =
+        FrameBuffer::getFB()->getDefaultVulkanGlobalState()->isSnapshotCurrentlyLoading();
     VkImageLayout currentLayout = colorBufferInfo->currentLayout;
     if (isSnapshotLoad) {
         currentLayout = VK_IMAGE_LAYOUT_UNDEFINED;

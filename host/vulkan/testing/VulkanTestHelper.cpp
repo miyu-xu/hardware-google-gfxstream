@@ -53,6 +53,8 @@ std::mutex VulkanTestHelper::mMutex;
 VulkanTestHelper::VulkanTestHelper()
     : mLock(mMutex),
       mVk(vkDispatch(/*forTesting=*/true)),
+      mBoxedHandleManager(
+          FrameBuffer::getFB()->getDefaultVulkanGlobalState()->getBoxedHandleManager()),
       mLogger(),
       mMetricsLogger(android::base::CreateMetricsLogger()),
       mHealthMonitor(*mMetricsLogger),
@@ -207,7 +209,7 @@ bool VulkanTestHelper::hasValidationErrors() const { return validationErrorsFoun
 VkCommandBuffer VulkanTestHelper::beginCommandBuffer() {
     VkCommandBufferAllocateInfo allocInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .commandPool = unbox_VkCommandPool(mCommandPool),
+        .commandPool = mBoxedHandleManager.unbox_VkCommandPool(mCommandPool),
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1,
     };
@@ -224,7 +226,7 @@ VkCommandBuffer VulkanTestHelper::beginCommandBuffer() {
 
 void VulkanTestHelper::submitCommandBuffer(VkCommandBuffer commandBuffer) {
     vk().vkEndCommandBuffer(commandBuffer);
-    auto cmdBuf = unbox_VkCommandBuffer(commandBuffer);
+    auto cmdBuf = mBoxedHandleManager.unbox_VkCommandBuffer(commandBuffer);
 
     VkSubmitInfo submitInfo = {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -297,7 +299,7 @@ void VulkanTestHelper::transitionImageLayout(VkCommandBuffer cmdBuf, VkImage ima
         .newLayout = newLayout,
         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
         .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = unbox_VkImage(image),
+        .image = mBoxedHandleManager.unbox_VkImage(image),
         .subresourceRange =
             {
                 .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
