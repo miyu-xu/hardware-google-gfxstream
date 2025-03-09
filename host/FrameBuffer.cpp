@@ -1466,10 +1466,13 @@ void FrameBuffer::createGraphicsProcessResources(uint64_t puid) {
     bool inserted = false;
     {
         AutoLock mutex(m_procOwnedResourcesLock);
-        inserted = m_procOwnedResources
-                       .try_emplace(puid, ProcessResources::create(vk::VkDecoderGlobalState::create(
-                                              m_emulationVk.get())))
-                       .second;
+        inserted =
+            m_procOwnedResources
+                .try_emplace(
+                    puid, ProcessResources::create(
+                              m_emulationVk ? vk::VkDecoderGlobalState::create(m_emulationVk.get())
+                                            : nullptr))
+                .second;
     }
     if (!inserted) {
         WARN("Failed to create process resource for puid %" PRIu64 ".", puid);
