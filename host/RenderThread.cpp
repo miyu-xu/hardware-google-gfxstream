@@ -324,7 +324,7 @@ intptr_t RenderThread::main() {
     FrameBuffer::waitUntilInitialized();
 
     if (FrameBuffer::getFB()->hasEmulationVk()) {
-        tInfo->m_vkInfo.emplace();
+        tInfo->m_vkInfo.emplace(FrameBuffer::getFB()->getDefaultVulkanGlobalState().get());
     }
 
 #if GFXSTREAM_ENABLE_HOST_MAGMA

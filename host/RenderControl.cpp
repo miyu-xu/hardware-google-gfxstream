@@ -325,17 +325,17 @@ static bool shouldEnableVulkan(const gfxstream::host::FeatureSet& features) {
     // TODO: Restrict further to devices supporting external memory.
     FrameBuffer* fb = FrameBuffer::getFB();
     return features.Vulkan.enabled && fb->hasEmulationVk() &&
-           vk::VkDecoderGlobalState::get()->getHostFeatureSupport().supportsVulkan;
+           fb->getDefaultVulkanGlobalState()->getHostFeatureSupport().supportsVulkan;
 }
 
 static bool shouldEnableDeferredVulkanCommands() {
-    auto supportInfo = vk::VkDecoderGlobalState::get()->getHostFeatureSupport();
+    auto supportInfo = FrameBuffer::getFB()->getDefaultVulkanGlobalState()->getHostFeatureSupport();
     return supportInfo.supportsVulkan &&
            supportInfo.useDeferredCommands;
 }
 
 static bool shouldEnableCreateResourcesWithRequirements() {
-    auto supportInfo = vk::VkDecoderGlobalState::get()->getHostFeatureSupport();
+    auto supportInfo = FrameBuffer::getFB()->getDefaultVulkanGlobalState()->getHostFeatureSupport();
     return supportInfo.supportsVulkan &&
            supportInfo.useCreateResourcesWithRequirements;
 }
