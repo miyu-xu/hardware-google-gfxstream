@@ -74,6 +74,30 @@ class BoxedHandleInfo {
     VulkanMemReadingStream* readStream = nullptr;
 };
 
+struct ReadStreamRegistry {
+    android::base::Lock mLock;
+
+    std::vector<VulkanMemReadingStream*> freeStreams;
+
+    ReadStreamRegistry() { freeStreams.reserve(100); };
+
+    VulkanMemReadingStream* pop(const gfxstream::host::FeatureSet& features) {
+        android::base::AutoLock lock(mLock);
+        if (freeStreams.empty()) {
+            return new VulkanMemReadingStream(nullptr, features);
+        } else {
+            VulkanMemReadingStream* res = freeStreams.back();
+            freeStreams.pop_back();
+            return res;
+        }
+    }
+
+    void push(VulkanMemReadingStream* stream) {
+        android::base::AutoLock lock(mLock);
+        freeStreams.push_back(stream);
+    }
+};
+
 class BoxedHandleManager {
    public:
     // The hybrid entity manager uses a sequence lock to protect access to
@@ -104,6 +128,8 @@ class BoxedHandleManager {
 
     void clear();
 
+    ReadStreamRegistry& getReadStreamRegistry() { return mReadStreamRegistry; }
+
    private:
     mutable Store mStore;
 
@@ -121,10 +147,10 @@ class BoxedHandleManager {
     // be used when replaying commands.
     bool mHandleReplay = false;
     std::deque<BoxedHandle> mHandleReplayQueue;
-};
 
-extern BoxedHandleManager sBoxedHandleManager;
+    ReadStreamRegistry mReadStreamRegistry;
 
+   public:
 #define DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL(type)                                 \
     type new_boxed_##type(type underlying, VulkanDispatch* dispatch, bool ownDispatch); \
     void delete_##type(type boxed);                                                     \
@@ -146,6 +172,6 @@ extern BoxedHandleManager sBoxedHandleManager;
 
 GOLDFISH_VK_LIST_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_DISPATCHABLE_HANDLE_API_DECL)
 GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HANDLE_API_DECL)
-
+};
 }  // namespace vk
 }  // namespace gfxstream
