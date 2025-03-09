@@ -99,6 +99,7 @@ class VulkanTestHelper {
     static std::mutex mMutex;  // Locked for the entire lifetime of this class.
     std::lock_guard<std::mutex> mLock;
     VulkanDispatch* mVk;
+    BoxedHandleManager& mBoxedHandleManager;
     emugl::GfxApiLogger mLogger;
     std::unique_ptr<android::base::MetricsLogger> mMetricsLogger;
     emugl::HealthMonitor<> mHealthMonitor;

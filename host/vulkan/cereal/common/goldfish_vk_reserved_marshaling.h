@@ -44,669 +44,787 @@ namespace vk {
 
 #ifdef VK_VERSION_1_0
 void reservedunmarshal_VkExtent2D(VulkanStream* vkStream, VkStructureType rootType,
+                                  BoxedHandleManager* pBoxedHandleManager,
                                   VkExtent2D* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExtent3D(VulkanStream* vkStream, VkStructureType rootType,
+                                  BoxedHandleManager* pBoxedHandleManager,
                                   VkExtent3D* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkOffset2D(VulkanStream* vkStream, VkStructureType rootType,
+                                  BoxedHandleManager* pBoxedHandleManager,
                                   VkOffset2D* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkOffset3D(VulkanStream* vkStream, VkStructureType rootType,
+                                  BoxedHandleManager* pBoxedHandleManager,
                                   VkOffset3D* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRect2D(VulkanStream* vkStream, VkStructureType rootType,
-                                VkRect2D* forUnmarshaling, uint8_t** ptr);
+                                BoxedHandleManager* pBoxedHandleManager, VkRect2D* forUnmarshaling,
+                                uint8_t** ptr);
 
 void reservedunmarshal_VkBaseInStructure(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkBaseInStructure* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBaseOutStructure(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkBaseOutStructure* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferMemoryBarrier(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkBufferMemoryBarrier* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDispatchIndirectCommand(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkDispatchIndirectCommand* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkDrawIndexedIndirectCommand(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkDrawIndexedIndirectCommand* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkDrawIndirectCommand(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkDrawIndirectCommand* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageSubresourceRange(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkImageSubresourceRange* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkImageMemoryBarrier(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkImageMemoryBarrier* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryBarrier(VulkanStream* vkStream, VkStructureType rootType,
+                                       BoxedHandleManager* pBoxedHandleManager,
                                        VkMemoryBarrier* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineCacheHeaderVersionOne(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineCacheHeaderVersionOne* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkAllocationCallbacks(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkAllocationCallbacks* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkApplicationInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkApplicationInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkFormatProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkFormatProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageFormatProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkImageFormatProperties* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkInstanceCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkInstanceCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryHeap(VulkanStream* vkStream, VkStructureType rootType,
+                                    BoxedHandleManager* pBoxedHandleManager,
                                     VkMemoryHeap* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryType(VulkanStream* vkStream, VkStructureType rootType,
+                                    BoxedHandleManager* pBoxedHandleManager,
                                     VkMemoryType* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceFeatures(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkPhysicalDeviceFeatures* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceLimits(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkPhysicalDeviceLimits* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMemoryProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMemoryProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSparseProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSparseProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkPhysicalDeviceProperties* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkQueueFamilyProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkQueueFamilyProperties* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceQueueCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkDeviceQueueCreateInfo* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkDeviceCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExtensionProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkExtensionProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkLayerProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkLayerProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubmitInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                    BoxedHandleManager* pBoxedHandleManager,
                                     VkSubmitInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMappedMemoryRange(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkMappedMemoryRange* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryAllocateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkMemoryAllocateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryRequirements(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkMemoryRequirements* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSparseMemoryBind(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkSparseMemoryBind* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSparseBufferMemoryBindInfo(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkSparseBufferMemoryBindInfo* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkSparseImageOpaqueMemoryBindInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSparseImageOpaqueMemoryBindInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageSubresource(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkImageSubresource* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSparseImageMemoryBind(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkSparseImageMemoryBind* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkSparseImageMemoryBindInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkSparseImageMemoryBindInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkBindSparseInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkBindSparseInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSparseImageFormatProperties(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkSparseImageFormatProperties* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkSparseImageMemoryRequirements(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSparseImageMemoryRequirements* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkFenceCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkFenceCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSemaphoreCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkSemaphoreCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkEventCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkEventCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkQueryPoolCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkQueryPoolCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkBufferCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferViewCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkBufferViewCreateInfo* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkImageCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkImageCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubresourceLayout(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkSubresourceLayout* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkComponentMapping(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkComponentMapping* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageViewCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkImageViewCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkShaderModuleCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkShaderModuleCreateInfo* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineCacheCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkPipelineCacheCreateInfo* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkSpecializationMapEntry(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkSpecializationMapEntry* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkSpecializationInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkSpecializationInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineShaderStageCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineShaderStageCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkComputePipelineCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkComputePipelineCreateInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkVertexInputBindingDescription(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkVertexInputBindingDescription* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkVertexInputAttributeDescription(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkVertexInputAttributeDescription* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineVertexInputStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineVertexInputStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineInputAssemblyStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineInputAssemblyStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineTessellationStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineTessellationStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkViewport(VulkanStream* vkStream, VkStructureType rootType,
+                                  BoxedHandleManager* pBoxedHandleManager,
                                   VkViewport* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineViewportStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineViewportStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineRasterizationStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineRasterizationStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineMultisampleStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineMultisampleStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkStencilOpState(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkStencilOpState* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineDepthStencilStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineDepthStencilStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineColorBlendAttachmentState(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineColorBlendAttachmentState* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineColorBlendStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineColorBlendStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineDynamicStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineDynamicStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkGraphicsPipelineCreateInfo(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkGraphicsPipelineCreateInfo* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkPushConstantRange(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkPushConstantRange* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineLayoutCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkPipelineLayoutCreateInfo* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkSamplerCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkSamplerCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCopyDescriptorSet(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkCopyDescriptorSet* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorBufferInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkDescriptorBufferInfo* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorImageInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkDescriptorImageInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorPoolSize(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkDescriptorPoolSize* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorPoolCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkDescriptorPoolCreateInfo* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorSetAllocateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkDescriptorSetAllocateInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorSetLayoutBinding(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkDescriptorSetLayoutBinding* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorSetLayoutCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDescriptorSetLayoutCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkWriteDescriptorSet(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkWriteDescriptorSet* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkAttachmentDescription(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkAttachmentDescription* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkAttachmentReference(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkAttachmentReference* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkFramebufferCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkFramebufferCreateInfo* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkSubpassDescription(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkSubpassDescription* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubpassDependency(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkSubpassDependency* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderPassCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkRenderPassCreateInfo* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkCommandPoolCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkCommandPoolCreateInfo* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkCommandBufferAllocateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkCommandBufferAllocateInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkCommandBufferInheritanceInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkCommandBufferInheritanceInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCommandBufferBeginInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkCommandBufferBeginInfo* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkBufferCopy(VulkanStream* vkStream, VkStructureType rootType,
+                                    BoxedHandleManager* pBoxedHandleManager,
                                     VkBufferCopy* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageSubresourceLayers(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkImageSubresourceLayers* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkBufferImageCopy(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkBufferImageCopy* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkClearColorValue(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkClearColorValue* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkClearDepthStencilValue(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkClearDepthStencilValue* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkClearValue(VulkanStream* vkStream, VkStructureType rootType,
+                                    BoxedHandleManager* pBoxedHandleManager,
                                     VkClearValue* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkClearAttachment(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkClearAttachment* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkClearRect(VulkanStream* vkStream, VkStructureType rootType,
+                                   BoxedHandleManager* pBoxedHandleManager,
                                    VkClearRect* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageBlit(VulkanStream* vkStream, VkStructureType rootType,
+                                   BoxedHandleManager* pBoxedHandleManager,
                                    VkImageBlit* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageCopy(VulkanStream* vkStream, VkStructureType rootType,
+                                   BoxedHandleManager* pBoxedHandleManager,
                                    VkImageCopy* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageResolve(VulkanStream* vkStream, VkStructureType rootType,
+                                      BoxedHandleManager* pBoxedHandleManager,
                                       VkImageResolve* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderPassBeginInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkRenderPassBeginInfo* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_VERSION_1_1
 void reservedunmarshal_VkPhysicalDeviceSubgroupProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSubgroupProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBindBufferMemoryInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkBindBufferMemoryInfo* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkBindImageMemoryInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkBindImageMemoryInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDevice16BitStorageFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevice16BitStorageFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryDedicatedRequirements(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkMemoryDedicatedRequirements* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryDedicatedAllocateInfo(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkMemoryDedicatedAllocateInfo* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryAllocateFlagsInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkMemoryAllocateFlagsInfo* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupRenderPassBeginInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceGroupRenderPassBeginInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupCommandBufferBeginInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceGroupCommandBufferBeginInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupSubmitInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkDeviceGroupSubmitInfo* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupBindSparseInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkDeviceGroupBindSparseInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkBindBufferMemoryDeviceGroupInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkBindBufferMemoryDeviceGroupInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBindImageMemoryDeviceGroupInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkBindImageMemoryDeviceGroupInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceGroupProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceGroupProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupDeviceCreateInfo(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkDeviceGroupDeviceCreateInfo* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkBufferMemoryRequirementsInfo2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkBufferMemoryRequirementsInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageMemoryRequirementsInfo2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImageMemoryRequirementsInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageSparseMemoryRequirementsInfo2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImageSparseMemoryRequirementsInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryRequirements2(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkMemoryRequirements2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSparseImageMemoryRequirements2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSparseImageMemoryRequirements2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceFeatures2(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkPhysicalDeviceFeatures2* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceProperties2(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkPhysicalDeviceProperties2* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkFormatProperties2(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkFormatProperties2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageFormatProperties2(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkImageFormatProperties2* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceImageFormatInfo2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceImageFormatInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkQueueFamilyProperties2(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkQueueFamilyProperties2* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMemoryProperties2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMemoryProperties2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSparseImageFormatProperties2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSparseImageFormatProperties2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSparseImageFormatInfo2(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSparseImageFormatInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDevicePointClippingProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevicePointClippingProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkInputAttachmentAspectReference(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkInputAttachmentAspectReference* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderPassInputAttachmentAspectCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRenderPassInputAttachmentAspectCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageViewUsageCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkImageViewUsageCreateInfo* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineTessellationDomainOriginStateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineTessellationDomainOriginStateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderPassMultiviewCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRenderPassMultiviewCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMultiviewFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMultiviewFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMultiviewProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMultiviewProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceVariablePointersFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVariablePointersFeatures* forUnmarshaling, uint8_t** ptr);
 
 DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceVariablePointersFeatures,
                       reservedunmarshal_VkPhysicalDeviceVariablePointerFeatures)
 
 void reservedunmarshal_VkPhysicalDeviceProtectedMemoryFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceProtectedMemoryFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceProtectedMemoryProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceProtectedMemoryProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceQueueInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkDeviceQueueInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkProtectedSubmitInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkProtectedSubmitInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSamplerYcbcrConversionCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSamplerYcbcrConversionCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSamplerYcbcrConversionInfo(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkSamplerYcbcrConversionInfo* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkBindImagePlaneMemoryInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkBindImagePlaneMemoryInfo* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkImagePlaneMemoryRequirementsInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImagePlaneMemoryRequirementsInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSamplerYcbcrConversionFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSamplerYcbcrConversionFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSamplerYcbcrConversionImageFormatProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSamplerYcbcrConversionImageFormatProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorUpdateTemplateEntry(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDescriptorUpdateTemplateEntry* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorUpdateTemplateCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDescriptorUpdateTemplateCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExternalMemoryProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkExternalMemoryProperties* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceExternalImageFormatInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceExternalImageFormatInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExternalImageFormatProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkExternalImageFormatProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceExternalBufferInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceExternalBufferInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExternalBufferProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkExternalBufferProperties* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceIDProperties(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkPhysicalDeviceIDProperties* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkExternalMemoryImageCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkExternalMemoryImageCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExternalMemoryBufferCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkExternalMemoryBufferCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExportMemoryAllocateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkExportMemoryAllocateInfo* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceExternalFenceInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceExternalFenceInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExternalFenceProperties(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkExternalFenceProperties* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkExportFenceCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkExportFenceCreateInfo* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkExportSemaphoreCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkExportSemaphoreCreateInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceExternalSemaphoreInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceExternalSemaphoreInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkExternalSemaphoreProperties(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkExternalSemaphoreProperties* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMaintenance3Properties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMaintenance3Properties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorSetLayoutSupport(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkDescriptorSetLayoutSupport* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderDrawParametersFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderDrawParametersFeatures* forUnmarshaling, uint8_t** ptr);
 
 DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceShaderDrawParametersFeatures,
@@ -715,436 +833,481 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceShaderDrawParametersFeat
 #endif
 #ifdef VK_VERSION_1_2
 void reservedunmarshal_VkPhysicalDeviceVulkan11Features(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVulkan11Features* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceVulkan11Properties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVulkan11Properties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceVulkan12Features(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVulkan12Features* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkConformanceVersion(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkConformanceVersion* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceVulkan12Properties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVulkan12Properties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageFormatListCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkImageFormatListCreateInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkAttachmentDescription2(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkAttachmentDescription2* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkAttachmentReference2(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkAttachmentReference2* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkSubpassDescription2(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkSubpassDescription2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubpassDependency2(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkSubpassDependency2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderPassCreateInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkRenderPassCreateInfo2* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkSubpassBeginInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkSubpassBeginInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubpassEndInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkSubpassEndInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDevice8BitStorageFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevice8BitStorageFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceDriverProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceDriverProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderAtomicInt64Features(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderAtomicInt64Features* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderFloat16Int8Features(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderFloat16Int8Features* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceFloatControlsProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceFloatControlsProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorSetLayoutBindingFlagsCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDescriptorSetLayoutBindingFlagsCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceDescriptorIndexingFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceDescriptorIndexingFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceDescriptorIndexingProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceDescriptorIndexingProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorSetVariableDescriptorCountAllocateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDescriptorSetVariableDescriptorCountAllocateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorSetVariableDescriptorCountLayoutSupport(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDescriptorSetVariableDescriptorCountLayoutSupport* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubpassDescriptionDepthStencilResolve(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSubpassDescriptionDepthStencilResolve* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceDepthStencilResolveProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceDepthStencilResolveProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceScalarBlockLayoutFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceScalarBlockLayoutFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageStencilUsageCreateInfo(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkImageStencilUsageCreateInfo* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkSamplerReductionModeCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSamplerReductionModeCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSamplerFilterMinmaxProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSamplerFilterMinmaxProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceVulkanMemoryModelFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVulkanMemoryModelFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceImagelessFramebufferFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceImagelessFramebufferFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkFramebufferAttachmentImageInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkFramebufferAttachmentImageInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkFramebufferAttachmentsCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkFramebufferAttachmentsCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderPassAttachmentBeginInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRenderPassAttachmentBeginInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceUniformBufferStandardLayoutFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceUniformBufferStandardLayoutFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkAttachmentReferenceStencilLayout(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkAttachmentReferenceStencilLayout* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkAttachmentDescriptionStencilLayout(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkAttachmentDescriptionStencilLayout* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceHostQueryResetFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceHostQueryResetFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceTimelineSemaphoreFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceTimelineSemaphoreFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceTimelineSemaphoreProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceTimelineSemaphoreProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSemaphoreTypeCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkSemaphoreTypeCreateInfo* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkTimelineSemaphoreSubmitInfo(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkTimelineSemaphoreSubmitInfo* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkSemaphoreWaitInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkSemaphoreWaitInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSemaphoreSignalInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkSemaphoreSignalInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceBufferDeviceAddressFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceBufferDeviceAddressFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferDeviceAddressInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkBufferDeviceAddressInfo* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkBufferOpaqueCaptureAddressCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkBufferOpaqueCaptureAddressCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryOpaqueCaptureAddressAllocateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkMemoryOpaqueCaptureAddressAllocateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceMemoryOpaqueCaptureAddressInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceMemoryOpaqueCaptureAddressInfo* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_VERSION_1_3
 void reservedunmarshal_VkPhysicalDeviceVulkan13Features(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVulkan13Features* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceVulkan13Properties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVulkan13Properties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineCreationFeedback(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkPipelineCreationFeedback* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineCreationFeedbackCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineCreationFeedbackCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderTerminateInvocationFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderTerminateInvocationFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceToolProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceToolProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDevicePrivateDataFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevicePrivateDataFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDevicePrivateDataCreateInfo(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkDevicePrivateDataCreateInfo* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkPrivateDataSlotCreateInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkPrivateDataSlotCreateInfo* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDevicePipelineCreationCacheControlFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevicePipelineCreationCacheControlFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryBarrier2(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkMemoryBarrier2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferMemoryBarrier2(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkBufferMemoryBarrier2* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkImageMemoryBarrier2(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkImageMemoryBarrier2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDependencyInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkDependencyInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSemaphoreSubmitInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkSemaphoreSubmitInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCommandBufferSubmitInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkCommandBufferSubmitInfo* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkSubmitInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                     BoxedHandleManager* pBoxedHandleManager,
                                      VkSubmitInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSynchronization2Features(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSynchronization2Features* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceImageRobustnessFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceImageRobustnessFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferCopy2(VulkanStream* vkStream, VkStructureType rootType,
+                                     BoxedHandleManager* pBoxedHandleManager,
                                      VkBufferCopy2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCopyBufferInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkCopyBufferInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageCopy2(VulkanStream* vkStream, VkStructureType rootType,
+                                    BoxedHandleManager* pBoxedHandleManager,
                                     VkImageCopy2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCopyImageInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkCopyImageInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferImageCopy2(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkBufferImageCopy2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCopyBufferToImageInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkCopyBufferToImageInfo2* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkCopyImageToBufferInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkCopyImageToBufferInfo2* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkImageBlit2(VulkanStream* vkStream, VkStructureType rootType,
+                                    BoxedHandleManager* pBoxedHandleManager,
                                     VkImageBlit2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBlitImageInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkBlitImageInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageResolve2(VulkanStream* vkStream, VkStructureType rootType,
+                                       BoxedHandleManager* pBoxedHandleManager,
                                        VkImageResolve2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkResolveImageInfo2(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkResolveImageInfo2* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSubgroupSizeControlFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSubgroupSizeControlFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceSubgroupSizeControlProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSubgroupSizeControlProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineShaderStageRequiredSubgroupSizeCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineShaderStageRequiredSubgroupSizeCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceInlineUniformBlockFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceInlineUniformBlockFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceInlineUniformBlockProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceInlineUniformBlockProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkWriteDescriptorSetInlineUniformBlock(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkWriteDescriptorSetInlineUniformBlock* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDescriptorPoolInlineUniformBlockCreateInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDescriptorPoolInlineUniformBlockCreateInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceTextureCompressionASTCHDRFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceTextureCompressionASTCHDRFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderingAttachmentInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkRenderingAttachmentInfo* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkRenderingInfo(VulkanStream* vkStream, VkStructureType rootType,
+                                       BoxedHandleManager* pBoxedHandleManager,
                                        VkRenderingInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineRenderingCreateInfo(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkPipelineRenderingCreateInfo* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceDynamicRenderingFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceDynamicRenderingFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCommandBufferInheritanceRenderingInfo(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkCommandBufferInheritanceRenderingInfo* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderIntegerDotProductFeatures(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderIntegerDotProductFeatures* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceShaderIntegerDotProductProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceShaderIntegerDotProductProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceTexelBufferAlignmentProperties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceTexelBufferAlignmentProperties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkFormatProperties3(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkFormatProperties3* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMaintenance4Features(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMaintenance4Features* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMaintenance4Properties(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMaintenance4Properties* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceBufferMemoryRequirements(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceBufferMemoryRequirements* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceImageMemoryRequirements(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceImageMemoryRequirements* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_KHR_swapchain
 void reservedunmarshal_VkSwapchainCreateInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                                BoxedHandleManager* pBoxedHandleManager,
                                                 VkSwapchainCreateInfoKHR* forUnmarshaling,
                                                 uint8_t** ptr);
 
 void reservedunmarshal_VkPresentInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                        BoxedHandleManager* pBoxedHandleManager,
                                         VkPresentInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageSwapchainCreateInfoKHR(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkImageSwapchainCreateInfoKHR* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkBindImageMemorySwapchainInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkBindImageMemorySwapchainInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkAcquireNextImageInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkAcquireNextImageInfoKHR* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupPresentCapabilitiesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceGroupPresentCapabilitiesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupPresentInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkDeviceGroupPresentInfoKHR* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceGroupSwapchainCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceGroupSwapchainCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1164,22 +1327,22 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkCommandBufferInheritanceRenderingInfo,
                       reservedunmarshal_VkCommandBufferInheritanceRenderingInfoKHR)
 
 void reservedunmarshal_VkRenderingFragmentShadingRateAttachmentInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRenderingFragmentShadingRateAttachmentInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderingFragmentDensityMapAttachmentInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRenderingFragmentDensityMapAttachmentInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkAttachmentSampleCountInfoAMD(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkAttachmentSampleCountInfoAMD* forUnmarshaling, uint8_t** ptr);
 
 DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkAttachmentSampleCountInfoAMD,
                       reservedunmarshal_VkAttachmentSampleCountInfoNV)
 
 void reservedunmarshal_VkMultiviewPerViewAttributesInfoNVX(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkMultiviewPerViewAttributesInfoNVX* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1269,10 +1432,12 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkExportSemaphoreCreateInfo,
 #endif
 #ifdef VK_KHR_external_semaphore_fd
 void reservedunmarshal_VkImportSemaphoreFdInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkImportSemaphoreFdInfoKHR* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkSemaphoreGetFdInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkSemaphoreGetFdInfoKHR* forUnmarshaling,
                                                uint8_t** ptr);
 
@@ -1287,12 +1452,15 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceShaderFloat16Int8Feature
 #endif
 #ifdef VK_KHR_incremental_present
 void reservedunmarshal_VkRectLayerKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                      BoxedHandleManager* pBoxedHandleManager,
                                       VkRectLayerKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPresentRegionKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkPresentRegionKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPresentRegionsKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkPresentRegionsKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1354,10 +1522,12 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkExportFenceCreateInfo,
 #endif
 #ifdef VK_KHR_external_fence_fd
 void reservedunmarshal_VkImportFenceFdInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkImportFenceFdInfoKHR* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkFenceGetFdInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkFenceGetFdInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1451,15 +1621,15 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceShaderSubgroupExtendedTy
 #endif
 #ifdef VK_KHR_global_priority
 void reservedunmarshal_VkDeviceQueueGlobalPriorityCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceQueueGlobalPriorityCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkQueueFamilyGlobalPriorityPropertiesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkQueueFamilyGlobalPriorityPropertiesKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1492,30 +1662,32 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkDeviceMemoryOpaqueCaptureAddressInfo,
 #endif
 #ifdef VK_KHR_pipeline_executable_properties
 void reservedunmarshal_VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                         BoxedHandleManager* pBoxedHandleManager,
                                          VkPipelineInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineExecutablePropertiesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineExecutablePropertiesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineExecutableInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkPipelineExecutableInfoKHR* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineExecutableStatisticValueKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineExecutableStatisticValueKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineExecutableStatisticKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineExecutableStatisticKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineExecutableInternalRepresentationKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineExecutableInternalRepresentationKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1529,7 +1701,7 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceShaderIntegerDotProductP
 #endif
 #ifdef VK_KHR_pipeline_library
 void reservedunmarshal_VkPipelineLibraryCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineLibraryCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1556,10 +1728,11 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceSynchronization2Features
                       reservedunmarshal_VkPhysicalDeviceSynchronization2FeaturesKHR)
 
 void reservedunmarshal_VkQueueFamilyCheckpointProperties2NV(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkQueueFamilyCheckpointProperties2NV* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCheckpointData2NV(VulkanStream* vkStream, VkStructureType rootType,
+                                           BoxedHandleManager* pBoxedHandleManager,
                                            VkCheckpointData2NV* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1616,86 +1789,91 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkDeviceImageMemoryRequirements,
 #endif
 #ifdef VK_KHR_maintenance5
 void reservedunmarshal_VkPhysicalDeviceMaintenance5FeaturesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMaintenance5FeaturesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceMaintenance5PropertiesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceMaintenance5PropertiesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderingAreaInfoKHR(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkRenderingAreaInfoKHR* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkImageSubresource2KHR(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkImageSubresource2KHR* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceImageSubresourceInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceImageSubresourceInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubresourceLayout2KHR(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkSubresourceLayout2KHR* forUnmarshaling,
                                                uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineCreateFlags2CreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineCreateFlags2CreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkBufferUsageFlags2CreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkBufferUsageFlags2CreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_KHR_line_rasterization
 void reservedunmarshal_VkPhysicalDeviceLineRasterizationFeaturesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceLineRasterizationFeaturesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceLineRasterizationPropertiesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceLineRasterizationPropertiesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineRasterizationLineStateCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineRasterizationLineStateCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_ANDROID_native_buffer
 void reservedunmarshal_VkNativeBufferUsage2ANDROID(VulkanStream* vkStream, VkStructureType rootType,
+                                                   BoxedHandleManager* pBoxedHandleManager,
                                                    VkNativeBufferUsage2ANDROID* forUnmarshaling,
                                                    uint8_t** ptr);
 
 void reservedunmarshal_VkNativeBufferANDROID(VulkanStream* vkStream, VkStructureType rootType,
+                                             BoxedHandleManager* pBoxedHandleManager,
                                              VkNativeBufferANDROID* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSwapchainImageCreateInfoANDROID(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSwapchainImageCreateInfoANDROID* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDevicePresentationPropertiesANDROID(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevicePresentationPropertiesANDROID* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_debug_report
 void reservedunmarshal_VkDebugReportCallbackCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDebugReportCallbackCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_transform_feedback
 void reservedunmarshal_VkPhysicalDeviceTransformFeedbackFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceTransformFeedbackFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceTransformFeedbackPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceTransformFeedbackPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineRasterizationStateStreamCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineRasterizationStateStreamCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1706,33 +1884,36 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceTextureCompressionASTCHD
 #endif
 #ifdef VK_EXT_depth_clip_enable
 void reservedunmarshal_VkPhysicalDeviceDepthClipEnableFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceDepthClipEnableFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineRasterizationDepthClipStateCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineRasterizationDepthClipStateCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_debug_utils
 void reservedunmarshal_VkDebugUtilsLabelEXT(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkDebugUtilsLabelEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDebugUtilsObjectNameInfoEXT(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkDebugUtilsObjectNameInfoEXT* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkDebugUtilsMessengerCallbackDataEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDebugUtilsMessengerCallbackDataEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDebugUtilsMessengerCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDebugUtilsMessengerCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDebugUtilsObjectTagInfoEXT(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkDebugUtilsObjectTagInfoEXT* forUnmarshaling,
                                                     uint8_t** ptr);
 
@@ -1753,67 +1934,67 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkDescriptorPoolInlineUniformBlockCreate
 #endif
 #ifdef VK_EXT_image_drm_format_modifier
 void reservedunmarshal_VkDrmFormatModifierPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDrmFormatModifierPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDrmFormatModifierPropertiesListEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDrmFormatModifierPropertiesListEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceImageDrmFormatModifierInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceImageDrmFormatModifierInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageDrmFormatModifierListCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImageDrmFormatModifierListCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageDrmFormatModifierExplicitCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImageDrmFormatModifierExplicitCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageDrmFormatModifierPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImageDrmFormatModifierPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDrmFormatModifierProperties2EXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDrmFormatModifierProperties2EXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDrmFormatModifierPropertiesList2EXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDrmFormatModifierPropertiesList2EXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_external_memory_host
 void reservedunmarshal_VkImportMemoryHostPointerInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImportMemoryHostPointerInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryHostPointerPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkMemoryHostPointerPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceExternalMemoryHostPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceExternalMemoryHostPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_vertex_attribute_divisor
 void reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkVertexInputBindingDivisorDescriptionEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkVertexInputBindingDivisorDescriptionEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineVertexInputDivisorStateCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineVertexInputDivisorStateCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1827,15 +2008,15 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPipelineCreationFeedback,
 #endif
 #ifdef VK_EXT_fragment_density_map
 void reservedunmarshal_VkPhysicalDeviceFragmentDensityMapFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceFragmentDensityMapFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceFragmentDensityMapPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceFragmentDensityMapPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRenderPassFragmentDensityMapCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRenderPassFragmentDensityMapCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1862,21 +2043,22 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceToolProperties,
 #endif
 #ifdef VK_EXT_validation_features
 void reservedunmarshal_VkValidationFeaturesEXT(VulkanStream* vkStream, VkStructureType rootType,
+                                               BoxedHandleManager* pBoxedHandleManager,
                                                VkValidationFeaturesEXT* forUnmarshaling,
                                                uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_provoking_vertex
 void reservedunmarshal_VkPhysicalDeviceProvokingVertexFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceProvokingVertexFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceProvokingVertexPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceProvokingVertexPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineRasterizationProvokingVertexStateCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineRasterizationProvokingVertexStateCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1893,55 +2075,60 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPipelineRasterizationLineStateCreateIn
 #endif
 #ifdef VK_EXT_index_type_uint8
 void reservedunmarshal_VkPhysicalDeviceIndexTypeUint8FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceIndexTypeUint8FeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_extended_dynamic_state
 void reservedunmarshal_VkPhysicalDeviceExtendedDynamicStateFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_host_image_copy
 void reservedunmarshal_VkPhysicalDeviceHostImageCopyFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceHostImageCopyFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceHostImageCopyPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceHostImageCopyPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkMemoryToImageCopyEXT(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkMemoryToImageCopyEXT* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkImageToMemoryCopyEXT(VulkanStream* vkStream, VkStructureType rootType,
+                                              BoxedHandleManager* pBoxedHandleManager,
                                               VkImageToMemoryCopyEXT* forUnmarshaling,
                                               uint8_t** ptr);
 
 void reservedunmarshal_VkCopyMemoryToImageInfoEXT(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkCopyMemoryToImageInfoEXT* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkCopyImageToMemoryInfoEXT(VulkanStream* vkStream, VkStructureType rootType,
+                                                  BoxedHandleManager* pBoxedHandleManager,
                                                   VkCopyImageToMemoryInfoEXT* forUnmarshaling,
                                                   uint8_t** ptr);
 
 void reservedunmarshal_VkCopyImageToImageInfoEXT(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkCopyImageToImageInfoEXT* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkHostImageLayoutTransitionInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkHostImageLayoutTransitionInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSubresourceHostMemcpySizeEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSubresourceHostMemcpySizeEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkHostImageCopyDevicePerformanceQueryEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkHostImageCopyDevicePerformanceQueryEXT* forUnmarshaling, uint8_t** ptr);
 
 DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkSubresourceLayout2KHR,
@@ -1953,28 +2140,29 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkImageSubresource2KHR,
 #endif
 #ifdef VK_EXT_swapchain_maintenance1
 void reservedunmarshal_VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSwapchainPresentFenceInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSwapchainPresentFenceInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSwapchainPresentModesCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSwapchainPresentModesCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkSwapchainPresentModeInfoEXT(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkSwapchainPresentModeInfoEXT* forUnmarshaling,
                                                      uint8_t** ptr);
 
 void reservedunmarshal_VkSwapchainPresentScalingCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSwapchainPresentScalingCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkReleaseSwapchainImagesInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkReleaseSwapchainImagesInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -1985,7 +2173,7 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceShaderDemoteToHelperInvo
 #endif
 #ifdef VK_EXT_texel_buffer_alignment
 void reservedunmarshal_VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceTexelBufferAlignmentProperties,
@@ -1994,39 +2182,39 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceTexelBufferAlignmentProp
 #endif
 #ifdef VK_EXT_device_memory_report
 void reservedunmarshal_VkPhysicalDeviceDeviceMemoryReportFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceDeviceMemoryReportFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceMemoryReportCallbackDataEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceMemoryReportCallbackDataEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkDeviceDeviceMemoryReportCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkDeviceDeviceMemoryReportCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_robustness2
 void reservedunmarshal_VkPhysicalDeviceRobustness2FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceRobustness2FeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceRobustness2PropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceRobustness2PropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_custom_border_color
 void reservedunmarshal_VkSamplerCustomBorderColorCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkSamplerCustomBorderColorCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceCustomBorderColorPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceCustomBorderColorPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceCustomBorderColorFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceCustomBorderColorFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -2048,21 +2236,21 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDevicePipelineCreationCacheCon
 #endif
 #ifdef VK_EXT_graphics_pipeline_library
 void reservedunmarshal_VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkGraphicsPipelineLibraryCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkGraphicsPipelineLibraryCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_ycbcr_2plane_444_formats
 void reservedunmarshal_VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
@@ -2073,92 +2261,97 @@ DEFINE_ALIAS_FUNCTION(reservedunmarshal_VkPhysicalDeviceImageRobustnessFeatures,
 #endif
 #ifdef VK_EXT_image_compression_control
 void reservedunmarshal_VkPhysicalDeviceImageCompressionControlFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceImageCompressionControlFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkImageCompressionControlEXT(VulkanStream* vkStream,
                                                     VkStructureType rootType,
+                                                    BoxedHandleManager* pBoxedHandleManager,
                                                     VkImageCompressionControlEXT* forUnmarshaling,
                                                     uint8_t** ptr);
 
 void reservedunmarshal_VkImageCompressionPropertiesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkImageCompressionPropertiesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_4444_formats
 void reservedunmarshal_VkPhysicalDevice4444FormatsFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevice4444FormatsFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_primitive_topology_list_restart
 void reservedunmarshal_VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_extended_dynamic_state2
 void reservedunmarshal_VkPhysicalDeviceExtendedDynamicState2FeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceExtendedDynamicState2FeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_color_write_enable
 void reservedunmarshal_VkPhysicalDeviceColorWriteEnableFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceColorWriteEnableFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPipelineColorWriteCreateInfoEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPipelineColorWriteCreateInfoEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_GOOGLE_gfxstream
 void reservedunmarshal_VkImportColorBufferGOOGLE(VulkanStream* vkStream, VkStructureType rootType,
+                                                 BoxedHandleManager* pBoxedHandleManager,
                                                  VkImportColorBufferGOOGLE* forUnmarshaling,
                                                  uint8_t** ptr);
 
 void reservedunmarshal_VkImportBufferGOOGLE(VulkanStream* vkStream, VkStructureType rootType,
+                                            BoxedHandleManager* pBoxedHandleManager,
                                             VkImportBufferGOOGLE* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkCreateBlobGOOGLE(VulkanStream* vkStream, VkStructureType rootType,
+                                          BoxedHandleManager* pBoxedHandleManager,
                                           VkCreateBlobGOOGLE* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_EXT_image_compression_control_swapchain
 void reservedunmarshal_VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT* forUnmarshaling, uint8_t** ptr);
 
 #endif
 #ifdef VK_KHR_ray_tracing_pipeline
 void reservedunmarshal_VkRayTracingShaderGroupCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRayTracingShaderGroupCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRayTracingPipelineInterfaceCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRayTracingPipelineInterfaceCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkRayTracingPipelineCreateInfoKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkRayTracingPipelineCreateInfoKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceRayTracingPipelineFeaturesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkPhysicalDeviceRayTracingPipelinePropertiesKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkPhysicalDeviceRayTracingPipelinePropertiesKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkStridedDeviceAddressRegionKHR(
-    VulkanStream* vkStream, VkStructureType rootType,
+    VulkanStream* vkStream, VkStructureType rootType, BoxedHandleManager* pBoxedHandleManager,
     VkStridedDeviceAddressRegionKHR* forUnmarshaling, uint8_t** ptr);
 
 void reservedunmarshal_VkTraceRaysIndirectCommandKHR(VulkanStream* vkStream,
                                                      VkStructureType rootType,
+                                                     BoxedHandleManager* pBoxedHandleManager,
                                                      VkTraceRaysIndirectCommandKHR* forUnmarshaling,
                                                      uint8_t** ptr);
 
