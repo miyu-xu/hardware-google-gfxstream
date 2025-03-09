@@ -21,7 +21,7 @@ namespace vk {
 
 static thread_local RenderThreadInfoVk* tlThreadInfo = nullptr;
 
-RenderThreadInfoVk::RenderThreadInfoVk() {
+RenderThreadInfoVk::RenderThreadInfoVk(VkDecoderGlobalState* state) : m_vkDec(state) {
     if (tlThreadInfo != nullptr) {
         GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
             << "Attempted to set thread local Vk render thread info twice.";

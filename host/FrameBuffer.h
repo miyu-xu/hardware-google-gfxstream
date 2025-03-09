@@ -81,10 +81,11 @@
 #define FB_MAX_SWAP_INTERVAL 7
 
 #include "render-utils/Renderer.h"
-#include "render-utils/virtio_gpu_ops.h"
 #include "render-utils/render_api.h"
+#include "render-utils/virtio_gpu_ops.h"
 #include "snapshot/common.h"
 #include "utils/RenderDoc.h"
+#include "vulkan/VkDecoderGlobalState.h"
 #include "vulkan/vk_util.h"
 
 namespace gfxstream {
@@ -590,6 +591,10 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     vk::VkEmulation& getEmulationVk();
     bool hasEmulationVk() const { return m_emulationVk != nullptr; }
 
+    std::shared_ptr<vk::VkDecoderGlobalState> getDefaultVulkanGlobalState() {
+        return m_defaultVulkanGlobalState;
+    }
+
     // Return the host EGLDisplay used by this instance.
     EGLDisplay getDisplay() const;
     EGLSurface getWindowSurface() const;
@@ -874,6 +879,9 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     bool m_useVulkanComposition = false;
 
     std::unique_ptr<vk::VkEmulation> m_emulationVk;
+
+    // the default vulkan global state, replacing the VkDecoderGlobalState::get()
+    std::shared_ptr<vk::VkDecoderGlobalState> m_defaultVulkanGlobalState;
 
     // The implementation for Vulkan native swapchain. Only initialized when useVulkan is set when
     // calling FrameBuffer::initialize(). DisplayVk is actually owned by VkEmulation.
