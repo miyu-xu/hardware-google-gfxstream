@@ -20,6 +20,7 @@
 #include "OpenGLESDispatch/OpenGLDispatchLoader.h"
 #endif
 
+#include "FrameBuffer.h"
 #include "aemu/base/Metrics.h"
 #include "aemu/base/system/System.h"
 #include "aemu/base/threads/Thread.h"
@@ -303,13 +304,13 @@ void SyncThread::triggerWaitVkWithCompletionCallback(VkFence vkFence, FenceCompl
               ss.str());
 }
 
-void SyncThread::triggerWaitVkQsriWithCompletionCallback(VkImage vkImage, FenceCompletionCallback cb) {
+void SyncThread::triggerWaitVkQsriWithCompletionCallback(std::shared_ptr<vk::VkDecoderGlobalState> decoder,
+        VkImage vkImage, FenceCompletionCallback cb) {
     std::stringstream ss;
     ss << "triggerWaitVkQsriWithCompletionCallback vkImage=0x"
        << reinterpret_cast<uintptr_t>(vkImage);
     sendAsync(
-        [vkImage, cb = std::move(cb)](WorkerId) {
-            auto decoder = vk::VkDecoderGlobalState::get();
+        [decoder, vkImage, cb = std::move(cb)](WorkerId) {
             auto res = decoder->registerQsriCallback(vkImage, cb);
             // If registerQsriCallback does not schedule the callback, we still need to complete
             // the task, otherwise we may hit deadlocks on tasks on the same ring.
@@ -324,17 +325,10 @@ void SyncThread::triggerWaitVkQsri(VkImage vkImage, uint64_t timeline) {
      std::stringstream ss;
     ss << "triggerWaitVkQsri vkImage=0x" << std::hex << vkImage
        << " timeline=0x" << std::hex << timeline;
+//    fprintf(stderr, "%s %d vkImage 0x%llx timeline 0x%llx\n", __func__, __LINE__, (unsigned long long)vkImage, (unsigned long long)timeline);
     sendAsync(
-        [vkImage, timeline](WorkerId) {
-            auto decoder = vk::VkDecoderGlobalState::get();
-            auto res = decoder->registerQsriCallback(vkImage, [timeline](){
-                 emugl::emugl_sync_timeline_inc(timeline, kTimelineInterval);
-            });
-            // If registerQsriCallback does not schedule the callback, we still need to complete
-            // the task, otherwise we may hit deadlocks on tasks on the same ring.
-            if (!res.CallbackScheduledOrFired()) {
+        [timeline](WorkerId) {
                 emugl::emugl_sync_timeline_inc(timeline, kTimelineInterval);
-            }
         },
         ss.str());
 }
@@ -436,7 +430,7 @@ void SyncThread::doSyncThreadCmd(Command&& command, WorkerId workerId) {
 int SyncThread::doSyncWaitVk(VkFence vkFence, std::function<void()> onComplete) {
     DPRINT("enter");
 
-    auto decoder = vk::VkDecoderGlobalState::get();
+    auto decoder = FrameBuffer::getFB()->getDefaultVulkanGlobalState();
     auto result = decoder->waitForFence(vkFence, kDefaultTimeoutNsecs);
     if (result == VK_TIMEOUT) {
         DPRINT("SYNC_WAIT_VK timeout: vkFence=%p", vkFence);

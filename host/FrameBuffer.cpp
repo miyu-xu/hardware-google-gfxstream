@@ -356,9 +356,14 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
         };
         fb->m_emulationVk = vk::VkEmulation::create(vkDispatch, callbacks, fb->m_features);
         if (fb->m_emulationVk) {
-            vk::VkDecoderGlobalState::initialize(fb->m_emulationVk.get());
+            fb->m_defaultVulkanGlobalState =
+                std::make_shared<vk::VkDecoderGlobalState>(fb->m_emulationVk.get());
         } else {
             ERR("Failed to initialize global Vulkan emulation. Disable the Vulkan support.");
+        }
+
+        if (!fb->m_defaultVulkanGlobalState) {
+            ERR("Failed to create global VkDecoderGlobalState.");
         }
     }
     if (fb->m_emulationVk) {
@@ -1453,7 +1458,14 @@ void FrameBuffer::createGraphicsProcessResources(uint64_t puid) {
     bool inserted = false;
     {
         AutoLock mutex(m_procOwnedResourcesLock);
-        inserted = m_procOwnedResources.try_emplace(puid, ProcessResources::create()).second;
+        inserted =
+            m_procOwnedResources
+                .try_emplace(
+                    puid, ProcessResources::create(
+                        m_emulationVk ?
+                        std::make_shared<vk::VkDecoderGlobalState>(m_emulationVk.get())
+                                            : nullptr))
+                .second;
     }
     if (!inserted) {
         WARN("Failed to create process resource for puid %" PRIu64 ".", puid);
@@ -2360,8 +2372,8 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
     }
 
     // Save Vulkan state
-    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
-        vk::VkDecoderGlobalState::get()->save(stream);
+    if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
+        m_defaultVulkanGlobalState->save(stream);
     }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
@@ -2604,7 +2616,10 @@ bool FrameBuffer::onLoad(Stream* stream,
         for (size_t i = 0; i < resourceCount; i++) {
             uint64_t puid = stream->getBe64();
             uint32_t sequenceNumber = stream->getBe32();
-            std::unique_ptr<ProcessResources> processResources = ProcessResources::create();
+            std::unique_ptr<ProcessResources> processResources = ProcessResources::create(
+                        m_emulationVk ?
+                        std::make_shared<vk::VkDecoderGlobalState>(m_emulationVk.get())
+                        : nullptr);
             processResources->getSequenceNumberPtr()->store(sequenceNumber);
             {
                 AutoLock mutex(m_procOwnedResourcesLock);
@@ -2644,10 +2659,10 @@ bool FrameBuffer::onLoad(Stream* stream,
     }
 
     // Restore Vulkan state
-    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
+    if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
         lock.unlock();
         GfxApiLogger gfxLogger;
-        vk::VkDecoderGlobalState::get()->load(stream, gfxLogger, m_healthMonitor.get());
+        m_defaultVulkanGlobalState->load(stream, gfxLogger, m_healthMonitor.get());
         lock.lock();
     }
 
@@ -2789,7 +2804,12 @@ void FrameBuffer::asyncWaitForGpuVulkanWithCb(uint64_t deviceHandle, uint64_t fe
 }
 
 void FrameBuffer::asyncWaitForGpuVulkanQsriWithCb(uint64_t image, FenceCompletionCallback cb) {
-    SyncThread::get()->triggerWaitVkQsriWithCompletionCallback((VkImage)image, std::move(cb));
+    auto* tInfo = RenderThreadInfo::get();
+    if (!tInfo) return;
+    auto* processResources = FrameBuffer::getFB()->getProcessResources(tInfo->m_puid);
+    if (!processResources) return;
+    auto gs = processResources->getVulkanGlobalState();
+    SyncThread::get()->triggerWaitVkQsriWithCompletionCallback(gs, (VkImage)image, std::move(cb));
 }
 
 void FrameBuffer::setGuestManagedColorBufferLifetime(bool guestManaged) {

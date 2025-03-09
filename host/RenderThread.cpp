@@ -323,10 +323,6 @@ intptr_t RenderThread::main() {
     // it's completely initialized before running any GL commands.
     FrameBuffer::waitUntilInitialized();
 
-    if (FrameBuffer::getFB()->hasEmulationVk()) {
-        tInfo->m_vkInfo.emplace();
-    }
-
 #if GFXSTREAM_ENABLE_HOST_MAGMA
     tInfo->m_magmaInfo.emplace(mContextId);
 #endif
@@ -494,6 +490,9 @@ intptr_t RenderThread::main() {
 
             if (!processResources && tInfo->m_puid && tInfo->m_puid != INVALID_CONTEXT_ID) {
                 processResources = FrameBuffer::getFB()->getProcessResources(tInfo->m_puid);
+                if (FrameBuffer::getFB()->hasEmulationVk()) {
+                    tInfo->m_vkInfo.emplace(processResources->getVulkanGlobalState().get());
+                }
             }
 
             progress = false;

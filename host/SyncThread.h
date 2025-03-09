@@ -94,7 +94,8 @@ class SyncThread : public android::base::Thread {
     void triggerWaitVkQsri(VkImage vkImage, uint64_t timeline);
 
     void triggerWaitVkWithCompletionCallback(VkFence fenceHandle, FenceCompletionCallback);
-    void triggerWaitVkQsriWithCompletionCallback(VkImage image, FenceCompletionCallback);
+    void triggerWaitVkQsriWithCompletionCallback(std::shared_ptr<vk::VkDecoderGlobalState> decoder,
+            VkImage image, FenceCompletionCallback);
     void triggerGeneral(FenceCompletionCallback, std::string description);
 
     // |cleanup|: for use with destructors and other cleanup functions.
