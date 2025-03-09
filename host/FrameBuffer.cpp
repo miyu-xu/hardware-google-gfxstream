@@ -361,9 +361,14 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
         };
         fb->m_emulationVk = vk::VkEmulation::create(vkDispatch, callbacks, fb->m_features);
         if (fb->m_emulationVk) {
-            vk::VkDecoderGlobalState::initialize(fb->m_emulationVk.get());
+            fb->m_defaultVulkanGlobalState =
+                vk::VkDecoderGlobalState::create(fb->m_emulationVk.get());
         } else {
             ERR("Failed to initialize global Vulkan emulation. Disable the Vulkan support.");
+        }
+
+        if (!fb->m_defaultVulkanGlobalState) {
+            ERR("Failed to create global VkDecoderGlobalState.");
         }
     }
     if (fb->m_emulationVk) {
@@ -2365,8 +2370,8 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
     }
 
     // Save Vulkan state
-    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
-        vk::VkDecoderGlobalState::get()->save(stream);
+    if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
+        m_defaultVulkanGlobalState->save(stream);
     }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
@@ -2649,10 +2654,10 @@ bool FrameBuffer::onLoad(Stream* stream,
     }
 
     // Restore Vulkan state
-    if (m_features.VulkanSnapshots.enabled && vk::VkDecoderGlobalState::get()) {
+    if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
         lock.unlock();
         GfxApiLogger gfxLogger;
-        vk::VkDecoderGlobalState::get()->load(stream, gfxLogger, m_healthMonitor.get());
+        m_defaultVulkanGlobalState->load(stream, gfxLogger, m_healthMonitor.get());
         lock.lock();
     }
 
