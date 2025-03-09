@@ -27,7 +27,7 @@ struct RenderThreadInfoVk {
     // Create new instance. Only call this once per thread.
     // Future calls to get() will return this instance until
     // it is destroyed.
-    RenderThreadInfoVk();
+    RenderThreadInfoVk(VkDecoderGlobalState* state);
 
     // Destructor.
     ~RenderThreadInfoVk();
