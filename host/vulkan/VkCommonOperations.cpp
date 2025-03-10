@@ -802,9 +802,6 @@ VkEmulation* VkEmulation::create(VulkanDispatch* gvk, gfxstream::host::BackendCa
     }
 
     VkEmulation* emulation = new VkEmulation();
-
-    std::lock_guard<std::mutex> lock(emulation->mMutex);
-
     emulation->mCallbacks = callbacks;
     emulation->mFeatures = features;
     emulation->mGvk = gvk;
@@ -1653,7 +1650,7 @@ VkEmulation* VkEmulation::create(VulkanDispatch* gvk, gfxstream::host::BackendCa
 }
 
 void VkEmulation::initFeatures(Features features) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
     INFO("Initializing VkEmulation features:");
     INFO("    glInteropSupported: %s", features.glInteropSupported ? "true" : "false");
     INFO("    useDeferredCommands: %s", features.deferredCommands ? "true" : "false");
@@ -1708,8 +1705,6 @@ void VkEmulation::initFeatures(Features features) {
 }
 
 void VkEmulation::teardown() {
-    std::lock_guard<std::mutex> lock(mMutex);
-
     mCompositorVk.reset();
     mDisplayVk.reset();
 
@@ -2303,7 +2298,7 @@ bool VkEmulation::isFormatVulkanCompatible(GLenum internalFormat) {
 
 bool VkEmulation::getColorBufferShareInfo(uint32_t colorBufferHandle, bool* glExported,
                                           bool* externalMemoryCompatible) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto info = android::base::find(mColorBuffers, colorBufferHandle);
     if (!info) {
@@ -2348,7 +2343,7 @@ bool VkEmulation::getColorBufferAllocationInfo(uint32_t colorBufferHandle, VkDev
                                                uint32_t* outMemoryTypeIndex,
                                                bool* outMemoryIsDedicatedAlloc,
                                                void** outMappedPtr) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
     return getColorBufferAllocationInfoLocked(colorBufferHandle, outSize, outMemoryTypeIndex,
                                               outMemoryIsDedicatedAlloc, outMappedPtr);
 }
@@ -2398,7 +2393,7 @@ uint32_t VkEmulation::getValidMemoryTypeIndex(uint32_t requiredMemoryTypeBits,
 
 // pNext, sharingMode, queueFamilyIndexCount, pQueueFamilyIndices, and initialLayout won't be
 // filled.
-std::unique_ptr<VkImageCreateInfo> VkEmulation::generateColorBufferVkImageCreateInfoLocked(
+std::unique_ptr<VkImageCreateInfo> VkEmulation::generateColorBufferVkImageCreateInfo_locked(
     VkFormat format, uint32_t width, uint32_t height, VkImageTiling tiling) {
     const VkEmulation::ImageSupportInfo* maybeImageSupportInfo = nullptr;
     for (const auto& supportInfo : mImageSupportInfo) {
@@ -2464,8 +2459,8 @@ std::unique_ptr<VkImageCreateInfo> VkEmulation::generateColorBufferVkImageCreate
 
 std::unique_ptr<VkImageCreateInfo> VkEmulation::generateColorBufferVkImageCreateInfo(
     VkFormat format, uint32_t width, uint32_t height, VkImageTiling tiling) {
-    std::lock_guard<std::mutex> lock(mMutex);
-    return generateColorBufferVkImageCreateInfoLocked(format, width, height, tiling);
+    AutoLock lock(mMutex);
+    return generateColorBufferVkImageCreateInfo_locked(format, width, height, tiling);
 }
 
 bool VkEmulation::updateMemReqsForExtMem(std::optional<ExternalHandleInfo> extMemHandleInfo,
@@ -2577,7 +2572,7 @@ bool VkEmulation::createVkColorBufferLocked(uint32_t width, uint32_t height, GLe
     VkImageTiling tiling = (infoPtr->memoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
                                ? VK_IMAGE_TILING_LINEAR
                                : VK_IMAGE_TILING_OPTIMAL;
-    std::unique_ptr<VkImageCreateInfo> imageCi = generateColorBufferVkImageCreateInfoLocked(
+    std::unique_ptr<VkImageCreateInfo> imageCi = generateColorBufferVkImageCreateInfo_locked(
         vkFormat, infoPtr->width, infoPtr->height, tiling);
     // pNext will be filled later.
     if (imageCi == nullptr) {
@@ -2825,7 +2820,7 @@ bool VkEmulation::isFormatSupported(GLenum format) {
 bool VkEmulation::createVkColorBuffer(uint32_t width, uint32_t height, GLenum internalFormat,
                                       FrameworkFormat frameworkFormat, uint32_t colorBufferHandle,
                                       bool vulkanOnly, uint32_t memoryProperty) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
     if (infoPtr) {
         VERBOSE("ColorBuffer already exists for handle: %d", colorBufferHandle);
@@ -2838,7 +2833,7 @@ bool VkEmulation::createVkColorBuffer(uint32_t width, uint32_t height, GLenum in
 
 std::optional<VkEmulation::VkColorBufferMemoryExport> VkEmulation::exportColorBufferMemory(
     uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     if (!mDeviceInfo.supportsExternalMemoryExport && mDeviceInfo.supportsExternalMemoryImport) {
         return std::nullopt;
@@ -2908,13 +2903,13 @@ bool VkEmulation::teardownVkColorBufferLocked(uint32_t colorBufferHandle) {
 }
 
 bool VkEmulation::teardownVkColorBuffer(uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
     return teardownVkColorBufferLocked(colorBufferHandle);
 }
 
 std::optional<VkEmulation::ColorBufferInfo> VkEmulation::getColorBufferInfo(
     uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
     if (!infoPtr) {
@@ -2945,7 +2940,7 @@ bool VkEmulation::colorBufferNeedsUpdateBetweenGlAndVk(
 }
 
 bool VkEmulation::colorBufferNeedsUpdateBetweenGlAndVk(uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto colorBufferInfo = android::base::find(mColorBuffers, colorBufferHandle);
     if (!colorBufferInfo) {
@@ -2956,7 +2951,7 @@ bool VkEmulation::colorBufferNeedsUpdateBetweenGlAndVk(uint32_t colorBufferHandl
 }
 
 bool VkEmulation::readColorBufferToBytes(uint32_t colorBufferHandle, std::vector<uint8_t>* bytes) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto colorBufferInfo = android::base::find(mColorBuffers, colorBufferHandle);
     if (!colorBufferInfo) {
@@ -2991,7 +2986,7 @@ bool VkEmulation::readColorBufferToBytes(uint32_t colorBufferHandle, std::vector
 bool VkEmulation::readColorBufferToBytes(uint32_t colorBufferHandle, uint32_t x, uint32_t y,
                                          uint32_t w, uint32_t h, void* outPixels,
                                          uint64_t outPixelsSize) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
     return readColorBufferToBytesLocked(colorBufferHandle, x, y, w, h, outPixels, outPixelsSize);
 }
 
@@ -3170,7 +3165,7 @@ bool VkEmulation::readColorBufferToBytesLocked(uint32_t colorBufferHandle, uint3
 
 bool VkEmulation::updateColorBufferFromBytes(uint32_t colorBufferHandle,
                                              const std::vector<uint8_t>& bytes) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto colorBufferInfo = android::base::find(mColorBuffers, colorBufferHandle);
     if (!colorBufferInfo) {
@@ -3185,7 +3180,7 @@ bool VkEmulation::updateColorBufferFromBytes(uint32_t colorBufferHandle,
 
 bool VkEmulation::updateColorBufferFromBytes(uint32_t colorBufferHandle, uint32_t x, uint32_t y,
                                              uint32_t w, uint32_t h, const void* pixels) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
     return updateColorBufferFromBytesLocked(colorBufferHandle, x, y, w, h, pixels, 0);
 }
 
@@ -3385,7 +3380,7 @@ bool VkEmulation::updateColorBufferFromBytesLocked(uint32_t colorBufferHandle, u
 
 std::optional<ExternalHandleInfo> VkEmulation::dupColorBufferExtMemoryHandle(
     uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
 
@@ -3404,7 +3399,7 @@ std::optional<ExternalHandleInfo> VkEmulation::dupColorBufferExtMemoryHandle(
 
 #ifdef __APPLE__
 MTLResource_id VkEmulation::getColorBufferMetalMemoryHandle(uint32_t colorBuffer) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBuffer);
 
@@ -3418,7 +3413,7 @@ MTLResource_id VkEmulation::getColorBufferMetalMemoryHandle(uint32_t colorBuffer
 
 // TODO(b/351765838): Temporary function for MoltenVK
 VkImage VkEmulation::getColorBufferVkImage(uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
 
@@ -3432,7 +3427,7 @@ VkImage VkEmulation::getColorBufferVkImage(uint32_t colorBufferHandle) {
 #endif  // __APPLE__
 
 bool VkEmulation::setColorBufferVulkanMode(uint32_t colorBuffer, uint32_t vulkanMode) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBuffer);
 
@@ -3446,7 +3441,7 @@ bool VkEmulation::setColorBufferVulkanMode(uint32_t colorBuffer, uint32_t vulkan
 }
 
 int32_t VkEmulation::mapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa, uint64_t size) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     VkEmulation::ExternalMemoryInfo* memoryInfoPtr = nullptr;
 
@@ -3500,7 +3495,7 @@ int32_t VkEmulation::mapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa, u
 bool VkEmulation::getBufferAllocationInfo(uint32_t bufferHandle, VkDeviceSize* outSize,
                                           uint32_t* outMemoryTypeIndex,
                                           bool* outMemoryIsDedicatedAlloc) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto info = android::base::find(mBuffers, bufferHandle);
     if (!info) {
@@ -3531,7 +3526,7 @@ bool VkEmulation::setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulka
 
     auto vk = mDvk;
 
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mBuffers, bufferHandle);
 
@@ -3663,7 +3658,7 @@ bool VkEmulation::setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulka
 
 bool VkEmulation::teardownVkBuffer(uint32_t bufferHandle) {
     auto vk = mDvk;
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mBuffers, bufferHandle);
     if (!infoPtr) return false;
@@ -3681,7 +3676,7 @@ bool VkEmulation::teardownVkBuffer(uint32_t bufferHandle) {
 }
 
 std::optional<ExternalHandleInfo> VkEmulation::dupBufferExtMemoryHandle(uint32_t bufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mBuffers, bufferHandle);
     if (!infoPtr) {
@@ -3699,7 +3694,7 @@ std::optional<ExternalHandleInfo> VkEmulation::dupBufferExtMemoryHandle(uint32_t
 
 #ifdef __APPLE__
 MTLResource_id VkEmulation::getBufferMetalMemoryHandle(uint32_t bufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mBuffers, bufferHandle);
     if (!infoPtr) {
@@ -3715,7 +3710,7 @@ bool VkEmulation::readBufferToBytes(uint32_t bufferHandle, uint64_t offset, uint
                                     void* outBytes) {
     auto vk = mDvk;
 
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto bufferInfo = android::base::find(mBuffers, bufferHandle);
     if (!bufferInfo) {
@@ -3797,7 +3792,7 @@ bool VkEmulation::updateBufferFromBytes(uint32_t bufferHandle, uint64_t offset, 
                                         const void* bytes) {
     auto vk = mDvk;
 
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto bufferInfo = android::base::find(mBuffers, bufferHandle);
     if (!bufferInfo) {
@@ -3957,7 +3952,7 @@ VkExternalMemoryProperties VkEmulation::transformExternalMemoryProperties_fromho
 }
 
 void VkEmulation::setColorBufferCurrentLayout(uint32_t colorBufferHandle, VkImageLayout layout) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
     if (!infoPtr) {
@@ -3968,7 +3963,7 @@ void VkEmulation::setColorBufferCurrentLayout(uint32_t colorBufferHandle, VkImag
 }
 
 VkImageLayout VkEmulation::getColorBufferCurrentLayout(uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
     if (!infoPtr) {
@@ -3980,7 +3975,7 @@ VkImageLayout VkEmulation::getColorBufferCurrentLayout(uint32_t colorBufferHandl
 
 // Allocate a ready to use VkCommandBuffer for queue transfer. The caller needs
 // to signal the returned VkFence when the VkCommandBuffer completes.
-std::tuple<VkCommandBuffer, VkFence> VkEmulation::allocateQueueTransferCommandBufferLocked() {
+std::tuple<VkCommandBuffer, VkFence> VkEmulation::allocateQueueTransferCommandBuffer_locked() {
     auto vk = mDvk;
     // Check if a command buffer in the pool is ready to use. If the associated
     // VkFence is ready, vkGetFenceStatus will return VK_SUCCESS, and the
@@ -4038,7 +4033,7 @@ std::tuple<VkCommandBuffer, VkFence> VkEmulation::allocateQueueTransferCommandBu
 const VkImageLayout kGuestUseDefaultImageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 void VkEmulation::releaseColorBufferForGuestUse(uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
     if (!infoPtr) {
@@ -4099,7 +4094,7 @@ void VkEmulation::releaseColorBufferForGuestUse(uint32_t colorBufferHandle) {
     }
 
     auto vk = mDvk;
-    auto [commandBuffer, fence] = allocateQueueTransferCommandBufferLocked();
+    auto [commandBuffer, fence] = allocateQueueTransferCommandBuffer_locked();
 
     VK_CHECK(vk->vkResetCommandBuffer(commandBuffer, 0));
 
@@ -4151,7 +4146,7 @@ void VkEmulation::releaseColorBufferForGuestUse(uint32_t colorBufferHandle) {
 
 std::unique_ptr<BorrowedImageInfoVk> VkEmulation::borrowColorBufferForComposition(
     uint32_t colorBufferHandle, bool colorBufferIsTarget) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto colorBufferInfo = android::base::find(mColorBuffers, colorBufferHandle);
     if (!colorBufferInfo) {
@@ -4192,7 +4187,7 @@ std::unique_ptr<BorrowedImageInfoVk> VkEmulation::borrowColorBufferForCompositio
 
 std::unique_ptr<BorrowedImageInfoVk> VkEmulation::borrowColorBufferForDisplay(
     uint32_t colorBufferHandle) {
-    std::lock_guard<std::mutex> lock(mMutex);
+    AutoLock lock(mMutex);
 
     auto colorBufferInfo = android::base::find(mColorBuffers, colorBufferHandle);
     if (!colorBufferInfo) {
