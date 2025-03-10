@@ -1136,7 +1136,7 @@ bool FrameBuffer::removeSubWindow_locked() {
     return removed;
 }
 
-HandleType FrameBuffer::genHandle_locked() {
+HandleType FrameBuffer::genHandle_locked() REQUIRES(m_lock) {
     HandleType id;
     do {
         id = ++s_nextHandle;
@@ -1201,7 +1201,7 @@ HandleType FrameBuffer::createColorBufferWithResourceHandleLocked(int p_width, i
                                                                   GLenum p_internalFormat,
                                                                   FrameworkFormat p_frameworkFormat,
                                                                   HandleType handle,
-                                                                  bool p_linear) {
+                                                                  bool p_linear) REQUIRES(m_colorBufferMapLock) {
     ColorBufferPtr cb = ColorBuffer::create(m_emulationGl.get(), m_emulationVk.get(), p_width,
                                             p_height, p_internalFormat, p_frameworkFormat, handle,
                                             nullptr /*stream*/, p_linear);
@@ -1261,7 +1261,7 @@ void FrameBuffer::createBufferWithResourceHandle(uint64_t size, HandleType handl
 }
 
 HandleType FrameBuffer::createBufferWithResourceHandleLocked(int p_size, HandleType handle,
-                                                             uint32_t memoryProperty) {
+                                                             uint32_t memoryProperty) REQUIRES(m_lock) {
     if (m_buffers.count(handle) != 0) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "Buffer already exists with handle " << handle;
@@ -1289,7 +1289,7 @@ int FrameBuffer::openColorBuffer(HandleType p_colorbuffer) {
 
     ColorBufferMap::iterator c;
     {
-        AutoLock colorBuffermapLock(m_colorBufferMapLock);
+        AutoLock colorBufferMapLock(m_colorBufferMapLock);
         c = m_colorbuffers.find(p_colorbuffer);
         if (c == m_colorbuffers.end()) {
             // bad colorbuffer handle
@@ -1350,7 +1350,7 @@ void FrameBuffer::closeBuffer(HandleType p_buffer) {
     m_buffers.erase(it);
 }
 
-bool FrameBuffer::closeColorBufferLocked(HandleType p_colorbuffer, bool forced) {
+bool FrameBuffer::closeColorBufferLocked(HandleType p_colorbuffer, bool forced) REQUIRES(m_lock) {
     // When guest feature flag RefCountPipe is on, no reference counting is
     // needed.
     if (m_refCountPipeEnabled) {
@@ -1408,7 +1408,7 @@ void FrameBuffer::decColorBufferRefCountNoDestroy(HandleType p_colorbuffer) {
     }
 }
 
-void FrameBuffer::performDelayedColorBufferCloseLocked(bool forced) {
+void FrameBuffer::performDelayedColorBufferCloseLocked(bool forced) REQUIRES(m_lock) {
     // Let's wait just long enough to make sure it's not because of instant
     // timestamp change (end of previous second -> beginning of a next one),
     // but not for long - this is a workaround for race conditions, and they
@@ -1434,8 +1434,7 @@ void FrameBuffer::performDelayedColorBufferCloseLocked(bool forced) {
 }
 
 void FrameBuffer::eraseDelayedCloseColorBufferLocked(
-        HandleType cb, uint64_t ts)
-{
+        HandleType cb, uint64_t ts) REQUIRES(m_lock) {
     // Find the first delayed buffer with a timestamp <= |ts|
     auto it = std::lower_bound(
                   m_colorBufferDelayedCloseList.begin(),
@@ -2158,7 +2157,7 @@ void FrameBuffer::onLastColorBufferRef(uint32_t handle) {
     }
 }
 
-bool FrameBuffer::decColorBufferRefCountLocked(HandleType p_colorbuffer) {
+bool FrameBuffer::decColorBufferRefCountLocked(HandleType p_colorbuffer) REQUIRES(m_lock) {
     AutoLock colorBufferMapLock(m_colorBufferMapLock);
     const auto& it = m_colorbuffers.find(p_colorbuffer);
     if (it != m_colorbuffers.end()) {
@@ -2216,10 +2215,10 @@ bool FrameBuffer::compose(uint32_t bufferSize, void* buffer, bool needPost) {
 AsyncResult FrameBuffer::composeWithCallback(uint32_t bufferSize, void* buffer,
                                              Post::CompletionCallback callback) {
     ComposeDevice* p = (ComposeDevice*)buffer;
-    AutoLock mutex(m_lock);
 
     switch (p->version) {
         case 1: {
+            AutoLock mutex(m_lock);
             Post composeCmd;
             composeCmd.composeVersion = 1;
             composeCmd.composeBuffer.resize(bufferSize);
@@ -2234,10 +2233,9 @@ AsyncResult FrameBuffer::composeWithCallback(uint32_t bufferSize, void* buffer,
             // support for multi-display
             ComposeDevice_v2* p2 = (ComposeDevice_v2*)buffer;
             if (p2->displayId != 0) {
-                mutex.unlock();
                 setDisplayColorBuffer(p2->displayId, p2->targetHandle);
-                mutex.lock();
             }
+            AutoLock mutex(m_lock);
             Post composeCmd;
             composeCmd.composeVersion = 2;
             composeCmd.composeBuffer.resize(bufferSize);
@@ -2766,7 +2764,7 @@ int FrameBuffer::setDisplayPose(uint32_t displayId, int32_t x, int32_t y, uint32
     return emugl::get_emugl_multi_display_operations().setDisplayPose(displayId, x, y, w, h, dpi);
 }
 
-void FrameBuffer::sweepColorBuffersLocked() {
+void FrameBuffer::sweepColorBuffersLocked() REQUIRES(m_lock) {
     HandleType handleToDestroy = 0;
     while (mOutstandingColorBufferDestroys.tryReceive(&handleToDestroy)) {
         decColorBufferRefCountLocked(handleToDestroy);
@@ -3232,7 +3230,7 @@ void FrameBuffer::destroyEmulatedEglWindowSurface(HandleType p_surface) {
     destroyEmulatedEglWindowSurfaceLocked(p_surface);
 }
 
-std::vector<HandleType> FrameBuffer::destroyEmulatedEglWindowSurfaceLocked(HandleType p_surface) {
+std::vector<HandleType> FrameBuffer::destroyEmulatedEglWindowSurfaceLocked(HandleType p_surface) REQUIRES(m_lock) {
     std::vector<HandleType> colorBuffersToCleanUp;
     const auto w = m_windows.find(p_surface);
     if (w != m_windows.end()) {

@@ -692,7 +692,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     FrameBuffer(int p_width, int p_height, gfxstream::host::FeatureSet features, bool useSubWindow);
     // Requires the caller to hold the m_colorBufferMapLock until the new handle is inserted into of
     // the object handle maps.
-    HandleType genHandle_locked();
+    HandleType genHandle_locked() REQUIRES(m_colorBufferMapLock);
 
     bool removeSubWindow_locked();
     // Returns the set of ColorBuffers destroyed (for further cleanup)
@@ -701,16 +701,16 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     void markOpened(ColorBufferRef* cbRef);
     // Returns true if the color buffer was erased.
-    bool closeColorBufferLocked(HandleType p_colorbuffer, bool forced = false);
+    bool closeColorBufferLocked(HandleType p_colorbuffer, bool forced = false) REQUIRES(m_lock);
     // Returns true if this was the last ref and we need to destroy stuff.
-    bool decColorBufferRefCountLocked(HandleType p_colorbuffer);
+    bool decColorBufferRefCountLocked(HandleType p_colorbuffer) REQUIRES(m_lock);
     // Decrease refcount but not destroy the object.
     // Mainly used in post thread, when we need to destroy the object but cannot in post thread.
     void decColorBufferRefCountNoDestroy(HandleType p_colorbuffer);
     // Close all expired color buffers for real.
     // Treat all delayed color buffers as expired if forced=true
-    void performDelayedColorBufferCloseLocked(bool forced = false);
-    void eraseDelayedCloseColorBufferLocked(HandleType cb, uint64_t ts);
+    void performDelayedColorBufferCloseLocked(bool forced = false) REQUIRES(m_lock);
+    void eraseDelayedCloseColorBufferLocked(HandleType cb, uint64_t ts) REQUIRES(m_lock);
 
     AsyncResult postImpl(HandleType p_colorbuffer, Post::CompletionCallback callback,
                   bool needLockAndBind = true, bool repaint = false);
@@ -722,13 +722,13 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     HandleType createColorBufferWithResourceHandleLocked(int p_width, int p_height,
                                                          GLenum p_internalFormat,
                                                          FrameworkFormat p_frameworkFormat,
-                                                         HandleType handle, bool linear = false);
+                                                         HandleType handle, bool linear = false) REQUIRES(m_lock);
     HandleType createBufferWithResourceHandleLocked(int p_size, HandleType handle,
-                                                    uint32_t memoryProperty);
+                                                    uint32_t memoryProperty) REQUIRES(m_lock);
 
     void recomputeLayout();
     void setDisplayPoseInSkinUI(int totalHeight);
-    void sweepColorBuffersLocked();
+    void sweepColorBuffersLocked() REQUIRES(m_lock);
 
     std::future<void> blockPostWorker(std::future<void> continueSignal);
 
@@ -764,8 +764,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     uint64_t mFrameNumber;
     FBNativeWindowType m_nativeWindow = 0;
 
-    ColorBufferMap m_colorbuffers;
-    BufferMap m_buffers;
+    ColorBufferMap m_colorbuffers GUARDED_BY(m_colorBufferMapLock);
+    BufferMap m_buffers GUARDED_BY(m_lock);
 
     // A collection of color buffers that were closed without any usages
     // (|opened| == false).
@@ -782,7 +782,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
         HandleType cbHandle;  // 0 == already closed, do nothing
     };
     using ColorBufferDelayedClose = std::vector<ColorBufferCloseInfo>;
-    ColorBufferDelayedClose m_colorBufferDelayedCloseList;
+    ColorBufferDelayedClose m_colorBufferDelayedCloseList GUARDED_BY(m_lock);
 
     EGLNativeWindowType m_subWin = {};
     HandleType m_lastPostedColorBuffer = 0;
@@ -836,7 +836,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     std::string m_graphicsApiExtensions;
     std::string m_graphicsDeviceExtensions;
     android::base::Lock m_procOwnedResourcesLock;
-    std::unordered_map<uint64_t, std::unique_ptr<ProcessResources>> m_procOwnedResources;
+    std::unordered_map<uint64_t, std::unique_ptr<ProcessResources>> m_procOwnedResources GUARDED_BY(m_procOwnedResourcesLock);
 
     // Flag set when emulator is shutting down.
     bool m_shuttingDown = false;
@@ -868,7 +868,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     bool m_guestManagedColorBufferLifetime = false;
 
     android::base::MessageChannel<HandleType, 1024>
-        mOutstandingColorBufferDestroys;
+        mOutstandingColorBufferDestroys GUARDED_BY(m_lock);
 
     Compositor* m_compositor = nullptr;
     bool m_useVulkanComposition = false;
@@ -923,19 +923,19 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // The host associates color buffers with guest processes for memory
     // cleanup. Guest processes are identified with a host generated unique ID.
     // TODO(kaiyili): move all those resources to the ProcessResources struct.
-    ProcOwnedColorBuffers m_procOwnedColorBuffers;
-    ProcOwnedCleanupCallbacks m_procOwnedCleanupCallbacks;
+    ProcOwnedColorBuffers m_procOwnedColorBuffers GUARDED_BY(m_lock);
+    ProcOwnedCleanupCallbacks m_procOwnedCleanupCallbacks GUARDED_BY(m_lock);
 
 #if GFXSTREAM_ENABLE_HOST_GLES
-    gl::EmulatedEglContextMap m_contexts;
-    gl::EmulatedEglImageMap m_images;
-    gl::EmulatedEglWindowSurfaceMap m_windows;
+    gl::EmulatedEglContextMap m_contexts GUARDED_BY(m_lock);
+    gl::EmulatedEglImageMap m_images GUARDED_BY(m_lock);
+    gl::EmulatedEglWindowSurfaceMap m_windows GUARDED_BY(m_lock);
 
-    std::unordered_map<HandleType, HandleType> m_EmulatedEglWindowSurfaceToColorBuffer;
+    std::unordered_map<HandleType, HandleType> m_EmulatedEglWindowSurfaceToColorBuffer GUARDED_BY(m_lock);
 
-    ProcOwnedEmulatedEGLImages m_procOwnedEmulatedEglImages;
-    ProcOwnedEmulatedEglContexts m_procOwnedEmulatedEglContexts;
-    ProcOwnedEmulatedEglWindowSurfaces m_procOwnedEmulatedEglWindowSurfaces;
+    ProcOwnedEmulatedEGLImages m_procOwnedEmulatedEglImages GUARDED_BY(m_lock);
+    ProcOwnedEmulatedEglContexts m_procOwnedEmulatedEglContexts GUARDED_BY(m_lock);
+    ProcOwnedEmulatedEglWindowSurfaces m_procOwnedEmulatedEglWindowSurfaces GUARDED_BY(m_lock);
     gl::DisplayGl* m_displayGl = nullptr;
 
     struct PlatformEglContextInfo {
@@ -943,7 +943,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
         EGLSurface surface;
     };
 
-    std::unordered_map<void*, PlatformEglContextInfo> m_platformEglContexts;
+    std::unordered_map<void*, PlatformEglContextInfo> m_platformEglContexts GUARDED_BY(m_lock);
 #endif
 };
 
