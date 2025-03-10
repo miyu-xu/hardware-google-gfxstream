@@ -77,11 +77,15 @@ enum class AstcEmulationMode {
 // with the traditional GL pipeline.
 class VkEmulation {
    public:
-    ~VkEmulation();
+    ~VkEmulation() = default;
 
-    static std::unique_ptr<VkEmulation> create(VulkanDispatch* vk,
-                                               gfxstream::host::BackendCallbacks callbacks,
-                                               gfxstream::host::FeatureSet features);
+    static VkEmulation* create(VulkanDispatch* vk, gfxstream::host::BackendCallbacks callbacks,
+                               gfxstream::host::FeatureSet features);
+
+    static VkEmulation* get();
+    static bool isLive() { return get() != nullptr; }
+
+    void teardown();
 
     struct Features {
         bool glInteropSupported = false;

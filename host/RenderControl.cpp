@@ -323,8 +323,7 @@ static bool shouldEnableAsyncSwap(const gfxstream::host::FeatureSet& features) {
 
 static bool shouldEnableVulkan(const gfxstream::host::FeatureSet& features) {
     // TODO: Restrict further to devices supporting external memory.
-    FrameBuffer* fb = FrameBuffer::getFB();
-    return features.Vulkan.enabled && fb->hasEmulationVk() &&
+    return features.Vulkan.enabled && vk::VkEmulation::isLive() &&
            vk::VkDecoderGlobalState::get()->getHostFeatureSupport().supportsVulkan;
 }
 
@@ -1412,12 +1411,12 @@ static int rcSetColorBufferVulkanMode2(uint32_t colorBuffer, uint32_t mode,
 
     bool modeIsVulkanOnly = mode == VULKAN_MODE_VULKAN_ONLY;
 
-    FrameBuffer* fb = FrameBuffer::getFB();
-    if (!fb->hasEmulationVk()) {
+    auto vkEmulation = vk::VkEmulation::get();
+    if (!vkEmulation) {
         ERR("VkEmulation not enabled.");
         return -1;
     }
-    if (!fb->getEmulationVk().setColorBufferVulkanMode(colorBuffer, mode)) {
+    if (!vkEmulation->setColorBufferVulkanMode(colorBuffer, mode)) {
         ERR("Failed to set ColorBuffer vulkan mode.");
         return -1;
     }
@@ -1431,12 +1430,12 @@ static int rcSetColorBufferVulkanMode(uint32_t colorBuffer, uint32_t mode) {
 }
 
 static int32_t rcMapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa) {
-    FrameBuffer* fb = FrameBuffer::getFB();
-    if (!fb->hasEmulationVk()) {
+    auto vkEmulation = vk::VkEmulation::get();
+    if (!vkEmulation) {
         ERR("VkEmulation not enabled.");
         return -1;
     }
-    if (fb->getEmulationVk().mapGpaToBufferHandle(bufferHandle, gpa) < 0) {
+    if (vkEmulation->mapGpaToBufferHandle(bufferHandle, gpa) < 0) {
         ERR("Failed to map gpa %" PRIx64 " to buffer handle 0x%x.", gpa, bufferHandle);
         return -1;
     }
@@ -1446,12 +1445,12 @@ static int32_t rcMapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa) {
 static int32_t rcMapGpaToBufferHandle2(uint32_t bufferHandle,
                                        uint64_t gpa,
                                        uint64_t size) {
-    FrameBuffer* fb = FrameBuffer::getFB();
-    if (!fb->hasEmulationVk()) {
+    auto vkEmulation = vk::VkEmulation::get();
+    if (!vkEmulation) {
         ERR("VkEmulation not enabled.");
         return -1;
     }
-    if (fb->getEmulationVk().mapGpaToBufferHandle(bufferHandle, gpa, size) < 0) {
+    if (vkEmulation->mapGpaToBufferHandle(bufferHandle, gpa, size) < 0) {
         ERR("Failed to map gpa %" PRIx64 " to buffer handle 0x%x.", gpa, bufferHandle);
         return -1;
     }

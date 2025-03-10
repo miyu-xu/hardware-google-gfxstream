@@ -104,8 +104,7 @@ using gl::YUVConverter;
 using gl::YUVPlane;
 #endif
 
-using vk::AstcEmulationMode;
-using vk::VkEmulation;
+using gfxstream::vk::AstcEmulationMode;
 
 // static std::string getTimeStampString() {
 //     const time_t timestamp = android::base::getUnixTimeUs();
@@ -315,6 +314,7 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
     // used by underlying EGL driver might become invalid,
     // preventing new contexts from being created that share
     // against those contexts.
+    vk::VkEmulation* vkEmu = nullptr;
     vk::VulkanDispatch* vkDispatch = nullptr;
     if (fb->m_features.Vulkan.enabled) {
         vkDispatch = vk::vkDispatch(false /* not for testing */);
@@ -357,20 +357,19 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
             .unregisterVulkanInstance =
                 [fb = fb.get()](uint64_t id) { fb->unregisterVulkanInstance(id); },
         };
-        fb->m_emulationVk = vk::VkEmulation::create(vkDispatch, callbacks, fb->m_features);
-        if (!fb->m_emulationVk) {
+        vkEmu = vk::VkEmulation::create(vkDispatch, callbacks, fb->m_features);
+        if (!vkEmu) {
             ERR("Failed to initialize global Vulkan emulation. Disable the Vulkan support.");
         }
-
-        vk::VkDecoderGlobalState::initialize(fb->m_emulationVk.get());
+        fb->m_emulationVk = vkEmu;
     }
-    if (fb->m_emulationVk) {
+    if (vkEmu) {
         fb->m_vulkanEnabled = true;
         if (fb->m_features.VulkanNativeSwapchain.enabled) {
-            fb->m_vkInstance = fb->m_emulationVk->getInstance();
+            fb->m_vkInstance = vkEmu->getInstance();
         }
 
-        auto vulkanUuidOpt = fb->m_emulationVk->getDeviceUuid();
+        auto vulkanUuidOpt = vkEmu->getDeviceUuid();
         if (vulkanUuidOpt) {
             fb->m_vulkanUUID = *vulkanUuidOpt;
         } else {
@@ -415,16 +414,15 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
     // Cache the GL strings so we don't have to think about threading or
     // current-context when asked for them.
     //
-    bool useVulkanGraphicsDiagInfo = fb->m_emulationVk &&
-                                     fb->m_features.VulkanNativeSwapchain.enabled &&
-                                     fb->m_features.GuestVulkanOnly.enabled;
+    bool useVulkanGraphicsDiagInfo =
+        vkEmu && fb->m_features.VulkanNativeSwapchain.enabled && fb->m_features.GuestVulkanOnly.enabled;
 
     if (useVulkanGraphicsDiagInfo) {
-        fb->m_graphicsAdapterVendor = fb->m_emulationVk->getGpuVendor();
-        fb->m_graphicsAdapterName = fb->m_emulationVk->getGpuName();
-        fb->m_graphicsApiVersion = fb->m_emulationVk->getGpuVersionString();
-        fb->m_graphicsApiExtensions = fb->m_emulationVk->getInstanceExtensionsString();
-        fb->m_graphicsDeviceExtensions = fb->m_emulationVk->getDeviceExtensionsString();
+        fb->m_graphicsAdapterVendor = vkEmu->getGpuVendor();
+        fb->m_graphicsAdapterName = vkEmu->getGpuName();
+        fb->m_graphicsApiVersion = vkEmu->getGpuVersionString();
+        fb->m_graphicsApiExtensions = vkEmu->getInstanceExtensionsString();
+        fb->m_graphicsDeviceExtensions = vkEmu->getDeviceExtensionsString();
     } else if (fb->m_emulationGl) {
 #if GFXSTREAM_ENABLE_HOST_GLES
         fb->m_graphicsAdapterVendor = fb->m_emulationGl->getGlesVendor();
@@ -450,7 +448,7 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
     bool vulkanInteropSupported = true;
     // First, if the VkEmulation instance doesn't support ext memory capabilities,
     // it won't support uuids.
-    if (!fb->m_emulationVk || !fb->m_emulationVk->supportsPhysicalDeviceIDProperties()) {
+    if (!vkEmu || !vkEmu->supportsPhysicalDeviceIDProperties()) {
         vulkanInteropSupported = false;
     }
     if (!fb->m_emulationGl) {
@@ -487,9 +485,9 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
     GL_LOG("glvk interop final: %d", fb->m_vulkanInteropSupported);
     vkEmulationFeatures.glInteropSupported = fb->m_vulkanInteropSupported;
     if (fb->m_features.Vulkan.enabled) {
-        fb->m_emulationVk->initFeatures(std::move(vkEmulationFeatures));
+        vkEmu->initFeatures(std::move(vkEmulationFeatures));
 
-        auto* display = fb->m_emulationVk->getDisplay();
+        auto* display = vkEmu->getDisplay();
         if (display) {
             fb->m_displayVk = display;
             fb->m_displaySurfaceUsers.push_back(fb->m_displayVk);
@@ -497,7 +495,7 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
     }
 
     if (fb->m_useVulkanComposition) {
-        fb->m_compositor = fb->m_emulationVk->getCompositor();
+        fb->m_compositor = vkEmu->getCompositor();
         if (!fb->m_compositor) {
             ERR("Failed to get CompositorVk from VkEmulation.");
             return false;
@@ -660,11 +658,8 @@ FrameBuffer::~FrameBuffer() {
     }
 #endif
 
-    if (m_emulationGl) {
-        m_emulationGl.reset();
-    }
     if (m_emulationVk) {
-        m_emulationVk.reset();
+        m_emulationVk->teardown();
     }
 
     sInitialized.store(false, std::memory_order_relaxed);
@@ -1200,9 +1195,9 @@ HandleType FrameBuffer::createColorBufferWithResourceHandleLocked(int p_width, i
                                                                   FrameworkFormat p_frameworkFormat,
                                                                   HandleType handle,
                                                                   bool p_linear) {
-    ColorBufferPtr cb = ColorBuffer::create(m_emulationGl.get(), m_emulationVk.get(), p_width,
-                                            p_height, p_internalFormat, p_frameworkFormat, handle,
-                                            nullptr /*stream*/, p_linear);
+    ColorBufferPtr cb =
+        ColorBuffer::create(m_emulationGl.get(), m_emulationVk, p_width, p_height, p_internalFormat,
+                            p_frameworkFormat, handle, nullptr /*stream*/, p_linear);
     if (cb.get() == nullptr) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "Failed to create ColorBuffer:" << handle << " format:" << p_internalFormat
@@ -1265,7 +1260,7 @@ HandleType FrameBuffer::createBufferWithResourceHandleLocked(int p_size, HandleT
             << "Buffer already exists with handle " << handle;
     }
 
-    BufferPtr buffer(Buffer::create(m_emulationGl.get(), m_emulationVk.get(), p_size, handle));
+    BufferPtr buffer(Buffer::create(m_emulationGl.get(), m_emulationVk, p_size, handle));
     if (!buffer) {
         ERR("Create buffer failed.\n");
         return 0;
@@ -2558,8 +2553,7 @@ bool FrameBuffer::onLoad(Stream* stream,
         m_guestManagedColorBufferLifetime = stream->getByte();
         loadCollection(
             stream, &m_colorbuffers, [this, now](Stream* stream) -> ColorBufferMap::value_type {
-                ColorBufferPtr cb =
-                    ColorBuffer::onLoad(m_emulationGl.get(), m_emulationVk.get(), stream);
+                ColorBufferPtr cb = ColorBuffer::onLoad(m_emulationGl.get(), m_emulationVk, stream);
                 const HandleType handle = cb->getHndl();
                 const unsigned refCount = stream->getBe32();
                 const bool opened = stream->getByte();
@@ -3382,13 +3376,6 @@ EmulationGl& FrameBuffer::getEmulationGl() {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "GL/EGL emulation not enabled.";
     }
     return *m_emulationGl;
-}
-
-VkEmulation& FrameBuffer::getEmulationVk() {
-    if (!m_emulationVk) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "GL/EGL emulation not enabled.";
-    }
-    return *m_emulationVk;
 }
 
 EGLDisplay FrameBuffer::getDisplay() const {

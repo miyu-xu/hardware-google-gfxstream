@@ -53,7 +53,6 @@ namespace gfxstream {
 namespace vk {
 
 class VkDecoderSnapshot;
-class VkEmulation;
 
 // Class for tracking host-side state. Currently we only care about
 // tracking VkDeviceMemory to make it easier to pass the right data
@@ -66,10 +65,8 @@ class VkEmulation;
 // functions.
 class VkDecoderGlobalState {
    public:
-    VkDecoderGlobalState(VkEmulation* emulation);
+    VkDecoderGlobalState();
     ~VkDecoderGlobalState();
-
-    static void initialize(VkEmulation* emulation);
 
     // There should only be one instance of VkDecoderGlobalState per process
     // Note: currently not thread-safe

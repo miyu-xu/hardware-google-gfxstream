@@ -20,35 +20,34 @@ namespace gfxstream {
 namespace vk {
 
 /*static*/
-std::unique_ptr<BufferVk> BufferVk::create(VkEmulation& vkEmulation, uint32_t handle, uint64_t size,
-                                           bool vulkanOnly) {
-    if (!vkEmulation.setupVkBuffer(size, handle, vulkanOnly, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+std::unique_ptr<BufferVk> BufferVk::create(uint32_t handle, uint64_t size, bool vulkanOnly) {
+    if (!VkEmulation::get()->setupVkBuffer(size, handle, vulkanOnly,
+                                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
         ERR("Failed to create BufferVk:%d", handle);
         return nullptr;
     }
 
-    return std::unique_ptr<BufferVk>(new BufferVk(vkEmulation, handle));
+    return std::unique_ptr<BufferVk>(new BufferVk(handle));
 }
 
-BufferVk::BufferVk(VkEmulation& vkEmulation, uint32_t handle)
-    : mVkEmulation(vkEmulation), mHandle(handle) {}
+BufferVk::BufferVk(uint32_t handle) : mHandle(handle) {}
 
 BufferVk::~BufferVk() {
-    if (!mVkEmulation.teardownVkBuffer(mHandle)) {
+    if (!VkEmulation::get()->teardownVkBuffer(mHandle)) {
         ERR("Failed to destroy BufferVk:%d", mHandle);
     }
 }
 
 void BufferVk::readToBytes(uint64_t offset, uint64_t size, void* outBytes) {
-    mVkEmulation.readBufferToBytes(mHandle, offset, size, outBytes);
+    VkEmulation::get()->readBufferToBytes(mHandle, offset, size, outBytes);
 }
 
 bool BufferVk::updateFromBytes(uint64_t offset, uint64_t size, const void* bytes) {
-    return mVkEmulation.updateBufferFromBytes(mHandle, offset, size, bytes);
+    return VkEmulation::get()->updateBufferFromBytes(mHandle, offset, size, bytes);
 }
 
 std::optional<BlobDescriptorInfo> BufferVk::exportBlob() {
-    auto dupHandleInfo = mVkEmulation.dupBufferExtMemoryHandle(mHandle);
+    auto dupHandleInfo = VkEmulation::get()->dupBufferExtMemoryHandle(mHandle);
     if (!dupHandleInfo) {
         return std::nullopt;
     }
