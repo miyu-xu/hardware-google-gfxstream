@@ -488,7 +488,7 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
 
     GL_LOG("glvk interop final: %d", fb->m_vulkanInteropSupported);
     vkEmulationFeatures.glInteropSupported = fb->m_vulkanInteropSupported;
-    if (fb->m_features.Vulkan.enabled) {
+    if (fb->m_emulationVk && fb->m_features.Vulkan.enabled) {
         fb->m_emulationVk->initFeatures(std::move(vkEmulationFeatures));
 
         auto* display = fb->m_emulationVk->getDisplay();
@@ -498,7 +498,7 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
         }
     }
 
-    if (fb->m_useVulkanComposition) {
+    if (fb->m_emulationVk && fb->m_useVulkanComposition) {
         fb->m_compositor = fb->m_emulationVk->getCompositor();
         if (!fb->m_compositor) {
             ERR("Failed to get CompositorVk from VkEmulation.");
