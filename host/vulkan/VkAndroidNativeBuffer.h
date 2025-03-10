@@ -148,7 +148,7 @@ struct AndroidNativeBufferInfo {
     std::unique_ptr<VkQsriTimeline> qsriTimeline = nullptr;
 };
 
-VkResult prepareAndroidNativeBufferImage(VkEmulation* emu, VulkanDispatch* vk, VkDevice device,
+VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
                                          android::base::BumpPool& allocator,
                                          const VkImageCreateInfo* pCreateInfo,
                                          const VkNativeBufferANDROID* nativeBufferANDROID,
@@ -161,15 +161,16 @@ void getGralloc1Usage(VkFormat format, VkImageUsageFlags imageUsage,
                       VkSwapchainImageUsageFlagsANDROID swapchainImageUsage,
                       uint64_t* consumerUsage_out, uint64_t* producerUsage_out);
 
-VkResult setAndroidNativeImageSemaphoreSignaled(VkEmulation* emu, VulkanDispatch* vk,
-                                                VkDevice device, VkQueue defaultQueue,
+VkResult setAndroidNativeImageSemaphoreSignaled(VulkanDispatch* vk, VkDevice device,
+                                                VkQueue defaultQueue,
                                                 uint32_t defaultQueueFamilyIndex,
                                                 std::mutex* defaultQueueMutex,
                                                 VkSemaphore semaphore, VkFence fence,
                                                 AndroidNativeBufferInfo* anbInfo);
 
-VkResult syncImageToColorBuffer(VkEmulation* emu, VulkanDispatch* vk, uint32_t queueFamilyIndex,
-                                VkQueue queue, std::mutex* queueMutex, uint32_t waitSemaphoreCount,
+VkResult syncImageToColorBuffer(gfxstream::host::BackendCallbacks& callbacks, VulkanDispatch* vk,
+                                uint32_t queueFamilyIndex, VkQueue queue,
+                                std::mutex* queueMutex, uint32_t waitSemaphoreCount,
                                 const VkSemaphore* pWaitSemaphores, int* pNativeFenceFd,
                                 AndroidNativeBufferInfo* anbInfo);
 

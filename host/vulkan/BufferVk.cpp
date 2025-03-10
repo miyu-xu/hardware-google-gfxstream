@@ -21,8 +21,7 @@ namespace vk {
 
 /*static*/
 std::unique_ptr<BufferVk> BufferVk::create(uint32_t handle, uint64_t size, bool vulkanOnly) {
-    if (!VkEmulation::get()->setupVkBuffer(size, handle, vulkanOnly,
-                                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+    if (!setupVkBuffer(size, handle, vulkanOnly, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
         ERR("Failed to create BufferVk:%d", handle);
         return nullptr;
     }
@@ -33,21 +32,21 @@ std::unique_ptr<BufferVk> BufferVk::create(uint32_t handle, uint64_t size, bool 
 BufferVk::BufferVk(uint32_t handle) : mHandle(handle) {}
 
 BufferVk::~BufferVk() {
-    if (!VkEmulation::get()->teardownVkBuffer(mHandle)) {
+    if (!teardownVkBuffer(mHandle)) {
         ERR("Failed to destroy BufferVk:%d", mHandle);
     }
 }
 
 void BufferVk::readToBytes(uint64_t offset, uint64_t size, void* outBytes) {
-    VkEmulation::get()->readBufferToBytes(mHandle, offset, size, outBytes);
+    readBufferToBytes(mHandle, offset, size, outBytes);
 }
 
 bool BufferVk::updateFromBytes(uint64_t offset, uint64_t size, const void* bytes) {
-    return VkEmulation::get()->updateBufferFromBytes(mHandle, offset, size, bytes);
+    return updateBufferFromBytes(mHandle, offset, size, bytes);
 }
 
 std::optional<BlobDescriptorInfo> BufferVk::exportBlob() {
-    auto dupHandleInfo = VkEmulation::get()->dupBufferExtMemoryHandle(mHandle);
+    auto dupHandleInfo = dupBufferExtMemoryHandle(mHandle);
     if (!dupHandleInfo) {
         return std::nullopt;
     }

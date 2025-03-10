@@ -80,7 +80,7 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
     }
 #endif
 
-    if (emulationVk) {
+    if (emulationVk && emulationVk->live) {
         const bool vulkanOnly = colorBuffer->mColorBufferGl == nullptr;
         uint32_t memoryProperty = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
         if (vulkanOnly && linear) {
@@ -101,12 +101,12 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
 
 #if GFXSTREAM_ENABLE_HOST_GLES
     bool b271028352Workaround = emulationGl && strstr(emulationGl->getGlesRenderer().c_str(), "Intel");
-    bool vkSnapshotEnabled = emulationVk && emulationVk->getFeatures().VulkanSnapshots.enabled;
+    bool vkSnapshotEnabled = emulationVk && emulationVk->features.VulkanSnapshots.enabled;
 
     if ((!stream || vkSnapshotEnabled) && colorBuffer->mColorBufferGl && colorBuffer->mColorBufferVk &&
         !b271028352Workaround && shouldAttemptExternalMemorySharing(frameworkFormat)) {
         colorBuffer->touch();
-        auto memoryExport = emulationVk->exportColorBufferMemory(handle);
+        auto memoryExport = vk::exportColorBufferMemory(handle);
         if (memoryExport) {
             if (colorBuffer->mColorBufferGl->importMemory(
 #ifdef _WIN32
@@ -296,7 +296,7 @@ std::unique_ptr<BorrowedImageInfo> ColorBuffer::borrowForComposition(UsedApi api
             if (!mColorBufferVk) {
                 GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "ColorBufferGl not available.";
             }
-            return mColorBufferVk->borrowForComposition(isTarget);
+            return vk::borrowColorBufferForComposition(getHndl(), isTarget);
         }
     }
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Unimplemented";
@@ -317,7 +317,7 @@ std::unique_ptr<BorrowedImageInfo> ColorBuffer::borrowForDisplay(UsedApi api) {
             if (!mColorBufferVk) {
                 GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "ColorBufferGl not available.";
             }
-            return mColorBufferVk->borrowForDisplay();
+            return vk::borrowColorBufferForDisplay(getHndl());
         }
     }
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Unimplemented";
@@ -348,7 +348,7 @@ bool ColorBuffer::flushFromVk() {
         return true;
     }
     std::vector<uint8_t> contents;
-    if (!mColorBufferVk->readToBytes(&contents)) {
+    if (!vk::readColorBufferToBytes(mHandle, &contents)) {
         ERR("Failed to get VK contents for ColorBuffer:%d", mHandle);
         return false;
     }

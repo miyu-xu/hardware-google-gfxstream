@@ -322,7 +322,7 @@ intptr_t RenderThread::main() {
     // Framebuffer initialization is asynchronous, so we need to make sure
     // it's completely initialized before running any GL commands.
     FrameBuffer::waitUntilInitialized();
-    if (vk::VkEmulation::isLive()) {
+    if (vk::getGlobalVkEmulation()) {
         tInfo->m_vkInfo.emplace();
     }
 

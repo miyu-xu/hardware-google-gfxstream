@@ -102,7 +102,7 @@ class VulkanTestHelper {
     emugl::GfxApiLogger mLogger;
     std::unique_ptr<android::base::MetricsLogger> mMetricsLogger;
     emugl::HealthMonitor<> mHealthMonitor;
-    std::unique_ptr<VkEmulation> mVkEmu;
+    VkEmulation* mVkEmu;
     std::unique_ptr<::android::base::BumpPool> mBp;
     VkDecoderContext mDecoderContext;
     VkDecoderTestDispatch mTestDispatch;

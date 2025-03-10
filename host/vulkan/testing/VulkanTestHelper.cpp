@@ -56,13 +56,14 @@ VulkanTestHelper::VulkanTestHelper()
       mLogger(),
       mMetricsLogger(android::base::CreateMetricsLogger()),
       mHealthMonitor(*mMetricsLogger),
-      mVkEmu(VkEmulation::create(mVk, {}, getGfxstreamFeatures())),
+      mVkEmu(createGlobalVkEmulation(mVk, {}, getGfxstreamFeatures())),
       mBp(std::make_unique<BumpPool>()),
       mDecoderContext(VkDecoderContext{.processName = "vulkan_test",
                                        .gfxApiLogger = &mLogger,
                                        .healthMonitor = &mHealthMonitor,
                                        .metricsLogger = mMetricsLogger.get()}),
       mTestDispatch(mVk, mBp.get(), &mDecoderContext) {
+
     // This is used by VkDecoderGlobalState::on_vkCreateInstance()
     QAndroidVmOperations vmOps;
     vmOps.setSkipSnapshotSave = [](bool) {};
@@ -90,7 +91,7 @@ void VulkanTestHelper::destroy() {
     mDebugMessenger = VK_NULL_HANDLE;
 
     VkDecoderGlobalState::reset();
-    mVkEmu.reset();
+    teardownGlobalVkEmulation();
 }
 
 VulkanTestHelper::~VulkanTestHelper() {
@@ -101,9 +102,9 @@ VulkanTestHelper::~VulkanTestHelper() {
 }
 
 void VulkanTestHelper::initialize(const InitializationOptions& options) {
-    mVkEmu->initFeatures(VkEmulation::Features{
+    initVkEmulationFeatures(std::make_unique<VkEmulationFeatures>(VkEmulationFeatures{
         .astcLdrEmulationMode = options.astcLdrEmulationMode,
-    });
+    }));
 
     // Check that the validation layer is present
     const char* validationLayer = "VK_LAYER_KHRONOS_validation";
