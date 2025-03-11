@@ -39,6 +39,7 @@
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/emugl_vm_operations.h"
 #include "host-common/vm_operations.h"
+#include "logging/logging.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -63,13 +64,6 @@ using android::base::StaticLock;
 using android::base::StaticMap;
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
-
-#ifndef VERBOSE
-#define VERBOSE(fmt, ...)                    \
-    if (android::base::isVerboseLogging()) { \
-        INFO(fmt, ##__VA_ARGS__);            \
-    }
-#endif
 
 constexpr size_t kPageBits = 12;
 constexpr size_t kPageSize = 1u << kPageBits;
@@ -314,7 +308,7 @@ static bool extensionsSupported(const std::vector<VkExtensionProperties>& curren
     for (size_t i = 0; i < wantedExtNames.size(); ++i) {
         bool found = foundExts[i];
         if (!found) {
-            VERBOSE("%s not found, bailing.", wantedExtNames[i]);
+            stream_renderer_debug("%s not found, bailing.", wantedExtNames[i]);
             return false;
         }
     }
@@ -412,7 +406,7 @@ bool VkEmulation::populateImageFormatExternalMemorySupportInfo(VulkanDispatch* v
             outImageFormatProps,
         };
 
-        VERBOSE("Supported (not externally): %s %s %s %s", string_VkFormat(info->format),
+        stream_renderer_debug("Supported (not externally): %s %s %s %s", string_VkFormat(info->format),
                 string_VkImageType(info->type), string_VkImageTiling(info->tiling),
                 string_VkImageUsageFlagBits((VkImageUsageFlagBits)info->usageFlags));
 
@@ -459,7 +453,7 @@ bool VkEmulation::populateImageFormatExternalMemorySupportInfo(VulkanDispatch* v
 
     if (res != VK_SUCCESS) {
         if (res == VK_ERROR_FORMAT_NOT_SUPPORTED) {
-            VERBOSE("Not Supported: %s %s %s %s", string_VkFormat(info->format),
+            stream_renderer_debug("Not Supported: %s %s %s %s", string_VkFormat(info->format),
                     string_VkImageType(info->type), string_VkImageTiling(info->tiling),
                     string_VkImageUsageFlagBits((VkImageUsageFlagBits)info->usageFlags));
 
@@ -502,7 +496,7 @@ bool VkEmulation::populateImageFormatExternalMemorySupportInfo(VulkanDispatch* v
     info->extFormatProps = outExternalProps;
     info->imageFormatProps2.pNext = &info->extFormatProps;
 
-    VERBOSE("Supported: %s %s %s %s, supportsExternalMemory? %d, requiresDedicated? %d",
+    stream_renderer_debug("Supported: %s %s %s %s, supportsExternalMemory? %d, requiresDedicated? %d",
             string_VkFormat(info->format), string_VkImageType(info->type),
             string_VkImageTiling(info->tiling),
             string_VkImageUsageFlagBits((VkImageUsageFlagBits)info->usageFlags),
@@ -758,7 +752,7 @@ int VkEmulation::getSelectedGpuIndex(
     uint32_t maxScore = 0;
     for (int i = 0; i < physicalDeviceCount; ++i) {
         const uint32_t score = getDeviceScore(deviceInfos[i]);
-        VERBOSE("Device selection score for '%s' = %d", deviceInfos[i].physdevProps.deviceName,
+        stream_renderer_debug("Device selection score for '%s' = %d", deviceInfos[i].physdevProps.deviceName,
                 score);
         if (score > maxScore) {
             selectedGpuIndex = i;
@@ -944,18 +938,18 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
 
     // Can we know instance version early?
     if (gvk->vkEnumerateInstanceVersion) {
-        VERBOSE("global loader has vkEnumerateInstanceVersion.");
+        stream_renderer_debug("global loader has vkEnumerateInstanceVersion.");
         uint32_t instanceVersion;
         VkResult res = gvk->vkEnumerateInstanceVersion(&instanceVersion);
         if (VK_SUCCESS == res) {
             if (instanceVersion >= VK_MAKE_VERSION(1, 1, 0)) {
-                VERBOSE("global loader has vkEnumerateInstanceVersion returning >= 1.1.");
+                stream_renderer_debug("global loader has vkEnumerateInstanceVersion returning >= 1.1.");
                 appInfo.apiVersion = VK_MAKE_VERSION(1, 1, 0);
             }
         }
     }
 
-    VERBOSE("Creating instance, asking for version %d.%d.%d ...",
+    stream_renderer_debug("Creating instance, asking for version %d.%d.%d ...",
             VK_VERSION_MAJOR(appInfo.apiVersion), VK_VERSION_MINOR(appInfo.apiVersion),
             VK_VERSION_PATCH(appInfo.apiVersion));
 
@@ -985,7 +979,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
 
         if (appInfo.apiVersion < VK_MAKE_VERSION(1, 1, 0) &&
             instanceVersion >= VK_MAKE_VERSION(1, 1, 0)) {
-            VERBOSE("Found out that we can create a higher version instance.");
+            stream_renderer_debug("Found out that we can create a higher version instance.");
             appInfo.apiVersion = VK_MAKE_VERSION(1, 1, 0);
 
             gvk->vkDestroyInstance(emulation->mInstance, nullptr);
@@ -998,7 +992,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
 
             init_vulkan_dispatch_from_instance(gvk, emulation->mInstance, emulation->mIvk);
 
-            VERBOSE("Created Vulkan 1.1 instance on second try.");
+            stream_renderer_debug("Created Vulkan 1.1 instance on second try.");
 
             if (!vulkan_dispatch_check_instance_VK_VERSION_1_1(ivk)) {
                 ERR("Warning: Vulkan 1.1 APIs missing from instance (2nd try)");
@@ -1060,7 +1054,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
     ivk->vkEnumeratePhysicalDevices(emulation->mInstance, &physicalDeviceCount,
                                     physicalDevices.data());
 
-    VERBOSE("Found %d Vulkan physical devices.", physicalDeviceCount);
+    stream_renderer_debug("Found %d Vulkan physical devices.", physicalDeviceCount);
 
     if (physicalDeviceCount == 0) {
         VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(ABORT_REASON_OTHER, "No physical devices available.");
@@ -1071,7 +1065,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
     for (uint32_t i = 0; i < physicalDeviceCount; ++i) {
         ivk->vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceInfos[i].physdevProps);
 
-        VERBOSE("Considering Vulkan physical device %d : %s", i,
+        stream_renderer_debug("Considering Vulkan physical device %d : %s", i,
                 deviceInfos[i].physdevProps.deviceName);
 
         // It's easier to figure out the staging buffer along with
@@ -1278,12 +1272,12 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
 
             if (hasGraphicsQueueFamily) {
                 deviceInfos[i].graphicsQueueFamilyIndices.push_back(j);
-                VERBOSE("Graphics queue family index: %d", j);
+                stream_renderer_debug("Graphics queue family index: %d", j);
             }
 
             if (hasComputeQueueFamily) {
                 deviceInfos[i].computeQueueFamilyIndices.push_back(j);
-                VERBOSE("Compute queue family index: %d", j);
+                stream_renderer_debug("Compute queue family index: %d", j);
             }
         }
     }
@@ -1314,7 +1308,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
          emulation->mDeviceInfo.physdevProps.deviceName, VK_VERSION_MAJOR(deviceVersion),
          VK_VERSION_MINOR(deviceVersion), VK_VERSION_PATCH(deviceVersion));
 
-    VERBOSE(
+    stream_renderer_debug(
         "deviceInfo: \n"
         "hasGraphicsQueueFamily = %d\n"
         "hasComputeQueueFamily = %d\n"
@@ -1521,7 +1515,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
 #endif
     }
 
-    VERBOSE("Vulkan logical device created and extension functions obtained.");
+    stream_renderer_debug("Vulkan logical device created and extension functions obtained.");
 
     emulation->mQueueLock = std::make_shared<android::base::Lock>();
     {
@@ -1533,7 +1527,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
 
     emulation->mQueueFamilyIndex = emulation->mDeviceInfo.graphicsQueueFamilyIndices[0];
 
-    VERBOSE("Vulkan device queue obtained.");
+    stream_renderer_debug("Vulkan device queue obtained.");
 
     VkCommandPoolCreateInfo poolCi = {
         VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -1661,8 +1655,7 @@ std::unique_ptr<VkEmulation> VkEmulation::create(VulkanDispatch* gvk,
         emulation->mDeviceLostHelper.enableWithNvidiaDeviceDiagnosticCheckpoints();
     }
 
-    VERBOSE("Vulkan global emulation state successfully initialized.");
-
+    stream_renderer_debug("Vulkan global emulation state successfully initialized.");
     emulation->mTransferQueueCommandBufferPool.resize(0);
 
     return emulation;
@@ -1716,7 +1709,7 @@ void VkEmulation::initFeatures(Features features) {
             << "Failed to find memory type for ColorBuffers.";
     }
     mRepresentativeColorBufferMemoryTypeInfo = *representativeInfo;
-    VERBOSE(
+    stream_renderer_debug(
         "Representative ColorBuffer memory type using host memory type index %d "
         "and guest memory type index :%d",
         mRepresentativeColorBufferMemoryTypeInfo.hostMemoryTypeIndex,
@@ -1991,7 +1984,7 @@ bool VkEmulation::allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalM
         VkResult allocRes = vk->vkAllocateMemory(mDevice, &allocInfo, nullptr, &info->memory);
 
         if (allocRes != VK_SUCCESS) {
-            VERBOSE("allocExternalMemory: failed in vkAllocateMemory: %s",
+            stream_renderer_debug("allocExternalMemory: failed in vkAllocateMemory: %s",
                     string_VkResult(allocRes));
             break;
         }
@@ -2001,7 +1994,7 @@ bool VkEmulation::allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalM
             VkResult mapRes =
                 vk->vkMapMemory(mDevice, info->memory, 0, info->size, 0, &info->mappedPtr);
             if (mapRes != VK_SUCCESS) {
-                VERBOSE("allocExternalMemory: failed in vkMapMemory: %s", string_VkResult(mapRes));
+                stream_renderer_debug("allocExternalMemory: failed in vkMapMemory: %s", string_VkResult(mapRes));
                 break;
             }
         }
@@ -2026,12 +2019,12 @@ bool VkEmulation::allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalM
         } else {
             allocationAttempts.push_back(info->memory);
 
-            VERBOSE("allocExternalMemory: attempt #%zu failed; deviceAlignment: %" PRIu64
+            stream_renderer_debug("allocExternalMemory: attempt #%zu failed; deviceAlignment: %" PRIu64
                     ", mappedPtrPageOffset: %" PRIu64,
                     allocationAttempts.size(), deviceAlignment.valueOr(0), mappedPtrPageOffset);
 
             if (allocationAttempts.size() >= kMaxAllocationAttempts) {
-                VERBOSE(
+                stream_renderer_debug(
                     "allocExternalMemory: unable to allocate memory with CPU mapped ptr aligned to "
                     "page");
                 break;
@@ -2629,7 +2622,7 @@ bool VkEmulation::createVkColorBufferLocked(uint32_t width, uint32_t height, GLe
 
     VkResult createRes = vk->vkCreateImage(mDevice, imageCi.get(), nullptr, &infoPtr->image);
     if (createRes != VK_SUCCESS) {
-        VERBOSE("Failed to create Vulkan image for ColorBuffer %d, error: %s", colorBufferHandle,
+        stream_renderer_debug("Failed to create Vulkan image for ColorBuffer %d, error: %s", colorBufferHandle,
                 string_VkResult(createRes));
         return false;
     }
@@ -2686,7 +2679,7 @@ bool VkEmulation::createVkColorBufferLocked(uint32_t width, uint32_t height, GLe
         getValidMemoryTypeIndex(memReqs.memoryTypeBits, infoPtr->memoryProperty);
 
     const VkFormat imageVkFormat = infoPtr->imageCreateInfoShallow.format;
-    VERBOSE(
+    stream_renderer_debug(
         "ColorBuffer %d, dimensions: %dx%d, format: %s, "
         "allocation size and type index: %lu, %d, "
         "allocated memory property: %d, "
@@ -2774,7 +2767,7 @@ bool VkEmulation::createVkColorBufferLocked(uint32_t width, uint32_t height, GLe
         createRes = vk->vkCreateSamplerYcbcrConversion(mDevice, &ycbcrCreateInfo, nullptr,
                                                        &infoPtr->ycbcrConversion);
         if (createRes != VK_SUCCESS) {
-            VERBOSE(
+            stream_renderer_debug(
                 "Failed to create Vulkan ycbcrConversion for ColorBuffer %d with format %s [%d], "
                 "Error: %s",
                 colorBufferHandle, string_VkFormat(imageVkFormat), imageVkFormat,
@@ -2809,7 +2802,7 @@ bool VkEmulation::createVkColorBufferLocked(uint32_t width, uint32_t height, GLe
     };
     createRes = vk->vkCreateImageView(mDevice, &imageViewCi, nullptr, &infoPtr->imageView);
     if (createRes != VK_SUCCESS) {
-        VERBOSE("Failed to create Vulkan image view for ColorBuffer %d, Error: %s",
+        stream_renderer_debug("Failed to create Vulkan image view for ColorBuffer %d, Error: %s",
                 colorBufferHandle, string_VkResult(createRes));
         return false;
     }
@@ -2848,7 +2841,7 @@ bool VkEmulation::createVkColorBuffer(uint32_t width, uint32_t height, GLenum in
     std::lock_guard<std::mutex> lock(mMutex);
     auto infoPtr = android::base::find(mColorBuffers, colorBufferHandle);
     if (infoPtr) {
-        VERBOSE("ColorBuffer already exists for handle: %d", colorBufferHandle);
+        stream_renderer_debug("ColorBuffer already exists for handle: %d", colorBufferHandle);
         return false;
     }
 
@@ -2980,7 +2973,7 @@ bool VkEmulation::readColorBufferToBytes(uint32_t colorBufferHandle, std::vector
 
     auto colorBufferInfo = android::base::find(mColorBuffers, colorBufferHandle);
     if (!colorBufferInfo) {
-        VERBOSE("Failed to read from ColorBuffer:%d, not found.", colorBufferHandle);
+        stream_renderer_debug("Failed to read from ColorBuffer:%d, not found.", colorBufferHandle);
         bytes->clear();
         return false;
     }
@@ -3194,7 +3187,7 @@ bool VkEmulation::updateColorBufferFromBytes(uint32_t colorBufferHandle,
 
     auto colorBufferInfo = android::base::find(mColorBuffers, colorBufferHandle);
     if (!colorBufferInfo) {
-        VERBOSE("Failed to update ColorBuffer:%d, not found.", colorBufferHandle);
+        stream_renderer_debug("Failed to update ColorBuffer:%d, not found.", colorBufferHandle);
         return false;
     }
 
@@ -3499,7 +3492,7 @@ int32_t VkEmulation::mapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa, u
 
     memoryInfoPtr->sizeToPage = ((rawSize + kPageSize - 1) >> kPageBits) << kPageBits;
 
-    VERBOSE("mapGpaToColorBuffer: hva = %p, pageAlignedHva = %p -> [ 0x%" PRIxPTR ", 0x%" PRIxPTR
+    stream_renderer_debug("mapGpaToColorBuffer: hva = %p, pageAlignedHva = %p -> [ 0x%" PRIxPTR ", 0x%" PRIxPTR
             " ]",
             memoryInfoPtr->mappedPtr, memoryInfoPtr->pageAlignedHva, memoryInfoPtr->gpa,
             memoryInfoPtr->gpa + memoryInfoPtr->sizeToPage);
@@ -3629,7 +3622,7 @@ bool VkEmulation::setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulka
     // Determine memory type.
     res.memory.typeIndex = getValidMemoryTypeIndex(memReqs.memoryTypeBits, memoryProperty);
 
-    VERBOSE(
+    stream_renderer_debug(
         "Buffer %d "
         "allocation size and type index: %lu, %d, "
         "allocated memory property: %d, "
@@ -4045,7 +4038,7 @@ std::tuple<VkCommandBuffer, VkFence> VkEmulation::allocateQueueTransferCommandBu
     const int cbIndex = static_cast<int>(mTransferQueueCommandBufferPool.size());
     mTransferQueueCommandBufferPool.emplace_back(commandBuffer, fence);
 
-    VERBOSE(
+    stream_renderer_debug(
         "Create a new command buffer for queue transfer for a total of %d "
         "transfer command buffers",
         (cbIndex + 1));

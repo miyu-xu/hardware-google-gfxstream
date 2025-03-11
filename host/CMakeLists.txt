@@ -1,3 +1,6 @@
+# Logging subdirectory
+add_subdirectory(logging)
+
 add_subdirectory(backend)
 add_subdirectory(features)
 add_subdirectory(tracing)
@@ -91,6 +94,7 @@ target_link_libraries(
         gfxstream_host_tracing
         gfxstream-gl-server
         gfxstream-magma-server
+        gfxstream-host-backend-logging
         gfxstream-vulkan-server
         gfxstream_egl_headers
         gfxstream-snapshot

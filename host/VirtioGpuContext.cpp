@@ -16,6 +16,7 @@
 
 #include "host-common/AddressSpaceService.h"
 #include "host-common/opengles.h"
+#include "logging/logging.h"
 
 namespace gfxstream {
 namespace host {

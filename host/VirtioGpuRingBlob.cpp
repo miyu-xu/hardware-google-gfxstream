@@ -17,6 +17,7 @@
 #include <string>
 
 #include "gfxstream/virtio-gpu-gfxstream-renderer.h"
+#include "logging/logging.h"
 
 namespace gfxstream {
 namespace host {

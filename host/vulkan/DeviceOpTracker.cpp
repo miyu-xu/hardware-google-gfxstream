@@ -19,6 +19,7 @@
 
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
+#include "logging/logging.h"
 
 namespace gfxstream {
 namespace vk {
@@ -88,9 +89,10 @@ void DeviceOpTracker::PollAndProcessGarbage() {
             });
         if (numOldFuncs > kSizeLoggingThreshold) {
             //TODO(b/382028853): should be a warning
-            VERBOSE("VkDevice:%p has %d pending waitables, %d taking more than %d milliseconds.",
-                 mDevice, mPollFunctions.size(), numOldFuncs,
-                 std::chrono::duration_cast<std::chrono::milliseconds>(kSizeLoggingTimeThreshold));
+            stream_renderer_debug(
+                "VkDevice:%p has %d pending waitables, %d taking more than %d milliseconds.",
+                mDevice, mPollFunctions.size(), numOldFuncs,
+                std::chrono::duration_cast<std::chrono::milliseconds>(kSizeLoggingTimeThreshold));
         }
     }
 

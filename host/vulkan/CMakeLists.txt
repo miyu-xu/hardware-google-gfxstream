@@ -48,6 +48,7 @@ target_link_libraries(gfxstream-vulkan-server PUBLIC
         gfxstream_features
         gfxstream_host_tracing
         gfxstream-snapshot.headers
+        gfxstream-host-backend-logging
         gfxstream_utils
         gfxstream_vulkan_headers
         PRIVATE

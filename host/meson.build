@@ -152,6 +152,7 @@ endif
 inc_stream_servers = include_directories('.')
 inc_host_include = include_directories('include')
 
+subdir('logging')
 subdir('features')
 subdir('tracing')
 
@@ -164,7 +165,7 @@ inc_gfxstream_backend = [inc_root, inc_gfxstream_include, inc_include, inc_apige
                          inc_host_features, inc_host_tracing]
 
 link_gfxstream_backend = [lib_gl_host_common, lib_apigen_codec, lib_common_utils, lib_host_backend,
-                          lib_host_features, lib_host_tracing]
+                          lib_host_features, lib_host_tracing, lib_gfxstream_logging]
 
 files_lib_gfxstream_backend = files(
   'Buffer.cpp',
