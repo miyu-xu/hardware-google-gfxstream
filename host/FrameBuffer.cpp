@@ -362,6 +362,7 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
         fb->m_emulationVk = vk::VkEmulation::create(vkDispatch, callbacks, fb->m_features);
         if (!fb->m_emulationVk) {
             ERR("Failed to initialize global Vulkan emulation. Disable the Vulkan support.");
+            return false;
         }
 
         vk::VkDecoderGlobalState::initialize(fb->m_emulationVk.get());
