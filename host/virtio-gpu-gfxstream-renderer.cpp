@@ -595,7 +595,17 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
                      false,                                                /* has guest renderer */
                      WINSYS_GLESBACKEND_PREFERENCE_AUTO, true /* force host gpu vulkan */);
 
+    INFO("emuglConfig backend: %s", config.backend);
+    INFO("emuglConfig status: %s", config.status);
+
+    if (strcmp(config.backend, "error") == 0) {
+        return 1;
+    }
+
     emuglConfig_setupEnv(&config);
+
+    printf("ANDROID_EMU_VK_ICD=%s\n",
+           android::base::getEnvironmentVariable("ANDROID_EMU_VK_ICD").c_str());
 
     gfxstream::vk::vkDispatch(false /* don't use test ICD */);
 
