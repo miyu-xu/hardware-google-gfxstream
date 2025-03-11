@@ -19,14 +19,11 @@
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/system/System.h"
 #include "host-common/misc.h"
+#include "logging/logging.h"
 
 using android::base::AutoLock;
 using android::base::Lock;
 using android::base::pj;
-
-#ifndef VERBOSE
-#define VERBOSE INFO
-#endif
 
 namespace gfxstream {
 namespace vk {
@@ -137,7 +134,7 @@ class SharedLibraries {
             return true;
         } else {
             // This is expected when searching for a valid library path
-            VERBOSE("Library cannot be added: %s", path.c_str());
+            stream_renderer_debug("Library cannot be added: %s", path.c_str());
             return false;
         }
     }

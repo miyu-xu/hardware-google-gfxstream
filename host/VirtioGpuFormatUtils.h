@@ -19,6 +19,8 @@ extern "C" {
 #include "virgl_hw.h"
 }  // extern "C"
 
+#include "logging/logging.h"
+
 namespace gfxstream {
 namespace host {
 

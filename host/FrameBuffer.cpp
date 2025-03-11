@@ -55,12 +55,13 @@
 #include "gfxstream/host/Tracing.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/crash_reporter.h"
+#include "host-common/emugl_vm_operations.h"
 #include "host-common/feature_control.h"
 #include "host-common/logging.h"
 #include "host-common/misc.h"
 #include "host-common/opengl/misc.h"
-#include "host-common/emugl_vm_operations.h"
 #include "host-common/vm_operations.h"
+#include "logging/logging.h"
 #include "render-utils/MediaNative.h"
 #include "vulkan/DisplayVk.h"
 #include "vulkan/PostWorkerVk.h"
@@ -2959,7 +2960,7 @@ bool FrameBuffer::invalidateColorBufferForVk(HandleType colorBufferHandle) {
     AutoLock mutex(m_lock);
     auto colorBuffer = findColorBuffer(colorBufferHandle);
     if (!colorBuffer) {
-        VERBOSE("%s: Failed to find ColorBuffer:%d", __func__, colorBufferHandle);
+        stream_renderer_debug("Failed to find ColorBuffer: %d", colorBufferHandle);
         return false;
     }
     return colorBuffer->invalidateForVk();
@@ -3629,7 +3630,7 @@ bool FrameBuffer::flushColorBufferFromGl(HandleType colorBufferHandle) {
 bool FrameBuffer::invalidateColorBufferForGl(HandleType colorBufferHandle) {
     auto colorBuffer = findColorBuffer(colorBufferHandle);
     if (!colorBuffer) {
-        VERBOSE("%s: Failed to find ColorBuffer:%d", __func__, colorBufferHandle);
+        stream_renderer_debug("Failed to find ColorBuffer: %d", colorBufferHandle);
         return false;
     }
     return colorBuffer->invalidateForGl();
