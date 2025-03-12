@@ -52,6 +52,24 @@
       "parentUuid": "8ab45dea_97432c07",
       "revId": "6c0ccd1fb55b3d4370ef8ea9099e0f9992c28c0b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e6e7863_f4373be8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2025-03-12T14:38:03Z",
+      "side": 1,
+      "message": "If we lunch this and multiple AMD issues appear that are solved by disabling interop, it\u0027d be good to have a way to update these manually",
+      "parentUuid": "2ad84678_1fca0e08",
+      "revId": "6c0ccd1fb55b3d4370ef8ea9099e0f9992c28c0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
