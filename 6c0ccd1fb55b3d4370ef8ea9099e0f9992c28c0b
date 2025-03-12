@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c068a9d_c47f0e1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1999272
+      },
+      "writtenOn": "2025-03-12T13:50:23Z",
+      "side": 1,
+      "message": "What\u0027s the plan here going forward? \n\nWe\u0027ve identified a few GPUs for which this doesn\u0027t work. Do we want to manually update this list everytime we encounter something in the wild? \n\nCan we use a setting/preference file that we can tweak and maybe release without having to recompile this? What options do we have here?",
+      "revId": "6c0ccd1fb55b3d4370ef8ea9099e0f9992c28c0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
