@@ -16,6 +16,116 @@
       "message": "I\u0027ll work on aosp/3534519 to add annotations to reduce possible issues in the future.",
       "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca0b7344_a167739a",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1398,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T17:11:49Z",
+      "side": 1,
+      "message": "Why is this one needed? I was under the impression `m_colorBufferDelayedCloseList` would also be guarded by `m_colorBufferMapLock`?",
+      "range": {
+        "startLine": 1398,
+        "startChar": 4,
+        "endLine": 1398,
+        "endChar": 27
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "67cc2925_e4b4aeb0",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/FrameBuffer.cpp",
+              "range": {
+                "startLine": 1398,
+                "startChar": 0,
+                "endLine": 1399,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7fa00504_a4ebd444",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1631,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T17:11:49Z",
+      "side": 1,
+      "message": "`AutoLock colorBufferMapLock(m_colorBufferMapLock);`",
+      "range": {
+        "startLine": 1631,
+        "startChar": 4,
+        "endLine": 1631,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84d04f12_d4d775fe",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1682,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T17:11:49Z",
+      "side": 1,
+      "message": "`AutoLock colorBufferMapLock(m_colorBufferMapLock);`",
+      "range": {
+        "startLine": 1682,
+        "startChar": 4,
+        "endLine": 1682,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b49fe4e_e16076a7",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1703,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T17:11:49Z",
+      "side": 1,
+      "message": "IIUC, this lock isn\u0027t needed.",
+      "range": {
+        "startLine": 1703,
+        "startChar": 3,
+        "endLine": 1703,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
