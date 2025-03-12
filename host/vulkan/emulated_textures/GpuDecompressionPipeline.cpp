@@ -14,7 +14,7 @@
 
 #include "GpuDecompressionPipeline.h"
 
-#include "host-common/logging.h"
+#include "logging/logging.h"
 #include "vulkan/VkFormatUtils.h"
 #include "vulkan/emulated_textures/shaders/DecompressionShaders.h"
 #include "vulkan/vk_enum_string_helper.h"
@@ -178,9 +178,9 @@ GpuDecompressionPipeline::GpuDecompressionPipeline(VulkanDispatch* vk, VkDevice 
       mImageType(imageType),
       mDescriptorSetLayout(descriptorSetLayout),
       mPipelineLayout(pipelineLayout) {
-    INFO("Created GPU decompression pipeline for format %s %s. ASTC decoder: %s",
-         string_VkFormat(mCompressedFormat), string_VkImageType(imageType),
-         string_AstcDecoder(activeAstcDecoder));
+    stream_renderer_info("Created GPU decompression pipeline for format %s %s. ASTC decoder: %s",
+                         string_VkFormat(mCompressedFormat), string_VkImageType(imageType),
+                         string_AstcDecoder(activeAstcDecoder));
 }
 
 bool GpuDecompressionPipeline::initialize() {

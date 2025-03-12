@@ -5,6 +5,7 @@
 
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
+#include "logging/logging.h"
 #include "vulkan/vk_enum_string_helper.h"
 #include "vulkan/vk_util.h"
 
@@ -171,7 +172,7 @@ std::optional<SwapchainCreateInfoWrapper> SwapChainStateVk::createSwapChainCi(
     // bug.
     if (res == VK_INCOMPLETE) {
         formatCount = (formatCount + 1) * 2;
-        INFO(
+        stream_renderer_info(
             "VK_INCOMPLETE returned by vkGetPhysicalDeviceSurfaceFormatsKHR. A possible driver "
             "bug. Retry with *pSurfaceFormatCount = %" PRIu32 ".",
             formatCount);
@@ -181,7 +182,7 @@ std::optional<SwapchainCreateInfoWrapper> SwapChainStateVk::createSwapChainCi(
         formats.resize(formatCount);
     }
     if (res == VK_INCOMPLETE) {
-        INFO(
+        stream_renderer_info(
             "VK_INCOMPLETE still returned by vkGetPhysicalDeviceSurfaceFormatsKHR with retry. A "
             "possible driver bug.");
     } else {

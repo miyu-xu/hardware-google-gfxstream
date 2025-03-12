@@ -20,6 +20,7 @@
 #include "FrameBuffer.h"
 #include "VkDecoder.h"
 #include "aemu/base/containers/EntityManager.h"
+#include "logging/logging.h"
 
 namespace gfxstream {
 namespace vk {
@@ -37,7 +38,7 @@ uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
 
 #if DEBUG_RECONSTRUCTION
 
-#define DEBUG_RECON(fmt, ...) INFO(fmt, ##__VA_ARGS__);
+#define DEBUG_RECON(fmt, ...) stream_renderer_info(fmt, ##__VA_ARGS__);
 
 #else
 
@@ -259,33 +260,33 @@ void VkReconstruction::setApiTrace(VkSnapshotApiCallInfo* apiInfo, const uint8_t
 }
 
 void VkReconstruction::dump() {
-    INFO("%s: api trace dump", __func__);
+    stream_renderer_info("%s: api trace dump", __func__);
 
     size_t traceBytesTotal = 0;
 
     mApiCallManager.forEachLiveEntry_const(
         [&traceBytesTotal](bool live, uint64_t handle, const VkSnapshotApiCallInfo& info) {
             const uint32_t opcode = GetOpcode(info);
-            INFO("VkReconstruction::%s: api handle 0x%llx: %s", __func__,
-                 (unsigned long long)handle, api_opcode_to_string(opcode));
+            stream_renderer_info("VkReconstruction::%s: api handle 0x%llx: %s", __func__,
+                                 (unsigned long long)handle, api_opcode_to_string(opcode));
             traceBytesTotal += info.packet.size();
         });
 
     mHandleReconstructions.forEachLiveComponent_const(
         [this](bool live, uint64_t componentHandle, uint64_t entityHandle,
                const HandleWithStateReconstruction& reconstruction) {
-            INFO("VkReconstruction::%s: %p handle 0x%llx api refs:", __func__, this,
-                    (unsigned long long)entityHandle);
+            stream_renderer_info("VkReconstruction::%s: %p handle 0x%llx api refs:", __func__, this,
+                                 (unsigned long long)entityHandle);
             for (const auto& state : reconstruction.states) {
                 for (auto apiHandle : state.apiRefs) {
                     auto apiInfo = mApiCallManager.get(apiHandle);
                     const char* apiName =
                         apiInfo ? api_opcode_to_string(GetOpcode(*apiInfo)) : "unalloced";
-                    INFO("VkReconstruction::%s:     0x%llx: %s", __func__,
-                            (unsigned long long)apiHandle, apiName);
+                    stream_renderer_info("VkReconstruction::%s:     0x%llx: %s", __func__,
+                                         (unsigned long long)apiHandle, apiName);
                     for (auto createdHandle : apiInfo->createdHandles) {
-                        INFO("VkReconstruction::%s:         created 0x%llx", __func__,
-                                (unsigned long long)createdHandle);
+                        stream_renderer_info("VkReconstruction::%s:         created 0x%llx",
+                                             __func__, (unsigned long long)createdHandle);
                     }
                 }
             }
@@ -294,17 +295,17 @@ void VkReconstruction::dump() {
     mHandleModifications.forEachLiveComponent_const([this](bool live, uint64_t componentHandle,
                                                            uint64_t entityHandle,
                                                            const HandleModification& modification) {
-        INFO("VkReconstruction::%s: mod: %p handle 0x%llx api refs:", __func__, this,
-                (unsigned long long)entityHandle);
+        stream_renderer_info("VkReconstruction::%s: mod: %p handle 0x%llx api refs:", __func__,
+                             this, (unsigned long long)entityHandle);
         for (auto apiHandle : modification.apiRefs) {
             auto apiInfo = mApiCallManager.get(apiHandle);
             const char* apiName = apiInfo ? api_opcode_to_string(GetOpcode(*apiInfo)) : "unalloced";
-            INFO("VkReconstruction::%s: mod:     0x%llx: %s", __func__,
-                    (unsigned long long)apiHandle, apiName);
+            stream_renderer_info("VkReconstruction::%s: mod:     0x%llx: %s", __func__,
+                                 (unsigned long long)apiHandle, apiName);
         }
     });
 
-    INFO("%s: total trace bytes: %zu", __func__, traceBytesTotal);
+    stream_renderer_info("%s: total trace bytes: %zu", __func__, traceBytesTotal);
 }
 
 void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
