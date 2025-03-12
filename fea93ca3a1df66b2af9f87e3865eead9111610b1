@@ -61,6 +61,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0f74b5a7_292b3ac5",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1398,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-12T20:23:14Z",
+      "side": 1,
+      "message": "Based on the usage, I can say that `m_colorBufferMapLock` should only be used for `m_colorbuffers`, there are accesses to `m_colorBufferDelayedCloseList` without `m_colorBufferMapLock` (e.g. performDelayedColorBufferCloseLocked, ~FrameBuffer..). We can change that, but that\u0027s a separate issue.",
+      "parentUuid": "ca0b7344_a167739a",
+      "range": {
+        "startLine": 1398,
+        "startChar": 4,
+        "endLine": 1398,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7fa00504_a4ebd444",
         "filename": "host/FrameBuffer.cpp",
         "patchSetId": 3
@@ -72,6 +96,30 @@
       "writtenOn": "2025-03-12T17:11:49Z",
       "side": 1,
       "message": "`AutoLock colorBufferMapLock(m_colorBufferMapLock);`",
+      "range": {
+        "startLine": 1631,
+        "startChar": 4,
+        "endLine": 1631,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d171767_c66a9ef6",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1631,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-12T20:23:14Z",
+      "side": 1,
+      "message": "My understanding, `m_colorBufferMapLock` is only for `m_colorbuffers` \u0027array\u0027 and alrady locked inside `findColorBuffer`, but modifications to the actual data and deletions is still protected by `m_lock`. Design looks a bit error prone, and annotations or some runtime tracking can reveal more issues.",
+      "parentUuid": "7fa00504_a4ebd444",
       "range": {
         "startLine": 1631,
         "startChar": 4,
@@ -107,6 +155,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "51c6906b_f252abaf",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1682,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-12T20:23:14Z",
+      "side": 1,
+      "message": "see readColorBuffer",
+      "parentUuid": "84d04f12_d4d775fe",
+      "range": {
+        "startLine": 1682,
+        "startChar": 4,
+        "endLine": 1682,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6b49fe4e_e16076a7",
         "filename": "host/FrameBuffer.cpp",
         "patchSetId": 3
@@ -118,6 +190,30 @@
       "writtenOn": "2025-03-12T17:11:49Z",
       "side": 1,
       "message": "IIUC, this lock isn\u0027t needed.",
+      "range": {
+        "startLine": 1703,
+        "startChar": 3,
+        "endLine": 1703,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32c5d8a1_1474b775",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1703,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-12T20:23:14Z",
+      "side": 1,
+      "message": "I think this should be the same as updateColorBuffer, and lock makes sense if we want to protect the data portion of the colorbuffer with `m_lock`.",
+      "parentUuid": "6b49fe4e_e16076a7",
       "range": {
         "startLine": 1703,
         "startChar": 3,
