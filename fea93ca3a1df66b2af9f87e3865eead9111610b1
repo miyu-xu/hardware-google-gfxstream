@@ -83,6 +83,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1b75bf3_f66b8130",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1398,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T20:24:31Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "0f74b5a7_292b3ac5",
+      "range": {
+        "startLine": 1398,
+        "startChar": 4,
+        "endLine": 1398,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7fa00504_a4ebd444",
@@ -120,6 +144,30 @@
       "side": 1,
       "message": "My understanding, `m_colorBufferMapLock` is only for `m_colorbuffers` \u0027array\u0027 and alrady locked inside `findColorBuffer`, but modifications to the actual data and deletions is still protected by `m_lock`. Design looks a bit error prone, and annotations or some runtime tracking can reveal more issues.",
       "parentUuid": "7fa00504_a4ebd444",
+      "range": {
+        "startLine": 1631,
+        "startChar": 4,
+        "endLine": 1631,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b049385_b06f8497",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1631,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T20:24:31Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "4d171767_c66a9ef6",
       "range": {
         "startLine": 1631,
         "startChar": 4,
@@ -177,6 +225,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "02a745c7_35feae89",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1682,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T20:24:31Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "51c6906b_f252abaf",
+      "range": {
+        "startLine": 1682,
+        "startChar": 4,
+        "endLine": 1682,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b49fe4e_e16076a7",
@@ -214,6 +286,30 @@
       "side": 1,
       "message": "I think this should be the same as updateColorBuffer, and lock makes sense if we want to protect the data portion of the colorbuffer with `m_lock`.",
       "parentUuid": "6b49fe4e_e16076a7",
+      "range": {
+        "startLine": 1703,
+        "startChar": 3,
+        "endLine": 1703,
+        "endChar": 27
+      },
+      "revId": "fea93ca3a1df66b2af9f87e3865eead9111610b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4504e0c0_0476ddb5",
+        "filename": "host/FrameBuffer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 1703,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-12T20:24:31Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "32c5d8a1_1474b775",
       "range": {
         "startLine": 1703,
         "startChar": 3,
