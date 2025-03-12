@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d6b4c29_dac1cd29",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-12T11:39:52Z",
+      "side": 1,
+      "message": "This will probably require some extra fixes around the host visible memory handling as the paging calculations doesn\u0027t look correct to me, but this improves the situation in a safe way and removes the related important VVL errors which might be causing rendering glitches on some cards.",
+      "revId": "2d6334f9495ecee680658d1cebca9a2f9adaf5f4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
