@@ -34,6 +34,24 @@
       "parentUuid": "1c068a9d_c47f0e1e",
       "revId": "6c0ccd1fb55b3d4370ef8ea9099e0f9992c28c0b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ad84678_1fca0e08",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-12T14:14:11Z",
+      "side": 1,
+      "message": "We could utilize server side queries used for GPU deny listing to improve this, but that\u0027s a separate issue. I think we should instead find the actual problem here or prove that this is a driver bug. One better way of handling this can be running a small program to determine if the GPU supports memory sharing as expected to enable the feature. \n\nSince we plan turning down GL usage on the host side anyways, I don\u0027t think it\u0027s crucial to make this extensible.",
+      "parentUuid": "8ab45dea_97432c07",
+      "revId": "6c0ccd1fb55b3d4370ef8ea9099e0f9992c28c0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
