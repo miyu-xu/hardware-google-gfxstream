@@ -31,7 +31,6 @@
 #include "host-common/opengles-pipe.h"
 #include "host-common/opengles.h"
 #include "host-common/refcount-pipe.h"
-#include "host-common/vm_operations.h"
 #include "vulkan/VulkanDispatch.h"
 #include "render-utils/RenderLib.h"
 #include "vk_util.h"
@@ -608,8 +607,7 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
 
     int maj;
     int min;
-    android_startOpenglesRenderer(display_width, display_height, 1, 28, getGraphicsAgents()->vm,
-                                  getGraphicsAgents()->emu, getGraphicsAgents()->multi_display,
+    android_startOpenglesRenderer(display_width, display_height, 1, 28, nullptr, nullptr, nullptr,
                                   &features, &maj, &min);
 
     char* vendor = nullptr;
@@ -627,7 +625,6 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
         return -EINVAL;
     }
 
-    address_space_set_vm_operations(getGraphicsAgents()->vm);
     android_init_opengles_pipe();
     android_opengles_pipe_set_recv_mode(2 /* virtio-gpu */);
     android_init_refcount_pipe();
