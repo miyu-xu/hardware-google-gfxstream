@@ -41,7 +41,7 @@ static std::string icdJsonNameToProgramAndLauncherPaths(const std::string& icdFi
 
 static void setIcdPaths(const std::string& icdFilename) {
     const std::string paths = icdJsonNameToProgramAndLauncherPaths(icdFilename);
-    INFO("Setting ICD filenames for the loader = %s", paths.c_str());
+    stream_renderer_info("Setting ICD filenames for the loader = %s", paths.c_str());
     // Set both for backwards compatibility
     android::base::setEnvironmentVariable("VK_DRIVER_FILES", paths);
     android::base::setEnvironmentVariable("VK_ICD_FILENAMES", paths);
@@ -56,15 +56,15 @@ static void initIcdPaths(bool forTesting) {
 
     if (forTesting) {
         const char* testingICD = "swiftshader";
-        INFO("%s: In test environment, enforcing %s ICD.", __func__, testingICD);
+        stream_renderer_info("%s: In test environment, enforcing %s ICD.", __func__, testingICD);
         android::base::setEnvironmentVariable("ANDROID_EMU_VK_ICD", testingICD);
         androidIcd = testingICD;
     }
     if (androidIcd == "lavapipe") {
-        INFO("%s: ICD set to 'lavapipe', using Lavapipe ICD", __func__);
+        stream_renderer_info("%s: ICD set to 'lavapipe', using Lavapipe ICD", __func__);
         setIcdPaths("lvp_icd.x86_64.json");
     } else if (androidIcd == "swiftshader") {
-        INFO("%s: ICD set to 'swiftshader', using Swiftshader ICD", __func__);
+        stream_renderer_info("%s: ICD set to 'swiftshader', using Swiftshader ICD", __func__);
         setIcdPaths("vk_swiftshader_icd.json");
     } else {
 #ifdef __APPLE__
@@ -105,7 +105,7 @@ static void initIcdPaths(bool forTesting) {
         //  way of external memory handling, add it into disable list to
         //  avoid users enabling it implicitly (i.e. via vkconfig).
         //  It can be enabled with VK_LOADER_LAYERS_ALLOW=VK_LAYER_KHRONOS_validation
-        INFO("Vulkan Validation Layers won't be enabled with MoltenVK");
+        stream_renderer_info("Vulkan Validation Layers won't be enabled with MoltenVK");
         android::base::setEnvironmentVariable("VK_LOADER_LAYERS_DISABLE",
                                               "VK_LAYER_KHRONOS_validation");
 #else
@@ -130,7 +130,7 @@ class SharedLibraries {
         auto library = android::base::SharedLibrary::open(path.c_str());
         if (library) {
             mLibs.push_back(library);
-            INFO("Added library: %s", path.c_str());
+            stream_renderer_info("Added library: %s", path.c_str());
             return true;
         } else {
             // This is expected when searching for a valid library path

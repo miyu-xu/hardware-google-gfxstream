@@ -27,6 +27,7 @@
 #include "gfxstream/host/Tracing.h"
 #include "goldfish_vk_private_defs.h"
 #include "host-common/GfxstreamFatalError.h"
+#include "logging/logging.h"
 #include "vulkan/vk_enum_string_helper.h"
 
 namespace gfxstream {
@@ -37,10 +38,9 @@ namespace vk {
 #define ENABLE_VK_ANB_DEBUG 0
 
 #if ENABLE_VK_ANB_DEBUG
-#define VK_ANB_DEBUG(fmt, ...) \
-    INFO("vk-anb-debug: " fmt, ##__VA_ARGS__);
+#define VK_ANB_DEBUG(fmt, ...) stream_renderer_info("vk-anb-debug: " fmt, ##__VA_ARGS__);
 #define VK_ANB_DEBUG_OBJ(obj, fmt, ...) \
-    INFO("vk-anb-debug: %p " fmt, obj, ##__VA_ARGS__);
+    stream_renderer_info("vk-anb-debug: %p " fmt, obj, ##__VA_ARGS__);
 #else
 #define VK_ANB_DEBUG(fmt, ...)
 #define VK_ANB_DEBUG_OBJ(obj, fmt, ...)

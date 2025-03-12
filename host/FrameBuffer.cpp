@@ -253,9 +253,10 @@ void MaybeIncreaseFileDescriptorSoftLimit() {
             return;
         }
 
-        INFO("Raised nofile soft limit to %d.", static_cast<int>(requestedSoftLimit));
+        stream_renderer_info("Raised nofile soft limit to %d.",
+                             static_cast<int>(requestedSoftLimit));
     } else {
-        INFO("Not raising nofile soft limit from %d.", static_cast<int>(softLimit));
+        stream_renderer_info("Not raising nofile soft limit from %d.", static_cast<int>(softLimit));
     }
 #endif
 }
@@ -295,7 +296,7 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
 #endif
         fb->m_renderDoc = emugl::RenderDoc::create(renderdocLib);
         if (fb->m_renderDoc) {
-            INFO("RenderDoc integration enabled.");
+            stream_renderer_info("RenderDoc integration enabled.");
             renderDocMultipleVkInstances =
                 std::make_unique<emugl::RenderDocWithMultipleVkInstances>(*fb->m_renderDoc);
             if (!renderDocMultipleVkInstances) {
@@ -517,11 +518,11 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
     }
 #endif
 
-    INFO("Graphics Adapter Vendor %s", fb->m_graphicsAdapterVendor.c_str());
-    INFO("Graphics Adapter %s", fb->m_graphicsAdapterName.c_str());
-    INFO("Graphics API Version %s", fb->m_graphicsApiVersion.c_str());
-    INFO("Graphics API Extensions %s", fb->m_graphicsApiExtensions.c_str());
-    INFO("Graphics Device Extensions %s", fb->m_graphicsDeviceExtensions.c_str());
+    stream_renderer_info("Graphics Adapter Vendor %s", fb->m_graphicsAdapterVendor.c_str());
+    stream_renderer_info("Graphics Adapter %s", fb->m_graphicsAdapterName.c_str());
+    stream_renderer_info("Graphics API Version %s", fb->m_graphicsApiVersion.c_str());
+    stream_renderer_info("Graphics API Extensions %s", fb->m_graphicsApiExtensions.c_str());
+    stream_renderer_info("Graphics Device Extensions %s", fb->m_graphicsDeviceExtensions.c_str());
 
     if (fb->m_useVulkanComposition) {
         fb->m_postWorker.reset(new PostWorkerVk(fb.get(), fb->m_compositor, fb->m_displayVk));
@@ -2877,8 +2878,8 @@ void FrameBuffer::scheduleVsyncTask(VsyncThread::VsyncTask task) {
 void FrameBuffer::setDisplayConfigs(int configId, int w, int h, int dpiX, int dpiY) {
     AutoLock mutex(m_lock);
     mDisplayConfigs[configId] = {w, h, dpiX, dpiY};
-    INFO("Setting display: %d configuration to: %dx%d, dpi: %dx%d ", configId,
-           w, h, dpiX, dpiY);
+    stream_renderer_info("Setting display: %d configuration to: %dx%d, dpi: %dx%d ", configId, w, h,
+                         dpiX, dpiY);
 }
 
 void FrameBuffer::setDisplayActiveConfig(int configId) {
@@ -2891,7 +2892,7 @@ void FrameBuffer::setDisplayActiveConfig(int configId) {
     m_framebufferWidth = mDisplayConfigs[configId].w;
     m_framebufferHeight = mDisplayConfigs[configId].h;
     setDisplayPose(0, 0, 0, getWidth(), getHeight(), 0);
-    INFO("setDisplayActiveConfig %d", configId);
+    stream_renderer_info("setDisplayActiveConfig %d", configId);
 }
 
 int FrameBuffer::getDisplayConfigsCount() {

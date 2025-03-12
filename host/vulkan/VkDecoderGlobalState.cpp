@@ -54,6 +54,7 @@
 #include "host-common/address_space_device_control_ops.h"
 #include "host-common/emugl_vm_operations.h"
 #include "host-common/vm_operations.h"
+#include "logging/logging.h"
 #include "utils/RenderDoc.h"
 #include "vk_util.h"
 #include "vulkan/VkFormatUtils.h"
@@ -62,7 +63,6 @@
 #include "vulkan/emulated_textures/GpuDecompressionPipeline.h"
 #include "vulkan/vk_enum_string_helper.h"
 #include "vulkan/vulkan_core.h"
-#include "logging/logging.h"
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -74,8 +74,8 @@
 #endif
 
 // Verbose logging only when ANDROID_EMU_VK_LOG_CALLS is set
-#define LOG_CALLS_VERBOSE(fmt, ...)  \
-    if (mLogging) {                  \
+#define LOG_CALLS_VERBOSE(fmt, ...)                \
+    if (mLogging) {                                \
         stream_renderer_debug(fmt, ##__VA_ARGS__); \
     }
 
@@ -962,8 +962,8 @@ class VkDecoderGlobalState::Impl {
             info.enabledExtensionNames.push_back(createInfoFiltered.ppEnabledExtensionNames[i]);
         }
 
-        INFO("Created VkInstance:%p for application:%s engine:%s.", *pInstance,
-             info.applicationName.c_str(), info.engineName.c_str());
+        stream_renderer_info("Created VkInstance:%p for application:%s engine:%s.", *pInstance,
+                             info.applicationName.c_str(), info.engineName.c_str());
 
 #ifdef CONFIG_AEMU
         m_vkEmulation->getCallbacks().registerVulkanInstance((uint64_t)*pInstance,
@@ -2019,10 +2019,11 @@ class VkDecoderGlobalState::Impl {
         deviceInfo.externalFenceInfo.supportedBinarySemaphoreHandleTypes =
             static_cast<VkExternalSemaphoreHandleTypeFlagBits>(supportedBinarySemaphoreHandleTypes);
 
-        INFO("Created VkDevice:%p for application:%s engine:%s ASTC emulation:%s CPU decoding:%s.",
-             *pDevice, instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str(),
-             deviceInfo.emulateTextureAstc ? "on" : "off",
-             deviceInfo.useAstcCpuDecompression ? "on" : "off");
+        stream_renderer_info(
+            "Created VkDevice:%p for application:%s engine:%s ASTC emulation:%s CPU decoding:%s.",
+            *pDevice, instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str(),
+            deviceInfo.emulateTextureAstc ? "on" : "off",
+            deviceInfo.useAstcCpuDecompression ? "on" : "off");
 
         for (uint32_t i = 0; i < createInfoFiltered.enabledExtensionCount; ++i) {
             deviceInfo.enabledExtensionNames.push_back(
@@ -2033,7 +2034,7 @@ class VkDecoderGlobalState::Impl {
         VkDevice boxedDevice = new_boxed_VkDevice(*pDevice, nullptr, true /* own dispatch */);
 
         if (mLogging) {
-            INFO("%s: init vulkan dispatch from device", __func__);
+            stream_renderer_info("%s: init vulkan dispatch from device", __func__);
         }
 
         VulkanDispatch* dispatch = dispatch_VkDevice(boxedDevice);
@@ -2048,7 +2049,7 @@ class VkDecoderGlobalState::Impl {
         deviceInfo.deviceOpTracker = std::make_shared<DeviceOpTracker>(*pDevice, dispatch);
 
         if (mLogging) {
-            INFO("%s: init vulkan dispatch from device (end)", __func__);
+            stream_renderer_info("%s: init vulkan dispatch from device (end)", __func__);
         }
 
         deviceInfo.boxed = boxedDevice;
@@ -2097,14 +2098,14 @@ class VkDecoderGlobalState::Impl {
                 VkQueue physicalQueue;
 
                 if (mLogging) {
-                    INFO("%s: get device queue (begin)", __func__);
+                    stream_renderer_info("%s: get device queue (begin)", __func__);
                 }
 
                 assert(i == 0 || !addVirtualQueue);
                 vk->vkGetDeviceQueue(*pDevice, index, i, &physicalQueue);
 
                 if (mLogging) {
-                    INFO("%s: get device queue (end)", __func__);
+                    stream_renderer_info("%s: get device queue (end)", __func__);
                 }
                 auto boxedQueue =
                     new_boxed_VkQueue(physicalQueue, dispatch, false /* does not own dispatch */);
@@ -2124,7 +2125,8 @@ class VkDecoderGlobalState::Impl {
                 });
 
                 if (addVirtualQueue) {
-                    stream_renderer_debug("Creating virtual device queue for physical VkQueue %p", physicalQueue);
+                    stream_renderer_debug("Creating virtual device queue for physical VkQueue %p",
+                                          physicalQueue);
                     const uint64_t physicalQueue64 = reinterpret_cast<uint64_t>(physicalQueue);
 
                     if ((physicalQueue64 & QueueInfo::kVirtualQueueBit) != 0) {
@@ -2168,7 +2170,7 @@ class VkDecoderGlobalState::Impl {
         *pDevice = (VkDevice)deviceInfo.boxed;
 
         if (mLogging) {
-            INFO("%s: (end)", __func__);
+            stream_renderer_info("%s: (end)", __func__);
         }
 
         return VK_SUCCESS;
@@ -2269,7 +2271,7 @@ class VkDecoderGlobalState::Impl {
             m_vk->vkDestroyDevice(device, pAllocator);
         }
 
-        INFO("Destroyed VkDevice:%p", device);
+        stream_renderer_info("Destroyed VkDevice:%p", device);
         delete_VkDevice(deviceInfo.boxed);
     }
 
@@ -2492,7 +2494,8 @@ class VkDecoderGlobalState::Impl {
         }
 
         if (deviceInfo->imageFormats.find(pCreateInfo->format) == deviceInfo->imageFormats.end()) {
-            stream_renderer_debug("gfxstream_texture_format_manifest: %s [%d]", string_VkFormat(pCreateInfo->format), pCreateInfo->format);
+            stream_renderer_debug("gfxstream_texture_format_manifest: %s [%d]",
+                                  string_VkFormat(pCreateInfo->format), pCreateInfo->format);
             deviceInfo->imageFormats.insert(pCreateInfo->format);
         }
 
@@ -5003,7 +5006,7 @@ class VkDecoderGlobalState::Impl {
         REQUIRES(mMutex) {
         if (!m_vkEmulation->getFeatures().GlDirectMem.enabled &&
             !m_vkEmulation->getFeatures().VirtioGpuNext.enabled) {
-            // INFO("%s: Tried to use direct mapping "
+            // stream_renderer_info("%s: Tried to use direct mapping "
             // "while GlDirectMem is not enabled!");
         }
 
@@ -5023,9 +5026,9 @@ class VkDecoderGlobalState::Impl {
         info->sizeToPage = ((info->size + pageOffset + kPageSize - 1) >> kPageBits) << kPageBits;
 
         if (mLogging) {
-            INFO("%s: map: %p, %p -> [0x%llx 0x%llx]", __func__, info->ptr,
-                    info->pageAlignedHva, (unsigned long long)info->guestPhysAddr,
-                    (unsigned long long)info->guestPhysAddr + info->sizeToPage);
+            stream_renderer_info("%s: map: %p, %p -> [0x%llx 0x%llx]", __func__, info->ptr,
+                                 info->pageAlignedHva, (unsigned long long)info->guestPhysAddr,
+                                 (unsigned long long)info->guestPhysAddr + info->sizeToPage);
         }
 
         info->directMapped = true;
@@ -5036,8 +5039,8 @@ class VkDecoderGlobalState::Impl {
         get_emugl_vm_operations().mapUserBackedRam(gpa, hva, sizeToPage);
 
         if (mVerbosePrints) {
-            INFO("VERBOSE:%s: registering gpa 0x%llx", __func__,
-                    (unsigned long long)gpa);
+            stream_renderer_info("VERBOSE:%s: registering gpa 0x%llx", __func__,
+                                 (unsigned long long)gpa);
         }
 
         if (!mUseOldMemoryCleanupPath) {
@@ -5059,8 +5062,8 @@ class VkDecoderGlobalState::Impl {
         // DO NOT place any additional locks in here, as it may cause a deadlock due to mismatched
         // lock ordering, as VM operations will typically have its own mutex already.
         if (mVerbosePrints) {
-            INFO("VERBOSE:%s: deallocation callback for gpa 0x%llx", __func__,
-                    (unsigned long long)gpa);
+            stream_renderer_info("VERBOSE:%s: deallocation callback for gpa 0x%llx", __func__,
+                                 (unsigned long long)gpa);
         }
 
         // Just blindly unmap here. Let the VM implementation deal with invalid addresses.
@@ -5841,7 +5844,7 @@ class VkDecoderGlobalState::Impl {
         std::mutex* defaultQueueMutex;
         if (!getDefaultQueueForDeviceLocked(device, &defaultQueue, &defaultQueueFamilyIndex,
                                             &defaultQueueMutex)) {
-            INFO("%s: can't get the default q", __func__);
+            stream_renderer_info("%s: can't get the default q", __func__);
             return VK_ERROR_INITIALIZATION_FAILED;
         }
 
@@ -5935,8 +5938,8 @@ class VkDecoderGlobalState::Impl {
         std::lock_guard<std::mutex> lock(mMutex);
 
         if (mLogging) {
-            INFO("%s: deviceMemory: 0x%llx pAddress: 0x%llx", __func__,
-                    (unsigned long long)memory, (unsigned long long)(*pAddress));
+            stream_renderer_info("%s: deviceMemory: 0x%llx pAddress: 0x%llx", __func__,
+                                 (unsigned long long)memory, (unsigned long long)(*pAddress));
         }
 
         if (!mapHostVisibleMemoryToGuestPhysicalAddressLocked(vk, device, memory, *pAddress)) {
@@ -7398,9 +7401,9 @@ class VkDecoderGlobalState::Impl {
             VkImageCreateInfo defaultVkImageCreateInfo = linearImageCreateInfo.toDefaultVk();
             VkResult result = vk->vkCreateImage(device, &defaultVkImageCreateInfo, nullptr, &image);
             if (result != VK_SUCCESS) {
-                INFO("vkCreateImage failed. size: (%u x %u) result: %d",
-                        linearImageCreateInfo.extent.width, linearImageCreateInfo.extent.height,
-                        result);
+                stream_renderer_info("vkCreateImage failed. size: (%u x %u) result: %d",
+                                     linearImageCreateInfo.extent.width,
+                                     linearImageCreateInfo.extent.height, result);
                 return;
             }
             vk->vkGetImageSubresourceLayout(device, image, &subresource, &subresourceLayout);
@@ -8665,8 +8668,8 @@ class VkDecoderGlobalState::Impl {
         }
 
         m_vk->vkDestroyInstance(instance, nullptr);
-        INFO("Destroyed VkInstance:%p for application:%s engine:%s.", instance,
-             instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str());
+        stream_renderer_info("Destroyed VkInstance:%p for application:%s engine:%s.", instance,
+                             instanceInfo.applicationName.c_str(), instanceInfo.engineName.c_str());
 
 #ifdef CONFIG_AEMU
         m_vkEmulation->getCallbacks().unregisterVulkanInstance((uint64_t)instance);

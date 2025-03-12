@@ -6,6 +6,7 @@
 
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
+#include "logging/logging.h"
 #include "vulkan/VkFormatUtils.h"
 #include "vulkan/vk_enum_string_helper.h"
 
@@ -131,8 +132,8 @@ bool DisplayVk::recreateSwapchain() {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "DisplayVk can't create VkSwapchainKHR with given VkDevice and VkSurfaceKHR.";
     }
-    INFO("Creating swapchain with size %" PRIu32 "x%" PRIu32 ".", surface->getWidth(),
-         surface->getHeight());
+    stream_renderer_info("Creating swapchain with size %" PRIu32 "x%" PRIu32 ".",
+                         surface->getWidth(), surface->getHeight());
     auto swapChainCi = SwapChainStateVk::createSwapChainCi(
         m_vk, surfaceVk->getSurface(), m_vkPhysicalDevice, surface->getWidth(),
         surface->getHeight(), {m_swapChainQueueFamilyIndex, m_compositorQueueFamilyIndex});
@@ -176,14 +177,14 @@ DisplayVk::PostResult DisplayVk::post(const BorrowedImageInfo* sourceImageInfo) 
     }
 
     if (m_needToRecreateSwapChain) {
-        INFO("Recreating swapchain...");
+        stream_renderer_info("Recreating swapchain...");
 
         constexpr const int kMaxRecreateSwapchainRetries = 8;
         int retriesRemaining = kMaxRecreateSwapchainRetries;
         while (retriesRemaining >= 0 && !recreateSwapchain()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             --retriesRemaining;
-            INFO("Swapchain recreation failed, retrying...");
+            stream_renderer_info("Swapchain recreation failed, retrying...");
         }
 
         if (retriesRemaining < 0) {
@@ -192,7 +193,7 @@ DisplayVk::PostResult DisplayVk::post(const BorrowedImageInfo* sourceImageInfo) 
                 << " w:" << surface->getWidth() << " h:" << surface->getHeight();
         }
 
-        INFO("Recreating swapchain completed.");
+        stream_renderer_info("Recreating swapchain completed.");
     }
 
     auto result = postImpl(sourceImageInfo);
