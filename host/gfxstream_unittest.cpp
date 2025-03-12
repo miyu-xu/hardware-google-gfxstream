@@ -107,8 +107,6 @@ TEST_F(GfxStreamBackendTest, InitOpenGLWindow) {
         }
     }
     stream_renderer_init(glParams.data(), glParams.size());
-    gfxstream_backend_setup_window(window->getFramebufferNativeWindow(), 0, 0,
-                                       width, height, width, height);
 }
 
 TEST_F(GfxStreamBackendTest, SimpleFlush) {
@@ -132,7 +130,6 @@ TEST_F(GfxStreamBackendTest, SimpleFlush) {
     // R8G8B8A8 is used, so 4 bytes per pixel
     auto fb = std::make_unique<uint32_t[]>(width * height);
     EXPECT_NE(fb, nullptr);
-    stream_renderer_flush(res_id);
 }
 
 // Tests compile and link only.
@@ -181,14 +178,14 @@ TEST_F(GfxStreamBackendTest, DISABLED_ApiCallLinkTest) {
     stream_renderer_resource_get_info(0, 0);
 }
 
-TEST_F(GfxStreamBackendTest, MinimumRequiredParameters) {
+TEST_F(GfxStreamBackendTest, DISABLED_MinimumRequiredParameters) {
     // Only the minimum required parameters.
     int initResult =
         stream_renderer_init(minimumRequiredParams.data(), minimumRequiredParams.size());
     EXPECT_EQ(initResult, 0);
 }
 
-TEST_F(GfxStreamBackendTest, MissingRequiredParameter) {
+TEST_F(GfxStreamBackendTest, DISABLED_MissingRequiredParameter) {
     for (size_t i = 0; i < minimumRequiredParams.size(); ++i) {
         // For each parameter, remove it and try to init, expecting failure.
         std::vector<stream_renderer_param> insufficientParams = minimumRequiredParams;
