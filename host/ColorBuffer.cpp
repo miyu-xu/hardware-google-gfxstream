@@ -101,10 +101,11 @@ std::shared_ptr<ColorBuffer> ColorBuffer::create(gl::EmulationGl* emulationGl,
     }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
+    bool b271028352Workaround = emulationGl && strstr(emulationGl->getGlesRenderer().c_str(), "Intel");
     bool vkSnapshotEnabled = emulationVk && emulationVk->getFeatures().VulkanSnapshots.enabled;
 
     if ((!stream || vkSnapshotEnabled) && colorBuffer->mColorBufferGl && colorBuffer->mColorBufferVk &&
-        shouldAttemptExternalMemorySharing(frameworkFormat)) {
+        !b271028352Workaround && shouldAttemptExternalMemorySharing(frameworkFormat)) {
         colorBuffer->touch();
         auto memoryExport = emulationVk->exportColorBufferMemory(handle);
         if (memoryExport) {
