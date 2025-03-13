@@ -1,0 +1,321 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "301b0d3a_b5beb0b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-13T15:05:25Z",
+      "side": 1,
+      "message": "LGTM overall. One repeated nit about avoiding circular dependencies between the VK backend and coordinator libs.",
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b36d042_6faa5a04",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-13T15:05:25Z",
+      "side": 1,
+      "message": "Could we pass in the global state into the `VkDecoder` constructor instead of trying to go through `FrameBuffer::getFB()`? This will help us eliminate the global `s_theFrameBuffer` eventually and avoids the circular dependency between `FrameBuffer` and the GL/VK/Magma backends.\n\nIIUC, this would require adding `std::shared_ptr\u003cVkDecoderGlobalState\u003e` to the `RenderThreadInfoVk` constructor and then updating the `tInfo-\u003em_vkInfo.emplace();` in `RenderThread` to be `tInfo-\u003em_vkInfo.emplace(FrameBuffer::getFB()-\u003egetDefaultVulkanGlobalState());` (which is okay from my POV since `RenderThread` and `FrameBuffer` are from the same library).",
+      "range": {
+        "startLine": 73,
+        "startChar": 18,
+        "endLine": 73,
+        "endChar": 75
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "b6298dfe_64f9b4d9",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoder.cpp",
+              "range": {
+                "startLine": 40,
+                "startChar": 0,
+                "endLine": 41,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "host/vulkan/VkDecoder.cpp",
+              "range": {
+                "startLine": 70,
+                "startChar": 0,
+                "endLine": 71,
+                "endChar": 0
+              },
+              "replacement": "    Impl(VkDecoderGlobalState* state)\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoder.cpp",
+              "range": {
+                "startLine": 73,
+                "startChar": 0,
+                "endLine": 74,
+                "endChar": 0
+              },
+              "replacement": "          m_state(state),\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoder.cpp",
+              "range": {
+                "startLine": 105,
+                "startChar": 0,
+                "endLine": 106,
+                "endChar": 0
+              },
+              "replacement": "VkDecoder::VkDecoder(VkDecoderGlobalState* state) : mImpl(new VkDecoder::Impl(state)) {}\n"
+            }
+          ]
+        }
+      ],
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea0dc14e_c39e6efb",
+        "filename": "host/vulkan/VkDecoder.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4901,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-13T15:05:25Z",
+      "side": 1,
+      "message": "Potentially this can just capture the `m_state` instead of going through `FrameBuffer::getFB()` ?\n\n```suggestion\n                std::function\u003cvoid()\u003e delayed_remove_callback \u003d [vk, device, pipelineLayout,\n                                                                 pAllocator, state \u003d m_state]() {\n                    if (CC_LIKELY(vk)) {\n                        state-\u003eon_vkDestroyPipelineLayout(nullptr, nullptr, device,\n                                                          pipelineLayout, pAllocator);\n                    }\n                };\n```",
+      "range": {
+        "startLine": 4894,
+        "startChar": 16,
+        "endLine": 4901,
+        "endChar": 18
+      },
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b290d3b_b7e8122d",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 9054,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-13T15:05:25Z",
+      "side": 1,
+      "message": "Since this function can not fail (as compared to `VkEmulation::create()`) and is just a wrapper around `std::make_shared()`, I would recommend just deleting this function and having `FrameBuffer` do the `m_defaultVulkanGlobalState \u003d std::make_shared\u003cVkDecoderGlobalState\u003e(m_emulationVk.get())`",
+      "range": {
+        "startLine": 9050,
+        "startChar": 0,
+        "endLine": 9054,
+        "endChar": 1
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "dcd9b494_87cbafb8",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 9049,
+                "startChar": 0,
+                "endLine": 9055,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "52f27e92_e21cc0b5",
+        "filename": "host/vulkan/VkDecoderSnapshot.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 844,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-13T15:05:25Z",
+      "side": 1,
+      "message": "Similar to the other comments, could `VkDecoderSnapshot` take the `VkDecoderGlobalState` in the constructor to avoid going through `FrameBuffer::getFB()`?",
+      "range": {
+        "startLine": 844,
+        "startChar": 40,
+        "endLine": 844,
+        "endChar": 98
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "33543392_7914e220",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderSnapshot.cpp",
+              "range": {
+                "startLine": 38,
+                "startChar": 0,
+                "endLine": 40,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "host/vulkan/VkDecoderSnapshot.cpp",
+              "range": {
+                "startLine": 45,
+                "startChar": 0,
+                "endLine": 48,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "host/vulkan/VkDecoderSnapshot.cpp",
+              "range": {
+                "startLine": 844,
+                "startChar": 0,
+                "endLine": 846,
+                "endChar": 0
+              },
+              "replacement": "        if (VkDecoderState::get()-\u003ebatchedDescriptorSetUpdateEnabled()) {\n"
+            },
+            {
+              "path": "host/vulkan/VkDecoderSnapshot.cpp",
+              "range": {
+                "startLine": 848,
+                "startChar": 0,
+                "endLine": 849,
+                "endChar": 0
+              },
+              "replacement": "        uint64_t handle \u003d VkDecoderState::get()-\u003enewGlobalVkGenericHandle();\n"
+            }
+          ]
+        }
+      ],
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e26ec6fe_cc106af0",
+        "filename": "host/vulkan/VkSubDecoder.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-13T15:05:25Z",
+      "side": 1,
+      "message": "Could we `VkDecoderGlobalState` as a param to `subDecode()` instead of going through `FrameBuffer::get()`?",
+      "range": {
+        "startLine": 46,
+        "startChar": 4,
+        "endLine": 46,
+        "endChar": 98
+      },
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6404e73e_c5e88c50",
+        "filename": "host/vulkan/VulkanBoxedHandles.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-13T15:05:25Z",
+      "side": 1,
+      "message": "Could we add `gfxstream::FeaturesSet` to `BoxedHandleManager` and have this function `get_read_stream_VkType()` below use `sBoxedHandleManager.getFeatures()`? My goal is to avoid circular dependencies between `FrameBuffer` and the GL/VK/Magma backends.",
+      "range": {
+        "startLine": 392,
+        "startChar": 8,
+        "endLine": 394,
+        "endChar": 27
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "ce7d3983_a4269803",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VulkanBoxedHandles.cpp",
+              "range": {
+                "startLine": 18,
+                "startChar": 0,
+                "endLine": 19,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "host/vulkan/VulkanBoxedHandles.cpp",
+              "range": {
+                "startLine": 65,
+                "startChar": 0,
+                "endLine": 65,
+                "endChar": 0
+              },
+              "replacement": "    mFeatures \u003d gfxstream::host::FeatureSet();\n"
+            },
+            {
+              "path": "host/vulkan/VulkanBoxedHandles.cpp",
+              "range": {
+                "startLine": 391,
+                "startChar": 0,
+                "endLine": 396,
+                "endChar": 0
+              },
+              "replacement": "    if (sBoxedHandleManager.getFeatures().VulkanVirtualQueue.enabled) {\n"
+            },
+            {
+              "path": "host/vulkan/VulkanBoxedHandles.cpp",
+              "range": {
+                "startLine": 505,
+                "startChar": 0,
+                "endLine": 507,
+                "endChar": 0
+              },
+              "replacement": "        info-\u003ereadStream \u003d sReadStreamRegistry.pop(sBoxedHandleManager.getFeatures());\n"
+            }
+          ]
+        }
+      ],
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
