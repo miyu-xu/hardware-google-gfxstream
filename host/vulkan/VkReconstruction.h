@@ -133,6 +133,9 @@ class VkReconstruction {
     HandleModifications mHandleModifications;
 
     std::vector<uint8_t> mLoadedTrace;
+
+    int mCurrentApiId{0};
+    std::map<int, int64_t> mId2ApiHandle;
 };
 
 }  // namespace vk

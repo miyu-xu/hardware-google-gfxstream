@@ -74,6 +74,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCommandBufferBeginInfo(
                         globalstate, (VkCommandBufferBeginInfo*)(pBeginInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkBeginCommandBuffer %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pBeginInfo);
+                }
                 VkResult vkBeginCommandBuffer_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
                     vkBeginCommandBuffer_VkResult_return = this->on_vkBeginCommandBuffer(
@@ -88,6 +93,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkEndCommandBuffer: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkEndCommandBuffer");
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkEndCommandBuffer %p\n", readStream,
+                            (void*)boxed_dispatchHandle);
+                }
                 VkResult vkEndCommandBuffer_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
                     vkEndCommandBuffer_VkResult_return = this->on_vkEndCommandBuffer(
@@ -105,6 +114,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkCommandBufferResetFlags*)&flags, *readStreamPtrPtr,
                        sizeof(VkCommandBufferResetFlags));
                 *readStreamPtrPtr += sizeof(VkCommandBufferResetFlags);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkResetCommandBuffer %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)flags);
+                }
                 VkResult vkResetCommandBuffer_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
                     vkResetCommandBuffer_VkResult_return = this->on_vkResetCommandBuffer(
@@ -127,6 +140,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((uint64_t*)&cgen_var_0, *readStreamPtrPtr, 1 * 8);
                 *readStreamPtrPtr += 1 * 8;
                 *(VkPipeline*)&pipeline = (VkPipeline)unbox_VkPipeline((VkPipeline)(*&cgen_var_0));
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBindPipeline %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pipelineBindPoint, (unsigned long long)pipeline);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdBindPipeline(pool, nullptr,
                                                (VkCommandBuffer)(boxed_dispatchHandle),
@@ -160,6 +178,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkViewport(globalstate, (VkViewport*)(pViewports + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetViewport %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstViewport, (unsigned long long)viewportCount,
+                            (unsigned long long)pViewports);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetViewport((VkCommandBuffer)dispatchHandle, firstViewport,
                                          viewportCount, pViewports);
@@ -192,6 +216,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkRect2D(globalstate, (VkRect2D*)(pScissors + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetScissor %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstScissor, (unsigned long long)scissorCount,
+                            (unsigned long long)pScissors);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetScissor((VkCommandBuffer)dispatchHandle, firstScissor, scissorCount,
                                         pScissors);
@@ -204,6 +234,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 float lineWidth;
                 memcpy((float*)&lineWidth, *readStreamPtrPtr, sizeof(float));
                 *readStreamPtrPtr += sizeof(float);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetLineWidth %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)lineWidth);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetLineWidth((VkCommandBuffer)dispatchHandle, lineWidth);
                 }
@@ -221,6 +255,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(float);
                 memcpy((float*)&depthBiasSlopeFactor, *readStreamPtrPtr, sizeof(float));
                 *readStreamPtrPtr += sizeof(float);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetDepthBias %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthBiasConstantFactor,
+                            (unsigned long long)depthBiasClamp,
+                            (unsigned long long)depthBiasSlopeFactor);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthBias((VkCommandBuffer)dispatchHandle, depthBiasConstantFactor,
                                           depthBiasClamp, depthBiasSlopeFactor);
@@ -233,6 +275,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 float blendConstants[4];
                 memcpy((float*)blendConstants, *readStreamPtrPtr, 4 * sizeof(const float));
                 *readStreamPtrPtr += 4 * sizeof(const float);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetBlendConstants %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)blendConstants);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetBlendConstants((VkCommandBuffer)dispatchHandle, blendConstants);
                 }
@@ -247,6 +294,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(float);
                 memcpy((float*)&maxDepthBounds, *readStreamPtrPtr, sizeof(float));
                 *readStreamPtrPtr += sizeof(float);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthBounds %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)minDepthBounds, (unsigned long long)maxDepthBounds);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthBounds((VkCommandBuffer)dispatchHandle, minDepthBounds,
                                             maxDepthBounds);
@@ -263,6 +315,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilFaceFlags);
                 memcpy((uint32_t*)&compareMask, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetStencilCompareMask %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)faceMask,
+                            (unsigned long long)compareMask);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetStencilCompareMask((VkCommandBuffer)dispatchHandle, faceMask,
                                                    compareMask);
@@ -279,6 +337,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilFaceFlags);
                 memcpy((uint32_t*)&writeMask, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetStencilWriteMask %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)faceMask,
+                            (unsigned long long)writeMask);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetStencilWriteMask((VkCommandBuffer)dispatchHandle, faceMask,
                                                  writeMask);
@@ -295,6 +359,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilFaceFlags);
                 memcpy((uint32_t*)&reference, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetStencilReference %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)faceMask,
+                            (unsigned long long)reference);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetStencilReference((VkCommandBuffer)dispatchHandle, faceMask,
                                                  reference);
@@ -353,6 +423,17 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((uint32_t*)pDynamicOffsets, *readStreamPtrPtr,
                        ((dynamicOffsetCount)) * sizeof(const uint32_t));
                 *readStreamPtrPtr += ((dynamicOffsetCount)) * sizeof(const uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBindDescriptorSets %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pipelineBindPoint, (unsigned long long)layout,
+                            (unsigned long long)firstSet, (unsigned long long)descriptorSetCount,
+                            (unsigned long long)pDescriptorSets,
+                            (unsigned long long)dynamicOffsetCount,
+                            (unsigned long long)pDynamicOffsets);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdBindDescriptorSets(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pipelineBindPoint,
@@ -375,6 +456,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((VkIndexType*)&indexType, *readStreamPtrPtr, sizeof(VkIndexType));
                 *readStreamPtrPtr += sizeof(VkIndexType);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBindIndexBuffer %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)buffer,
+                            (unsigned long long)offset, (unsigned long long)indexType);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBindIndexBuffer((VkCommandBuffer)dispatchHandle, buffer, offset,
                                              indexType);
@@ -418,6 +505,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkDeviceSize*)pOffsets, *readStreamPtrPtr,
                        ((bindingCount)) * sizeof(const VkDeviceSize));
                 *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBindVertexBuffers %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstBinding, (unsigned long long)bindingCount,
+                            (unsigned long long)pBuffers, (unsigned long long)pOffsets);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBindVertexBuffers((VkCommandBuffer)dispatchHandle, firstBinding,
                                                bindingCount, pBuffers, pOffsets);
@@ -438,6 +533,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&firstInstance, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdDraw %p0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)vertexCount, (unsigned long long)instanceCount,
+                            (unsigned long long)firstVertex, (unsigned long long)firstInstance);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDraw((VkCommandBuffer)dispatchHandle, vertexCount, instanceCount,
                                   firstVertex, firstInstance);
@@ -462,6 +563,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(int32_t);
                 memcpy((uint32_t*)&firstInstance, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdDrawIndexed %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)indexCount,
+                            (unsigned long long)instanceCount, (unsigned long long)firstIndex,
+                            (unsigned long long)vertexOffset, (unsigned long long)firstInstance);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDrawIndexed((VkCommandBuffer)dispatchHandle, indexCount, instanceCount,
                                          firstIndex, vertexOffset, firstInstance);
@@ -485,6 +594,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdDrawIndirect %p0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)buffer,
+                            (unsigned long long)offset, (unsigned long long)drawCount,
+                            (unsigned long long)stride);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDrawIndirect((VkCommandBuffer)dispatchHandle, buffer, offset,
                                           drawCount, stride);
@@ -508,6 +624,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdDrawIndexedIndirect %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)buffer,
+                            (unsigned long long)offset, (unsigned long long)drawCount,
+                            (unsigned long long)stride);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDrawIndexedIndirect((VkCommandBuffer)dispatchHandle, buffer, offset,
                                                  drawCount, stride);
@@ -526,6 +650,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&groupCountZ, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdDispatch %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)groupCountX, (unsigned long long)groupCountY,
+                            (unsigned long long)groupCountZ);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDispatch((VkCommandBuffer)dispatchHandle, groupCountX, groupCountY,
                                       groupCountZ);
@@ -543,6 +673,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *(VkBuffer*)&buffer = (VkBuffer)unbox_VkBuffer((VkBuffer)(*&cgen_var_0));
                 memcpy((VkDeviceSize*)&offset, *readStreamPtrPtr, sizeof(VkDeviceSize));
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdDispatchIndirect %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)buffer,
+                            (unsigned long long)offset);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDispatchIndirect((VkCommandBuffer)dispatchHandle, buffer, offset);
                 }
@@ -580,6 +715,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
                         transform_tohost_VkBufferCopy(globalstate, (VkBufferCopy*)(pRegions + i));
                     }
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdCopyBuffer %p0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)srcBuffer,
+                            (unsigned long long)dstBuffer, (unsigned long long)regionCount,
+                            (unsigned long long)pRegions);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdCopyBuffer((VkCommandBuffer)dispatchHandle, srcBuffer, dstBuffer,
@@ -625,6 +767,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     for (uint32_t i = 0; i < (uint32_t)((regionCount)); ++i) {
                         transform_tohost_VkImageCopy(globalstate, (VkImageCopy*)(pRegions + i));
                     }
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdCopyImage %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)srcImage,
+                            (unsigned long long)srcImageLayout, (unsigned long long)dstImage,
+                            (unsigned long long)dstImageLayout, (unsigned long long)regionCount,
+                            (unsigned long long)pRegions);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyImage(pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle),
@@ -675,6 +826,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkImageBlit(globalstate, (VkImageBlit*)(pRegions + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBlitImage %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)srcImage,
+                            (unsigned long long)srcImageLayout, (unsigned long long)dstImage,
+                            (unsigned long long)dstImageLayout, (unsigned long long)regionCount,
+                            (unsigned long long)pRegions, (unsigned long long)filter);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBlitImage((VkCommandBuffer)dispatchHandle, srcImage, srcImageLayout,
                                        dstImage, dstImageLayout, regionCount, pRegions, filter);
@@ -718,6 +878,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkBufferImageCopy(globalstate,
                                                            (VkBufferImageCopy*)(pRegions + i));
                     }
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdCopyBufferToImage %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)srcBuffer,
+                            (unsigned long long)dstImage, (unsigned long long)dstImageLayout,
+                            (unsigned long long)regionCount, (unsigned long long)pRegions);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyBufferToImage(
@@ -764,6 +932,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                                                            (VkBufferImageCopy*)(pRegions + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdCopyImageToBuffer %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)srcImage,
+                            (unsigned long long)srcImageLayout, (unsigned long long)dstBuffer,
+                            (unsigned long long)regionCount, (unsigned long long)pRegions);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyImageToBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), srcImage,
@@ -794,6 +970,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 }
                 memcpy((void*)pData, *readStreamPtrPtr, ((dataSize)) * sizeof(const uint8_t));
                 *readStreamPtrPtr += ((dataSize)) * sizeof(const uint8_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdUpdateBuffer %p0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)dstBuffer,
+                            (unsigned long long)dstOffset, (unsigned long long)dataSize,
+                            (unsigned long long)pData);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdUpdateBuffer((VkCommandBuffer)dispatchHandle, dstBuffer, dstOffset,
                                           dataSize, pData);
@@ -817,6 +1000,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((uint32_t*)&data, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdFillBuffer %p0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)dstBuffer,
+                            (unsigned long long)dstOffset, (unsigned long long)size,
+                            (unsigned long long)data);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdFillBuffer((VkCommandBuffer)dispatchHandle, dstBuffer, dstOffset, size,
                                         data);
@@ -863,6 +1053,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkImageSubresourceRange(
                             globalstate, (VkImageSubresourceRange*)(pRanges + i));
                     }
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdClearColorImage %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)image,
+                            (unsigned long long)imageLayout, (unsigned long long)pColor,
+                            (unsigned long long)rangeCount, (unsigned long long)pRanges);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdClearColorImage((VkCommandBuffer)dispatchHandle, image, imageLayout,
@@ -912,6 +1110,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkImageSubresourceRange(
                             globalstate, (VkImageSubresourceRange*)(pRanges + i));
                     }
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdClearDepthStencilImage %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)image,
+                            (unsigned long long)imageLayout, (unsigned long long)pDepthStencil,
+                            (unsigned long long)rangeCount, (unsigned long long)pRanges);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdClearDepthStencilImage((VkCommandBuffer)dispatchHandle, image,
@@ -964,6 +1170,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkClearRect(globalstate, (VkClearRect*)(pRects + i));
                     }
                 }
+                if (1) {
+                    fprintf(
+                        stderr,
+                        "substream %p: call vkCmdClearAttachments %p0x%llx 0x%llx 0x%llx 0x%llx \n",
+                        readStream, (void*)boxed_dispatchHandle,
+                        (unsigned long long)attachmentCount, (unsigned long long)pAttachments,
+                        (unsigned long long)rectCount, (unsigned long long)pRects);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdClearAttachments((VkCommandBuffer)dispatchHandle, attachmentCount,
                                               pAttachments, rectCount, pRects);
@@ -1011,6 +1225,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                                                         (VkImageResolve*)(pRegions + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdResolveImage %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)srcImage,
+                            (unsigned long long)srcImageLayout, (unsigned long long)dstImage,
+                            (unsigned long long)dstImageLayout, (unsigned long long)regionCount,
+                            (unsigned long long)pRegions);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdResolveImage((VkCommandBuffer)dispatchHandle, srcImage, srcImageLayout,
                                           dstImage, dstImageLayout, regionCount, pRegions);
@@ -1029,6 +1252,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetEvent %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)event,
+                            (unsigned long long)stageMask);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetEvent((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
@@ -1046,6 +1274,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdResetEvent %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)event,
+                            (unsigned long long)stageMask);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdResetEvent((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
@@ -1150,6 +1383,20 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkImageMemoryBarrier*)(pImageMemoryBarriers + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdWaitEvents %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)eventCount,
+                            (unsigned long long)pEvents, (unsigned long long)srcStageMask,
+                            (unsigned long long)dstStageMask,
+                            (unsigned long long)memoryBarrierCount,
+                            (unsigned long long)pMemoryBarriers,
+                            (unsigned long long)bufferMemoryBarrierCount,
+                            (unsigned long long)pBufferMemoryBarriers,
+                            (unsigned long long)imageMemoryBarrierCount,
+                            (unsigned long long)pImageMemoryBarriers);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdWaitEvents(
                         (VkCommandBuffer)dispatchHandle, eventCount, pEvents, srcStageMask,
@@ -1241,6 +1488,19 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkImageMemoryBarrier*)(pImageMemoryBarriers + i));
                     }
                 }
+                if (1) {
+                    fprintf(
+                        stderr,
+                        "substream %p: call vkCmdPipelineBarrier %p0x%llx 0x%llx 0x%llx 0x%llx "
+                        "0x%llx 0x%llx 0x%llx 0x%llx 0x%llx \n",
+                        readStream, (void*)boxed_dispatchHandle, (unsigned long long)srcStageMask,
+                        (unsigned long long)dstStageMask, (unsigned long long)dependencyFlags,
+                        (unsigned long long)memoryBarrierCount, (unsigned long long)pMemoryBarriers,
+                        (unsigned long long)bufferMemoryBarrierCount,
+                        (unsigned long long)pBufferMemoryBarriers,
+                        (unsigned long long)imageMemoryBarrierCount,
+                        (unsigned long long)pImageMemoryBarriers);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdPipelineBarrier(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), srcStageMask,
@@ -1266,6 +1526,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkQueryControlFlags*)&flags, *readStreamPtrPtr,
                        sizeof(VkQueryControlFlags));
                 *readStreamPtrPtr += sizeof(VkQueryControlFlags);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBeginQuery %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)queryPool,
+                            (unsigned long long)query, (unsigned long long)flags);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBeginQuery((VkCommandBuffer)dispatchHandle, queryPool, query, flags);
                 }
@@ -1283,6 +1548,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdEndQuery %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)queryPool,
+                            (unsigned long long)query);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndQuery((VkCommandBuffer)dispatchHandle, queryPool, query);
                 }
@@ -1303,6 +1573,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&queryCount, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdResetQueryPool %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)queryPool,
+                            (unsigned long long)firstQuery, (unsigned long long)queryCount);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdResetQueryPool((VkCommandBuffer)dispatchHandle, queryPool, firstQuery,
                                             queryCount);
@@ -1325,6 +1601,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(
+                        stderr, "substream %p: call vkCmdWriteTimestamp %p0x%llx 0x%llx 0x%llx \n",
+                        readStream, (void*)boxed_dispatchHandle, (unsigned long long)pipelineStage,
+                        (unsigned long long)queryPool, (unsigned long long)query);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdWriteTimestamp((VkCommandBuffer)dispatchHandle, pipelineStage,
                                             queryPool, query);
@@ -1360,6 +1642,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((VkQueryResultFlags*)&flags, *readStreamPtrPtr, sizeof(VkQueryResultFlags));
                 *readStreamPtrPtr += sizeof(VkQueryResultFlags);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdCopyQueryPoolResults %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)queryPool,
+                            (unsigned long long)firstQuery, (unsigned long long)queryCount,
+                            (unsigned long long)dstBuffer, (unsigned long long)dstOffset,
+                            (unsigned long long)stride, (unsigned long long)flags);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyQueryPoolResults(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), queryPool,
@@ -1395,6 +1686,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 }
                 memcpy((void*)pValues, *readStreamPtrPtr, ((size)) * sizeof(const uint8_t));
                 *readStreamPtrPtr += ((size)) * sizeof(const uint8_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdPushConstants %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)layout,
+                            (unsigned long long)stageFlags, (unsigned long long)offset,
+                            (unsigned long long)size, (unsigned long long)pValues);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdPushConstants((VkCommandBuffer)dispatchHandle, layout, stageFlags,
                                            offset, size, pValues);
@@ -1417,6 +1716,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkRenderPassBeginInfo(
                         globalstate, (VkRenderPassBeginInfo*)(pRenderPassBegin));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBeginRenderPass %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pRenderPassBegin, (unsigned long long)contents);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdBeginRenderPass(pool, nullptr,
                                                   (VkCommandBuffer)(boxed_dispatchHandle),
@@ -1430,6 +1734,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkSubpassContents contents;
                 memcpy((VkSubpassContents*)&contents, *readStreamPtrPtr, sizeof(VkSubpassContents));
                 *readStreamPtrPtr += sizeof(VkSubpassContents);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdNextSubpass %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)contents);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdNextSubpass((VkCommandBuffer)dispatchHandle, contents);
                 }
@@ -1438,6 +1746,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndRenderPass: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndRenderPass");
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdEndRenderPass %p\n", readStream,
+                            (void*)boxed_dispatchHandle);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndRenderPass((VkCommandBuffer)dispatchHandle);
                 }
@@ -1468,6 +1780,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                                    : VK_NULL_HANDLE;
                     }
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdExecuteCommands %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)commandBufferCount,
+                            (unsigned long long)pCommandBuffers);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdExecuteCommands(pool, nullptr,
                                                   (VkCommandBuffer)(boxed_dispatchHandle),
@@ -1483,6 +1801,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 uint32_t deviceMask;
                 memcpy((uint32_t*)&deviceMask, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDeviceMask %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)deviceMask);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDeviceMask((VkCommandBuffer)dispatchHandle, deviceMask);
                 }
@@ -1509,6 +1831,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&groupCountZ, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdDispatchBase %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)baseGroupX,
+                            (unsigned long long)baseGroupY, (unsigned long long)baseGroupZ,
+                            (unsigned long long)groupCountX, (unsigned long long)groupCountY,
+                            (unsigned long long)groupCountZ);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDispatchBase((VkCommandBuffer)dispatchHandle, baseGroupX, baseGroupY,
                                           baseGroupZ, groupCountX, groupCountY, groupCountZ);
@@ -1542,6 +1873,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdDrawIndirectCount %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)buffer,
+                            (unsigned long long)offset, (unsigned long long)countBuffer,
+                            (unsigned long long)countBufferOffset, (unsigned long long)maxDrawCount,
+                            (unsigned long long)stride);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDrawIndirectCount((VkCommandBuffer)dispatchHandle, buffer, offset,
                                                countBuffer, countBufferOffset, maxDrawCount,
@@ -1574,6 +1914,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&stride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdDrawIndexedIndirectCount %p0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)buffer,
+                            (unsigned long long)offset, (unsigned long long)countBuffer,
+                            (unsigned long long)countBufferOffset, (unsigned long long)maxDrawCount,
+                            (unsigned long long)stride);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDrawIndexedIndirectCount((VkCommandBuffer)dispatchHandle, buffer,
                                                       offset, countBuffer, countBufferOffset,
@@ -1603,6 +1952,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pSubpassBeginInfo) {
                     transform_tohost_VkSubpassBeginInfo(globalstate,
                                                         (VkSubpassBeginInfo*)(pSubpassBeginInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBeginRenderPass2 %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pRenderPassBegin,
+                            (unsigned long long)pSubpassBeginInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdBeginRenderPass2(pool, nullptr,
@@ -1634,6 +1989,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdNextSubpass2 %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pSubpassBeginInfo,
+                            (unsigned long long)pSubpassEndInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdNextSubpass2((VkCommandBuffer)dispatchHandle, pSubpassBeginInfo,
                                           pSubpassEndInfo);
@@ -1652,6 +2013,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pSubpassEndInfo) {
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdEndRenderPass2 %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pSubpassEndInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndRenderPass2((VkCommandBuffer)dispatchHandle, pSubpassEndInfo);
@@ -1678,6 +2044,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetEvent2 %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)event,
+                            (unsigned long long)pDependencyInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetEvent2((VkCommandBuffer)dispatchHandle, event, pDependencyInfo);
                 }
@@ -1695,6 +2066,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags2*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags2));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags2);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdResetEvent2 %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)event,
+                            (unsigned long long)stageMask);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdResetEvent2((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
@@ -1742,6 +2118,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkDependencyInfo*)(pDependencyInfos + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdWaitEvents2 %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)eventCount,
+                            (unsigned long long)pEvents, (unsigned long long)pDependencyInfos);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdWaitEvents2((VkCommandBuffer)dispatchHandle, eventCount, pEvents,
                                          pDependencyInfos);
@@ -1760,6 +2141,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pDependencyInfo) {
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdPipelineBarrier2 %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pDependencyInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdPipelineBarrier2(
@@ -1783,6 +2169,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdWriteTimestamp2 %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)stage,
+                            (unsigned long long)queryPool, (unsigned long long)query);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdWriteTimestamp2((VkCommandBuffer)dispatchHandle, stage, queryPool,
                                              query);
@@ -1802,6 +2194,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyBufferInfo2(globalstate,
                                                        (VkCopyBufferInfo2*)(pCopyBufferInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyBuffer2 %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)pCopyBufferInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdCopyBuffer2((VkCommandBuffer)dispatchHandle, pCopyBufferInfo);
                 }
@@ -1819,6 +2215,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pCopyImageInfo) {
                     transform_tohost_VkCopyImageInfo2(globalstate,
                                                       (VkCopyImageInfo2*)(pCopyImageInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyImage2 %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)pCopyImageInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyImage2(pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle),
@@ -1838,6 +2238,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pCopyBufferToImageInfo) {
                     transform_tohost_VkCopyBufferToImageInfo2(
                         globalstate, (VkCopyBufferToImageInfo2*)(pCopyBufferToImageInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyBufferToImage2 %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pCopyBufferToImageInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyBufferToImage2(pool, nullptr,
@@ -1859,6 +2264,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyImageToBufferInfo2(
                         globalstate, (VkCopyImageToBufferInfo2*)(pCopyImageToBufferInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyImageToBuffer2 %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pCopyImageToBufferInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyImageToBuffer2(pool, nullptr,
                                                      (VkCommandBuffer)(boxed_dispatchHandle),
@@ -1879,6 +2289,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkBlitImageInfo2(globalstate,
                                                       (VkBlitImageInfo2*)(pBlitImageInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBlitImage2 %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)pBlitImageInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBlitImage2((VkCommandBuffer)dispatchHandle, pBlitImageInfo);
                 }
@@ -1896,6 +2310,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pResolveImageInfo) {
                     transform_tohost_VkResolveImageInfo2(globalstate,
                                                          (VkResolveImageInfo2*)(pResolveImageInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdResolveImage2 %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)pResolveImageInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdResolveImage2((VkCommandBuffer)dispatchHandle, pResolveImageInfo);
@@ -1915,6 +2333,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkRenderingInfo(globalstate,
                                                      (VkRenderingInfo*)(pRenderingInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBeginRendering %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pRenderingInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBeginRendering((VkCommandBuffer)dispatchHandle, pRenderingInfo);
                 }
@@ -1923,6 +2346,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndRendering: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndRendering");
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdEndRendering %p\n", readStream,
+                            (void*)boxed_dispatchHandle);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndRendering((VkCommandBuffer)dispatchHandle);
                 }
@@ -1934,6 +2361,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCullModeFlags cullMode;
                 memcpy((VkCullModeFlags*)&cullMode, *readStreamPtrPtr, sizeof(VkCullModeFlags));
                 *readStreamPtrPtr += sizeof(VkCullModeFlags);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetCullMode %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)cullMode);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetCullMode((VkCommandBuffer)dispatchHandle, cullMode);
                 }
@@ -1945,6 +2376,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkFrontFace frontFace;
                 memcpy((VkFrontFace*)&frontFace, *readStreamPtrPtr, sizeof(VkFrontFace));
                 *readStreamPtrPtr += sizeof(VkFrontFace);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetFrontFace %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)frontFace);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetFrontFace((VkCommandBuffer)dispatchHandle, frontFace);
                 }
@@ -1957,6 +2392,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPrimitiveTopology*)&primitiveTopology, *readStreamPtrPtr,
                        sizeof(VkPrimitiveTopology));
                 *readStreamPtrPtr += sizeof(VkPrimitiveTopology);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetPrimitiveTopology %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)primitiveTopology);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetPrimitiveTopology((VkCommandBuffer)dispatchHandle,
                                                   primitiveTopology);
@@ -1986,6 +2426,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkViewport(globalstate, (VkViewport*)(pViewports + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetViewportWithCount %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)viewportCount, (unsigned long long)pViewports);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetViewportWithCount((VkCommandBuffer)dispatchHandle, viewportCount,
                                                   pViewports);
@@ -2014,6 +2460,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
                         transform_tohost_VkRect2D(globalstate, (VkRect2D*)(pScissors + i));
                     }
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetScissorWithCount %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)scissorCount, (unsigned long long)pScissors);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetScissorWithCount((VkCommandBuffer)dispatchHandle, scissorCount,
@@ -2100,6 +2552,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((bindingCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBindVertexBuffers2 %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstBinding, (unsigned long long)bindingCount,
+                            (unsigned long long)pBuffers, (unsigned long long)pOffsets,
+                            (unsigned long long)pSizes, (unsigned long long)pStrides);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBindVertexBuffers2((VkCommandBuffer)dispatchHandle, firstBinding,
                                                 bindingCount, pBuffers, pOffsets, pSizes, pStrides);
@@ -2112,6 +2573,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthTestEnable;
                 memcpy((VkBool32*)&depthTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthTestEnable %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthTestEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthTestEnable((VkCommandBuffer)dispatchHandle, depthTestEnable);
                 }
@@ -2123,6 +2589,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthWriteEnable;
                 memcpy((VkBool32*)&depthWriteEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthWriteEnable %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthWriteEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthWriteEnable((VkCommandBuffer)dispatchHandle, depthWriteEnable);
                 }
@@ -2134,6 +2605,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCompareOp depthCompareOp;
                 memcpy((VkCompareOp*)&depthCompareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthCompareOp %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthCompareOp);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthCompareOp((VkCommandBuffer)dispatchHandle, depthCompareOp);
                 }
@@ -2145,6 +2621,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBoundsTestEnable;
                 memcpy((VkBool32*)&depthBoundsTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthBoundsTestEnable %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthBoundsTestEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthBoundsTestEnable((VkCommandBuffer)dispatchHandle,
                                                       depthBoundsTestEnable);
@@ -2157,6 +2638,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 stencilTestEnable;
                 memcpy((VkBool32*)&stencilTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetStencilTestEnable %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)stencilTestEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetStencilTestEnable((VkCommandBuffer)dispatchHandle,
                                                   stencilTestEnable);
@@ -2182,6 +2668,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilOp);
                 memcpy((VkCompareOp*)&compareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetStencilOp %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)faceMask,
+                            (unsigned long long)failOp, (unsigned long long)passOp,
+                            (unsigned long long)depthFailOp, (unsigned long long)compareOp);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetStencilOp((VkCommandBuffer)dispatchHandle, faceMask, failOp, passOp,
                                           depthFailOp, compareOp);
@@ -2194,6 +2688,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 rasterizerDiscardEnable;
                 memcpy((VkBool32*)&rasterizerDiscardEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetRasterizerDiscardEnable %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)rasterizerDiscardEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetRasterizerDiscardEnable((VkCommandBuffer)dispatchHandle,
                                                         rasterizerDiscardEnable);
@@ -2206,6 +2706,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBiasEnable;
                 memcpy((VkBool32*)&depthBiasEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthBiasEnable %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthBiasEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthBiasEnable((VkCommandBuffer)dispatchHandle, depthBiasEnable);
                 }
@@ -2217,6 +2722,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 primitiveRestartEnable;
                 memcpy((VkBool32*)&primitiveRestartEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetPrimitiveRestartEnable %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)primitiveRestartEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetPrimitiveRestartEnable((VkCommandBuffer)dispatchHandle,
                                                        primitiveRestartEnable);
@@ -2238,6 +2748,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkRenderingInfo(globalstate,
                                                      (VkRenderingInfo*)(pRenderingInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBeginRenderingKHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pRenderingInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBeginRenderingKHR((VkCommandBuffer)dispatchHandle, pRenderingInfo);
                 }
@@ -2246,6 +2761,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndRenderingKHR: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndRenderingKHR");
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdEndRenderingKHR %p\n", readStream,
+                            (void*)boxed_dispatchHandle);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndRenderingKHR((VkCommandBuffer)dispatchHandle);
                 }
@@ -2275,6 +2794,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pSubpassBeginInfo) {
                     transform_tohost_VkSubpassBeginInfo(globalstate,
                                                         (VkSubpassBeginInfo*)(pSubpassBeginInfo));
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBeginRenderPass2KHR %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pRenderPassBegin,
+                            (unsigned long long)pSubpassBeginInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdBeginRenderPass2KHR(pool, nullptr,
@@ -2306,6 +2832,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdNextSubpass2KHR %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pSubpassBeginInfo,
+                            (unsigned long long)pSubpassEndInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdNextSubpass2KHR((VkCommandBuffer)dispatchHandle, pSubpassBeginInfo,
                                              pSubpassEndInfo);
@@ -2324,6 +2856,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pSubpassEndInfo) {
                     transform_tohost_VkSubpassEndInfo(globalstate,
                                                       (VkSubpassEndInfo*)(pSubpassEndInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdEndRenderPass2KHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pSubpassEndInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndRenderPass2KHR((VkCommandBuffer)dispatchHandle, pSubpassEndInfo);
@@ -2350,6 +2887,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetEvent2KHR %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)event,
+                            (unsigned long long)pDependencyInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetEvent2KHR((VkCommandBuffer)dispatchHandle, event, pDependencyInfo);
                 }
@@ -2367,6 +2909,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPipelineStageFlags2*)&stageMask, *readStreamPtrPtr,
                        sizeof(VkPipelineStageFlags2));
                 *readStreamPtrPtr += sizeof(VkPipelineStageFlags2);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdResetEvent2KHR %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)event,
+                            (unsigned long long)stageMask);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdResetEvent2KHR((VkCommandBuffer)dispatchHandle, event, stageMask);
                 }
@@ -2414,6 +2961,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                             globalstate, (VkDependencyInfo*)(pDependencyInfos + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdWaitEvents2KHR %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)eventCount,
+                            (unsigned long long)pEvents, (unsigned long long)pDependencyInfos);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdWaitEvents2KHR((VkCommandBuffer)dispatchHandle, eventCount, pEvents,
                                             pDependencyInfos);
@@ -2432,6 +2985,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pDependencyInfo) {
                     transform_tohost_VkDependencyInfo(globalstate,
                                                       (VkDependencyInfo*)(pDependencyInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdPipelineBarrier2KHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pDependencyInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdPipelineBarrier2KHR((VkCommandBuffer)dispatchHandle, pDependencyInfo);
@@ -2454,6 +3012,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     (VkQueryPool)unbox_VkQueryPool((VkQueryPool)(*&cgen_var_0));
                 memcpy((uint32_t*)&query, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdWriteTimestamp2KHR %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)stage,
+                            (unsigned long long)queryPool, (unsigned long long)query);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdWriteTimestamp2KHR((VkCommandBuffer)dispatchHandle, stage, queryPool,
                                                 query);
@@ -2478,6 +3042,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((uint32_t*)&marker, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdWriteBufferMarker2AMD %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)stage,
+                            (unsigned long long)dstBuffer, (unsigned long long)dstOffset,
+                            (unsigned long long)marker);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdWriteBufferMarker2AMD((VkCommandBuffer)dispatchHandle, stage,
                                                    dstBuffer, dstOffset, marker);
@@ -2499,6 +3071,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyBufferInfo2(globalstate,
                                                        (VkCopyBufferInfo2*)(pCopyBufferInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyBuffer2KHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pCopyBufferInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdCopyBuffer2KHR((VkCommandBuffer)dispatchHandle, pCopyBufferInfo);
                 }
@@ -2516,6 +3093,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pCopyImageInfo) {
                     transform_tohost_VkCopyImageInfo2(globalstate,
                                                       (VkCopyImageInfo2*)(pCopyImageInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyImage2KHR %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)pCopyImageInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyImage2KHR(
@@ -2535,6 +3116,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pCopyBufferToImageInfo) {
                     transform_tohost_VkCopyBufferToImageInfo2(
                         globalstate, (VkCopyBufferToImageInfo2*)(pCopyBufferToImageInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyBufferToImage2KHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pCopyBufferToImageInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyBufferToImage2KHR(pool, nullptr,
@@ -2556,6 +3142,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCopyImageToBufferInfo2(
                         globalstate, (VkCopyImageToBufferInfo2*)(pCopyImageToBufferInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdCopyImageToBuffer2KHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pCopyImageToBufferInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCmdCopyImageToBuffer2KHR(pool, nullptr,
                                                         (VkCommandBuffer)(boxed_dispatchHandle),
@@ -2576,6 +3167,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkBlitImageInfo2(globalstate,
                                                       (VkBlitImageInfo2*)(pBlitImageInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBlitImage2KHR %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)pBlitImageInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBlitImage2KHR((VkCommandBuffer)dispatchHandle, pBlitImageInfo);
                 }
@@ -2593,6 +3188,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (pResolveImageInfo) {
                     transform_tohost_VkResolveImageInfo2(globalstate,
                                                          (VkResolveImageInfo2*)(pResolveImageInfo));
+                }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdResolveImage2KHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pResolveImageInfo);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdResolveImage2KHR((VkCommandBuffer)dispatchHandle, pResolveImageInfo);
@@ -2618,6 +3218,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkDeviceSize);
                 memcpy((VkIndexType*)&indexType, *readStreamPtrPtr, sizeof(VkIndexType));
                 *readStreamPtrPtr += sizeof(VkIndexType);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBindIndexBuffer2KHR %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)buffer,
+                            (unsigned long long)offset, (unsigned long long)size,
+                            (unsigned long long)indexType);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBindIndexBuffer2KHR((VkCommandBuffer)dispatchHandle, buffer, offset,
                                                  size, indexType);
@@ -2635,6 +3243,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint16_t*)&lineStipplePattern, *readStreamPtrPtr, sizeof(uint16_t));
                 *readStreamPtrPtr += sizeof(uint16_t);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetLineStippleKHR %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)lineStippleFactor,
+                            (unsigned long long)lineStipplePattern);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetLineStippleKHR((VkCommandBuffer)dispatchHandle, lineStippleFactor,
                                                lineStipplePattern);
@@ -2697,6 +3311,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((bindingCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBindTransformFeedbackBuffersEXT %p0x%llx "
+                            "0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstBinding, (unsigned long long)bindingCount,
+                            (unsigned long long)pBuffers, (unsigned long long)pOffsets,
+                            (unsigned long long)pSizes);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBindTransformFeedbackBuffersEXT((VkCommandBuffer)dispatchHandle,
                                                              firstBinding, bindingCount, pBuffers,
@@ -2754,6 +3377,16 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     memcpy((VkDeviceSize*)pCounterBufferOffsets, *readStreamPtrPtr,
                            ((counterBufferCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((counterBufferCount)) * sizeof(const VkDeviceSize);
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBeginTransformFeedbackEXT %p0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstCounterBuffer,
+                            (unsigned long long)counterBufferCount,
+                            (unsigned long long)pCounterBuffers,
+                            (unsigned long long)pCounterBufferOffsets);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBeginTransformFeedbackEXT((VkCommandBuffer)dispatchHandle,
@@ -2813,6 +3446,16 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((counterBufferCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((counterBufferCount)) * sizeof(const VkDeviceSize);
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdEndTransformFeedbackEXT %p0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstCounterBuffer,
+                            (unsigned long long)counterBufferCount,
+                            (unsigned long long)pCounterBuffers,
+                            (unsigned long long)pCounterBufferOffsets);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndTransformFeedbackEXT((VkCommandBuffer)dispatchHandle,
                                                      firstCounterBuffer, counterBufferCount,
@@ -2839,6 +3482,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkQueryControlFlags);
                 memcpy((uint32_t*)&index, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBeginQueryIndexedEXT %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)queryPool,
+                            (unsigned long long)query, (unsigned long long)flags,
+                            (unsigned long long)index);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBeginQueryIndexedEXT((VkCommandBuffer)dispatchHandle, queryPool, query,
                                                   flags, index);
@@ -2860,6 +3511,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&index, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdEndQueryIndexedEXT %p0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)queryPool,
+                            (unsigned long long)query, (unsigned long long)index);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndQueryIndexedEXT((VkCommandBuffer)dispatchHandle, queryPool, query,
                                                 index);
@@ -2890,6 +3547,16 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&vertexStride, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdDrawIndirectByteCountEXT %p0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)instanceCount, (unsigned long long)firstInstance,
+                            (unsigned long long)counterBuffer,
+                            (unsigned long long)counterBufferOffset,
+                            (unsigned long long)counterOffset, (unsigned long long)vertexStride);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdDrawIndirectByteCountEXT(
                         (VkCommandBuffer)dispatchHandle, instanceCount, firstInstance,
@@ -2912,6 +3579,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDebugUtilsLabelEXT(globalstate,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdBeginDebugUtilsLabelEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pLabelInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBeginDebugUtilsLabelEXT((VkCommandBuffer)dispatchHandle, pLabelInfo);
                 }
@@ -2920,6 +3592,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkCmdEndDebugUtilsLabelEXT: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkCmdEndDebugUtilsLabelEXT");
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdEndDebugUtilsLabelEXT %p\n",
+                            readStream, (void*)boxed_dispatchHandle);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdEndDebugUtilsLabelEXT((VkCommandBuffer)dispatchHandle);
                 }
@@ -2938,6 +3614,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkDebugUtilsLabelEXT(globalstate,
                                                           (VkDebugUtilsLabelEXT*)(pLabelInfo));
                 }
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdInsertDebugUtilsLabelEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pLabelInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdInsertDebugUtilsLabelEXT((VkCommandBuffer)dispatchHandle, pLabelInfo);
                 }
@@ -2954,6 +3635,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint16_t*)&lineStipplePattern, *readStreamPtrPtr, sizeof(uint16_t));
                 *readStreamPtrPtr += sizeof(uint16_t);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetLineStippleEXT %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)lineStippleFactor,
+                            (unsigned long long)lineStipplePattern);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetLineStippleEXT((VkCommandBuffer)dispatchHandle, lineStippleFactor,
                                                lineStipplePattern);
@@ -2968,6 +3655,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCullModeFlags cullMode;
                 memcpy((VkCullModeFlags*)&cullMode, *readStreamPtrPtr, sizeof(VkCullModeFlags));
                 *readStreamPtrPtr += sizeof(VkCullModeFlags);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetCullModeEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)cullMode);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetCullModeEXT((VkCommandBuffer)dispatchHandle, cullMode);
                 }
@@ -2979,6 +3670,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkFrontFace frontFace;
                 memcpy((VkFrontFace*)&frontFace, *readStreamPtrPtr, sizeof(VkFrontFace));
                 *readStreamPtrPtr += sizeof(VkFrontFace);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetFrontFaceEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)frontFace);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetFrontFaceEXT((VkCommandBuffer)dispatchHandle, frontFace);
                 }
@@ -2991,6 +3686,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkPrimitiveTopology*)&primitiveTopology, *readStreamPtrPtr,
                        sizeof(VkPrimitiveTopology));
                 *readStreamPtrPtr += sizeof(VkPrimitiveTopology);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetPrimitiveTopologyEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)primitiveTopology);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetPrimitiveTopologyEXT((VkCommandBuffer)dispatchHandle,
                                                      primitiveTopology);
@@ -3020,6 +3720,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         transform_tohost_VkViewport(globalstate, (VkViewport*)(pViewports + i));
                     }
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetViewportWithCountEXT %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)viewportCount, (unsigned long long)pViewports);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetViewportWithCountEXT((VkCommandBuffer)dispatchHandle, viewportCount,
                                                      pViewports);
@@ -3048,6 +3754,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     for (uint32_t i = 0; i < (uint32_t)((scissorCount)); ++i) {
                         transform_tohost_VkRect2D(globalstate, (VkRect2D*)(pScissors + i));
                     }
+                }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetScissorWithCountEXT %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)scissorCount, (unsigned long long)pScissors);
                 }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetScissorWithCountEXT((VkCommandBuffer)dispatchHandle, scissorCount,
@@ -3134,6 +3846,15 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                            ((bindingCount)) * sizeof(const VkDeviceSize));
                     *readStreamPtrPtr += ((bindingCount)) * sizeof(const VkDeviceSize);
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdBindVertexBuffers2EXT %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)firstBinding, (unsigned long long)bindingCount,
+                            (unsigned long long)pBuffers, (unsigned long long)pOffsets,
+                            (unsigned long long)pSizes, (unsigned long long)pStrides);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdBindVertexBuffers2EXT((VkCommandBuffer)dispatchHandle, firstBinding,
                                                    bindingCount, pBuffers, pOffsets, pSizes,
@@ -3147,6 +3868,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthTestEnable;
                 memcpy((VkBool32*)&depthTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthTestEnableEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthTestEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthTestEnableEXT((VkCommandBuffer)dispatchHandle,
                                                    depthTestEnable);
@@ -3159,6 +3885,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthWriteEnable;
                 memcpy((VkBool32*)&depthWriteEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthWriteEnableEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthWriteEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthWriteEnableEXT((VkCommandBuffer)dispatchHandle,
                                                     depthWriteEnable);
@@ -3171,6 +3902,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkCompareOp depthCompareOp;
                 memcpy((VkCompareOp*)&depthCompareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthCompareOpEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthCompareOp);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthCompareOpEXT((VkCommandBuffer)dispatchHandle, depthCompareOp);
                 }
@@ -3182,6 +3918,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBoundsTestEnable;
                 memcpy((VkBool32*)&depthBoundsTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetDepthBoundsTestEnableEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthBoundsTestEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthBoundsTestEnableEXT((VkCommandBuffer)dispatchHandle,
                                                          depthBoundsTestEnable);
@@ -3194,6 +3936,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 stencilTestEnable;
                 memcpy((VkBool32*)&stencilTestEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetStencilTestEnableEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)stencilTestEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetStencilTestEnableEXT((VkCommandBuffer)dispatchHandle,
                                                      stencilTestEnable);
@@ -3219,6 +3966,14 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(VkStencilOp);
                 memcpy((VkCompareOp*)&compareOp, *readStreamPtrPtr, sizeof(VkCompareOp));
                 *readStreamPtrPtr += sizeof(VkCompareOp);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetStencilOpEXT %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)faceMask,
+                            (unsigned long long)failOp, (unsigned long long)passOp,
+                            (unsigned long long)depthFailOp, (unsigned long long)compareOp);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetStencilOpEXT((VkCommandBuffer)dispatchHandle, faceMask, failOp,
                                              passOp, depthFailOp, compareOp);
@@ -3233,6 +3988,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 uint32_t patchControlPoints;
                 memcpy((uint32_t*)&patchControlPoints, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetPatchControlPointsEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)patchControlPoints);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetPatchControlPointsEXT((VkCommandBuffer)dispatchHandle,
                                                       patchControlPoints);
@@ -3245,6 +4005,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 rasterizerDiscardEnable;
                 memcpy((VkBool32*)&rasterizerDiscardEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetRasterizerDiscardEnableEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)rasterizerDiscardEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetRasterizerDiscardEnableEXT((VkCommandBuffer)dispatchHandle,
                                                            rasterizerDiscardEnable);
@@ -3257,6 +4023,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 depthBiasEnable;
                 memcpy((VkBool32*)&depthBiasEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetDepthBiasEnableEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)depthBiasEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetDepthBiasEnableEXT((VkCommandBuffer)dispatchHandle,
                                                    depthBiasEnable);
@@ -3269,6 +4040,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkLogicOp logicOp;
                 memcpy((VkLogicOp*)&logicOp, *readStreamPtrPtr, sizeof(VkLogicOp));
                 *readStreamPtrPtr += sizeof(VkLogicOp);
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkCmdSetLogicOpEXT %p0x%llx \n", readStream,
+                            (void*)boxed_dispatchHandle, (unsigned long long)logicOp);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetLogicOpEXT((VkCommandBuffer)dispatchHandle, logicOp);
                 }
@@ -3280,6 +4055,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 VkBool32 primitiveRestartEnable;
                 memcpy((VkBool32*)&primitiveRestartEnable, *readStreamPtrPtr, sizeof(VkBool32));
                 *readStreamPtrPtr += sizeof(VkBool32);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetPrimitiveRestartEnableEXT %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)primitiveRestartEnable);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetPrimitiveRestartEnableEXT((VkCommandBuffer)dispatchHandle,
                                                           primitiveRestartEnable);
@@ -3305,6 +4086,13 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkBool32*)pColorWriteEnables, *readStreamPtrPtr,
                        ((attachmentCount)) * sizeof(const VkBool32));
                 *readStreamPtrPtr += ((attachmentCount)) * sizeof(const VkBool32);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetColorWriteEnableEXT %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)attachmentCount,
+                            (unsigned long long)pColorWriteEnables);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetColorWriteEnableEXT((VkCommandBuffer)dispatchHandle,
                                                     attachmentCount, pColorWriteEnables);
@@ -3326,6 +4114,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     transform_tohost_VkCommandBufferBeginInfo(
                         globalstate, (VkCommandBufferBeginInfo*)(pBeginInfo));
                 }
+                if (1) {
+                    fprintf(
+                        stderr, "substream %p: call vkBeginCommandBufferAsyncGOOGLE %p0x%llx \n",
+                        readStream, (void*)boxed_dispatchHandle, (unsigned long long)pBeginInfo);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkBeginCommandBufferAsyncGOOGLE(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pBeginInfo,
@@ -3336,6 +4129,10 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
             case OP_vkEndCommandBufferAsyncGOOGLE: {
                 GFXSTREAM_TRACE_EVENT(GFXSTREAM_TRACE_DECODER_CATEGORY,
                                       "VkSubDecoder vkEndCommandBufferAsyncGOOGLE");
+                if (1) {
+                    fprintf(stderr, "substream %p: call vkEndCommandBufferAsyncGOOGLE %p\n",
+                            readStream, (void*)boxed_dispatchHandle);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkEndCommandBufferAsyncGOOGLE(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), context);
@@ -3349,6 +4146,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 memcpy((VkCommandBufferResetFlags*)&flags, *readStreamPtrPtr,
                        sizeof(VkCommandBufferResetFlags));
                 *readStreamPtrPtr += sizeof(VkCommandBufferResetFlags);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkResetCommandBufferAsyncGOOGLE %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle, (unsigned long long)flags);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkResetCommandBufferAsyncGOOGLE(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), flags);
@@ -3364,6 +4166,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 *readStreamPtrPtr += sizeof(uint32_t);
                 memcpy((uint32_t*)&sequenceNumber, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCommandBufferHostSyncGOOGLE %p0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)needHostSync, (unsigned long long)sequenceNumber);
+                }
                 if (CC_LIKELY(vk)) {
                     this->on_vkCommandBufferHostSyncGOOGLE(pool, nullptr,
                                                            (VkCommandBuffer)(boxed_dispatchHandle),
@@ -3432,6 +4240,18 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         globalstate,
                         (VkStridedDeviceAddressRegionKHR*)(pCallableShaderBindingTable));
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdTraceRaysKHR %p0x%llx 0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pRaygenShaderBindingTable,
+                            (unsigned long long)pMissShaderBindingTable,
+                            (unsigned long long)pHitShaderBindingTable,
+                            (unsigned long long)pCallableShaderBindingTable,
+                            (unsigned long long)width, (unsigned long long)height,
+                            (unsigned long long)depth);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdTraceRaysKHR((VkCommandBuffer)dispatchHandle,
                                           pRaygenShaderBindingTable, pMissShaderBindingTable,
@@ -3494,6 +4314,17 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                         globalstate,
                         (VkStridedDeviceAddressRegionKHR*)(pCallableShaderBindingTable));
                 }
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdTraceRaysIndirectKHR %p0x%llx 0x%llx 0x%llx "
+                            "0x%llx 0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pRaygenShaderBindingTable,
+                            (unsigned long long)pMissShaderBindingTable,
+                            (unsigned long long)pHitShaderBindingTable,
+                            (unsigned long long)pCallableShaderBindingTable,
+                            (unsigned long long)indirectDeviceAddress);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdTraceRaysIndirectKHR(
                         (VkCommandBuffer)dispatchHandle, pRaygenShaderBindingTable,
@@ -3508,6 +4339,12 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 uint32_t pipelineStackSize;
                 memcpy((uint32_t*)&pipelineStackSize, *readStreamPtrPtr, sizeof(uint32_t));
                 *readStreamPtrPtr += sizeof(uint32_t);
+                if (1) {
+                    fprintf(stderr,
+                            "substream %p: call vkCmdSetRayTracingPipelineStackSizeKHR %p0x%llx \n",
+                            readStream, (void*)boxed_dispatchHandle,
+                            (unsigned long long)pipelineStackSize);
+                }
                 if (CC_LIKELY(vk)) {
                     vk->vkCmdSetRayTracingPipelineStackSizeKHR((VkCommandBuffer)dispatchHandle,
                                                                pipelineStackSize);

@@ -15,6 +15,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 
 #include "aemu/base/containers/EntityManager.h"
 
@@ -26,11 +27,16 @@ using VkSnapshotApiCallHandle = uint64_t;
 struct VkSnapshotApiCallInfo {
     VkSnapshotApiCallHandle handle = -1;
 
+    // this id never repeats and it is based on
+    // the time it is added to apiManager
+    int32_t mId{0};
     // Raw packet from VkDecoder.
     std::vector<uint8_t> packet;
 
     // Book-keeping for which handles were created by this API
     std::vector<uint64_t> createdHandles;
+    std::set<uint64_t> mainHandles; // createdHandles excludes the extrac handles
+    std::set<uint64_t> modifiedHandles;
 
     // Extra boxed handles created for this API call that are not identifiable
     // solely from the API parameters itself. For example, the extra boxed `VkQueue`s
@@ -50,7 +56,7 @@ struct VkSnapshotApiCallInfo {
     }
 };
 
-using VkSnapshotApiCallManager = android::base::EntityManager<32, 16, 16, VkSnapshotApiCallInfo>;
+using VkSnapshotApiCallManager = android::base::EntityManager<32, 24, 8, VkSnapshotApiCallInfo>;
 
 }  // namespace vk
 }  // namespace gfxstream

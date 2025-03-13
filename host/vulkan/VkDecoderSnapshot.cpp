@@ -322,6 +322,8 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         mReconstruction.forEachHandleAddApi((const uint64_t*)&boxed_VkImage, 1, apiCallHandle,
                                             VkReconstruction::BOUND_MEMORY);
+        mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed_VkImage),
+                1, apiCallHandle);
     }
     void vkGetBufferMemoryRequirements(android::base::BumpPool* pool,
                                        VkSnapshotApiCallInfo* apiCallInfo,
