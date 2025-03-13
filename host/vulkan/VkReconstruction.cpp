@@ -78,60 +78,20 @@ void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
     dump();
 #endif
 
-    std::unordered_set<uint64_t> savedApis;
-
-    std::unordered_map<HandleWithState, int, HandleWithStateHash> totalParents;
-    std::vector<HandleWithState> next;
-
-    mHandleReconstructions.forEachLiveComponent_const(
-        [&totalParents, &next](bool live, uint64_t componentHandle, uint64_t entityHandle,
-                               const HandleWithStateReconstruction& item) {
-            for (int state = BEGIN; state < HANDLE_STATE_COUNT; state++) {
-                const auto& parents = item.states[state].parentHandles;
-                HandleWithState handleWithState = {entityHandle, static_cast<HandleState>(state)};
-                totalParents[handleWithState] = parents.size();
-                if (parents.empty()) {
-                    next.push_back(handleWithState);
-                }
-            }
-        });
-
-    std::vector<std::vector<HandleWithState>> handlesByTopoOrder;
-
-    while (!next.empty()) {
-        next = typeTagSortedHandles(next);
-        handlesByTopoOrder.push_back(std::move(next));
-        const std::vector<HandleWithState>& current = handlesByTopoOrder.back();
-        for (const auto& handle : current) {
-            const auto& item = mHandleReconstructions.get(handle.first)->states[handle.second];
-            for (const auto& childHandle : item.childHandles) {
-                if (--totalParents[childHandle] == 0) {
-                    next.push_back(childHandle);
-                }
-            }
-        }
-    }
-
     std::vector<std::vector<uint64_t>> uniqApiRefsByTopoOrder;
-    uniqApiRefsByTopoOrder.reserve(handlesByTopoOrder.size() + 1);
-    for (const auto& handles : handlesByTopoOrder) {
-        std::vector<uint64_t> nextApis;
-        for (const auto& handle : handles) {
-            auto item = mHandleReconstructions.get(handle.first)->states[handle.second];
-            for (uint64_t apiRef : item.apiRefs) {
-                auto apiItem = mApiCallManager.get(apiRef);
-                if (!apiItem) continue;
-                if (savedApis.find(apiRef) != savedApis.end()) continue;
-                savedApis.insert(apiRef);
-#if DEBUG_RECONSTRUCTION
-                DEBUG_RECON("adding handle 0x%lx API 0x%lx op code %d", handle.first, apiRef,
-                            apiItem->opCode);
-#endif
-                nextApis.push_back(apiRef);
-            }
+    uniqApiRefsByTopoOrder.resize(1);
+
+    fprintf(stderr, "%s %d\n", __func__, __LINE__);
+    for (auto [myid, myhandle]: mId2ApiHandle) {
+            fprintf(stderr, "%s %d try pushing back id %d handle 0x%llx\n",
+                    __func__, __LINE__, myid, (unsigned long long)myhandle);
+        if (mApiCallManager.get(myhandle)) {
+            fprintf(stderr, "%s %d pushing back id %d handle 0x%llx\n",
+                    __func__, __LINE__, myid, (unsigned long long)myhandle);
+            uniqApiRefsByTopoOrder.back().push_back(myhandle);
         }
-        uniqApiRefsByTopoOrder.push_back(std::move(nextApis));
     }
+    fprintf(stderr, "%s %d\n", __func__, __LINE__);
 
     uniqApiRefsByTopoOrder.push_back(getOrderedUniqueModifyApis());
 
@@ -193,10 +153,13 @@ void VkReconstruction::loadReplayBuffers(android::base::Stream* stream,
 }
 
 VkSnapshotApiCallInfo* VkReconstruction::createApiCallInfo() {
-    VkSnapshotApiCallHandle handle = mApiCallManager.add(VkSnapshotApiCallInfo(), 1);
+    VkSnapshotApiCallInfo myinfo;
+    myinfo.mId = ++mCurrentApiId;
+    VkSnapshotApiCallHandle handle = mApiCallManager.add(myinfo, 1);
 
     auto* info = mApiCallManager.get(handle);
     info->handle = handle;
+    mId2ApiHandle[myinfo.mId] = handle;
     return info;
 }
 
@@ -226,6 +189,7 @@ void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
     item->createdHandles.clear();
 
     mApiCallManager.remove(h);
+    mId2ApiHandle.erase(item->mId);
 }
 
 void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
@@ -233,6 +197,7 @@ void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
 
     if (info->packet.empty()) {
         mApiCallManager.remove(info->handle);
+        mId2ApiHandle.erase(info->mId);
         return;
     }
 

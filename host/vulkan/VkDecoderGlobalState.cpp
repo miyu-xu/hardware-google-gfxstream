@@ -324,7 +324,7 @@ class VkDecoderGlobalState::Impl {
     }
 
     void save(android::base::Stream* stream) {
-        VERBOSE("VulkanSnapshots save (begin)");
+        INFO("VulkanSnapshots save (begin)");
         std::lock_guard<std::mutex> lock(mMutex);
 
         mSnapshotState = SnapshotState::Saving;
@@ -335,7 +335,7 @@ class VkDecoderGlobalState::Impl {
         }
 #endif
 
-        VERBOSE("snapshot save: setup internal structures");
+        INFO("snapshot save: setup internal structures");
         {
             std::unordered_map<VkDevice, uint32_t> deviceToContextId;
             for (const auto& [device, deviceInfo] : mDeviceInfo) {
@@ -998,6 +998,7 @@ class VkDecoderGlobalState::Impl {
             m_vkEmulation->getCallbacks().registerProcessCleanupCallback(
                 unbox_VkInstance(boxed), [this, boxed] {
                     if (snapshotsEnabled()) {
+            INFO("enabled vk snapshot");
                         snapshot()->vkDestroyInstance(nullptr, nullptr, nullptr, 0, boxed, nullptr);
                     }
                     vkDestroyInstanceImpl(unbox_VkInstance(boxed), nullptr);
@@ -2161,6 +2162,7 @@ class VkDecoderGlobalState::Impl {
             }
         }
         if (snapshotsEnabled() && snapshotInfo) {
+            INFO("enabled vk snapshot");
             snapshotInfo->addOrderedBoxedHandlesCreatedByCall(extraHandles.data(),
                                                               extraHandles.size());
         }
@@ -2307,6 +2309,7 @@ class VkDecoderGlobalState::Impl {
         auto vk = dispatch_VkDevice(boxed_device);
         VkBufferCreateInfo localCreateInfo;
         if (snapshotsEnabled()) {
+            INFO("enabled vk snapshot");
             localCreateInfo = *pCreateInfo;
             // Add transfer src bit for potential device local memories.
             //
@@ -2723,6 +2726,7 @@ class VkDecoderGlobalState::Impl {
         EXCLUDES(mMutex) {
 #ifdef CONFIG_AEMU
         if (bindInfoCount > 1 && snapshotsEnabled()) {
+            INFO("enabled vk snapshot");
             if (mVerbosePrints) {
                 fprintf(stderr,
                     "vkBindImageMemory2 with more than 1 bindInfoCount not supporting snapshot");

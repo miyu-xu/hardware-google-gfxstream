@@ -26,6 +26,9 @@ using VkSnapshotApiCallHandle = uint64_t;
 struct VkSnapshotApiCallInfo {
     VkSnapshotApiCallHandle handle = -1;
 
+    // this id never repeats and it is based on
+    // the time it is added to apiManager
+    int32_t mId{0};
     // Raw packet from VkDecoder.
     std::vector<uint8_t> packet;
 
