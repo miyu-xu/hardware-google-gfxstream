@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c306ce28_68a4a3cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-03-13T16:04:54Z",
+      "side": 1,
+      "message": "Thanks a lot, Jason,\nreplaced by https://android-review.git.corp.google.com/c/platform/hardware/google/gfxstream/+/3534205 with all the recommended edits.",
+      "revId": "3135ccf1b7609c0d6ef1a6193682332beb4cf60f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4b36d042_6faa5a04",
