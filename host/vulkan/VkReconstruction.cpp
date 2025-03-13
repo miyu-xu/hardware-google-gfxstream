@@ -33,7 +33,7 @@ uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
 
 }  // namespace
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -78,60 +78,59 @@ void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
     dump();
 #endif
 
-    std::unordered_set<uint64_t> savedApis;
-
-    std::unordered_map<HandleWithState, int, HandleWithStateHash> totalParents;
-    std::vector<HandleWithState> next;
-
-    mHandleReconstructions.forEachLiveComponent_const(
-        [&totalParents, &next](bool live, uint64_t componentHandle, uint64_t entityHandle,
-                               const HandleWithStateReconstruction& item) {
-            for (int state = BEGIN; state < HANDLE_STATE_COUNT; state++) {
-                const auto& parents = item.states[state].parentHandles;
-                HandleWithState handleWithState = {entityHandle, static_cast<HandleState>(state)};
-                totalParents[handleWithState] = parents.size();
-                if (parents.empty()) {
-                    next.push_back(handleWithState);
-                }
-            }
-        });
-
-    std::vector<std::vector<HandleWithState>> handlesByTopoOrder;
-
-    while (!next.empty()) {
-        next = typeTagSortedHandles(next);
-        handlesByTopoOrder.push_back(std::move(next));
-        const std::vector<HandleWithState>& current = handlesByTopoOrder.back();
-        for (const auto& handle : current) {
-            const auto& item = mHandleReconstructions.get(handle.first)->states[handle.second];
-            for (const auto& childHandle : item.childHandles) {
-                if (--totalParents[childHandle] == 0) {
-                    next.push_back(childHandle);
-                }
-            }
-        }
-    }
-
     std::vector<std::vector<uint64_t>> uniqApiRefsByTopoOrder;
-    uniqApiRefsByTopoOrder.reserve(handlesByTopoOrder.size() + 1);
-    for (const auto& handles : handlesByTopoOrder) {
-        std::vector<uint64_t> nextApis;
-        for (const auto& handle : handles) {
-            auto item = mHandleReconstructions.get(handle.first)->states[handle.second];
-            for (uint64_t apiRef : item.apiRefs) {
-                auto apiItem = mApiCallManager.get(apiRef);
-                if (!apiItem) continue;
-                if (savedApis.find(apiRef) != savedApis.end()) continue;
-                savedApis.insert(apiRef);
-#if DEBUG_RECONSTRUCTION
-                DEBUG_RECON("adding handle 0x%lx API 0x%lx op code %d", handle.first, apiRef,
-                            GetOpcode(*apiItem));
-#endif
-                nextApis.push_back(apiRef);
+    uniqApiRefsByTopoOrder.resize(1);
+
+    fprintf(stderr, "%s %d\n", __func__, __LINE__);
+    for (auto [myid, myhandle]: mId2ApiHandle) {
+            fprintf(stderr, "%s %d try pushing back id %d handle 0x%llx\n",
+                    __func__, __LINE__, myid, (unsigned long long)myhandle);
+        if (mApiCallManager.get(myhandle)) {
+            fprintf(stderr, "%s %d pushing back id %d handle 0x%llx\n",
+                    __func__, __LINE__, myid, (unsigned long long)myhandle);
+            auto item = mApiCallManager.get(myhandle);
+            bool found = false;
+            for(auto createdId: item->createdHandles) {
+                auto vk_item = mHandleReconstructions.get(createdId);
+                if (!vk_item) {
+                    fprintf(stderr, "%s %d created id 0x%llx missing from valid handle 0x%llx\n",
+                            __func__, __LINE__, (unsigned long long)createdId,
+                            (unsigned long long)myhandle);
+                } else {
+                    found = true;
+                    fprintf(stderr, "%s %d created id 0x%llx live from valid handle 0x%llx\n",
+                            __func__, __LINE__, (unsigned long long)createdId,
+                            (unsigned long long)myhandle);
+                }
             }
+            bool found2 = false;
+            for(auto createdId: item->modifiedHandles) {
+                auto vk_item = mHandleReconstructions.get(createdId);
+                if (!vk_item) {
+                    fprintf(stderr, "%s %d modified id 0x%llx missing from valid handle 0x%llx\n",
+                            __func__, __LINE__, (unsigned long long)createdId,
+                            (unsigned long long)myhandle);
+                } else {
+                    found2 = true;
+                    fprintf(stderr, "%s %d modified id 0x%llx live from valid handle 0x%llx\n",
+                            __func__, __LINE__, (unsigned long long)createdId,
+                            (unsigned long long)myhandle);
+                }
+            }
+            if (!found && !found2) {
+                fprintf(stderr, "%s %d cannot pushing back id %d valid handle 0x%llx\n",
+                    __func__, __LINE__, myid, (unsigned long long)myhandle);
+                continue;
+            }
+            fprintf(stderr, "%s %d pushing back id %d handle 0x%llx\n",
+                    __func__, __LINE__, myid, (unsigned long long)myhandle);
+            uniqApiRefsByTopoOrder.back().push_back(myhandle);
+        } else {
+                fprintf(stderr, "%s %d cannot pushing back id %d invalid handle 0x%llx\n",
+                    __func__, __LINE__, myid, (unsigned long long)myhandle);
         }
-        uniqApiRefsByTopoOrder.push_back(std::move(nextApis));
     }
+    fprintf(stderr, "%s %d\n", __func__, __LINE__);
 
     uniqApiRefsByTopoOrder.push_back(getOrderedUniqueModifyApis());
 
@@ -152,7 +151,8 @@ void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
         for (auto apiHandle : uniqApiRefsByTopoOrder[i]) {
             auto item = mApiCallManager.get(apiHandle);
             for (auto createdHandle : item->createdHandles) {
-                DEBUG_RECON("save handle: 0x%lx", createdHandle);
+                DEBUG_RECON("save handle: 0x%lx for api 0x%llx", createdHandle,
+                        (unsigned long long)apiHandle);
                 createdHandleBuffer.push_back(createdHandle);
             }
         }
@@ -193,10 +193,13 @@ void VkReconstruction::loadReplayBuffers(android::base::Stream* stream,
 }
 
 VkSnapshotApiCallInfo* VkReconstruction::createApiCallInfo() {
-    VkSnapshotApiCallHandle handle = mApiCallManager.add(VkSnapshotApiCallInfo(), 1);
+    VkSnapshotApiCallInfo myinfo;
+    myinfo.mId = ++mCurrentApiId;
+    VkSnapshotApiCallHandle handle = mApiCallManager.add(myinfo, 1);
 
     auto* info = mApiCallManager.get(handle);
     info->handle = handle;
+    mId2ApiHandle[myinfo.mId] = handle;
     return info;
 }
 
@@ -211,6 +214,10 @@ void VkReconstruction::removeHandleFromApiInfo(VkSnapshotApiCallHandle h, uint64
 
     if (it != handles.end()) {
         handles.erase(it);
+        apiInfo->mainHandles.erase(toRemove);
+        if (apiInfo->mainHandles.empty()) {
+            handles.clear();
+        }
     }
     DEBUG_RECON("removed 1 vk handle  0x%llx from apiInfo  0x%llx, now it has %d left",
                 (unsigned long long)toRemove, (unsigned long long)h, (int)handles.size());
@@ -226,6 +233,7 @@ void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
     item->createdHandles.clear();
 
     mApiCallManager.remove(h);
+    mId2ApiHandle.erase(item->mId);
 }
 
 void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
@@ -233,9 +241,11 @@ void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
 
     if (info->packet.empty()) {
         mApiCallManager.remove(info->handle);
+        mId2ApiHandle.erase(info->mId);
         return;
     }
 
+    info->mainHandles.insert(info->createdHandles.begin(), info->createdHandles.end());
     if (!info->extraCreatedHandles.empty()) {
         info->createdHandles.insert(info->createdHandles.end(), info->extraCreatedHandles.begin(),
                                     info->extraCreatedHandles.end());
@@ -249,6 +259,7 @@ VkSnapshotApiCallInfo* VkReconstruction::getApiInfo(VkSnapshotApiCallHandle h) {
 
 void VkReconstruction::setApiTrace(VkSnapshotApiCallInfo* apiInfo, const uint8_t* packet,
                                    size_t packetLenBytes) {
+    INFO("assign packet of size %d\n", (int)packetLenBytes);
     apiInfo->packet.assign(packet, packet + packetLenBytes);
 }
 
@@ -459,6 +470,10 @@ void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint
 
         item->apiRefs.push_back(apiHandle);
     }
+        auto item = mApiCallManager.get(apiHandle);
+        if (item) {
+            item->modifiedHandles.insert(toProcess, toProcess+ count);
+        }
 }
 
 void VkReconstruction::forEachHandleClearModifyApi(const uint64_t* toProcess, uint32_t count) {
@@ -470,6 +485,12 @@ void VkReconstruction::forEachHandleClearModifyApi(const uint64_t* toProcess, ui
         if (!item) continue;
 
         item->apiRefs.clear();
+        for (auto apiHandle: item->apiRefs) {
+            auto item = mApiCallManager.get(apiHandle);
+            if (item) {
+                item->modifiedHandles.erase(toProcess[i]);
+            }
+        }
     }
 }
 

@@ -68,7 +68,7 @@ using android::base::MetricEventDuplicateSequenceNum;
 class VkDecoder::Impl {
    public:
     Impl()
-        : m_logCalls(android::base::getEnvironmentVariable("ANDROID_EMU_VK_LOG_CALLS") == "1"),
+        : m_logCalls(true),
           m_vk(vkDispatch()),
           m_state(VkDecoderGlobalState::get()),
           m_vkStream(nullptr, m_state->getFeatures()),
@@ -88,7 +88,7 @@ class VkDecoder::Impl {
                   const ProcessResources* processResources, const VkDecoderContext&);
 
    private:
-    bool m_logCalls;
+    bool m_logCalls {true};
     bool m_forSnapshotLoad = false;
     VulkanDispatch* m_vk;
     VkDecoderGlobalState* m_state;

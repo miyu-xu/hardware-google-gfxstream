@@ -591,6 +591,7 @@ FrameBuffer::FrameBuffer(int p_width, int p_height, gfxstream::host::FeatureSet 
       m_postThread([this](Post&& post) { return postWorkerFunc(post); }),
       m_logger(CreateMetricsLogger()),
       m_healthMonitor(CreateHealthMonitor(*m_logger)) {
+          m_features.VulkanSnapshots.enabled = true;
     mDisplayActiveConfigId = 0;
     mDisplayConfigs[0] = {p_width, p_height, 160, 160};
     uint32_t displayId = 0;
