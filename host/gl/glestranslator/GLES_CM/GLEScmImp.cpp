@@ -1213,12 +1213,10 @@ GL_API void GL_APIENTRY  glGetFloatv( GLenum pname, GLfloat *params) {
     case GL_COMPRESSED_TEXTURE_FORMATS:
         {
             int nparams = getCompressedFormats(1, NULL);
-            if (nparams > 0) {
-                int* iparams = new int[nparams];
+            if (nparams>0) {
+                int * iparams = new int[nparams];
                 getCompressedFormats(1, iparams);
-                for (int paramIndex = 0; paramIndex < nparams; paramIndex++) {
-                    params[paramIndex] = (GLfloat)iparams[paramIndex];
-                }
+                for (int i=0; i<nparams; i++) params[i] = (GLfloat)iparams[i];
                 delete [] iparams;
             }
         }
@@ -2693,10 +2691,10 @@ GL_API void GLAPIENTRY glGetFramebufferAttachmentParameterivOES(GLenum target, G
     if (fbName) {
         auto fbObj = ctx->getFBOData(fbName);
         if (fbObj) {
-            GLenum attachmentTarget;
-            GLuint name = fbObj->getAttachment(attachment, &attachmentTarget, NULL);
+            GLenum target;
+            GLuint name = fbObj->getAttachment(attachment, &target, NULL);
             if (pname == GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_OES) {
-                *params = attachmentTarget;
+                *params = target;
                 return;
             }
             else if (pname == GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME_OES) {
