@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "host/magma/IntelDrmDecoder.h"
+#include "IntelDrmDecoder.h"
 
 #include <i915_drm.h>
 #include <magma_intel_gen_defs.h>
@@ -24,9 +24,9 @@
 #include <ctime>
 #include <vector>
 
+#include "Connection.h"
+#include "DrmDevice.h"
 #include "RenderThreadInfoMagma.h"
-#include "host/magma/Connection.h"
-#include "host/magma/DrmDevice.h"
 #include "magma/magma_common_defs.h"
 
 namespace gfxstream {

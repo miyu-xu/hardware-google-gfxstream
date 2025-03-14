@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "host/magma/DrmContext.h"
+#include "DrmContext.h"
 
 #include <i915_drm.h>
 #include <sys/mman.h>
@@ -20,9 +20,9 @@
 #include <cerrno>
 #include <cinttypes>
 
+#include "Connection.h"
+#include "DrmDevice.h"
 #include "host-common/logging.h"
-#include "host/magma/Connection.h"
-#include "host/magma/DrmDevice.h"
 
 namespace gfxstream {
 namespace magma {
