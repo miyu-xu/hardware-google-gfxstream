@@ -235,8 +235,29 @@ std::unique_ptr<AndroidNativeBufferInfo> AndroidNativeBufferInfo::create(
 
         vk->vkGetImageMemoryRequirements(out->mDevice, out->mImage, &out->mImageMemoryRequirements);
 
+<<<<<<< PATCH SET (045bf9 Revert "Workaround the issue in b/399729237 instead of rever)
+        vk->vkGetImageMemoryRequirements(device, out->image, &out->memReqs);
+
+        if (out->memReqs.size > importedColorBufferMemoryInfo.size) {
+            VK_ANB_ERR(
+                "Failed to prepare ANB image: attempted to import memory that is not large enough "
+                "for the VkImage: image memory requirements size:%d vs actual memory size:%d",
+                out->memReqs.size, importedColorBufferMemoryInfo.size);
+
+            return VK_ERROR_INITIALIZATION_FAILED;
+        }
+
+        if (out->memReqs.size < importedColorBufferMemoryInfo.size) {
+            out->memReqs.size = importedColorBufferMemoryInfo.size;
+||||||| BASE
+        vk->vkGetImageMemoryRequirements(device, out->image, &out->memReqs);
+
+        if (out->memReqs.size < importedColorBufferMemoryInfo.size) {
+            out->memReqs.size = importedColorBufferMemoryInfo.size;
+=======
         if (out->mImageMemoryRequirements.size < importedColorBufferMemoryInfo.size) {
             out->mImageMemoryRequirements.size = importedColorBufferMemoryInfo.size;
+>>>>>>> BASE      (fb68aa Merge "Revert "Fixes for framebuffer locks"" into main)
         }
 
         VkMemoryDedicatedAllocateInfo dedicatedInfo = {
