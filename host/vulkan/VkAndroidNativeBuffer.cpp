@@ -551,6 +551,7 @@ VkResult AndroidNativeBufferInfo::on_vkAcquireImageANDROID(VkEmulation* emu,
     mEverAcquired = true;
 
     if (firstTimeSetup) {
+        mLastUsedQueueFamilyIndex = defaultQueueFamilyIndex;
         VkSubmitInfo submitInfo = {
             VK_STRUCTURE_TYPE_SUBMIT_INFO,
             0,
@@ -566,7 +567,6 @@ VkResult AndroidNativeBufferInfo::on_vkAcquireImageANDROID(VkEmulation* emu,
         VK_CHECK(vk->vkQueueSubmit(defaultQueue, 1, &submitInfo, fence));
         return VK_SUCCESS;
     }
-
     // Setup queue state for this queue family index.
     auto queueFamilyIndex = mLastUsedQueueFamilyIndex;
     if (queueFamilyIndex >= mQueueStates.size()) {
