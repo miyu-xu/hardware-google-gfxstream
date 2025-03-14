@@ -25,7 +25,6 @@
 
 #include "VkCommonOperations.h"
 #include "VkQsriTimeline.h"
-#include "aemu/base/AsyncResult.h"
 #include "aemu/base/BumpPool.h"
 #include "aemu/base/ThreadAnnotations.h"
 #include "aemu/base/synchronization/ConditionVariable.h"
@@ -36,64 +35,37 @@
 namespace gfxstream {
 namespace vk {
 
+struct AndroidNativeBufferInfo;
 struct VulkanDispatch;
 
 // This class provides methods to create and query information about Android
 // native buffers in the context of creating Android swapchain images that have
 // Android native buffer backing.
 
-class AndroidNativeBufferInfo {
-   public:
-    static std::unique_ptr<AndroidNativeBufferInfo> create(
-        VkEmulation* emu, VulkanDispatch* vk, VkDevice device, android::base::BumpPool& allocator,
-        const VkImageCreateInfo* pCreateInfo, const VkNativeBufferANDROID* nativeBufferANDROID,
-        const VkAllocationCallbacks* pAllocator, const VkPhysicalDeviceMemoryProperties* memProps);
+// This is to be refactored to move to external memory only once we get that
+// working.
 
-    AndroidNativeBufferInfo(const AndroidNativeBufferInfo&) = delete;
-    AndroidNativeBufferInfo& operator=(const AndroidNativeBufferInfo&) = delete;
+void teardownAndroidNativeBufferImage(VulkanDispatch* vk, AndroidNativeBufferInfo* anbInfo);
 
-    AndroidNativeBufferInfo(AndroidNativeBufferInfo&&) = delete;
-    AndroidNativeBufferInfo& operator=(AndroidNativeBufferInfo&&) = delete;
+struct AndroidNativeBufferInfo {
+    ~AndroidNativeBufferInfo() {
+        if (vk) {
+            teardownAndroidNativeBufferImage(vk, this);
+        }
+    }
 
-    ~AndroidNativeBufferInfo();
+    VulkanDispatch* vk = nullptr;
+    VkDevice device = VK_NULL_HANDLE;
+    VkFormat vkFormat;
+    VkExtent3D extent;
+    VkImageUsageFlags usage;
+    std::vector<uint32_t> queueFamilyIndices;
 
-    VkImage getImage() const { return mImage; }
-
-    bool isExternallyBacked() const { return mExternallyBacked; }
-
-    bool isUsingNativeImage() const { return mUseVulkanNativeImage; }
-
-    uint32_t getColorBufferHandle() const { return mColorBufferHandle; }
-
-    VkResult on_vkAcquireImageANDROID(VkEmulation* emu, VulkanDispatch* vk, VkDevice device, VkQueue defaultQueue,
-                                      uint32_t defaultQueueFamilyIndex,
-                                      std::mutex* defaultQueueMutex, VkSemaphore semaphore,
-                                      VkFence fence);
-
-    VkResult on_vkQueueSignalReleaseImageANDROID(VkEmulation* emu,
-                                                 VulkanDispatch* vk, uint32_t queueFamilyIndex,
-                                                 VkQueue queue, std::mutex* queueMutex,
-                                                 uint32_t waitSemaphoreCount,
-                                                 const VkSemaphore* pWaitSemaphores,
-                                                 int* pNativeFenceFd);
-
-    AsyncResult registerQsriCallback(VkImage image, VkQsriTimeline::Callback callback);
-
-   private:
-    AndroidNativeBufferInfo() = default;
-
-    VulkanDispatch* mDeviceDispatch = nullptr;
-    VkDevice mDevice = VK_NULL_HANDLE;
-    VkFormat mVkFormat;
-    VkExtent3D mExtent;
-    VkImageUsageFlags mUsage;
-    std::vector<uint32_t> mQueueFamilyIndices;
-
-    int mAhbFormat = 0;
-    int mStride = 0;
-    uint32_t mColorBufferHandle = 0;
-    bool mExternallyBacked = false;
-    bool mUseVulkanNativeImage = false;
+    int format;
+    int stride;
+    uint32_t colorBufferHandle;
+    bool externallyBacked = false;
+    bool useVulkanNativeImage = false;
 
     // We will be using separate allocations for image versus staging memory,
     // because not all host Vulkan drivers will support directly rendering to
@@ -101,16 +73,19 @@ class AndroidNativeBufferInfo {
 
     // If we are using external memory, these memories are imported
     // to the current instance.
-    VkDeviceMemory mImageMemory = VK_NULL_HANDLE;
-    uint32_t mImageMemoryTypeIndex = -1;
+    VkDeviceMemory imageMemory = VK_NULL_HANDLE;
+    VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
 
-    VkDeviceMemory mStagingBufferMemory = VK_NULL_HANDLE;
-    VkBuffer mStagingBuffer = VK_NULL_HANDLE;
-    uint8_t* mMappedStagingPtr = nullptr;
+    VkBuffer stagingBuffer = VK_NULL_HANDLE;
+
+    uint32_t imageMemoryTypeIndex;
+    uint32_t stagingMemoryTypeIndex;
+
+    uint8_t* mappedStagingPtr = nullptr;
 
     // To be populated later as we go.
-    VkImage mImage = VK_NULL_HANDLE;
-    VkMemoryRequirements mImageMemoryRequirements;
+    VkImage image = VK_NULL_HANDLE;
+    VkMemoryRequirements memReqs;
 
     // The queue over which we send the buffer/image copy commands depends on
     // the queue over which vkQueueSignalReleaseImageANDROID happens.
@@ -131,7 +106,7 @@ class AndroidNativeBufferInfo {
     };
     // We keep one QueueState for each queue family index used by the guest
     // in vkQueuePresentKHR.
-    std::vector<QueueState> mQueueStates;
+    std::vector<QueueState> queueStates;
 
     // Did we ever sync the Vulkan image with a ColorBuffer?
     // If so, set everSynced along with the queue family index
@@ -139,14 +114,14 @@ class AndroidNativeBufferInfo {
     // If the swapchain image was created with exclusive sharing
     // mode (reflected in this struct's |sharingMode| field),
     // this part doesn't really matter.
-    bool mEverSynced = false;
-    uint32_t mLastUsedQueueFamilyIndex = -1;
+    bool everSynced = false;
+    uint32_t lastUsedQueueFamilyIndex;
 
     // On first acquire, we might use a different queue family
     // to initially set the semaphore/fence to be signaled.
     // Track that here.
-    bool mEverAcquired = false;
-    QueueState mAcquireQueueState;
+    bool everAcquired = false;
+    QueueState acquireQueueState;
 
     // State that is of interest when interacting with sync fds and SyncThread.
     // Protected by this lock and condition variable.
@@ -169,14 +144,34 @@ class AndroidNativeBufferInfo {
         std::unordered_set<VkFence> mUsedFences GUARDED_BY(mMutex);
     };
 
-    std::unique_ptr<QsriWaitFencePool> mQsriWaitFencePool;
-    std::unique_ptr<VkQsriTimeline> mQsriTimeline;
+    std::unique_ptr<QsriWaitFencePool> qsriWaitFencePool = nullptr;
+    std::unique_ptr<VkQsriTimeline> qsriTimeline = nullptr;
 };
+
+VkResult prepareAndroidNativeBufferImage(VkEmulation* emu, VulkanDispatch* vk, VkDevice device,
+                                         android::base::BumpPool& allocator,
+                                         const VkImageCreateInfo* pCreateInfo,
+                                         const VkNativeBufferANDROID* nativeBufferANDROID,
+                                         const VkAllocationCallbacks* pAllocator,
+                                         const VkPhysicalDeviceMemoryProperties* memProps,
+                                         AndroidNativeBufferInfo* out);
 
 void getGralloc0Usage(VkFormat format, VkImageUsageFlags imageUsage, int* usage_out);
 void getGralloc1Usage(VkFormat format, VkImageUsageFlags imageUsage,
                       VkSwapchainImageUsageFlagsANDROID swapchainImageUsage,
                       uint64_t* consumerUsage_out, uint64_t* producerUsage_out);
+
+VkResult setAndroidNativeImageSemaphoreSignaled(VkEmulation* emu, VulkanDispatch* vk,
+                                                VkDevice device, VkQueue defaultQueue,
+                                                uint32_t defaultQueueFamilyIndex,
+                                                std::mutex* defaultQueueMutex,
+                                                VkSemaphore semaphore, VkFence fence,
+                                                AndroidNativeBufferInfo* anbInfo);
+
+VkResult syncImageToColorBuffer(VkEmulation* emu, VulkanDispatch* vk, uint32_t queueFamilyIndex,
+                                VkQueue queue, std::mutex* queueMutex, uint32_t waitSemaphoreCount,
+                                const VkSemaphore* pWaitSemaphores, int* pNativeFenceFd,
+                                AndroidNativeBufferInfo* anbInfo);
 
 }  // namespace vk
 }  // namespace gfxstream
