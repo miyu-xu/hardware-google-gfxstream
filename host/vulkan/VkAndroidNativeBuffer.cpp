@@ -567,6 +567,11 @@ VkResult AndroidNativeBufferInfo::on_vkAcquireImageANDROID(VkEmulation* emu,
         return VK_SUCCESS;
     }
 
+    if (mLastUsedQueueFamilyIndex < 0) {
+        // this could happen: on_vkAcquireImageANDROID is called
+        // before on_vkQueueSignalReleaseImageANDROID.
+        mLastUsedQueueFamilyIndex = defaultQueueFamilyIndex;
+    }
     // Setup queue state for this queue family index.
     auto queueFamilyIndex = mLastUsedQueueFamilyIndex;
     if (queueFamilyIndex >= mQueueStates.size()) {
