@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81deedd7_7b6823a5",
+        "filename": "host/vulkan/VkAndroidNativeBuffer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 574,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-14T16:17:19Z",
+      "side": 1,
+      "message": "```suggestion\n    if (firstTimeSetup) {\n        mLastUsedQueueFamilyIndex \u003d defaultQueueFamilyIndex;\n\n        VkSubmitInfo submitInfo \u003d {\n            VK_STRUCTURE_TYPE_SUBMIT_INFO,\n            0,\n            0,\n            nullptr,\n            nullptr,\n            0,\n            nullptr,\n            (uint32_t)(semaphore \u003d\u003d VK_NULL_HANDLE ? 0 : 1),\n            semaphore \u003d\u003d VK_NULL_HANDLE ? nullptr : \u0026semaphore,\n        };\n        std::lock_guard\u003cstd::mutex\u003e qlock(*defaultQueueMutex);\n        VK_CHECK(vk-\u003evkQueueSubmit(defaultQueue, 1, \u0026submitInfo, fence));\n        return VK_SUCCESS;\n    }\n\n    if (mLastUsedQueueFamilyIndex \u003d\u003d INVALID_QUEUE_FAMILY_INDEX) {\n        ERR(\"AndroidNativeBufferInfo missing last used queue.\");\n        return VK_ERROR_INITIALIZATION_FAILED;\n    }\n```",
+      "range": {
+        "startLine": 553,
+        "startChar": 4,
+        "endLine": 574,
+        "endChar": 5
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "798a7d40_7550c2e1",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkAndroidNativeBuffer.cpp",
+              "range": {
+                "startLine": 554,
+                "startChar": 0,
+                "endLine": 554,
+                "endChar": 0
+              },
+              "replacement": "        mLastUsedQueueFamilyIndex \u003d defaultQueueFamilyIndex;\n"
+            },
+            {
+              "path": "host/vulkan/VkAndroidNativeBuffer.cpp",
+              "range": {
+                "startLine": 569,
+                "startChar": 0,
+                "endLine": 575,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "55112172acaf9698122e38c7050d94ef78bccceb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
