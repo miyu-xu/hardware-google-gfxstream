@@ -44,7 +44,6 @@ cc_library_headers {
         "include",
         "host",
         "host/gl",
-        "host/vulkan",
         "utils/include",
     ],
     header_libs: [

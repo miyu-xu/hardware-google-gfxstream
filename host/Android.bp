@@ -197,6 +197,7 @@ cc_test_library {
     header_libs: [
         "gfxstream_opengl_headers",
         "libgfxstream_host_vulkan_cereal_common",
+        "libgfxstream_host_vulkan_server_headers",
     ],
     shared_libs: [
         "libbase",
