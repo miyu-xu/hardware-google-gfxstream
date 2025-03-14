@@ -17,7 +17,7 @@
 #include "RenderThreadInfoMagma.h"
 
 #if GFXSTREAM_MAGMA_USE_INTEL_DRM
-#include "host/magma/IntelDrmDecoder.h"
+#include "IntelDrmDecoder.h"
 #endif
 
 namespace gfxstream {

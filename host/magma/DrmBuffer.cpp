@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "host/magma/DrmBuffer.h"
+#include "DrmBuffer.h"
 
 #include <errno.h>
 #include <i915_drm.h>
 #include <sys/mman.h>
 
 #include "host-common/logging.h"
-#include "host/ExternalObjectManager.h"
+#include "ExternalObjectManager.h"
 
 namespace gfxstream {
 namespace magma {
