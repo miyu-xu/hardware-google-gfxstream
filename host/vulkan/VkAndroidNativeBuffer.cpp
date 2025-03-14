@@ -235,6 +235,18 @@ std::unique_ptr<AndroidNativeBufferInfo> AndroidNativeBufferInfo::create(
 
         vk->vkGetImageMemoryRequirements(out->mDevice, out->mImage, &out->mImageMemoryRequirements);
 
+        if (out->mImageMemoryRequirements.size > importedColorBufferMemoryInfo.size) {
+            VK_ANB_ERR(
+                "Failed to prepare ANB image: attempted to import memory that is not large enough "
+                "for the VkImage: image memory requirements size:%d vs actual memory size:%d, "
+                "format: %s, extent: %ux%ux%u",
+                out->mImageMemoryRequirements.size, importedColorBufferMemoryInfo.size,
+                string_VkFormat(createImageCi.format), createImageCi.extent.width,
+                createImageCi.extent.height, createImageCi.extent.depth);
+
+            return VK_ERROR_INITIALIZATION_FAILED;
+        }
+
         if (out->mImageMemoryRequirements.size < importedColorBufferMemoryInfo.size) {
             out->mImageMemoryRequirements.size = importedColorBufferMemoryInfo.size;
         }
