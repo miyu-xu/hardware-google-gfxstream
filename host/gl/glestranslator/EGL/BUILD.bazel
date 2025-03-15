@@ -1,0 +1,83 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
+objc_library(
+    name = "gfxstream_egl_translator_darwin",
+    srcs = [
+        "MacNative.m",
+        "MacPixelFormatsAttribs.m",
+    ] + glob(["*.h"]),
+    copts = ["-Wno-deprecated-declarations"],
+    defines = ["EMUGL_BUILD"],
+    sdk_frameworks = [
+        "IOSurface",
+        "AppKit",
+        "CoreGraphics",
+        "OpenGL",
+    ],
+    deps = [
+        "@aemu//base:aemu-base-headers",
+        "@aemu//host-common:aemu-host-common-headers",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "gfxstream_egl_translator",
+    srcs = [
+        "ClientAPIExts.cpp",
+        "EglConfig.cpp",
+        "EglContext.cpp",
+        "EglDisplay.cpp",
+        "EglGlobalInfo.cpp",
+        "EglImp.cpp",
+        "EglOsApi_egl.cpp",
+        "EglPbufferSurface.cpp",
+        "EglSurface.cpp",
+        "EglThreadInfo.cpp",
+        "EglValidate.cpp",
+        "EglWindowSurface.cpp",
+        "ShaderCache.cpp",
+        "ThreadInfo.cpp",
+    ] + glob([
+        "*.h",
+    ]) + select({
+        "@platforms//os:macos": ["EglOsApi_darwin.cpp"],
+        "@platforms//os:windows": [
+            "CoreProfileConfigs_windows.cpp",
+            "EglOsApi_wgl.cpp",
+        ],
+        "@platforms//os:linux": [
+            "CoreProfileConfigs_linux.cpp",
+            "EglOsApi_glx.cpp",
+            "X11ErrorHandler.cpp",
+        ],
+        "//conditions:default": [],
+    }),
+    hdrs =
+        ["ClientAPIExts.in"],
+    copts = [
+        "-fno-exceptions",
+        "-Wno-extern-c-compat",
+        "-Wno-inconsistent-missing-override",
+        "-Wno-return-type-c-linkage",
+    ],
+    defines = ["EMUGL_BUILD"],
+    deps = [
+        "@aemu//base:aemu-base-headers",
+        "//common/etc:gfxstream_etc",
+        "//common/opengl:gfxstream_opengl_headers",
+        "//host:gfxstream_host_headers",
+        "//host/apigen-codec-common",
+        "//host/gl/gl-host-common:gfxstream_gl_host_common",
+        "//host/gl/glestranslator/GLES_CM:GLES_CM_translator_static",
+        "//host/gl/glestranslator/GLES_V2:GLES_V2_translator_static",
+        "@aemu//host-common:aemu-host-common-headers",
+        "@aemu//snapshot:aemu-snapshot",
+    ] + select({
+        "@platforms//os:macos": [":gfxstream_egl_translator_darwin"],
+        "//conditions:default": [],
+    }),
+    alwayslink = True,
+)

@@ -1,16 +1,11 @@
-# Header Library
-cc_library(
-    name = "gfxstream_common_utils_headers",
-    hdrs = glob(["include/**/*.h"]),
-    includes = ["include"],
-    visibility = ["//visibility:public"],
+package(
+    default_visibility = ["//:gfxstream_packages"],
 )
 
-# Code Library
 cc_library(
     name = "gfxstream_common_utils",
     srcs = ["Strings.cpp"],
+    hdrs = glob(["include/**/*.h"]),
+    includes = ["include"],
     copts = ["-fno-exceptions"],
-    visibility = ["//visibility:public"],
-    deps = [":gfxstream_common_utils_headers"],
 )

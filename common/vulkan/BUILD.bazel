@@ -1,4 +1,7 @@
-# Header Library
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
 cc_library(
     name = "gfxstream_vulkan_headers",
     hdrs = glob([
@@ -6,5 +9,4 @@ cc_library(
         "include/**/*.hpp",
     ]),
     includes = ["include"],
-    visibility = ["//visibility:public"],
 )

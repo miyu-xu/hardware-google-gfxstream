@@ -1,6 +1,9 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
 cc_library(
     name = "renderdoc",
     hdrs = glob(["include/*.h"]),
     includes = ["include"],
-    visibility = ["//visibility:public"],
 )
