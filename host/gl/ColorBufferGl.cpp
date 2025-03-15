@@ -27,7 +27,7 @@
 #include "TextureDraw.h"
 #include "TextureResize.h"
 #include "gl/YUVConverter.h"
-#include "glestranslator/include/GLcommon/GLutils.h"
+#include "GLcommon/GLutils.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/opengl/misc.h"
 

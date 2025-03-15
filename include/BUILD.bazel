@@ -1,0 +1,27 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
+cc_library(
+    name = "gfxstream_openglesdispatch_headers",
+    hdrs = glob([
+        "OpenGLESDispatch/**/*.h",
+    ]),
+    includes = ["."],
+    deps = [
+        "@aemu//base:aemu-base-headers",
+        "@aemu//host-common:aemu-host-common-headers",
+    ],
+)
+
+cc_library(
+    name = "gfxstream_renderutils",
+    hdrs = glob([
+        "render-utils/**/*.h",
+    ]),
+    includes = ["."],
+    deps = [
+        "@aemu//base:aemu-base-headers",
+        "@aemu//host-common:aemu-host-common-headers",
+    ],
+)

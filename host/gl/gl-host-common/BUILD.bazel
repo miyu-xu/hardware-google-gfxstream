@@ -1,0 +1,62 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
+objc_library(
+    name = "gfxstream_gl_host_common_darwin",
+    srcs = [
+        "opengl/macTouchOpenGL.m",
+    ],
+    hdrs = ["include/host-common/opengl/macTouchOpenGL.h"],
+    defines = ["EMUGL_BUILD"],
+    includes = ["include"],
+    deps = [
+        "@aemu//base:aemu-base-headers",
+        "@aemu//host-common:aemu-host-common-headers",
+    ],
+)
+
+cc_library(
+    name = "gfxstream_gl_host_common",
+    srcs = [
+        "opengl/EmuglBackendList.cpp",
+        "opengl/GLProcessPipe.cpp",
+        "opengl/OpenglEsPipe.cpp",
+        "opengl/emugl_config.cpp",
+        "opengl/gpuinfo.cpp",
+        "opengl/logger.cpp",
+        "opengl/misc.cpp",
+        "opengles.cpp",
+    ] + select({
+        "@platforms//os:macos": [
+            "opengl/NativeGpuInfo_darwin.cpp",
+        ],
+        "@platforms//os:windows": ["opengl/NativeGpuInfo_windows.cpp"],
+        "@platforms//os:linux": ["opengl/NativeGpuInfo_linux.cpp"],
+        "//conditions:default": [],
+    }) + glob(["include/**/*.h"]),
+    copts = [
+        "-Wno-return-type-c-linkage",
+        "-fno-exceptions",
+        "-Wno-extern-c-compat",
+    ],
+    defines = ["EMUGL_BUILD"],
+    includes = ["include"],
+    linkopts = select({
+        "@platforms//os:windows": [
+            "-DEFAULTLIB:D3d9.lib",
+            "-DEFAULTLIB:Advapi32.lib",
+        ],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//common/opengl:gfxstream_opengl_headers",
+        "//host/apigen-codec-common",
+        "//host/features:gfxstream_features",
+        "//include:gfxstream_renderutils",
+        "@aemu//snapshot:aemu-snapshot",
+    ] + select({
+        "@platforms//os:macos": ["gfxstream_gl_host_common_darwin"],
+        "//conditions:default": [],
+    }),
+)
