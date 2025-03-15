@@ -1,19 +1,15 @@
-# Header Library
-cc_library(
-    name = "gfxstream_etc_headers",
-    hdrs = glob([
-        "include/**/*.h",
-        "include/**/*.hpp",
-    ]),
-    includes = ["include"],
-    visibility = ["//visibility:public"],
+package(
+    default_visibility = ["//:gfxstream_packages"],
 )
 
-# Static Library
 cc_library(
     name = "gfxstream_etc",
-    srcs = ["etc.cpp"],
+    srcs = [
+        "etc.cpp",
+    ],
+    hdrs = glob([
+        "include/**/*.h",
+    ]),
     copts = ["-fno-exceptions"],
-    visibility = ["//visibility:public"],  # Control visibility
-    deps = [":gfxstream_etc_headers"],
+    strip_include_prefix = "include",
 )

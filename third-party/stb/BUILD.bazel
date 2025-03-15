@@ -1,3 +1,7 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
 cc_library(
     name = "gfxstream_stb",
     srcs = [
@@ -6,5 +10,4 @@ cc_library(
     ],
     hdrs = glob(["include/stb/*.h"]),
     includes = ["include"],
-    visibility = ["//visibility:public"],
 )

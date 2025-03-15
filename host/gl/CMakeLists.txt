@@ -40,6 +40,7 @@ target_link_libraries(
         gfxstream_egl_headers
         gles1_dec
         gles2_dec
+        GLcommon
         GLSnapshot
         OpenGLESDispatch)
 
@@ -52,6 +53,7 @@ endif()
 
 target_include_directories(gfxstream-gl-server
                            PRIVATE
+                           .
                            ${GFXSTREAM_REPO_ROOT}
                            ${GFXSTREAM_REPO_ROOT}/gldispatch/include
                            ${GFXSTREAM_REPO_ROOT}/include

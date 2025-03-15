@@ -1,0 +1,45 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
+cc_library(
+    name = "gfxstream_glestranslator_glcommon",
+    srcs = [
+        "FramebufferData.cpp",
+        "GLBackgroundLoader.cpp",
+        "GLDispatch.cpp",
+        "GLESbuffer.cpp",
+        "GLEScontext.cpp",
+        "GLESpointer.cpp",
+        "GLESvalidate.cpp",
+        "GLutils.cpp",
+        "NamedObject.cpp",
+        "ObjectData.cpp",
+        "ObjectNameSpace.cpp",
+        "PaletteTexture.cpp",
+        "RangeManip.cpp",
+        "SaveableTexture.cpp",
+        "ScopedGLState.cpp",
+        "ShareGroup.cpp",
+        "TextureData.cpp",
+        "TextureUtils.cpp",
+        "rgtc.cpp",
+    ],
+    hdrs = glob(["include/**/*.h"]),
+    copts = [
+        "-Wno-extern-c-compat",
+        "-fno-exceptions",
+    ],
+    defines = [
+        "EMUGL_BUILD",
+        "BUILDING_EMUGL_COMMON_SHARED",
+    ],
+    includes = ["include"],
+    deps = [
+        "//common/etc:gfxstream_etc",
+        "//common/opengl:gfxstream_opengl_headers",
+        "//host:gfxstream-compressedTextures",
+        "//include:gfxstream_openglesdispatch_headers",
+        "@aemu//snapshot:aemu-snapshot",
+    ],
+)

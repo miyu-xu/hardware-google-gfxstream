@@ -1,0 +1,19 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
+cc_library(
+    name = "gfxstream_glsnapshot",
+    srcs = ["GLSnapshot.cpp"],
+    hdrs = ["GLSnapshot.h"],
+    copts = [
+        "-fno-exceptions",
+        "-Wno-extern-c-compat",
+    ],
+    defines = ["EMUGL_BUILD"],
+    includes = ["."],
+    deps = [
+        "//host/apigen-codec-common",
+        "//include:gfxstream_openglesdispatch_headers",
+    ],
+)

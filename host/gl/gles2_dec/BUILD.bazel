@@ -1,0 +1,22 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
+cc_library(
+    name = "gfxstream_gles2_decoder",
+    srcs = [
+        "GLESv2Decoder.cpp",
+        "gles2_dec.cpp",
+        "gles2_server_context.cpp",
+    ] + glob(["*.h"]),
+    copts = ["-fno-exceptions"],
+    defines = ["EMUGL_BUILD"],
+    deps = [
+        "//common/opengl:gfxstream_opengl_headers",
+        "//host/apigen-codec-common",
+        "//host/gl/glsnapshot:gfxstream_glsnapshot",
+        "//include:gfxstream_renderutils",
+        "@aemu//base:aemu-base-headers",
+        "@aemu//host-common:aemu-host-common-headers",
+    ],
+)
