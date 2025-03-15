@@ -21,6 +21,7 @@ add_library(
   TextureUtils.cpp)
 target_include_directories(
     GLcommon PUBLIC
+    include
     ${GFXSTREAM_REPO_ROOT}
     ${GFXSTREAM_REPO_ROOT}/include
     ${GFXSTREAM_REPO_ROOT}/host
