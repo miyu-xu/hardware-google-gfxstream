@@ -1,3 +1,7 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
 cc_library(
     name = "GLES_V2_translator_static",
     srcs = [
@@ -25,11 +29,11 @@ cc_library(
         "BUILDING_EMUGL_COMMON_SHARED",
     ],
     includes = ["."],
-    visibility = ["//visibility:public"],
     deps = [
-        "//hardware/google/gfxstream:gfxstream-gl-host-common-headers",
-        "//hardware/google/gfxstream/host/apigen-codec-common",
-        "//hardware/google/gfxstream/host/gl:gl_common",
+        "//host/apigen-codec-common",
+        "//host/gl/glestranslator/GLcommon:gfxstream_glestranslator_glcommon",
+        "@aemu//base:aemu-base-headers",
+        "@aemu//host-common:aemu-host-common-headers",
     ],
     alwayslink = True,
 )

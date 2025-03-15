@@ -1,0 +1,31 @@
+package(
+    default_visibility = ["//:gfxstream_packages"],
+)
+
+cc_library(
+    name = "gfxstream_opengles_dispatch",
+    srcs = [
+        "EGLDispatch.cpp",
+        "GLESv1Dispatch.cpp",
+        "GLESv2Dispatch.cpp",
+        "OpenGLDispatchLoader.cpp",
+        "StaticDispatch.cpp",
+        "gles1_stubbed_in_translator_namespace.cpp",
+        "gles2_stubbed_in_translator_namespace.cpp",
+    ],
+    copts = [
+        "-fno-exceptions",
+        "-Wno-extern-c-compat",
+    ],
+    defines = ["EMUGL_BUILD"],
+    deps = [
+        "//common/opengl:gfxstream_opengl_headers",
+        "//host/apigen-codec-common",
+        "//host/gl/gles1_dec:gfxstream_gles1_decoder",
+        "//host/gl/gles2_dec:gfxstream_gles2_decoder",
+        "//host/gl/glestranslator/EGL:gfxstream_egl_translator",
+        "//include:gfxstream_openglesdispatch_headers",
+        "@aemu//base:aemu-base-headers",
+        "@aemu//host-common:aemu-host-common-headers",
+    ],
+)

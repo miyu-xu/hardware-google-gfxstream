@@ -56,8 +56,6 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
-#include "gl/BufferGl.h"
-#include "gl/ColorBufferGl.h"
 #include "gl/CompositorGl.h"
 #include "gl/DisplaySurfaceGl.h"
 #include "gl/EmulatedEglConfig.h"

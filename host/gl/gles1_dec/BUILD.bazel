@@ -3,15 +3,18 @@ package(
 )
 
 cc_library(
-    name = "renderControl_dec",
+    name = "gfxstream_gles1_decoder",
     srcs = [
-        "renderControl_dec.cpp",
-        "renderControl_server_context.cpp",
+        "GLESv1Decoder.cpp",
+        "gles1_dec.cpp",
+        "gles1_server_context.cpp",
     ] + glob(["*.h"]),
-    hdrs = [],
+    copts = ["-fno-exceptions"],
+    defines = ["EMUGL_BUILD"],
     deps = [
         "//common/opengl:gfxstream_opengl_headers",
         "//host/apigen-codec-common",
+        "//host/gl/glsnapshot:gfxstream_glsnapshot",
         "//include:gfxstream_renderutils",
     ],
 )
