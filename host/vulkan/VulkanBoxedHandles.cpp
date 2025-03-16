@@ -50,11 +50,12 @@ static ReadStreamRegistry sReadStreamRegistry;
 }  // namespace
 
 void BoxedHandleManager::replayHandles(std::vector<BoxedHandle> handles) {
-    mHandleReplay = true;
     mHandleReplayQueue.clear();
     for (BoxedHandle handle : handles) {
         mHandleReplayQueue.push_back(handle);
     }
+    // this queue can be empty
+    mHandleReplay = !mHandleReplayQueue.empty();
 }
 
 void BoxedHandleManager::clear() {
