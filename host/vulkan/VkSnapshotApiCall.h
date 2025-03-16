@@ -56,7 +56,7 @@ struct VkSnapshotApiCallInfo {
     }
 };
 
-using VkSnapshotApiCallManager = android::base::EntityManager<32, 24, 8, VkSnapshotApiCallInfo>;
+using VkSnapshotApiCallManager = android::base::EntityManager<32, 16, 16, VkSnapshotApiCallInfo>;
 
 }  // namespace vk
 }  // namespace gfxstream

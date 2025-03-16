@@ -26,7 +26,7 @@ namespace vk {
 namespace {
 
 uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
-    if (info.packet.size() <= 4) return -1;
+    if (info.packet.size() <= 4) {abort(); return -1; }
 
     return *(reinterpret_cast<const uint32_t*>(info.packet.data()));
 }
@@ -236,7 +236,12 @@ void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
     mId2ApiHandle.erase(item->mId);
 }
 
-void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
+void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* in_info) {
+    // always operate on the current handle
+    if (!in_info) return;
+
+    auto handle = in_info->handle;
+    auto* info = mApiCallManager.get(handle);
     if (!info) return;
 
     if (info->packet.empty()) {
@@ -246,10 +251,10 @@ void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
     }
 
     info->mainHandles.insert(info->createdHandles.begin(), info->createdHandles.end());
-    if (!info->extraCreatedHandles.empty()) {
-        info->createdHandles.insert(info->createdHandles.end(), info->extraCreatedHandles.begin(),
-                                    info->extraCreatedHandles.end());
-        info->extraCreatedHandles.clear();
+    if (!in_info->extraCreatedHandles.empty()) {
+        info->createdHandles.insert(info->createdHandles.end(), in_info->extraCreatedHandles.begin(),
+                                    in_info->extraCreatedHandles.end());
+        in_info->extraCreatedHandles.clear();
     }
 }
 
@@ -259,8 +264,14 @@ VkSnapshotApiCallInfo* VkReconstruction::getApiInfo(VkSnapshotApiCallHandle h) {
 
 void VkReconstruction::setApiTrace(VkSnapshotApiCallInfo* apiInfo, const uint8_t* packet,
                                    size_t packetLenBytes) {
-    INFO("assign packet of size %d\n", (int)packetLenBytes);
-    apiInfo->packet.assign(packet, packet + packetLenBytes);
+    auto* info = mApiCallManager.get(apiInfo->handle);
+    if(info && (info->handle == apiInfo->handle)) {
+            INFO("assign packet of size %d\n", (int)packetLenBytes);
+            info->packet.assign(packet, packet + packetLenBytes);
+    } else {
+            ERR("assign packet of size %d failed\n", (int)packetLenBytes);
+            abort();
+    }
 }
 
 void VkReconstruction::dump() {

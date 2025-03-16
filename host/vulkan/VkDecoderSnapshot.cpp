@@ -539,6 +539,7 @@ class VkDecoderSnapshot::Impl {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
         // image destroy
         mReconstruction.removeHandles((const uint64_t*)(&image), 1, true);
+        mReconstruction.forEachHandleClearModifyApi((const uint64_t*)(&image), 1);
     }
     void vkGetImageSubresourceLayout(android::base::BumpPool* pool,
                                      VkSnapshotApiCallInfo* apiCallInfo,
@@ -3852,6 +3853,7 @@ class VkDecoderSnapshot::Impl {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
         // memory destroy
         mReconstruction.removeHandles((const uint64_t*)(&memory), 1, true);
+        mReconstruction.forEachHandleClearModifyApi((const uint64_t*)(&memory), 1);
     }
     void vkQueueHostSyncGOOGLE(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                const uint8_t* apiCallPacket, size_t apiCallPacketSize,
