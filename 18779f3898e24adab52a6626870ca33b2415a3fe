@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "308fe7a9_e3e46af9",
+        "filename": "host/VirtioGpuFrontend.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 810,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2025-03-17T17:16:59Z",
+      "side": 1,
+      "message": "Nit: `createArgs-\u003ehandle` would work too I think.",
+      "range": {
+        "startLine": 810,
+        "startChar": 8,
+        "endLine": 810,
+        "endChar": 21
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "533692d1_9a894c5f",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/VirtioGpuFrontend.cpp",
+              "range": {
+                "startLine": 810,
+                "startChar": 0,
+                "endLine": 811,
+                "endChar": 0
+              },
+              "replacement": "        createArgs-\u003ehandle \u003d resourceId;\n"
+            }
+          ]
+        }
+      ],
+      "revId": "18779f3898e24adab52a6626870ca33b2415a3fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
