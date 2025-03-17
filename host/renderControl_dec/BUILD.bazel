@@ -7,7 +7,7 @@ cc_library(
     hdrs = [],
     visibility = ["//visibility:public"],
     deps = [
-        "//hardware/google/gfxstream/common/opengl:gfxstream_opengl_headers",
-        "//hardware/google/gfxstream/host/apigen-codec-common",
+        "@gfxstream//common/opengl:gfxstream_opengl_headers",
+        "@gfxstream//host/apigen-codec-common",
     ],
 )

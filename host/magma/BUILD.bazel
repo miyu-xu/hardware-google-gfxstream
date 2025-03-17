@@ -8,9 +8,9 @@ cc_library(
     includes = ["magma_dec"],
     visibility = ["//visibility:public"],
     deps = [
-        "//hardware/google/gfxstream/host:gfxstream_host_headers",
-        "//hardware/google/gfxstream/host/apigen-codec-common",
-        "//hardware/google/gfxstream/third-party/fuchsia/magma:magma-headers",
+        "@gfxstream//host:gfxstream_host_headers",
+        "@gfxstream//host/apigen-codec-common",
+        "@gfxstream//third-party/fuchsia/magma:magma-headers",
     ],
 )
 
