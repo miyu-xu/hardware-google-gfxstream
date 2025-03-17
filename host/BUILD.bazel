@@ -69,7 +69,7 @@ objc_library(
     deps = [
         ":gfxstream_backend_headers",
         "//:gfxstream-gl-host-common-headers",
-        "//external/angle:angle-headers",
+        "//common/opengl:gfxstream_opengl_headers",
     ],
     target_compatible_with = [
         "@platforms//os:macos",
