@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76ebaf44_459661d0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-17T15:41:31Z",
+      "side": 1,
+      "message": "Can you elaborate further on what the race is? It is not obvious to me at least from the change. The `VkSnapshotApiCallInfo` is being overwritten? or `VkSnapshotApiCallInfo::handle` becomes invalid?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 0
+      },
+      "revId": "dceda9ee6ead596108ea30cbe7082dc77d0c1ff5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
