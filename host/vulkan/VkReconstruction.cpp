@@ -249,7 +249,10 @@ VkSnapshotApiCallInfo* VkReconstruction::getApiInfo(VkSnapshotApiCallHandle h) {
 
 void VkReconstruction::setApiTrace(VkSnapshotApiCallInfo* apiInfo, const uint8_t* packet,
                                    size_t packetLenBytes) {
-    apiInfo->packet.assign(packet, packet + packetLenBytes);
+    auto* info = mApiCallManager.get(apiInfo->handle);
+    if(info && (info->handle == apiInfo->handle)) {
+        info->packet.assign(packet, packet + packetLenBytes);
+    }
 }
 
 void VkReconstruction::dump() {
