@@ -68,7 +68,6 @@ objc_library(
     ],
     deps = [
         ":gfxstream_backend_headers",
-        "//external/angle:angle-headers",
         "@gfxstream//:gfxstream-gl-host-common-headers",
     ],
 )
