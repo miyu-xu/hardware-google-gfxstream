@@ -1,3 +1,6 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:objc_library.bzl", "objc_library")
+
 cc_library(
     name = "gles1_dec",
     srcs = [
@@ -249,7 +252,7 @@ cc_library(
         "OpenGLESDispatch/StaticDispatch.cpp",
         "OpenGLESDispatch/gles1_stubbed_in_translator_namespace.cpp",
         "OpenGLESDispatch/gles2_stubbed_in_translator_namespace.cpp",
-    ] + glob(["OpenGLESDispatch/*.h"]),
+    ],
     copts = [
         "-fno-exceptions",
         "-Wno-extern-c-compat",
