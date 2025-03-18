@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5ebd828_91d9dfee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-03-18T22:14:34Z",
+      "side": 1,
+      "message": "JFYI, based on how device lost happens, `VK_ERROR_DEVICE_LOST` can propagate to all `VkInstance`s created, so this may not improve the robustness significantly.",
+      "revId": "45a1767f35e0a14927ff11bfe99f3e7597fbf589",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
