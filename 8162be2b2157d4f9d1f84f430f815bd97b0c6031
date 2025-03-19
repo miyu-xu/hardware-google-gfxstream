@@ -16,6 +16,29 @@
       "message": "CMake help needed:\n\nI\u0027m not been able to work around these two error cases:\n\n```\n-- CMAKE_AUTORCC_OPTIONS after \u003d [--compress-algo;zlib]\n^[[33;20mCMake Error at /usr/local/google/home/gurchetansingh/emulator/hardware/google/gfxstream/host/logging/CMakeLists.txt:6 (target_include_directories):^[[0m\n^[[33;20mCannot specify include directories for target^[[0m\n^[[33;20m\"gfxstream-host-backend-logging\" which is not built by this project.^[[0m\n^[[33;20m^[[0m\n^[[33;20m^[[0m\n```\n\n```\nDeclare it as a common local lib in this file\n/usr/local/google/home/gurchetansingh/emulator/external/qemu/android/build/python/aemu/licensing.py,\nor you will need to explicitly declare a license in the cmake files.  if it\nis not a binary, or does not need licensing, declare its as:\n\nandroid_license(TARGET \"gfxstream-host-backend-logging\" LIBNAME None SPDX None LICENSE None LOCAL None)\n\nCall Stack (most recent call first):\nCMakeLists.txt:1067 (finalize_all_licenses)\n```",
       "revId": "8162be2b2157d4f9d1f84f430f815bd97b0c6031",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02daca14_eefa6c22",
+        "filename": "host/logging/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1128973
+      },
+      "writtenOn": "2025-03-19T15:02:41Z",
+      "side": 1,
+      "message": "Typo, should be \"gfxstream\"\n```suggestion\n    gfxstream-host-backend-logging\n```",
+      "range": {
+        "startLine": 2,
+        "startChar": 4,
+        "endLine": 2,
+        "endChar": 33
+      },
+      "revId": "8162be2b2157d4f9d1f84f430f815bd97b0c6031",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
