@@ -79,10 +79,9 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                     vkBeginCommandBuffer_VkResult_return = this->on_vkBeginCommandBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), pBeginInfo,
                         context);
+                    this->on_CheckOutOfMemory(vkBeginCommandBuffer_VkResult_return, opcode,
+                                              context);
                 }
-                if ((vkBeginCommandBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    this->on_DeviceLost();
-                this->on_CheckOutOfMemory(vkBeginCommandBuffer_VkResult_return, opcode, context);
                 break;
             }
             case OP_vkEndCommandBuffer: {
@@ -92,10 +91,8 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (CC_LIKELY(vk)) {
                     vkEndCommandBuffer_VkResult_return = this->on_vkEndCommandBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), context);
+                    this->on_CheckOutOfMemory(vkEndCommandBuffer_VkResult_return, opcode, context);
                 }
-                if ((vkEndCommandBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    this->on_DeviceLost();
-                this->on_CheckOutOfMemory(vkEndCommandBuffer_VkResult_return, opcode, context);
                 break;
             }
             case OP_vkResetCommandBuffer: {
@@ -109,10 +106,9 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk, void* b
                 if (CC_LIKELY(vk)) {
                     vkResetCommandBuffer_VkResult_return = this->on_vkResetCommandBuffer(
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), flags);
+                    this->on_CheckOutOfMemory(vkResetCommandBuffer_VkResult_return, opcode,
+                                              context);
                 }
-                if ((vkResetCommandBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
-                    this->on_DeviceLost();
-                this->on_CheckOutOfMemory(vkResetCommandBuffer_VkResult_return, opcode, context);
                 break;
             }
             case OP_vkCmdBindPipeline: {
