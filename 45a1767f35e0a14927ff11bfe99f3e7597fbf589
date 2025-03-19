@@ -16,6 +16,24 @@
       "message": "JFYI, based on how device lost happens, `VK_ERROR_DEVICE_LOST` can propagate to all `VkInstance`s created, so this may not improve the robustness significantly.",
       "revId": "45a1767f35e0a14927ff11bfe99f3e7597fbf589",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2118e484_809524db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-19T00:01:05Z",
+      "side": 1,
+      "message": "Right, the main idea here is to avoid the emulator crashes when a fatal error is encountered, such as unboxing an unknown object, or restoring an unsupported snapshot state. For real device lost events from the host GPU, this will still let the emulator not crash immediately, but probably some other calls from the emulation device will start failing as well.",
+      "parentUuid": "e5ebd828_91d9dfee",
+      "revId": "45a1767f35e0a14927ff11bfe99f3e7597fbf589",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
