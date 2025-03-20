@@ -85,6 +85,30 @@
       ],
       "revId": "45a1767f35e0a14927ff11bfe99f3e7597fbf589",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39439cde_06b326af",
+        "filename": "host/vulkan/RenderThreadInfoVk.cpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-20T00:30:10Z",
+      "side": 1,
+      "message": "Done. I\u0027ve moved this outside of onLoad to check the feature flag. Later, this can actually be moved to mark objects as lost, but not the thread instead.",
+      "parentUuid": "d4fb8251_228bcc78",
+      "range": {
+        "startLine": 46,
+        "startChar": 3,
+        "endLine": 46,
+        "endChar": 19
+      },
+      "revId": "45a1767f35e0a14927ff11bfe99f3e7597fbf589",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
