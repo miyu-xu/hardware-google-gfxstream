@@ -1458,13 +1458,15 @@ void FrameBuffer::createGraphicsProcessResources(uint64_t puid) {
     bool inserted = false;
     {
         AutoLock mutex(m_procOwnedResourcesLock);
+        auto gs = m_emulationVk ?
+            std::make_shared<vk::VkDecoderGlobalState>(m_emulationVk.get())
+            : nullptr;
+        INFO("%s %d created state puid 0x%llx %p", __func__, __LINE__,
+                (unsigned long long)puid, gs.get());
         inserted =
             m_procOwnedResources
                 .try_emplace(
-                    puid, ProcessResources::create(
-                        m_emulationVk ?
-                        std::make_shared<vk::VkDecoderGlobalState>(m_emulationVk.get())
-                                            : nullptr))
+                    puid, ProcessResources::create(gs))
                 .second;
     }
     if (!inserted) {
@@ -2370,10 +2372,19 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
             stream->putBe32(element.second->getSequenceNumberPtr()->load());
         }
     }
-
     // Save Vulkan state
     if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
-        m_defaultVulkanGlobalState->save(stream);
+        int count = 0;
+        for (auto& element : m_procOwnedResources) {
+            stream->putBe64(element.first);
+            auto gs = element.second->getVulkanGlobalState();
+            if (gs) {
+                INFO("saving %d puid 0x%llx", count, element.first);
+                gs->save(stream);
+                INFO("done saving %d\n\n", count );
+                ++count;
+            }
+        }
     }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
@@ -2659,11 +2670,26 @@ bool FrameBuffer::onLoad(Stream* stream,
     }
 
     // Restore Vulkan state
-    if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
-        lock.unlock();
-        GfxApiLogger gfxLogger;
-        m_defaultVulkanGlobalState->load(stream, gfxLogger, m_healthMonitor.get());
-        lock.lock();
+    if (m_features.VulkanSnapshots.enabled) {
+        int count = 0;
+        const int size = m_procOwnedResources.size();
+        for (int i = 0; i < size; ++i) {
+            uint64_t puid = stream->getBe64();
+            if (m_procOwnedResources.find(puid) == m_procOwnedResources.end()) {
+                abort();
+            }
+            auto gs = m_procOwnedResources[puid]->getVulkanGlobalState();
+            if (gs) {
+                INFO("loading %d with state %p puid 0x%llx",
+                        count, gs.get(), (unsigned long long)puid);
+                lock.unlock();
+                GfxApiLogger gfxLogger;
+                gs->load(stream, m_procOwnedResources[puid].get(), gfxLogger, m_healthMonitor.get());
+                lock.lock();
+                INFO("done loading %d\n\n", count);
+                ++count;
+            }
+        }
     }
 
     repost(false);

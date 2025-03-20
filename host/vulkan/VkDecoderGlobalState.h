@@ -51,6 +51,7 @@ class Stream;
 }  // namespace android
 
 namespace gfxstream {
+class ProcessResources;
 namespace vk {
 
 class VkDecoderSnapshot;
@@ -91,8 +92,8 @@ class VkDecoderGlobalState {
     bool vkCleanupEnabled() const;
 
     void save(android::base::Stream* stream);
-    void load(android::base::Stream* stream, emugl::GfxApiLogger& gfxLogger,
-              emugl::HealthMonitor<>* healthMonitor);
+    void load(android::base::Stream* stream, ProcessResources* resources,
+              emugl::GfxApiLogger& gfxLogger, emugl::HealthMonitor<>* healthMonitor);
 
     VkResult on_vkEnumerateInstanceVersion(android::base::BumpPool* pool,
                                            VkSnapshotApiCallInfo* snapshotInfo,

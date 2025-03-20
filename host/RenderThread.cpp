@@ -491,6 +491,9 @@ intptr_t RenderThread::main() {
             if (!processResources && tInfo->m_puid && tInfo->m_puid != INVALID_CONTEXT_ID) {
                 processResources = FrameBuffer::getFB()->getProcessResources(tInfo->m_puid);
                 if (FrameBuffer::getFB()->hasEmulationVk()) {
+                    INFO("%s %d create decoder with puid 0x%llx state %p", __func__, __LINE__,
+                            (unsigned long long)(tInfo->m_puid),
+                            processResources->getVulkanGlobalState().get());
                     tInfo->m_vkInfo.emplace(processResources->getVulkanGlobalState().get());
                 }
             }

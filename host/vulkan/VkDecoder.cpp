@@ -227,6 +227,10 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 .setAnnotations(std::move(executionData))
                 .build();
 
+        if (opcode >= 20000) {
+            fprintf(stderr, "stream %p: opcode %d state %p boxmanager %p\n",
+                    ioStream, (int)opcode, m_state, pBoxedHandleManager);
+        }
         switch (opcode) {
 #ifdef VK_VERSION_1_0
             case OP_vkCreateInstance: {
