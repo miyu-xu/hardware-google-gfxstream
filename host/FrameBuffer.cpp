@@ -2368,12 +2368,8 @@ void FrameBuffer::onSave(Stream* stream, const android::snapshot::ITextureSaverP
         for (const auto& element : m_procOwnedResources) {
             stream->putBe64(element.first);
             stream->putBe32(element.second->getSequenceNumberPtr()->load());
+            element.second->getVulkanGlobalState()->save(stream);
         }
-    }
-
-    // Save Vulkan state
-    if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
-        m_defaultVulkanGlobalState->save(stream);
     }
 
 #if GFXSTREAM_ENABLE_HOST_GLES
@@ -2625,6 +2621,13 @@ bool FrameBuffer::onLoad(Stream* stream,
                 AutoLock mutex(m_procOwnedResourcesLock);
                 m_procOwnedResources.emplace(puid, std::move(processResources));
             }
+            {
+                lock.unlock();
+                GfxApiLogger gfxLogger;
+                processResources->getVulkanGlobalState()->load(stream, processResources.get(),
+                                                               gfxLogger, m_healthMonitor.get());
+                lock.lock();
+            }
         }
     }
 
@@ -2659,12 +2662,6 @@ bool FrameBuffer::onLoad(Stream* stream,
     }
 
     // Restore Vulkan state
-    if (m_features.VulkanSnapshots.enabled && m_defaultVulkanGlobalState) {
-        lock.unlock();
-        GfxApiLogger gfxLogger;
-        m_defaultVulkanGlobalState->load(stream, gfxLogger, m_healthMonitor.get());
-        lock.lock();
-    }
 
     repost(false);
 

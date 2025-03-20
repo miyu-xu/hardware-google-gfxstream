@@ -591,7 +591,7 @@ class VkDecoderGlobalState::Impl {
         VERBOSE("VulkanSnapshots save (end)");
     }
 
-    void load(android::base::Stream* stream, GfxApiLogger& gfxLogger,
+    void load(android::base::Stream* stream, ProcessResources* resources, GfxApiLogger& gfxLogger,
               HealthMonitor<>* healthMonitor) {
         // assume that we already destroyed all instances
         // from FrameBuffer's onLoad method.
@@ -633,16 +633,13 @@ class VkDecoderGlobalState::Impl {
             decoderForLoading.setForSnapshotLoad(true);
             TrivialStream trivialStream;
 
-            // TODO: This needs to be the puid seqno ptr
-            auto resources = 
-                ProcessResources::create(FrameBuffer::getFB()->getDefaultVulkanGlobalState());
             VkDecoderContext context = {
                 .processName = nullptr,
                 .gfxApiLogger = &gfxLogger,
                 .healthMonitor = healthMonitor,
             };
             decoderForLoading.decode(decoderReplayBuffer.data(), decoderReplayBuffer.size(),
-                                     &trivialStream, resources.get(), context);
+                                     &trivialStream, resources, context);
         }
 
         {
@@ -9166,9 +9163,9 @@ bool VkDecoderGlobalState::vkCleanupEnabled() const { return mImpl->vkCleanupEna
 
 void VkDecoderGlobalState::save(android::base::Stream* stream) { mImpl->save(stream); }
 
-void VkDecoderGlobalState::load(android::base::Stream* stream, GfxApiLogger& gfxLogger,
-                                HealthMonitor<>* healthMonitor) {
-    mImpl->load(stream, gfxLogger, healthMonitor);
+void VkDecoderGlobalState::load(android::base::Stream* stream, ProcessResources* resources,
+                                GfxApiLogger& gfxLogger, HealthMonitor<>* healthMonitor) {
+    mImpl->load(stream, resources, gfxLogger, healthMonitor);
 }
 
 VkResult VkDecoderGlobalState::on_vkEnumerateInstanceVersion(android::base::BumpPool* pool,
