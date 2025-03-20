@@ -458,7 +458,10 @@ std::unique_ptr<EmulationGl> EmulationGl::create(uint32_t width, uint32_t height
     }
 
     emulationGl->mGlesVulkanInteropSupported = false;
-    if (s_egl.eglQueryVulkanInteropSupportANDROID) {
+    const bool enforceNoInterop =
+        (android::base::getEnvironmentVariable("ANDROID_EMU_VK_NO_INTEROP") == "1");
+    WARN("enforceNoInterop = %d", enforceNoInterop);
+    if (!enforceNoInterop && s_egl.eglQueryVulkanInteropSupportANDROID) {
         emulationGl->mGlesVulkanInteropSupported = s_egl.eglQueryVulkanInteropSupportANDROID();
     }
     if (emulationGl->mGlesVulkanInteropSupported) {
