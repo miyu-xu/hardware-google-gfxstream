@@ -1,0 +1,127 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a025ade2_55972dca",
+        "filename": "host/RenderThreadInfo.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-03-20T04:36:50Z",
+      "side": 1,
+      "message": "I think this should be\n if (!FrameBuffer::getFB()-\u003egetFeatures().VulkanSnapshots.enabled) {\n }\n \nas we do want enable the device when we explicitly want\nVulkanSnapshots so we can test the vulkan snapshot saving\nand loading.\n\nIIUC, we want to ignore vulkan apps during normal snapshot\nsave, by marking vulkan apps as lost.\nhowever, if we explicitly enabled VulkanSnapshots feature,\nwe do want to save and load those apps.",
+      "range": {
+        "startLine": 121,
+        "startChar": 8,
+        "endLine": 121,
+        "endChar": 74
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "6714be99_93bc691b",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/RenderThreadInfo.cpp",
+              "range": {
+                "startLine": 121,
+                "startChar": 0,
+                "endLine": 122,
+                "endChar": 0
+              },
+              "replacement": "        if (!FrameBuffer::getFB()-\u003egetFeatures().VulkanSnapshots.enabled) {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "702a79f6a4740633492218204097efcf7f39f82a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ccdd924_9fd9a138",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 7755,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-03-20T04:36:50Z",
+      "side": 1,
+      "message": "typo: should this be if ( !renderThreadInfo ||  renderThreadInfo-\u003emIsLost)?",
+      "range": {
+        "startLine": 7755,
+        "startChar": 33,
+        "endLine": 7755,
+        "endChar": 60
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "c4560b42_715ec142",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderGlobalState.cpp",
+              "range": {
+                "startLine": 7755,
+                "startChar": 0,
+                "endLine": 7756,
+                "endChar": 0
+              },
+              "replacement": "        if (!renderThreadInfo || renderThreadInfo-\u003emIsLost) {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "702a79f6a4740633492218204097efcf7f39f82a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0873368_96e86bc9",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 10
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1046320
+      },
+      "writtenOn": "2025-03-20T04:36:50Z",
+      "side": 1,
+      "message": "should this default to be false?",
+      "range": {
+        "startLine": 224,
+        "startChar": 9,
+        "endLine": 224,
+        "endChar": 16
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "fde42a99_f9cf5826",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/vulkan/VkDecoderInternalStructs.h",
+              "range": {
+                "startLine": 224,
+                "startChar": 0,
+                "endLine": 225,
+                "endChar": 0
+              },
+              "replacement": "    bool mIsLost \u003d false;\n"
+            }
+          ]
+        }
+      ],
+      "revId": "702a79f6a4740633492218204097efcf7f39f82a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
