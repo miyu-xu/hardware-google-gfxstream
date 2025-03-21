@@ -44,6 +44,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "84843ab3_7ac63fd9",
+        "filename": "host/RenderThreadInfo.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-21T20:27:32Z",
+      "side": 1,
+      "message": "This was assuming snapshots won\u0027t recover any devices, but as discussed offline, I\u0027ll try getting this working when some of the snapshots can be saved and restored and only mark threads as lost if the load fails",
+      "parentUuid": "a025ade2_55972dca",
+      "range": {
+        "startLine": 121,
+        "startChar": 8,
+        "endLine": 121,
+        "endChar": 74
+      },
+      "revId": "702a79f6a4740633492218204097efcf7f39f82a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4ccdd924_9fd9a138",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 10
@@ -79,6 +103,30 @@
           ]
         }
       ],
+      "revId": "702a79f6a4740633492218204097efcf7f39f82a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a605d08_64819585",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 7755,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-21T20:27:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4ccdd924_9fd9a138",
+      "range": {
+        "startLine": 7755,
+        "startChar": 33,
+        "endLine": 7755,
+        "endChar": 60
+      },
       "revId": "702a79f6a4740633492218204097efcf7f39f82a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -120,6 +168,30 @@
           ]
         }
       ],
+      "revId": "702a79f6a4740633492218204097efcf7f39f82a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ba22360_fb936158",
+        "filename": "host/vulkan/VkDecoderInternalStructs.h",
+        "patchSetId": 10
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-21T20:27:32Z",
+      "side": 1,
+      "message": "It\u0027s set in the constructor, but I\u0027ll also add a default, thanks.",
+      "parentUuid": "a0873368_96e86bc9",
+      "range": {
+        "startLine": 224,
+        "startChar": 9,
+        "endLine": 224,
+        "endChar": 16
+      },
       "revId": "702a79f6a4740633492218204097efcf7f39f82a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
