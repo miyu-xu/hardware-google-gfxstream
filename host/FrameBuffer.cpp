@@ -1313,24 +1313,49 @@ void FrameBuffer::closeColorBuffer(HandleType p_colorbuffer) {
 
     std::vector<HandleType> toCleanup;
 
-    AutoLock mutex(m_lock);
-    uint64_t puid = tInfo ? tInfo->m_puid : 0;
-    if (puid) {
-        auto ite = m_procOwnedColorBuffers.find(puid);
-        if (ite != m_procOwnedColorBuffers.end()) {
-            const auto& cb = ite->second.find(p_colorbuffer);
-            if (cb != ite->second.end()) {
-                ite->second.erase(cb);
-                if (closeColorBufferLocked(p_colorbuffer)) {
-                    toCleanup.push_back(p_colorbuffer);
+    ColorBufferPtr toClose = nullptr;
+
+    {
+        AutoLock mutex(m_lock);
+        uint64_t puid = tInfo ? tInfo->m_puid : 0;
+        if (puid) {
+            auto ite = m_procOwnedColorBuffers.find(puid);
+            if (ite != m_procOwnedColorBuffers.end()) {
+                const auto& cb = ite->second.find(p_colorbuffer);
+                if (cb != ite->second.end()) {
+                    ite->second.erase(cb);
+                    toClose = closeColorBufferLocked(p_colorbuffer);
+                    if (toClose != nullptr) {
+                        toCleanup.push_back(p_colorbuffer);
+                    }
                 }
             }
-        }
-    } else {
-        if (closeColorBufferLocked(p_colorbuffer)) {
-            toCleanup.push_back(p_colorbuffer);
+        } else {
+            if (closeColorBufferLocked(p_colorbuffer)) {
+                toCleanup.push_back(p_colorbuffer);
+            }
         }
     }
+
+    // If we need to close any ColorBuffer, we must do it after releasing the
+    // FrameBuffer mutex.
+    //
+    // Consider the following case:
+    //
+    // - Thread 1 closes a ColorBuffer. Closing a ColorBuffer may release
+    //   external memory, which acquires the global emulator IO lock.
+    // - Thread 2 executes MMIO operations on the address space device.
+    //   It also acquires the emulator IO lock and waits for the FrameBuffer
+    //   consumer to finish any existing work.
+    // - Thread 3 is the FrameBuffer consumer. It may hold the FrameBuffer
+    //   mutex while modifying the FrameBuffer.
+    //
+    // In order to avoid a deadlock, the thread closing a ColorBuffer must
+    // do it while the FrameBuffer mutex is not held.
+    //
+    // This doesn't affect the FrameBuffer internal state, as the color buffer
+    // has been moved out of the FrameBuffer in the critical section above.
+    toClose = nullptr;
 }
 
 void FrameBuffer::closeBuffer(HandleType p_buffer) {
@@ -1345,13 +1370,13 @@ void FrameBuffer::closeBuffer(HandleType p_buffer) {
     m_buffers.erase(it);
 }
 
-bool FrameBuffer::closeColorBufferLocked(HandleType p_colorbuffer, bool forced) {
+ColorBufferPtr FrameBuffer::closeColorBufferLocked(HandleType p_colorbuffer, bool forced) {
     // When guest feature flag RefCountPipe is on, no reference counting is
     // needed.
     if (m_refCountPipeEnabled) {
-        return false;
+        return nullptr;
     }
-    bool deleted = false;
+    ColorBufferPtr toDelete = nullptr;
     {
         AutoLock colorBufferMapLock(m_colorBufferMapLock);
 
@@ -1363,7 +1388,7 @@ bool FrameBuffer::closeColorBufferLocked(HandleType p_colorbuffer, bool forced) 
             // closeColorBuffer command when the color buffer is already
             // garbage collected on the host. (we don't have a mechanism
             // to give guest a notice yet)
-            return false;
+            return nullptr;
         }
 
         // The guest can and will gralloc_alloc/gralloc_free and then
@@ -1375,8 +1400,8 @@ bool FrameBuffer::closeColorBufferLocked(HandleType p_colorbuffer, bool forced) 
         if (--c->second.refcount == 0) {
             if (forced) {
                 eraseDelayedCloseColorBufferLocked(c->first, c->second.closedTs);
+                toDelete = c->second.cb;
                 m_colorbuffers.erase(c);
-                deleted = true;
             } else {
                 c->second.closedTs = android::base::getUnixTimeUs();
                 m_colorBufferDelayedCloseList.push_back({c->second.closedTs, p_colorbuffer});
@@ -1386,7 +1411,7 @@ bool FrameBuffer::closeColorBufferLocked(HandleType p_colorbuffer, bool forced) 
 
     performDelayedColorBufferCloseLocked(false);
 
-    return deleted;
+    return toDelete;
 }
 
 void FrameBuffer::decColorBufferRefCountNoDestroy(HandleType p_colorbuffer) {

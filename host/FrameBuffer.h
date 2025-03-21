@@ -701,7 +701,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     void markOpened(ColorBufferRef* cbRef);
     // Returns true if the color buffer was erased.
-    bool closeColorBufferLocked(HandleType p_colorbuffer, bool forced = false);
+    ColorBufferPtr closeColorBufferLocked(HandleType p_colorbuffer, bool forced = false);
     // Returns true if this was the last ref and we need to destroy stuff.
     bool decColorBufferRefCountLocked(HandleType p_colorbuffer);
     // Decrease refcount but not destroy the object.
