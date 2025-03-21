@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa274a10_4be3288c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1125918
+      },
+      "writtenOn": "2025-03-21T16:58:49Z",
+      "side": 1,
+      "message": "Ran buildifier so the warnings are gone.",
+      "revId": "4667d9a4c3146b1cd2df4dc60cc9d1c3331a3c90",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
