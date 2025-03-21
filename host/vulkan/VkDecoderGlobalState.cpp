@@ -635,13 +635,16 @@ class VkDecoderGlobalState::Impl {
             decoderForLoading.setForSnapshotLoad(true);
             TrivialStream trivialStream;
 
+         auto resources2 = 
+                ProcessResources::create(FrameBuffer::getFB()->getDefaultVulkanGlobalState());
+            
             VkDecoderContext context = {
                 .processName = nullptr,
                 .gfxApiLogger = &gfxLogger,
                 .healthMonitor = healthMonitor,
             };
             decoderForLoading.decode(decoderReplayBuffer.data(), decoderReplayBuffer.size(),
-                                     &trivialStream, resources, context);
+                                     &trivialStream, resources2.get(), context);
         }
 
         {
