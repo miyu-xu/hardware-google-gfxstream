@@ -2878,21 +2878,31 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                     seqnoPtr->fetch_add(1, std::memory_order_seq_cst);
                 VkResult vkWaitForFences_VkResult_return = VK_ERROR_OUT_OF_HOST_MEMORY;
                 if (CC_LIKELY(vk)) {
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                     vkWaitForFences_VkResult_return =
                         m_state->on_vkWaitForFences(&m_pool, snapshotApiCallInfo, device,
                                                     fenceCount, pFences, waitAll, timeout);
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 }
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 if ((vkWaitForFences_VkResult_return) == VK_ERROR_DEVICE_LOST)
                     m_state->on_DeviceLost();
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 m_state->on_CheckOutOfMemory(vkWaitForFences_VkResult_return, opcode, context);
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 vkStream->unsetHandleMapping();
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 vkStream->write(&vkWaitForFences_VkResult_return, sizeof(VkResult));
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 vkStream->commitWrite();
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 if (m_snapshotsEnabled) {
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                     m_state->snapshot()->vkWaitForFences(&m_pool, snapshotApiCallInfo, packet,
                                                          packetLen, vkWaitForFences_VkResult_return,
                                                          device, fenceCount, pFences, waitAll,
                                                          timeout);
+fprintf(stderr, "stream %p: call vkWaitForFences at line %d\n", ioStream, __LINE__);
                 }
                 vkReadStream->clearPool();
                 break;

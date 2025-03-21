@@ -7806,7 +7806,10 @@ class VkDecoderGlobalState::Impl {
         const auto endTime = std::chrono::system_clock::now();
         const uint64_t timePassed = std::chrono::nanoseconds(endTime - startTime).count();
         const uint64_t timeoutLeft = (timeout > timePassed) ? timeout - timePassed : 0;
-        return vk->vkWaitForFences(unboxed_device, fenceCount, pFences, waitAll, timeoutLeft);
+        INFO("%s %d wait for driver fence", __func__, __LINE__);
+        VkResult vkres = vk->vkWaitForFences(unboxed_device, fenceCount, pFences, waitAll, timeoutLeft);
+        INFO("%s %d wait for driver fence %s", __func__, __LINE__, vkres == VK_SUCCESS ? " ok" :"fail");
+        return vkres;
     }
 
     VkResult waitForFence(VkFence fence, uint64_t timeout) {

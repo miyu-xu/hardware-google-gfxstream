@@ -3900,7 +3900,18 @@ class VkDecoderSnapshot::Impl {
                                     VkSnapshotApiCallInfo* apiCallInfo,
                                     const uint8_t* apiCallPacket, size_t apiCallPacketSize,
                                     VkQueue queue, VkCommandBuffer commandBuffer,
-                                    VkDeviceSize dataSize, const void* pData) {}
+                                    VkDeviceSize dataSize, const void* pData) {
+        // TODO record this command into modifier
+        std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        // commandBuffer modify
+        auto apiCallHandle = apiCallInfo->handle;
+        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
+        for (uint32_t i = 0; i < 1; ++i) {
+            // commandBuffer is already boxed, no need to box again
+            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
+            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
+        }
+    }
     void vkQueueCommitDescriptorSetUpdatesGOOGLE(
         android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
         const uint8_t* apiCallPacket, size_t apiCallPacketSize, VkQueue queue,

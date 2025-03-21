@@ -34,6 +34,12 @@
 #define MAX_PACKET_LENGTH (400 * 1024 * 1024)  // 400MB
 #define CC_LIKELY(exp) (__builtin_expect(!!(exp), true))
 #define CC_UNLIKELY(exp) (__builtin_expect(!!(exp), false))
+#if defined(GFXSTREAM_TRACE_EVENT)
+#undef GFXSTREAM_TRACE_EVENT
+#define GFXSTREAM_TRACE_EVENT(a,b) \
+    INFO("decode " #b);
+#endif
+
 size_t subDecode(VkDecoderGlobalState* globalstate, VulkanMemReadingStream* readStream,
                  VulkanDispatch* vk, void* boxed_dispatchHandle, void* dispatchHandle,
                  VkDeviceSize subDecodeDataSize, const void* pSubDecodeData,
