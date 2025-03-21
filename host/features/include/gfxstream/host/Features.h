@@ -337,7 +337,6 @@ struct FeatureDependencyHandler {
     const std::map<const FeatureInfo*, std::vector<const FeatureInfo*>> VK_FEATURE_DEPENDENCY_MAP= {
         // List other dependencies here in the shape of:
         // {FEATURE_X, {DEPENDENT_FEATURE_A, DEPENDENT_FEATURE_B}}
-        {&featureSetView.VulkanSnapshots, {&featureSetView.VulkanBatchedDescriptorSetUpdate, &featureSetView.Vulkan}},
     };
 
     FeatureResult checkAllDependentFeaturesAreEnabled();
