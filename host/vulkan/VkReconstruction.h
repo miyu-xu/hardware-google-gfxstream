@@ -13,6 +13,11 @@
 // limitations under the License.
 #pragma once
 
+#include <map>
+#include <mutex>
+#include <memory>
+#include <set>
+
 #include "VkSnapshotApiCall.h"
 #include "VulkanHandleMapping.h"
 #include "VulkanHandles.h"
@@ -26,6 +31,167 @@ namespace vk {
 
 // A class that captures all important data structures for
 // reconstructing a Vulkan system state via trimmed API record and replay.
+class SimpleManager {
+   public:
+    VkSnapshotApiCallInfo* get(uint64_t handle) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto iter = mApiHandle2Info.find(handle);
+        if (iter != mApiHandle2Info.end()) {
+            return iter->second;
+        }
+        return nullptr;
+    }
+
+    using EntityHandle = uint64_t;
+    using ConstIteratorFunc =
+        std::function<void(bool live, EntityHandle h, const VkSnapshotApiCallInfo& item)>;
+
+    void forEachLiveEntry_const(ConstIteratorFunc func) const {
+        std::lock_guard<std::mutex> lock(mMutex);
+        bool live = true;
+        for (auto& [key, val] : mApiHandle2Info) {
+            func(live, key, *val);
+        }
+    }
+
+    uint64_t add(VkSnapshotApiCallInfo info, uint64_t tag) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto* copy = new VkSnapshotApiCallInfo(info);
+        auto id = mId;
+        mId++;
+        mApiHandle2Info[id] = copy;
+        return id;
+    }
+
+    void clear() {
+        std::lock_guard<std::mutex> lock(mMutex);
+        for (auto& [key, pval] : mApiHandle2Info) {
+            delete pval;
+        }
+        mApiHandle2Info.clear();
+    }
+    void remove(uint64_t handle) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto iter = mApiHandle2Info.find(handle);
+        if (iter != mApiHandle2Info.end()) {
+            delete iter->second;
+            mApiHandle2Info.erase(iter);
+        }
+    }
+
+   private:
+    uint64_t mId{1};
+    mutable std::mutex mMutex;
+    std::map<uint64_t, VkSnapshotApiCallInfo*> mApiHandle2Info;
+};
+
+struct DepNode {
+    // id of this depnode, 0 is invalid
+    uint64_t id{0};
+    // the api that created this DepNode; 0 is invalid
+    uint64_t apiRef{0};
+    std::set<uint64_t> childHandles;
+    // there could be only one parent, 0 is invalid
+    uint64_t parentHandle{0};
+};
+
+struct ApiNode {
+    // id of this api node, 0 is invalid
+    uint64_t id{0};
+    std::set<uint64_t> createdHandles;
+};
+
+class DepGraph {
+   public:
+    void addHandles(const uint64_t* toAdd, uint32_t count);
+
+    void addHandleDependency(const uint64_t* handles, uint32_t count, uint64_t parentHandle);
+
+    void dump(SimpleManager& apiManager);
+
+    uint64_t getHandlePuid(uint64_t handle) const;
+    uint64_t getHandleType(uint64_t handle) const;
+
+    void forEachHandleAddApi(const uint64_t* created, uint32_t count, uint64_t apiRef) {
+        for (uint64_t i = 0; i < count; ++i) {
+            auto* nd = getDepNode(created[i]);
+            if (nd) {
+                nd->apiRef = apiRef;
+            }
+        }
+    }
+
+    void clear() {
+        for (auto& [key, pval] : mDepId2DepNode) {
+            delete pval;
+        }
+        mDepId2DepNode.clear();
+        for (auto& [key, pval] : mApiId2ApiNode) {
+            delete pval;
+        }
+        mApiId2ApiNode.clear();
+    }
+    void replaceDep(uint64_t child_id, uint64_t parent_id) {
+        clearChildHandles(parent_id);
+        addDep(child_id, parent_id);
+    }
+
+    void addDep(uint64_t child_id, uint64_t parent_id);
+
+    DepNode* getDepNode(uint64_t id) {
+        if (mDepId2DepNode.find(id) == mDepId2DepNode.end()) return nullptr;
+        auto* nd = mDepId2DepNode[id];
+        return nd;
+    }
+
+    ApiNode* getApiNode(uint64_t id) {
+        if (mApiId2ApiNode.find(id) == mApiId2ApiNode.end()) return nullptr;
+        auto* nd = mApiId2ApiNode[id];
+        return nd;
+    }
+
+    void clearChildHandles(uint64_t id) {
+        auto* nd = getDepNode(id);
+        if (nd) {
+            nd->childHandles.clear();
+        }
+    }
+
+    void removeHandles(const uint64_t* toRemove, uint32_t count);
+
+    void setCreatedHandlesForApi(uint64_t apiRef, const uint64_t* created, uint32_t count) {
+        addApiNode(apiRef);
+        auto* apiNode = getApiNode(apiRef);
+        if (apiNode) {
+            for (uint32_t i = 0; i < count; ++i) {
+                apiNode->createdHandles.insert(created[i]);
+            }
+        }
+    }
+    void addApiNode(uint64_t id) {
+        if (getApiNode(id)) return;
+        auto* nd = new ApiNode();
+        nd->id = id;
+        mApiId2ApiNode[id] = nd;
+    }
+    void removeApiNode(uint64_t id) {
+        auto* nd = getApiNode(id);
+        if (nd) {
+            delete nd;
+        }
+        mApiId2ApiNode.erase(id);
+    }
+    void addDepNode(uint64_t id);
+
+    void getApiByTopoOrder(std::vector<uint64_t>& uniqApiRefsByTopoOrder);
+
+    void removeDepNode(uint64_t id);
+
+   private:
+    std::map<uint64_t, DepNode*> mDepId2DepNode;
+    std::map<uint64_t, ApiNode*> mApiId2ApiNode;
+};
+
 class VkReconstruction {
    public:
     VkReconstruction();
@@ -127,13 +293,91 @@ class VkReconstruction {
    private:
     std::vector<uint64_t> getOrderedUniqueModifyApis() const;
 
-    VkSnapshotApiCallManager mApiCallManager;
+    //    VkSnapshotApiCallManager mApiCallManager;
+    SimpleManager mApiCallManager;
 
     HandleWithStateReconstructions mHandleReconstructions;
     HandleModifications mHandleModifications;
 
     std::vector<uint8_t> mLoadedTrace;
+
+    DepGraph mGraph;
 };
+
+struct InternalHandle {
+    uint64_t id;
+    uint64_t vkHandle;
+};
+
+class VkHandleMapper {
+   public:
+    uint64_t vkHandle2Id(uint64_t vkHandle) {
+        if (mVkHandle2InternalHandle.find(vkHandle) == mVkHandle2InternalHandle.end()) {
+            mVkHandle2InternalHandle[vkHandle].id = mId;
+            mVkHandle2InternalHandle[vkHandle].vkHandle = vkHandle;
+            ++mId;
+        }
+        return mVkHandle2InternalHandle[vkHandle].id;
+    }
+
+   private:
+    uint64_t mId{1};
+    std::map<uint64_t, InternalHandle> mVkHandle2InternalHandle;
+};
+
+/*
+
+   // those tag ids are important, as they mark the different
+   // types of vk object
+enum BoxedHandleTypeTag {
+  Tag_Invalid = 0,
+  Tag_VkInstance = 1,
+  Tag_VkPhysicalDevice = 2,
+  Tag_VkDevice = 3,
+  Tag_VkQueue = 4,
+  Tag_VkDeviceMemory = 5,
+  Tag_VkBuffer = 6,
+  Tag_VkImage = 7,
+  Tag_VkBufferView,
+  Tag_VkImageView,
+  Tag_VkShaderModule,
+  Tag_VkDescriptorSetLayout,
+  Tag_VkDescriptorPool,
+  Tag_VkDescriptorSet,
+  Tag_VkSampler,
+  Tag_VkSamplerYcbcrConversion,
+  Tag_VkDescriptorUpdateTemplate,
+  Tag_VkRenderPass,
+  Tag_VkFramebuffer,
+  Tag_VkPipelineLayout,
+  Tag_VkPipelineCache,
+  Tag_VkPipeline,
+  Tag_VkFence = 0x16,
+  Tag_VkSemaphore = 0x17,
+  Tag_VkEvent,
+  Tag_VkQueryPool,
+  Tag_VkSurfaceKHR,
+  Tag_VkSwapchainKHR,
+  Tag_VkDisplayKHR,
+  Tag_VkDisplayModeKHR,
+  Tag_VkValidationCacheEXT,
+  Tag_VkDebugReportCallbackEXT,
+  Tag_VkDebugUtilsMessengerEXT,
+  Tag_VkCommandPool,
+  Tag_VkCommandBuffer = 34, // 0x22
+  Tag_VkAccelerationStructureNV,
+  Tag_VkIndirectCommandsLayoutNV,
+  Tag_VkAccelerationStructureKHR,
+  Tag_VkCuModuleNVX,
+  Tag_VkCuFunctionNVX,
+  Tag_VkPrivateDataSlot,
+  Tag_VkMicromapEXT,
+
+  Tag_VkGeneric = 1001,
+};
+
+
+*/
 
 }  // namespace vk
 }  // namespace gfxstream

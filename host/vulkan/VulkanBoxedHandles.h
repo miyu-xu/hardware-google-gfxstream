@@ -36,8 +36,14 @@ enum BoxedHandleTypeTag {
 
     GOLDFISH_VK_LIST_HANDLE_TYPES_BY_STAGE(DEFINE_BOXED_HANDLE_TYPE_TAG)
 
+    // extra command for snapshot purpose
+    Tag_VkBindMemory,
+    Tag_VkMapMemory,
+    Tag_VkResetCmd,
+    Tag_VkCmdOp,
+    Tag_VkUpdateDescriptorSets,
     // additional generic tag
-    Tag_VkGeneric = 1001,
+    Tag_VkGeneric = 0xFF,
 };
 
 using BoxedHandle = uint64_t;
@@ -67,11 +73,53 @@ inline void releaseOrderMaintInfo(OrderMaintenanceInfo* ord) {
 
 class BoxedHandleInfo {
    public:
-    UnboxedHandle underlying;
+    UnboxedHandle underlying { 0} ;
     VulkanDispatch* dispatch = nullptr;
     bool ownDispatch = false;
     OrderMaintenanceInfo* ordMaintInfo = nullptr;
     VulkanMemReadingStream* readStream = nullptr;
+};
+
+class SimpleVkHandleManager {
+   public:
+    BoxedHandleInfo* get_const(uint64_t handle) { return get(handle); }
+    BoxedHandleInfo* get(uint64_t handle) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto iter = mVkHandle2Info.find(handle);
+        if (iter != mVkHandle2Info.end()) {
+            return iter->second;
+        }
+        return nullptr;
+    }
+
+    using EntityHandle = uint64_t;
+    using ConstIteratorFunc =
+        std::function<void(bool live, EntityHandle h, const BoxedHandleInfo& item)>;
+
+    void forEachLiveEntry_const(ConstIteratorFunc func) const {
+        std::lock_guard<std::mutex> lock(mMutex);
+        bool live = true;
+        for (auto& [key, val] : mVkHandle2Info) {
+            func(live, key, *val);
+        }
+    }
+
+    uint64_t addFixed(BoxedHandle handle, const BoxedHandleInfo& info, uint64_t tag);
+    uint64_t add(BoxedHandleInfo info, uint64_t tag);
+
+    void clear() {
+        std::lock_guard<std::mutex> lock(mMutex);
+        for (auto& [key, pval] : mVkHandle2Info) {
+            delete pval;
+        }
+        mVkHandle2Info.clear();
+    }
+    void remove(uint64_t handle);
+
+   private:
+    mutable std::mutex mMutex;
+    uint64_t mIndex{1};
+    std::map<uint64_t, BoxedHandleInfo*> mVkHandle2Info;
 };
 
 class BoxedHandleManager {
@@ -105,7 +153,7 @@ class BoxedHandleManager {
     void clear();
 
    private:
-    mutable Store mStore;
+    mutable SimpleVkHandleManager mStore;
 
     std::mutex mMutex;
     std::unordered_map<UnboxedHandle, BoxedHandle> mReverseMap GUARDED_BY(mMutex);

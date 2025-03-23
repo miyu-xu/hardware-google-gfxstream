@@ -26,6 +26,7 @@ using VkSnapshotApiCallHandle = uint64_t;
 struct VkSnapshotApiCallInfo {
     VkSnapshotApiCallHandle handle = -1;
 
+    std::vector<uint64_t> depends;
     // Raw packet from VkDecoder.
     std::vector<uint8_t> packet;
 

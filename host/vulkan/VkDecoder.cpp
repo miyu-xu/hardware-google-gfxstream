@@ -20587,8 +20587,8 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 if (m_snapshotsEnabled) {
                     m_state->snapshot()->vkMapMemoryIntoAddressSpaceGOOGLE(
                         &m_pool, snapshotApiCallInfo, packet, packetLen,
-                        vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return, device, memory,
-                        pAddress);
+                        vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return, device,
+                        unboxed_to_boxed_non_dispatchable_VkDeviceMemory(memory), pAddress);
                 }
                 vkReadStream->clearPool();
                 if (m_queueSubmitWithCommandsEnabled)
