@@ -177,6 +177,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // object in getFB() and
     static void waitUntilInitialized();
 
+    uint64_t getPuid() const;
+
     // Return the emulated GPU display width in pixels.
     int getWidth() const { return m_framebufferWidth; }
 
