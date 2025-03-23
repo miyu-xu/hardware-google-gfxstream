@@ -19,6 +19,7 @@
 
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
+#include "VulkanBoxedHandles.h"
 
 namespace gfxstream {
 namespace vk {
@@ -88,8 +89,9 @@ void DeviceOpTracker::PollAndProcessGarbage() {
             });
         if (numOldFuncs > kSizeLoggingThreshold) {
             //TODO(b/382028853): should be a warning
-            VERBOSE("VkDevice:%p has %d pending waitables, %d taking more than %d milliseconds.",
-                 mDevice, mPollFunctions.size(), numOldFuncs,
+            WARN("VkDevice:%p boxed: 0x%llx has %d pending waitables, %d taking more than %d milliseconds.",
+                 mDevice, (unsigned long long)sBoxedHandleManager.getBoxedFromUnboxed((uint64_t)(uintptr_t)mDevice),
+                mPollFunctions.size(), numOldFuncs,
                  std::chrono::duration_cast<std::chrono::milliseconds>(kSizeLoggingTimeThreshold));
         }
     }
