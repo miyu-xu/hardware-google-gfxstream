@@ -14,6 +14,7 @@
 
 #include "VulkanBoxedHandles.h"
 
+#include "FrameBuffer.h"
 #include "VkDecoderGlobalState.h"
 #include "VkDecoderInternalStructs.h"
 
@@ -49,6 +50,27 @@ static ReadStreamRegistry sReadStreamRegistry;
 
 }  // namespace
 
+uint64_t SimpleVkHandleManager::addFixed(BoxedHandle handle, const BoxedHandleInfo& info,
+                                         uint64_t tag) {
+    std::lock_guard<std::mutex> lock(mMutex);
+    auto* copy = new BoxedHandleInfo(info);
+    auto id = handle;
+    // mIndex will be 1 bigger than largest id so far
+    auto handleIndex = handle >> (8 * 3);  // 24bits, last 8bit for tag, next 16bit puid
+    mIndex = std::max(mIndex, handleIndex + 1);
+    mVkHandle2Info[id] = copy;
+    return id;
+}
+
+uint64_t SimpleVkHandleManager::add(BoxedHandleInfo info, uint64_t tag) {
+    std::lock_guard<std::mutex> lock(mMutex);
+    auto* copy = new BoxedHandleInfo(info);
+    uint64_t puid = FrameBuffer::getFB()->getPuid();
+    auto id = (mIndex << 24) + tag + (puid << 16);
+    mIndex++;
+    mVkHandle2Info[id] = copy;
+    return id;
+}
 void BoxedHandleManager::replayHandles(std::vector<BoxedHandle> handles) {
     mHandleReplay = true;
     mHandleReplayQueue.clear();
