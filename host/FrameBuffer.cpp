@@ -1955,6 +1955,14 @@ static void sFrameBuffer_FlushReadPixelPipeline(int displayId) {
     FrameBuffer::getFB()->flushReadPipeline(displayId);
 }
 
+uint64_t FrameBuffer::getPuid() const {
+    RenderThreadInfo* tInfo = RenderThreadInfo::get();
+    if (tInfo && tInfo->m_puid < 0xffffffff) {
+        return tInfo->m_puid;
+    }
+    return 0;
+}
+
 bool FrameBuffer::asyncReadbackSupported() {
 #if GFXSTREAM_ENABLE_HOST_GLES
     return m_emulationGl && m_emulationGl->isAsyncReadbackSupported();
