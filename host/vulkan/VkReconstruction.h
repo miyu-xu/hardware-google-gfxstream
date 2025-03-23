@@ -13,6 +13,9 @@
 // limitations under the License.
 #pragma once
 
+#include <map>
+#include <set>
+
 #include "VkSnapshotApiCall.h"
 #include "VulkanHandleMapping.h"
 #include "VulkanHandles.h"
@@ -133,6 +136,193 @@ class VkReconstruction {
     HandleModifications mHandleModifications;
 
     std::vector<uint8_t> mLoadedTrace;
+};
+
+class SimpleManager {
+   public:
+    VkSnapshotApiCallInfo* get(uint64_t handle) {
+        auto iter = mApiHandle2Info.find(handle);
+        if (iter != mApiHandle2Info.end()) {
+            return iter->second;
+        }
+        return nullptr;
+    }
+
+    using EntityHandle = uint64_t;
+    using ConstIteratorFunc =
+        std::function<void(bool live, EntityHandle h, const VkSnapshotApiCallInfo& item)>;
+
+    void forEachLiveEntry_const(ConstIteratorFunc func) const {
+        bool live = true;
+        for (auto& [key, val] : mApiHandle2Info) {
+            func(live, key, *val);
+        }
+    }
+
+    uint64_t add(VkSnapshotApiCallInfo info, uint64_t tag) {
+        auto* copy = new VkSnapshotApiCallInfo(info);
+        auto id = mId;
+        mId++;
+        mApiHandle2Info[id] = copy;
+        return id;
+    }
+
+    void clear() {
+        for (auto& [key, pval] : mApiHandle2Info) {
+            delete pval;
+        }
+        mApiHandle2Info.clear();
+    }
+    void remove(uint64_t handle) {
+        auto iter = mApiHandle2Info.find(handle);
+        if (iter != mApiHandle2Info.end()) {
+            delete iter->second;
+            mApiHandle2Info.erase(iter);
+        }
+    }
+
+   private:
+    uint64_t mId{1};
+    std::map<uint64_t, VkSnapshotApiCallInfo*> mApiHandle2Info;
+};
+
+// SimpleManager mApiCallManager;
+
+struct InternalHandle {
+    uint64_t id;
+    uint64_t vkHandle;
+};
+
+class VkHandleMapper {
+   public:
+    uint64_t vkHandle2Id(uint64_t vkHandle) {
+        if (mVkHandle2InternalHandle.find(vkHandle) == mVkHandle2InternalHandle.end()) {
+            mVkHandle2InternalHandle[vkHandle].id = mId;
+            mVkHandle2InternalHandle[vkHandle].vkHandle = vkHandle;
+            ++mId;
+        }
+        return mVkHandle2InternalHandle[vkHandle].id;
+    }
+
+   private:
+    uint64_t mId{1};
+    std::map<uint64_t, InternalHandle> mVkHandle2InternalHandle;
+};
+
+struct DepNode {
+    // id of this depnode, 0 is invalid
+    uint64_t id{0};
+    // the api that created this DepNode; 0 is invalid
+    uint64_t apiRef{0};
+    std::set<uint64_t> childHandles;
+    // there could be only one parent, 0 is invalid
+    uint64_t parentHandle{0};
+};
+
+struct ApiNode {
+    // id of this api node, 0 is invalid
+    uint64_t id{0};
+    std::set<uint64_t> createdHandles;
+};
+
+class DepGraph {
+   public:
+    void addHandles(const uint64_t* toAdd, uint32_t count) {
+        for (uint32_t i = 0; i < count; ++i) {
+            addDepNode(toAdd[i]);
+        }
+    }
+    void addHandleDependency(const uint64_t* handles, uint32_t count, uint64_t parentHandle) {
+        for (uint32_t i = 0; i < count; ++i) {
+            addDep(handles[i], parentHandle);
+        }
+    }
+
+    void forEachHandleAddApi(const uint64_t* created, uint32_t count, uint64_t apiRef) {
+        for (uint64_t i = 0; i < count; ++i) {
+            auto* nd = getDepNode(created[i]);
+            if (nd) {
+                nd->apiRef = apiRef;
+            }
+        }
+    }
+
+    void replaceDep(uint64_t child_id, uint64_t parent_id) {
+        clearChildHandles(parent_id);
+        addDep(child_id, parent_id);
+    }
+
+    void addDep(uint64_t child_id, uint64_t parent_id) {
+        auto* child = getDepNode(child_id);
+        auto* parent = getDepNode(parent_id);
+        if (!child || !parent) return;
+        child->parentHandle = parent_id;
+        parent->childHandles.insert(child_id);
+    }
+
+    DepNode* getDepNode(uint64_t id) {
+        if (mDepId2DepNode.find(id) == mDepId2DepNode.end()) return nullptr;
+        auto* nd = mDepId2DepNode[id];
+        return nd;
+    }
+
+    ApiNode* getApiNode(uint64_t id) {
+        if (mApiId2ApiNode.find(id) == mApiId2ApiNode.end()) return nullptr;
+        auto* nd = mApiId2ApiNode[id];
+        return nd;
+    }
+
+    void clearChildHandles(uint64_t id) {
+        auto* nd = getDepNode(id);
+        if (nd) {
+            nd->childHandles.clear();
+        }
+    }
+
+    void removeHandles(const uint64_t* toRemove, uint32_t count) {
+        for (uint32_t i = 0; i < count; ++i) {
+            removeDepNode(toRemove[i]);
+        }
+    }
+    void setCreatedHandlesForApi(uint64_t apiRef, const uint64_t* created, uint32_t count) {
+        auto* apiNode = getApiNode(apiRef);
+        if (apiNode) {
+            for (uint32_t i = 0; i < count; ++i) {
+                apiNode->createdHandles.insert(created[i]);
+            }
+        }
+    }
+    void addApiNode(uint64_t id) {
+        auto* nd = new ApiNode();
+        nd->id = id;
+        mApiId2ApiNode[id] = nd;
+    }
+    void removeApiNode(uint64_t id) {
+        auto* nd = getApiNode(id);
+        if (nd) {
+            delete nd;
+        }
+        mApiId2ApiNode.erase(id);
+    }
+    void addDepNode(uint64_t id) {
+        auto* nd = new DepNode();
+        nd->id = id;
+        mDepId2DepNode[id] = nd;
+    }
+    void removeDepNode(uint64_t id) {
+        auto* nd = getDepNode(id);
+        if (nd) {
+            for (auto child : nd->childHandles) {
+                removeDepNode(child);
+            }
+            delete nd;
+        }
+        mDepId2DepNode.erase(id);
+    }
+
+   private:
+    std::map<uint64_t, DepNode*> mDepId2DepNode;
+    std::map<uint64_t, ApiNode*> mApiId2ApiNode;
 };
 
 }  // namespace vk
