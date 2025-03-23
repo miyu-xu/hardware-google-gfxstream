@@ -74,6 +74,70 @@ class BoxedHandleInfo {
     VulkanMemReadingStream* readStream = nullptr;
 };
 
+class SimpleVkHandleManager {
+   public:
+    BoxedHandleInfo* get(uint64_t handle) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto iter = mVkHandle2Info.find(handle);
+        if (iter != mVkHandle2Info.end()) {
+            return iter->second;
+        }
+        return nullptr;
+    }
+
+    using EntityHandle = uint64_t;
+    using ConstIteratorFunc =
+        std::function<void(bool live, EntityHandle h, const BoxedHandleInfo& item)>;
+
+    void forEachLiveEntry_const(ConstIteratorFunc func) const {
+        std::lock_guard<std::mutex> lock(mMutex);
+        bool live = true;
+        for (auto& [key, val] : mVkHandle2Info) {
+            func(live, key, *val);
+        }
+    }
+
+    uint64_t addFixed(BoxedHandle handle, const BoxedHandleInfo& info, uint64_t tag) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto* copy = new BoxedHandleInfo(info);
+        auto id = handle;
+        // mId will be 1 bigger than largest id so far
+        mId = std::max(mId, handle + 1);
+        mVkHandle2Info[id] = copy;
+        return id;
+    }
+
+    uint64_t add(BoxedHandleInfo info, uint64_t tag) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto* copy = new BoxedHandleInfo(info);
+        auto id = mId;
+        mId++;
+        mVkHandle2Info[id] = copy;
+        return id;
+    }
+
+    void clear() {
+        std::lock_guard<std::mutex> lock(mMutex);
+        for (auto& [key, pval] : mVkHandle2Info) {
+            delete pval;
+        }
+        mVkHandle2Info.clear();
+    }
+    void remove(uint64_t handle) {
+        std::lock_guard<std::mutex> lock(mMutex);
+        auto iter = mVkHandle2Info.find(handle);
+        if (iter != mVkHandle2Info.end()) {
+            delete iter->second;
+            mVkHandle2Info.erase(iter);
+        }
+    }
+
+   private:
+    mutable std::mutex mMutex;
+    uint64_t mId{1};
+    std::map<uint64_t, BoxedHandleInfo*> mVkHandle2Info;
+};
+
 class BoxedHandleManager {
    public:
     // The hybrid entity manager uses a sequence lock to protect access to
