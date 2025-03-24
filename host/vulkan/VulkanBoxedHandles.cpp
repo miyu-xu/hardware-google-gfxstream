@@ -379,7 +379,10 @@ VkObjectT new_boxed_VkType(VkObjectT underlying, bool dispatchable = false, Vulk
         info.ordMaintInfo = new OrderMaintenanceInfo();
         info.readStream = nullptr;
     }
-    return (VkObjectT)sBoxedHandleManager.add(info, GetTag<VkObjectT>());
+    auto ret = (VkObjectT)sBoxedHandleManager.add(info, GetTag<VkObjectT>());
+    fprintf(stderr, "%s %d handle is 0x%llx tag 0x%llx name %s\n", __func__, __LINE__,
+            (unsigned long long)ret, (unsigned long long)GetTag<VkObjectT>(), GetTypeStr<VkObjectT>());
+    return ret;
 }
 
 template <typename VkObjectT>

@@ -19,6 +19,7 @@
 
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
+#include "VulkanBoxedHandles.h"
 
 namespace gfxstream {
 namespace vk {
@@ -88,8 +89,9 @@ void DeviceOpTracker::PollAndProcessGarbage() {
             });
         if (numOldFuncs > kSizeLoggingThreshold) {
             //TODO(b/382028853): should be a warning
-            VERBOSE("VkDevice:%p has %d pending waitables, %d taking more than %d milliseconds.",
-                 mDevice, mPollFunctions.size(), numOldFuncs,
+            WARN("VkDevice:%p boxed: 0x%llx has %d pending waitables, %d taking more than %d milliseconds.",
+                 mDevice, (unsigned long long)sBoxedHandleManager.getBoxedFromUnboxed((uint64_t)(uintptr_t)mDevice),
+                mPollFunctions.size(), numOldFuncs,
                  std::chrono::duration_cast<std::chrono::milliseconds>(kSizeLoggingTimeThreshold));
         }
     }
@@ -128,8 +130,10 @@ void DeviceOpTracker::PollAndProcessGarbage() {
                 [this](auto&& arg) {
                     using T = std::decay_t<decltype(arg)>;
                     if constexpr (std::is_same_v<T, VkFence>) {
+                    fprintf(stderr, "%s %d destroy fence\n", __func__, __LINE__);
                         mDeviceDispatch->vkDestroyFence(mDevice, arg, nullptr);
                     } else if constexpr (std::is_same_v<T, VkSemaphore>) {
+                    fprintf(stderr, "%s %d destroy semaphore\n", __func__, __LINE__);
                         mDeviceDispatch->vkDestroySemaphore(mDevice, arg, nullptr);
                     } else {
                         static_assert(always_false_v<T>, "non-exhaustive visitor!");

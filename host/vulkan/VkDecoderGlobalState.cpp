@@ -2569,6 +2569,7 @@ class VkDecoderGlobalState::Impl {
 
         if (boxImage) {
             *pImage = new_boxed_non_dispatchable_VkImage(*pImage);
+            imageInfo.boxed = *pImage;
         }
         return createRes;
     }
@@ -2641,6 +2642,8 @@ class VkDecoderGlobalState::Impl {
             return VK_ERROR_OUT_OF_HOST_MEMORY;
         }
 
+        // fixme: problem here: destroy image will remove the boxed image from boxedhandlemanager
+        // however, later it will find it and update the underlying image, problem
         on_vkDestroyImage(pool, snapshotInfo, boxed_device, original_underlying_image, nullptr);
 
         {
@@ -2855,12 +2858,14 @@ class VkDecoderGlobalState::Impl {
         }
 
         *pView = new_boxed_non_dispatchable_VkImageView(*pView);
+        imageViewInfo.boxed = *pView;
         return result;
     }
 
     void destroyImageViewWithExclusiveInfo(VkDevice device, VulkanDispatch* deviceDispatch,
                                            VkImageView imageView, ImageViewInfo& imageViewInfo,
                                            const VkAllocationCallbacks* pAllocator) {
+        delete_VkImageView(imageViewInfo.boxed);
         deviceDispatch->vkDestroyImageView(device, imageView, pAllocator);
     }
 
@@ -2914,6 +2919,7 @@ class VkDecoderGlobalState::Impl {
              pCreateInfo->borderColor == VK_BORDER_COLOR_INT_CUSTOM_EXT);
 
         *pSampler = new_boxed_non_dispatchable_VkSampler(*pSampler);
+        samplerInfo.boxed = *pSampler;
 
         return result;
     }
@@ -2921,6 +2927,7 @@ class VkDecoderGlobalState::Impl {
     void destroySamplerWithExclusiveInfo(VkDevice device, VulkanDispatch* deviceDispatch,
                                          VkSampler sampler, SamplerInfo& samplerInfo,
                                          const VkAllocationCallbacks* pAllocator) {
+        delete_VkSampler(samplerInfo.boxed);
         deviceDispatch->vkDestroySampler(device, sampler, pAllocator);
 
         if (samplerInfo.emulatedborderSampler != VK_NULL_HANDLE) {
@@ -3070,6 +3077,7 @@ class VkDecoderGlobalState::Impl {
         semaphoreInfo.device = device;
 
         *pSemaphore = new_boxed_non_dispatchable_VkSemaphore(*pSemaphore);
+        semaphoreInfo.boxed = *pSemaphore;
 
         return res;
     }
@@ -3222,6 +3230,8 @@ class VkDecoderGlobalState::Impl {
 
             {
                 auto boxed_fence = unboxed_to_boxed_non_dispatchable_VkFence(fence);
+                // fixme: problem here: if we ever remove the fence from boxed handle
+                // manager, it will crash
                 set_boxed_non_dispatchable_VkFence(boxed_fence, replacement);
 
                 auto& fenceInfo = mFenceInfo[replacement];
@@ -3369,6 +3379,9 @@ class VkDecoderGlobalState::Impl {
                                            VkSemaphore semaphore, DeviceInfo& deviceInfo,
                                            SemaphoreInfo& semaphoreInfo,
                                            const VkAllocationCallbacks* pAllocator) {
+        fprintf(stderr, "%s %d destroy semaphoreInfo boxed 0x%llx\n", __func__, __LINE__, (unsigned long long)semaphoreInfo.boxed);
+        delete_VkSemaphore(semaphoreInfo.boxed);
+        semaphoreInfo.boxed = VK_NULL_HANDLE;
 #ifndef _WIN32
         if (semaphoreInfo.externalHandle != VK_EXT_SYNC_HANDLE_INVALID) {
             close(semaphoreInfo.externalHandle);
@@ -3435,6 +3448,7 @@ class VkDecoderGlobalState::Impl {
                                                      FenceInfo& fenceInfo,
                                                      const VkAllocationCallbacks* pAllocator,
                                                      bool allowExternalFenceRecycling) {
+        delete_VkFence(fenceInfo.boxed);
         fenceInfo.boxed = VK_NULL_HANDLE;
 
         // External fences are just slated for recycling. This addresses known
@@ -3525,6 +3539,7 @@ class VkDecoderGlobalState::Impl {
         VkDevice device, VulkanDispatch* deviceDispatch, VkDescriptorSetLayout descriptorSetLayout,
         DescriptorSetLayoutInfo& descriptorSetLayoutInfo, const VkAllocationCallbacks* pAllocator) {
         deviceDispatch->vkDestroyDescriptorSetLayout(device, descriptorSetLayout, pAllocator);
+        delete_VkDescriptorSetLayout(descriptorSetLayoutInfo.boxed);
     }
 
     void destroyDescriptorSetLayoutLocked(VkDevice device, VulkanDispatch* deviceDispatch,
@@ -3538,6 +3553,7 @@ class VkDecoderGlobalState::Impl {
         destroyDescriptorSetLayoutWithExclusiveInfo(device, deviceDispatch, descriptorSetLayout,
                                                     descriptorSetLayoutInfo, pAllocator);
 
+        delete_VkDescriptorSetLayout(descriptorSetLayoutInfo.boxed);
         mDescriptorSetLayoutInfo.erase(descriptorSetLayoutInfoIt);
     }
 
@@ -8536,7 +8552,10 @@ class VkDecoderGlobalState::Impl {
             auto& physicalDeviceInstance = current->second;
             if (physicalDeviceInstance != instance) continue;
             mPhysicalDeviceToInstance.erase(current);
-            mPhysdevInfo.erase(physicalDevice);
+            if (mPhysdevInfo.find(physicalDevice) != mPhysdevInfo.end()) {
+                delete_VkPhysicalDevice(mPhysdevInfo[physicalDevice].boxed);
+                mPhysdevInfo.erase(physicalDevice);
+            }
         }
     }
 
@@ -8582,6 +8601,7 @@ class VkDecoderGlobalState::Impl {
 
             LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu images.", deviceObjects.images.size());
             for (auto& [image, imageInfo] : deviceObjects.images) {
+                delete_VkImage(imageInfo.boxed);
                 destroyImageWithExclusiveInfo(device, deviceDispatch, image, imageInfo, nullptr);
             }
 
