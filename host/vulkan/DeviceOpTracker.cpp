@@ -128,8 +128,10 @@ void DeviceOpTracker::PollAndProcessGarbage() {
                 [this](auto&& arg) {
                     using T = std::decay_t<decltype(arg)>;
                     if constexpr (std::is_same_v<T, VkFence>) {
+                    fprintf(stderr, "%s %d destroy fence\n", __func__, __LINE__);
                         mDeviceDispatch->vkDestroyFence(mDevice, arg, nullptr);
                     } else if constexpr (std::is_same_v<T, VkSemaphore>) {
+                    fprintf(stderr, "%s %d destroy semaphore\n", __func__, __LINE__);
                         mDeviceDispatch->vkDestroySemaphore(mDevice, arg, nullptr);
                     } else {
                         static_assert(always_false_v<T>, "non-exhaustive visitor!");
