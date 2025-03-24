@@ -19,6 +19,7 @@
 
 #include "FrameBuffer.h"
 #include "VkDecoder.h"
+#include "VulkanBoxedHandles.h"
 #include "aemu/base/containers/EntityManager.h"
 
 namespace gfxstream {
@@ -33,7 +34,7 @@ uint32_t GetOpcode(const VkSnapshotApiCallInfo& info) {
 
 }  // namespace
 
-#define DEBUG_RECONSTRUCTION 0
+#define DEBUG_RECONSTRUCTION 1
 
 #if DEBUG_RECONSTRUCTION
 
@@ -78,6 +79,7 @@ void VkReconstruction::saveReplayBuffers(android::base::Stream* stream) {
     dump();
 #endif
 
+    return;
     std::unordered_set<uint64_t> savedApis;
 
     std::unordered_map<HandleWithState, int, HandleWithStateHash> totalParents;
@@ -201,6 +203,7 @@ VkSnapshotApiCallInfo* VkReconstruction::createApiCallInfo() {
 }
 
 void VkReconstruction::removeHandleFromApiInfo(VkSnapshotApiCallHandle h, uint64_t toRemove) {
+    return;
     auto vk_item = mHandleReconstructions.get(toRemove);
     if (!vk_item) return;
     auto apiInfo = mApiCallManager.get(h);
@@ -226,6 +229,7 @@ void VkReconstruction::destroyApiCallInfo(VkSnapshotApiCallHandle h) {
     item->createdHandles.clear();
 
     mApiCallManager.remove(h);
+    mGraph.removeApiNode(h);
 }
 
 void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
@@ -236,6 +240,7 @@ void VkReconstruction::destroyApiCallInfoIfUnused(VkSnapshotApiCallInfo* info) {
 
     if (currentInfo->packet.empty()) {
         mApiCallManager.remove(handle);
+        mGraph.removeApiNode(handle);
         return;
     }
 
@@ -259,8 +264,13 @@ void VkReconstruction::setApiTrace(VkSnapshotApiCallInfo* apiInfo, const uint8_t
 }
 
 void VkReconstruction::dump() {
+    INFO("%s: dep graph dump", __func__);
+
+    mGraph.dump(mApiCallManager);
+
     INFO("%s: api trace dump", __func__);
 
+    return;
     size_t traceBytesTotal = 0;
 
     mApiCallManager.forEachLiveEntry_const(
@@ -310,6 +320,8 @@ void VkReconstruction::dump() {
 void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
     if (!toAdd) return;
 
+    mGraph.addHandles(toAdd, count);
+    return;
     for (uint32_t i = 0; i < count; ++i) {
         DEBUG_RECON("add 0x%llx", (unsigned long long)toAdd[i]);
         mHandleReconstructions.add(toAdd[i], HandleWithStateReconstruction());
@@ -319,6 +331,7 @@ void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
 void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive) {
     if (!toRemove) return;
 
+    return;
     for (uint32_t i = 0; i < count; ++i) {
         DEBUG_RECON("remove 0x%llx", (unsigned long long)toRemove[i]);
         auto item = mHandleReconstructions.get(toRemove[i]);
@@ -377,6 +390,11 @@ void VkReconstruction::forEachHandleAddApi(const uint64_t* toProcess, uint32_t c
                                            uint64_t apiHandle, HandleState state) {
     if (!toProcess) return;
 
+    // fixme
+    if (state == VkReconstruction::CREATED) {
+        mGraph.forEachHandleAddApi(toProcess, count, apiHandle);
+    }
+    return;
     for (uint32_t i = 0; i < count; ++i) {
         auto item = mHandleReconstructions.get(toProcess[i]);
         if (!item) continue;
@@ -418,6 +436,10 @@ void VkReconstruction::addHandleDependency(const uint64_t* handles, uint32_t cou
 
     if (!parentHandle) return;
 
+    mGraph.addHandleDependency(handles, count, parentHandle);
+
+    return;
+
     auto parentItem = mHandleReconstructions.get(parentHandle);
 
     if (!parentItem) {
@@ -443,6 +465,7 @@ void VkReconstruction::setCreatedHandlesForApi(uint64_t apiHandle, const uint64_
                                                uint32_t count) {
     if (!created) return;
 
+    mGraph.setCreatedHandlesForApi(apiHandle, created, count);
     auto item = mApiCallManager.get(apiHandle);
 
     if (!item) return;
@@ -454,6 +477,7 @@ void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint
                                                  uint64_t apiHandle) {
     if (!toProcess) return;
 
+    return;
     for (uint32_t i = 0; i < count; ++i) {
         auto item = mHandleModifications.get(toProcess[i]);
         if (!item) {
@@ -470,6 +494,7 @@ void VkReconstruction::forEachHandleAddModifyApi(const uint64_t* toProcess, uint
 void VkReconstruction::forEachHandleClearModifyApi(const uint64_t* toProcess, uint32_t count) {
     if (!toProcess) return;
 
+    return;
     for (uint32_t i = 0; i < count; ++i) {
         auto item = mHandleModifications.get(toProcess[i]);
 
@@ -510,6 +535,99 @@ std::vector<uint64_t> VkReconstruction::getOrderedUniqueModifyApis() const {
 
     return orderedUniqueModifyApis;
 }
+
+// ===================  new graph dependency
+void DepGraph::addHandles(const uint64_t* toAdd, uint32_t count) {
+    for (uint32_t i = 0; i < count; ++i) {
+        addDepNode(toAdd[i]);
+    }
+}
+
+void DepGraph::addDepNode(uint64_t id) {
+    if (getDepNode(id)) {
+        // this can happen, e.g.
+        // vkGetDeviceQueue, can be called
+        // multiple times with same queue
+        // or enumerate physical device
+        // multiple times
+        return;
+    }
+    auto* nd = new DepNode();
+    nd->id = id;
+    mDepId2DepNode[id] = nd;
+    INFO("%s %d id 0x%llx, nd %p", __func__, __LINE__, (unsigned long long)id, nd);
+}
+void DepGraph::dump(SimpleManager& apiManager) {
+    for (const auto& [handle, item] : mDepId2DepNode) {
+        auto apiHandle = item->apiRef;
+        auto* apiInfo = apiManager.get(apiHandle);
+        INFO("handle 0x%llx api 0x%llx name: %s", (unsigned long long)handle, item->apiRef,
+             api_opcode_to_string(GetOpcode(*apiInfo)));
+    }
+}
+
+uint64_t DepGraph::getHandlePuid(uint64_t handle) const { return (handle & 0xFFFF00) >> 8; }
+
+uint64_t DepGraph::getHandleType(uint64_t handle) const { return handle & 0xFF; }
+
+void DepGraph::addHandleDependency(const uint64_t* handles, uint32_t count, uint64_t parentHandle) {
+    for (uint32_t i = 0; i < count; ++i) {
+        addDep(handles[i], parentHandle);
+    }
+}
+
+void DepGraph::addDep(uint64_t child_id, uint64_t parent_id) {
+    INFO("%s %d child 0x%llx parent 0x%llx", __func__, __LINE__, (unsigned long long)child_id,
+         (unsigned long long)parent_id);
+
+    auto ptype = getHandleType(parent_id);
+    switch (ptype) {
+        case Tag_VkInstance:
+        case Tag_VkPhysicalDevice:
+        case Tag_VkDevice:
+        case Tag_VkDeviceMemory:
+        case Tag_VkCommandBuffer:
+            break;
+        default:
+            INFO("%s %d child 0x%llx parent 0x%llx", __func__, __LINE__,
+                 (unsigned long long)child_id, (unsigned long long)parent_id);
+            return;
+    }
+
+    auto* child = getDepNode(child_id);
+    auto* parent = getDepNode(parent_id);
+    if (!child || !parent) return;
+
+    auto ctype = getHandleType(child_id);
+    if (ptype == Tag_VkCommandBuffer) {
+        if (ctype == Tag_VkResetCmd) {
+            parent->childHandles.clear();
+        } else if (ctype == Tag_VkCmdOp) {
+            child->parentHandle = parent_id;
+            parent->childHandles.insert(child_id);
+        }
+        INFO("%s %d child 0x%llx parent 0x%llx", __func__, __LINE__, (unsigned long long)child_id,
+             (unsigned long long)parent_id);
+        return;
+    }
+
+    if (ptype == Tag_VkDeviceMemory) {
+        if (ctype == Tag_VkBindMemory) {
+        } else if(ctype == Tag_VkMapMemory) {
+        } else {
+            INFO("%s %d child 0x%llx parent 0x%llx", __func__, __LINE__,
+                 (unsigned long long)child_id, (unsigned long long)parent_id);
+            return;
+        }
+    }
+
+    child->parentHandle = parent_id;
+    parent->childHandles.insert(child_id);
+    INFO("%s %d child 0x%llx parent 0x%llx", __func__, __LINE__, (unsigned long long)child_id,
+         (unsigned long long)parent_id);
+}
+
+// ===================  done graph dependency
 
 }  // namespace vk
 }  // namespace gfxstream

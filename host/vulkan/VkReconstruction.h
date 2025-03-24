@@ -95,16 +95,14 @@ struct ApiNode {
 
 class DepGraph {
    public:
-    void addHandles(const uint64_t* toAdd, uint32_t count) {
-        for (uint32_t i = 0; i < count; ++i) {
-            addDepNode(toAdd[i]);
-        }
-    }
-    void addHandleDependency(const uint64_t* handles, uint32_t count, uint64_t parentHandle) {
-        for (uint32_t i = 0; i < count; ++i) {
-            addDep(handles[i], parentHandle);
-        }
-    }
+    void addHandles(const uint64_t* toAdd, uint32_t count);
+
+    void addHandleDependency(const uint64_t* handles, uint32_t count, uint64_t parentHandle);
+
+    void dump(SimpleManager& apiManager);
+
+    uint64_t getHandlePuid(uint64_t handle) const;
+    uint64_t getHandleType(uint64_t handle) const;
 
     void forEachHandleAddApi(const uint64_t* created, uint32_t count, uint64_t apiRef) {
         for (uint64_t i = 0; i < count; ++i) {
@@ -120,13 +118,7 @@ class DepGraph {
         addDep(child_id, parent_id);
     }
 
-    void addDep(uint64_t child_id, uint64_t parent_id) {
-        auto* child = getDepNode(child_id);
-        auto* parent = getDepNode(parent_id);
-        if (!child || !parent) return;
-        child->parentHandle = parent_id;
-        parent->childHandles.insert(child_id);
-    }
+    void addDep(uint64_t child_id, uint64_t parent_id);
 
     DepNode* getDepNode(uint64_t id) {
         if (mDepId2DepNode.find(id) == mDepId2DepNode.end()) return nullptr;
@@ -153,6 +145,7 @@ class DepGraph {
         }
     }
     void setCreatedHandlesForApi(uint64_t apiRef, const uint64_t* created, uint32_t count) {
+        addApiNode(apiRef);
         auto* apiNode = getApiNode(apiRef);
         if (apiNode) {
             for (uint32_t i = 0; i < count; ++i) {
@@ -161,6 +154,7 @@ class DepGraph {
         }
     }
     void addApiNode(uint64_t id) {
+        if (getApiNode(id)) return;
         auto* nd = new ApiNode();
         nd->id = id;
         mApiId2ApiNode[id] = nd;
@@ -172,19 +166,8 @@ class DepGraph {
         }
         mApiId2ApiNode.erase(id);
     }
-    void addDepNode(uint64_t id) {
-        if (getDepNode(id)) {
-            // this can happen, e.g.
-            // vkGetDeviceQueue, can be called
-            // multiple times with same queue
-            // or enumerate physical device
-            // multiple times
-            return;
-        }
-        auto* nd = new DepNode();
-        nd->id = id;
-        mDepId2DepNode[id] = nd;
-    }
+    void addDepNode(uint64_t id);
+
     void removeDepNode(uint64_t id) {
         auto* nd = getDepNode(id);
         if (nd) {
