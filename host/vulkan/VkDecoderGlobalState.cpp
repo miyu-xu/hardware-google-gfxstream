@@ -2568,6 +2568,7 @@ class VkDecoderGlobalState::Impl {
         imageInfo.anbInfo = std::move(anbInfo);
 
         if (boxImage) {
+            imageInfo.boxed = *pImage;
             *pImage = new_boxed_non_dispatchable_VkImage(*pImage);
         }
         return createRes;
@@ -2583,6 +2584,7 @@ class VkDecoderGlobalState::Impl {
             }
         }
 
+        delete_VkImage(imageInfo.boxed);
         imageInfo.anbInfo.reset();
     }
 
@@ -2854,6 +2856,7 @@ class VkDecoderGlobalState::Impl {
                                                        *imageViewInfo.boundColorBuffer);
         }
 
+        imageViewInfo.boxed = *pView;
         *pView = new_boxed_non_dispatchable_VkImageView(*pView);
         return result;
     }
@@ -2861,6 +2864,7 @@ class VkDecoderGlobalState::Impl {
     void destroyImageViewWithExclusiveInfo(VkDevice device, VulkanDispatch* deviceDispatch,
                                            VkImageView imageView, ImageViewInfo& imageViewInfo,
                                            const VkAllocationCallbacks* pAllocator) {
+        delete_VkImageView(imageViewInfo.boxed);
         deviceDispatch->vkDestroyImageView(device, imageView, pAllocator);
     }
 
@@ -2913,6 +2917,7 @@ class VkDecoderGlobalState::Impl {
              pCreateInfo->borderColor == VK_BORDER_COLOR_FLOAT_CUSTOM_EXT ||
              pCreateInfo->borderColor == VK_BORDER_COLOR_INT_CUSTOM_EXT);
 
+        samplerInfo.boxed = *pSampler;
         *pSampler = new_boxed_non_dispatchable_VkSampler(*pSampler);
 
         return result;
@@ -2924,6 +2929,7 @@ class VkDecoderGlobalState::Impl {
         deviceDispatch->vkDestroySampler(device, sampler, pAllocator);
 
         if (samplerInfo.emulatedborderSampler != VK_NULL_HANDLE) {
+            delete_VkSampler(samplerInfo.boxed);
             deviceDispatch->vkDestroySampler(device, samplerInfo.emulatedborderSampler, nullptr);
         }
     }
@@ -3525,6 +3531,7 @@ class VkDecoderGlobalState::Impl {
         VkDevice device, VulkanDispatch* deviceDispatch, VkDescriptorSetLayout descriptorSetLayout,
         DescriptorSetLayoutInfo& descriptorSetLayoutInfo, const VkAllocationCallbacks* pAllocator) {
         deviceDispatch->vkDestroyDescriptorSetLayout(device, descriptorSetLayout, pAllocator);
+        delete_VkDescriptorSetLayout(descriptorSetLayoutInfo.boxed);
     }
 
     void destroyDescriptorSetLayoutLocked(VkDevice device, VulkanDispatch* deviceDispatch,
@@ -3538,6 +3545,7 @@ class VkDecoderGlobalState::Impl {
         destroyDescriptorSetLayoutWithExclusiveInfo(device, deviceDispatch, descriptorSetLayout,
                                                     descriptorSetLayoutInfo, pAllocator);
 
+        delete_VkDescriptorSetLayout(descriptorSetLayoutInfo.boxed);
         mDescriptorSetLayoutInfo.erase(descriptorSetLayoutInfoIt);
     }
 
@@ -8536,7 +8544,10 @@ class VkDecoderGlobalState::Impl {
             auto& physicalDeviceInstance = current->second;
             if (physicalDeviceInstance != instance) continue;
             mPhysicalDeviceToInstance.erase(current);
-            mPhysdevInfo.erase(physicalDevice);
+            if (mPhysdevInfo.find(physicalDevice) != mPhysdevInfo.end()) {
+                delete_VkPhysicalDevice(mPhysdevInfo[physicalDevice].boxed);
+                mPhysdevInfo.erase(physicalDevice);
+            }
         }
     }
 
