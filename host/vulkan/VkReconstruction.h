@@ -113,6 +113,16 @@ class DepGraph {
         }
     }
 
+    void clear() {
+        for (auto& [key, pval] : mDepId2DepNode) {
+            delete pval;
+        }
+        mDepId2DepNode.clear();
+        for (auto& [key, pval] : mApiId2ApiNode) {
+            delete pval;
+        }
+        mApiId2ApiNode.clear();
+    }
     void replaceDep(uint64_t child_id, uint64_t parent_id) {
         clearChildHandles(parent_id);
         addDep(child_id, parent_id);
