@@ -287,6 +287,10 @@ void DepGraph::removeHandles(const uint64_t* toRemove, uint32_t count) {
                 removeDepNode(toRemove[i]);
                 INFO("DepGraph %s done removing Physical Device 0x%llx\n\n", __func__, toRemove[i]); 
             }
+            if (getHandleType(toRemove[i]) == Tag_VkShaderModule) {
+                //removeDepNode(toRemove[i]);
+                continue;
+            }
         }
 }
 
@@ -412,6 +416,9 @@ void VkReconstruction::addHandleDependency(const uint64_t* handles, uint32_t cou
 
     if (!parentHandle) return;
 
+    if (parentState == BOUND_MEMORY) {
+        return;
+    }
     mGraph.addHandleDependency(handles, count, parentHandle);
 
     return;
@@ -565,12 +572,22 @@ void DepGraph::addDep(uint64_t child_id, uint64_t parent_id) {
     INFO("%s %d child 0x%llx parent 0x%llx", __func__, __LINE__, (unsigned long long)child_id,
          (unsigned long long)parent_id);
 
+    if (child_id == parent_id) {
+        // dont do this, image depends on image, create on bound state
+        // ignore; fixeme
+        return;
+    }
     auto ptype = getHandleType(parent_id);
     switch (ptype) {
         case Tag_VkInstance:
         case Tag_VkPhysicalDevice:
         case Tag_VkDevice:
         case Tag_VkDeviceMemory:
+        case Tag_VkFramebuffer:
+        case Tag_VkImageView:
+        case Tag_VkImage:
+        case Tag_VkBuffer:
+        case Tag_VkBufferView:
         case Tag_VkCommandBuffer:
         case Tag_VkCommandPool:
             break;
