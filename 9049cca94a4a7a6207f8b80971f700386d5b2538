@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "83fde269_38c53fc2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1571059
+      },
+      "writtenOn": "2025-03-25T19:11:34Z",
+      "side": 1,
+      "message": "Fuchsia is still on the non-gfxstream build, and the builder has been stopped for months, which also blocks other graphics-related bugs like b/375531266; thus we would prefer a solution that could unblock Fuchsia first.\n\nIf I understood correctly, what we\u0027ve agreed from our discussion offline was to first land this change to unblock the Fuchsia roll, and then figure out a design to move the mapping / unmapping operation to a new thread.\n\nDoes this sound good to you?",
+      "parentUuid": "99bb3980_960910a4",
+      "revId": "9049cca94a4a7a6207f8b80971f700386d5b2538",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "84996dd8_19bbf76c",
         "filename": "host/FrameBuffer.h",
         "patchSetId": 1
