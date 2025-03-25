@@ -68,6 +68,7 @@ std::vector<VkReconstruction::HandleWithState> typeTagSortedHandles(
 }
 
 void VkReconstruction::clear() {
+    mGraph.clear();
     mApiCallManager.clear();
     mHandleReconstructions.clear();
 }
@@ -268,9 +269,22 @@ void VkReconstruction::addHandles(const uint64_t* toAdd, uint32_t count) {
     }
 }
 
+void DepGraph::removeHandles(const uint64_t* toRemove, uint32_t count) {
+    // HACK: if deleting shader is called indepently, ignore it as it
+    // is the special case that shader should only be removed during device
+    // delete
+        for (uint32_t i = 0; i < count; ++i) {
+            if (getHandleType(toRemove[i]) == Tag_VkShaderModule) {
+                continue;
+            }
+            removeDepNode(toRemove[i]);
+        }
+}
+
 void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive) {
     if (!toRemove) return;
 
+    mGraph.removeHandles(toRemove, count);
     return;
     for (uint32_t i = 0; i < count; ++i) {
         DEBUG_RECON("remove 0x%llx", (unsigned long long)toRemove[i]);

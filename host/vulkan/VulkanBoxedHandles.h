@@ -41,8 +41,9 @@ enum BoxedHandleTypeTag {
     Tag_VkMapMemory,
     Tag_VkResetCmd,
     Tag_VkCmdOp,
+    Tag_VkUpdateDescriptorSets,
     // additional generic tag
-    Tag_VkGeneric = 1001,
+    Tag_VkGeneric = 0xFF,
 };
 
 using BoxedHandle = uint64_t;

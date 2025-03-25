@@ -873,8 +873,10 @@ class VkDecoderSnapshot::Impl {
         if (m_state->batchedDescriptorSetUpdateEnabled()) {
             return;
         }
-        uint64_t handle = m_state->newGlobalVkGenericHandle();
+        uint64_t handle = m_state->newGlobalVkGenericHandle(Tag_VkUpdateDescriptorSets);
         mReconstruction.addHandles((const uint64_t*)(&handle), 1);
+        mReconstruction.addHandleDependency((const uint64_t*)(&handle), 1,
+                                            (uint64_t)(uintptr_t)device);
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         for (uint32_t i = 0; i < descriptorWriteCount; ++i) {
