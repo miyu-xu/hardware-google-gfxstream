@@ -85,6 +85,7 @@ uint64_t SimpleVkHandleManager::add(BoxedHandleInfo info, uint64_t tag) {
     return id;
 }
 void BoxedHandleManager::replayHandles(std::vector<BoxedHandle> handles) {
+    if (handles.empty()) return;
     mHandleReplay = true;
     mHandleReplayQueue.clear();
     for (BoxedHandle handle : handles) {
