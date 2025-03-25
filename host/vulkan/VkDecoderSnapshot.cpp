@@ -1023,6 +1023,8 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandles((const uint64_t*)pCommandBuffers,
                                    pAllocateInfo->commandBufferCount);
         mReconstruction.addHandleDependency(
+            (const uint64_t*)pCommandBuffers, pAllocateInfo->commandBufferCount, (uint64_t)(uintptr_t)device);
+        mReconstruction.addHandleDependency(
             (const uint64_t*)pCommandBuffers, pAllocateInfo->commandBufferCount,
             (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkCommandPool(
                 pAllocateInfo->commandPool));

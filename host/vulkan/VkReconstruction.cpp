@@ -274,11 +274,33 @@ void DepGraph::removeHandles(const uint64_t* toRemove, uint32_t count) {
     // is the special case that shader should only be removed during device
     // delete
         for (uint32_t i = 0; i < count; ++i) {
-            if (getHandleType(toRemove[i]) == Tag_VkShaderModule) {
-                continue;
+            if (getHandleType(toRemove[i]) == Tag_VkDevice) {
+                INFO("DepGraph %s removing device 0x%llx", __func__, toRemove[i]); 
+                removeDepNode(toRemove[i]);
+                INFO("DepGraph %s done removing device 0x%llx\n\n", __func__, toRemove[i]); 
+            }else if (getHandleType(toRemove[i]) == Tag_VkInstance) {
+                INFO("DepGraph %s removing Instance 0x%llx", __func__, toRemove[i]); 
+                removeDepNode(toRemove[i]);
+                INFO("DepGraph %s done removing Instance 0x%llx", __func__, toRemove[i]); 
+            }else if (getHandleType(toRemove[i]) == Tag_VkPhysicalDevice) {
+                INFO("DepGraph %s removing Physical Device 0x%llx\n\n", __func__, toRemove[i]); 
+                removeDepNode(toRemove[i]);
+                INFO("DepGraph %s done removing Physical Device 0x%llx\n\n", __func__, toRemove[i]); 
             }
-            removeDepNode(toRemove[i]);
         }
+}
+
+void DepGraph::removeDepNode(uint64_t id) {
+//        INFO("DepGraph %s removing node 0x%llx\n", __func__, id); 
+        auto* nd = getDepNode(id);
+        if (nd) {
+            for (auto child : nd->childHandles) {
+                removeDepNode(child);
+            }
+            delete nd;
+        }
+        mDepId2DepNode.erase(id);
+//        INFO("DepGraph %s done removing node 0x%llx\n", __func__, id); 
 }
 
 void VkReconstruction::removeHandles(const uint64_t* toRemove, uint32_t count, bool recursive) {
@@ -550,6 +572,7 @@ void DepGraph::addDep(uint64_t child_id, uint64_t parent_id) {
         case Tag_VkDevice:
         case Tag_VkDeviceMemory:
         case Tag_VkCommandBuffer:
+        case Tag_VkCommandPool:
             break;
         default:
             INFO("%s %d child 0x%llx parent 0x%llx", __func__, __LINE__,

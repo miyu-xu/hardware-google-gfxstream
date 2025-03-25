@@ -177,16 +177,7 @@ class DepGraph {
 
     void getApiByTopoOrder(std::vector<uint64_t>& uniqApiRefsByTopoOrder);
 
-    void removeDepNode(uint64_t id) {
-        auto* nd = getDepNode(id);
-        if (nd) {
-            for (auto child : nd->childHandles) {
-                removeDepNode(child);
-            }
-            delete nd;
-        }
-        mDepId2DepNode.erase(id);
-    }
+    void removeDepNode(uint64_t id);
 
    private:
     std::map<uint64_t, DepNode*> mDepId2DepNode;
