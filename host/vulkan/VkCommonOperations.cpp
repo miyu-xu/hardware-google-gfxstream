@@ -113,7 +113,7 @@ std::optional<GenericDescriptorInfo> VkEmulation::exportMemoryHandle(VkDevice de
 #endif
 
     int fd = -1;
-    if (mDeviceInfo.getMemoryHandleFunc(mDevice, &memoryGetFdInfo, &fd) != VK_SUCCESS) {
+    if (mDeviceInfo.getMemoryHandleFunc(device, &memoryGetFdInfo, &fd) != VK_SUCCESS) {
         return std::nullopt;
     };
 
@@ -129,7 +129,7 @@ std::optional<GenericDescriptorInfo> VkEmulation::exportMemoryHandle(VkDevice de
     ret.streamHandleType = STREAM_HANDLE_TYPE_MEM_OPAQUE_WIN32;
 
     HANDLE handle;
-    if (mDeviceInfo.getMemoryHandleFunc(mDevice, &memoryGetHandleInfo, &handle) != VK_SUCCESS) {
+    if (mDeviceInfo.getMemoryHandleFunc(device, &memoryGetHandleInfo, &handle) != VK_SUCCESS) {
         return std::nullopt;
     }
 
