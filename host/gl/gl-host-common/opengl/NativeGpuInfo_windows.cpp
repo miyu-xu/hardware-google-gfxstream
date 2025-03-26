@@ -19,7 +19,6 @@
 #include "aemu/base/containers/SmallVector.h"
 #include "aemu/base/StringFormat.h"
 #include "aemu/base/files/PathUtils.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/system/Win32UnicodeString.h"
 
 #include <windows.h>
@@ -191,7 +190,7 @@ static void load_gpu_registry_info(const wchar_t* keyName, GpuInfo* gpu) {
 //     guid.erase(std::remove(guid.begin(), guid.end(), '-'), guid.end());
 //     auto tempName = PathUtils::join(System::get()->getTempDir(),
 //                                     StringFormat("gpuinfo_%s.txt", guid));
-// 
+//
 //     auto deleteTempFile = makeCustomScopedPtr(
 //             &tempName,
 //             [](const std::string* name) { path_delete_file(name->c_str()); });

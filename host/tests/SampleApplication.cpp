@@ -17,7 +17,6 @@
 #include "aemu/base/GLObjectCounter.h"
 #include "aemu/base/synchronization/ConditionVariable.h"
 #include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/threads/FunctorThread.h"
 #include "aemu/base/testing/TestSystem.h"
 #include "host-common/GraphicsAgentFactory.h"

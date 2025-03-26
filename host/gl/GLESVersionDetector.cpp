@@ -18,7 +18,6 @@
 
 #include "OpenGLESDispatch/EGLDispatch.h"
 
-#include "aemu/base/system/System.h"
 #include "aemu/base/misc/StringUtils.h"
 #include "host-common/feature_control.h"
 #include "host-common/opengl/misc.h"

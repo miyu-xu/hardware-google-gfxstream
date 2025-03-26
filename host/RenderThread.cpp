@@ -27,7 +27,6 @@
 #include "aemu/base/files/StreamSerializing.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/synchronization/MessageChannel.h"
-#include "aemu/base/system/System.h"
 #include "apigen-codec-common/ChecksumCalculatorThreadInfo.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"

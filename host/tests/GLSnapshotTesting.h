@@ -15,7 +15,6 @@
 #pragma once
 
 #include "aemu/base/files/PathUtils.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/testing/TestSystem.h"
 
 #include "OpenGLTestContext.h"

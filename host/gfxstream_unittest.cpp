@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "OSWindow.h"
-#include "aemu/base/system/System.h"
 #include "host-common/testing/MockGraphicsAgentFactory.h"
 #include "virgl_hw.h"
 #include "gfxstream/virtio-gpu-gfxstream-renderer-unstable.h"

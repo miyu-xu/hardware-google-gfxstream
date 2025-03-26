@@ -26,7 +26,6 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl31.h>
 
-#include "aemu/base/system/System.h"
 #include "host-common/logging.h"
 
 #include "GLESv2Context.h"

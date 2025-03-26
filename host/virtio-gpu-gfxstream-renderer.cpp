@@ -19,7 +19,6 @@
 #include "GfxStreamAgents.h"
 #include "VirtioGpuFrontend.h"
 #include "aemu/base/Metrics.h"
-#include "aemu/base/system/System.h"
 #include "gfxstream/Strings.h"
 #include "gfxstream/host/Features.h"
 #include "gfxstream/host/Tracing.h"

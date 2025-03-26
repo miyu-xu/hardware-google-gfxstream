@@ -34,7 +34,6 @@
 #include "aemu/base/containers/Lookup.h"
 #include "aemu/base/containers/StaticMap.h"
 #include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/system/System.h"
 #include "common/goldfish_vk_dispatch.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/emugl_vm_operations.h"

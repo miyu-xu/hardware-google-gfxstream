@@ -18,7 +18,6 @@
 
 #include "GLcommon/GLEScontext.h"
 #include "GLcommon/SaveableTexture.h"
-#include "aemu/base/system/System.h"
 
 #include <EGL/eglext.h>
 #include <GLES2/gl2.h>

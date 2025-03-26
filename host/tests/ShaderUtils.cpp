@@ -16,7 +16,6 @@
 
 #include "aemu/base/files/PathUtils.h"
 #include "aemu/base/Optional.h"
-#include "aemu/base/system/System.h"
 
 #include "OpenGLESDispatch/OpenGLDispatchLoader.h"
 

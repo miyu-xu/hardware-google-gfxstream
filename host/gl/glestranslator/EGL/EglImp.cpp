@@ -28,7 +28,6 @@
 #include "ThreadInfo.h"
 #include "aemu/base/synchronization/Lock.h"
 #include "aemu/base/files/Stream.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/SharedLibrary.h"
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/emugl_vm_operations.h"

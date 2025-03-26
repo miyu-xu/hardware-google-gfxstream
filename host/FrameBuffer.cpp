@@ -39,7 +39,6 @@
 #include "aemu/base/files/StreamSerializing.h"
 #include "aemu/base/memory/MemoryTracker.h"
 #include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/system/System.h"
 
 #if GFXSTREAM_ENABLE_HOST_GLES
 #include "GLESVersionDetector.h"

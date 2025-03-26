@@ -17,7 +17,6 @@
 #include "aemu/base/files/PathUtils.h"
 #include "aemu/base/files/StreamSerializing.h"
 #include "aemu/base/threads/FunctorThread.h"
-#include "aemu/base/system/System.h"
 #include "host-common/globals.h"
 // #include "loadpng.h"
 #include "host-common/opengl/GLProcessPipe.h"

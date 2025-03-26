@@ -19,7 +19,6 @@
 #include "aemu/base/ArraySize.h"
 #include "aemu/base/containers/SmallVector.h"
 #include "aemu/base/files/StreamSerializing.h"
-#include "aemu/base/system/System.h"
 
 #include "GLcommon/GLEScontext.h"
 #include "GLcommon/GLutils.h"

@@ -45,7 +45,6 @@
 #include "VulkanStream.h"
 #include "aemu/base/BumpPool.h"
 #include "aemu/base/Metrics.h"
-#include "aemu/base/system/System.h"
 #include "common/goldfish_vk_marshaling.h"
 #include "common/goldfish_vk_reserved_marshaling.h"
 #include "common/goldfish_vk_transform.h"

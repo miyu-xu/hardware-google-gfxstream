@@ -21,7 +21,6 @@
 #endif
 
 #include "aemu/base/Metrics.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/threads/Thread.h"
 #include "gfxstream/host/Tracing.h"
 #include "host-common/GfxstreamFatalError.h"

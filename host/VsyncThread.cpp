@@ -13,7 +13,6 @@
 // limitations under the License.
 #include "VsyncThread.h"
 
-#include "aemu/base/system/System.h"
 
 namespace gfxstream {
 

@@ -16,6 +16,7 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <chrono>
 #include <utility>
 #include <variant>
 
@@ -23,7 +24,6 @@
 #include "GraphicsDriverLock.h"
 #include "RenderChannelImpl.h"
 #include "RenderThread.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/threads/WorkerThread.h"
 #include "host-common/logging.h"
 #include "snapshot/common.h"
@@ -394,17 +394,15 @@ bool RendererImpl::load(android::base::Stream* stream,
                         const android::snapshot::ITextureLoaderPtr& textureLoader) {
 
 #ifdef SNAPSHOT_PROFILE
-    android::base::System::Duration startTime =
-            android::base::System::get()->getUnixTimeUs();
+    auto startTime = std::chrono::high_resolution_clock::now();
 #endif
     waitForProcessCleanup();
 #ifdef SNAPSHOT_PROFILE
-    printf("Previous session cleanup time: %lld ms\n",
-           (long long)(android::base::System::get()
-                               ->getUnixTimeUs() -
-                       startTime) /
-                   1000);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+    printf("Previous session cleanup time: %lld ms\n", (long long)duration.count());
 #endif
+
 
     mStopped = stream->getByte();
     if (mStopped) {
@@ -681,17 +679,15 @@ void RendererImpl::snapshotOperationCallback(int op, int stage) {
         case SNAPSHOTTER_OPERATION_LOAD:
             if (stage == SNAPSHOTTER_STAGE_START) {
 #ifdef SNAPSHOT_PROFILE
-             android::base::System::Duration startTime =
-                     android::base::System::get()->getUnixTimeUs();
+                auto startTime = std::chrono::steady_clock::now();
 #endif
                 mRenderWindow->setPaused(true);
                 cleanupRenderThreads();
 #ifdef SNAPSHOT_PROFILE
-                printf("Previous session suspend time: %lld ms\n",
-                       (long long)(android::base::System::get()
-                                           ->getUnixTimeUs() -
-                                   startTime) /
-                               1000);
+                auto endTime = std::chrono::steady_clock::now();
+                auto duration =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+                LOG(INFO) << "Previous session suspend time: " << duration.count() << " ms";
 #endif
             }
             if (stage == SNAPSHOTTER_STAGE_END) {

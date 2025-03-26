@@ -15,7 +15,6 @@
 #include "host-common/opengl/EmuglBackendList.h"
 
 #include "aemu/base/StringFormat.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/files/PathUtils.h"
 
 #define DEBUG 0

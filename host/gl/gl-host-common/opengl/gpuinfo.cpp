@@ -15,7 +15,6 @@
 #include "host-common/opengl/gpuinfo.h"
 
 #include "aemu/base/ArraySize.h"
-#include "aemu/base/system/System.h"
 #include "aemu/base/threads/FunctorThread.h"
 #include "host-common/opengl/NativeGpuInfo.h"
 
