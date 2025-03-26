@@ -6,7 +6,6 @@
 #===============#
 gfxstream_host_args = [
   '-D_FILE_OFFSET_BITS=64',
-  '-DGFXSTREAM_ENABLE_GUEST_VIRTIO_RESOURCE_TILING_CONTROL=1',
   '-Wno-unused-parameter',
   '-Wno-unused-function',
   '-Wno-unused-variable',
@@ -244,7 +243,6 @@ elif host_machine.system() == 'linux' and use_gles
 elif host_machine.system() == 'qnx'
   files_lib_gfxstream_backend += files(
     'NativeSubWindow_qnx.cpp',
-    '../qnx/host/platform_qnx.cpp',
   )
 endif
 
