@@ -73,7 +73,7 @@ inline void releaseOrderMaintInfo(OrderMaintenanceInfo* ord) {
 
 class BoxedHandleInfo {
    public:
-    UnboxedHandle underlying;
+    UnboxedHandle underlying { 0} ;
     VulkanDispatch* dispatch = nullptr;
     bool ownDispatch = false;
     OrderMaintenanceInfo* ordMaintInfo = nullptr;

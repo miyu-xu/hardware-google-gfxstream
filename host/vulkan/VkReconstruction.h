@@ -14,6 +14,8 @@
 #pragma once
 
 #include <map>
+#include <mutex>
+#include <memory>
 #include <set>
 
 #include "VkSnapshotApiCall.h"
@@ -32,6 +34,7 @@ namespace vk {
 class SimpleManager {
    public:
     VkSnapshotApiCallInfo* get(uint64_t handle) {
+        std::lock_guard<std::mutex> lock(mMutex);
         auto iter = mApiHandle2Info.find(handle);
         if (iter != mApiHandle2Info.end()) {
             return iter->second;
@@ -44,6 +47,7 @@ class SimpleManager {
         std::function<void(bool live, EntityHandle h, const VkSnapshotApiCallInfo& item)>;
 
     void forEachLiveEntry_const(ConstIteratorFunc func) const {
+        std::lock_guard<std::mutex> lock(mMutex);
         bool live = true;
         for (auto& [key, val] : mApiHandle2Info) {
             func(live, key, *val);
@@ -51,6 +55,7 @@ class SimpleManager {
     }
 
     uint64_t add(VkSnapshotApiCallInfo info, uint64_t tag) {
+        std::lock_guard<std::mutex> lock(mMutex);
         auto* copy = new VkSnapshotApiCallInfo(info);
         auto id = mId;
         mId++;
@@ -59,12 +64,14 @@ class SimpleManager {
     }
 
     void clear() {
+        std::lock_guard<std::mutex> lock(mMutex);
         for (auto& [key, pval] : mApiHandle2Info) {
             delete pval;
         }
         mApiHandle2Info.clear();
     }
     void remove(uint64_t handle) {
+        std::lock_guard<std::mutex> lock(mMutex);
         auto iter = mApiHandle2Info.find(handle);
         if (iter != mApiHandle2Info.end()) {
             delete iter->second;
@@ -74,6 +81,7 @@ class SimpleManager {
 
    private:
     uint64_t mId{1};
+    mutable std::mutex mMutex;
     std::map<uint64_t, VkSnapshotApiCallInfo*> mApiHandle2Info;
 };
 

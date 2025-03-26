@@ -119,10 +119,10 @@ BoxedHandle BoxedHandleManager::add(const BoxedHandleInfo& item, BoxedHandleType
 
 void BoxedHandleManager::update(BoxedHandle handle, const BoxedHandleInfo& item,
                                 BoxedHandleTypeTag tag) {
+    std::lock_guard<std::mutex> lock(mMutex);
     auto storedItem = mStore.get(handle);
     UnboxedHandle oldHandle = (UnboxedHandle)storedItem->underlying;
     *storedItem = item;
-    std::lock_guard<std::mutex> lock(mMutex);
     if (oldHandle) {
         mReverseMap.erase(oldHandle);
     }
@@ -131,8 +131,8 @@ void BoxedHandleManager::update(BoxedHandle handle, const BoxedHandleInfo& item,
 
 void BoxedHandleManager::remove(BoxedHandle h) {
     auto item = get(h);
+    std::lock_guard<std::mutex> lock(mMutex);
     if (item) {
-        std::lock_guard<std::mutex> lock(mMutex);
         mReverseMap.erase((UnboxedHandle)(item->underlying));
     }
     mStore.remove(h);
@@ -170,6 +170,7 @@ void BoxedHandleManager::processDelayedRemoves(VkDevice device) {
 }
 
 BoxedHandleInfo* BoxedHandleManager::get(BoxedHandle handle) {
+    std::lock_guard<std::mutex> lock(mMutex);
     return (BoxedHandleInfo*)mStore.get_const(handle);
 }
 
