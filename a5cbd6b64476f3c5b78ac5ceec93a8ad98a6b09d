@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "481b256d_a1427b77",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-03-26T17:18:24Z",
+      "side": 1,
+      "message": "I wonder if we should not be using `mDeviceInfo.getMemoryHandleFunc` since `getMemoryHandleFunc` is specifically from `vkGetDeviceProcAddr()` using `mDevice`. Perhaps this function should just re-query the memory handle function here? WDYT?",
+      "range": {
+        "startLine": 116,
+        "startChar": 4,
+        "endLine": 116,
+        "endChar": 87
+      },
+      "revId": "a5cbd6b64476f3c5b78ac5ceec93a8ad98a6b09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
