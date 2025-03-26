@@ -74,6 +74,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5c8c0d7e_385c4b40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1571059
+      },
+      "writtenOn": "2025-03-26T01:41:57Z",
+      "side": 1,
+      "message": "The CL above fixes the deadlock issue on Fuchsia; I think we can land that CL instead.",
+      "parentUuid": "cf5367d3_1df41348",
+      "revId": "9049cca94a4a7a6207f8b80971f700386d5b2538",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "84996dd8_19bbf76c",
         "filename": "host/FrameBuffer.h",
         "patchSetId": 1
