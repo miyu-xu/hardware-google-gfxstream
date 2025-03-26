@@ -199,7 +199,7 @@ VkSnapshotApiCallInfo* VkReconstruction::getApiInfo(VkSnapshotApiCallHandle h) {
 void VkReconstruction::setApiTrace(VkSnapshotApiCallInfo* apiInfo, const uint8_t* packet,
                                    size_t packetLenBytes) {
     auto* info = mApiCallManager.get(apiInfo->handle);
-    if(info) {
+    if(info && packet && packetLenBytes > 0) {
         info->packet.assign(packet, packet + packetLenBytes);
     }
 }
@@ -288,9 +288,12 @@ void DepGraph::removeHandles(const uint64_t* toRemove, uint32_t count) {
                 INFO("DepGraph %s done removing Physical Device 0x%llx\n\n", __func__, toRemove[i]); 
             }
             if (getHandleType(toRemove[i]) == Tag_VkShaderModule) {
-                //removeDepNode(toRemove[i]);
                 continue;
             }
+            if (getHandleType(toRemove[i]) == Tag_VkRenderPass) {
+                continue;
+            }
+            removeDepNode(toRemove[i]);
         }
 }
 
@@ -588,7 +591,9 @@ void DepGraph::addDep(uint64_t child_id, uint64_t parent_id) {
         case Tag_VkImage:
         case Tag_VkBuffer:
         case Tag_VkBufferView:
+        case Tag_VkSampler:
         case Tag_VkCommandBuffer:
+        case Tag_VkDescriptorSet:
         case Tag_VkCommandPool:
             break;
         default:

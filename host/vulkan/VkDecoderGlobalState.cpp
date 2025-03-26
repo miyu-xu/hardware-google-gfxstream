@@ -389,6 +389,8 @@ class VkDecoderGlobalState::Impl {
             if (imageInfo.memory == VK_NULL_HANDLE) {
                 continue;
             }
+
+            INFO("save image 0x%llx", imageInfo.boxed);
             // Vulkan command playback doesn't recover image layout. We need to do it here.
             stream->putBe32(imageInfo.layout);
 
@@ -419,6 +421,7 @@ class VkDecoderGlobalState::Impl {
             // TODO: add a special case for host mapped memory
             StateBlock stateBlock = createSnapshotStateBlock(bufferInfo.device);
 
+            INFO("save buffer boxed 0x%llx", bufferInfo.boxed);
             // TODO(b/294277842): make sure the queue is empty before using.
             saveBufferContent(stream, &stateBlock, unboxedBuffer, &bufferInfo);
             releaseSnapshotStateBlock(&stateBlock);
@@ -672,6 +675,7 @@ class VkDecoderGlobalState::Impl {
                 if (imageInfo.memory == VK_NULL_HANDLE) {
                     continue;
                 }
+                INFO("load image 0x%llx", imageInfo.boxed);
                 // Playback doesn't recover image layout. We need to do it here.
                 //
                 // Layout transform was done by vkCmdPipelineBarrier but we don't record such
@@ -704,6 +708,7 @@ class VkDecoderGlobalState::Impl {
                 if (bufferInfo.memory == VK_NULL_HANDLE) {
                     continue;
                 }
+                INFO("load buffer boxed 0x%llx", bufferInfo.boxed);
                 // TODO: add a special case for host mapped memory
                 StateBlock stateBlock = createSnapshotStateBlock(bufferInfo.device);
                 // TODO(b/294277842): make sure the queue is empty before using.
@@ -2352,6 +2357,7 @@ class VkDecoderGlobalState::Impl {
             bufInfo.usage = pCreateInfo->usage;
             bufInfo.size = pCreateInfo->size;
             *pBuffer = new_boxed_non_dispatchable_VkBuffer(*pBuffer);
+            bufInfo.boxed = *pBuffer;
         }
 
         return result;
@@ -7450,7 +7456,8 @@ class VkDecoderGlobalState::Impl {
 
 #include "VkSubDecoder.cpp"
 
-    void on_vkQueueFlushCommandsGOOGLE(android::base::BumpPool* pool, VkSnapshotApiCallInfo*,
+    void on_vkQueueFlushCommandsGOOGLE(android::base::BumpPool* pool,
+            VkSnapshotApiCallInfo* snapshotApiCallInfo,
                                        VkQueue queue, VkCommandBuffer boxed_commandBuffer,
                                        VkDeviceSize dataSize, const void* pData,
                                        const VkDecoderContext& context) {
@@ -7459,7 +7466,7 @@ class VkDecoderGlobalState::Impl {
         VkCommandBuffer commandBuffer = unbox_VkCommandBuffer(boxed_commandBuffer);
         VulkanDispatch* vk = dispatch_VkCommandBuffer(boxed_commandBuffer);
         VulkanMemReadingStream* readStream = readstream_VkCommandBuffer(boxed_commandBuffer);
-        subDecode(readStream, vk, boxed_commandBuffer, commandBuffer, dataSize, pData, context);
+        subDecode(readStream, vk, snapshotApiCallInfo, boxed_commandBuffer, commandBuffer, dataSize, pData, context);
     }
 
     void on_vkQueueFlushCommandsFromAuxMemoryGOOGLE(android::base::BumpPool* pool,

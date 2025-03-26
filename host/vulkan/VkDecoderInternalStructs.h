@@ -249,6 +249,7 @@ struct QueueInfo {
 
 struct BufferInfo {
     VkDevice device;
+    VkBuffer boxed = VK_NULL_HANDLE;
     VkBufferUsageFlags usage;
     VkDeviceMemory memory = 0;
     VkDeviceSize memoryOffset = 0;

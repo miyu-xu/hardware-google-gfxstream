@@ -307,21 +307,14 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandleDependency(
             (const uint64_t*)(&handle), 1,
             (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkDeviceMemory(memory));
+        mReconstruction.addHandleDependency(
+            (const uint64_t*)(&handle), 1,
+            (uint64_t)(uintptr_t)(boxed_VkBuffer));
         mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiCallInfo->handle,
                                             VkReconstruction::CREATED);
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setCreatedHandlesForApi(apiCallHandle, (const uint64_t*)(&handle), 1);
-        // buffer create
-        mReconstruction.addHandleDependency(
-            (const uint64_t*)&boxed_VkBuffer, 1,
-            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkDeviceMemory(memory),
-            VkReconstruction::BOUND_MEMORY);
-        mReconstruction.addHandleDependency((const uint64_t*)&boxed_VkBuffer, 1,
-                                            (uint64_t)(uintptr_t)((&boxed_VkBuffer)[0]),
-                                            VkReconstruction::BOUND_MEMORY);
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        mReconstruction.forEachHandleAddApi((const uint64_t*)&boxed_VkBuffer, 1, apiCallHandle,
-                                            VkReconstruction::BOUND_MEMORY);
     }
     void vkBindImageMemory(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
@@ -340,17 +333,10 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.setCreatedHandlesForApi(apiCallHandle, (const uint64_t*)(&handle), 1);
         VkImage boxed_VkImage = unboxed_to_boxed_non_dispatchable_VkImage((&image)[0]);
 
-        // image create
         mReconstruction.addHandleDependency(
-            (const uint64_t*)&boxed_VkImage, 1,
-            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkDeviceMemory(memory),
-            VkReconstruction::BOUND_MEMORY);
-        mReconstruction.addHandleDependency((const uint64_t*)&boxed_VkImage, 1,
-                                            (uint64_t)(uintptr_t)((&boxed_VkImage)[0]),
-                                            VkReconstruction::BOUND_MEMORY);
+            (const uint64_t*)(&handle), 1,
+            (uint64_t)(uintptr_t)boxed_VkImage);
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        mReconstruction.forEachHandleAddApi((const uint64_t*)&boxed_VkImage, 1, apiCallHandle,
-                                            VkReconstruction::BOUND_MEMORY);
     }
     void vkGetBufferMemoryRequirements(android::base::BumpPool* pool,
                                        VkSnapshotApiCallInfo* apiCallInfo,
@@ -585,8 +571,7 @@ class VkDecoderSnapshot::Impl {
         mReconstruction.addHandleDependency((const uint64_t*)pView, 1, (uint64_t)(uintptr_t)device);
         mReconstruction.addHandleDependency(
             (const uint64_t*)pView, 1,
-            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(pCreateInfo->image),
-            VkReconstruction::CREATED, VkReconstruction::BOUND_MEMORY);
+            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(pCreateInfo->image));
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         mReconstruction.forEachHandleAddApi((const uint64_t*)pView, 1, apiCallHandle,
@@ -892,6 +877,14 @@ class VkDecoderSnapshot::Impl {
                             (const uint64_t*)(&handle), 1,
                             (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkSampler(
                                 pDescriptorWrites[i].pImageInfo[j].sampler));
+                        mReconstruction.addHandleDependency(
+                            (const uint64_t*)(&handle), 1,
+                            (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImageView(
+                                pDescriptorWrites[i].pImageInfo[j].imageView));
+                    }
+                    INFO("%s %d desc type is 0x%llx", __func__, __LINE__,
+                            (unsigned long long)((pDescriptorWrites[i].descriptorType)));
+                    if (pDescriptorWrites[i].pImageInfo[j].imageView) {
                         mReconstruction.addHandleDependency(
                             (const uint64_t*)(&handle), 1,
                             (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImageView(
@@ -1269,13 +1262,10 @@ class VkDecoderSnapshot::Impl {
                                 uint32_t bindingCount, const VkBuffer* pBuffers,
                                 const VkDeviceSize* pOffsets) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        // commandBuffer modify
-        auto apiCallHandle = apiCallInfo->handle;
-        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        for (uint32_t i = 0; i < 1; ++i) {
-            // commandBuffer is already boxed, no need to box again
-            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
+        for (uint32_t i = 0; i < bindingCount; ++i) {
+            apiCallInfo->depends.push_back(
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkBuffer(
+                    pBuffers[i]));
         }
     }
     void vkCmdDraw(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
@@ -1587,13 +1577,22 @@ class VkDecoderSnapshot::Impl {
                               uint32_t imageMemoryBarrierCount,
                               const VkImageMemoryBarrier* pImageMemoryBarriers) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        // commandBuffer modify
-        auto apiCallHandle = apiCallInfo->handle;
-        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        for (uint32_t i = 0; i < 1; ++i) {
-            // commandBuffer is already boxed, no need to box again
-            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
+        for (uint32_t i = 0; i < bufferMemoryBarrierCount; ++i) {
+            auto mydep = (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkBuffer(
+                    pBufferMemoryBarriers[i].buffer);
+            fprintf(stderr, "%s %d add buf dep 0x%llx\n", __func__, __LINE__, (unsigned long long)mydep);
+            apiCallInfo->depends.push_back(
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkBuffer(
+                    pBufferMemoryBarriers[i].buffer));
+        }
+        for (uint32_t i = 0; i < imageMemoryBarrierCount; ++i) {
+            auto mydep = 
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(
+                    pImageMemoryBarriers[i].image);
+            fprintf(stderr, "%s %d add img dep 0x%llx\n", __func__, __LINE__, (unsigned long long)mydep);
+            apiCallInfo->depends.push_back(
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(
+                    pImageMemoryBarriers[i].image));
         }
     }
     void vkCmdBeginQuery(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
@@ -1688,14 +1687,9 @@ class VkDecoderSnapshot::Impl {
                               const VkRenderPassBeginInfo* pRenderPassBegin,
                               VkSubpassContents contents) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        // commandBuffer modify
-        auto apiCallHandle = apiCallInfo->handle;
-        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        for (uint32_t i = 0; i < 1; ++i) {
-            // commandBuffer is already boxed, no need to box again
-            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
-        }
+            apiCallInfo->depends.push_back(
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkFramebuffer(
+                    pRenderPassBegin->framebuffer));
     }
     void vkCmdNextSubpass(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                           const uint8_t* apiCallPacket, size_t apiCallPacketSize,
@@ -1752,24 +1746,23 @@ class VkDecoderSnapshot::Impl {
                             VkResult input_result, VkDevice device, uint32_t bindInfoCount,
                             const VkBindImageMemoryInfo* pBindInfos) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
+        VkDecoderGlobalState* m_state = VkDecoderGlobalState::get();
+        uint64_t handle = m_state->newGlobalVkGenericHandle(Tag_VkBindMemory);
+        mReconstruction.addHandles((const uint64_t*)(&handle), 1);
+        mReconstruction.forEachHandleAddApi((const uint64_t*)(&handle), 1, apiCallInfo->handle,
+                                            VkReconstruction::CREATED);
+        auto apiCallHandle = apiCallInfo->handle;
+        mReconstruction.setCreatedHandlesForApi(apiCallHandle, (const uint64_t*)(&handle), 1);
+
+        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
         for (uint32_t i = 0; i < bindInfoCount; ++i) {
             VkImage boxed_VkImage = unboxed_to_boxed_non_dispatchable_VkImage(pBindInfos[i].image);
             VkDeviceMemory boxed_VkDeviceMemory =
                 unboxed_to_boxed_non_dispatchable_VkDeviceMemory(pBindInfos[i].memory);
-            mReconstruction.addHandleDependency((const uint64_t*)&boxed_VkImage, 1,
-                                                (uint64_t)(uintptr_t)boxed_VkDeviceMemory,
-                                                VkReconstruction::BOUND_MEMORY);
-            mReconstruction.addHandleDependency((const uint64_t*)&boxed_VkImage, 1,
-                                                (uint64_t)(uintptr_t)boxed_VkImage,
-                                                VkReconstruction::BOUND_MEMORY);
-        }
-        auto apiCallHandle = apiCallInfo->handle;
-        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        // Note: the implementation does not work with bindInfoCount > 1
-        for (uint32_t i = 0; i < bindInfoCount; ++i) {
-            VkImage boxed_VkImage = unboxed_to_boxed_non_dispatchable_VkImage(pBindInfos[i].image);
-            mReconstruction.forEachHandleAddApi((const uint64_t*)&boxed_VkImage, 1, apiCallHandle,
-                                                VkReconstruction::BOUND_MEMORY);
+            mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                                (uint64_t)(uintptr_t)boxed_VkDeviceMemory);
+            mReconstruction.addHandleDependency((const uint64_t*)&handle, 1,
+                                                (uint64_t)(uintptr_t)boxed_VkImage);
         }
     }
     void vkGetDeviceGroupPeerMemoryFeatures(android::base::BumpPool* pool,
@@ -2010,14 +2003,9 @@ class VkDecoderSnapshot::Impl {
                                const VkRenderPassBeginInfo* pRenderPassBegin,
                                const VkSubpassBeginInfo* pSubpassBeginInfo) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        // commandBuffer modify
-        auto apiCallHandle = apiCallInfo->handle;
-        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        for (uint32_t i = 0; i < 1; ++i) {
-            // commandBuffer is already boxed, no need to box again
-            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
-        }
+            apiCallInfo->depends.push_back(
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkFramebuffer(
+                    pRenderPassBegin->framebuffer));
     }
     void vkCmdNextSubpass2(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                            const uint8_t* apiCallPacket, size_t apiCallPacketSize,
@@ -3940,12 +3928,10 @@ class VkDecoderSnapshot::Impl {
                                             VkReconstruction::CREATED);
         auto apiCallHandle = apiCallInfo->handle;
         mReconstruction.setCreatedHandlesForApi(apiCallHandle, (const uint64_t*)(&handle), 1);
-        // commandBuffer modify
         mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        for (uint32_t i = 0; i < 1; ++i) {
-            // commandBuffer is already boxed, no need to box again
-            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
+        for(auto parent: apiCallInfo->depends) {
+            mReconstruction.addHandleDependency((const uint64_t*)(&handle), 1,
+                                            (uint64_t)(uintptr_t)parent);
         }
     }
     void vkQueueCommitDescriptorSetUpdatesGOOGLE(
