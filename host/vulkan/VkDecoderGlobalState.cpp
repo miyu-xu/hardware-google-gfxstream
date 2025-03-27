@@ -24,6 +24,7 @@
 #include "FrameBuffer.h"
 #include "GraphicsDriverLock.h"
 #include "RenderThreadInfoVk.h"
+#include "SyncThread.h"
 #include "TrivialStream.h"
 #include "VkAndroidNativeBuffer.h"
 #include "VkCommonOperations.h"
@@ -831,6 +832,7 @@ class VkDecoderGlobalState::Impl {
                 const auto& deviceInfo = android::base::find(mDeviceInfo, device);
                 VulkanDispatch* dvk = dispatch_VkDevice(deviceInfo->boxed);
                 dvk->vkResetFences(device, 1, &unboxedFence);
+                it->second.resetWaitablePromise();
             }
 #ifdef CONFIG_AEMU
             if (!mInstanceInfo.empty()) {
@@ -3141,10 +3143,9 @@ class VkDecoderGlobalState::Impl {
             fenceInfo.boxed = *pFence;
             fenceInfo.external = exportSyncFd;
 
+            fenceInfo.resetWaitablePromise();
             if (localCreateInfo.flags & VK_FENCE_CREATE_SIGNALED_BIT) {
-                fenceInfo.state = FenceInfo::State::kWaitable;
-            } else {
-                fenceInfo.state = FenceInfo::State::kNotWaitable;
+                fenceInfo.signalWaitablePromise();
             }
         }
 
@@ -3161,6 +3162,11 @@ class VkDecoderGlobalState::Impl {
             if (!fenceInfo) {
                 ERR("%s: Invalid fence %p", fence);
                 return VK_SUCCESS;
+            }
+
+            if (std::future_status::ready !=
+                fenceInfo->isWaitable.wait_for(std::chrono::nanoseconds(0LL))) {
+                return VK_NOT_READY;
             }
         }
 
@@ -3190,15 +3196,16 @@ class VkDecoderGlobalState::Impl {
             for (uint32_t i = 0; i < fenceCount; i++) {
                 if (pFences[i] == VK_NULL_HANDLE) continue;
 
-                if (mFenceInfo.find(pFences[i]) == mFenceInfo.end()) {
+                auto* fenceInfo = android::base::find(mFenceInfo, pFences[i]);
+                if (!fenceInfo) {
                     ERR("Invalid fence handle: %p!", pFences[i]);
                 } else {
-                    if (mFenceInfo[pFences[i]].external) {
+                    if (fenceInfo->external) {
                         externalFences.push_back(pFences[i]);
                     } else {
                         // Reset all fences' states to kNotWaitable.
                         cleanedFences.push_back(pFences[i]);
-                        mFenceInfo[pFences[i]].state = FenceInfo::State::kNotWaitable;
+                        fenceInfo->resetWaitablePromise();
                     }
                 }
             }
@@ -3237,7 +3244,7 @@ class VkDecoderGlobalState::Impl {
                 fenceInfo.vk = vk;
                 fenceInfo.boxed = boxed_fence;
                 fenceInfo.external = true;
-                fenceInfo.state = FenceInfo::State::kNotWaitable;
+                fenceInfo.resetWaitablePromise();
 
                 mFenceInfo[fence].boxed = VK_NULL_HANDLE;
             }
@@ -5887,6 +5894,7 @@ class VkDecoderGlobalState::Impl {
             auto fenceInfo = android::base::find(mFenceInfo, fence);
             if (fenceInfo != nullptr) {
                 fenceInfo->latestUse = aniCompletedWaitable;
+                fenceInfo->signalWaitablePromise();
             }
         }
 
@@ -6331,7 +6339,8 @@ class VkDecoderGlobalState::Impl {
 
         VkDevice device = VK_NULL_HANDLE;
         std::mutex* queueMutex = nullptr;
-
+        std::shared_ptr<std::promise<void>> isWaitablePromise;
+        std::shared_future<void> isFenceWaitable;
         {
             std::lock_guard<std::mutex> lock(mMutex);
             auto* queueInfo = android::base::find(mQueueInfo, queue);
@@ -6341,6 +6350,18 @@ class VkDecoderGlobalState::Impl {
             }
             device = queueInfo->device;
             queueMutex = queueInfo->queueMutex.get();
+
+            if (fence) {
+                auto* fenceInfo = android::base::find(mFenceInfo, fence);
+                if (fenceInfo) {
+                    isWaitablePromise = fenceInfo->isWaitablePromise;
+                    isFenceWaitable = fenceInfo->isWaitable;
+                }
+            }
+        }
+        if (isWaitablePromise == nullptr) {
+            isWaitablePromise.reset(new std::promise<void>());
+            isFenceWaitable = isWaitablePromise->get_future().share();
         }
 
         // Unsafe to release when snapshot enabled.
@@ -6350,6 +6371,8 @@ class VkDecoderGlobalState::Impl {
         }
 
         VkFence usedFence = fence;
+        bool shouldDeleteFence = false;
+        DeviceOpWaitable colorBufferLatestUse;
         DeviceOpWaitable queueCompletedWaitable;
         {
             std::lock_guard<std::mutex> lock(mMutex);
@@ -6359,14 +6382,35 @@ class VkDecoderGlobalState::Impl {
             DeviceOpBuilder builder(*deviceInfo->deviceOpTracker);
 
             if (VK_NULL_HANDLE == usedFence) {
-                // Note: This fence will be managed by the DeviceOpTracker after the
-                // OnQueueSubmittedWithFence call, so it does not need to be destroyed in the scope
-                // of this queueSubmit
-                usedFence = builder.CreateFenceForOp();
+                // Maintain a local fence.
+                // Alternatively we could consider builder.CreateFenceForOp().
+                // But we could not wait on the returned fence from builder.CreateFenceForOp()
+                // as there could be a race condition that it will immediately destroy
+                // the fence after wait complete on a different thread.
+                const VkFenceCreateInfo fenceCreateInfo = {
+                    .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+                    .pNext = nullptr,
+                    .flags = 0,
+                };
+                VkResult result = vk->vkCreateFence(device, &fenceCreateInfo, nullptr, &usedFence);
+                if (result != VK_SUCCESS) {
+                    ERR("Queuesubmit failed to create VkFence!");
+                    return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+                }
+                shouldDeleteFence = true;
             }
             queueCompletedWaitable = builder.OnQueueSubmittedWithFence(usedFence);
 
             deviceInfo->deviceOpTracker->PollAndProcessGarbage();
+        }
+        // If releasedColorBuffers is empty, the color buffers are good for use
+        // right after queue compltes.
+        // Otherwise, it will perform VK->GL copy after GPU fence and we need
+        // to wait for it.
+        if (releasedColorBuffers.empty()) {
+            colorBufferLatestUse = queueCompletedWaitable;
+        } else {
+            colorBufferLatestUse = isFenceWaitable;
         }
 
         std::lock_guard<std::mutex> queueLock(*queueMutex);
@@ -6416,32 +6460,46 @@ class VkDecoderGlobalState::Impl {
                 }
             }
 
-            // After vkQueueSubmit is called, we can signal the conditional variable
-            // in FenceInfo, so that other threads (e.g. SyncThread) can call
-            // waitForFence() on this fence.
             auto* fenceInfo = android::base::find(mFenceInfo, fence);
             if (fenceInfo) {
-                {
-                    std::unique_lock<std::mutex> fenceLock(fenceInfo->mutex);
-                    fenceInfo->state = FenceInfo::State::kWaitable;
-                }
-                fenceInfo->cv.notify_all();
                 // Also update the latestUse waitable for this fence, to ensure
                 // it is not asynchronously destroyed before all the waitables
                 // referencing it
-                fenceInfo->latestUse = queueCompletedWaitable;
+                fenceInfo->latestUse = colorBufferLatestUse;
             }
         }
-        if (!releasedColorBuffers.empty()) {
-            result = vk->vkWaitForFences(device, 1, &usedFence, VK_TRUE, /* 1 sec */ 1000000000L);
-            if (result != VK_SUCCESS) {
-                ERR("vkWaitForFences failed: %s [%d]", string_VkResult(result), result);
-                return result;
-            }
 
-            for (HandleType cb : releasedColorBuffers) {
-                m_vkEmulation->getCallbacks().flushColorBuffer(cb);
+        if (releasedColorBuffers.empty()) {
+            if (isWaitablePromise.get()) {
+                isWaitablePromise->set_value();
             }
+        } else {
+            SyncThread::get()->triggerGeneral(
+                [flushColorBuffer = m_vkEmulation->getCallbacks().flushColorBuffer,
+                 releasedColorBuffers, usedFence, isWaitablePromise = std::move(isWaitablePromise),
+                 vk, device, shouldDeleteFence]() {
+                    VkResult result = vk->vkWaitForFences(device, 1, &usedFence, true,
+                                                          10ULL * 1000ULL * 1000ULL * 1000ULL);
+                    if (result != VK_SUCCESS) {
+                        ERR("vkWaitForFences failed: %s [%d]", string_VkResult(result), result);
+                        return;
+                    }
+
+                    for (HandleType cb : releasedColorBuffers) {
+                        flushColorBuffer(cb);
+                    }
+                    // After vkQueueSubmit is called, we can signal the conditional variable
+                    // in FenceInfo, so that other threads (e.g. SyncThread) can call
+                    // waitForFence() on this fence.
+                    if (isWaitablePromise.get()) {
+                        isWaitablePromise->set_value();
+                    }
+
+                    if (shouldDeleteFence) {
+                        vk->vkDestroyFence(device, usedFence, nullptr);
+                    }
+                },
+                "Wait for submit and copy color buffers from vk->gl");
         }
 
         return result;
@@ -7708,11 +7766,11 @@ class VkDecoderGlobalState::Impl {
         }
 
         const auto startTime = std::chrono::system_clock::now();
+        const auto timeoutStamp = startTime + std::chrono::nanoseconds(timeout);
         for (uint32_t i = 0; i < fenceCount; i++) {
             VkFence fence = pFences[i];
             {
-                std::mutex* fenceMutex = nullptr;
-                std::condition_variable* cv = nullptr;
+                std::shared_future<void> isWaitable;
                 {
                     std::lock_guard<std::mutex> lock(mMutex);
                     auto* fenceInfo = android::base::find(mFenceInfo, fence);
@@ -7727,15 +7785,14 @@ class VkDecoderGlobalState::Impl {
                         return VK_ERROR_OUT_OF_HOST_MEMORY;
                     }
 
-                    fenceMutex = &fenceInfo->mutex;
-                    cv = &fenceInfo->cv;
+                    isWaitable = fenceInfo->isWaitable;
                 }
 
                 // Vulkan specs require fences of vkQueueSubmit to be *externally
                 // synchronized*, i.e. we cannot submit a queue while waiting for the
                 // fence in another thread. For threads that call this function, they
                 // have to wait until a vkQueueSubmit() using this fence is called
-                // before calling vkWaitForFences(). So we use a conditional variable
+                // before calling vkWaitForFences(). So we use a future for thread
                 // and mutex for thread synchronization.
                 //
                 // See:
@@ -7743,29 +7800,11 @@ class VkDecoderGlobalState::Impl {
                 // https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/issues/519
 
                 // Current implementation does not respect waitAll here.
-                if (checkWaitState) {
-                    std::unique_lock<std::mutex> lock(*fenceMutex);
-                    cv->wait(lock, [this, fence] {
-                        std::lock_guard<std::mutex> lock(mMutex);
-                        auto* fenceInfo = android::base::find(mFenceInfo, fence);
-                        if (!fenceInfo) {
-                            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-                                << "Fence was destroyed while waiting.";
-                        }
-
-                        // Block vkWaitForFences calls until the fence is waitable
-                        // Should also allow 'kWaiting' stage as the user can call
-                        // vkWaitForFences multiple times on the same fence.
-                        if (fenceInfo->state == FenceInfo::State::kNotWaitable) {
-                            return false;
-                        }
-                        fenceInfo->state = FenceInfo::State::kWaiting;
-                        return true;
-                    });
+                if (checkWaitState && std::future_status::ready != isWaitable.wait_until(timeoutStamp)) {
+                    return VK_TIMEOUT;
                 }
             }
         }
-
         const auto endTime = std::chrono::system_clock::now();
         const uint64_t timePassed = std::chrono::nanoseconds(endTime - startTime).count();
         const uint64_t timeoutLeft = (timeout > timePassed) ? timeout - timePassed : 0;

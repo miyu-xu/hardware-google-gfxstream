@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include <condition_variable>
+#include <future>
 #include <mutex>
 #include <optional>
 #include <set>
@@ -303,22 +304,28 @@ struct FenceInfo {
     VkFence boxed = VK_NULL_HANDLE;
     VulkanDispatch* vk = nullptr;
 
-    std::mutex mutex;
-    std::condition_variable cv;
-
-    enum class State {
-        kNotWaitable,   // Newly created or reset
-        kWaitable,      // A submission is made, or created as signaled
-        kWaiting,       // Fence waitable status is acknowledged
-    };
-    State state = State::kNotWaitable;
-
     bool external = false;
 
     // If this fence was used in an additional host operation that must be waited
     // upon before destruction (e.g. as part of a vkAcquireImageANDROID() call),
     // the waitable that tracking that host operation.
     std::optional<DeviceOpWaitable> latestUse;
+
+    // 1. Handles races between the main virtio gpu channel and RenderThread/ASG
+    // channels by ensuring that the host does not do a `vkWaitForFences()` before
+    // the fence is used in a `VkQueueSubmit`.
+    //
+    // 2. Allows the host to insert additional operations and artificially delay when
+    // the fence will be marked as signaled (e.g. inserting VK->GL ColorBuffer syncs
+    // after vkQueueSubmit() operations).
+    std::shared_ptr<std::promise<void>> isWaitablePromise;
+    std::shared_future<void> isWaitable;
+
+    void resetWaitablePromise() {
+        isWaitablePromise.reset(new std::promise<void>());
+        isWaitable = isWaitablePromise->get_future().share();
+    }
+    void signalWaitablePromise() { isWaitablePromise->set_value(); }
 };
 
 struct SemaphoreInfo {
