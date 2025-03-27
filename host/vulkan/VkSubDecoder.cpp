@@ -732,6 +732,11 @@ size_t subDecode(VulkanMemReadingStream* readStream, VulkanDispatch* vk,
                         pool, nullptr, (VkCommandBuffer)(boxed_dispatchHandle), srcBuffer, dstImage,
                         dstImageLayout, regionCount, pRegions, context);
                 }
+                if (snapshotsEnabled()) {
+                    this->snapshot()->vkCmdCopyBufferToImage(pool, snapshotApiCallInfo, nullptr,
+                            0, (VkCommandBuffer)(boxed_dispatchHandle),  srcBuffer, dstImage,
+                            dstImageLayout, regionCount, pRegions);
+                }
                 break;
             }
             case OP_vkCmdCopyImageToBuffer: {

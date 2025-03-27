@@ -1405,14 +1405,10 @@ class VkDecoderSnapshot::Impl {
                                 VkImageLayout dstImageLayout, uint32_t regionCount,
                                 const VkBufferImageCopy* pRegions) {
         std::lock_guard<std::mutex> lock(mReconstructionMutex);
-        // commandBuffer modify
-        auto apiCallHandle = apiCallInfo->handle;
-        mReconstruction.setApiTrace(apiCallInfo, apiCallPacket, apiCallPacketSize);
-        for (uint32_t i = 0; i < 1; ++i) {
-            // commandBuffer is already boxed, no need to box again
-            VkCommandBuffer boxed = VkCommandBuffer((&commandBuffer)[i]);
-            mReconstruction.forEachHandleAddModifyApi((const uint64_t*)(&boxed), 1, apiCallHandle);
-        }
+            apiCallInfo->depends.push_back(
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkBuffer(srcBuffer));
+            apiCallInfo->depends.push_back(
+                (uint64_t)(uintptr_t)unboxed_to_boxed_non_dispatchable_VkImage(dstImage));
     }
     void vkCmdCopyImageToBuffer(android::base::BumpPool* pool, VkSnapshotApiCallInfo* apiCallInfo,
                                 const uint8_t* apiCallPacket, size_t apiCallPacketSize,
