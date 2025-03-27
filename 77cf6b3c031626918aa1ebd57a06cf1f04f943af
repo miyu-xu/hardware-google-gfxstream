@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b836d493_64e21b74",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2928,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-03-27T11:43:34Z",
+      "side": 1,
+      "message": "This will cause objects to be deleted before snapshot decoding is completed. So for example, this part for samplers in VkDecoder.cpp won\u0027t work as expected: \n```\nif (m_snapshotsEnabled) {\n    m_state-\u003esnapshot()-\u003evkDestroySampler(\u0026m_pool, snapshotApiCallInfo, packet,\n                                            packetLen, device, boxed_sampler_preserve,\n                                            pAllocator);\n}\ndelete_VkSampler(boxed_sampler_preserve);\n```\n\nI think if we need to keep this behavior, we should update `destroyDeviceObjects` function instead to go over all the dangling handle objects and delete them there?",
+      "revId": "77cf6b3c031626918aa1ebd57a06cf1f04f943af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
