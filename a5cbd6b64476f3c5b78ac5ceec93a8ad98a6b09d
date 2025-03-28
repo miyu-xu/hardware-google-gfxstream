@@ -22,6 +22,30 @@
       },
       "revId": "a5cbd6b64476f3c5b78ac5ceec93a8ad98a6b09d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7441fa40_32edcb3a",
+        "filename": "host/vulkan/VkCommonOperations.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1986660
+      },
+      "writtenOn": "2025-03-28T15:11:49Z",
+      "side": 1,
+      "message": "This, or should we pass the `device`\u0027s `DeviceInfo` down [from `VkDecoderGlobalState`](http://ac/hardware/google/gfxstream/host/vulkan/VkDecoderGlobalState.cpp?l\u003d8965)?",
+      "parentUuid": "481b256d_a1427b77",
+      "range": {
+        "startLine": 116,
+        "startChar": 4,
+        "endLine": 116,
+        "endChar": 87
+      },
+      "revId": "a5cbd6b64476f3c5b78ac5ceec93a8ad98a6b09d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
