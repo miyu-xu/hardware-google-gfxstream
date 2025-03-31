@@ -1801,6 +1801,30 @@ class VkDecoderGlobalState::Impl {
             featuresToFilter.emplace_back(&featuresFiltered);
         }
 
+        // Check for private data usage before force enabling. The api is unsupported so return error.
+        {
+            bool requestedPrivateData = false;
+            VkPhysicalDevicePrivateDataFeatures* privateDataFeatures =
+                vk_find_struct<VkPhysicalDevicePrivateDataFeatures>(&createInfoFiltered);
+            if (privateDataFeatures != nullptr && privateDataFeatures->privateData) {
+                requestedPrivateData = true;
+            }
+
+            VkPhysicalDeviceVulkan13Features* vulkan13Features =
+                vk_find_struct<VkPhysicalDeviceVulkan13Features>(&createInfoFiltered);
+            if (vulkan13Features != nullptr && vulkan13Features->privateData) {
+                requestedPrivateData = true;
+            }
+
+            // This may be hit by the CTS in create_device_unsupported_features.vulkan13_features
+            // We log the behavior, to identify cases as some system apps may still try creating
+            // private data devices without checking the feature support.
+            if (requestedPrivateData) {
+                WARN("%s: Unsupported private data feature is requested!", __func__);
+                return VK_ERROR_FEATURE_NOT_PRESENT;
+            }
+        }
+
         // TODO(b/378686769): Force enable private data feature when available to
         //  mitigate the issues with duplicated vulkan handles. This should be
         //  removed once the issue is properly fixed.
@@ -2260,6 +2284,7 @@ class VkDecoderGlobalState::Impl {
             if (fenceInfo.device == device) {
                 destroyFenceWithExclusiveInfo(device, deviceDispatch, deviceInfo, fence, fenceInfo,
                                               nullptr, /*allowExternalFenceRecycling=*/false);
+                delete_VkFence(fenceInfo.boxed);
                 fenceInfoIt = fenceInfos.erase(fenceInfoIt);
             } else {
                 ++fenceInfoIt;
@@ -2577,6 +2602,7 @@ class VkDecoderGlobalState::Impl {
 
         if (boxImage) {
             *pImage = new_boxed_non_dispatchable_VkImage(*pImage);
+            imageInfo.boxed = *pImage;
         }
         return createRes;
     }
@@ -2863,6 +2889,7 @@ class VkDecoderGlobalState::Impl {
         }
 
         *pView = new_boxed_non_dispatchable_VkImageView(*pView);
+        imageViewInfo.boxed = *pView;
         return result;
     }
 
@@ -2922,6 +2949,7 @@ class VkDecoderGlobalState::Impl {
              pCreateInfo->borderColor == VK_BORDER_COLOR_INT_CUSTOM_EXT);
 
         *pSampler = new_boxed_non_dispatchable_VkSampler(*pSampler);
+        samplerInfo.boxed = *pSampler;
 
         return result;
     }
@@ -3078,6 +3106,7 @@ class VkDecoderGlobalState::Impl {
         semaphoreInfo.device = device;
 
         *pSemaphore = new_boxed_non_dispatchable_VkSemaphore(*pSemaphore);
+        semaphoreInfo.boxed = *pSemaphore;
 
         return res;
     }
@@ -5290,7 +5319,7 @@ class VkDecoderGlobalState::Impl {
                         return VK_ERROR_OUT_OF_DEVICE_MEMORY;
                     }
 #else
-                    importFdInfo.fd = static_cast<int>(dupHandleInfo->handle);
+                    importFdInfo.fd = dupHandleInfo->getFd();
                     vk_append_struct(&structChainIter, &importFdInfo);
 #endif
                 }
@@ -5367,7 +5396,7 @@ class VkDecoderGlobalState::Impl {
                     return VK_ERROR_OUT_OF_DEVICE_MEMORY;
                 }
 #else
-                importFdInfo.fd = static_cast<int>(dupHandleInfo->handle);
+                importFdInfo.fd = dupHandleInfo->getFd();
                 vk_append_struct(&structChainIter, &importFdInfo);
 #endif
             }
@@ -8544,7 +8573,10 @@ class VkDecoderGlobalState::Impl {
             auto& physicalDeviceInstance = current->second;
             if (physicalDeviceInstance != instance) continue;
             mPhysicalDeviceToInstance.erase(current);
-            mPhysdevInfo.erase(physicalDevice);
+            if (mPhysdevInfo.find(physicalDevice) != mPhysdevInfo.end()) {
+                delete_VkPhysicalDevice(mPhysdevInfo[physicalDevice].boxed);
+                mPhysdevInfo.erase(physicalDevice);
+            }
         }
     }
 
@@ -8569,12 +8601,14 @@ class VkDecoderGlobalState::Impl {
                 destroySemaphoreWithExclusiveInfo(device, deviceDispatch, semaphore,
                                                   deviceObjects.device.mapped(), semaphoreInfo,
                                                   nullptr);
+                delete_VkSemaphore(semaphoreInfo.boxed);
             }
 
             LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu samplers.", deviceObjects.samplers.size());
             for (auto& [sampler, samplerInfo] : deviceObjects.samplers) {
                 destroySamplerWithExclusiveInfo(device, deviceDispatch, sampler, samplerInfo,
                                                 nullptr);
+                delete_VkSampler(samplerInfo.boxed);
             }
 
             LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu buffers.", deviceObjects.buffers.size());
@@ -8586,11 +8620,13 @@ class VkDecoderGlobalState::Impl {
             for (auto& [imageView, imageViewInfo] : deviceObjects.imageViews) {
                 destroyImageViewWithExclusiveInfo(device, deviceDispatch, imageView, imageViewInfo,
                                                   nullptr);
+                delete_VkImageView(imageViewInfo.boxed);
             }
 
             LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu images.", deviceObjects.images.size());
             for (auto& [image, imageInfo] : deviceObjects.images) {
                 destroyImageWithExclusiveInfo(device, deviceDispatch, image, imageInfo, nullptr);
+                delete_VkImage(imageInfo.boxed);
             }
 
             LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu memories.", deviceObjects.memories.size());
@@ -8624,6 +8660,7 @@ class VkDecoderGlobalState::Impl {
                  deviceObjects.descriptorSetLayouts) {
                 destroyDescriptorSetLayoutWithExclusiveInfo(
                     device, deviceDispatch, descriptorSetLayout, descriptorSetLayoutInfo, nullptr);
+                delete_VkDescriptorSetLayout(descriptorSetLayoutInfo.boxed);
             }
 
             LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu shaderModules.", deviceObjects.shaderModules.size());
