@@ -1865,18 +1865,28 @@ class VkDecoderGlobalState::Impl {
         }
 
         {
-            // Protected memory is not supported on emulators. Override feature
-            // information to mark as unsupported (see b/329845987).
+            // b/329845987, protected memory is not supported on emulators.
+            // We override feature information to mark as unsupported and need to return correct
+            // error code here even if the feature is supported by the underlying driver.
+            bool protectedMemoryFeatureRequested = false;
             VkPhysicalDeviceProtectedMemoryFeatures* protectedMemoryFeatures =
                 vk_find_struct<VkPhysicalDeviceProtectedMemoryFeatures>(&createInfoFiltered);
-            if (protectedMemoryFeatures != nullptr) {
-                protectedMemoryFeatures->protectedMemory = VK_FALSE;
+            if (protectedMemoryFeatures != nullptr && protectedMemoryFeatures->protectedMemory) {
+                protectedMemoryFeatureRequested = true;
             }
 
             VkPhysicalDeviceVulkan11Features* vk11Features =
                 vk_find_struct<VkPhysicalDeviceVulkan11Features>(&createInfoFiltered);
-            if (vk11Features != nullptr) {
-                vk11Features->protectedMemory = VK_FALSE;
+            if (vk11Features != nullptr && vk11Features->protectedMemory) {
+                protectedMemoryFeatureRequested = true;
+            }
+
+            // This may be hit by the CTS in create_device_unsupported_features.vulkan11_features
+            // We log the behavior, to identify cases as some system apps may still try creating
+            // protected memory devices without checking the feature support.
+            if (protectedMemoryFeatureRequested) {
+                INFO("%s: Unsupported protected memory feature is requested!", __func__);
+                return VK_ERROR_FEATURE_NOT_PRESENT;
             }
 
             for (uint32_t i = 0; i < createInfoFiltered.queueCreateInfoCount; i++) {
@@ -8596,7 +8606,7 @@ class VkDecoderGlobalState::Impl {
                 return;
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu semaphores.", deviceObjects.semaphores.size());
+            LOG_CALLS_VERBOSE("%s: %zu semaphores.", __func__, deviceObjects.semaphores.size());
             for (auto& [semaphore, semaphoreInfo] : deviceObjects.semaphores) {
                 destroySemaphoreWithExclusiveInfo(device, deviceDispatch, semaphore,
                                                   deviceObjects.device.mapped(), semaphoreInfo,
@@ -8604,58 +8614,58 @@ class VkDecoderGlobalState::Impl {
                 delete_VkSemaphore(semaphoreInfo.boxed);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu samplers.", deviceObjects.samplers.size());
+            LOG_CALLS_VERBOSE("%s: %zu samplers.", __func__, deviceObjects.samplers.size());
             for (auto& [sampler, samplerInfo] : deviceObjects.samplers) {
                 destroySamplerWithExclusiveInfo(device, deviceDispatch, sampler, samplerInfo,
                                                 nullptr);
                 delete_VkSampler(samplerInfo.boxed);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu buffers.", deviceObjects.buffers.size());
+            LOG_CALLS_VERBOSE("%s: %zu buffers.", __func__, deviceObjects.buffers.size());
             for (auto& [buffer, bufferInfo] : deviceObjects.buffers) {
                 destroyBufferWithExclusiveInfo(device, deviceDispatch, buffer, bufferInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu imageViews.", deviceObjects.imageViews.size());
+            LOG_CALLS_VERBOSE("%s: %zu imageViews.", __func__, deviceObjects.imageViews.size());
             for (auto& [imageView, imageViewInfo] : deviceObjects.imageViews) {
                 destroyImageViewWithExclusiveInfo(device, deviceDispatch, imageView, imageViewInfo,
                                                   nullptr);
                 delete_VkImageView(imageViewInfo.boxed);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu images.", deviceObjects.images.size());
+            LOG_CALLS_VERBOSE("%s: %zu images.", __func__, deviceObjects.images.size());
             for (auto& [image, imageInfo] : deviceObjects.images) {
                 destroyImageWithExclusiveInfo(device, deviceDispatch, image, imageInfo, nullptr);
                 delete_VkImage(imageInfo.boxed);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu memories.", deviceObjects.memories.size());
+            LOG_CALLS_VERBOSE("%s: %zu memories.", __func__, deviceObjects.memories.size());
             for (auto& [memory, memoryInfo] : deviceObjects.memories) {
                 destroyMemoryWithExclusiveInfo(device, deviceDispatch, memory, memoryInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu commandBuffers.", deviceObjects.commandBuffers.size());
+            LOG_CALLS_VERBOSE("%s: %zu commandBuffers.", __func__, deviceObjects.commandBuffers.size());
             for (auto& [commandBuffer, commandBufferInfo] : deviceObjects.commandBuffers) {
                 freeCommandBufferWithExclusiveInfos(device, deviceDispatch, commandBuffer,
                                                        commandBufferInfo,
                                                        deviceObjects.commandPools);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu commandPools.", deviceObjects.commandPools.size());
+            LOG_CALLS_VERBOSE("%s: %zu commandPools.", __func__, deviceObjects.commandPools.size());
             for (auto& [commandPool, commandPoolInfo] : deviceObjects.commandPools) {
                 destroyCommandPoolWithExclusiveInfo(device, deviceDispatch, commandPool,
                                                     commandPoolInfo, deviceObjects.commandBuffers,
                                                     nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu descriptorPools.", deviceObjects.descriptorPools.size());
+            LOG_CALLS_VERBOSE("%s: %zu descriptorPools.", __func__, deviceObjects.descriptorPools.size());
             for (auto& [descriptorPool, descriptorPoolInfo] : deviceObjects.descriptorPools) {
                 destroyDescriptorPoolWithExclusiveInfo(device, deviceDispatch, descriptorPool,
                                                        descriptorPoolInfo,
                                                        deviceObjects.descriptorSets, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu descriptorSetLayouts.", deviceObjects.descriptorSetLayouts.size());
+            LOG_CALLS_VERBOSE("%s: %zu descriptorSetLayouts.", __func__, deviceObjects.descriptorSetLayouts.size());
             for (auto& [descriptorSetLayout, descriptorSetLayoutInfo] :
                  deviceObjects.descriptorSetLayouts) {
                 destroyDescriptorSetLayoutWithExclusiveInfo(
@@ -8663,37 +8673,37 @@ class VkDecoderGlobalState::Impl {
                 delete_VkDescriptorSetLayout(descriptorSetLayoutInfo.boxed);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu shaderModules.", deviceObjects.shaderModules.size());
+            LOG_CALLS_VERBOSE("%s: %zu shaderModules.", __func__, deviceObjects.shaderModules.size());
             for (auto& [shaderModule, shaderModuleInfo] : deviceObjects.shaderModules) {
                 destroyShaderModuleWithExclusiveInfo(device, deviceDispatch, shaderModule,
                                                      shaderModuleInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu pipelines.", deviceObjects.pipelines.size());
+            LOG_CALLS_VERBOSE("%s: %zu pipelines.", __func__, deviceObjects.pipelines.size());
             for (auto& [pipeline, pipelineInfo] : deviceObjects.pipelines) {
                 destroyPipelineWithExclusiveInfo(device, deviceDispatch, pipeline, pipelineInfo,
                                                  nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu pipelineCaches.", deviceObjects.pipelineCaches.size());
+            LOG_CALLS_VERBOSE("%s: %zu pipelineCaches.", __func__, deviceObjects.pipelineCaches.size());
             for (auto& [pipelineCache, pipelineCacheInfo] : deviceObjects.pipelineCaches) {
                 destroyPipelineCacheWithExclusiveInfo(device, deviceDispatch, pipelineCache,
                                                       pipelineCacheInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu pipelineLayouts.", deviceObjects.pipelineLayouts.size());
+            LOG_CALLS_VERBOSE("%s: %zu pipelineLayouts.", __func__, deviceObjects.pipelineLayouts.size());
             for (auto& [pipelineLayout, pipelineLayoutInfo] : deviceObjects.pipelineLayouts) {
                 destroyPipelineLayoutWithExclusiveInfo(device, deviceDispatch, pipelineLayout,
                                                       pipelineLayoutInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu framebuffers.", deviceObjects.framebuffers.size());
+            LOG_CALLS_VERBOSE("%s: %zu framebuffers.", __func__, deviceObjects.framebuffers.size());
             for (auto& [framebuffer, framebufferInfo] : deviceObjects.framebuffers) {
                 destroyFramebufferWithExclusiveInfo(device, deviceDispatch, framebuffer,
                                                     framebufferInfo, nullptr);
             }
 
-            LOG_CALLS_VERBOSE("destroyDeviceObjects: %zu renderPasses.", deviceObjects.renderPasses.size());
+            LOG_CALLS_VERBOSE("%s: %zu renderPasses.", __func__, deviceObjects.renderPasses.size());
             for (auto& [renderPass, renderPassInfo] : deviceObjects.renderPasses) {
                 destroyRenderPassWithExclusiveInfo(device, deviceDispatch, renderPass,
                                                    renderPassInfo, nullptr);
@@ -8724,6 +8734,10 @@ class VkDecoderGlobalState::Impl {
 #endif
         delete_VkInstance(instanceInfo.boxed);
         LOG_CALLS_VERBOSE("destroyInstanceObjects: finished.");
+
+        // Log handle count when call logging is enabled to be able to catch any leaks
+        VERBOSE("%s: Global boxed handles count = %llu", __func__,
+                sBoxedHandleManager.getHandlesCount());
     }
 
     bool isDescriptorTypeImageInfo(VkDescriptorType descType) {
