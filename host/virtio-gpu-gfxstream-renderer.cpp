@@ -608,10 +608,14 @@ static int stream_renderer_opengles_init(uint32_t display_width, uint32_t displa
 
     android_prepareOpenglesEmulation();
 
+#ifdef __MINGW32__
+
+#else
     {
         static gfxstream::RenderLibPtr renderLibPtr = gfxstream::initLibrary();
         android_setOpenglesEmulation(renderLibPtr.get(), nullptr, nullptr);
     }
+#endif // __MINGW32__
 
     int maj;
     int min;

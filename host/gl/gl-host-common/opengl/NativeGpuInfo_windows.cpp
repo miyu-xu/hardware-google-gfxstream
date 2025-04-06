@@ -263,6 +263,9 @@ void parse_gpu_info_list_windows(const std::string& contents,
 }
 
 static bool queryGpuInfoD3D(GpuInfoList* gpus) {
+#ifdef __MINGW32__
+    return false; // stub constant
+#else
     LPDIRECT3D9 pD3D = Direct3DCreate9(D3D_SDK_VERSION);
     UINT numAdapters = pD3D->GetAdapterCount();
 
@@ -300,6 +303,7 @@ static bool queryGpuInfoD3D(GpuInfoList* gpus) {
     }
 
     return false;
+#endif // __MINGW32__
 }
 
 void getGpuInfoListNative(GpuInfoList* gpus) {
@@ -380,8 +384,11 @@ bool badVulkanDllVersion() {
 
     // crashhandler_append_message_format(
     //     "checking for bad vulkan-1.dll version...\n");
-
+#ifdef __MINGW32__
+    const char* vulkanDllPath = nullptr; // stub constant
+#else
     const char* vulkanDllPath = emuglConfig_get_vulkan_runtime_full_path();
+#endif // __MINGW32__
     if (!android::base::queryFileVersionInfo(vulkanDllPath, &major, &minor, &build_1, &build_2)) {
         // crashhandler_append_message_format(
         //     "info on vulkan-1.dll cannot be found, continue.\n");

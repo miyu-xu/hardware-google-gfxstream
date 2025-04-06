@@ -12,7 +12,7 @@ lib_gles2_dec = static_library(
   files_lib_gles2_dec,
   cpp_args: gfxstream_host_args,
   include_directories: [inc_gfxstream_include, inc_include, inc_apigen_codec, inc_gles_translator,
-                        inc_gl_snapshot],
+                        inc_gl_snapshot, inc_opengl_headers],
   link_with: lib_gl_snapshot,
   dependencies: [aemu_base_dep, aemu_logging_dep]
 )

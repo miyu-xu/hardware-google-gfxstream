@@ -14,6 +14,6 @@ lib_glescm_translator = static_library(
   files_lib_glescm_translator,
   cpp_args: gfxstream_host_args,
   include_directories: [inc_gfxstream_include, inc_include, inc_gles_translator, inc_glm,
-                        inc_etc],
+                        inc_etc, inc_opengl_headers],
   dependencies: [aemu_base_dep, aemu_logging_dep, aemu_snapshot_dep]
 )

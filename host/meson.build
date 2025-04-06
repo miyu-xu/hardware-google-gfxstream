@@ -75,10 +75,15 @@ else
   aemu_common_dep = dependency('aemu_host_common')
   aemu_logging_dep = dependency('aemu_logging')
   aemu_snapshot_dep = dependency('aemu_snapshot')
-  dl_dep = dependency('dl')
+  if host_machine.system() != 'windows'
+    dl_dep = dependency('dl')
+  endif
   thread_dep = dependency('threads')
   gfxstream_host_args += '-DGFXSTREAM_UNSTABLE_VULKAN_EXTERNAL_SYNC=1'
   gfxstream_host_args += '-DGFXSTREAM_UNSTABLE_VULKAN_DMABUF_WINSYS=1'
+  if host_machine.system() == 'windows'
+     gfxstream_host_args += '-DVK_USE_PLATFORM_WIN32_KHR'
+  endif
 endif
 
 if log_level == 'error'
@@ -123,6 +128,10 @@ inc_gfxstream_include = include_directories('../include')
 # Included by all host component builds. Leave empty for future build updates.
 inc_include = include_directories()
 inc_utils = include_directories('../utils/include')
+inc_opengl_headers = include_directories()
+if host_machine.system() == 'windows'
+  inc_opengl_headers = include_directories('../common/opengl/include/')
+endif
 
 if host_machine.system() == 'qnx'
   inc_gfxstream_include = [inc_qnx_headers, inc_gfxstream_include]
@@ -282,7 +291,7 @@ gfxstream_backend = library(
   'gfxstream_backend',
   files_lib_gfxstream_backend,
   cpp_args: gfxstream_host_args + gfxstream_backend_cpp_args,
-  include_directories: [inc_gfxstream_backend, inc_glm],
+  include_directories: [inc_gfxstream_backend, inc_glm, inc_opengl_headers],
   gnu_symbol_visibility: 'default',
   dependencies: deps_gfxstream_backend,
   link_with: link_gfxstream_backend,
