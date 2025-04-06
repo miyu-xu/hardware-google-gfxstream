@@ -1,12 +1,12 @@
-// Copyright 2015-2023 The Khronos Group Inc.
-// 
+// Copyright 2015-2025 The Khronos Group Inc.
+//
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 //
 
 // This header is generated from the Khronos Vulkan XML API Registry.
 
 #ifndef VULKAN_FORMAT_TRAITS_HPP
-#  define VULKAN_FORMAT_TRAITS_HPP
+#define VULKAN_FORMAT_TRAITS_HPP
 
 #include <vulkan/vulkan.hpp>
 
@@ -20,101 +20,101 @@ namespace VULKAN_HPP_NAMESPACE
   // The three-dimensional extent of a texel block.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 std::array<uint8_t, 3> blockExtent( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
-      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbUnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbSrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaUnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaSrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc2UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc2SrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc3UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc3SrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc4UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc4SnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc5UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc5SnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc6HUfloatBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc6HSfloatBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc7UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eBc7SrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8SrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1SrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8SrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEacR11UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEacR11SnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEacR11G11UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eEacR11G11SnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc4x4UnormBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SrgbBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc5x4UnormBlock: return {{ 5, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SrgbBlock: return {{ 5, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc5x5UnormBlock: return {{ 5, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SrgbBlock: return {{ 5, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc6x5UnormBlock: return {{ 6, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SrgbBlock: return {{ 6, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc6x6UnormBlock: return {{ 6, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SrgbBlock: return {{ 6, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x5UnormBlock: return {{ 8, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SrgbBlock: return {{ 8, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x6UnormBlock: return {{ 8, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SrgbBlock: return {{ 8, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x8UnormBlock: return {{ 8, 8, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SrgbBlock: return {{ 8, 8, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x5UnormBlock: return {{ 10, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SrgbBlock: return {{ 10, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x6UnormBlock: return {{ 10, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SrgbBlock: return {{ 10, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x8UnormBlock: return {{ 10, 8, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SrgbBlock: return {{ 10, 8, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x10UnormBlock: return {{ 10, 10, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SrgbBlock: return {{ 10, 10, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc12x10UnormBlock: return {{ 12, 10, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SrgbBlock: return {{ 12, 10, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc12x12UnormBlock: return {{ 12, 12, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SrgbBlock: return {{ 12, 12, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eG8B8G8R8422Unorm: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eB8G8R8G8422Unorm: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6G10X6R10X6422Unorm4Pack16: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eB10X6G10X6R10X6G10X6422Unorm4Pack16: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4G12X4R12X4422Unorm4Pack16: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eB12X4G12X4R12X4G12X4422Unorm4Pack16: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eG16B16G16R16422Unorm: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eB16G16R16G16422Unorm: return {{ 2, 1, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SfloatBlock: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SfloatBlock: return {{ 5, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SfloatBlock: return {{ 5, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SfloatBlock: return {{ 6, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SfloatBlock: return {{ 6, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SfloatBlock: return {{ 8, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SfloatBlock: return {{ 8, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SfloatBlock: return {{ 8, 8, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SfloatBlock: return {{ 10, 5, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SfloatBlock: return {{ 10, 6, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SfloatBlock: return {{ 10, 8, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock: return {{ 10, 10, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock: return {{ 12, 10, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock: return {{ 12, 12, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG: return {{ 8, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG: return {{ 8, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppUnormBlockIMG: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppSrgbBlockIMG: return {{ 8, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG: return {{ 4, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG: return {{ 8, 4, 1 }};
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG: return {{ 4, 4, 1 }};
+      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbUnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbSrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaUnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaSrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc2UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc2SrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc3UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc3SrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc4UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc4SnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc5UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc5SnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc6HUfloatBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc6HSfloatBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc7UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eBc7SrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8SrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1SrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8SrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEacR11UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEacR11SnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEacR11G11UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eEacR11G11SnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc4x4UnormBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SrgbBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc5x4UnormBlock: return { { 5, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SrgbBlock: return { { 5, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc5x5UnormBlock: return { { 5, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SrgbBlock: return { { 5, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc6x5UnormBlock: return { { 6, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SrgbBlock: return { { 6, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc6x6UnormBlock: return { { 6, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SrgbBlock: return { { 6, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x5UnormBlock: return { { 8, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SrgbBlock: return { { 8, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x6UnormBlock: return { { 8, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SrgbBlock: return { { 8, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x8UnormBlock: return { { 8, 8, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SrgbBlock: return { { 8, 8, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x5UnormBlock: return { { 10, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SrgbBlock: return { { 10, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x6UnormBlock: return { { 10, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SrgbBlock: return { { 10, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x8UnormBlock: return { { 10, 8, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SrgbBlock: return { { 10, 8, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x10UnormBlock: return { { 10, 10, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SrgbBlock: return { { 10, 10, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc12x10UnormBlock: return { { 12, 10, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SrgbBlock: return { { 12, 10, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc12x12UnormBlock: return { { 12, 12, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SrgbBlock: return { { 12, 12, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eG8B8G8R8422Unorm: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eB8G8R8G8422Unorm: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6G10X6R10X6422Unorm4Pack16: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eB10X6G10X6R10X6G10X6422Unorm4Pack16: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4G12X4R12X4422Unorm4Pack16: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eB12X4G12X4R12X4G12X4422Unorm4Pack16: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eG16B16G16R16422Unorm: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eB16G16R16G16422Unorm: return { { 2, 1, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SfloatBlock: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SfloatBlock: return { { 5, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SfloatBlock: return { { 5, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SfloatBlock: return { { 6, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SfloatBlock: return { { 6, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SfloatBlock: return { { 8, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SfloatBlock: return { { 8, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SfloatBlock: return { { 8, 8, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SfloatBlock: return { { 10, 5, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SfloatBlock: return { { 10, 6, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SfloatBlock: return { { 10, 8, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock: return { { 10, 10, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock: return { { 12, 10, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock: return { { 12, 12, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG: return { { 8, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG: return { { 8, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppUnormBlockIMG: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppSrgbBlockIMG: return { { 8, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG: return { { 4, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG: return { { 8, 4, 1 } };
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG: return { { 4, 4, 1 } };
 
-      default: return {{1, 1, 1 }};
+      default: return { { 1, 1, 1 } };
     }
   }
 
   // The texel block size in bytes.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t blockSize( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8: return 1;
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16: return 2;
@@ -354,6 +354,8 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock: return 16;
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock: return 16;
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock: return 16;
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16: return 2;
+      case VULKAN_HPP_NAMESPACE::Format::eA8Unorm: return 1;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG: return 8;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG: return 8;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG: return 8;
@@ -362,18 +364,16 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG: return 8;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG: return 8;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG: return 8;
-      case VULKAN_HPP_NAMESPACE::Format::eR16G16S105NV: return 4;
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR: return 2;
-      case VULKAN_HPP_NAMESPACE::Format::eA8UnormKHR: return 1;
+      case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfixed5NV: return 4;
 
-      default : VULKAN_HPP_ASSERT( false ); return 0;
+      default: VULKAN_HPP_ASSERT( false ); return 0;
     }
   }
 
   // The class of the format (can't be just named "class"!)
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 char const * compatibilityClass( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8: return "8-bit";
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16: return "16-bit";
@@ -613,6 +613,8 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock: return "ASTC_10x10";
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock: return "ASTC_12x10";
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock: return "ASTC_12x12";
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16: return "16-bit";
+      case VULKAN_HPP_NAMESPACE::Format::eA8Unorm: return "8-bit alpha";
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG: return "PVRTC1_2BPP";
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG: return "PVRTC1_4BPP";
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG: return "PVRTC2_2BPP";
@@ -621,28 +623,26 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG: return "PVRTC1_4BPP";
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG: return "PVRTC2_2BPP";
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG: return "PVRTC2_4BPP";
-      case VULKAN_HPP_NAMESPACE::Format::eR16G16S105NV: return "32-bit";
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR: return "16-bit";
-      case VULKAN_HPP_NAMESPACE::Format::eA8UnormKHR: return "8-bit alpha";
+      case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfixed5NV: return "32-bit";
 
-      default : VULKAN_HPP_ASSERT( false ); return "";
+      default: VULKAN_HPP_ASSERT( false ); return "";
     }
   }
 
   // The number of bits in this component, if not compressed, otherwise 0.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t componentBits( VULKAN_HPP_NAMESPACE::Format format, uint8_t component )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8:
-        switch( component )
+        switch ( component )
         {
           case 0: return 4;
           case 1: return 4;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 4;
           case 1: return 4;
@@ -651,7 +651,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB4G4R4A4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 4;
           case 1: return 4;
@@ -660,7 +660,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR5G6B5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 5;
           case 1: return 6;
@@ -668,7 +668,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB5G6R5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 5;
           case 1: return 6;
@@ -676,7 +676,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR5G5B5A1UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 5;
           case 1: return 5;
@@ -685,7 +685,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB5G5R5A1UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 5;
           case 1: return 5;
@@ -694,7 +694,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA1R5G5B5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 1;
           case 1: return 5;
@@ -703,98 +703,98 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -802,7 +802,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -810,7 +810,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -818,7 +818,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -826,7 +826,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -834,7 +834,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -842,7 +842,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -850,7 +850,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -858,7 +858,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -866,7 +866,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -874,7 +874,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -882,7 +882,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -890,7 +890,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -898,7 +898,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -906,7 +906,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -915,7 +915,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -924,7 +924,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -933,7 +933,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -942,7 +942,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -951,7 +951,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -960,7 +960,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -969,7 +969,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -978,7 +978,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -987,7 +987,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -996,7 +996,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1005,7 +1005,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1014,7 +1014,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1023,7 +1023,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1032,7 +1032,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1041,7 +1041,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1050,7 +1050,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1059,7 +1059,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1068,7 +1068,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1077,7 +1077,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1086,7 +1086,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SrgbPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1095,7 +1095,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1104,7 +1104,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1113,7 +1113,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1122,7 +1122,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1131,7 +1131,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1140,7 +1140,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1149,7 +1149,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1158,7 +1158,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1167,7 +1167,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1176,7 +1176,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1185,7 +1185,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1194,7 +1194,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 2;
           case 1: return 10;
@@ -1203,98 +1203,98 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1302,7 +1302,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1310,7 +1310,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1318,7 +1318,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1326,7 +1326,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1334,7 +1334,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1342,7 +1342,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1350,7 +1350,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1359,7 +1359,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1368,7 +1368,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1377,7 +1377,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1386,7 +1386,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1395,7 +1395,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1404,7 +1404,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1413,46 +1413,46 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
@@ -1460,7 +1460,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
@@ -1468,7 +1468,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
@@ -1476,7 +1476,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
@@ -1485,7 +1485,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
@@ -1494,7 +1494,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 32;
@@ -1503,46 +1503,46 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
@@ -1550,7 +1550,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
@@ -1558,7 +1558,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
@@ -1566,7 +1566,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
@@ -1575,7 +1575,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
@@ -1584,7 +1584,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 64;
           case 1: return 64;
@@ -1593,7 +1593,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB10G11R11UfloatPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 11;
@@ -1601,7 +1601,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eE5B9G9R9UfloatPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 9;
           case 1: return 9;
@@ -1609,78 +1609,78 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eD16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eX8D24UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return 24;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eD32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eD16UnormS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eD24UnormS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 24;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eD32SfloatS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return 32;
           case 1: return 8;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return 11;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return 11;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11G11UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return 11;
           case 1: return 11;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11G11SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return 11;
           case 1: return 11;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8G8R8422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1689,7 +1689,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8G8422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1698,7 +1698,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1706,7 +1706,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1714,7 +1714,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1722,7 +1722,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1730,7 +1730,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1738,20 +1738,20 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6Unorm2Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6B10X6A10X6Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1760,7 +1760,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6G10X6R10X6422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1769,7 +1769,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB10X6G10X6R10X6G10X6422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1778,7 +1778,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1786,7 +1786,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1794,7 +1794,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1802,7 +1802,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1810,7 +1810,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1818,20 +1818,20 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4Unorm2Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4B12X4A12X4Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1840,7 +1840,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4G12X4R12X4422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1849,7 +1849,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB12X4G12X4R12X4G12X4422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1858,7 +1858,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1866,7 +1866,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1874,7 +1874,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1882,7 +1882,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1890,7 +1890,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1898,7 +1898,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16G16R16422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1907,7 +1907,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eB16G16R16G16422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1916,7 +1916,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1924,7 +1924,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1932,7 +1932,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1940,7 +1940,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1948,7 +1948,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1956,7 +1956,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 8;
           case 1: return 8;
@@ -1964,7 +1964,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 10;
           case 1: return 10;
@@ -1972,7 +1972,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 12;
           case 1: return 12;
@@ -1980,7 +1980,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 16;
           case 1: return 16;
@@ -1988,7 +1988,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA4R4G4B4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 4;
           case 1: return 4;
@@ -1997,7 +1997,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eA4B4G4R4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 4;
           case 1: return 4;
@@ -2005,15 +2005,8 @@ namespace VULKAN_HPP_NAMESPACE
           case 3: return 4;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
-      case VULKAN_HPP_NAMESPACE::Format::eR16G16S105NV:
-        switch( component )
-        {
-          case 0: return 16;
-          case 1: return 16;
-          default: VULKAN_HPP_ASSERT( false ); return 0;
-        }
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR:
-        switch( component )
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16:
+        switch ( component )
         {
           case 0: return 1;
           case 1: return 5;
@@ -2021,10 +2014,17 @@ namespace VULKAN_HPP_NAMESPACE
           case 3: return 5;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
-      case VULKAN_HPP_NAMESPACE::Format::eA8UnormKHR:
-        switch( component )
+      case VULKAN_HPP_NAMESPACE::Format::eA8Unorm:
+        switch ( component )
         {
           case 0: return 8;
+          default: VULKAN_HPP_ASSERT( false ); return 0;
+        }
+      case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfixed5NV:
+        switch ( component )
+        {
+          case 0: return 16;
+          case 1: return 16;
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
 
@@ -2035,7 +2035,7 @@ namespace VULKAN_HPP_NAMESPACE
   // The number of components of this format.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t componentCount( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8: return 2;
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16: return 4;
@@ -2275,6 +2275,8 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock: return 4;
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock: return 4;
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock: return 4;
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16: return 4;
+      case VULKAN_HPP_NAMESPACE::Format::eA8Unorm: return 1;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG: return 4;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG: return 4;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG: return 4;
@@ -2283,9 +2285,7 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG: return 4;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG: return 4;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG: return 4;
-      case VULKAN_HPP_NAMESPACE::Format::eR16G16S105NV: return 2;
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR: return 4;
-      case VULKAN_HPP_NAMESPACE::Format::eA8UnormKHR: return 1;
+      case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfixed5NV: return 2;
 
       default: return 0;
     }
@@ -2294,17 +2294,17 @@ namespace VULKAN_HPP_NAMESPACE
   // The name of the component
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 char const * componentName( VULKAN_HPP_NAMESPACE::Format format, uint8_t component )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2313,7 +2313,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB4G4R4A4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2322,7 +2322,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR5G6B5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2330,7 +2330,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB5G6R5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2338,7 +2338,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR5G5B5A1UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2347,7 +2347,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB5G5R5A1UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2356,7 +2356,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA1R5G5B5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -2365,98 +2365,98 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2464,7 +2464,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2472,7 +2472,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2480,7 +2480,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2488,7 +2488,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2496,7 +2496,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2504,7 +2504,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2512,7 +2512,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2520,7 +2520,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2528,7 +2528,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2536,7 +2536,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2544,7 +2544,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2552,7 +2552,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2560,7 +2560,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2568,7 +2568,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2577,7 +2577,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2586,7 +2586,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2595,7 +2595,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2604,7 +2604,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2613,7 +2613,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2622,7 +2622,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2631,7 +2631,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2640,7 +2640,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2649,7 +2649,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2658,7 +2658,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2667,7 +2667,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2676,7 +2676,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2685,7 +2685,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -2694,7 +2694,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2703,7 +2703,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2712,7 +2712,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2721,7 +2721,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2730,7 +2730,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2739,7 +2739,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2748,7 +2748,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SrgbPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2757,7 +2757,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -2766,7 +2766,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -2775,7 +2775,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -2784,7 +2784,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -2793,7 +2793,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -2802,7 +2802,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -2811,7 +2811,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2820,7 +2820,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2829,7 +2829,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2838,7 +2838,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2847,7 +2847,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2856,7 +2856,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -2865,98 +2865,98 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2964,7 +2964,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2972,7 +2972,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2980,7 +2980,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2988,7 +2988,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -2996,7 +2996,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3004,7 +3004,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3012,7 +3012,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3021,7 +3021,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3030,7 +3030,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3039,7 +3039,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3048,7 +3048,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3057,7 +3057,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3066,7 +3066,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3075,46 +3075,46 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3122,7 +3122,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3130,7 +3130,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3138,7 +3138,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3147,7 +3147,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3156,7 +3156,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3165,46 +3165,46 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3212,7 +3212,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3220,7 +3220,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3228,7 +3228,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3237,7 +3237,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3246,7 +3246,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3255,7 +3255,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB10G11R11UfloatPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -3263,7 +3263,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eE5B9G9R9UfloatPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -3271,52 +3271,52 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "D";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eX8D24UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "D";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "D";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "S";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD16UnormS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "D";
           case 1: return "S";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD24UnormS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "D";
           case 1: return "S";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD32SfloatS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "D";
           case 1: return "S";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbUnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3324,7 +3324,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbSrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3332,7 +3332,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaUnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3341,7 +3341,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaSrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3350,7 +3350,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc2UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3359,7 +3359,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc2SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3368,7 +3368,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc3UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3377,7 +3377,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc3SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3386,33 +3386,33 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc4UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc4SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc5SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc6HUfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3420,7 +3420,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc6HSfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3428,7 +3428,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc7UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3437,7 +3437,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc7SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3446,7 +3446,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3454,7 +3454,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3462,7 +3462,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3471,7 +3471,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3480,7 +3480,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3489,7 +3489,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3498,33 +3498,33 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11G11UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11G11SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc4x4UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3533,7 +3533,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3542,7 +3542,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x4UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3551,7 +3551,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3560,7 +3560,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3569,7 +3569,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3578,7 +3578,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3587,7 +3587,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3596,7 +3596,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x6UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3605,7 +3605,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3614,7 +3614,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3623,7 +3623,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3632,7 +3632,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x6UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3641,7 +3641,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3650,7 +3650,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3659,7 +3659,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3668,7 +3668,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3677,7 +3677,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3686,7 +3686,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x6UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3695,7 +3695,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3704,7 +3704,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3713,7 +3713,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3722,7 +3722,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3731,7 +3731,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3740,7 +3740,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3749,7 +3749,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3758,7 +3758,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3767,7 +3767,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3776,7 +3776,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8G8R8422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3785,7 +3785,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8G8422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -3794,7 +3794,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3802,7 +3802,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3810,7 +3810,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3818,7 +3818,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3826,7 +3826,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3834,20 +3834,20 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6Unorm2Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6B10X6A10X6Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3856,7 +3856,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6G10X6R10X6422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3865,7 +3865,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB10X6G10X6R10X6G10X6422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -3874,7 +3874,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3882,7 +3882,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3890,7 +3890,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3898,7 +3898,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3906,7 +3906,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3914,20 +3914,20 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4Unorm2Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4B12X4A12X4Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -3936,7 +3936,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4G12X4R12X4422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3945,7 +3945,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB12X4G12X4R12X4G12X4422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -3954,7 +3954,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3962,7 +3962,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3970,7 +3970,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3978,7 +3978,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3986,7 +3986,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -3994,7 +3994,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16G16R16422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4003,7 +4003,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB16G16R16G16422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "B";
           case 1: return "G";
@@ -4012,7 +4012,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4020,7 +4020,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4028,7 +4028,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4036,7 +4036,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4044,7 +4044,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4052,7 +4052,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4060,7 +4060,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4068,7 +4068,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4076,7 +4076,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "G";
           case 1: return "B";
@@ -4084,7 +4084,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA4R4G4B4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "R";
@@ -4093,7 +4093,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA4B4G4R4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "A";
           case 1: return "B";
@@ -4102,7 +4102,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4111,7 +4111,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4120,7 +4120,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4129,7 +4129,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4138,7 +4138,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4147,7 +4147,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4156,7 +4156,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4165,7 +4165,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4174,7 +4174,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4183,7 +4183,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4192,7 +4192,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4201,7 +4201,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4210,7 +4210,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4219,7 +4219,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4227,8 +4227,23 @@ namespace VULKAN_HPP_NAMESPACE
           case 3: return "A";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16:
+        switch ( component )
+        {
+          case 0: return "A";
+          case 1: return "B";
+          case 2: return "G";
+          case 3: return "R";
+          default: VULKAN_HPP_ASSERT( false ); return "";
+        }
+      case VULKAN_HPP_NAMESPACE::Format::eA8Unorm:
+        switch ( component )
+        {
+          case 0: return "A";
+          default: VULKAN_HPP_ASSERT( false ); return "";
+        }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4237,7 +4252,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4246,7 +4261,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4255,7 +4270,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4264,7 +4279,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4273,7 +4288,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4282,7 +4297,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4291,7 +4306,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
@@ -4299,26 +4314,11 @@ namespace VULKAN_HPP_NAMESPACE
           case 3: return "A";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
-      case VULKAN_HPP_NAMESPACE::Format::eR16G16S105NV:
-        switch( component )
+      case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfixed5NV:
+        switch ( component )
         {
           case 0: return "R";
           case 1: return "G";
-          default: VULKAN_HPP_ASSERT( false ); return "";
-        }
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR:
-        switch( component )
-        {
-          case 0: return "A";
-          case 1: return "B";
-          case 2: return "G";
-          case 3: return "R";
-          default: VULKAN_HPP_ASSERT( false ); return "";
-        }
-      case VULKAN_HPP_NAMESPACE::Format::eA8UnormKHR:
-        switch( component )
-        {
-          case 0: return "A";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
 
@@ -4329,17 +4329,17 @@ namespace VULKAN_HPP_NAMESPACE
   // The numeric format of the component
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 char const * componentNumericFormat( VULKAN_HPP_NAMESPACE::Format format, uint8_t component )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4348,7 +4348,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB4G4R4A4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4357,7 +4357,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR5G6B5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4365,7 +4365,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB5G6R5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4373,7 +4373,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR5G5B5A1UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4382,7 +4382,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB5G5R5A1UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4391,7 +4391,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA1R5G5B5UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4400,98 +4400,98 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4499,7 +4499,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -4507,7 +4507,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -4515,7 +4515,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -4523,7 +4523,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -4531,7 +4531,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -4539,7 +4539,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -4547,7 +4547,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4555,7 +4555,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -4563,7 +4563,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -4571,7 +4571,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -4579,7 +4579,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -4587,7 +4587,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -4595,7 +4595,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -4603,7 +4603,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4612,7 +4612,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -4621,7 +4621,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -4630,7 +4630,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -4639,7 +4639,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -4648,7 +4648,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -4657,7 +4657,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR8G8B8A8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -4666,7 +4666,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4675,7 +4675,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -4684,7 +4684,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -4693,7 +4693,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -4702,7 +4702,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -4711,7 +4711,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -4720,7 +4720,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8A8Srgb:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -4729,7 +4729,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4738,7 +4738,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -4747,7 +4747,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -4756,7 +4756,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -4765,7 +4765,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -4774,7 +4774,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -4783,7 +4783,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA8B8G8R8SrgbPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -4792,7 +4792,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4801,7 +4801,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -4810,7 +4810,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -4819,7 +4819,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -4828,7 +4828,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -4837,7 +4837,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2R10G10B10SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -4846,7 +4846,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4855,7 +4855,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -4864,7 +4864,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -4873,7 +4873,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SscaledPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -4882,7 +4882,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10UintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -4891,7 +4891,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA2B10G10R10SintPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -4900,98 +4900,98 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -4999,7 +4999,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -5007,7 +5007,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -5015,7 +5015,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -5023,7 +5023,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -5031,7 +5031,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -5039,7 +5039,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -5047,7 +5047,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5056,7 +5056,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Snorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
@@ -5065,7 +5065,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Uscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "USCALED";
           case 1: return "USCALED";
@@ -5074,7 +5074,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sscaled:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SSCALED";
           case 1: return "SSCALED";
@@ -5083,7 +5083,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -5092,7 +5092,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -5101,7 +5101,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR16G16B16A16Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -5110,46 +5110,46 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -5157,7 +5157,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -5165,7 +5165,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -5173,7 +5173,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -5182,7 +5182,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -5191,7 +5191,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR32G32B32A32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -5200,46 +5200,46 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -5247,7 +5247,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -5255,7 +5255,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -5263,7 +5263,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           case 1: return "UINT";
@@ -5272,7 +5272,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Sint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SINT";
           case 1: return "SINT";
@@ -5281,7 +5281,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR64G64B64A64Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -5290,7 +5290,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB10G11R11UfloatPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UFLOAT";
           case 1: return "UFLOAT";
@@ -5298,7 +5298,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eE5B9G9R9UfloatPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UFLOAT";
           case 1: return "UFLOAT";
@@ -5306,52 +5306,52 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD16Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eX8D24UnormPack32:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD32Sfloat:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD16UnormS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD24UnormS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eD32SfloatS8Uint:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "UINT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbUnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5359,7 +5359,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbSrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5367,7 +5367,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaUnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5376,7 +5376,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbaSrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5385,7 +5385,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc2UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5394,7 +5394,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc2SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5403,7 +5403,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc3UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5412,7 +5412,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc3SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5421,33 +5421,33 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc4UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc4SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc5SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc6HUfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UFLOAT";
           case 1: return "UFLOAT";
@@ -5455,7 +5455,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc6HSfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -5463,7 +5463,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc7UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5472,7 +5472,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eBc7SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5481,7 +5481,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5489,7 +5489,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5497,7 +5497,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5506,7 +5506,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A1SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5515,7 +5515,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5524,7 +5524,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEtc2R8G8B8A8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5533,33 +5533,33 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11G11UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eEacR11G11SnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SNORM";
           case 1: return "SNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc4x4UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5568,7 +5568,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5577,7 +5577,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x4UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5586,7 +5586,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5595,7 +5595,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5604,7 +5604,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5613,7 +5613,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5622,7 +5622,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5631,7 +5631,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x6UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5640,7 +5640,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5649,7 +5649,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5658,7 +5658,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5667,7 +5667,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x6UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5676,7 +5676,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5685,7 +5685,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5694,7 +5694,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5703,7 +5703,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x5UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5712,7 +5712,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5721,7 +5721,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x6UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5730,7 +5730,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5739,7 +5739,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x8UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5748,7 +5748,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5757,7 +5757,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5766,7 +5766,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5775,7 +5775,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5784,7 +5784,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5793,7 +5793,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12UnormBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5802,7 +5802,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SrgbBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -5811,7 +5811,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8G8R8422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5820,7 +5820,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB8G8R8G8422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5829,7 +5829,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5837,7 +5837,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5845,7 +5845,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5853,7 +5853,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5861,7 +5861,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5869,20 +5869,20 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6Unorm2Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6B10X6A10X6Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5891,7 +5891,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6G10X6R10X6422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5900,7 +5900,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB10X6G10X6R10X6G10X6422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5909,7 +5909,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5917,7 +5917,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5925,7 +5925,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5933,7 +5933,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5941,7 +5941,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5949,20 +5949,20 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4Unorm2Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4B12X4A12X4Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5971,7 +5971,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4G12X4R12X4422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5980,7 +5980,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB12X4G12X4R12X4G12X4422Unorm4Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5989,7 +5989,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -5997,7 +5997,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6005,7 +6005,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6013,7 +6013,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6021,7 +6021,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6029,7 +6029,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16G16R16422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6038,7 +6038,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eB16G16R16G16422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6047,7 +6047,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6055,7 +6055,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6063,7 +6063,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6071,7 +6071,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6079,7 +6079,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6087,7 +6087,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6095,7 +6095,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6103,7 +6103,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6111,7 +6111,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6119,7 +6119,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA4R4G4B4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6128,7 +6128,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eA4B4G4R4UnormPack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6137,7 +6137,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc4x4SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6146,7 +6146,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x4SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6155,7 +6155,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc5x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6164,7 +6164,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6173,7 +6173,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc6x6SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6182,7 +6182,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6191,7 +6191,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x6SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6200,7 +6200,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc8x8SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6209,7 +6209,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x5SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6218,7 +6218,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x6SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6227,7 +6227,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x8SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6236,7 +6236,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6245,7 +6245,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6254,7 +6254,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SFLOAT";
           case 1: return "SFLOAT";
@@ -6262,8 +6262,23 @@ namespace VULKAN_HPP_NAMESPACE
           case 3: return "SFLOAT";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16:
+        switch ( component )
+        {
+          case 0: return "UNORM";
+          case 1: return "UNORM";
+          case 2: return "UNORM";
+          case 3: return "UNORM";
+          default: VULKAN_HPP_ASSERT( false ); return "";
+        }
+      case VULKAN_HPP_NAMESPACE::Format::eA8Unorm:
+        switch ( component )
+        {
+          case 0: return "UNORM";
+          default: VULKAN_HPP_ASSERT( false ); return "";
+        }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6272,7 +6287,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6281,7 +6296,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6290,7 +6305,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppUnormBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "UNORM";
           case 1: return "UNORM";
@@ -6299,7 +6314,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -6308,7 +6323,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -6317,7 +6332,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -6326,7 +6341,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG:
-        switch( component )
+        switch ( component )
         {
           case 0: return "SRGB";
           case 1: return "SRGB";
@@ -6334,26 +6349,11 @@ namespace VULKAN_HPP_NAMESPACE
           case 3: return "SRGB";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
-      case VULKAN_HPP_NAMESPACE::Format::eR16G16S105NV:
-        switch( component )
+      case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfixed5NV:
+        switch ( component )
         {
-          case 0: return "SINT";
-          case 1: return "SINT";
-          default: VULKAN_HPP_ASSERT( false ); return "";
-        }
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR:
-        switch( component )
-        {
-          case 0: return "UNORM";
-          case 1: return "UNORM";
-          case 2: return "UNORM";
-          case 3: return "UNORM";
-          default: VULKAN_HPP_ASSERT( false ); return "";
-        }
-      case VULKAN_HPP_NAMESPACE::Format::eA8UnormKHR:
-        switch( component )
-        {
-          case 0: return "UNORM";
+          case 0: return "SFIXED5";
+          case 1: return "SFIXED5";
           default: VULKAN_HPP_ASSERT( false ); return "";
         }
 
@@ -6364,10 +6364,10 @@ namespace VULKAN_HPP_NAMESPACE
   // The plane this component lies in.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t componentPlaneIndex( VULKAN_HPP_NAMESPACE::Format format, uint8_t component )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6375,7 +6375,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6383,7 +6383,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6391,7 +6391,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6399,7 +6399,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6407,7 +6407,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6415,7 +6415,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6423,7 +6423,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6431,7 +6431,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6439,7 +6439,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6447,7 +6447,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6455,7 +6455,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane420Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6463,7 +6463,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6471,7 +6471,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane422Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6479,7 +6479,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6487,7 +6487,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6495,7 +6495,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane420Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6503,7 +6503,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6511,7 +6511,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane422Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6519,7 +6519,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6527,7 +6527,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6535,7 +6535,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6543,7 +6543,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6551,7 +6551,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 0;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane444Unorm:
-        switch( component )
+        switch ( component )
         {
           case 0: return 0;
           case 1: return 1;
@@ -6566,7 +6566,7 @@ namespace VULKAN_HPP_NAMESPACE
   // True, if the components of this format are compressed, otherwise false.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 bool componentsAreCompressed( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbUnormBlock:
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbSrgbBlock:
@@ -6639,9 +6639,7 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppSrgbBlockIMG:
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG:
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG:
-      case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG:
-
-        return true;
+      case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG: return true;
       default: return false;
     }
   }
@@ -6649,7 +6647,7 @@ namespace VULKAN_HPP_NAMESPACE
   // A textual description of the compression scheme, or an empty string if it is not compressed
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 char const * compressionScheme( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbUnormBlock: return "BC";
       case VULKAN_HPP_NAMESPACE::Format::eBc1RgbSrgbBlock: return "BC";
@@ -6742,7 +6740,7 @@ namespace VULKAN_HPP_NAMESPACE
   // can be stored in the same space as a scalar type of this bit width.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t packed( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8: return 8;
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16: return 16;
@@ -6798,7 +6796,7 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16: return 16;
       case VULKAN_HPP_NAMESPACE::Format::eA4R4G4B4UnormPack16: return 16;
       case VULKAN_HPP_NAMESPACE::Format::eA4B4G4R4UnormPack16: return 16;
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR: return 16;
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16: return 16;
 
       default: return 0;
     }
@@ -6807,10 +6805,10 @@ namespace VULKAN_HPP_NAMESPACE
   // The single-plane format that this plane is compatible with.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 VULKAN_HPP_NAMESPACE::Format planeCompatibleFormat( VULKAN_HPP_NAMESPACE::Format format, uint8_t plane )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
@@ -6818,14 +6816,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR8G8Unorm;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
@@ -6833,14 +6831,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR8G8Unorm;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
@@ -6848,7 +6846,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
@@ -6856,14 +6854,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6Unorm2Pack16;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
@@ -6871,14 +6869,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6Unorm2Pack16;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
@@ -6886,7 +6884,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
@@ -6894,14 +6892,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4Unorm2Pack16;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
@@ -6909,14 +6907,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4Unorm2Pack16;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
@@ -6924,7 +6922,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
@@ -6932,14 +6930,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR16G16Unorm;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
@@ -6947,14 +6945,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR16G16Unorm;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
@@ -6962,28 +6960,28 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR8Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR8G8Unorm;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR10X6UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR10X6G10X6Unorm2Pack16;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR12X4UnormPack16;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR12X4G12X4Unorm2Pack16;
           default: VULKAN_HPP_ASSERT( false ); return VULKAN_HPP_NAMESPACE::Format::eUndefined;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return VULKAN_HPP_NAMESPACE::Format::eR16Unorm;
           case 1: return VULKAN_HPP_NAMESPACE::Format::eR16G16Unorm;
@@ -6997,7 +6995,7 @@ namespace VULKAN_HPP_NAMESPACE
   // The number of image planes of this format.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t planeCount( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm: return 3;
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm: return 2;
@@ -7031,10 +7029,10 @@ namespace VULKAN_HPP_NAMESPACE
   // The relative height of this plane. A value of k means that this plane is 1/k the height of the overall format.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t planeHeightDivisor( VULKAN_HPP_NAMESPACE::Format format, uint8_t plane )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7042,14 +7040,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7057,14 +7055,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7072,7 +7070,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7080,14 +7078,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7095,14 +7093,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7110,7 +7108,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7118,14 +7116,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7133,14 +7131,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7148,7 +7146,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7156,14 +7154,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7171,14 +7169,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7186,28 +7184,28 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7221,10 +7219,10 @@ namespace VULKAN_HPP_NAMESPACE
   // The relative width of this plane. A value of k means that this plane is 1/k the width of the overall format.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t planeWidthDivisor( VULKAN_HPP_NAMESPACE::Format format, uint8_t plane )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7232,14 +7230,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7247,14 +7245,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R83Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7262,7 +7260,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7270,14 +7268,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7285,14 +7283,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X63Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7300,7 +7298,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7308,14 +7306,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane420Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7323,14 +7321,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane422Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X43Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7338,7 +7336,7 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7346,14 +7344,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane420Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
@@ -7361,14 +7359,14 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane422Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 2;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R163Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7376,28 +7374,28 @@ namespace VULKAN_HPP_NAMESPACE
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG8B8R82Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG10X6B10X6R10X62Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG12X4B12X4R12X42Plane444Unorm3Pack16:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
           default: VULKAN_HPP_ASSERT( false ); return 1;
         }
       case VULKAN_HPP_NAMESPACE::Format::eG16B16R162Plane444Unorm:
-        switch( plane )
+        switch ( plane )
         {
           case 0: return 1;
           case 1: return 1;
@@ -7411,7 +7409,7 @@ namespace VULKAN_HPP_NAMESPACE
   // The number of texels in a texel block.
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_14 uint8_t texelsPerBlock( VULKAN_HPP_NAMESPACE::Format format )
   {
-    switch( format )
+    switch ( format )
     {
       case VULKAN_HPP_NAMESPACE::Format::eR4G4UnormPack8: return 1;
       case VULKAN_HPP_NAMESPACE::Format::eR4G4B4A4UnormPack16: return 1;
@@ -7651,6 +7649,8 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::eAstc10x10SfloatBlock: return 100;
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x10SfloatBlock: return 120;
       case VULKAN_HPP_NAMESPACE::Format::eAstc12x12SfloatBlock: return 144;
+      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16: return 1;
+      case VULKAN_HPP_NAMESPACE::Format::eA8Unorm: return 1;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc12BppUnormBlockIMG: return 1;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppUnormBlockIMG: return 1;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppUnormBlockIMG: return 1;
@@ -7659,13 +7659,11 @@ namespace VULKAN_HPP_NAMESPACE
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc14BppSrgbBlockIMG: return 1;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc22BppSrgbBlockIMG: return 1;
       case VULKAN_HPP_NAMESPACE::Format::ePvrtc24BppSrgbBlockIMG: return 1;
-      case VULKAN_HPP_NAMESPACE::Format::eR16G16S105NV: return 1;
-      case VULKAN_HPP_NAMESPACE::Format::eA1B5G5R5UnormPack16KHR: return 1;
-      case VULKAN_HPP_NAMESPACE::Format::eA8UnormKHR: return 1;
+      case VULKAN_HPP_NAMESPACE::Format::eR16G16Sfixed5NV: return 1;
 
       default: VULKAN_HPP_ASSERT( false ); return 0;
     }
   }
 
-}   // namespace VULKAN_HPP_NAMESPACE
+}  // namespace VULKAN_HPP_NAMESPACE
 #endif
