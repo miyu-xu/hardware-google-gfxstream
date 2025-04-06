@@ -69,10 +69,7 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_AMD_gpu_shader_int16", "VK_KHR_shader_float16_int8" },
       { "VK_NV_ray_tracing", "VK_KHR_ray_tracing_pipeline" },
       { "VK_EXT_buffer_device_address", "VK_KHR_buffer_device_address" },
-      { "VK_EXT_validation_features", "VK_EXT_layer_settings" },
-#if defined( VK_ENABLE_BETA_EXTENSIONS )
-      { "VK_NV_displacement_micromap", "VK_NV_cluster_acceleration_structure" }
-#endif /*VK_ENABLE_BETA_EXTENSIONS*/
+      { "VK_EXT_validation_features", "VK_EXT_layer_settings" }
     };
     return deprecatedExtensions;
   }
@@ -183,7 +180,6 @@ namespace VULKAN_HPP_NAMESPACE
       "VK_AMD_shader_fragment_mask",
       "VK_EXT_inline_uniform_block",
       "VK_EXT_shader_stencil_export",
-      "VK_KHR_shader_bfloat16",
       "VK_EXT_sample_locations",
       "VK_KHR_relaxed_block_layout",
       "VK_KHR_get_memory_requirements2",
@@ -314,7 +310,6 @@ namespace VULKAN_HPP_NAMESPACE
 #if defined( VK_ENABLE_BETA_EXTENSIONS )
       "VK_NV_cuda_kernel_launch",
 #endif /*VK_ENABLE_BETA_EXTENSIONS*/
-      "VK_QCOM_tile_shading",
       "VK_NV_low_latency",
 #if defined( VK_USE_PLATFORM_METAL_EXT )
       "VK_EXT_metal_objects",
@@ -452,10 +447,8 @@ namespace VULKAN_HPP_NAMESPACE
       "VK_KHR_shader_expect_assume",
       "VK_KHR_maintenance6",
       "VK_NV_descriptor_pool_overallocation",
-      "VK_QCOM_tile_memory_heap",
       "VK_KHR_video_encode_quantization_map",
       "VK_NV_raw_access_chains",
-      "VK_NV_external_compute_queue",
       "VK_KHR_shader_relaxed_extended_instruction",
       "VK_NV_command_buffer_inheritance",
       "VK_KHR_maintenance7",
@@ -476,13 +469,7 @@ namespace VULKAN_HPP_NAMESPACE
       "VK_EXT_external_memory_metal",
 #endif /*VK_USE_PLATFORM_METAL_EXT*/
       "VK_KHR_depth_clamp_zero_one",
-      "VK_EXT_vertex_attribute_robustness",
-      "VK_KHR_robustness2",
-#if defined( VK_ENABLE_BETA_EXTENSIONS )
-      "VK_NV_present_metering",
-#endif /*VK_ENABLE_BETA_EXTENSIONS*/
-      "VK_EXT_fragment_density_map_offset",
-      "VK_EXT_zero_initialize_device_memory"
+      "VK_EXT_vertex_attribute_robustness"
     };
     return deviceExtensions;
   }
@@ -579,8 +566,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_display_swapchain",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_display",
               "VK_KHR_swapchain",
+              "VK_KHR_display",
             } } } } },
 #if defined( VK_USE_PLATFORM_XLIB_KHR )
       { "VK_KHR_xlib_surface",
@@ -631,13 +618,10 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_video_decode_queue",
         { { "VK_VERSION_1_0",
             { {
+              "VK_KHR_video_queue",
               "VK_KHR_synchronization2",
-              "VK_KHR_video_queue",
             } } },
-          { "VK_VERSION_1_3",
-            { {
-              "VK_KHR_video_queue",
-            } } } } },
+          { "VK_VERSION_1_3", { {} } } } },
       { "VK_EXT_transform_feedback",
         { { "VK_VERSION_1_0",
             { {
@@ -668,7 +652,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_dynamic_rendering",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_depth_stencil_resolve",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -895,7 +878,6 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_image_format_list",
               "VK_KHR_maintenance2",
             } } },
           { "VK_VERSION_1_1",
@@ -906,8 +888,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_create_renderpass2",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_maintenance2",
               "VK_KHR_multiview",
+              "VK_KHR_maintenance2",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_IMG_relaxed_line_rasterization",
@@ -919,14 +901,14 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_shared_presentable_image",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_get_surface_capabilities2",
               "VK_KHR_swapchain",
+              "VK_KHR_get_surface_capabilities2",
+              "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
             { {
-              "VK_KHR_get_surface_capabilities2",
               "VK_KHR_swapchain",
+              "VK_KHR_get_surface_capabilities2",
             } } } } },
       { "VK_KHR_external_fence_capabilities",
         { { "VK_VERSION_1_0",
@@ -1010,10 +992,9 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_ANDROID_external_memory_android_hardware_buffer",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_queue_family_foreign",
-              "VK_KHR_dedicated_allocation",
-              "VK_KHR_external_memory",
               "VK_KHR_sampler_ycbcr_conversion",
+              "VK_KHR_external_memory",
+              "VK_KHR_dedicated_allocation",
             } } },
           { "VK_VERSION_1_1",
             { {
@@ -1030,11 +1011,9 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_AMDX_shader_enqueue",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_extended_dynamic_state",
-              "VK_KHR_maintenance5",
-              "VK_KHR_pipeline_library",
-              "VK_KHR_spirv_1_4",
               "VK_KHR_synchronization2",
+              "VK_KHR_spirv_1_4",
+              "VK_EXT_extended_dynamic_state",
             } } },
           { "VK_VERSION_1_3",
             { {
@@ -1047,12 +1026,6 @@ namespace VULKAN_HPP_NAMESPACE
             { {
               "VK_KHR_get_physical_device_properties2",
               "VK_KHR_maintenance1",
-            } } },
-          { "VK_VERSION_1_1", { {} } } } },
-      { "VK_KHR_shader_bfloat16",
-        { { "VK_VERSION_1_0",
-            { {
-              "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_sample_locations",
@@ -1072,7 +1045,6 @@ namespace VULKAN_HPP_NAMESPACE
             { {
               "VK_EXT_descriptor_indexing",
               "VK_KHR_buffer_device_address",
-              "VK_KHR_deferred_host_operations",
             } } },
           { "VK_VERSION_1_2",
             { {
@@ -1081,31 +1053,23 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_ray_tracing_pipeline",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_acceleration_structure",
               "VK_KHR_spirv_1_4",
-            } } },
-          { "VK_VERSION_1_2",
-            { {
               "VK_KHR_acceleration_structure",
             } } } } },
       { "VK_KHR_ray_query",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_acceleration_structure",
               "VK_KHR_spirv_1_4",
-            } } },
-          { "VK_VERSION_1_2",
-            { {
               "VK_KHR_acceleration_structure",
             } } } } },
       { "VK_NV_shader_sm_builtins", { { "VK_VERSION_1_1", { {} } } } },
       { "VK_KHR_sampler_ycbcr_conversion",
         { { "VK_VERSION_1_0",
             { {
+              "VK_KHR_maintenance1",
               "VK_KHR_bind_memory2",
               "VK_KHR_get_memory_requirements2",
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_maintenance1",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_image_drm_format_modifier",
@@ -1113,7 +1077,6 @@ namespace VULKAN_HPP_NAMESPACE
             { {
               "VK_KHR_bind_memory2",
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_image_format_list",
               "VK_KHR_sampler_ycbcr_conversion",
             } } },
           { "VK_VERSION_1_1",
@@ -1145,8 +1108,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_NV_ray_tracing",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_get_memory_requirements2",
               "VK_KHR_get_physical_device_properties2",
+              "VK_KHR_get_memory_requirements2",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_NV_representative_fragment_test",
@@ -1220,8 +1183,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_GGP_frame_token",
         { { "VK_VERSION_1_0",
             { {
-              "VK_GGP_stream_descriptor_surface",
               "VK_KHR_swapchain",
+              "VK_GGP_stream_descriptor_surface",
             } } } } },
 #endif /*VK_USE_PLATFORM_GGP*/
       { "VK_KHR_driver_properties",
@@ -1246,14 +1209,14 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_swapchain_mutable_format",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_image_format_list",
-              "VK_KHR_maintenance2",
               "VK_KHR_swapchain",
+              "VK_KHR_maintenance2",
+              "VK_KHR_image_format_list",
             } } },
           { "VK_VERSION_1_1",
             { {
-              "VK_KHR_image_format_list",
               "VK_KHR_swapchain",
+              "VK_KHR_image_format_list",
             } } },
           { "VK_VERSION_1_2",
             { {
@@ -1323,8 +1286,6 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_get_surface_capabilities2",
-              "VK_KHR_swapchain",
             } } },
           { "VK_VERSION_1_1",
             { {
@@ -1367,7 +1328,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_fragment_shading_rate",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_create_renderpass2",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -1401,11 +1361,7 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_shader_quad_control",
         { { "VK_VERSION_1_1",
             { {
-              "VK_KHR_shader_maximal_reconvergence",
               "VK_KHR_vulkan_memory_model",
-            } } },
-          { "VK_VERSION_1_2",
-            { {
               "VK_KHR_shader_maximal_reconvergence",
             } } } } },
       { "VK_KHR_spirv_1_4",
@@ -1440,7 +1396,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_separate_depth_stencil_layouts",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_create_renderpass2",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -1457,8 +1412,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_present_wait",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_present_id",
               "VK_KHR_swapchain",
+              "VK_KHR_present_id",
             } } } } },
       { "VK_NV_cooperative_matrix",
         { { "VK_VERSION_1_0",
@@ -1469,13 +1424,10 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_NV_coverage_reduction_mode",
         { { "VK_VERSION_1_0",
             { {
+              "VK_NV_framebuffer_mixed_samples",
               "VK_KHR_get_physical_device_properties2",
-              "VK_NV_framebuffer_mixed_samples",
             } } },
-          { "VK_VERSION_1_1",
-            { {
-              "VK_NV_framebuffer_mixed_samples",
-            } } } } },
+          { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_fragment_shader_interlock",
         { { "VK_VERSION_1_0",
             { {
@@ -1505,14 +1457,11 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_get_surface_capabilities2",
-              "VK_KHR_surface",
-              "VK_KHR_swapchain",
             } } },
           { "VK_VERSION_1_1",
             { {
-              "VK_KHR_get_surface_capabilities2",
               "VK_KHR_surface",
+              "VK_KHR_get_surface_capabilities2",
               "VK_KHR_swapchain",
             } } } } },
 #endif /*VK_USE_PLATFORM_WIN32_KHR*/
@@ -1524,8 +1473,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_buffer_device_address",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_device_group",
               "VK_KHR_get_physical_device_properties2",
+              "VK_KHR_device_group",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_line_rasterization",
@@ -1567,8 +1516,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_host_image_copy",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_copy_commands2",
-              "VK_KHR_format_feature_flags2",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -1591,21 +1538,17 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_surface_maintenance1",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_get_surface_capabilities2",
               "VK_KHR_surface",
+              "VK_KHR_get_surface_capabilities2",
             } } } } },
       { "VK_EXT_swapchain_maintenance1",
         { { "VK_VERSION_1_0",
             { {
+              "VK_KHR_swapchain",
               "VK_EXT_surface_maintenance1",
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_swapchain",
             } } },
-          { "VK_VERSION_1_1",
-            { {
-              "VK_EXT_surface_maintenance1",
-              "VK_KHR_swapchain",
-            } } } } },
+          { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_shader_demote_to_helper_invocation",
         { { "VK_VERSION_1_0",
             { {
@@ -1669,21 +1612,18 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_get_surface_capabilities2",
-              "VK_KHR_surface",
-              "VK_KHR_swapchain",
             } } },
           { "VK_VERSION_1_1",
             { {
-              "VK_KHR_get_surface_capabilities2",
               "VK_KHR_surface",
+              "VK_KHR_get_surface_capabilities2",
               "VK_KHR_swapchain",
             } } } } },
       { "VK_KHR_present_id",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_get_physical_device_properties2",
               "VK_KHR_swapchain",
+              "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_private_data",
@@ -1701,27 +1641,16 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_video_encode_queue",
         { { "VK_VERSION_1_0",
             { {
+              "VK_KHR_video_queue",
               "VK_KHR_synchronization2",
-              "VK_KHR_video_queue",
             } } },
-          { "VK_VERSION_1_3",
-            { {
-              "VK_KHR_video_queue",
-            } } } } },
+          { "VK_VERSION_1_3", { {} } } } },
       { "VK_NV_device_diagnostics_config",
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
-      { "VK_QCOM_tile_shading",
-        { { "VK_VERSION_1_0",
-            { {
-                "VK_QCOM_tile_properties",
-              },
-              {
-                "VK_KHR_get_physical_device_properties2",
-              } } } } },
       { "VK_KHR_synchronization2",
         { { "VK_VERSION_1_0",
             { {
@@ -1731,16 +1660,12 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_descriptor_buffer",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_descriptor_indexing",
-              "VK_KHR_buffer_device_address",
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_synchronization2",
             } } },
           { "VK_VERSION_1_1",
             { {
-              "VK_EXT_descriptor_indexing",
               "VK_KHR_buffer_device_address",
-              "VK_KHR_synchronization2",
+              "VK_EXT_descriptor_indexing",
             } } },
           { "VK_VERSION_1_2",
             { {
@@ -1751,7 +1676,6 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_pipeline_library",
             } } },
           { "VK_VERSION_1_1",
             { {
@@ -1790,8 +1714,7 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_spirv_1_4",
-            } } },
-          { "VK_VERSION_1_2", { {} } } } },
+            } } } } },
       { "VK_EXT_ycbcr_2plane_444_formats",
         { { "VK_VERSION_1_0",
             { {
@@ -1897,7 +1820,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_device_address_binding_report",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_debug_utils",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -1931,15 +1853,15 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_FUCHSIA_external_memory",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_external_memory",
               "VK_KHR_external_memory_capabilities",
+              "VK_KHR_external_memory",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_FUCHSIA_external_semaphore",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_external_semaphore",
               "VK_KHR_external_semaphore_capabilities",
+              "VK_KHR_external_semaphore",
             } } } } },
       { "VK_FUCHSIA_buffer_collection",
         { { "VK_VERSION_1_0",
@@ -1947,16 +1869,12 @@ namespace VULKAN_HPP_NAMESPACE
               "VK_FUCHSIA_external_memory",
               "VK_KHR_sampler_ycbcr_conversion",
             } } },
-          { "VK_VERSION_1_1",
-            { {
-              "VK_FUCHSIA_external_memory",
-            } } } } },
+          { "VK_VERSION_1_1", { {} } } } },
 #endif /*VK_USE_PLATFORM_FUCHSIA*/
       { "VK_HUAWEI_subpass_shading",
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_create_renderpass2",
-              "VK_KHR_synchronization2",
             } } },
           { "VK_VERSION_1_2",
             { {
@@ -1969,10 +1887,7 @@ namespace VULKAN_HPP_NAMESPACE
               "VK_KHR_ray_tracing_pipeline",
               "VK_KHR_synchronization2",
             } } },
-          { "VK_VERSION_1_3",
-            { {
-              "VK_KHR_ray_tracing_pipeline",
-            } } } } },
+          { "VK_VERSION_1_3", { {} } } } },
       { "VK_NV_external_memory_rdma",
         { { "VK_VERSION_1_0",
             { {
@@ -2027,10 +1942,7 @@ namespace VULKAN_HPP_NAMESPACE
               "VK_EXT_global_priority",
               "VK_KHR_get_physical_device_properties2",
             } } },
-          { "VK_VERSION_1_1",
-            { {
-              "VK_EXT_global_priority",
-            } } } } },
+          { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_image_view_min_lod",
         { { "VK_VERSION_1_0",
             { {
@@ -2046,8 +1958,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_image_2d_view_of_3d",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_get_physical_device_properties2",
               "VK_KHR_maintenance1",
+              "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_shader_tile_image", { { "VK_VERSION_1_3", { {} } } } },
@@ -2057,10 +1969,7 @@ namespace VULKAN_HPP_NAMESPACE
               "VK_KHR_acceleration_structure",
               "VK_KHR_synchronization2",
             } } },
-          { "VK_VERSION_1_3",
-            { {
-              "VK_KHR_acceleration_structure",
-            } } } } },
+          { "VK_VERSION_1_3", { {} } } } },
 #if defined( VK_ENABLE_BETA_EXTENSIONS )
       { "VK_NV_displacement_micromap",
         { { "VK_VERSION_1_0",
@@ -2094,8 +2003,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_image_sliced_view_of_3d",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_get_physical_device_properties2",
               "VK_KHR_maintenance1",
+              "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_VALVE_descriptor_set_host_mapping",
@@ -2120,7 +2029,6 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_synchronization2",
             } } },
           { "VK_VERSION_1_1",
             { {
@@ -2130,7 +2038,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_QCOM_fragment_density_map_offset",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_fragment_density_map",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -2140,7 +2047,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_NV_copy_memory_indirect",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_buffer_device_address",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -2151,7 +2057,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_NV_memory_decompression",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_buffer_device_address",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -2219,7 +2124,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_shader_module_identifier",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_pipeline_creation_cache_control",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -2236,9 +2140,7 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_NV_optical_flow",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_format_feature_flags2",
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_synchronization2",
             } } },
           { "VK_VERSION_1_1",
             { {
@@ -2279,7 +2181,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_shader_object",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_dynamic_rendering",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -2291,8 +2192,7 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_maintenance5",
-            } } },
-          { "VK_VERSION_1_4", { {} } } } },
+            } } } } },
       { "VK_QCOM_tile_properties",
         { { "VK_VERSION_1_0",
             { {
@@ -2320,8 +2220,7 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_maintenance3",
-            } } },
-          { "VK_VERSION_1_1", { {} } } } },
+            } } } } },
       { "VK_EXT_legacy_vertex_attributes",
         { { "VK_VERSION_1_0",
             { {
@@ -2336,13 +2235,12 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_pipeline_library_group_handles",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_pipeline_library",
               "VK_KHR_ray_tracing_pipeline",
+              "VK_KHR_pipeline_library",
             } } } } },
       { "VK_EXT_dynamic_rendering_unused_attachments",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_dynamic_rendering",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -2366,8 +2264,7 @@ namespace VULKAN_HPP_NAMESPACE
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
-            } } },
-          { "VK_VERSION_1_1", { {} } } } },
+            } } } } },
       { "VK_KHR_video_decode_av1",
         { { "VK_VERSION_1_0",
             { {
@@ -2412,7 +2309,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_attachment_feedback_loop_dynamic_state",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_attachment_feedback_loop_layout",
               "VK_KHR_get_physical_device_properties2",
             } } },
           { "VK_VERSION_1_1",
@@ -2434,10 +2330,9 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_QNX_external_memory_screen_buffer",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_queue_family_foreign",
-              "VK_KHR_dedicated_allocation",
-              "VK_KHR_external_memory",
               "VK_KHR_sampler_ycbcr_conversion",
+              "VK_KHR_external_memory",
+              "VK_KHR_dedicated_allocation",
             } } },
           { "VK_VERSION_1_1",
             { {
@@ -2476,13 +2371,6 @@ namespace VULKAN_HPP_NAMESPACE
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_KHR_maintenance6", { { "VK_VERSION_1_1", { {} } } } },
       { "VK_NV_descriptor_pool_overallocation", { { "VK_VERSION_1_1", { {} } } } },
-      { "VK_QCOM_tile_memory_heap",
-        { { "VK_VERSION_1_0",
-            { {
-              "VK_KHR_get_memory_requirements2",
-              "VK_KHR_get_physical_device_properties2",
-            } } },
-          { "VK_VERSION_1_1", { {} } } } },
       { "VK_NV_display_stereo",
         { { "VK_VERSION_1_0",
             { {
@@ -2492,12 +2380,8 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_video_encode_quantization_map",
         { { "VK_VERSION_1_0",
             { {
+              "VK_KHR_video_encode_queue",
               "VK_KHR_format_feature_flags2",
-              "VK_KHR_video_encode_queue",
-            } } },
-          { "VK_VERSION_1_3",
-            { {
-              "VK_KHR_video_encode_queue",
             } } } } },
       { "VK_KHR_maintenance7", { { "VK_VERSION_1_1", { {} } } } },
       { "VK_NV_cluster_acceleration_structure",
@@ -2515,12 +2399,7 @@ namespace VULKAN_HPP_NAMESPACE
             { {
               "VK_KHR_buffer_device_address",
               "VK_KHR_maintenance5",
-            } } },
-          { "VK_VERSION_1_2",
-            { {
-              "VK_KHR_maintenance5",
-            } } },
-          { "VK_VERSION_1_3", { {} } } } },
+            } } } } },
       { "VK_KHR_maintenance8", { { "VK_VERSION_1_1", { {} } } } },
       { "VK_MESA_image_alignment_control",
         { { "VK_VERSION_1_0",
@@ -2537,19 +2416,18 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_video_maintenance2",
         { { "VK_VERSION_1_0",
             { {
-              "VK_KHR_video_queue",
+              "VK_KHR_video_decode_queue",
+              "VK_KHR_video_encode_queue",
             } } } } },
       { "VK_HUAWEI_hdr_vivid",
         { { "VK_VERSION_1_0",
             { {
-              "VK_EXT_hdr_metadata",
               "VK_KHR_get_physical_device_properties2",
-              "VK_KHR_swapchain",
             } } },
           { "VK_VERSION_1_1",
             { {
-              "VK_EXT_hdr_metadata",
               "VK_KHR_swapchain",
+              "VK_EXT_hdr_metadata",
             } } } } },
       { "VK_NV_cooperative_matrix2",
         { { "VK_VERSION_1_0",
@@ -2576,41 +2454,6 @@ namespace VULKAN_HPP_NAMESPACE
             } } },
           { "VK_VERSION_1_1", { {} } } } },
       { "VK_EXT_vertex_attribute_robustness",
-        { { "VK_VERSION_1_0",
-            { {
-              "VK_KHR_get_physical_device_properties2",
-            } } },
-          { "VK_VERSION_1_1", { {} } } } },
-      { "VK_KHR_robustness2",
-        { { "VK_VERSION_1_0",
-            { {
-              "VK_KHR_get_physical_device_properties2",
-            } } },
-          { "VK_VERSION_1_1", { {} } } } },
-      { "VK_EXT_fragment_density_map_offset",
-        { { "VK_VERSION_1_0",
-            { {
-              "VK_EXT_fragment_density_map",
-              "VK_KHR_create_renderpass2",
-              "VK_KHR_dynamic_rendering",
-              "VK_KHR_get_physical_device_properties2",
-            } } },
-          { "VK_VERSION_1_1",
-            { {
-              "VK_EXT_fragment_density_map",
-              "VK_KHR_create_renderpass2",
-              "VK_KHR_dynamic_rendering",
-            } } },
-          { "VK_VERSION_1_2",
-            { {
-              "VK_EXT_fragment_density_map",
-              "VK_KHR_dynamic_rendering",
-            } } },
-          { "VK_VERSION_1_3",
-            { {
-              "VK_EXT_fragment_density_map",
-            } } } } },
-      { "VK_EXT_zero_initialize_device_memory",
         { { "VK_VERSION_1_0",
             { {
               "VK_KHR_get_physical_device_properties2",
@@ -2735,7 +2578,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_EXT_shader_demote_to_helper_invocation", "VK_VERSION_1_3" },
       { "VK_KHR_shader_integer_dot_product", "VK_VERSION_1_3" },
       { "VK_EXT_texel_buffer_alignment", "VK_VERSION_1_3" },
-      { "VK_EXT_robustness2", "VK_KHR_robustness2" },
       { "VK_KHR_shader_non_semantic_info", "VK_VERSION_1_3" },
       { "VK_EXT_private_data", "VK_VERSION_1_3" },
       { "VK_EXT_pipeline_creation_cache_control", "VK_VERSION_1_3" },
@@ -2754,7 +2596,6 @@ namespace VULKAN_HPP_NAMESPACE
       { "VK_KHR_maintenance4", "VK_VERSION_1_3" },
       { "VK_KHR_shader_subgroup_rotate", "VK_VERSION_1_4" },
       { "VK_EXT_depth_clamp_zero_one", "VK_KHR_depth_clamp_zero_one" },
-      { "VK_QCOM_fragment_density_map_offset", "VK_EXT_fragment_density_map_offset" },
       { "VK_EXT_pipeline_protected_access", "VK_VERSION_1_4" },
       { "VK_KHR_maintenance5", "VK_VERSION_1_4" },
       { "VK_KHR_vertex_attribute_divisor", "VK_VERSION_1_4" },
@@ -2844,13 +2685,6 @@ namespace VULKAN_HPP_NAMESPACE
     {
       return "VK_EXT_layer_settings";
     }
-#if defined( VK_ENABLE_BETA_EXTENSIONS )
-    if ( extension == "VK_NV_displacement_micromap" )
-    {
-      return "VK_NV_cluster_acceleration_structure";
-    }
-#endif /*VK_ENABLE_BETA_EXTENSIONS*/
-
     return "";
   }
 
@@ -3163,10 +2997,6 @@ namespace VULKAN_HPP_NAMESPACE
     {
       return "VK_VERSION_1_3";
     }
-    if ( extension == "VK_EXT_robustness2" )
-    {
-      return "VK_KHR_robustness2";
-    }
     if ( extension == "VK_KHR_shader_non_semantic_info" )
     {
       return "VK_VERSION_1_3";
@@ -3239,10 +3069,6 @@ namespace VULKAN_HPP_NAMESPACE
     {
       return "VK_KHR_depth_clamp_zero_one";
     }
-    if ( extension == "VK_QCOM_fragment_density_map_offset" )
-    {
-      return "VK_EXT_fragment_density_map_offset";
-    }
     if ( extension == "VK_EXT_pipeline_protected_access" )
     {
       return "VK_VERSION_1_4";
@@ -3298,11 +3124,7 @@ namespace VULKAN_HPP_NAMESPACE
            ( extension == "VK_MVK_macos_surface" ) ||
 #endif /*VK_USE_PLATFORM_MACOS_MVK*/
            ( extension == "VK_AMD_gpu_shader_int16" ) || ( extension == "VK_NV_ray_tracing" ) || ( extension == "VK_EXT_buffer_device_address" ) ||
-           ( extension == "VK_EXT_validation_features" ) ||
-#if defined( VK_ENABLE_BETA_EXTENSIONS )
-           ( extension == "VK_NV_displacement_micromap" ) ||
-#endif /*VK_ENABLE_BETA_EXTENSIONS*/
-           false;
+           ( extension == "VK_EXT_validation_features" );
   }
 
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_20 bool isDeviceExtension( std::string const & extension )
@@ -3362,8 +3184,8 @@ namespace VULKAN_HPP_NAMESPACE
         || ( extension == "VK_AMDX_shader_enqueue" )
 #endif /*VK_ENABLE_BETA_EXTENSIONS*/
         || ( extension == "VK_AMD_mixed_attachment_samples" ) || ( extension == "VK_AMD_shader_fragment_mask" ) ||
-           ( extension == "VK_EXT_inline_uniform_block" ) || ( extension == "VK_EXT_shader_stencil_export" ) || ( extension == "VK_KHR_shader_bfloat16" ) ||
-           ( extension == "VK_EXT_sample_locations" ) || ( extension == "VK_KHR_relaxed_block_layout" ) || ( extension == "VK_KHR_get_memory_requirements2" ) ||
+           ( extension == "VK_EXT_inline_uniform_block" ) || ( extension == "VK_EXT_shader_stencil_export" ) || ( extension == "VK_EXT_sample_locations" ) ||
+           ( extension == "VK_KHR_relaxed_block_layout" ) || ( extension == "VK_KHR_get_memory_requirements2" ) ||
            ( extension == "VK_KHR_image_format_list" ) || ( extension == "VK_EXT_blend_operation_advanced" ) ||
            ( extension == "VK_NV_fragment_coverage_to_color" ) || ( extension == "VK_KHR_acceleration_structure" ) ||
            ( extension == "VK_KHR_ray_tracing_pipeline" ) || ( extension == "VK_KHR_ray_query" ) || ( extension == "VK_NV_framebuffer_mixed_samples" ) ||
@@ -3426,7 +3248,7 @@ namespace VULKAN_HPP_NAMESPACE
 #if defined( VK_ENABLE_BETA_EXTENSIONS )
         || ( extension == "VK_NV_cuda_kernel_launch" )
 #endif /*VK_ENABLE_BETA_EXTENSIONS*/
-        || ( extension == "VK_QCOM_tile_shading" ) || ( extension == "VK_NV_low_latency" )
+        || ( extension == "VK_NV_low_latency" )
 #if defined( VK_USE_PLATFORM_METAL_EXT )
         || ( extension == "VK_EXT_metal_objects" )
 #endif /*VK_USE_PLATFORM_METAL_EXT*/
@@ -3497,9 +3319,8 @@ namespace VULKAN_HPP_NAMESPACE
 #endif /*VK_USE_PLATFORM_SCREEN_QNX*/
         || ( extension == "VK_MSFT_layered_driver" ) || ( extension == "VK_KHR_index_type_uint8" ) || ( extension == "VK_KHR_line_rasterization" ) ||
            ( extension == "VK_KHR_calibrated_timestamps" ) || ( extension == "VK_KHR_shader_expect_assume" ) || ( extension == "VK_KHR_maintenance6" ) ||
-           ( extension == "VK_NV_descriptor_pool_overallocation" ) || ( extension == "VK_QCOM_tile_memory_heap" ) ||
-           ( extension == "VK_KHR_video_encode_quantization_map" ) || ( extension == "VK_NV_raw_access_chains" ) ||
-           ( extension == "VK_NV_external_compute_queue" ) || ( extension == "VK_KHR_shader_relaxed_extended_instruction" ) ||
+           ( extension == "VK_NV_descriptor_pool_overallocation" ) || ( extension == "VK_KHR_video_encode_quantization_map" ) ||
+           ( extension == "VK_NV_raw_access_chains" ) || ( extension == "VK_KHR_shader_relaxed_extended_instruction" ) ||
            ( extension == "VK_NV_command_buffer_inheritance" ) || ( extension == "VK_KHR_maintenance7" ) ||
            ( extension == "VK_NV_shader_atomic_float16_vector" ) || ( extension == "VK_EXT_shader_replicated_composites" ) ||
            ( extension == "VK_NV_ray_tracing_validation" ) || ( extension == "VK_NV_cluster_acceleration_structure" ) ||
@@ -3510,11 +3331,7 @@ namespace VULKAN_HPP_NAMESPACE
 #if defined( VK_USE_PLATFORM_METAL_EXT )
         || ( extension == "VK_EXT_external_memory_metal" )
 #endif /*VK_USE_PLATFORM_METAL_EXT*/
-        || ( extension == "VK_KHR_depth_clamp_zero_one" ) || ( extension == "VK_EXT_vertex_attribute_robustness" ) || ( extension == "VK_KHR_robustness2" )
-#if defined( VK_ENABLE_BETA_EXTENSIONS )
-        || ( extension == "VK_NV_present_metering" )
-#endif /*VK_ENABLE_BETA_EXTENSIONS*/
-        || ( extension == "VK_EXT_fragment_density_map_offset" ) || ( extension == "VK_EXT_zero_initialize_device_memory" );
+        || ( extension == "VK_KHR_depth_clamp_zero_one" ) || ( extension == "VK_EXT_vertex_attribute_robustness" );
   }
 
   VULKAN_HPP_INLINE VULKAN_HPP_CONSTEXPR_20 bool isInstanceExtension( std::string const & extension )
@@ -3616,7 +3433,7 @@ namespace VULKAN_HPP_NAMESPACE
            ( extension == "VK_KHR_buffer_device_address" ) || ( extension == "VK_EXT_line_rasterization" ) || ( extension == "VK_EXT_host_query_reset" ) ||
            ( extension == "VK_EXT_index_type_uint8" ) || ( extension == "VK_EXT_extended_dynamic_state" ) || ( extension == "VK_EXT_host_image_copy" ) ||
            ( extension == "VK_KHR_map_memory2" ) || ( extension == "VK_EXT_shader_demote_to_helper_invocation" ) ||
-           ( extension == "VK_KHR_shader_integer_dot_product" ) || ( extension == "VK_EXT_texel_buffer_alignment" ) || ( extension == "VK_EXT_robustness2" ) ||
+           ( extension == "VK_KHR_shader_integer_dot_product" ) || ( extension == "VK_EXT_texel_buffer_alignment" ) ||
            ( extension == "VK_KHR_shader_non_semantic_info" ) || ( extension == "VK_EXT_private_data" ) ||
            ( extension == "VK_EXT_pipeline_creation_cache_control" ) || ( extension == "VK_KHR_synchronization2" ) ||
            ( extension == "VK_KHR_zero_initialize_workgroup_memory" ) || ( extension == "VK_EXT_ycbcr_2plane_444_formats" ) ||
@@ -3625,8 +3442,8 @@ namespace VULKAN_HPP_NAMESPACE
            ( extension == "VK_KHR_format_feature_flags2" ) || ( extension == "VK_EXT_extended_dynamic_state2" ) ||
            ( extension == "VK_EXT_global_priority_query" ) || ( extension == "VK_EXT_load_store_op_none" ) || ( extension == "VK_KHR_maintenance4" ) ||
            ( extension == "VK_KHR_shader_subgroup_rotate" ) || ( extension == "VK_EXT_depth_clamp_zero_one" ) ||
-           ( extension == "VK_QCOM_fragment_density_map_offset" ) || ( extension == "VK_EXT_pipeline_protected_access" ) ||
-           ( extension == "VK_KHR_maintenance5" ) || ( extension == "VK_KHR_vertex_attribute_divisor" ) || ( extension == "VK_KHR_load_store_op_none" ) ||
+           ( extension == "VK_EXT_pipeline_protected_access" ) || ( extension == "VK_KHR_maintenance5" ) ||
+           ( extension == "VK_KHR_vertex_attribute_divisor" ) || ( extension == "VK_KHR_load_store_op_none" ) ||
            ( extension == "VK_KHR_shader_float_controls2" ) || ( extension == "VK_KHR_index_type_uint8" ) || ( extension == "VK_KHR_line_rasterization" ) ||
            ( extension == "VK_KHR_shader_expect_assume" ) || ( extension == "VK_KHR_maintenance6" );
   }

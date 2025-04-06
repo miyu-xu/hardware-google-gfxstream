@@ -3461,7 +3461,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1ColorConfigFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1ColorConfigFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1ColorConfigFlags *>( this );
@@ -3472,8 +3471,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1ColorConfigFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1ColorConfigFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( mono_chrome == rhs.mono_chrome ) && ( color_range == rhs.color_range ) && ( separate_uv_delta_q == rhs.separate_uv_delta_q ) &&
@@ -3507,7 +3504,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1ColorConfig *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1ColorConfig const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1ColorConfig *>( this );
@@ -3518,8 +3514,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1ColorConfig *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1ColorConfig const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( BitDepth == rhs.BitDepth ) && ( subsampling_x == rhs.subsampling_x ) && ( subsampling_y == rhs.subsampling_y ) &&
@@ -3562,7 +3556,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1TimingInfoFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1TimingInfoFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1TimingInfoFlags *>( this );
@@ -3573,8 +3566,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1TimingInfoFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1TimingInfoFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( equal_picture_interval == rhs.equal_picture_interval ) && ( reserved == rhs.reserved );
@@ -3604,7 +3595,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1TimingInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1TimingInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1TimingInfo *>( this );
@@ -3615,8 +3605,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1TimingInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1TimingInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( num_units_in_display_tick == rhs.num_units_in_display_tick ) && ( time_scale == rhs.time_scale ) &&
@@ -3649,7 +3637,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1LoopFilterFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1LoopFilterFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1LoopFilterFlags *>( this );
@@ -3660,8 +3647,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1LoopFilterFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1LoopFilterFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( loop_filter_delta_enabled == rhs.loop_filter_delta_enabled ) && ( loop_filter_delta_update == rhs.loop_filter_delta_update ) &&
@@ -3693,7 +3678,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1LoopFilter *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1LoopFilter const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1LoopFilter *>( this );
@@ -3704,8 +3688,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1LoopFilter *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1LoopFilter const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( loop_filter_level == rhs.loop_filter_level ) && ( loop_filter_sharpness == rhs.loop_filter_sharpness ) &&
@@ -3742,7 +3724,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1QuantizationFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1QuantizationFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1QuantizationFlags *>( this );
@@ -3753,8 +3734,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1QuantizationFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1QuantizationFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( using_qmatrix == rhs.using_qmatrix ) && ( diff_uv_delta == rhs.diff_uv_delta ) && ( reserved == rhs.reserved );
@@ -3785,7 +3764,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1Quantization *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1Quantization const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1Quantization *>( this );
@@ -3796,8 +3774,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1Quantization *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1Quantization const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( base_q_idx == rhs.base_q_idx ) && ( DeltaQYDc == rhs.DeltaQYDc ) && ( DeltaQUDc == rhs.DeltaQUDc ) &&
@@ -3837,7 +3813,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1Segmentation *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1Segmentation const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1Segmentation *>( this );
@@ -3848,8 +3823,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1Segmentation *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1Segmentation const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( FeatureEnabled == rhs.FeatureEnabled ) && ( FeatureData == rhs.FeatureData );
@@ -3879,7 +3852,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1TileInfoFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1TileInfoFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1TileInfoFlags *>( this );
@@ -3890,8 +3862,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1TileInfoFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1TileInfoFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( uniform_tile_spacing_flag == rhs.uniform_tile_spacing_flag ) && ( reserved == rhs.reserved );
@@ -3921,7 +3891,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1TileInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1TileInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1TileInfo *>( this );
@@ -3932,8 +3901,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1TileInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1TileInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( TileCols == rhs.TileCols ) && ( TileRows == rhs.TileRows ) &&
@@ -3974,7 +3941,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1CDEF *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1CDEF const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1CDEF *>( this );
@@ -3985,8 +3951,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1CDEF *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1CDEF const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( cdef_damping_minus_3 == rhs.cdef_damping_minus_3 ) && ( cdef_bits == rhs.cdef_bits ) && ( cdef_y_pri_strength == rhs.cdef_y_pri_strength ) &&
@@ -4022,7 +3986,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1LoopRestoration *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1LoopRestoration const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1LoopRestoration *>( this );
@@ -4033,8 +3996,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1LoopRestoration *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1LoopRestoration const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( FrameRestorationType == rhs.FrameRestorationType ) && ( LoopRestorationSize == rhs.LoopRestorationSize );
@@ -4064,7 +4025,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1GlobalMotion *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1GlobalMotion const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1GlobalMotion *>( this );
@@ -4075,8 +4035,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1GlobalMotion *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1GlobalMotion const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( GmType == rhs.GmType ) && ( gm_params == rhs.gm_params );
@@ -4106,7 +4064,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1FilmGrainFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1FilmGrainFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1FilmGrainFlags *>( this );
@@ -4117,8 +4074,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1FilmGrainFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1FilmGrainFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( chroma_scaling_from_luma == rhs.chroma_scaling_from_luma ) && ( overlap_flag == rhs.overlap_flag ) &&
@@ -4152,7 +4107,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1FilmGrain *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1FilmGrain const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1FilmGrain *>( this );
@@ -4163,8 +4117,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1FilmGrain *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1FilmGrain const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( grain_scaling_minus_8 == rhs.grain_scaling_minus_8 ) && ( ar_coeff_lag == rhs.ar_coeff_lag ) &&
@@ -4225,7 +4177,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1SequenceHeaderFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1SequenceHeaderFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1SequenceHeaderFlags *>( this );
@@ -4236,8 +4187,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1SequenceHeaderFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1SequenceHeaderFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( still_picture == rhs.still_picture ) && ( reduced_still_picture_header == rhs.reduced_still_picture_header ) &&
@@ -4294,7 +4243,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoAV1SequenceHeader *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoAV1SequenceHeader const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoAV1SequenceHeader *>( this );
@@ -4305,8 +4253,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoAV1SequenceHeader *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( AV1SequenceHeader const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( seq_profile == rhs.seq_profile ) && ( frame_width_bits_minus_1 == rhs.frame_width_bits_minus_1 ) &&
@@ -4355,7 +4301,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoDecodeAV1PictureInfoFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoDecodeAV1PictureInfoFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoDecodeAV1PictureInfoFlags *>( this );
@@ -4366,8 +4311,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoDecodeAV1PictureInfoFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( DecodeAV1PictureInfoFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( error_resilient_mode == rhs.error_resilient_mode ) && ( disable_cdf_update == rhs.disable_cdf_update ) &&
@@ -4437,7 +4380,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoDecodeAV1PictureInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoDecodeAV1PictureInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoDecodeAV1PictureInfo *>( this );
@@ -4448,8 +4390,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoDecodeAV1PictureInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( DecodeAV1PictureInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( frame_type == rhs.frame_type ) && ( current_frame_id == rhs.current_frame_id ) && ( OrderHint == rhs.OrderHint ) &&
@@ -4509,7 +4449,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoDecodeAV1ReferenceInfoFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoDecodeAV1ReferenceInfoFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoDecodeAV1ReferenceInfoFlags *>( this );
@@ -4520,8 +4459,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoDecodeAV1ReferenceInfoFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( DecodeAV1ReferenceInfoFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( disable_frame_end_update_cdf == rhs.disable_frame_end_update_cdf ) && ( segmentation_enabled == rhs.segmentation_enabled ) &&
@@ -4553,7 +4490,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoDecodeAV1ReferenceInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoDecodeAV1ReferenceInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoDecodeAV1ReferenceInfo *>( this );
@@ -4564,8 +4500,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoDecodeAV1ReferenceInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( DecodeAV1ReferenceInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( frame_type == rhs.frame_type ) && ( RefFrameSignBias == rhs.RefFrameSignBias ) && ( OrderHint == rhs.OrderHint ) &&
@@ -4601,7 +4535,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1DecoderModelInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1DecoderModelInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1DecoderModelInfo *>( this );
@@ -4612,8 +4545,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1DecoderModelInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1DecoderModelInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( buffer_delay_length_minus_1 == rhs.buffer_delay_length_minus_1 ) &&
@@ -4649,7 +4580,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1ExtensionHeader *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1ExtensionHeader const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1ExtensionHeader *>( this );
@@ -4660,8 +4590,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1ExtensionHeader *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1ExtensionHeader const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( temporal_id == rhs.temporal_id ) && ( spatial_id == rhs.spatial_id );
@@ -4691,7 +4619,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1OperatingPointInfoFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1OperatingPointInfoFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1OperatingPointInfoFlags *>( this );
@@ -4702,8 +4629,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1OperatingPointInfoFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1OperatingPointInfoFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( decoder_model_present_for_this_op == rhs.decoder_model_present_for_this_op ) && ( low_delay_mode_flag == rhs.low_delay_mode_flag ) &&
@@ -4736,7 +4661,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1OperatingPointInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1OperatingPointInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1OperatingPointInfo *>( this );
@@ -4747,8 +4671,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1OperatingPointInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1OperatingPointInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( operating_point_idc == rhs.operating_point_idc ) && ( seq_level_idx == rhs.seq_level_idx ) &&
@@ -4785,7 +4707,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1PictureInfoFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1PictureInfoFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1PictureInfoFlags *>( this );
@@ -4796,8 +4717,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1PictureInfoFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1PictureInfoFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( error_resilient_mode == rhs.error_resilient_mode ) && ( disable_cdf_update == rhs.disable_cdf_update ) &&
@@ -4868,7 +4787,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1PictureInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1PictureInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1PictureInfo *>( this );
@@ -4879,8 +4797,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1PictureInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1PictureInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( frame_type == rhs.frame_type ) && ( frame_presentation_time == rhs.frame_presentation_time ) &&
@@ -4945,7 +4861,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1ReferenceInfoFlags *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1ReferenceInfoFlags const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1ReferenceInfoFlags *>( this );
@@ -4956,8 +4871,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1ReferenceInfoFlags *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1ReferenceInfoFlags const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( disable_frame_end_update_cdf == rhs.disable_frame_end_update_cdf ) && ( segmentation_enabled == rhs.segmentation_enabled ) &&
@@ -4989,7 +4902,6 @@ namespace VULKAN_HPP_NAMESPACE
         return *reinterpret_cast<StdVideoEncodeAV1ReferenceInfo *>( this );
       }
 
-<<<<<<< HEAD:third_party/vulkan/include/vulkan/vulkan_video.hpp
       operator StdVideoEncodeAV1ReferenceInfo const *() const VULKAN_HPP_NOEXCEPT
       {
         return reinterpret_cast<const StdVideoEncodeAV1ReferenceInfo *>( this );
@@ -5000,8 +4912,6 @@ namespace VULKAN_HPP_NAMESPACE
         return reinterpret_cast<StdVideoEncodeAV1ReferenceInfo *>( this );
       }
 
-=======
->>>>>>> 4abedc66b (Updated the vulkan headers from the official Khronos registry.):common/vulkan/include/vulkan/vulkan_video.hpp
       bool operator==( EncodeAV1ReferenceInfo const & rhs ) const VULKAN_HPP_NOEXCEPT
       {
         return ( flags == rhs.flags ) && ( RefFrameId == rhs.RefFrameId ) && ( frame_type == rhs.frame_type ) && ( OrderHint == rhs.OrderHint ) &&
