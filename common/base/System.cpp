@@ -46,7 +46,11 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifdef __MINGW64__
+
+#else
 #include <sys/resource.h>
+#endif // __MINGW64__
 #include <unistd.h>
 #endif
 
@@ -60,6 +64,9 @@ using gfxstream::base::Win32UnicodeString;
 
 // Return |path| as a Unicode string, while discarding trailing separators.
 Win32UnicodeString win32Path(const char* path) {
+#ifdef __MINGW64__
+    //linker error
+#else
     Win32UnicodeString wpath(path);
     // Get rid of trailing directory separators, Windows doesn't like them.
     size_t size = wpath.size();
@@ -71,6 +78,7 @@ Win32UnicodeString win32Path(const char* path) {
         wpath.resize(size);
     }
     return wpath;
+#endif // __MINGW64__
 }
 
 using PathStat = struct _stat64;
@@ -147,6 +155,9 @@ namespace base {
 
 std::string getEnvironmentVariable(const std::string& key) {
 #ifdef _WIN32
+#ifdef __MINGW64__
+    //linker error
+#else
     Win32UnicodeString varname_unicode(key);
     const wchar_t* value = _wgetenv(varname_unicode.c_str());
     if (!value) {
@@ -154,6 +165,7 @@ std::string getEnvironmentVariable(const std::string& key) {
     } else {
         return Win32UnicodeString::convertToUtf8(value);
     }
+#endif // __MINGW64__
 #else
     const char* value = getenv(key.c_str());
     if (!value) {
@@ -165,10 +177,14 @@ std::string getEnvironmentVariable(const std::string& key) {
 
 void setEnvironmentVariable(const std::string& key, const std::string& value) {
 #ifdef _WIN32
+#ifdef __MINGW64__
+
+#else
     std::string envStr =
         StringFormat("%s=%s", key, value);
     // Note: this leaks the result of release().
     _wputenv(Win32UnicodeString(envStr).release());
+#endif // __MINGW64__
 #else
     if (value.empty()) {
         unsetenv(key.c_str());
@@ -353,6 +369,9 @@ std::string getProgramDirectoryFromPlatform() {
         res.assign("<unknown-application-dir>");
     }
 #elif defined(_WIN32)
+#ifdef __MINGW64__
+    // linker error
+#else
     Win32UnicodeString appDir(PATH_MAX);
     int len = GetModuleFileNameW(0, appDir.data(), appDir.size());
     res.assign("<unknown-application-dir>");
@@ -368,6 +387,7 @@ std::string getProgramDirectoryFromPlatform() {
             res.assign(dir.c_str());
         }
     }
+#endif // __MINGW64__
 #elif defined(__QNX__)
     char path[1024];
     memset(path, 0, sizeof(path));
@@ -534,6 +554,9 @@ bool initFileVersionInfoFuncs() {
 bool queryFileVersionInfo(const char* path, int* major, int* minor, int* build_1, int* build_2) {
     if (!initFileVersionInfoFuncs()) return false;
     if (!canQueryFileVersion) return false;
+#ifdef __MINGW64__
+    //linker error
+#else
     const Win32UnicodeString pathWide(path);
     DWORD dummy;
     DWORD length = 0;
@@ -573,6 +596,7 @@ bool queryFileVersionInfo(const char* path, int* major, int* minor, int* build_1
     if (minor) *minor = LOWORD(fixedFileInfo->dwFileVersionMS);
     if (build_1) *build_1 = HIWORD(fixedFileInfo->dwFileVersionLS);
     if (build_2) *build_2 = LOWORD(fixedFileInfo->dwFileVersionLS);
+#endif // __MINGW64__
     return true;
 }
 #else

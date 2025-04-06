@@ -31,11 +31,14 @@ Thread::Thread(ThreadFlags flags, int stackSize, std::optional<std::string> name
 
 Thread::~Thread() {
     assert(!mStarted || mFinished);
-    if ((mFlags & ThreadFlags::Detach) == ThreadFlags::NoFlags && mStarted &&
-        !mJoined) {
+#ifdef __MINGW64__ 
+
+#else 
+    if ((mFlags & ThreadFlags::Detach) == ThreadFlags::NoFlags && mStarted && !mJoined) {
         // Make sure we reclaim the OS resources.
         pthread_join(mThread, nullptr);
     }
+#endif // __MINGW64__
 }
 
 bool Thread::start() {
@@ -53,7 +56,9 @@ bool Thread::start() {
         pthread_attr_init(&attr);
         pthread_attr_setstacksize(&attr, mStackSize);
     }
+#ifdef __MINGW64__
 
+#else
     if (pthread_create(&mThread, mStackSize ? &attr : nullptr, thread_main,
                        this)) {
         fprintf(stderr, "Thread: failed to create a thread, errno %d\n", errno);
@@ -74,6 +79,7 @@ bool Thread::start() {
     }
 #endif  // __APPLE__
 
+#endif // __MINGW64__
     if (useAttributes) {
         pthread_attr_destroy(&attr);
     }
@@ -85,7 +91,9 @@ bool Thread::wait(intptr_t* exitStatus) {
     if (!mStarted || (mFlags & ThreadFlags::Detach) != ThreadFlags::NoFlags) {
         return false;
     }
+#ifdef __MINGW64__
 
+#else
     // NOTE: Do not hold the lock when waiting for the thread to ensure
     // it can update mFinished and mExitStatus properly in thread_main
     // without blocking.
@@ -93,6 +101,7 @@ bool Thread::wait(intptr_t* exitStatus) {
         return false;
     }
     mJoined = true;
+#endif // __MINGW64__
 
     if (exitStatus) {
         *exitStatus = mExitStatus;
@@ -111,13 +120,17 @@ bool Thread::tryWait(intptr_t* exitStatus) {
             return false;
         }
     }
+#ifdef __MINGW64__
 
+#else
     if (!mJoined) {
         if (pthread_join(mThread, NULL)) {
             fprintf(stderr, "Thread: failed to join a finished thread, errno %d\n", errno);
         }
         mJoined = true;
     }
+#endif // __MINGW64__
+
 
     if (exitStatus) {
         *exitStatus = mExitStatus;
@@ -125,6 +138,9 @@ bool Thread::tryWait(intptr_t* exitStatus) {
     return true;
 }
 
+#ifdef __MINGW64__
+
+#else
 // static
 void* Thread::thread_main(void* arg) {
     intptr_t ret;
@@ -156,12 +172,17 @@ void* Thread::thread_main(void* arg) {
     // This return value is ignored.
     return NULL;
 }
+#endif // __MINGW64__
 
 // static
 void Thread::maskAllSignals() {
+#ifdef __MINGW64__
+
+#else
     sigset_t set;
     sigfillset(&set);
     pthread_sigmask(SIG_SETMASK, &set, nullptr);
+#endif
 }
 
 // static

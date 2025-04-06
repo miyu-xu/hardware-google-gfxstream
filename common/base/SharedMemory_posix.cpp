@@ -13,7 +13,11 @@
 // limitations under the License.
 #include <errno.h>
 #include <fcntl.h>
+#ifdef __MINGW64__
+
+#else
 #include <sys/mman.h>
+#endif // __MINGW64__
 #include <sys/stat.h>
 
 #include "gfxstream/EintrWrapper.h"
@@ -45,8 +49,12 @@ int memfd_create_wrapper(const char *name, unsigned int flags) {
 #if defined(HAVE_MEMFD_CREATE)
 	return memfd_create(name, flags);
 #elif defined(__NR_memfd_create)
-	return syscall(__NR_memfd_create, name, flags);
+#ifdef __MINGW64__
+  return -1; // stub constant
 #else
+	return syscall(__NR_memfd_create, name, flags);
+#endif // __MINGW64__
+#else // defined(HAVE_MEMFD_CREATE)
 	return -1;
 #endif
 }
@@ -67,11 +75,19 @@ SharedMemory::SharedMemory(const std::string& name, size_t size) : mSize(size) {
 }
 
 int SharedMemory::create(mode_t mode) {
+#ifdef __MINGW64__
+  return -1; // stub constant
+#else
     return openInternal(O_CREAT | O_RDWR, mode);
+#endif // __MINGW64__
 }
 
 int SharedMemory::createNoMapping(mode_t mode) {
+#ifdef __MINGW64__
+  return -1; // stub constant
+#else
     return openInternal(O_CREAT | O_RDWR, mode, false /* no mapping */);
+#endif // __MINGW64__
 }
 
 int SharedMemory::open(AccessMode access) {
@@ -81,10 +97,17 @@ int SharedMemory::open(AccessMode access) {
         oflag = O_RDWR;
         mode = 0600;
     }
+#ifdef __MINGW64__
+    return -1; // stub constant
+#else
     return openInternal(oflag, mode);
+#endif // __MINGW64__
 }
 
 void SharedMemory::close(bool forceDestroy) {
+#ifdef __MINGW64__
+
+#else
     if (mAddr != unmappedMemory()) {
         munmap(mAddr, mSize);
         mAddr = unmappedMemory();
@@ -104,12 +127,13 @@ void SharedMemory::close(bool forceDestroy) {
 #endif
         }
     }
+#endif // __MINGW64__
 }
 
 bool SharedMemory::isOpen() const {
     return mFd != invalidHandle();
 }
-
+#ifndef __MINGW64__
 int SharedMemory::openInternal(int oflag, int mode, bool doMapping) {
     if (isOpen()) {
         return EEXIST;
@@ -171,5 +195,6 @@ int SharedMemory::openInternal(int oflag, int mode, bool doMapping) {
     assert(isOpen());
     return 0;
 }
+#endif // !__MINGW64__
 }  // namespace base
 }  // namespace android

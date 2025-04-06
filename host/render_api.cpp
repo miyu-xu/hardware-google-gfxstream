@@ -22,8 +22,12 @@
 
 namespace gfxstream {
 
+#ifdef __MINGW64__
+
+#else
 RENDER_APICALL RenderLibPtr RENDER_APIENTRY initLibrary() {
     return RenderLibPtr(new RenderLibImpl());
 }
+#endif // __MINGW64__
 
 }  // namespace gfxstream

@@ -370,6 +370,9 @@ bool PathUtils::move(const std::string& from, const std::string& to) {
 
 // Return |path| as a Unicode string, while discarding trailing separators.
 Win32UnicodeString win32Path(const char* path) {
+#ifdef __MINGW64__
+  //linker error
+#else
     Win32UnicodeString wpath(path);
     // Get rid of trailing directory separators, Windows doesn't like them.
     size_t size = wpath.size();
@@ -381,6 +384,7 @@ Win32UnicodeString win32Path(const char* path) {
         wpath.resize(size);
     }
     return wpath;
+#endif // __MINGW64__
 }
 
 /* access function */
@@ -407,7 +411,11 @@ static int GetWin32Mode(int mode) {
 
 bool pathExists(const char* path) {
 #ifdef _WIN32
+#ifdef __MINGW64__
+    // linker error
+#else
     return _waccess(win32Path(path).c_str(), GetWin32Mode(F_OK));
+#endif // __MINGW64__
 #else
     return 0 == access(path, F_OK);
 #endif

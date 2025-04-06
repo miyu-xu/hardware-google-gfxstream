@@ -58,6 +58,10 @@ elif host_machine.system() == 'qnx'
   vulkan_server_cpp_args += '-DVK_USE_PLATFORM_SCREEN_QNX'
 endif
 
+if host_machine.system() == 'windows'
+  vulkan_server_cpp_args += '-Wa,-mbig-obj'
+endif
+
 lib_vulkan_server = static_library(
   'lib_vulkan_server',
   files_lib_vulkan_server,
