@@ -6349,8 +6349,10 @@ class VkDecoderGlobalState::Impl {
             processDelayedRemovesForDevice(device);
         }
 
+        VkResult result = VK_SUCCESS;
         VkFence usedFence = fence;
         DeviceOpWaitable queueCompletedWaitable;
+        std::lock_guard<std::mutex> queueLock(*queueMutex);
         {
             std::lock_guard<std::mutex> lock(mMutex);
 
@@ -6364,20 +6366,17 @@ class VkDecoderGlobalState::Impl {
                 // of this queueSubmit
                 usedFence = builder.CreateFenceForOp();
             }
+
+            result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
+            if (result != VK_SUCCESS) {
+                WARN("dispatchVkQueueSubmit failed: %s [%d]", string_VkResult(result), result);
+                return result;
+            }
+
+            // Note: usedFence must be added to the DeviceOpBuilder *after* queue submission
             queueCompletedWaitable = builder.OnQueueSubmittedWithFence(usedFence);
-
             deviceInfo->deviceOpTracker->PollAndProcessGarbage();
-        }
 
-        std::lock_guard<std::mutex> queueLock(*queueMutex);
-        auto result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
-
-        if (result != VK_SUCCESS) {
-            WARN("dispatchVkQueueSubmit failed: %s [%d]", string_VkResult(result), result);
-            return result;
-        }
-        {
-            std::lock_guard<std::mutex> lock(mMutex);
             // Update image layouts
             for (uint32_t i = 0; i < submitCount; i++) {
                 for (int j = 0; j < getCommandBufferCount(pSubmits[i]); j++) {
