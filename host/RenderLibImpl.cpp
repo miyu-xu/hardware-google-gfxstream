@@ -16,14 +16,14 @@
 #include "FrameBuffer.h"
 #include "RendererImpl.h"
 #include "aemu/base/files/Stream.h"
-#include "gfxstream/host/logging.h"
 #include "host-common/address_space_device_control_ops.h"
 #include "host-common/crash_reporter.h"
-#include "host-common/dma_device.h"
 #include "host-common/emugl_vm_operations.h"
 #include "host-common/feature_control.h"
 #include "host-common/opengl/misc.h"
-#include "host-common/sync_device.h"
+#include "gfxstream/host/dma_device.h"
+#include "gfxstream/host/logging.h"
+#include "gfxstream/host/sync_device.h"
 
 #if GFXSTREAM_ENABLE_HOST_GLES
 #include "OpenGLESDispatch/DispatchTables.h"
@@ -77,37 +77,24 @@ void RenderLibImpl::setLogger(emugl_logger_struct logger) {
 #endif
 }
 
-void RenderLibImpl::setGLObjectCounter(
-        android::base::GLObjectCounter* counter) {
-    emugl::setGLObjectCounter(counter);
-}
-
-void RenderLibImpl::setCrashReporter(emugl_crash_reporter_t reporter) {
-    // set_emugl_crash_reporter(reporter);
-}
-
-void RenderLibImpl::setFeatureController(emugl_feature_is_enabled_t featureController) {
-    android::featurecontrol::setFeatureEnabledCallback(featureController);
-}
-
 void RenderLibImpl::setSyncDevice
-    (emugl_sync_create_timeline_t create_timeline,
-     emugl_sync_create_fence_t create_fence,
-     emugl_sync_timeline_inc_t timeline_inc,
-     emugl_sync_destroy_timeline_t destroy_timeline,
-     emugl_sync_register_trigger_wait_t register_trigger_wait,
-     emugl_sync_device_exists_t device_exists) {
-    emugl::set_emugl_sync_create_timeline(create_timeline);
-    emugl::set_emugl_sync_create_fence(create_fence);
-    emugl::set_emugl_sync_timeline_inc(timeline_inc);
-    emugl::set_emugl_sync_destroy_timeline(destroy_timeline);
-    emugl::set_emugl_sync_register_trigger_wait(register_trigger_wait);
-    emugl::set_emugl_sync_device_exists(device_exists);
+    (gfxstream_sync_create_timeline_t create_timeline,
+     gfxstream_sync_create_fence_t create_fence,
+     gfxstream_sync_timeline_inc_t timeline_inc,
+     gfxstream_sync_destroy_timeline_t destroy_timeline,
+     gfxstream_sync_register_trigger_wait_t register_trigger_wait,
+     gfxstream_sync_device_exists_t device_exists) {
+    set_gfxstream_sync_create_timeline(create_timeline);
+    set_gfxstream_sync_create_fence(create_fence);
+    set_gfxstream_sync_timeline_inc(timeline_inc);
+    set_gfxstream_sync_destroy_timeline(destroy_timeline);
+    set_gfxstream_sync_register_trigger_wait(register_trigger_wait);
+    set_gfxstream_sync_device_exists(device_exists);
 }
 
-void RenderLibImpl::setDmaOps(emugl_dma_ops ops) {
-    emugl::set_emugl_dma_get_host_addr(ops.get_host_addr);
-    emugl::set_emugl_dma_unlock(ops.unlock);
+void RenderLibImpl::setDmaOps(gfxstream_dma_ops ops) {
+    set_gfxstream_dma_get_host_addr(ops.get_host_addr);
+    set_gfxstream_dma_unlock(ops.unlock);
 }
 
 void RenderLibImpl::setVmOps(const QAndroidVmOperations &vm_operations) {
@@ -123,12 +110,6 @@ void RenderLibImpl::setWindowOps(const QAndroidEmulatorWindowAgent &window_opera
                                  const QAndroidMultiDisplayAgent &multi_display_operations) {
     emugl::set_emugl_window_operations(window_operations);
     emugl::set_emugl_multi_display_operations(multi_display_operations);
-}
-
-void RenderLibImpl::setUsageTracker(android::base::CpuUsage* cpuUsage,
-                                    android::base::MemoryTracker* memUsage) {
-    emugl::setCpuUsage(cpuUsage);
-    emugl::setMemoryTracker(memUsage);
 }
 
 void RenderLibImpl::setGrallocImplementation(GrallocImplementation gralloc) {
@@ -164,14 +145,13 @@ RendererPtr RenderLibImpl::initRenderer(int width, int height,
     return res;
 }
 
-static void impl_onLastCbRef(uint32_t handle) {
-    FrameBuffer* fb = FrameBuffer::getFB();
-    if (fb)
-        fb->onLastColorBufferRef(handle);
-}
-
 OnLastColorBufferRef RenderLibImpl::getOnLastColorBufferRef() {
-    return (OnLastColorBufferRef)impl_onLastCbRef;
+    return [](uint32_t handle) {
+        FrameBuffer* fb = FrameBuffer::getFB();
+        if (fb) {
+            fb->onLastColorBufferRef(handle);
+        }
+    };
 }
 
 }  // namespace gfxstream

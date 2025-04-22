@@ -1,5 +1,4 @@
-// Copyright (C) 2022 The Android Open Source Project
-// Copyright (C) 2022 Google Inc.
+// Copyright (C) 2025 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,22 +14,14 @@
 
 #pragma once
 
-#include <memory>
-
-#include "aemu/base/HealthMonitor.h"
-#include "aemu/base/Metrics.h"
-#include "utils/GfxApiLogger.h"
+#include "render-utils/dma_device.h"
 
 namespace gfxstream {
-namespace vk {
 
-struct VkDecoderContext {
-    const char* processName = nullptr;
-    emugl::GfxApiLogger* gfxApiLogger = nullptr;
-    emugl::HealthMonitor<>* healthMonitor = nullptr;
-    emugl::MetricsLogger* metricsLogger = nullptr;
-    std::atomic_bool* shouldExit = nullptr;
-};
+extern gfxstream_dma_get_host_addr_t g_gfxstream_dma_get_host_addr;
+extern gfxstream_dma_unlock_t g_gfxstream_dma_unlock;
 
-}  // namespace vk
+void set_gfxstream_dma_get_host_addr(gfxstream_dma_get_host_addr_t);
+void set_gfxstream_dma_unlock(gfxstream_dma_unlock_t);
+
 }  // namespace gfxstream
