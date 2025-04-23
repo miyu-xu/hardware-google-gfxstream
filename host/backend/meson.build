@@ -8,6 +8,8 @@ files_lib_host_backend = files(
   'display_surface_user.cpp',
   'dma_device.cpp',
   'sync_device.cpp',
+  'vm_operations.cpp',
+  'window_operations.cpp',
 )
 
 lib_host_backend = static_library(

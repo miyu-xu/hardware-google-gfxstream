@@ -17,13 +17,13 @@
 #include "RendererImpl.h"
 #include "aemu/base/files/Stream.h"
 #include "host-common/address_space_device_control_ops.h"
-#include "host-common/crash_reporter.h"
-#include "host-common/emugl_vm_operations.h"
-#include "host-common/feature_control.h"
 #include "host-common/opengl/misc.h"
+#include "host-common/misc.h"
 #include "gfxstream/host/dma_device.h"
 #include "gfxstream/host/logging.h"
 #include "gfxstream/host/sync_device.h"
+#include "gfxstream/host/vm_operations.h"
+#include "gfxstream/host/window_operations.h"
 
 #if GFXSTREAM_ENABLE_HOST_GLES
 #include "OpenGLESDispatch/DispatchTables.h"
@@ -97,18 +97,27 @@ void RenderLibImpl::setDmaOps(gfxstream_dma_ops ops) {
     set_gfxstream_dma_unlock(ops.unlock);
 }
 
-void RenderLibImpl::setVmOps(const QAndroidVmOperations &vm_operations) {
-    set_emugl_vm_operations(vm_operations);
-    address_space_set_vm_operations(&get_emugl_vm_operations());
+void RenderLibImpl::setVmOps(const gfxstream_vm_ops& ops) {
+    set_gfxstream_vm_operations(ops);
+
+    // TODO: remove in next change:
+    static const QAndroidVmOperations sAndroidOps = {
+        .mapUserBackedRam = ops.map_user_memory,
+        .unmapUserBackedRam = ops.unmap_user_memory,
+        .physicalMemoryGetAddr = ops.lookup_user_memory,
+    };
+    address_space_set_vm_operations(&sAndroidOps);
 }
 
 void RenderLibImpl::setAddressSpaceDeviceControlOps(struct address_space_device_control_ops* ops) {
     set_emugl_address_space_device_control_ops(ops);
 }
 
-void RenderLibImpl::setWindowOps(const QAndroidEmulatorWindowAgent &window_operations,
-                                 const QAndroidMultiDisplayAgent &multi_display_operations) {
-    emugl::set_emugl_window_operations(window_operations);
+void RenderLibImpl::setWindowOps(const gfxstream_window_ops& window_operations) {
+    set_gfxstream_window_operations(window_operations);
+}
+
+void RenderLibImpl::setMultiDisplayOps(const QAndroidMultiDisplayAgent& multi_display_operations) {
     emugl::set_emugl_multi_display_operations(multi_display_operations);
 }
 
