@@ -18,10 +18,11 @@
 
 #include "aemu/base/files/Stream.h"
 #include "gfxstream/host/Features.h"
-#include "host-common/multi_display_agent.h"
 #include "render-utils/Renderer.h"
+#include "render-utils/display_operations.h"
 #include "render-utils/dma_device.h"
 #include "render-utils/gralloc_enums.h"
+#include "render-utils/logging_operations.h"
 #include "render-utils/render_api_types.h"
 #include "render-utils/renderer_enums.h"
 #include "render-utils/sync_device.h"
@@ -53,11 +54,13 @@ public:
 
     // Get the selected renderer
     virtual void setRenderer(SelectedRenderer renderer) = 0;
-    // Tell emugl the API version of the system image
-    virtual void setAvdInfo(bool phone, int api) = 0;
+
+    virtual void setGuestAndroidApiLevel(int api) = 0;
+
     // Get the GLES major/minor version determined by libOpenglRender.
     virtual void getGlesVersion(int* maj, int* min) = 0;
-    virtual void setLogger(emugl_logger_struct logger) = 0;
+
+    virtual void setLogger(gfxstream_log_callback_t callback) = 0;
 
     // TODO: delete after goldfish fully migrates to virtio gpu.
     virtual void setSyncDevice(gfxstream_sync_create_timeline_t,
@@ -75,7 +78,8 @@ public:
     virtual void setAddressSpaceDeviceControlOps(struct address_space_device_control_ops* ops) = 0;
 
     virtual void setWindowOps(const gfxstream_window_ops& window_operations) = 0;
-    virtual void setMultiDisplayOps(const QAndroidMultiDisplayAgent& multi_display_operations) = 0;
+
+    virtual void setDisplayOps(const gfxstream_multi_display_ops& display_ops) = 0;
 
     virtual void setGrallocImplementation(GrallocImplementation gralloc) = 0;
 

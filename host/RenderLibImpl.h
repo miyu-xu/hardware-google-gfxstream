@@ -26,9 +26,9 @@ public:
     RenderLibImpl() = default;
 
     virtual void setRenderer(SelectedRenderer renderer) override;
-    virtual void setAvdInfo(bool phone, int api) override;
+    virtual void setGuestAndroidApiLevel(int api) override;
     virtual void getGlesVersion(int* maj, int* min) override;
-    virtual void setLogger(emugl_logger_struct logger) override;
+    virtual void setLogger(gfxstream_log_callback_t callback) override;
 
     virtual void setSyncDevice(gfxstream_sync_create_timeline_t,
                                gfxstream_sync_create_fence_t,
@@ -44,7 +44,8 @@ public:
     virtual void setAddressSpaceDeviceControlOps(struct address_space_device_control_ops* ops) override;
 
     virtual void setWindowOps(const gfxstream_window_ops& window_operations) override;
-    virtual void setMultiDisplayOps(const QAndroidMultiDisplayAgent& multi_display_operations) override;
+
+    virtual void setDisplayOps(const gfxstream_multi_display_ops& display_operations) override;
 
     virtual void setGrallocImplementation(GrallocImplementation gralloc) override;
 

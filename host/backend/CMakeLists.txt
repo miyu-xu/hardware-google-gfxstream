@@ -13,9 +13,11 @@ if (NOT TARGET gfxstream_host_backend)
 
     add_library(
         gfxstream_host_backend
+        display_operations.cpp
         display_surface.cpp
         display_surface_user.cpp
         dma_device.cpp
+        guest_operations.cpp
         sync_device.cpp
         vm_operations.cpp
         window_operations.cpp

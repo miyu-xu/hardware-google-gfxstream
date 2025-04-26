@@ -16,14 +16,16 @@
 #include "FrameBuffer.h"
 #include "RendererImpl.h"
 #include "aemu/base/files/Stream.h"
-#include "host-common/address_space_device_control_ops.h"
-#include "host-common/opengl/misc.h"
-#include "host-common/misc.h"
+#include "gfxstream/host/display_operations.h"
 #include "gfxstream/host/dma_device.h"
+#include "gfxstream/host/guest_operations.h"
 #include "gfxstream/host/logging.h"
 #include "gfxstream/host/sync_device.h"
 #include "gfxstream/host/vm_operations.h"
 #include "gfxstream/host/window_operations.h"
+#include "host-common/address_space_device_control_ops.h"
+#include "host-common/misc.h"
+#include "host-common/opengl/misc.h"
 
 #if GFXSTREAM_ENABLE_HOST_GLES
 #include "OpenGLESDispatch/DispatchTables.h"
@@ -36,45 +38,19 @@ void RenderLibImpl::setRenderer(SelectedRenderer renderer) {
     emugl::setRenderer(renderer);
 }
 
-void RenderLibImpl::setAvdInfo(bool phone, int api) {
-    emugl::setAvdInfo(phone, api);
+void RenderLibImpl::setGuestAndroidApiLevel(int api) {
+    set_gfxstream_guest_android_api_level(api);
 }
 
 void RenderLibImpl::getGlesVersion(int* maj, int* min) {
     emugl::getGlesVersion(maj, min);
 }
 
-void RenderLibImpl::setLogger(emugl_logger_struct logger) {
-#ifdef CONFIG_AEMU
-    set_gfxstream_logger(logger);
-
-    // TODO: move this into emu init.
+void RenderLibImpl::setLogger(gfxstream_log_callback_t callback) {
     gfxstream::host::SetGfxstreamLogCallback(
-        [](gfxstream::host::LogLevel level, const char* file, int line, const char* function, const char* message) {
-            char severity;
-            switch (level) {
-                case gfxstream::host::LogLevel::kFatal:
-                    severity = 'F';
-                    break;
-                case gfxstream::host::LogLevel::kError:
-                    severity = 'E';
-                    break;
-                case gfxstream::host::LogLevel::kWarning:
-                    severity = 'W';
-                    break;
-                case gfxstream::host::LogLevel::kInfo:
-                    severity = 'I';
-                    break;
-                case gfxstream::host::LogLevel::kDebug:
-                    severity = 'D';
-                    break;
-                case gfxstream::host::LogLevel::kVerbose:
-                    severity = 'V';
-                    break;
-            }
-            OutputLog(stderr, severity, file, line, /*timestamp_us=*/0, "%s", message);
+        [callback](gfxstream::host::LogLevel level, const char* file, int line, const char* function, const char* message) {
+            callback(static_cast<gfxstream_logging_level>(level), file, line, function, message);
         });
-#endif
 }
 
 void RenderLibImpl::setSyncDevice
@@ -117,8 +93,8 @@ void RenderLibImpl::setWindowOps(const gfxstream_window_ops& window_operations) 
     set_gfxstream_window_operations(window_operations);
 }
 
-void RenderLibImpl::setMultiDisplayOps(const QAndroidMultiDisplayAgent& multi_display_operations) {
-    emugl::set_emugl_multi_display_operations(multi_display_operations);
+void RenderLibImpl::setDisplayOps(const gfxstream_multi_display_ops& display_operations) {
+    set_gfxstream_multi_display_operations(display_operations);
 }
 
 void RenderLibImpl::setGrallocImplementation(GrallocImplementation gralloc) {
