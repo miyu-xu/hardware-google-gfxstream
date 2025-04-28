@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ce1ff77_9f70bf4f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-04-28T20:39:45Z",
+      "side": 1,
+      "message": "@kocdemir@google.com , can you take a look at this one w.r.t the changes around b/398986781",
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5c9438b_12d34905",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6357,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-04-28T20:39:45Z",
+      "side": 1,
+      "message": "Note: want to be careful with this as I see a couple other spots that acquire in the opposite order.",
+      "range": {
+        "startLine": 6355,
+        "startChar": 8,
+        "endLine": 6357,
+        "endChar": 53
+      },
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33e6ff7d_0e013310",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6376,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-04-28T20:39:45Z",
+      "side": 1,
+      "message": "@kocdemir@google.com just calling this out",
+      "range": {
+        "startLine": 6376,
+        "startChar": 12,
+        "endLine": 6376,
+        "endChar": 92
+      },
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
