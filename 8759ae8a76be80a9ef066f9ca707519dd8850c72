@@ -33,6 +33,24 @@
       "message": "@natsu@google.com what\u0027s the process now, is https://android.googlesource.com/platform/hardware/google/gfxstream/ staying up to date with your internal repo?",
       "revId": "8759ae8a76be80a9ef066f9ca707519dd8850c72",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45bc510f_70388813",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-04-28T20:54:03Z",
+      "side": 1,
+      "message": "IIUC, we cherrypick internally and then https://android.googlesource.com/platform/hardware/google/gfxstream/ has to wait for releases :/\n\nI hope to get a more up to date copy (at least as some kind of read only copy) some where non-internal (potentially as https://github.com/google/gfxstream ?) as Cuttlefish has been moving its host package to https://github.com/google/android-cuttlefish and we want to be able to update more frequently with fixes. This is still TBD and a WIP though so stay tuned.",
+      "parentUuid": "6b3dba7e_c5200d41",
+      "revId": "8759ae8a76be80a9ef066f9ca707519dd8850c72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
