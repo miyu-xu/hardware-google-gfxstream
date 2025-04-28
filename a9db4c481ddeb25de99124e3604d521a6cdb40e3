@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f8fa456a_3bc23878",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6357,
+      "author": {
+        "id": 1576895
+      },
+      "writtenOn": "2025-04-28T21:15:33Z",
+      "side": 1,
+      "message": "The old code also grab the lock in this order, so I don\u0027t think this is more problematic, but I _think_ we only need to grab the queue lock to protect `dispatchVkQueueSubmit`.",
+      "parentUuid": "d5c9438b_12d34905",
+      "range": {
+        "startLine": 6355,
+        "startChar": 8,
+        "endLine": 6357,
+        "endChar": 53
+      },
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "33e6ff7d_0e013310",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
