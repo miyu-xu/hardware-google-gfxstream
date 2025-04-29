@@ -27,9 +27,10 @@
 
 #include "OpenGLESDispatch/DispatchTables.h"
 #include "aemu/base/synchronization/Lock.h"
+#include "gfxstream/Strings.h"
 #include "gfxstream/host/logging.h"
-#include "host-common/misc.h"
-#include "host-common/opengl/misc.h"
+#include "gfxstream/host/renderer_operations.h"
+#include "render-utils/Renderer.h"
 
 namespace gfxstream {
 namespace gl {
@@ -226,16 +227,16 @@ TextureResize::TextureResize(GLuint width, GLuint height) :
     const char* exts = (const char*)s_gles2.glGetString(GL_EXTENSIONS);
 
     bool hasColorBufferFloat =
-        emugl::getRenderer() == SELECTED_RENDERER_HOST ||
-        emugl::hasExtension(exts, "GL_EXT_color_buffer_float");
+        get_gfxstream_renderer() == SELECTED_RENDERER_HOST ||
+        HasExtension(exts, "GL_EXT_color_buffer_float");
     bool hasColorBufferHalfFloat =
-        emugl::hasExtension(exts, "GL_EXT_color_buffer_half_float");
+        HasExtension(exts, "GL_EXT_color_buffer_half_float");
     bool hasTextureFloat =
-        emugl::hasExtension(exts, "GL_OES_texture_float");
+        HasExtension(exts, "GL_OES_texture_float");
     bool hasTextureHalfFloat =
-        emugl::hasExtension(exts, "GL_OES_texture_half_float");
+        HasExtension(exts, "GL_OES_texture_half_float");
     bool hasTextureFloatLinear =
-        emugl::hasExtension(exts, "GL_OES_texture_float_linear");
+        HasExtension(exts, "GL_OES_texture_float_linear");
 
     if (hasColorBufferFloat && hasTextureFloat) {
         mTextureDataType = GL_FLOAT;
@@ -581,20 +582,20 @@ GLuint TextureResize::GenericResizer::draw(GLuint texture, int width, int height
     s_gles2.glUniform1i(mInputUniformLocation, 0);
     intptr_t indexShift;
     switch(rotation) {
-    case SKIN_ROTATION_0:
-        indexShift = 0;
-        break;
-    case SKIN_ROTATION_90:
-        indexShift = 6;
-        break;
-    case SKIN_ROTATION_180:
-        indexShift = 12;
-        break;
-    case SKIN_ROTATION_270:
-        indexShift = 18;
-        break;
-    default:
-        indexShift = 0;
+        case GFXSTREAM_ROTATION_0:
+            indexShift = 0;
+            break;
+        case GFXSTREAM_ROTATION_90:
+            indexShift = 6;
+            break;
+        case GFXSTREAM_ROTATION_180:
+            indexShift = 12;
+            break;
+        case GFXSTREAM_ROTATION_270:
+            indexShift = 18;
+            break;
+        default:
+            indexShift = 0;
     }
     s_gles2.glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (const GLvoid*)indexShift);
 

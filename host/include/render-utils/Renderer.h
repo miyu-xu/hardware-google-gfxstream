@@ -15,8 +15,8 @@
 
 #include "aemu/base/files/Stream.h"
 #include "aemu/base/ring_buffer.h"
-#include "host-common/address_space_graphics_types.h"
 #include "render-utils/RenderChannel.h"
+#include "render-utils/address_space_graphics_types.h"
 #include "render-utils/render_api_platform_types.h"
 #include "render-utils/virtio_gpu_ops.h"
 #include "snapshot/common.h"
@@ -56,6 +56,13 @@ struct FrameBufferChangeEvent {
     FrameBufferChange change;
     uint64_t frameNumber;
 };
+
+typedef enum {
+    GFXSTREAM_ROTATION_0 = 0,
+    GFXSTREAM_ROTATION_90 = 1,
+    GFXSTREAM_ROTATION_180 = 2,
+    GFXSTREAM_ROTATION_270 = 3,
+} GFXSTREAM_ROTATION;
 
 // Renderer - an object that manages a single OpenGL window used for drawing
 // and is able to create individual render channels for that window.
@@ -318,6 +325,9 @@ public:
 
     virtual const void* getEglDispatch() = 0;
     virtual const void* getGles2Dispatch() = 0;
+
+    virtual void setShouldSkipDraw(bool skip) = 0;
+    virtual bool getShouldSkipDraw() const = 0;
 
 protected:
     ~Renderer() = default;

@@ -30,14 +30,15 @@
 #include "OpenGLESDispatch/EGLDispatch.h"
 #include "RenderThreadInfo.h"
 #include "RenderThreadInfoGl.h"
+#include "RenderThreadInfoVk.h"
 #include "SyncThread.h"
 #include "aemu/base/Tracing.h"
 #include "compressedTextureFormats/AstcCpuDecompressor.h"
-#include "gfxstream/host/Tracing.h"
 #include "gfxstream/host/logging.h"
-#include "host-common/misc.h"
-#include "host-common/opengl/misc.h"
+#include "gfxstream/host/guest_operations.h"
+#include "gfxstream/host/renderer_operations.h"
 #include "gfxstream/host/sync_device.h"
+#include "gfxstream/host/Tracing.h"
 #include "vulkan/VkCommonOperations.h"
 #include "vulkan/VkDecoderGlobalState.h"
 
@@ -504,7 +505,7 @@ static EGLint rcGetGLString(EGLenum name, void* buffer, EGLint bufferSize) {
         glStr += kAsyncSwapStrV2;
         glStr += " "; // for compatibility with older system images
         // Only enable EGL_KHR_wait_sync (and above) for host gpu.
-        if (emugl::getRenderer() == SELECTED_RENDERER_HOST) {
+        if (get_gfxstream_renderer() == SELECTED_RENDERER_HOST) {
             glStr += kAsyncSwapStrV3;
             glStr += " ";
             glStr += kAsyncSwapStrV4;
@@ -1241,6 +1242,10 @@ static void rcSetPuid(uint64_t puid) {
 
     RenderThreadInfo *tInfo = RenderThreadInfo::get();
     tInfo->m_puid = puid;
+    auto* renderThreadInfoVk = vk::RenderThreadInfoVk::get();
+    if (renderThreadInfoVk) {
+        renderThreadInfoVk->ctx_id = puid;
+    }
 }
 
 static int rcCompose(uint32_t bufferSize, void* buffer) {

@@ -9,6 +9,7 @@ target_include_directories(
         INTERFACE
         include)
 
+add_subdirectory(address_space)
 add_subdirectory(backend)
 add_subdirectory(features)
 add_subdirectory(iostream)
@@ -71,6 +72,21 @@ else()
     set(stream-server-core-platform-sources NativeSubWindow_x11.cpp)
 endif()
 
+add_library(
+    gfxstream_backend.headers
+    INTERFACE
+    )
+target_link_libraries(
+    gfxstream_backend.headers
+    INTERFACE
+    gfxstream_features.headers
+    gfxstream_host_snapshot.headers
+    )
+target_include_directories(
+    gfxstream_backend.headers
+    INTERFACE
+    include
+    )
 
 
 # Compile everything as a static library first so that unit tests can call non-exported functions
@@ -83,11 +99,13 @@ add_library(
 target_link_libraries(
         gfxstream_backend_static
         PUBLIC
+        gfxstream_backend.headers
         ${GFXSTREAM_BASE_LIB}
         ${GFXSTREAM_HOST_COMMON_LIB}
         apigen-codec-common
         gfxstream_egl_headers
         gfxstream_features
+        gfxstream_host_address_space
         gfxstream_host_backend
         gfxstream_host_iostream
         gfxstream_host_logging
@@ -105,7 +123,6 @@ target_include_directories(
         gfxstream_backend_static
         PUBLIC
         ${GFXSTREAM_REPO_ROOT}
-        ${GFXSTREAM_REPO_ROOT}/include
         ${GFXSTREAM_REPO_ROOT}/host
         ${GFXSTREAM_REPO_ROOT}/host/include
         ${GFXSTREAM_REPO_ROOT}/host/apigen-codec-common
@@ -156,12 +173,6 @@ target_link_libraries(
     PRIVATE
     )
 
-if(BUILD_STANDALONE)
-    target_link_libraries(gfxstream_backend
-        PRIVATE
-        gfxstream-gl-host-common)
-endif()
-
 if (APPLE)
     set_target_properties(gfxstream_backend
         PROPERTIES
@@ -210,7 +221,6 @@ endfunction()
         PRIVATE
         OSWindow
         gfxstream_backend
-        aemu-host-common-testing-support
         ${GFXSTREAM_BASE_LIB}
         gtest_main)
         discover_tests(gfxstream_backend_unittests)
@@ -233,7 +243,6 @@ endfunction()
         stream-server-testing-support
         PUBLIC
         ${GFXSTREAM_REPO_ROOT}
-        ${GFXSTREAM_REPO_ROOT}/include
         ${GFXSTREAM_REPO_ROOT}/host
         ${GFXSTREAM_REPO_ROOT}/host/gl/glestranslator/GLES_CM
         ${GFXSTREAM_REPO_ROOT}/host/gl/glestranslator/include
@@ -242,7 +251,6 @@ endfunction()
     target_link_libraries(
         stream-server-testing-support
         PUBLIC
-        aemu-host-common-testing-support
         aemu-base-testing-support
         gfxstream_common_image
         gfxstream_backend_static
@@ -272,7 +280,6 @@ endfunction()
         OpenglRender_unittests
         PRIVATE
         stream-server-testing-support
-        aemu-host-common-testing-support
         aemu-base-testing-support
         gfxstream_backend_static
         gmock
@@ -309,7 +316,6 @@ endfunction()
         OpenglRender_snapshot_unittests
         PRIVATE
         stream-server-testing-support
-        aemu-host-common-testing-support
         aemu-base-testing-support
         gfxstream_backend_static
         gtest_main)
@@ -332,7 +338,6 @@ endfunction()
         Vulkan_unittests
         PRIVATE
         stream-server-testing-support
-        aemu-host-common-testing-support
         aemu-base-testing-support
         gfxstream_backend_static
         gfxstream-vulkan-server
