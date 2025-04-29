@@ -18,6 +18,41 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "18a07505_ea6cd05f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-04-29T10:41:03Z",
+      "side": 1,
+      "message": "Ack. I\u0027ll move this to internal branch and test with the new timeline semaphore support.",
+      "parentUuid": "1ce1ff77_9f70bf4f",
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "480d3401_b500cf25",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-04-29T10:41:03Z",
+      "side": 1,
+      "message": "Thanks for the change, it looks good in general, do you have a dEQP or any other test cases which were failing without the changes?\n\nAOSP is now read only for gfxstream and we\u0027ll need to move this change to Android internal branches, where there are some other changes, so it may take some time to properly test and integrate this.",
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d5c9438b_12d34905",
@@ -78,6 +113,30 @@
       "writtenOn": "2025-04-28T20:39:45Z",
       "side": 1,
       "message": "@kocdemir@google.com just calling this out",
+      "range": {
+        "startLine": 6376,
+        "startChar": 12,
+        "endLine": 6376,
+        "endChar": 92
+      },
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f534ec3d_e2b27822",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6376,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-04-29T10:41:03Z",
+      "side": 1,
+      "message": "Thanks. I remember fixing this before but it didn\u0027t work well, with some recent changes and fixes it might actually work ok, I\u0027ll make changes on the internal branch and upload a cl.",
+      "parentUuid": "33e6ff7d_0e013310",
       "range": {
         "startLine": 6376,
         "startChar": 12,
