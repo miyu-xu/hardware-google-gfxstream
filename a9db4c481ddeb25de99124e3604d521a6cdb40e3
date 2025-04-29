@@ -53,6 +53,41 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "94877178_20e8cd27",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-04-29T15:12:26Z",
+      "side": 1,
+      "message": "Can I request that you guys shoot me an email if you ever have updates on where the public gfxstream mirror is going to be? (aruby@qnx.com)\n\nThank you!",
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a083a6f_739623f7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-04-29T15:12:26Z",
+      "side": 1,
+      "message": "Ok, that\u0027s fine. It wasn\u0027t any dEQP tests in particular, but the fence was just being added then immediately being removed from the DeviceOpTracker, as the fence wasn\u0027t actually submitted yet (so it was immediately ready). \n\nBut, sounds like all this may be reworked in your internal branch, so not sure how relevant it is.",
+      "parentUuid": "480d3401_b500cf25",
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d5c9438b_12d34905",
