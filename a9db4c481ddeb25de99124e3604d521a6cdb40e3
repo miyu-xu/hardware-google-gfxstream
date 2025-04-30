@@ -155,6 +155,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "66e5fa9e_4f7fd0fa",
+        "filename": "host/vulkan/VkDecoderGlobalState.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 6357,
+      "author": {
+        "id": 1967833
+      },
+      "writtenOn": "2025-04-30T18:08:22Z",
+      "side": 1,
+      "message": "fyi, I moved this to ag/33328925, with some changes to reduce the scope of queue mutex. I\u0027ll request review once i finish some manual tests on my amd machine",
+      "parentUuid": "f8fa456a_3bc23878",
+      "range": {
+        "startLine": 6355,
+        "startChar": 8,
+        "endLine": 6357,
+        "endChar": 53
+      },
+      "revId": "a9db4c481ddeb25de99124e3604d521a6cdb40e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "33e6ff7d_0e013310",
         "filename": "host/vulkan/VkDecoderGlobalState.cpp",
         "patchSetId": 1
