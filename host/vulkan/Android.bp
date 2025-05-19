@@ -1,24 +1,33 @@
+// Copyright 2025 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expresso or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package {
     default_team: "trendy_team_android_developer_tools",
-    // See: http://go/android-license-faq
-    // A large-scale-change added 'default_applicable_licenses' to import
-    // all of the 'license_kinds' from "hardware_google_gfxstream_license"
-    // to get the below license kinds:
-    //   SPDX-license-identifier-Apache-2.0
-    //   SPDX-license-identifier-MIT
     default_applicable_licenses: ["hardware_google_gfxstream_license"],
 }
 
 cc_library_static {
     name: "libgfxstream_host_vulkan_server",
-    defaults: [
-        "gfxstream_defaults",
-        "gfxstream_host_cc_defaults",
-    ],
+    defaults: ["gfxstream_host_cc_defaults"],
     header_libs: [
-        "gfxstream_gl_host_common_headers",
-        "gfxstream_opengl_headers",
+        "libgfxstream_thirdparty_opengl_headers",
         "libgfxstream_host_vulkan_cereal_common",
+        "libgfxstream_thirdparty_renderdoc_headers",
+        "libgfxstream_thirdparty_glm",
+    ],
+    export_header_lib_headers: [
+        "libgfxstream_thirdparty_renderdoc_headers",
     ],
     whole_static_libs: [
         "libgfxstream_host_tracing",
@@ -27,15 +36,25 @@ cc_library_static {
         "liblog",
     ],
     static_libs: [
-        "gfxstream_base",
         "gfxstream_host_common",
-        "libgfxstream_host_apigen_codec_common",
+        "libgfxstream_common_base",
+        "libgfxstream_host_decoder_common",
         "libgfxstream_host_backend",
         "libgfxstream_host_compressedtextures",
         "libgfxstream_host_features",
+        "libgfxstream_host_health",
+        "libgfxstream_host_iostream",
+        "libgfxstream_host_library",
+        "libgfxstream_common_logging",
+        "libgfxstream_host_openglesdispatch",
+        "libgfxstream_host_renderdoc",
+        "libgfxstream_host_snapshot",
         "libgfxstream_host_vulkan_cereal",
         "libgfxstream_host_vulkan_emulatedtextures",
-        "libgfxstream_thirdparty_glm",
+    ],
+    export_static_lib_headers: [
+        "libgfxstream_host_decoder_common",
+        "libgfxstream_host_health",
     ],
     cflags: [
         "-fvisibility=hidden",
@@ -55,6 +74,7 @@ cc_library_static {
         "ColorBufferVk.cpp",
         "CompositorVk.cpp",
         "DebugUtilsHelper.cpp",
+        "DependencyGraph.cpp",
         "DeviceLostHelper.cpp",
         "DeviceOpTracker.cpp",
         "DisplaySurfaceVk.cpp",
@@ -86,22 +106,28 @@ cc_library_static {
         "VkDecoderGlobalState.cpp", // took more than 400 seconds
         "VkDecoder.cpp",
     ],
+    export_include_dirs: [
+        ".",
+    ],
 }
 
 // Run with `atest --host gfxstream_vkformatutils_tests`
 cc_test_host {
     name: "gfxstream_vkformatutils_tests",
-    defaults: ["gfxstream_defaults"],
+    defaults: ["gfxstream_host_cc_defaults"],
     srcs: [
         "VkFormatUtils_unittest.cpp",
+    ],
+    header_libs: [
+        "libgfxstream_thirdparty_glm",
     ],
     shared_libs: [
         "libbase",
         "liblog",
     ],
     static_libs: [
-        "libgfxstream_thirdparty_glm",
         "gfxstream_host_common",
+        "libgfxstream_common_logging",
         "libgfxstream_host_vulkan_server",
         "libgtest",
         "libgmock",
@@ -114,7 +140,7 @@ cc_test_host {
 // Run with `atest --host gfxstream_vkguestmemoryutils_tests`
 cc_test_host {
     name: "gfxstream_vkemulatedphysicaldevicememory_tests",
-    defaults: ["gfxstream_defaults"],
+    defaults: ["gfxstream_host_cc_defaults"],
     srcs: [
         "VkEmulatedPhysicalDeviceMemoryTests.cpp",
     ],
@@ -123,10 +149,39 @@ cc_test_host {
         "liblog",
     ],
     static_libs: [
-        "gfxstream_base",
         "gfxstream_host_common",
+        "libgfxstream_common_base",
         "libgfxstream_host_features",
+        "libgfxstream_common_logging",
         "libgfxstream_host_vulkan_server",
+        "libgmock",
+        "libgtest",
+    ],
+    test_options: {
+        unit_test: true,
+    },
+    test_suites: [
+        "general-tests",
+    ],
+}
+
+// Run with `atest --host gfxstream_vkutil_tests`
+cc_test_host {
+    name: "gfxstream_vkutil_tests",
+    defaults: ["gfxstream_host_cc_defaults"],
+    srcs: [
+        "vk_util_unittest.cpp",
+    ],
+    shared_libs: [
+        "libbase",
+        "liblog",
+    ],
+    header_libs: [
+        "libgfxstream_host_vulkan_cereal_common",
+    ],
+    static_libs: [
+        "libgfxstream_host_vulkan_server",
+        "libgfxstream_common_logging",
         "libgtest",
         "libgmock",
     ],
@@ -141,7 +196,7 @@ cc_test_host {
 // Run with `atest --host gfxstream_vkguestqueueutils_tests`
 cc_test_host {
     name: "gfxstream_vkemulatedphysicaldevicequeue_tests",
-    defaults: ["gfxstream_defaults"],
+    defaults: ["gfxstream_host_cc_defaults"],
     srcs: [
         "VkEmulatedPhysicalDeviceQueueTests.cpp",
     ],
@@ -150,7 +205,7 @@ cc_test_host {
         "liblog",
     ],
     static_libs: [
-        "gfxstream_base",
+        "libgfxstream_common_base",
         "gfxstream_host_common",
         "libgfxstream_host_features",
         "libgfxstream_host_vulkan_server",

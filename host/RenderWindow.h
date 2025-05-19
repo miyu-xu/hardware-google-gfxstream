@@ -17,9 +17,9 @@
 
 #include "render-utils/render_api.h"
 
-#include "aemu/base/synchronization/MessageChannel.h"
-#include "aemu/base/threads/FunctorThread.h"
-#include "aemu/base/threads/Thread.h"
+#include "gfxstream/synchronization/MessageChannel.h"
+#include "gfxstream/threads/FunctorThread.h"
+#include "gfxstream/threads/Thread.h"
 #include "gfxstream/host/Features.h"
 
 namespace gfxstream {
@@ -62,7 +62,7 @@ public:
     //
     // Note that this call doesn't display anything, it just initializes
     // the library, use setupSubWindow() to display something.
-    RenderWindow(int width, int height, gfxstream::host::FeatureSet features,
+    RenderWindow(int width, int height, const gfxstream::host::FeatureSet& features,
                  bool use_thread, bool use_sub_window, bool egl2egl);
 
     // Destructor. This will automatically call removeSubWindow() is needed.
@@ -157,15 +157,15 @@ private:
 
     bool mValid = false;
     bool mHasSubWindow = false;
-    android::base::Thread* mThread = nullptr;
+    gfxstream::base::Thread* mThread = nullptr;
     RenderWindowChannel* mChannel = nullptr;
 
     // A worker thread to run repost() commands asynchronously.
     enum class RepostCommand : char {
         Repost, Sync
     };
-    android::base::MessageChannel<RepostCommand, 10> mRepostCommands;
-    android::base::FunctorThread mRepostThread;
+    gfxstream::base::MessageChannel<RepostCommand, 10> mRepostCommands;
+    gfxstream::base::FunctorThread mRepostThread;
 
     bool mPaused = false;
 };

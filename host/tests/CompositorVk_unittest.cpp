@@ -1,3 +1,18 @@
+// Copyright 2025 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expresso or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
 #include <gtest/gtest.h>
 
 #include "CompositorVk.h"
@@ -10,7 +25,7 @@
 #include <optional>
 
 #include "BorrowedImageVk.h"
-#include "aemu/base/synchronization/Lock.h"
+#include "gfxstream/synchronization/Lock.h"
 #include "gfxstream/ImageUtils.h"
 #include "tests/VkTestUtils.h"
 #include "vulkan/VulkanDispatch.h"
@@ -23,7 +38,7 @@ namespace {
 static constexpr const bool kDefaultSaveImageIfComparisonFailed = false;
 
 std::string GetTestDataPath(const std::string& basename) {
-    const std::filesystem::path currentPath = android::base::getProgramDirectory();
+    const std::filesystem::path currentPath = gfxstream::base::getProgramDirectory();
     return (currentPath / "tests" / "testdata" / basename).string();
 }
 
@@ -69,7 +84,7 @@ class CompositorVkTest : public ::testing::Test {
         k_vk->vkGetDeviceQueue(m_vkDevice, m_compositorQueueFamilyIndex, 0, &m_compositorVkQueue);
         ASSERT_NE(m_compositorVkQueue, VK_NULL_HANDLE);
 
-        m_compositorVkQueueLock = std::make_shared<android::base::Lock>();
+        m_compositorVkQueueLock = std::make_shared<gfxstream::base::Lock>();
     }
 
     void TearDown() override {
@@ -265,7 +280,7 @@ class CompositorVkTest : public ::testing::Test {
     VkDevice m_vkDevice = VK_NULL_HANDLE;
     VkCommandPool m_vkCommandPool = VK_NULL_HANDLE;
     VkQueue m_compositorVkQueue = VK_NULL_HANDLE;
-    std::shared_ptr<android::base::Lock> m_compositorVkQueueLock;
+    std::shared_ptr<gfxstream::base::Lock> m_compositorVkQueueLock;
 
    private:
     void createInstance() {

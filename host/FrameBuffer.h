@@ -29,26 +29,26 @@
 #include "Buffer.h"
 #include "ColorBuffer.h"
 #include "Compositor.h"
-#include "Display.h"
-#include "DisplaySurface.h"
-#include "ExternalObjectManager.h"
+#include "gfxstream/host/display.h"
+#include "gfxstream/host/display_surface.h"
+#include "gfxstream/host/external_object_manager.h"
 #include "Hwc2.h"
 #include "PostCommands.h"
 #include "PostWorker.h"
 #include "ProcessResources.h"
 #include "ReadbackWorker.h"
 #include "VsyncThread.h"
-#include "aemu/base/AsyncResult.h"
-#include "aemu/base/EventNotificationSupport.h"
-#include "aemu/base/HealthMonitor.h"
-#include "aemu/base/Metrics.h"
-#include "aemu/base/ThreadAnnotations.h"
-#include "aemu/base/files/Stream.h"
-#include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/synchronization/MessageChannel.h"
-#include "aemu/base/threads/Thread.h"
-#include "aemu/base/threads/WorkerThread.h"
+#include "gfxstream/AsyncResult.h"
+#include "gfxstream/EventNotificationSupport.h"
+#include "gfxstream/HealthMonitor.h"
+#include "gfxstream/Metrics.h"
+#include "gfxstream/ThreadAnnotations.h"
+#include "gfxstream/synchronization/Lock.h"
+#include "gfxstream/synchronization/MessageChannel.h"
+#include "gfxstream/threads/Thread.h"
+#include "gfxstream/threads/WorkerThread.h"
 #include "gfxstream/host/Features.h"
+#include "gfxstream/host/RenderDoc.h"
 
 #if GFXSTREAM_ENABLE_HOST_GLES
 
@@ -71,6 +71,11 @@
 #include "GlesCompat.h"
 #endif
 
+#include "render-utils/Renderer.h"
+#include "render-utils/render_api.h"
+#include "render-utils/stream.h"
+#include "render-utils/virtio_gpu_ops.h"
+
 // values for 'param' argument of rcGetFBParam
 #define FB_WIDTH 1
 #define FB_HEIGHT 2
@@ -80,13 +85,6 @@
 #define FB_MIN_SWAP_INTERVAL 6
 #define FB_MAX_SWAP_INTERVAL 7
 
-#include "render-utils/Renderer.h"
-#include "render-utils/virtio_gpu_ops.h"
-#include "render-utils/render_api.h"
-#include "snapshot/common.h"
-#include "utils/RenderDoc.h"
-#include "vulkan/vk_util.h"
-
 namespace gfxstream {
 namespace vk {
 class DisplayVk;
@@ -95,9 +93,7 @@ class DisplayVk;
 
 namespace gfxstream {
 
-using android::base::CreateMetricsLogger;
-using emugl::HealthMonitor;
-using emugl::MetricsLogger;
+using gfxstream::base::CreateMetricsLogger;
 
 struct BufferRef {
     BufferPtr buffer;
@@ -127,7 +123,7 @@ typedef std::unordered_map<uint64_t, CallbackMap> ProcOwnedCleanupCallbacks;
 // There is only one global instance, that can be retrieved with getFB(),
 // and which must be previously setup by calling initialize().
 //
-class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferChangeEvent> {
+class FrameBuffer : public gfxstream::base::EventNotificationSupport<FrameBufferChangeEvent> {
    public:
     // Initialize the global instance.
     // |width| and |height| are the dimensions of the emulator GPU display
@@ -136,7 +132,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // own sub-windows. If false, this means the caller will use
     // setPostCallback() instead to retrieve the content.
     // Returns true on success, false otherwise.
-    static bool initialize(int width, int height, gfxstream::host::FeatureSet features,
+    static bool initialize(int width, int height, const gfxstream::host::FeatureSet& features,
                            bool useSubWindow, bool egl2egl);
 
     // Finalize the instance.
@@ -392,10 +388,10 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     ~FrameBuffer();
 
-    void onSave(android::base::Stream* stream,
-                const android::snapshot::ITextureSaverPtr& textureSaver);
-    bool onLoad(android::base::Stream* stream,
-                const android::snapshot::ITextureLoaderPtr& textureLoader);
+    void onSave(gfxstream::Stream* stream,
+                const ITextureSaverPtr& textureSaver);
+    bool onLoad(gfxstream::Stream* stream,
+                const ITextureLoaderPtr& textureLoader);
 
     // lock and unlock handles (EmulatedEglContext, ColorBuffer, EmulatedEglWindowSurface)
     void lock() ACQUIRE(m_lock);
@@ -440,7 +436,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     ColorBufferPtr findColorBuffer(HandleType p_colorbuffer);
     BufferPtr findBuffer(HandleType p_buffer);
 
-    void registerProcessCleanupCallback(void* key,
+    void registerProcessCleanupCallback(void* key, uint64_t contextId,
                                         std::function<void()> callback);
     void unregisterProcessCleanupCallback(void* key);
 
@@ -486,7 +482,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     HealthMonitor<>* getHealthMonitor() { return m_healthMonitor.get(); }
 
-    emugl::MetricsLogger& getMetricsLogger() {
+    MetricsLogger& getMetricsLogger() {
         return *m_logger;
     }
 
@@ -687,7 +683,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     const gfxstream::host::FeatureSet& getFeatures() const { return m_features; }
 
    private:
-    FrameBuffer(int p_width, int p_height, gfxstream::host::FeatureSet features, bool useSubWindow);
+    FrameBuffer(int p_width, int p_height, const gfxstream::host::FeatureSet& features, bool useSubWindow);
     // Requires the caller to hold the m_colorBufferMapLock until the new handle is inserted into of
     // the object handle maps.
     HandleType genHandle_locked();
@@ -755,11 +751,10 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     int m_statsNumFrames = 0;
     long long m_statsStartTime = 0;
 
-    android::base::Thread* m_perfThread;
-    android::base::Lock m_lock;
-    android::base::ReadWriteLock m_contextStructureLock;
-    android::base::Lock m_colorBufferMapLock;
-    uint64_t mFrameNumber;
+    gfxstream::base::Lock m_lock;
+    gfxstream::base::ReadWriteLock m_contextStructureLock;
+    gfxstream::base::Lock m_colorBufferMapLock;
+    uint64_t mFrameNumber = 0;
     FBNativeWindowType m_nativeWindow = 0;
 
     ColorBufferMap m_colorbuffers;
@@ -804,7 +799,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
         uint32_t width;
         uint32_t height;
     };
-    android::base::WorkerProcessingResult sendReadbackWorkerCmd(
+    gfxstream::base::WorkerProcessingResult sendReadbackWorkerCmd(
         const Readback& readback);
     bool m_guestPostedAFrame = false;
 
@@ -825,7 +820,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     };
     std::map<uint32_t, onPost> m_onPost;
     ReadbackWorker* m_readbackWorker = nullptr;
-    android::base::WorkerThread<Readback> m_readbackThread;
+    gfxstream::base::WorkerThread<Readback> m_readbackThread;
     std::atomic_bool m_readbackThreadStarted = false;
 
     std::string m_graphicsAdapterVendor;
@@ -833,7 +828,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     std::string m_graphicsApiVersion;
     std::string m_graphicsApiExtensions;
     std::string m_graphicsDeviceExtensions;
-    android::base::Lock m_procOwnedResourcesLock;
+    gfxstream::base::Lock m_procOwnedResourcesLock;
     std::unordered_map<uint64_t, std::unique_ptr<ProcessResources>> m_procOwnedResources;
 
     // Flag set when emulator is shutting down.
@@ -855,8 +850,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     std::unique_ptr<PostWorker> m_postWorker = {};
     std::atomic_bool m_postThreadStarted = false;
-    android::base::WorkerThread<Post> m_postThread;
-    android::base::WorkerProcessingResult postWorkerFunc(Post& post);
+    gfxstream::base::WorkerThread<Post> m_postThread;
+    gfxstream::base::WorkerProcessingResult postWorkerFunc(Post& post);
     std::future<void> sendPostWorkerCmd(Post post);
 
     bool m_vulkanEnabled = false;
@@ -864,7 +859,7 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // so we don't need refcounting on the host side.
     bool m_guestManagedColorBufferLifetime = false;
 
-    android::base::MessageChannel<HandleType, 1024>
+    gfxstream::base::MessageChannel<HandleType, 1024>
         mOutstandingColorBufferDestroys;
 
     Compositor* m_compositor = nullptr;
@@ -876,11 +871,11 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // calling FrameBuffer::initialize(). DisplayVk is actually owned by VkEmulation.
     vk::DisplayVk* m_displayVk = nullptr;
     VkInstance m_vkInstance = VK_NULL_HANDLE;
-    std::unique_ptr<emugl::RenderDoc> m_renderDoc = nullptr;
+    std::unique_ptr<gfxstream::host::RenderDoc> m_renderDoc = nullptr;
 
     // TODO(b/233939967): Refactor to create DisplayGl and DisplaySurfaceGl
     // and remove usage of non-generic DisplayVk.
-    Display* m_display;
+    Display* m_display = nullptr;
     std::unique_ptr<DisplaySurface> m_displaySurface;
 
     // CompositorGl.

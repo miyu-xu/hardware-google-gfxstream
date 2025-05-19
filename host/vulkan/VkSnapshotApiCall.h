@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "aemu/base/containers/EntityManager.h"
+#include "gfxstream/containers/EntityManager.h"
 
 namespace gfxstream {
 namespace vk {
@@ -31,6 +31,7 @@ struct VkSnapshotApiCallInfo {
 
     // Book-keeping for which handles were created by this API
     std::vector<uint64_t> createdHandles;
+    std::vector<uint64_t> depends;
 
     // Extra boxed handles created for this API call that are not identifiable
     // solely from the API parameters itself. For example, the extra boxed `VkQueue`s
@@ -50,7 +51,7 @@ struct VkSnapshotApiCallInfo {
     }
 };
 
-using VkSnapshotApiCallManager = android::base::EntityManager<32, 16, 16, VkSnapshotApiCallInfo>;
+using VkSnapshotApiCallManager = gfxstream::base::EntityManager<32, 16, 16, VkSnapshotApiCallInfo>;
 
 }  // namespace vk
 }  // namespace gfxstream

@@ -14,29 +14,21 @@
 
 #include "GLSnapshotTesting.h"
 
-#include "aemu/base/files/PathUtils.h"
-#include "aemu/base/files/StdioStream.h"
-#include "aemu/base/system/System.h"
-#include "snapshot/TextureLoader.h"
-#include "snapshot/TextureSaver.h"
-
-#include "GLTestUtils.h"
-#include "OpenGLTestContext.h"
-
-#include <gtest/gtest.h>
-
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <GLES3/gl31.h>
+#include <gtest/gtest.h>
+
+#include "GLTestUtils.h"
+#include "OpenGLTestContext.h"
+#include "gfxstream/host/mem_stream.h"
+#include "gfxstream/system/System.h"
+#include "render-utils/snapshot_operations.h"
 
 namespace gfxstream {
 namespace gl {
 
 static constexpr const GLenum kNoError = GL_NO_ERROR;
-
-using android::base::StdioStream;
-using android::snapshot::TextureLoader;
-using android::snapshot::TextureSaver;
 
 std::string describeGlEnum(GLenum enumValue) {
     std::ostringstream description;
@@ -235,63 +227,49 @@ testing::AssertionResult compareGlobalGlFloatv(
 
 void SnapshotTest::SetUp() {
     GLTest::SetUp();
-    mTestSystem.getTempRoot()->makeSubDir("Snapshots");
-    mSnapshotPath = mTestSystem.getTempRoot()->makeSubPath("Snapshots");
 }
 
-void SnapshotTest::saveSnapshot(const std::string streamFile,
-                                const std::string textureFile) {
+void SnapshotTest::saveSnapshot(gfxstream::Stream* stream,
+                                const ITextureSaverPtr& textureSaver) {
     const EGLDispatch* egl = LazyLoadedEGLDispatch::get();
 
-    std::unique_ptr<StdioStream> m_stream(new StdioStream(
-            android_fopen(streamFile.c_str(), "wb"), StdioStream::kOwner));
-    auto egl_stream = static_cast<EGLStreamKHR>(m_stream.get());
-    std::unique_ptr<TextureSaver> m_texture_saver(new TextureSaver(StdioStream(
-            android_fopen(textureFile.c_str(), "wb"), StdioStream::kOwner)));
+    auto eglStream = static_cast<EGLStreamKHR>(stream);
 
-    egl->eglPreSaveContext(m_display, m_context, egl_stream);
-    egl->eglSaveAllImages(m_display, egl_stream, &m_texture_saver);
+    egl->eglPreSaveContext(m_display, m_context, eglStream);
+    egl->eglSaveAllImages(m_display, eglStream, &textureSaver);
 
-    egl->eglSaveContext(m_display, m_context, egl_stream);
+    egl->eglSaveContext(m_display, m_context, eglStream);
 
     // Skip saving a bunch of FrameBuffer's fields
     // Skip saving colorbuffers
     // Skip saving window surfaces
 
-    egl->eglSaveConfig(m_display, m_config, egl_stream);
+    egl->eglSaveConfig(m_display, m_config, eglStream);
 
     // Skip saving a bunch of process-owned objects
 
-    egl->eglPostSaveContext(m_display, m_context, egl_stream);
-
-    m_stream->close();
-    m_texture_saver->done();
+    egl->eglPostSaveContext(m_display, m_context, eglStream);
 }
 
-void SnapshotTest::loadSnapshot(const std::string streamFile,
-                                const std::string textureFile) {
+void SnapshotTest::loadSnapshot(gfxstream::Stream* stream,
+                                const ITextureLoaderPtr& textureLoader) {
+
     const EGLDispatch* egl = LazyLoadedEGLDispatch::get();
 
-    std::unique_ptr<StdioStream> m_stream(new StdioStream(
-            android_fopen(streamFile.c_str(), "rb"), StdioStream::kOwner));
-    auto egl_stream = static_cast<EGLStreamKHR>(m_stream.get());
-    std::shared_ptr<TextureLoader> m_texture_loader(
-            new TextureLoader(StdioStream(android_fopen(textureFile.c_str(), "rb"),
-                                          StdioStream::kOwner)));
+    auto eglStream = static_cast<EGLStreamKHR>(stream);
 
-    egl->eglLoadAllImages(m_display, egl_stream, &m_texture_loader);
+    egl->eglLoadAllImages(m_display, eglStream, &textureLoader);
 
     EGLint contextAttribs[5] = {EGL_CONTEXT_CLIENT_VERSION, 3,
                                 EGL_CONTEXT_MINOR_VERSION_KHR, 0, EGL_NONE};
 
-    m_context = egl->eglLoadContext(m_display, &contextAttribs[0], egl_stream);
-    m_config = egl->eglLoadConfig(m_display, egl_stream);
+    m_context = egl->eglLoadContext(m_display, &contextAttribs[0], eglStream);
+    m_config = egl->eglLoadConfig(m_display, eglStream);
     m_surface = pbufferSurface(m_display, m_config, kTestSurfaceSize[0],
                                kTestSurfaceSize[0]);
-    egl->eglPostLoadAllImages(m_display, egl_stream);
+    egl->eglPostLoadAllImages(m_display, eglStream);
 
-    m_stream->close();
-    m_texture_loader->join();
+    textureLoader->join();
     egl->eglMakeCurrent(m_display, m_surface, m_surface, m_context);
 }
 
@@ -301,19 +279,18 @@ void SnapshotTest::preloadReset() {
 }
 
 void SnapshotTest::doSnapshot(std::function<void()> preloadCheck = [] {}) {
-    std::string timeStamp =
-            std::to_string(android::base::getUnixTimeUs());
-    std::string snapshotFile =
-            android::base::pj({mSnapshotPath, std::string("snapshot_") + timeStamp + ".snap"});
-    std::string textureFile =
-            android::base::pj({mSnapshotPath, std::string("textures_") + timeStamp + ".stex"});
+    std::shared_ptr<InMemoryTextureSaverLoader> textureSaverLoader =
+        std::make_shared<InMemoryTextureSaverLoader>();
 
-    saveSnapshot(snapshotFile, textureFile);
+    gfxstream::MemStream saveStream;
+    saveSnapshot(&saveStream, textureSaverLoader);
 
     preloadReset();
     preloadCheck();
 
-    loadSnapshot(snapshotFile, textureFile);
+    gfxstream::MemStream loadStream(
+        gfxstream::MemStream::Buffer(saveStream.buffer()));
+    loadSnapshot(&loadStream, textureSaverLoader);
 
     EXPECT_NE(m_context, EGL_NO_CONTEXT);
     EXPECT_NE(m_surface, EGL_NO_SURFACE);

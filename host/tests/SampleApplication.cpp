@@ -14,17 +14,12 @@
 
 #include "SampleApplication.h"
 
-#include "aemu/base/GLObjectCounter.h"
-#include "aemu/base/synchronization/ConditionVariable.h"
-#include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/system/System.h"
-#include "aemu/base/threads/FunctorThread.h"
-#include "aemu/base/testing/TestSystem.h"
-#include "host-common/GraphicsAgentFactory.h"
-#include "host-common/multi_display_agent.h"
-#include "host-common/MultiDisplay.h"
-#include "host-common/opengl/misc.h"
 #include "Standalone.h"
+#include "gfxstream/host/renderer_operations.h"
+#include "gfxstream/synchronization/ConditionVariable.h"
+#include "gfxstream/synchronization/Lock.h"
+#include "gfxstream/system/System.h"
+#include "gfxstream/threads/FunctorThread.h"
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -32,12 +27,11 @@
 
 namespace gfxstream {
 
-using android::base::AutoLock;
-using android::base::ConditionVariable;
-using android::base::FunctorThread;
-using android::base::Lock;
-using android::base::MessageChannel;
-using android::base::TestSystem;
+using gfxstream::base::AutoLock;
+using gfxstream::base::ConditionVariable;
+using gfxstream::base::FunctorThread;
+using gfxstream::base::Lock;
+using gfxstream::base::MessageChannel;
 using gl::EmulatedEglFenceSync;
 using gl::GLESApi;
 using gl::GLESApi_3_0;
@@ -97,20 +91,20 @@ static TestWindow* sTestWindow() {
 }
 
 bool shouldUseHostGpu() {
-    bool useHost = android::base::getEnvironmentVariable("ANDROID_EMU_TEST_WITH_HOST_GPU") == "1";
+    bool useHost = gfxstream::base::getEnvironmentVariable("ANDROID_EMU_TEST_WITH_HOST_GPU") == "1";
 
     // Also set the global emugl renderer accordingly.
     if (useHost) {
-        emugl::setRenderer(SELECTED_RENDERER_HOST);
+        set_gfxstream_renderer(SELECTED_RENDERER_HOST);
     } else {
-        emugl::setRenderer(SELECTED_RENDERER_SWIFTSHADER_INDIRECT);
+        set_gfxstream_renderer(SELECTED_RENDERER_SWIFTSHADER_INDIRECT);
     }
 
     return useHost;
 }
 
 bool shouldUseWindow() {
-    bool useWindow = android::base::getEnvironmentVariable("ANDROID_EMU_TEST_WITH_WINDOW") == "1";
+    bool useWindow = gfxstream::base::getEnvironmentVariable("ANDROID_EMU_TEST_WITH_WINDOW") == "1";
     return useWindow;
 }
 
@@ -129,7 +123,7 @@ public:
         mThread([this] {
             while (true) {
                 if (mShouldStop) return 0;
-                android::base::sleepUs(mRefreshIntervalUs);
+                gfxstream::base::sleepUs(mRefreshIntervalUs);
                 AutoLock lock(mLock);
                 mSync = 1;
                 mCv.signal();
@@ -234,16 +228,11 @@ private:
     ComposeDevice* mComposeDevice;
 };
 
-extern "C" const QAndroidMultiDisplayAgent* const gMockQAndroidMultiDisplayAgent;
-
 // SampleApplication implementation/////////////////////////////////////////////
 SampleApplication::SampleApplication(int windowWidth, int windowHeight, int refreshRate, GLESApi glVersion, bool compose) :
     mWidth(windowWidth), mHeight(windowHeight), mRefreshRate(refreshRate), mIsCompose(compose) {
 
     // setupStandaloneLibrarySearchPaths();
-    emugl::setGLObjectCounter(android::base::GLObjectCounter::get());
-    emugl::set_emugl_window_operations(*getGraphicsAgents()->emu);;
-    emugl::set_emugl_multi_display_operations(*getGraphicsAgents()->multi_display);
     gl::LazyLoadedEGLDispatch::get();
     if (glVersion == GLESApi_CM) gl::LazyLoadedGLESv1Dispatch::get();
     gl::LazyLoadedGLESv2Dispatch::get();

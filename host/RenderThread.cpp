@@ -15,48 +15,37 @@
 */
 #include "RenderThread.h"
 
+#include <assert.h>
+#include <string.h>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+#include <unordered_map>
+
 #include "ChannelStream.h"
 #include "FrameBuffer.h"
 #include "ReadBuffer.h"
 #include "RenderChannelImpl.h"
-#include "RenderThreadInfo.h"
-#include "RingStream.h"
-#include "VkDecoderContext.h"
-#include "aemu/base/HealthMonitor.h"
-#include "aemu/base/Metrics.h"
-#include "aemu/base/files/StreamSerializing.h"
-#include "aemu/base/synchronization/Lock.h"
-#include "aemu/base/synchronization/MessageChannel.h"
-#include "aemu/base/system/System.h"
-#include "apigen-codec-common/ChecksumCalculatorThreadInfo.h"
-#include "host-common/GfxstreamFatalError.h"
-#include "host-common/logging.h"
-#include "vulkan/VkCommonOperations.h"
-
 #if GFXSTREAM_ENABLE_HOST_GLES
 #include "RenderControl.h"
 #endif
-
-#define EMUGL_DEBUG_LEVEL 0
-#include "host-common/debug.h"
-
-#ifndef _WIN32
-#include <unistd.h>
-#endif
-
-#include <assert.h>
-#include <string.h>
-
-#include <unordered_map>
+#include "RenderThreadInfo.h"
+#include "VkDecoderContext.h"
+#include "gfxstream/host/ChecksumCalculatorThreadInfo.h"
+#include "gfxstream/HealthMonitor.h"
+#include "gfxstream/Metrics.h"
+#include "gfxstream/common/logging.h"
+#include "gfxstream/host/stream_utils.h"
+#include "gfxstream/synchronization/Lock.h"
+#include "gfxstream/synchronization/MessageChannel.h"
+#include "gfxstream/system/System.h"
+#include "vulkan/VkCommonOperations.h"
 
 namespace gfxstream {
 
-using android::base::AutoLock;
-using android::base::EventHangMetadata;
-using android::base::MessageChannel;
-using emugl::ABORT_REASON_OTHER;
-using emugl::FatalError;
-using emugl::GfxApiLogger;
+using gfxstream::base::AutoLock;
+using gfxstream::base::EventHangMetadata;
+using gfxstream::host::GfxApiLogger;
 using vk::VkDecoderContext;
 
 struct RenderThread::SnapshotObjects {
@@ -68,7 +57,7 @@ struct RenderThread::SnapshotObjects {
 };
 
 static bool getBenchmarkEnabledFromEnv() {
-    auto threadEnabled = android::base::getEnvironmentVariable("ANDROID_EMUGL_RENDERTHREAD_STATS");
+    auto threadEnabled = gfxstream::base::getEnvironmentVariable("ANDROID_EMUGL_RENDERTHREAD_STATS");
     if (threadEnabled == "1") return true;
     return false;
 }
@@ -80,22 +69,22 @@ static constexpr int kStreamBufferSize = 128 * 1024;
 static constexpr int kMinThreadsToRunUnlimited = 5;
 
 // A thread run limiter that limits render threads to run one slice at a time.
-static android::base::Lock sThreadRunLimiter;
+static gfxstream::base::Lock sThreadRunLimiter;
 
 RenderThread::RenderThread(RenderChannelImpl* channel,
-                           android::base::Stream* loadStream,
+                           gfxstream::Stream* load,
                            uint32_t virtioGpuContextId)
-    : android::base::Thread(android::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024,
+    : gfxstream::base::Thread(gfxstream::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024,
                             "RenderThread"),
       mChannel(channel),
-      mRunInLimitedMode(android::base::getCpuCoreCount() < kMinThreadsToRunUnlimited),
+      mRunInLimitedMode(gfxstream::base::getCpuCoreCount() < kMinThreadsToRunUnlimited),
       mContextId(virtioGpuContextId)
 {
-    if (loadStream) {
-        const bool success = loadStream->getByte();
+    if (load) {
+        const bool success = load->getByte();
         if (success) {
             mStream.emplace(0);
-            android::base::loadStream(loadStream, &*mStream);
+            loadStream(load, &*mStream);
             mState = SnapshotState::StartLoading;
         } else {
             mFinished.store(true, std::memory_order_relaxed);
@@ -103,22 +92,17 @@ RenderThread::RenderThread(RenderChannelImpl* channel,
     }
 }
 
-RenderThread::RenderThread(
-        struct asg_context context,
-        android::base::Stream* loadStream,
-        android::emulation::asg::ConsumerCallbacks callbacks,
-        uint32_t contextId, uint32_t capsetId,
-        std::optional<std::string> nameOpt)
-    : android::base::Thread(android::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024,
-                            std::move(nameOpt)),
-      mRingStream(
-          new RingStream(context, callbacks, kStreamBufferSize)),
-      mContextId(contextId), mCapsetId(capsetId) {
-    if (loadStream) {
-        const bool success = loadStream->getByte();
+RenderThread::RenderThread(const AsgConsumerCreateInfo& info, Stream* load)
+    : gfxstream::base::Thread(gfxstream::base::ThreadFlags::MaskSignals, 2 * 1024 * 1024,
+                              info.virtioGpuContextName ? *info.virtioGpuContextName : ""),
+      mRingStream(new RingStream(info, kStreamBufferSize)),
+      mContextId(info.virtioGpuContextId ? *info.virtioGpuContextId : 0),
+      mCapsetId(info.virtioGpuCapsetId ? *info.virtioGpuCapsetId : 0) {
+    if (load) {
+        const bool success = load->getByte();
         if (success) {
             mStream.emplace(0);
-            android::base::loadStream(loadStream, &*mStream);
+            loadStream(load, &*mStream);
             mState = SnapshotState::StartLoading;
         } else {
             mFinished.store(true, std::memory_order_relaxed);
@@ -157,14 +141,14 @@ void RenderThread::resume() {
     waitForSnapshotCompletion(&lock);
 
     mNeedReloadProcessResources = true;
-    mStream.clear();
+    mStream.reset();
     mState = SnapshotState::Empty;
     if (mChannel) mChannel->resume();
     if (mRingStream) mRingStream->resume();
     mSnapshotSignal.broadcastAndUnlock(&lock);
 }
 
-void RenderThread::save(android::base::Stream* stream) {
+void RenderThread::save(gfxstream::Stream* stream) {
     bool success;
     {
         AutoLock lock(mLock);
@@ -178,7 +162,7 @@ void RenderThread::save(android::base::Stream* stream) {
     if (success) {
         assert(mStream);
         stream->putByte(1);
-        android::base::saveStream(stream, *mStream);
+        saveStream(stream, *mStream);
     } else {
         stream->putByte(0);
     }
@@ -248,11 +232,16 @@ void RenderThread::waitForFinished() {
 void RenderThread::sendExitSignal() {
     AutoLock lock(mLock);
     if (!mFinished.load(std::memory_order_relaxed)) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-            << "RenderThread exit signal sent before finished";
+        GFXSTREAM_FATAL("RenderThread exit signal sent before finished");
     }
     mCanExit.store(true, std::memory_order_relaxed);
     mExitSignal.broadcastAndUnlock(&lock);
+}
+
+void RenderThread::addressSpaceGraphicsReloadRingConfig() {
+    if (mRingStream) {
+        mRingStream->reloadRingConfig();
+    }
 }
 
 void RenderThread::setFinished() {
@@ -273,7 +262,7 @@ void RenderThread::setFinished() {
 
 void RenderThread::waitForExitSignal() {
     AutoLock lock(mLock);
-    GL_LOG("Waiting for exit signal RenderThread @%p", this);
+    GFXSTREAM_DEBUG("Waiting for exit signal RenderThread @%p", this);
     while (!mCanExit.load(std::memory_order_relaxed)) {
         mExitSignal.wait(&lock);
     }
@@ -281,7 +270,7 @@ void RenderThread::waitForExitSignal() {
 
 intptr_t RenderThread::main() {
     if (mFinished.load(std::memory_order_relaxed)) {
-        ERR("Error: fail loading a RenderThread @%p", this);
+        GFXSTREAM_ERROR("Error: fail loading a RenderThread @%p", this);
         return 0;
     }
 
@@ -301,7 +290,7 @@ intptr_t RenderThread::main() {
 #endif
 
     if (!mChannel && !mRingStream) {
-        GL_LOG("Exited a loader RenderThread @%p", this);
+        GFXSTREAM_DEBUG("Exited a loader RenderThread @%p", this);
         mFinished.store(true, std::memory_order_relaxed);
         return 0;
     }
@@ -327,15 +316,11 @@ intptr_t RenderThread::main() {
         tInfo->m_vkInfo.emplace();
     }
 
-#if GFXSTREAM_ENABLE_HOST_MAGMA
-    tInfo->m_magmaInfo.emplace(mContextId);
-#endif
-
     // This is the only place where we try loading from snapshot.
     // But the context bind / restoration will be delayed after receiving
     // the first GL command.
     if (loadSnapshot(snapshotObjects)) {
-        GL_LOG("Loaded RenderThread @%p from snapshot", this);
+        GFXSTREAM_DEBUG("Loaded RenderThread @%p from snapshot", this);
         needRestoreFromSnapshot = true;
     } else {
         // Not loading from a snapshot: continue regular startup, read
@@ -347,7 +332,7 @@ intptr_t RenderThread::main() {
                 setFinished();
                 tInfo.reset();
                 waitForExitSignal();
-                GL_LOG("Exited a RenderThread @%p early", this);
+                GFXSTREAM_DEBUG("Exited a RenderThread @%p early", this);
                 return 0;
             }
         }
@@ -358,7 +343,7 @@ intptr_t RenderThread::main() {
 
     int stats_totalBytes = 0;
     uint64_t stats_progressTimeUs = 0;
-    auto stats_t0 = android::base::getHighResTimeUs() / 1000;
+    auto stats_t0 = gfxstream::base::getHighResTimeUs() / 1000;
     bool benchmarkEnabled = getBenchmarkEnabledFromEnv();
 
     //
@@ -412,7 +397,6 @@ intptr_t RenderThread::main() {
                 if (saveSnapshot(snapshotObjects)) {
                     continue;
                 } else {
-                    D("Warning: render thread could not read data from stream");
                     break;
                 }
             } else if (needRestoreFromSnapshot) {
@@ -428,23 +412,19 @@ intptr_t RenderThread::main() {
             }
         }
 
-        DD("render thread read %i bytes, op %i, packet size %i",
-           readBuf.validData(), *(uint32_t*)readBuf.buf(),
-           *(uint32_t*)(readBuf.buf() + 4));
-
         //
         // log received bandwidth statistics
         //
         if (benchmarkEnabled) {
             stats_totalBytes += readBuf.validData();
-            auto dt = android::base::getHighResTimeUs() / 1000 - stats_t0;
+            auto dt = gfxstream::base::getHighResTimeUs() / 1000 - stats_t0;
             if (dt > 1000) {
                 float dts = (float)dt / 1000.0f;
                 printf("Used Bandwidth %5.3f MB/s, time in progress %f ms total %f ms\n", ((float)stats_totalBytes / dts) / (1024.0f*1024.0f),
                         stats_progressTimeUs / 1000.0f,
                         (float)dt);
                 readBuf.printStats();
-                stats_t0 = android::base::getHighResTimeUs() / 1000;
+                stats_t0 = gfxstream::base::getHighResTimeUs() / 1000;
                 stats_progressTimeUs = 0;
                 stats_totalBytes = 0;
             }
@@ -506,18 +486,22 @@ intptr_t RenderThread::main() {
             // Note: It's risky to limit Vulkan decoding to one thread,
             // so we do it outside the limiter
             if (tInfo->m_vkInfo) {
-                tInfo->m_vkInfo->ctx_id = mContextId;
+                if (tInfo->m_vkInfo->ctx_id == 0) {
+                    tInfo->m_vkInfo->ctx_id = mContextId;
+                }
                 VkDecoderContext context = {
                     .processName = contextName,
                     .gfxApiLogger = &gfxLogger,
                     .healthMonitor = FrameBuffer::getFB()->getHealthMonitor(),
                     .metricsLogger = &metricsLogger,
+                    .shouldExit = &(tInfo->m_shouldExit),
                 };
                 last = tInfo->m_vkInfo->m_vkDec.decode(readBuf.buf(), readBuf.validData(), ioStream,
                                                       processResources, context);
                 if (last > 0) {
                     if (!processResources) {
-                        ERR("Processed some Vulkan packets without process resources created. "
+                        GFXSTREAM_ERROR(
+                            "Processed some Vulkan packets without process resources created. "
                             "That's problematic.");
                     }
                     readBuf.consume(last);
@@ -525,7 +509,7 @@ intptr_t RenderThread::main() {
                 }
             }
 
-            std::optional<android::base::AutoLock> limitedModeLock;
+            std::optional<gfxstream::base::AutoLock> limitedModeLock;
             if (mRunInLimitedMode) {
                 limitedModeLock.emplace(sThreadRunLimiter);
             }
@@ -590,22 +574,6 @@ intptr_t RenderThread::main() {
                 }
             }
 #endif
-
-            //
-            // try to process some of the command buffer using the Magma
-            // decoder
-            //
-#if GFXSTREAM_ENABLE_HOST_MAGMA
-            if (tInfo->m_magmaInfo && tInfo->m_magmaInfo->mMagmaDec)
-            {
-                last = tInfo->m_magmaInfo->mMagmaDec->decode(readBuf.buf(), readBuf.validData(),
-                                                            ioStream, &checksumCalc);
-                if (last > 0) {
-                    readBuf.consume(last);
-                    progress = true;
-                }
-            }
-#endif
         } while (progress);
     }
 
@@ -626,7 +594,7 @@ intptr_t RenderThread::main() {
     tInfo.reset();
     waitForExitSignal();
 
-    GL_LOG("Exited a RenderThread @%p", this);
+    GFXSTREAM_DEBUG("Exited a RenderThread @%p", this);
     return 0;
 }
 

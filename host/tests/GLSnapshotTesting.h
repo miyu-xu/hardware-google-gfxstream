@@ -14,16 +14,19 @@
 
 #pragma once
 
-#include "aemu/base/files/PathUtils.h"
-#include "aemu/base/system/System.h"
-#include "aemu/base/testing/TestSystem.h"
-
-#include "OpenGLTestContext.h"
-
-#include <gtest/gtest.h>
-
 #include <memory>
 #include <vector>
+#include <unordered_map>
+
+#include "InMemoryTextureSaverLoader.h"
+#include "OpenGLTestContext.h"
+#include "gfxstream/system/System.h"
+#include "render-utils/snapshot_operations.h"
+
+// Clashes with X11's `None`  preprocessor...
+// clang-format off
+#include <gtest/gtest.h>
+// clang-format on
 
 namespace gfxstream {
 namespace gl {
@@ -200,17 +203,13 @@ class SnapshotTest : public gfxstream::gl::GLTest {
     void SetUp() override;
 
     // Mimics FrameBuffer.onSave, with fewer objects to manage.
-    // |streamFile| is a filename into which the snapshot will be saved.
-    // |textureFile| is a filename into which the textures will be saved.
-    void saveSnapshot(const std::string streamFile,
-                      const std::string textureFile);
+    void saveSnapshot(gfxstream::Stream* stream,
+                      const ITextureSaverPtr& textureSaver);
 
     // Mimics FrameBuffer.onLoad, with fewer objects to manage.
     // Assumes that a valid display is present.
-    // |streamFile| is a filename from which the snapshot will be loaded.
-    // |textureFile| is a filename from which the textures will be loaded.
-    void loadSnapshot(const std::string streamFile,
-                      const std::string textureFile);
+    void loadSnapshot(gfxstream::Stream* stream,
+                      const ITextureLoaderPtr& textureLoader);
 
     // Performs a teardown and reset of graphics objects in preparation for
     // a snapshot load.
@@ -220,10 +219,6 @@ class SnapshotTest : public gfxstream::gl::GLTest {
     // To verify that state has been reset to some default before the load,
     // assertions can be performed in |preloadCheck|.
     void doSnapshot(std::function<void()> preloadCheck);
-
-protected:
-    android::base::TestSystem mTestSystem;
-    std::string mSnapshotPath = {};
 };
 
 // SnapshotPreserveTest - A helper class building on SnapshotTest for granular

@@ -28,14 +28,11 @@
 #include "TextureDraw.h"
 #include "TextureResize.h"
 #include "gl/YUVConverter.h"
-#include "host-common/GfxstreamFatalError.h"
-#include "host-common/opengl/misc.h"
+#include "gfxstream/host/renderer_operations.h"
 
 #define DEBUG_CB_FBO 0
 
-using android::base::ManagedDescriptor;
-using emugl::ABORT_REASON_OTHER;
-using emugl::FatalError;
+using gfxstream::base::ManagedDescriptor;
 
 namespace gfxstream {
 namespace gl {
@@ -65,7 +62,7 @@ bool bindFbo(GLuint* fbo, GLuint tex, bool ensureTextureAttached) {
 #if DEBUG_CB_FBO
     GLenum status = s_gles2.glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
-        ERR("ColorBufferGl::bindFbo: FBO not complete: %#x\n", status);
+        GFXSTREAM_ERROR("ColorBufferGl::bindFbo: FBO not complete: %#x\n", status);
         s_gles2.glBindFramebuffer(GL_FRAMEBUFFER, 0);
         s_gles2.glDeleteFramebuffers(1, fbo);
         *fbo = 0;
@@ -259,7 +256,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
     if (!sGetFormatParameters(&p_internalFormat, &texFormat, &pixelType,
                               &bytesPerPixel, &p_sizedInternalFormat,
                               &isBlob)) {
-        ERR("ColorBufferGl::create invalid format 0x%x", p_internalFormat);
+        GFXSTREAM_ERROR("ColorBufferGl::create invalid format 0x%x", p_internalFormat);
         return nullptr;
     }
     const unsigned long bufsize = ((unsigned long)bytesPerPixel) * p_width
@@ -340,7 +337,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
     }
 
     // desktop GL only: use GL_UNSIGNED_INT_8_8_8_8_REV for faster readback.
-    if (emugl::getRenderer() == SELECTED_RENDERER_HOST) {
+    if (get_gfxstream_renderer() == SELECTED_RENDERER_HOST) {
 #define GL_UNSIGNED_INT_8_8_8_8           0x8035
 #define GL_UNSIGNED_INT_8_8_8_8_REV       0x8367
         cb->m_asyncReadbackType = GL_UNSIGNED_INT_8_8_8_8_REV;
@@ -357,7 +354,8 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
                     s_egl.eglCreateImageKHR(p_display, s_egl.eglGetCurrentContext(),
                                             EGL_NATIVE_PIXMAP_KHR, nativePixmap, nullptr);
                 if (cb->m_eglImage == EGL_NO_IMAGE_KHR) {
-                    ERR("ColorBufferGl::create(): EGL_NATIVE_PIXMAP handle provided as external "
+                    GFXSTREAM_ERROR(
+                        "ColorBufferGl::create(): EGL_NATIVE_PIXMAP handle provided as external "
                         "resource info, but failed to import pixmap (nativePixmap=0x%x)",
                         nativePixmap);
                     return nullptr;
@@ -368,7 +366,7 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
                 EGLBoolean setInfoRes = s_egl.eglSetImageInfoANDROID(
                     p_display, cb->m_eglImage, cb->m_width, cb->m_height, cb->m_internalFormat);
                 if (EGL_TRUE != setInfoRes) {
-                    ERR("ColorBufferGl::create(): Failed to set image info");
+                    GFXSTREAM_ERROR("ColorBufferGl::create(): Failed to set image info");
                     return nullptr;
                 }
 
@@ -376,8 +374,8 @@ std::unique_ptr<ColorBufferGl> ColorBufferGl::create(EGLDisplay p_display, int p
                 s_gles2.glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, (GLeglImageOES)cb->m_eglImage);
             } break;
             default:
-                ERR("ColorBufferGl::create -- external memory info was provided, but ",
-                    p_internalFormat);
+                GFXSTREAM_ERROR("ColorBufferGl::create -- external memory info was provided, but ",
+                                p_internalFormat);
                 return nullptr;
         }
     } else {
@@ -408,7 +406,7 @@ ColorBufferGl::~ColorBufferGl() {
     // b/284523053
     // Swiftshader logspam on exit. But it doesn't happen with SwANGLE.
     if (!context.isOk()) {
-        GL_LOG("Failed to bind context when releasing color buffers\n");
+        GFXSTREAM_DEBUG("Failed to bind context when releasing color buffers\n");
         return;
     }
 
@@ -501,7 +499,8 @@ bool ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLe
     if (useSnipping &&
         (rect.pos.x < 0 || rect.pos.y < 0 || rect.pos.x + rect.size.w > width ||
          rect.pos.y + rect.size.h > height)) {
-        ERR("readPixelsScaled failed. Out-of-bound rectangle: (%d, %d) [%d x %d]"
+        GFXSTREAM_ERROR(
+            "readPixelsScaled failed. Out-of-bound rectangle: (%d, %d) [%d x %d]"
             " with screen [%d x %d]",
             rect.pos.x, rect.pos.y, rect.size.w, rect.size.h);
         return false;
@@ -520,8 +519,8 @@ bool ColorBufferGl::readPixelsScaled(int width, int height, GLenum p_format, GLe
         // other formats are optional.
         bool needConvert4To3Channel =
                 p_format == GL_RGB && p_type == GL_UNSIGNED_BYTE &&
-                (emugl::getRenderer() == SELECTED_RENDERER_SWIFTSHADER_INDIRECT ||
-                    emugl::getRenderer() == SELECTED_RENDERER_ANGLE_INDIRECT);
+                (get_gfxstream_renderer() == SELECTED_RENDERER_SWIFTSHADER_INDIRECT ||
+                    get_gfxstream_renderer() == SELECTED_RENDERER_ANGLE_INDIRECT);
         std::vector<uint8_t> tmpPixels;
         void* readPixelsDst = pixels;
         if (needConvert4To3Channel) {
@@ -565,6 +564,10 @@ bool ColorBufferGl::readPixelsYUVCached(int x, int y, int width, int height, voi
     }
 
     waitSync();
+
+    if (!m_yuv_converter) {
+        return false;
+    }
 
 #if DEBUG_CB_FBO
     fprintf(stderr, "%s %d request width %d height %d\n", __func__, __LINE__,
@@ -728,8 +731,7 @@ bool ColorBufferGl::readContents(size_t* numBytes, void* pixels) {
 bool ColorBufferGl::blitFromCurrentReadBuffer() {
     RenderThreadInfoGl* const tInfo = RenderThreadInfoGl::get();
     if (!tInfo) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-            << "Render thread GL not available.";
+        GFXSTREAM_FATAL("Render thread GL not available.");
     }
 
     if (!tInfo->currContext.get()) {
@@ -894,8 +896,7 @@ bool ColorBufferGl::bindToTexture() {
 
     RenderThreadInfoGl* const tInfo = RenderThreadInfoGl::get();
     if (!tInfo) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-            << "Render thread GL not available.";
+        GFXSTREAM_FATAL("Render thread GL not available.");
     }
 
     if (!tInfo->currContext.get()) {
@@ -926,8 +927,7 @@ bool ColorBufferGl::bindToRenderbuffer() {
 
     RenderThreadInfoGl* const tInfo = RenderThreadInfoGl::get();
     if (!tInfo) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-            << "Render thread GL not available.";
+        GFXSTREAM_FATAL("Render thread GL not available.");
     }
 
     if (!tInfo->currContext.get()) {
@@ -1010,7 +1010,7 @@ void ColorBufferGl::readbackAsync(GLuint buffer, bool readbackBgra) {
 
 HandleType ColorBufferGl::getHndl() const { return mHndl; }
 
-void ColorBufferGl::onSave(android::base::Stream* stream) {
+void ColorBufferGl::onSave(gfxstream::Stream* stream) {
     stream->putBe32(getHndl());
     stream->putBe32(static_cast<uint32_t>(m_width));
     stream->putBe32(static_cast<uint32_t>(m_height));
@@ -1023,7 +1023,7 @@ void ColorBufferGl::onSave(android::base::Stream* stream) {
     stream->putBe32(m_needFormatCheck);
 }
 
-std::unique_ptr<ColorBufferGl> ColorBufferGl::onLoad(android::base::Stream* stream,
+std::unique_ptr<ColorBufferGl> ColorBufferGl::onLoad(gfxstream::Stream* stream,
                                                      EGLDisplay p_display, ContextHelper* helper,
                                                      TextureDraw* textureDraw,
                                                      bool fastBlitSupported,
@@ -1108,7 +1108,7 @@ bool ColorBufferGl::importMemory(ManagedDescriptor externalDescriptor, uint64_t 
     }
     std::optional<ManagedDescriptor::DescriptorType> maybeRawDescriptor = externalDescriptor.get();
     if (!maybeRawDescriptor.has_value()) {
-        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Uninitialized external descriptor.";
+        GFXSTREAM_FATAL("Uninitialized external descriptor.");
     }
     ManagedDescriptor::DescriptorType rawDescriptor = *maybeRawDescriptor;
 
@@ -1134,7 +1134,8 @@ bool ColorBufferGl::importMemory(ManagedDescriptor externalDescriptor, uint64_t 
         externalDescriptor.release();
 #endif
     } else {
-        ERR("Failed to import external memory object with error: %d", static_cast<int>(error));
+        GFXSTREAM_ERROR("Failed to import external memory object with error: %d",
+                        static_cast<int>(error));
         return false;
     }
 

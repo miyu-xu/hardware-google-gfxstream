@@ -22,8 +22,7 @@
 #include <string>
 
 #include "OpenGLESDispatch/DispatchTables.h"
-#include "host-common/crash_reporter.h"
-#include "host-common/logging.h"
+#include "gfxstream/common/logging.h"
 
 #ifndef NDEBUG
 #define DEBUG_TEXTURE_DRAW
@@ -55,12 +54,9 @@ GLuint createShader(GLint shaderType, const char* shaderText) {
         GLint infoLogLength;
         s_gles2.glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::string infoLog(infoLogLength + 1, '\0');
-        fprintf(stderr, "%s: TextureDraw shader compile failed.\n", __func__);
         s_gles2.glGetShaderInfoLog(shader, infoLogLength, 0, &infoLog[0]);
-        fprintf(stderr, "%s: Info log:\n%s\n", __func__,
-                infoLog.c_str());
-        fprintf(stderr, "%s: Source:\n%s\n", __func__,
-                shaderText);
+        GFXSTREAM_ERROR("%s: TextureDraw shader compile failed: \n%s", __func__, shaderText);
+        GFXSTREAM_ERROR("%s: Info log: %s", __func__, infoLog.c_str());
         s_gles2.glDeleteShader(shader);
 
         // No point in continuing as it's going to be a black screen.
@@ -212,7 +208,7 @@ TextureDraw::TextureDraw()
         GLchar messages[256];
         s_gles2.glGetProgramInfoLog(
                 mProgram, sizeof(messages), 0, &messages[0]);
-        ERR("%s: Could not create/link program: %s\n", __FUNCTION__, messages);
+        GFXSTREAM_ERROR("%s: Could not create/link program: %s\n", __FUNCTION__, messages);
         s_gles2.glDeleteProgram(mProgram);
         mProgram = 0;
         return;
@@ -276,7 +272,7 @@ TextureDraw::TextureDraw()
 bool TextureDraw::drawImpl(GLuint texture, float rotation,
                            float dx, float dy, bool wantOverlay) {
     if (!mProgram) {
-        ERR("%s: no program\n", __FUNCTION__);
+        GFXSTREAM_ERROR("%s: no program\n", __FUNCTION__);
         return false;
     }
 
@@ -289,8 +285,7 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
 #ifdef DEBUG_TEXTURE_DRAW
     GLenum err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not use program error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not use program error=0x%x\n", __FUNCTION__, err);
     }
 #endif
 
@@ -300,8 +295,7 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
 #ifdef DEBUG_TEXTURE_DRAW
     err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not bind GL_ARRAY_BUFFER error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not bind GL_ARRAY_BUFFER error=0x%x\n", __FUNCTION__, err);
     }
 #endif
 
@@ -316,8 +310,8 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
 #ifdef DEBUG_TEXTURE_DRAW
     err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could glVertexAttribPointer with mPositionSlot error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could glVertexAttribPointer with mPositionSlot error=0x%x\n",
+                        __FUNCTION__, err);
     }
 #endif
 
@@ -349,7 +343,7 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
         GLchar messages[256] = {};
         s_gles2.glGetProgramInfoLog(
                 mProgram, sizeof(messages), 0, &messages[0]);
-        ERR("%s: Could not run program: '%s'\n", __FUNCTION__, messages);
+        GFXSTREAM_ERROR("%s: Could not run program: '%s'\n", __FUNCTION__, messages);
         return false;
     }
 #endif
@@ -359,8 +353,8 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
 #ifdef DEBUG_TEXTURE_DRAW
     err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not glBindBuffer(GL_ELEMENT_ARRAY_BUFFER) error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not glBindBuffer(GL_ELEMENT_ARRAY_BUFFER) error=0x%x\n",
+                        __FUNCTION__, err);
     }
 #endif
 
@@ -392,7 +386,7 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
     s_gles2.glGetUniformfv(mProgram, mScaleSlot, scale);
     GLfloat overlayScale[2];
     {
-        android::base::AutoLock lock(mMaskLock);
+        gfxstream::base::AutoLock lock(mMaskLock);
         if (wantOverlay && mHaveNewMask) {
             // Create a texture from the mask image and make it
             // available to be blended
@@ -458,8 +452,7 @@ bool TextureDraw::drawImpl(GLuint texture, float rotation,
 #ifdef DEBUG_TEXTURE_DRAW
     err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not glDrawElements() error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not glDrawElements() error=0x%x\n", __FUNCTION__, err);
     }
 #endif
 
@@ -491,7 +484,7 @@ TextureDraw::~TextureDraw() {
 }
 
 void TextureDraw::setScreenMask(int width, int height, const unsigned char* rgbaData) {
-    android::base::AutoLock lock(mMaskLock);
+    gfxstream::base::AutoLock lock(mMaskLock);
     if (width <= 0 || height <= 0 || rgbaData == nullptr) {
         mMaskIsValid = false;
         return;
@@ -512,15 +505,14 @@ void TextureDraw::setScreenMask(int width, int height, const unsigned char* rgba
 
 void TextureDraw::preDrawLayer() {
     if (!mProgram) {
-        ERR("%s: no program\n", __FUNCTION__);
+        GFXSTREAM_ERROR("%s: no program\n", __FUNCTION__);
         return;
     }
     s_gles2.glUseProgram(mProgram);
 #ifdef DEBUG_TEXTURE_DRAW
     GLenum err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not use program error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not use program error=0x%x\n", __FUNCTION__, err);
     }
 #endif
 
@@ -528,16 +520,15 @@ void TextureDraw::preDrawLayer() {
 #ifdef DEBUG_TEXTURE_DRAW
     err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not bind GL_ARRAY_BUFFER error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not bind GL_ARRAY_BUFFER error=0x%x\n", __FUNCTION__, err);
     }
 #endif
     s_gles2.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
 #ifdef DEBUG_TEXTURE_DRAW
     err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not glBindBuffer(GL_ELEMENT_ARRAY_BUFFER) error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not glBindBuffer(GL_ELEMENT_ARRAY_BUFFER) error=0x%x\n",
+                        __FUNCTION__, err);
     }
 #endif
 
@@ -561,8 +552,8 @@ void TextureDraw::preDrawLayer() {
 #ifdef DEBUG_TEXTURE_DRAW
     err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could glVertexAttribPointer with mPositionSlot error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could glVertexAttribPointer with mPositionSlot error=0x%x\n",
+                        __FUNCTION__, err);
     }
 #endif
 
@@ -598,7 +589,7 @@ void TextureDraw::drawLayer(const ComposeLayer& layer, int frameWidth, int frame
         case HWC2_COMPOSITION_SIDEBAND:
         case HWC2_COMPOSITION_INVALID:
         default:
-            ERR("%s: invalid composition mode %d", __FUNCTION__, layer.composeMode);
+            GFXSTREAM_ERROR("%s: invalid composition mode %d", __FUNCTION__, layer.composeMode);
             return;
     }
 
@@ -612,7 +603,7 @@ void TextureDraw::drawLayer(const ComposeLayer& layer, int frameWidth, int frame
         case HWC2_BLEND_MODE_INVALID:
         case HWC2_BLEND_MODE_COVERAGE:
         default:
-            ERR("%s: invalid blendMode %d", __FUNCTION__, layer.blendMode);
+            GFXSTREAM_ERROR("%s: invalid blendMode %d", __FUNCTION__, layer.blendMode);
             return;
     }
 
@@ -669,8 +660,7 @@ void TextureDraw::drawLayer(const ComposeLayer& layer, int frameWidth, int frame
 #ifdef DEBUG_TEXTURE_DRAW
     GLenum err = s_gles2.glGetError();
     if (err != GL_NO_ERROR) {
-        ERR("%s: Could not glDrawElements() error=0x%x\n",
-            __FUNCTION__, err);
+        GFXSTREAM_ERROR("%s: Could not glDrawElements() error=0x%x\n", __FUNCTION__, err);
     }
 #endif
 

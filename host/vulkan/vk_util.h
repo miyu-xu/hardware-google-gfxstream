@@ -1,4 +1,5 @@
 /*
+ * Copyright © 2025 The Android Open Source Project
  * Copyright © 2017 Intel Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,9 +43,8 @@
 
 #include "VkDecoderContext.h"
 #include "VulkanDispatch.h"
-#include "aemu/base/synchronization/Lock.h"
-#include "host-common/GfxstreamFatalError.h"
-#include "host-common/logging.h"
+#include "gfxstream/synchronization/Lock.h"
+#include "gfxstream/common/logging.h"
 #include "vk_fn_info.h"
 #include "vk_struct_id.h"
 #include "vulkan/vk_enum_string_helper.h"
@@ -304,9 +304,8 @@ void vk_struct_chain_filter(H* head) {
                 vk_util::getVkCheckCallbacks().callIfExists(                                    \
                     &vk_util::VkCheckCallbacks::onVkErrorOutOfMemory, err, __func__, __LINE__); \
             }                                                                                   \
-            GFXSTREAM_ABORT(::emugl::FatalError(err))                                           \
-                << " VK_CHECK(" << #x << ") failed with " << string_VkResult(err) << " at "     \
-                << __FILE__ << ":" << __LINE__;                                                 \
+            const std::string errString = string_VkResult(err);                                 \
+            GFXSTREAM_FATAL("VK_CHECK(" #x ") failed with %s", errString.c_str());              \
         }                                                                                       \
     } while (0)
 
@@ -319,7 +318,8 @@ void vk_struct_chain_filter(H* head) {
                     &vk_util::VkCheckCallbacks::onVkErrorOutOfMemoryOnAllocation, err, __func__, \
                     __LINE__, allocateInfo.allocationSize);                                      \
             }                                                                                    \
-            GFXSTREAM_ABORT(::emugl::FatalError(err));                                           \
+            const std::string errString = string_VkResult(err);                                  \
+            GFXSTREAM_FATAL("VK_CHECK_MEMALLOC(" #x ") failed with %s", errString.c_str());      \
         }                                                                                        \
     } while (0)
 
@@ -334,11 +334,12 @@ inline VkResult waitForVkQueueIdleWithRetry(const VulkanDispatch& vk, VkQueue qu
     constexpr std::chrono::duration waitInterval = 4ms;
     VkResult res = vk.vkQueueWaitIdle(queue);
     for (uint32_t retryTimes = 1; retryTimes < retryLimit && res == VK_TIMEOUT; retryTimes++) {
-        INFO("VK_TIMEOUT returned from vkQueueWaitIdle with %" PRIu32 " attempt. Wait for %" PRIu32
-             "ms before another attempt.",
-             retryTimes,
-             static_cast<uint32_t>(
-                 std::chrono::duration_cast<std::chrono::milliseconds>(waitInterval).count()));
+        GFXSTREAM_INFO(
+            "VK_TIMEOUT returned from vkQueueWaitIdle with %" PRIu32 " attempt. Wait for %" PRIu32
+            "ms before another attempt.",
+            retryTimes,
+            static_cast<uint32_t>(
+                std::chrono::duration_cast<std::chrono::milliseconds>(waitInterval).count()));
         std::this_thread::sleep_for(waitInterval);
         res = vk.vkQueueWaitIdle(queue);
     }
@@ -430,7 +431,7 @@ class FindMemoryType : public U {
 template <class T, class U = CrtpBase>
 class RunSingleTimeCommand : public U {
    protected:
-    void runSingleTimeCommands(VkQueue queue, std::shared_ptr<android::base::Lock> queueLock,
+    void runSingleTimeCommands(VkQueue queue, std::shared_ptr<gfxstream::base::Lock> queueLock,
                                std::function<void(const VkCommandBuffer& commandBuffer)> f) const {
         const T& self = static_cast<const T&>(*this);
         VkCommandBuffer cmdBuff;
@@ -449,9 +450,9 @@ class RunSingleTimeCommand : public U {
                                    .commandBufferCount = 1,
                                    .pCommandBuffers = &cmdBuff};
         {
-            std::unique_ptr<android::base::AutoLock> lock = nullptr;
+            std::unique_ptr<gfxstream::base::AutoLock> lock = nullptr;
             if (queueLock) {
-                lock = std::make_unique<android::base::AutoLock>(*queueLock);
+                lock = std::make_unique<gfxstream::base::AutoLock>(*queueLock);
             }
             VK_CHECK(self.m_vk.vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
             VK_CHECK(self.m_vk.vkQueueWaitIdle(queue));

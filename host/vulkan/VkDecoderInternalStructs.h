@@ -34,10 +34,11 @@
 #include "Handle.h"
 #include "VkEmulatedPhysicalDeviceMemory.h"
 #include "VkEmulatedPhysicalDeviceQueue.h"
-#include "aemu/base/files/Stream.h"
-#include "aemu/base/memory/SharedMemory.h"
-#include "aemu/base/synchronization/ConditionVariable.h"
-#include "aemu/base/synchronization/Lock.h"
+#include "render-utils/stream.h"
+#include "gfxstream/common/logging.h"
+#include "gfxstream/memory/SharedMemory.h"
+#include "gfxstream/synchronization/ConditionVariable.h"
+#include "gfxstream/synchronization/Lock.h"
 #include "common/goldfish_vk_deepcopy.h"
 #include "vulkan/VkAndroidNativeBuffer.h"
 #include "vulkan/VkFormatUtils.h"
@@ -54,17 +55,18 @@ class ExternalFencePool {
 
     ~ExternalFencePool() {
         if (!mPool.empty()) {
-            GFXSTREAM_ABORT(emugl::FatalError(emugl::ABORT_REASON_OTHER))
-                << "External fence pool for device " << static_cast<void*>(mDevice)
-                << " destroyed but " << mPool.size() << " fences still not destroyed.";
+            GFXSTREAM_FATAL(
+                "External fence pool for VkDevice:%p destroyed but %zu fences still not destroyed.",
+                mDevice, mPool.size());
         }
     }
 
     void add(VkFence fence) {
-        android::base::AutoLock lock(mLock);
+        gfxstream::base::AutoLock lock(mLock);
         mPool.push_back(fence);
         if (mPool.size() > mMaxSize) {
-            INFO("External fence pool for %p has increased to size %d", mDevice, mPool.size());
+            GFXSTREAM_INFO("External fence pool for %p has increased to size %d", mDevice,
+                           mPool.size());
             mMaxSize = mPool.size();
         }
     }
@@ -72,7 +74,7 @@ class ExternalFencePool {
     VkFence pop(const VkFenceCreateInfo* pCreateInfo) {
         VkFence fence = VK_NULL_HANDLE;
         {
-            android::base::AutoLock lock(mLock);
+            gfxstream::base::AutoLock lock(mLock);
             auto it = std::find_if(mPool.begin(), mPool.end(), [this](const VkFence& fence) {
                 VkResult status = m_vk->vkGetFenceStatus(mDevice, fence);
                 if (status != VK_SUCCESS) {
@@ -101,7 +103,7 @@ class ExternalFencePool {
     }
 
     std::vector<VkFence> popAll() {
-        android::base::AutoLock lock(mLock);
+        gfxstream::base::AutoLock lock(mLock);
         std::vector<VkFence> popped = mPool;
         mPool.clear();
         return popped;
@@ -110,7 +112,7 @@ class ExternalFencePool {
    private:
     TDispatch* m_vk;
     VkDevice mDevice;
-    android::base::Lock mLock;
+    gfxstream::base::Lock mLock;
     std::vector<VkFence> mPool;
     size_t mMaxSize;
 };
@@ -164,7 +166,7 @@ struct MemoryInfo {
     VkDevice device = VK_NULL_HANDLE;
     uint32_t memoryIndex = 0;
     // Set if the memory is backed by shared memory.
-    std::optional<android::base::SharedMemory> sharedMemory;
+    std::optional<gfxstream::base::SharedMemory> sharedMemory;
 
     std::shared_ptr<PrivateMemory> privateMemory;
     // virtio-gpu blobs
@@ -183,6 +185,7 @@ struct InstanceInfo {
     bool isAngle = false;
     std::string applicationName;
     std::string engineName;
+    uint32_t contextId = 0;
 };
 
 struct PhysicalDeviceInfo {
@@ -229,13 +232,113 @@ struct DeviceInfo {
         return (gfxstream::vk::isEtc2(format) && emulateTextureEtc2) ||
                (gfxstream::vk::isAstc(format) && emulateTextureAstc);
     }
+
+#ifdef _WIN32
+    PFN_vkGetMemoryWin32HandleKHR getMemoryHandleFunc = nullptr;
+#else
+    PFN_vkGetMemoryFdKHR getMemoryHandleFunc = nullptr;
+#endif
+};
+
+struct PhysicalQueuePendingOps {
+    // Wrapper structure to defer queue submission calls, e.g. VkSubmitInfo2
+    // Pending operations will be checked and executed when the conditions are
+    // met, e.g. the valid timeline semaphore point is signalled.
+    // Normally, application should make safe submissions that'd avoid deadlock
+    // conditions, but when the virtual queue is active, we have to manually block
+    // the submissions until they can be executed safely, without blocking the
+    // signalling submissions.
+
+    struct QueueSubmit2 {
+        bool convertFrom(const VkSubmitInfo2& submit) {
+            // TODO(b/379862480): Use deepcopy_VkSubmitInfo2 to support pNext values
+            bool foundAnyPNext = false;
+            if (submit.pNext) {
+                foundAnyPNext = true;
+                return false;
+            }
+
+            mWaitSemaphoreInfos.resize(submit.commandBufferInfoCount);
+            for (uint32_t i = 0; i < submit.commandBufferInfoCount; i++) {
+                if (submit.pWaitSemaphoreInfos[i].pNext) {
+                    foundAnyPNext = true;
+                }
+                mWaitSemaphoreInfos[i] = submit.pWaitSemaphoreInfos[i];
+            }
+
+            mCommandBufferInfos.resize(submit.commandBufferInfoCount);
+            for (uint32_t i = 0; i < submit.commandBufferInfoCount; i++) {
+                if (submit.pCommandBufferInfos[i].pNext) {
+                    foundAnyPNext = true;
+                }
+                mCommandBufferInfos[i] = submit.pCommandBufferInfos[i];
+            }
+
+            mSignalSemaphoreInfos.resize(submit.commandBufferInfoCount);
+            for (uint32_t i = 0; i < submit.commandBufferInfoCount; i++) {
+                if (submit.pSignalSemaphoreInfos[i].pNext) {
+                    foundAnyPNext = true;
+                }
+                mSignalSemaphoreInfos[i] = submit.pSignalSemaphoreInfos[i];
+            }
+
+            if (foundAnyPNext) {
+                return false;
+            }
+
+            mSubmitInfoCopy = submit;
+            mSubmitInfoCopy.pWaitSemaphoreInfos = mWaitSemaphoreInfos.data();
+            mSubmitInfoCopy.pCommandBufferInfos = mCommandBufferInfos.data();
+            mSubmitInfoCopy.pSignalSemaphoreInfos = mSignalSemaphoreInfos.data();
+
+            return true;
+        }
+
+        VkSubmitInfo2 mSubmitInfoCopy;
+
+        std::vector<VkSemaphoreSubmitInfo> mWaitSemaphoreInfos;
+        std::vector<VkCommandBufferSubmitInfo> mCommandBufferInfos;
+        std::vector<VkSemaphoreSubmitInfo> mSignalSemaphoreInfos;
+    };
+
+    struct DeferredSubmitCall {
+        std::vector<QueueSubmit2> mSubmits;
+        VkFence mFence;
+    };
+
+    std::vector<DeferredSubmitCall> mSubmitCalls;
+
+    VkResult queuePendingSubmission(uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
+        // TODO(b/379862480): VkSubmitInfo is not supported for deferred submissions, this
+        // should not be called until we support VkTimelineSemaphoreSubmitInfo on pNext
+        GFXSTREAM_ERROR("PhysicalQueuePendingOps: Cannot defer queue submissions with 'VkSubmitInfo'");
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+
+    VkResult queuePendingSubmission(uint32_t submitCount, const VkSubmitInfo2* pSubmits,
+                                VkFence fence) {
+        PhysicalQueuePendingOps::DeferredSubmitCall deferredCall;
+        for (uint32_t i = 0; i < submitCount; i++) {
+            PhysicalQueuePendingOps::QueueSubmit2 deferredSubmit;
+            if (!deferredSubmit.convertFrom(pSubmits[i])) {
+                GFXSTREAM_ERROR("Unsupported submission type detected on virtual queue!");
+                return VK_ERROR_OUT_OF_HOST_MEMORY;
+            }
+            deferredCall.mSubmits.push_back(deferredSubmit);
+        }
+        deferredCall.mFence = fence;
+        mSubmitCalls.emplace_back(deferredCall);
+        return VK_SUCCESS;
+    }
 };
 
 struct QueueInfo {
     std::shared_ptr<std::mutex> queueMutex;
+    std::shared_ptr<PhysicalQueuePendingOps> pendingOps;  // Only used if virtually shared
     VkDevice device;
     uint32_t queueFamilyIndex;
     VkQueue boxed = nullptr;
+    bool usingSharedPhysicalQueue = false;
 
     // In order to create a virtual queue handle, we use an offset to the physical
     // queue handle value. This assumes the new generated virtual handle value will
@@ -258,6 +361,7 @@ struct BufferInfo {
 
 struct ImageInfo {
     VkDevice device;
+    VkImage boxed = VK_NULL_HANDLE;
     VkImageCreateInfo imageCreateInfoShallow;
     std::unique_ptr<AndroidNativeBufferInfo> anbInfo;
     CompressedImageInfo cmpInfo;
@@ -271,6 +375,7 @@ struct ImageInfo {
 struct ImageViewInfo {
     VkDevice device;
     bool needEmulatedAlpha = false;
+    VkImageView boxed = VK_NULL_HANDLE;
 
     // Color buffer, provided via vkAllocateMemory().
     std::optional<HandleType> boundColorBuffer;
@@ -280,9 +385,10 @@ struct ImageViewInfo {
 struct SamplerInfo {
     VkDevice device;
     bool needEmulatedAlpha = false;
+    VkSampler boxed = VK_NULL_HANDLE;
     VkSamplerCreateInfo createInfo = {};
     VkSampler emulatedborderSampler = VK_NULL_HANDLE;
-    android::base::BumpPool pool = android::base::BumpPool(256);
+    gfxstream::base::BumpPool pool = gfxstream::base::BumpPool(256);
     SamplerInfo() = default;
     SamplerInfo& operator=(const SamplerInfo& other) {
         deepcopy_VkSamplerCreateInfo(&pool, VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -323,13 +429,18 @@ struct FenceInfo {
 
 struct SemaphoreInfo {
     VkDevice device;
+    VkSemaphore boxed = VK_NULL_HANDLE;
     int externalHandleId = 0;
     VK_EXT_SYNC_HANDLE externalHandle = VK_EXT_SYNC_HANDLE_INVALID;
     // If this fence was used in an additional host operation that must be waited
     // upon before destruction (e.g. as part of a vkAcquireImageANDROID() call),
     // the waitable that tracking that host operation.
     std::optional<DeviceOpWaitable> latestUse;
+
+    uint64_t lastSignalValue = 0;  // Only valid when the virtual queue feature is enabled
+    bool isTimelineSemaphore = false;
 };
+
 struct DescriptorSetLayoutInfo {
     VkDevice device = 0;
     VkDescriptorSetLayout boxed = 0;

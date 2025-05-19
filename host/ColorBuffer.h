@@ -16,12 +16,12 @@
 
 #include <memory>
 
-#include "BorrowedImage.h"
-#include "ExternalObjectManager.h"
+#include "gfxstream/host/borrowed_image.h"
+#include "gfxstream/host/external_object_manager.h"
 #include "FrameworkFormats.h"
 #include "Handle.h"
 #include "Hwc2.h"
-#include "aemu/base/files/Stream.h"
+#include "render-utils/stream.h"
 #include "render-utils/Renderer.h"
 #include "snapshot/LazySnapshotObj.h"
 
@@ -46,18 +46,18 @@ class VkEmulation;
 
 namespace gfxstream {
 
-class ColorBuffer : public android::snapshot::LazySnapshotObj<ColorBuffer> {
+class ColorBuffer : public LazySnapshotObj<ColorBuffer> {
    public:
     static std::shared_ptr<ColorBuffer> create(gl::EmulationGl* emulationGl,
                                                vk::VkEmulation* emulationVk, uint32_t width,
                                                uint32_t height, GLenum format,
                                                FrameworkFormat frameworkFormat, HandleType handle,
-                                               android::base::Stream* stream = nullptr);
+                                               gfxstream::Stream* stream = nullptr);
 
     static std::shared_ptr<ColorBuffer> onLoad(gl::EmulationGl* emulationGl,
                                                vk::VkEmulation* emulationVk,
-                                               android::base::Stream* stream);
-    void onSave(android::base::Stream* stream);
+                                               gfxstream::Stream* stream);
+    void onSave(gfxstream::Stream* stream);
     void restore();
 
     HandleType getHndl() const { return mHandle; }

@@ -1,4 +1,8 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test", "objc_library")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "objc_library")
+
+package(
+    default_visibility = ["//:gfxstream"],
+)
 
 cc_library(
     name = "gfxstream_backend_headers",
@@ -10,39 +14,15 @@ cc_library(
 
 cc_library(
     name = "gfxstream_host_headers",
-    hdrs = [
-        "compressedTextureFormats/AstcCpuDecompressor.h",
-    ] + glob([
+    hdrs = glob([
         "*.h",
     ]),
     copts = ["-fno-exceptions"],
     includes = ["."],
-    visibility = [":__subpackages__"],
-)
-
-cc_library(
-    name = "gfxstream-compressedTextures",
-    srcs = ["compressedTextureFormats/AstcCpuDecompressorNoOp.cpp"] + glob(["compressedTextureFormats/*.h"]),
-    hdrs = [
-        "compressedTextureFormats/AstcCpuDecompressor.h",
-    ],
-    copts = ["-fno-exceptions"],
-    includes = ["."],
-    visibility = ["//visibility:public"],
     deps = [
-        "//common/etc:gfxstream_etc",
-    ],
-)
-
-cc_test(
-    name = "gfxstream-compressedTextures_unittests",
-    srcs = ["compressedTextureFormats/AstcCpuDecompressor_unittest.cpp"],
-    copts = ["-fno-exceptions"],
-    deps = [
-        ":gfxstream-compressedTextures",
-        "@aemu//base:aemu-base",
-        "@aemu//host-common:logging",
-        "@com_google_googletest//:gtest_main",
+        "//host/health:gfxstream_host_health",
+        "//host/renderdoc:gfxstream_host_renderdoc",
+        "//host/snapshot:gfxstream_host_snapshot",
     ],
 )
 
@@ -71,8 +51,7 @@ objc_library(
     ],
     deps = [
         ":gfxstream_backend_headers",
-        "//:gfxstream-gl-host-common-headers",
-        "//common/opengl:gfxstream_opengl_headers",
+        "//third_party/opengl:gfxstream_opengl_headers",
     ],
 )
 
@@ -82,12 +61,7 @@ cc_library(
         "Buffer.cpp",
         "ChannelStream.cpp",
         "ColorBuffer.cpp",
-        "DisplaySurface.cpp",
-        "DisplaySurfaceUser.cpp",
-        "ExternalObjectManager.cpp",
         "FrameBuffer.cpp",
-        "GfxStreamAgents.cpp",
-        "GraphicsDriverLock.cpp",
         "Hwc2.cpp",
         "PostWorker.cpp",
         "PostWorkerGl.cpp",
@@ -97,14 +71,13 @@ cc_library(
         "RenderLibImpl.cpp",
         "RenderThread.cpp",
         "RenderThreadInfo.cpp",
-        "RenderThreadInfoGl.cpp",
-        "RenderThreadInfoMagma.cpp",
         "RenderWindow.cpp",
         "RendererImpl.cpp",
         "RingStream.cpp",
         "SyncThread.cpp",
         "VirtioGpuContext.cpp",
         "VirtioGpuFrontend.cpp",
+        "VirtioGpuPipe.cpp",
         "VirtioGpuResource.cpp",
         "VirtioGpuRingBlob.cpp",
         "VirtioGpuTimelines.cpp",
@@ -140,29 +113,26 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gfxstream_backend_headers",
-        "//:gfxstream-gl-host-common-headers",
-        "//host/apigen-codec-common",
-        "//host/backend:gfxstream_backend",
+        "//common/base:gfxstream_common_base",
+        "//common/logging:gfxstream_common_logging",
+        "//host/backend:gfxstream_host_backend",
+        "//host/decoder_common:gfxstream_host_decoder_common",
         "//host/features:gfxstream_features",
         "//host/gl:EGL_translator_static",
-        "//host/gl:OpenGLESDispatch",
-        "//host/gl:gfxstream-gl-host-common",
         "//host/gl:gfxstream-gl-server",
         "//host/gl:gl-common-headers",
         "//host/gl:gl_headers",
         "//host/gl:gles1_dec",
         "//host/gl:gles2_dec",
+        "//host/gl/OpenGLESDispatch:gfxstream_host_openglesdispatch",
         "//host/gl/glestranslator/GLES_CM:GLES_CM_translator_static",
-        "//host/magma:gfxstream-magma-server",
-        "//host/magma:magma-headers",
+        "//host/health:gfxstream_host_health",
         "//host/renderControl_dec",
+        "//host/renderdoc:gfxstream_host_renderdoc",
+        "//host/snapshot:gfxstream_host_snapshot",
         "//host/tracing:gfxstream_host_tracing",
-        "//host/vulkan:gfxstream-vulkan-server",
-        "@aemu//base:aemu-base",
-        "@aemu//base:aemu-base-metrics",
-        "@aemu//host-common:aemu-host-common",
-        "@aemu//host-common:logging",
-        "@aemu//snapshot:aemu-snapshot",
+        "//host/vulkan:gfxstream_vulkan_server",
+        "//third_party/drm:gfxstream_drm_headers",
     ] + select({
         "@platforms//os:macos": [
             ":gfxstream_backend_static-darwin",
@@ -191,12 +161,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gfxstream_backend_static",
-        "//:gfxstream-gl-host-common-headers",
         "//common/utils:gfxstream_common_utils",
-        "//host/gl:gfxstream-gl-host-common",
-        "@aemu//base:aemu-base",
-        "@aemu//base:aemu-base-metrics",
-        "@aemu//host-common:aemu-host-common-product-feature-override",
     ],
 )
 
@@ -211,19 +176,6 @@ cc_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":gfxstream_backend_static",
-        "//:gfxstream-gl-host-common-headers",
         "//common/utils:gfxstream_common_utils",
-        "//host/gl:gfxstream-gl-host-common",
-        "@aemu//base:aemu-base",
-        "@aemu//base:aemu-base-metrics",
-        "@aemu//host-common:aemu-host-common-product-feature-override",
     ],
 )
-
-# Note: It looks like cc_shared_library refuses to include objc_library
-# b/331235218
-# cc_shared_library(
-#     name = "gfxstream_backend",
-#     visibility = ["//visibility:public"],
-#     deps = [":gfxstream_backend_shared"],
-# )

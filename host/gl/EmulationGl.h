@@ -30,9 +30,9 @@
 #include "Compositor.h"
 #include "CompositorGl.h"
 #include "ContextHelper.h"
-#include "Display.h"
+#include "gfxstream/host/display.h"
 #include "DisplayGl.h"
-#include "DisplaySurface.h"
+#include "gfxstream/host/display_surface.h"
 #include "EmulatedEglConfig.h"
 #include "EmulatedEglContext.h"
 #include "EmulatedEglFenceSync.h"
@@ -42,7 +42,7 @@
 #include "OpenGLESDispatch/GLESv2Dispatch.h"
 #include "ReadbackWorkerGl.h"
 #include "TextureDraw.h"
-#include "aemu/base/files/Stream.h"
+#include "render-utils/stream.h"
 #include "gfxstream/host/Features.h"
 
 #define EGL_NO_CONFIG ((EGLConfig)0)
@@ -57,7 +57,7 @@ namespace gl {
 class EmulationGl {
    public:
     static std::unique_ptr<EmulationGl> create(uint32_t width, uint32_t height,
-                                               gfxstream::host::FeatureSet features,
+                                               const gfxstream::host::FeatureSet& features,
                                                bool allowWindowSurface, bool egl2egl);
 
     ~EmulationGl();
@@ -103,7 +103,7 @@ class EmulationGl {
 
     std::unique_ptr<BufferGl> createBuffer(uint64_t size, HandleType handle);
 
-    std::unique_ptr<BufferGl> loadBuffer(android::base::Stream* stream);
+    std::unique_ptr<BufferGl> loadBuffer(gfxstream::Stream* stream);
 
     bool isFormatSupported(GLenum format);
 
@@ -112,7 +112,7 @@ class EmulationGl {
                                                      FrameworkFormat frameworkFormat,
                                                      HandleType handle);
 
-    std::unique_ptr<ColorBufferGl> loadColorBuffer(android::base::Stream* stream);
+    std::unique_ptr<ColorBufferGl> loadColorBuffer(gfxstream::Stream* stream);
 
     std::unique_ptr<EmulatedEglContext> createEmulatedEglContext(
         uint32_t emulatedEglConfigIndex,
@@ -121,7 +121,7 @@ class EmulationGl {
         HandleType handle);
 
     std::unique_ptr<EmulatedEglContext> loadEmulatedEglContext(
-        android::base::Stream* stream);
+        gfxstream::Stream* stream);
 
     std::unique_ptr<EmulatedEglFenceSync> createEmulatedEglFenceSync(
         EGLenum type,
@@ -139,7 +139,7 @@ class EmulationGl {
         HandleType handle);
 
     std::unique_ptr<EmulatedEglWindowSurface> loadEmulatedEglWindowSurface(
-        android::base::Stream* stream,
+        gfxstream::Stream* stream,
         const ColorBufferMap& colorBuffers,
         const EmulatedEglContextMap& contexts);
 

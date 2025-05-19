@@ -23,9 +23,6 @@
 
 namespace gfxstream {
 
-using emugl::ABORT_REASON_OTHER;
-using emugl::FatalError;
-
 Buffer::Buffer(HandleType handle, uint64_t size) : mHandle(handle), mSize(size) {}
 
 /*static*/
@@ -37,7 +34,7 @@ std::shared_ptr<Buffer> Buffer::create(gl::EmulationGl* emulationGl, vk::VkEmula
     if (emulationGl) {
         buffer->mBufferGl = emulationGl->createBuffer(size, handle);
         if (!buffer->mBufferGl) {
-            ERR("Failed to initialize BufferGl.");
+            GFXSTREAM_ERROR("Failed to initialize BufferGl.");
             return nullptr;
         }
     }
@@ -48,14 +45,14 @@ std::shared_ptr<Buffer> Buffer::create(gl::EmulationGl* emulationGl, vk::VkEmula
 
         buffer->mBufferVk = vk::BufferVk::create(*emulationVk, handle, size, vulkanOnly);
         if (!buffer->mBufferVk) {
-            ERR("Failed to initialize BufferVk.");
+            GFXSTREAM_ERROR("Failed to initialize BufferVk.");
             return nullptr;
         }
 
         if (!vulkanOnly) {
 #if GFXSTREAM_ENABLE_HOST_GLES
             if (!buffer->mBufferGl) {
-                GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Missing BufferGl?";
+                GFXSTREAM_FATAL("Missing BufferGl?");
             }
 #endif
             // TODO: external memory sharing.
@@ -67,7 +64,7 @@ std::shared_ptr<Buffer> Buffer::create(gl::EmulationGl* emulationGl, vk::VkEmula
 
 /*static*/
 std::shared_ptr<Buffer> Buffer::onLoad(gl::EmulationGl* emulationGl, vk::VkEmulation*,
-                                       android::base::Stream* stream) {
+                                       gfxstream::Stream* stream) {
     const auto handle = static_cast<HandleType>(stream->getBe32());
     const auto size = static_cast<uint64_t>(stream->getBe64());
 
@@ -77,7 +74,7 @@ std::shared_ptr<Buffer> Buffer::onLoad(gl::EmulationGl* emulationGl, vk::VkEmula
     if (emulationGl) {
         buffer->mBufferGl = emulationGl->loadBuffer(stream);
         if (!buffer->mBufferGl) {
-            ERR("Failed to load BufferGl.");
+            GFXSTREAM_ERROR("Failed to load BufferGl.");
             return nullptr;
         }
     }
@@ -88,7 +85,7 @@ std::shared_ptr<Buffer> Buffer::onLoad(gl::EmulationGl* emulationGl, vk::VkEmula
     return buffer;
 }
 
-void Buffer::onSave(android::base::Stream* stream) {
+void Buffer::onSave(gfxstream::Stream* stream) {
     stream->putBe32(mHandle);
     stream->putBe64(mSize);
 
@@ -116,7 +113,7 @@ void Buffer::readToBytes(uint64_t offset, uint64_t size, void* outBytes) {
         return;
     }
 
-    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "No Buffer impl?";
+    GFXSTREAM_FATAL("No Buffer impl?");
 }
 
 bool Buffer::updateFromBytes(uint64_t offset, uint64_t size, const void* bytes) {
@@ -133,7 +130,7 @@ bool Buffer::updateFromBytes(uint64_t offset, uint64_t size, const void* bytes) 
         return mBufferVk->updateFromBytes(offset, size, bytes);
     }
 
-    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "No Buffer impl?";
+    GFXSTREAM_FATAL("No Buffer impl?");
     return false;
 }
 

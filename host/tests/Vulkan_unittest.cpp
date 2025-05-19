@@ -14,37 +14,29 @@
 
 #include <gtest/gtest.h>
 
-#include "FrameBuffer.h"
-#include "VkCommonOperations.h"
-#include "VulkanDispatch.h"
-
-#include "aemu/base/ArraySize.h"
-#include "aemu/base/GLObjectCounter.h"
-#include "aemu/base/files/PathUtils.h"
-#include "aemu/base/system/System.h"
-#include "aemu/base/testing/TestSystem.h"
-#include "host-common/GraphicsAgentFactory.h"
-#include "host-common/opengl/misc.h"
-#include "host-common/testing/MockGraphicsAgentFactory.h"
-#include "tests/VkTestUtils.h"
-
-#include "Standalone.h"
-
 #include <sstream>
 #include <string>
+
 #include <vulkan/vulkan.h>
+
+#include "FrameBuffer.h"
+#include "Standalone.h"
+#include "VkCommonOperations.h"
+#include "VulkanDispatch.h"
+#include "gfxstream/ArraySize.h"
+#include "gfxstream/files/PathUtils.h"
+#include "gfxstream/system/System.h"
+#include "tests/VkTestUtils.h"
 
 #ifdef _WIN32
 #include <windows.h>
-#include "aemu/base/system/Win32UnicodeString.h"
-using android::base::Win32UnicodeString;
+#include "gfxstream/system/Win32UnicodeString.h"
+using gfxstream::base::Win32UnicodeString;
 #else
 #include <dlfcn.h>
 #endif
 
-using android::base::arraySize;
-using android::base::pj;
-using android::base::TestSystem;
+using gfxstream::base::arraySize;
 
 namespace gfxstream {
 namespace vk {
@@ -387,14 +379,7 @@ static void teardownVulkanTest(const VulkanDispatch* vk,
 }
 
 class VulkanTest : public ::testing::Test {
-protected:
-    static void SetUpTestSuite() {
-        android::emulation::injectGraphicsAgents(
-                android::emulation::MockGraphicsAgentFactory());
-    }
-
-    static void TearDownTestSuite() { }
-
+  protected:
     void SetUp() override {
         auto dispatch = vkDispatch(false);
         ASSERT_NE(dispatch, nullptr);
@@ -424,7 +409,25 @@ TEST_F(VulkanTest, StagingMemoryQuery) {
 
     mVk.vkGetPhysicalDeviceMemoryProperties(mPhysicalDevice, &memProps);
 
-    EXPECT_TRUE(getStagingMemoryTypeIndex(&mVk, mDevice, &memProps, &typeIndex));
+    VkBufferCreateInfo bufCi = {
+        VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+        0,
+        0,
+        4096,
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_SHARING_MODE_EXCLUSIVE,
+        0,
+        nullptr,
+    };
+
+    VkBuffer buffer = VK_NULL_HANDLE;
+    VkResult bufCreateRes = mVk.vkCreateBuffer(mDevice, &bufCi, nullptr, &buffer);
+    EXPECT_EQ(VK_SUCCESS, bufCreateRes);
+
+    VkMemoryRequirements memReqs;
+    mVk.vkGetBufferMemoryRequirements(mDevice, buffer, &memReqs);
+
+    EXPECT_TRUE(getStagingMemoryTypeIndex(&mVk, mDevice, &memProps, memReqs, &typeIndex));
 }
 
 #ifndef _WIN32 // TODO: Get this working w/ Swiftshader vk on Windows
@@ -443,9 +446,6 @@ protected:
 
         VulkanTest::SetUp();
 
-        emugl::setGLObjectCounter(android::base::GLObjectCounter::get());
-        emugl::set_emugl_window_operations(*getGraphicsAgents()->emu);
-        emugl::set_emugl_multi_display_operations(*getGraphicsAgents()->multi_display);
         ASSERT_NE(nullptr, gl::LazyLoadedEGLDispatch::get());
         ASSERT_NE(nullptr, gl::LazyLoadedGLESv2Dispatch::get());
 

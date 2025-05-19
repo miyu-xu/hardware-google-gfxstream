@@ -1,3 +1,17 @@
+// Copyright 2025 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expresso or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 // Note: needs to be included before DisplayVk to avoid conflicts
 // between gtest and x11 headers.
 #include <gtest/gtest.h>
@@ -6,7 +20,7 @@
 
 #include "BorrowedImageVk.h"
 #include "Standalone.h"
-#include "aemu/base/synchronization/Lock.h"
+#include "gfxstream/synchronization/Lock.h"
 #include "tests/VkTestUtils.h"
 #include "vulkan/VulkanDispatch.h"
 
@@ -35,9 +49,9 @@ class DisplayVkTest : public ::testing::Test {
         pickPhysicalDevice();
         createLogicalDevice();
         k_vk->vkGetDeviceQueue(m_vkDevice, m_compositorQueueFamilyIndex, 0, &m_compositorVkQueue);
-        m_compositorVkQueueLock = std::make_shared<android::base::Lock>();
+        m_compositorVkQueueLock = std::make_shared<gfxstream::base::Lock>();
         k_vk->vkGetDeviceQueue(m_vkDevice, m_swapChainQueueFamilyIndex, 0, &m_swapChainVkQueue);
-        m_swapChainVkQueueLock = std::make_shared<android::base::Lock>();
+        m_swapChainVkQueueLock = std::make_shared<gfxstream::base::Lock>();
         VkCommandPoolCreateInfo commandPoolCi = {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .queueFamilyIndex = m_compositorQueueFamilyIndex};
@@ -96,9 +110,9 @@ class DisplayVkTest : public ::testing::Test {
     uint32_t m_compositorQueueFamilyIndex = 0;
     VkDevice m_vkDevice = VK_NULL_HANDLE;
     VkQueue m_compositorVkQueue = VK_NULL_HANDLE;
-    std::shared_ptr<android::base::Lock> m_compositorVkQueueLock;
+    std::shared_ptr<gfxstream::base::Lock> m_compositorVkQueueLock;
     VkQueue m_swapChainVkQueue = VK_NULL_HANDLE;
-    std::shared_ptr<android::base::Lock> m_swapChainVkQueueLock;
+    std::shared_ptr<gfxstream::base::Lock> m_swapChainVkQueueLock;
     VkCommandPool m_vkCommandPool = VK_NULL_HANDLE;
     std::unique_ptr<DisplayVk> m_displayVk = nullptr;
     std::unique_ptr<DisplaySurface> m_displaySurface = nullptr;
