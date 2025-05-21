@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4297a4a2_b899b79a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3115162
+      },
+      "writtenOn": "2025-05-21T16:30:32Z",
+      "side": 1,
+      "message": "A lot of changes! +1 to dropping AEMU entirely ...",
+      "revId": "cb5028a6ee4d853ec3483c23699aa01a7ed72422",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
