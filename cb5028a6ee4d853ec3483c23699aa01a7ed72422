@@ -16,6 +16,24 @@
       "message": "A lot of changes! +1 to dropping AEMU entirely ...",
       "revId": "cb5028a6ee4d853ec3483c23699aa01a7ed72422",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d898ca8_fb9d52c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-05-21T21:51:55Z",
+      "side": 1,
+      "message": "check your partner account for more updates!",
+      "parentUuid": "4297a4a2_b899b79a",
+      "revId": "cb5028a6ee4d853ec3483c23699aa01a7ed72422",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
