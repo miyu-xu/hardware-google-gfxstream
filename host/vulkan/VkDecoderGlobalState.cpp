@@ -1318,9 +1318,7 @@ class VkDecoderGlobalState::Impl {
             }
 
             if (m_vkEmulation->getFeatures().VulkanBatchedDescriptorSetUpdate.enabled) {
-                // Currently not supporting iub due to descriptor set optimization.
-                // TODO: fix the non-optimized descriptor set path and re-enable the features afterwads.
-                // b/372217918
+                // Currently not supporting IUB with descriptor set optimizations.
                 VkPhysicalDeviceInlineUniformBlockFeatures* iubFeatures =
                     vk_find_struct<VkPhysicalDeviceInlineUniformBlockFeatures>(pFeatures);
                 if (iubFeatures != nullptr) {
@@ -6332,7 +6330,7 @@ class VkDecoderGlobalState::Impl {
         if (!info) return VK_ERROR_OUT_OF_HOST_MEMORY;
 
         auto* deviceInfo = gfxstream::base::find(mDeviceInfo, device);
-        if (!info) return VK_ERROR_OUT_OF_HOST_MEMORY;
+        if (!deviceInfo) return VK_ERROR_OUT_OF_HOST_MEMORY;
 
         hostBlobId = (info->blobId && !hostBlobId) ? info->blobId : hostBlobId;
 

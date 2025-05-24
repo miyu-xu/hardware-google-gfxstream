@@ -1,5 +1,5 @@
 package(
-    default_visibility = ["@//:gfxstream"],
+    default_visibility = ["//:gfxstream"],
 )
 
 exports_files([

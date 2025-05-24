@@ -1,6 +1,6 @@
 package(
     default_visibility = [
-        "@//:gfxstream",
+        "//:gfxstream",
         "@mesa//:__subpackages__",
     ],
 )
