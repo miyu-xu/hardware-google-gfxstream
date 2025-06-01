@@ -238,15 +238,17 @@ RendererPtr InitRenderer(uint32_t displayWidth,
 
     gfxstream::vk::vkDispatch(false /* don't use test ICD */);
 
+#ifdef __MINGW64__
+    return std::shared_ptr<gfxstream::Renderer>(nullptr); // stub cosnstant
+#else
     static gfxstream::RenderLibPtr sRendererLibrary = gfxstream::initLibrary();
-    MaybeConfigureRenderer(*sRendererLibrary);
+    MaybeConfigureRenderer(*sRendererLibrary);  
 
     RendererPtr renderer = sRendererLibrary->initRenderer(displayWidth, displayHeight, features, true, enableEgl2egl);
     if (!renderer) {
         GFXSTREAM_ERROR("Failed to initialize renderer.");
         return nullptr;
     }
-
     // TODO: move this into a proper function in address_space_device_control_ops.
     gfxstream::host::AddressSpaceGraphicsContext::setConsumer(
         gfxstream::ConsumerInterface{
@@ -280,8 +282,8 @@ RendererPtr InitRenderer(uint32_t displayWidth,
                 renderer->addressSpaceGraphicsConsumerReloadRingConfig(consumer);
             },
         });
-
     return renderer;
+#endif // __MINGW64__
 }
 
 RendererPtr GetRenderer(uint32_t displayWidth,
