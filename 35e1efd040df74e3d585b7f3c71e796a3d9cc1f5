@@ -1,0 +1,449 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f35f384_9ce393cc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-06-02T16:32:54Z",
+      "side": 1,
+      "message": "Left a few comments, mostly concerning `mingw64` and some unnecessary ifdefs.\n\n\nExcellent work, can you rebase this series and submit it to https://github.com/google/gfxstream (it\u0027s open again)?  We can continue the review there.  The first 3 patches (updating the headers) look flawless.",
+      "revId": "35e1efd040df74e3d585b7f3c71e796a3d9cc1f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d4d799e_fe594967",
+        "filename": "common/base/SharedMemory_posix.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-06-02T16:32:54Z",
+      "side": 1,
+      "message": "You shouldn\u0027t compile `POSIX` apis on Windows.  Change this in the meson_layer.\n\nSo if target_os \u003d\u003d windows {\n   files +\u003d [SharedMemory_win32.cpp]\n}",
+      "fixSuggestions": [
+        {
+          "fixId": "d7f21f18_582bc387",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 16,
+                "startChar": 0,
+                "endLine": 19,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 20,
+                "startChar": 0,
+                "endLine": 21,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 52,
+                "startChar": 0,
+                "endLine": 55,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 56,
+                "startChar": 0,
+                "endLine": 57,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 78,
+                "startChar": 0,
+                "endLine": 81,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 82,
+                "startChar": 0,
+                "endLine": 83,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 86,
+                "startChar": 0,
+                "endLine": 89,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 90,
+                "startChar": 0,
+                "endLine": 91,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 100,
+                "startChar": 0,
+                "endLine": 103,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 104,
+                "startChar": 0,
+                "endLine": 105,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 108,
+                "startChar": 0,
+                "endLine": 111,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 130,
+                "startChar": 0,
+                "endLine": 131,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 136,
+                "startChar": 0,
+                "endLine": 137,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            },
+            {
+              "path": "common/base/SharedMemory_posix.cpp",
+              "range": {
+                "startLine": 198,
+                "startChar": 0,
+                "endLine": 199,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            }
+          ]
+        }
+      ],
+      "revId": "35e1efd040df74e3d585b7f3c71e796a3d9cc1f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ad0ca5c_0428ca83",
+        "filename": "common/base/Thread_pthread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-06-02T16:32:54Z",
+      "side": 1,
+      "message": "Don\u0027t compile `pthread` on Windows, compile `thread_win32.cpp`",
+      "range": {
+        "startLine": 175,
+        "startChar": 19,
+        "endLine": 186,
+        "endChar": 1
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "6241bc7e_611c2871",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 22,
+                "startChar": 0,
+                "endLine": 23,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 24,
+                "startChar": 0,
+                "endLine": 25,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 34,
+                "startChar": 0,
+                "endLine": 37,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 41,
+                "startChar": 0,
+                "endLine": 42,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 59,
+                "startChar": 0,
+                "endLine": 62,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 81,
+                "startChar": 0,
+                "endLine": 83,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 94,
+                "startChar": 0,
+                "endLine": 97,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 104,
+                "startChar": 0,
+                "endLine": 105,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 123,
+                "startChar": 0,
+                "endLine": 126,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 132,
+                "startChar": 0,
+                "endLine": 134,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 141,
+                "startChar": 0,
+                "endLine": 144,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 175,
+                "startChar": 0,
+                "endLine": 176,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 179,
+                "startChar": 0,
+                "endLine": 182,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "common/base/Thread_pthread.cpp",
+              "range": {
+                "startLine": 185,
+                "startChar": 0,
+                "endLine": 186,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "35e1efd040df74e3d585b7f3c71e796a3d9cc1f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14e508ac_dc421dbe",
+        "filename": "host/gl/gl-host-common/opengl/NativeGpuInfo_windows.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-06-02T16:32:54Z",
+      "side": 1,
+      "message": "So this code only works on `win32`, but not `win64`?  I think you should add a comment about how you are compiling/testing this in the CL.\n\nYou may even want to add to the README.md in crosvm, of how you are compiling on Windows (https://crosvm.dev/book/appendix/rutabaga_gfx.html).",
+      "range": {
+        "startLine": 266,
+        "startChar": 0,
+        "endLine": 307,
+        "endChar": 0
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "cd0b58a2_a5e98912",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/gl/gl-host-common/opengl/NativeGpuInfo_windows.cpp",
+              "range": {
+                "startLine": 267,
+                "startChar": 0,
+                "endLine": 267,
+                "endChar": 0
+              },
+              "replacement": "    // Direct3D9 is a 32-bit API and is not compatible with 64-bit applications.\n    // This function will always fail when compiled for 64-bit.\n"
+            },
+            {
+              "path": "host/gl/gl-host-common/opengl/NativeGpuInfo_windows.cpp",
+              "range": {
+                "startLine": 388,
+                "startChar": 0,
+                "endLine": 388,
+                "endChar": 0
+              },
+              "replacement": "    // The vulkan loader path is not available when compiled for 64-bit.\n"
+            }
+          ]
+        }
+      ],
+      "revId": "35e1efd040df74e3d585b7f3c71e796a3d9cc1f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3992fc22_3c535f5f",
+        "filename": "host/virtio-gpu-gfxstream-renderer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1101621
+      },
+      "writtenOn": "2025-06-02T16:32:54Z",
+      "side": 1,
+      "message": "hmm, why doesn\u0027t this work on `__MINGW64__`?",
+      "range": {
+        "startLine": 241,
+        "startChar": 0,
+        "endLine": 244,
+        "endChar": 0
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "c1ee4a64_f0ec75f4",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "host/virtio-gpu-gfxstream-renderer.cpp",
+              "range": {
+                "startLine": 241,
+                "startChar": 0,
+                "endLine": 241,
+                "endChar": 0
+              },
+              "replacement": "// TODO(b/324950048): Fix this issue and remove this stub.\n"
+            }
+          ]
+        }
+      ],
+      "revId": "35e1efd040df74e3d585b7f3c71e796a3d9cc1f5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
