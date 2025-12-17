@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2adb44e0_faa98598",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1561731
+      },
+      "writtenOn": "2025-12-17T17:45:55Z",
+      "side": 1,
+      "message": "Thank you for the catch! Can you send a PR to https://github.com/google/gfxstream ?",
+      "revId": "53313df6a87bba8e20a9bf3e613f3cb8e9080772",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
