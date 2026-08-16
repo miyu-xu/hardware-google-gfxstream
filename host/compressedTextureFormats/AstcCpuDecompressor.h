@@ -13,6 +13,8 @@
 // limitations under the License.
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 

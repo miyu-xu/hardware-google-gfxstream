@@ -22,7 +22,9 @@
 
 #include "ExternalObjectManager.h"
 #include "FrameBuffer.h"
+#include "HdDisplaySelection.h"
 #include "GfxStreamAgents.h"
+#include "HdFrameBridgeWin32.h"
 #include "VirtioGpuTimelines.h"
 #include "VkCommonOperations.h"
 #include "aemu/base/AlignedBuf.h"
@@ -64,12 +66,39 @@ extern "C" {
 }  // extern "C"
 
 #if defined(_WIN32)
+#include <windows.h>
+
 struct iovec {
     void* iov_base; /* Starting address */
     size_t iov_len; /* Length in bytes */
 };
+
+static uintptr_t hdPackedViewportProperty(int32_t width, int32_t height) {
+    if (width <= 0 || height <= 0 || width > UINT16_MAX || height > UINT16_MAX) {
+        return 0;
+    }
+    return (static_cast<uintptr_t>(static_cast<uint16_t>(height)) << 16) |
+           static_cast<uint16_t>(width);
+}
+
+static void hdSetWindowProperty(void* nativeWindowHandle, const wchar_t* name, uintptr_t value) {
+    if (nativeWindowHandle != nullptr && value != 0) {
+        SetPropW(reinterpret_cast<HWND>(nativeWindowHandle), name,
+                 reinterpret_cast<HANDLE>(value));
+    }
+}
 #else
 #include <unistd.h>
+
+static uintptr_t hdPackedViewportProperty(int32_t width, int32_t height) {
+    if (width <= 0 || height <= 0 || width > UINT16_MAX || height > UINT16_MAX) {
+        return 0;
+    }
+    return (static_cast<uintptr_t>(static_cast<uint16_t>(height)) << 16) |
+           static_cast<uint16_t>(width);
+}
+
+static void hdSetWindowProperty(void*, const wchar_t*, uintptr_t) {}
 #endif  // _WIN32
 
 #define MAX_DEBUG_BUFFER_SIZE 512
@@ -869,7 +898,11 @@ class CleanupThread {
 
 class PipeVirglRenderer {
    public:
-    PipeVirglRenderer() = default;
+    PipeVirglRenderer()
+#if defined(_WIN32)
+        : mHdFrameBridge(gfxstream::HdFrameBridgeWin32::createFromEnvironment())
+#endif
+    {}
 
     int init(void* cookie, gfxstream::host::FeatureSet features,
              stream_renderer_fence_callback fence_callback) {
@@ -1998,10 +2031,44 @@ class PipeVirglRenderer {
     }
 
     void flushResource(uint32_t res_handle) {
+        uint32_t width = 0;
+        uint32_t height = 0;
+        uint32_t format = 0;
+        auto resource = mResources.find(res_handle);
+        if (resource != mResources.end()) {
+            width = resource->second.args.width;
+            height = resource->second.args.height;
+            format = resource->second.args.format;
+        }
+        if (gfxstream::hdDisplaySelectionEnabled()) {
+            // Native Vulkan/composer frames arrive here without AEMU multi-display callbacks or
+            // virtio SET_SCANOUT. Resolve only an unambiguous configured extent; never guess when
+            // two scanouts use the same dimensions.
+            const uint32_t scanoutId = gfxstream::hdScanoutForDisplayBuffer(
+                gfxstream::kHdInvalidScanout, width, height);
+            if (scanoutId != gfxstream::kHdInvalidScanout) {
+                gfxstream::hdSetScanoutResource(scanoutId, res_handle);
+            }
+        }
         auto taskId = mVirtioGpuTimelines->enqueueTask(VirtioGpuRingGlobal{});
         gfxstream::FrameBuffer::getFB()->postWithCallback(
-            res_handle, [this, taskId](std::shared_future<void> waitForGpu) {
+            res_handle, [this, taskId, res_handle, width, height,
+                         format](std::shared_future<void> waitForGpu) {
                 waitForGpu.wait();
+#if defined(_WIN32)
+                // The broker has one bounded triple-buffer set for the display currently selected
+                // by HD. Publishing buffers from every configured scanout fills those slots with
+                // an off-screen display and turns normal primary-display traffic into a permanent
+                // rejection loop. Presentation stays zero-copy; recording receives only the same
+                // selected scanout that the Player is showing.
+                const bool selectedForHd = !gfxstream::hdDisplaySelectionEnabled() ||
+                                           gfxstream::hdShouldPresentResource(res_handle);
+                if (mHdFrameBridge && selectedForHd &&
+                    !mHdFrameBridge->publish(res_handle, width, height, format)) {
+                    stream_renderer_error("HD strict frame broker rejected color buffer %u",
+                                          res_handle);
+                }
+#endif
                 mVirtioGpuTimelines->notifyTaskCompletion(taskId);
             });
     }
@@ -2322,6 +2389,7 @@ class PipeVirglRenderer {
 #ifdef CONFIG_AEMU
     void setServiceOps(const GoldfishPipeServiceOps* ops) { mServiceOps = ops; }
 #endif  // CONFIG_AEMU
+
    private:
     void allocResource(PipeResEntry& entry, iovec* iov, int num_iovs) {
         stream_renderer_debug("entry linear: %p", entry.linear);
@@ -2411,6 +2479,9 @@ class PipeVirglRenderer {
     std::unique_ptr<VirtioGpuTimelines> mVirtioGpuTimelines = nullptr;
 
     std::unique_ptr<CleanupThread> mCleanupThread;
+#if defined(_WIN32)
+    std::unique_ptr<gfxstream::HdFrameBridgeWin32> mHdFrameBridge;
+#endif
 };
 
 static PipeVirglRenderer* sRenderer() {
@@ -3256,7 +3327,6 @@ VG_EXPORT int stream_renderer_init(struct stream_renderer_param* stream_renderer
 
     sRenderer()->init(renderer_cookie, features, fence_callback);
     gfxstream::FrameBuffer::waitUntilInitialized();
-
     stream_renderer_info("Gfxstream initialized successfully!");
     return 0;
 }
@@ -3267,6 +3337,101 @@ VG_EXPORT void gfxstream_backend_setup_window(void* native_window_handle, int32_
                                               int32_t fb_height) {
     android_showOpenglesWindow(native_window_handle, window_x, window_y, window_width,
                                window_height, fb_width, fb_height, 1.0f, 0, false, false);
+}
+
+VG_EXPORT void gfxstream_backend_setup_window_for_display(
+    uint32_t scanout_id, void* native_window_handle, int32_t window_x, int32_t window_y,
+    int32_t window_width, int32_t window_height, int32_t fb_width, int32_t fb_height) {
+    // All crosvm scanouts share gfxstream's single native Vulkan presentation surface. An
+    // unselected scanout must never resize or rebind that surface; doing so temporarily replaces
+    // HD's portrait viewport with the secondary/default 1024x768 extent during pointer-driven
+    // composition and produces a black, distorted flash.
+    const uintptr_t packedViewport = hdPackedViewportProperty(window_width, window_height);
+    hdSetWindowProperty(native_window_handle, L"HD_GFXSTREAM_SETUP_VIEWPORT_V1", packedViewport);
+    if (gfxstream::hdDisplaySelectionEnabled()) {
+        if (scanout_id != gfxstream::hdSelectedScanout()) {
+            return;
+        }
+        // Startup and scanout refreshes can replay crosvm's default 1024x768 projection after the
+        // Player has already committed its aspect-correct viewport. That race used to recreate the
+        // swapchain at the stale extent while APPLIED_VIEWPORT still reported success, producing
+        // deterministic distortion or timing-dependent black flashes. Only the explicit commit
+        // API may resize an HWND once HD owns its viewport; a new HWND remains free to initialize.
+        if (gfxstream::hdHasAuthoritativeHostViewport(
+                scanout_id, reinterpret_cast<uintptr_t>(native_window_handle))) {
+            hdSetWindowProperty(native_window_handle, L"HD_GFXSTREAM_SETUP_BLOCKED_V1",
+                                packedViewport);
+            return;
+        }
+    }
+    gfxstream_backend_setup_window(native_window_handle, window_x, window_y, window_width,
+                                   window_height, fb_width, fb_height);
+}
+
+VG_EXPORT int32_t gfxstream_backend_commit_window_for_display(
+    uint32_t scanout_id, void* native_window_handle, int32_t window_x, int32_t window_y,
+    int32_t window_width, int32_t window_height, int32_t fb_width, int32_t fb_height) {
+    hdSetWindowProperty(native_window_handle, L"HD_GFXSTREAM_COMMIT_VIEWPORT_V1",
+                        hdPackedViewportProperty(window_width, window_height));
+    int32_t status = 0;
+    const bool selectionChanged =
+        gfxstream::hdDisplaySelectionEnabled() && scanout_id != gfxstream::hdSelectedScanout();
+    if (selectionChanged) {
+        status |= 1;
+        // The authoritative viewport message is addressed to the exact attached crosvm scanout.
+        // Repair a stale renderer-side selection before resizing instead of silently discarding
+        // the transaction and leaving the old-orientation swapchain on screen.
+        gfxstream::hdSelectDisplay(scanout_id);
+    }
+    if (android_showOpenglesWindow(native_window_handle, window_x, window_y, window_width,
+                                   window_height, fb_width, fb_height, 1.0f, 0, false, false) == 0) {
+        status |= 2;
+    }
+    gfxstream::FrameBuffer* fb = gfxstream::FrameBuffer::getFB();
+    if (fb != nullptr && window_width > 0 && window_height > 0) {
+        status |= 4;
+        if (fb->commitSubWindowSurfaceSizeForHd(scanout_id, static_cast<uint32_t>(window_width),
+                                                static_cast<uint32_t>(window_height))) {
+            status |= 8;
+            gfxstream::hdSetAuthoritativeHostViewport(
+                scanout_id, reinterpret_cast<uintptr_t>(native_window_handle),
+                static_cast<uint32_t>(window_width), static_cast<uint32_t>(window_height));
+        }
+    }
+    hdSetWindowProperty(native_window_handle, L"HD_GFXSTREAM_COMMIT_STATUS_V1",
+                        static_cast<uintptr_t>(status));
+    return status;
+}
+
+VG_EXPORT int32_t gfxstream_backend_configure_display(uint32_t scanout_id, uint32_t width,
+                                                      uint32_t height, uint32_t dpi) {
+    if (!gfxstream::hdDisplaySelectionEnabled() || width == 0 || height == 0) {
+        return false;
+    }
+    gfxstream::FrameBuffer* fb = gfxstream::FrameBuffer::getFB();
+    if (!fb) {
+        return false;
+    }
+    gfxstream::hdConfigureScanoutSize(scanout_id, width, height);
+    const uint32_t displayId = gfxstream::hdPhysicalDisplayIdForScanout(scanout_id);
+    // Display 0 already exists when FrameBuffer initializes, and a recovered crosvm surface may
+    // configure the same secondary scanout more than once. Treat creation as idempotent and let
+    // setDisplayPose provide the authoritative dimensions for the selected scanout.
+    if (displayId != 0) {
+        (void)fb->createDisplay(displayId);
+    }
+    return fb->setDisplayPose(displayId, 0, 0, width, height, dpi) == 0;
+}
+
+VG_EXPORT void gfxstream_backend_set_scanout_resource(uint32_t scanout_id, uint32_t resource_id) {
+    if (gfxstream::hdDisplaySelectionEnabled()) {
+        gfxstream::hdSetScanoutResource(scanout_id, resource_id);
+    }
+}
+
+VG_EXPORT int32_t gfxstream_backend_select_display(uint32_t scanout_id) {
+    gfxstream::FrameBuffer* fb = gfxstream::FrameBuffer::getFB();
+    return fb != nullptr ? fb->selectDisplayForHd(scanout_id) : 0;
 }
 
 VG_EXPORT void stream_renderer_teardown() {

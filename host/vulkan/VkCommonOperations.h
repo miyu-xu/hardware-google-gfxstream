@@ -30,6 +30,7 @@
 #include "DeviceOpTracker.h"
 #include "DisplayVk.h"
 #include "FrameworkFormats.h"
+#include "VkEmulatedPhysicalDeviceMemory.h"
 #include "aemu/base/ManagedDescriptor.hpp"
 #include "aemu/base/Optional.h"
 #include "aemu/base/synchronization/Lock.h"
@@ -87,6 +88,12 @@ bool getStagingMemoryTypeIndex(VulkanDispatch* vk, VkDevice device,
                                uint32_t* typeIndex);
 
 VK_EXT_MEMORY_HANDLE dupExternalMemory(VK_EXT_MEMORY_HANDLE);
+
+// Deprecated: use CoherentMemoryBacking::createForPlatform() instead.
+// Kept as a thin wrapper for backward compatibility.
+CoherentHostMemoryProbeResult probeCoherentHostMemory(VulkanDispatch* vk,
+                                                       VkPhysicalDevice physdev,
+                                                       uint32_t compatibleMemoryTypeMask);
 
 enum class AstcEmulationMode {
     Disabled,  // No ASTC emulation (ie: ASTC not supported unless the GPU supports it natively)
@@ -444,6 +451,10 @@ struct VkEmulation {
         uint32_t guestMemoryTypeIndex;
     };
     std::optional<RepresentativeColorBufferMemoryTypeInfo> representativeColorBufferMemoryTypeInfo;
+
+    // Cached during init when VulkanAllocateHostMemory is enabled. Reused when the guest
+    // enumerates physical devices (Windows requires a real VkDevice for the probe).
+    CoherentHostMemoryProbeResult coherentHostMemoryProbeResult{};
 };
 
 VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
@@ -467,6 +478,12 @@ void initVkEmulationFeatures(std::unique_ptr<VkEmulationFeatures>);
 
 VkEmulation* getGlobalVkEmulation();
 void teardownGlobalVkEmulation();
+
+CoherentHostMemoryProbeResult probeCoherentHostMemory(
+    VkPhysicalDevice physicalDevice, VkDevice device, const VulkanDispatch* vk,
+    const VkPhysicalDeviceMemoryProperties& hostMemoryProperties,
+    bool supportsExternalMemoryHostProps, VkDeviceSize minImportedHostPointerAlignment,
+    const gfxstream::host::FeatureSet& features);
 
 void onVkDeviceLost();
 
@@ -522,11 +539,19 @@ VkImage getColorBufferVkImage(uint32_t colorBufferHandle);
 struct VkColorBufferMemoryExport {
     android::base::ManagedDescriptor descriptor;
     uint64_t size = 0;
+    uint32_t memoryTypeIndex = 0;
     uint32_t streamHandleType = 0;
     bool linearTiling = false;
     bool dedicatedAllocation = false;
+    VkImageCreateFlags imageCreateFlags = 0;
+    VkImageUsageFlags imageUsage = 0;
+    VkFormat imageFormat = VK_FORMAT_UNDEFINED;
 };
 std::optional<VkColorBufferMemoryExport> exportColorBufferMemory(uint32_t colorBufferHandle);
+
+// Returns the LUID of the physical device used by the live gfxstream Vulkan device. Windows frame
+// consumers compare it with their own VkPhysicalDeviceIDProperties before importing memory.
+void getVkPhysicalDeviceLuid(uint8_t* luid, size_t luidSize, bool* valid);
 
 bool setColorBufferVulkanMode(uint32_t colorBufferHandle, uint32_t vulkanMode);
 int32_t mapGpaToBufferHandle(uint32_t bufferHandle, uint64_t gpa, uint64_t size = 0);

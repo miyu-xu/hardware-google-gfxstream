@@ -1,6 +1,7 @@
 #ifndef DISPLAY_VK_H
 #define DISPLAY_VK_H
 
+#include <atomic>
 #include <deque>
 #include <functional>
 #include <future>
@@ -35,6 +36,14 @@ class DisplayVk : public gfxstream::Display {
 
     PostResult post(const BorrowedImageInfo* info);
 
+    // Runs on PostWorker and creates the swapchain for the latest committed surface generation
+    // without requiring a new guest frame.
+    bool recreateSwapchainIfNeeded();
+
+    // Safe to query from the native window thread. DisplaySurface metadata can already contain a
+    // requested Win32 extent while PostWorker still presents the previous swapchain generation.
+    bool isSwapchainCurrentForSurface() const;
+
     void drainQueues();
 
    protected:
@@ -44,7 +53,7 @@ class DisplayVk : public gfxstream::Display {
 
    private:
     void destroySwapchain();
-    bool recreateSwapchain();
+    bool recreateSwapchain(uint64_t surfaceGeneration);
 
     // The success component of the result is false when the swapchain is no longer valid and
     // bindToSurface() needs to be called again. When the success component is true, the waitable
@@ -110,7 +119,20 @@ class DisplayVk : public gfxstream::Display {
     std::vector<std::unique_ptr<ImageBorrowResource>> m_imageBorrowResources;
 
     std::unique_ptr<SwapChainStateVk> m_swapChainStateVk;
-    bool m_needToRecreateSwapChain = true;
+    // Keep the previously presented Win32 swapchain alive while the replacement receives its
+    // first frame. DWM can retain the old presentation instead of exposing an empty surface.
+    std::unique_ptr<SwapChainStateVk> m_retiredSwapChainStateVk;
+    // DisplaySurface notifications run on the native window thread while post() runs on the
+    // PostWorker. A plain bool loses runtime resize/rotation updates under that cross-thread
+    // access, leaving DisplayVk on the previous extent even though the HWND already changed.
+    std::atomic<bool> m_needToRecreateSwapChain{true};
+    std::atomic<bool> m_surfaceQueuesAlreadyDrained{false};
+    // Monotonic cross-thread surface state. A bool alone can lose a resize when surfaceUpdated()
+    // sets it while PostWorker is completing an older recreation and subsequently clears it.
+    std::atomic<uint64_t> m_surfaceGeneration{1};
+    std::atomic<uint64_t> m_appliedSurfaceGeneration{0};
+    std::atomic<uint32_t> m_appliedSwapchainWidth{0};
+    std::atomic<uint32_t> m_appliedSwapchainHeight{0};
 
     std::unordered_map<VkFormat, VkFormatProperties> m_vkFormatProperties;
 };

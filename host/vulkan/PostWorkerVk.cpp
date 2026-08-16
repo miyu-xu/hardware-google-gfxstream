@@ -43,6 +43,11 @@ std::shared_future<void> PostWorkerVk::postImpl(ColorBuffer* cb) {
     constexpr const int kMaxPostRetries = 2;
     for (int i = 0; i < kMaxPostRetries; i++) {
         const auto imageInfo = mFb->borrowColorBufferForDisplay(cb->getHndl());
+        if (!imageInfo) {
+            ERR("Failed to borrow ColorBuffer:%d for DisplayVk.", cb->getHndl());
+            continue;
+        }
+
         auto result = m_displayVk->post(imageInfo.get());
         if (result.success) {
             return result.postCompletedWaitable;
@@ -59,7 +64,13 @@ void PostWorkerVk::screenshot(ColorBuffer* cb, int width, int height, GLenum for
         << "Screenshot not supported with native Vulkan swapchain enabled.";
 }
 
-void PostWorkerVk::viewportImpl(int width, int height) {}
+void PostWorkerVk::viewportImpl(int width, int height) {
+    (void)width;
+    (void)height;
+    if (!m_displayVk || !m_displayVk->recreateSwapchainIfNeeded()) {
+        ERR("Failed to commit DisplayVk viewport.");
+    }
+}
 
 void PostWorkerVk::clearImpl() {
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))

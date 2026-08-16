@@ -2,6 +2,7 @@
 
 #include <GLES2/gl2.h>
 
+#include <cstdint>
 #include <functional>
 #include <future>
 #include <memory>
@@ -35,6 +36,9 @@ struct Post {
     using CompletionCallback =
         std::function<void(std::shared_future<void> waitForGpu)>;
     PostCmd cmd;
+    // HD diagnostics only: monotonic time at which the selected Android frame entered the host
+    // post queue. It never participates in presentation ordering or synchronization.
+    uint64_t hdEnqueueTimestampNs = 0;
     int composeVersion;
     std::vector<char> composeBuffer;
     std::unique_ptr<CompletionCallback> completionCallback = nullptr;

@@ -16,12 +16,18 @@
 
 #include <vulkan/vulkan.h>
 
+#include <cstdint>
 #include <optional>
 
 #include "gfxstream/host/Features.h"
 
 namespace gfxstream {
 namespace vk {
+
+struct CoherentHostMemoryProbeResult {
+    bool success = false;
+    uint32_t coherentHostMemoryTypeMask = 0;
+};
 
 // A physical device may have memory types that are not desirable or are not
 // supportable by the host renderer. This class helps to track the original
@@ -31,7 +37,8 @@ class EmulatedPhysicalDeviceMemoryProperties {
    public:
     EmulatedPhysicalDeviceMemoryProperties(const VkPhysicalDeviceMemoryProperties& host,
                                            uint32_t hostColorBufferMemoryTypeIndex,
-                                           const gfxstream::host::FeatureSet& features);
+                                           const gfxstream::host::FeatureSet& features,
+                                           CoherentHostMemoryProbeResult coherentProbeResult = {});
 
     struct HostMemoryInfo {
         uint32_t index;
@@ -55,11 +62,17 @@ class EmulatedPhysicalDeviceMemoryProperties {
 
     void transformToGuestMemoryRequirements(VkMemoryRequirements* hostMemoryRequirements) const;
 
+    uint32_t getCoherentHostMemoryTypeMask() const { return mCoherentHostMemoryTypeMask; }
+
    private:
     VkPhysicalDeviceMemoryProperties mGuestMemoryProperties;
     VkPhysicalDeviceMemoryProperties mHostMemoryProperties;
     uint32_t mGuestToHostMemoryTypeIndexMap[VK_MAX_MEMORY_TYPES];
     uint32_t mHostToGuestMemoryTypeIndexMap[VK_MAX_MEMORY_TYPES];
+
+    // Bitmask of host memory types that are import-compatible, HOST_VISIBLE, and
+    // genuinely HOST_COHERENT, as determined by a runtime probe.
+    uint32_t mCoherentHostMemoryTypeMask = 0;
 
     // The memory type index reported to the guest for VkDeviceMemory requirements which would
     // try to import host ColorBuffer allocations

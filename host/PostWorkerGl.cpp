@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "PostWorkerGl.h"
+#include "HdDisplaySelection.h"
 
 #include "FrameBuffer.h"
 #include "gl/DisplayGl.h"
@@ -97,7 +98,52 @@ std::shared_future<void> PostWorkerGl::postImpl(ColorBuffer* cb) {
 #endif
     }
     else if (multiDisplay.isMultiDisplayEnabled()) {
-        if (multiDisplay.isMultiDisplayWindow()) {
+        if (hdDisplaySelectionEnabled()) {
+            uint32_t selectedDisplayId = hdSelectedDisplay();
+            uint32_t selectedWidth = 0;
+            uint32_t selectedHeight = 0;
+            uint32_t selectedColorBufferHandle = 0;
+            if (!multiDisplay.getMultiDisplay(
+                    selectedDisplayId, nullptr, nullptr, &selectedWidth, &selectedHeight,
+                    nullptr, nullptr, nullptr)) {
+                selectedDisplayId = 0;
+                (void)multiDisplay.getMultiDisplay(
+                    0, nullptr, nullptr, &selectedWidth, &selectedHeight, nullptr, nullptr,
+                    nullptr);
+            }
+            if (selectedDisplayId != 0) {
+                (void)multiDisplay.getDisplayColorBuffer(selectedDisplayId,
+                                                         &selectedColorBufferHandle);
+            }
+            ColorBuffer* selectedColorBuffer =
+                selectedDisplayId == 0
+                    ? cb
+                    : mFb->findColorBuffer(selectedColorBufferHandle).get();
+            if (selectedColorBuffer == nullptr) {
+                selectedDisplayId = 0;
+                selectedColorBuffer = cb;
+                selectedWidth = cb->getWidth();
+                selectedHeight = cb->getHeight();
+            }
+            post.frameWidth = selectedWidth;
+            post.frameHeight = selectedHeight;
+            postLayerOptions.displayFrame = {
+                .left = 0,
+                .top = 0,
+                .right = static_cast<int>(selectedWidth),
+                .bottom = static_cast<int>(selectedHeight),
+            };
+            postLayerOptions.crop = {
+                .left = 0.0f,
+                .top = static_cast<float>(selectedColorBuffer->getHeight()),
+                .right = static_cast<float>(selectedColorBuffer->getWidth()),
+                .bottom = 0.0f,
+            };
+            post.layers.push_back(DisplayGl::PostLayer{
+                .colorBuffer = selectedColorBuffer,
+                .layerOptions = postLayerOptions,
+            });
+        } else if (multiDisplay.isMultiDisplayWindow()) {
             int32_t previousDisplayId = -1;
             uint32_t currentDisplayId;
             uint32_t currentDisplayColorBufferHandle;

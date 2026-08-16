@@ -29,16 +29,19 @@ class DisplaySurfaceVk : public gfxstream::DisplaySurfaceImpl {
    static std::unique_ptr<DisplaySurfaceVk> create(const VulkanDispatch& vk, VkInstance vkInstance,
                                                    FBNativeWindowType window);
 
-   ~DisplaySurfaceVk();
+    ~DisplaySurfaceVk();
 
-   VkSurfaceKHR getSurface() const { return mSurface; }
+    VkSurfaceKHR getSurface() const { return mSurface; }
+    FBNativeWindowType getNativeWindow() const { return mNativeWindow; }
 
   private:
-   DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance vkInstance, VkSurfaceKHR vkSurface);
+   DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance vkInstance, VkSurfaceKHR vkSurface,
+                    FBNativeWindowType nativeWindow);
 
    const VulkanDispatch& mVk;
-   VkInstance mInstance = VK_NULL_HANDLE;
-   VkSurfaceKHR mSurface = VK_NULL_HANDLE;
+    VkInstance mInstance = VK_NULL_HANDLE;
+    VkSurfaceKHR mSurface = VK_NULL_HANDLE;
+    FBNativeWindowType mNativeWindow{};
 };
 
 }  // namespace vk

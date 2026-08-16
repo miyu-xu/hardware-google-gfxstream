@@ -137,3 +137,11 @@ int moveSubWindow(FBNativeWindowType p_parent_window,
 
     return 1;
 }
+
+void* getNativeSubWindowMetalLayer(EGLNativeWindowType win) {
+    if (!win) {
+        return NULL;
+    }
+    NSView* glView = (NSView*)win;
+    return (void*)[glView layer];
+}

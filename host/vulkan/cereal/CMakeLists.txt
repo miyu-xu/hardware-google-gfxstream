@@ -26,4 +26,3 @@ target_include_directories(OpenglRender_vulkan_cereal
                            ..
                            ../..
                            ../../../include)
-

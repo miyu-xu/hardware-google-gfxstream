@@ -1,16 +1,67 @@
 #include "DisplayVk.h"
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
+#include "vulkan/HdDisplayTelemetry.h"
 #include "vulkan/VkFormatUtils.h"
 #include "vulkan/vk_enum_string_helper.h"
 
 namespace gfxstream {
 namespace vk {
+
+namespace {
+
+void publishHdAppliedSwapchainViewport(const DisplaySurfaceVk* surface, uint32_t width,
+                                       uint32_t height) {
+#if defined(_WIN32)
+    if (surface == nullptr) return;
+    const auto renderWindow = reinterpret_cast<HWND>(surface->getNativeWindow());
+    if (renderWindow == nullptr) return;
+    constexpr wchar_t kProperty[] = L"HD_GFXSTREAM_APPLIED_VIEWPORT_V1";
+    if (width == 0 || height == 0 || width > UINT16_MAX || height > UINT16_MAX) {
+        RemovePropW(renderWindow, kProperty);
+        const HWND parent = GetParent(renderWindow);
+        if (parent != nullptr) RemovePropW(parent, kProperty);
+        return;
+    }
+    const uintptr_t packed = (static_cast<uintptr_t>(height) << 16) | width;
+    SetPropW(renderWindow, kProperty, reinterpret_cast<HANDLE>(packed));
+    const HWND parent = GetParent(renderWindow);
+    if (parent != nullptr) SetPropW(parent, kProperty, reinterpret_cast<HANDLE>(packed));
+#else
+    (void)surface;
+    (void)width;
+    (void)height;
+#endif
+}
+
+uint64_t hdCadenceProbeEpoch(const DisplaySurfaceVk* surface) {
+#if defined(_WIN32)
+    if (surface == nullptr) return 0;
+    const auto renderWindow = reinterpret_cast<HWND>(surface->getNativeWindow());
+    if (renderWindow == nullptr) return 0;
+    constexpr wchar_t kProperty[] = L"HD_GFXSTREAM_CADENCE_PROBE_V1";
+    HANDLE value = GetPropW(renderWindow, kProperty);
+    if (value == nullptr) {
+        const HWND parent = GetParent(renderWindow);
+        if (parent != nullptr) value = GetPropW(parent, kProperty);
+    }
+    return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(value));
+#else
+    (void)surface;
+    return 0;
+#endif
+}
+
+}  // namespace
 
 using emugl::ABORT_REASON_OTHER;
 using emugl::FatalError;
@@ -47,6 +98,19 @@ bool shouldRecreateSwapchain(VkResult result) {
 
         default:
             return false;
+    }
+}
+
+const char* presentModeName(VkPresentModeKHR presentMode) {
+    switch (presentMode) {
+        case VK_PRESENT_MODE_IMMEDIATE_KHR:
+            return "immediate";
+        case VK_PRESENT_MODE_MAILBOX_KHR:
+            return "mailbox";
+        case VK_PRESENT_MODE_FIFO_KHR:
+            return "fifo";
+        default:
+            return "other";
     }
 }
 
@@ -105,25 +169,47 @@ void DisplayVk::drainQueues() {
 }
 
 void DisplayVk::bindToSurfaceImpl(gfxstream::DisplaySurface* surface) {
+    m_surfaceGeneration.fetch_add(1, std::memory_order_release);
     m_needToRecreateSwapChain = true;
 }
 
 void DisplayVk::surfaceUpdated(gfxstream::DisplaySurface* surface) {
+    m_surfaceGeneration.fetch_add(1, std::memory_order_release);
+    m_surfaceQueuesAlreadyDrained.store(true, std::memory_order_release);
     m_needToRecreateSwapChain = true;
 }
 
 void DisplayVk::unbindFromSurfaceImpl() { destroySwapchain(); }
 
 void DisplayVk::destroySwapchain() {
+    const auto* surface = getBoundSurface();
+    publishHdAppliedSwapchainViewport(
+        surface ? static_cast<const DisplaySurfaceVk*>(surface->getImpl()) : nullptr, 0, 0);
     drainQueues();
     m_freePostResources.clear();
     m_postResourceFutures.clear();
     m_swapChainStateVk.reset();
+    m_retiredSwapChainStateVk.reset();
+    m_appliedSwapchainWidth.store(0, std::memory_order_release);
+    m_appliedSwapchainHeight.store(0, std::memory_order_release);
     m_needToRecreateSwapChain = true;
 }
 
-bool DisplayVk::recreateSwapchain() {
-    destroySwapchain();
+bool DisplayVk::recreateSwapchain(uint64_t surfaceGeneration) {
+    // Do not destroy the currently presented Win32 swapchain before its replacement exists.
+    // Destroy-first leaves the HWND with no retained image for one or two DWM compositions,
+    // which is visible as a black flash on maximize, restore and live resize.
+    // FrameBuffer drains both queues before publishing DisplaySurface::updateSize(). Draining a
+    // second time from the PostWorker can wait on the very presentation that is performing this
+    // recreation. Only self-drain for out-of-date/error retries that were not triggered by a
+    // committed surface update.
+    if (!m_surfaceQueuesAlreadyDrained.exchange(false, std::memory_order_acq_rel)) {
+        drainQueues();
+    }
+    m_freePostResources.clear();
+    m_postResourceFutures.clear();
+    m_retiredSwapChainStateVk.reset();
+    auto previousSwapchain = std::move(m_swapChainStateVk);
 
     const auto* surface = getBoundSurface();
     if (!surface) {
@@ -137,14 +223,20 @@ bool DisplayVk::recreateSwapchain() {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "DisplayVk can't create VkSwapchainKHR with given VkDevice and VkSurfaceKHR.";
     }
-    INFO("Creating swapchain with size %" PRIu32 "x%" PRIu32 ".", surface->getWidth(),
-         surface->getHeight());
+    const uint32_t surfaceWidth = surface->getWidth();
+    const uint32_t surfaceHeight = surface->getHeight();
+    INFO("Creating swapchain with size %" PRIu32 "x%" PRIu32 ".", surfaceWidth, surfaceHeight);
     auto swapChainCi = SwapChainStateVk::createSwapChainCi(
-        m_vk, surfaceVk->getSurface(), m_vkPhysicalDevice, surface->getWidth(),
-        surface->getHeight(), {m_swapChainQueueFamilyIndex, m_compositorQueueFamilyIndex});
+        m_vk, surfaceVk->getSurface(), m_vkPhysicalDevice, surfaceWidth, surfaceHeight,
+        {m_swapChainQueueFamilyIndex, m_compositorQueueFamilyIndex});
     if (!swapChainCi) {
+        recordHdSwapchainRecreation(false);
+        m_swapChainStateVk = std::move(previousSwapchain);
         return false;
     }
+    swapChainCi->mCreateInfo.oldSwapchain = previousSwapchain
+                                                ? previousSwapchain->getSwapChain()
+                                                : VK_NULL_HANDLE;
     VkFormatProperties formatProps;
     m_vk.vkGetPhysicalDeviceFormatProperties(m_vkPhysicalDevice,
                                              swapChainCi->mCreateInfo.imageFormat, &formatProps);
@@ -153,9 +245,18 @@ bool DisplayVk::recreateSwapchain() {
             << "DisplayVk: The image format chosen for present VkImage can't be used as the color "
                "attachment, and therefore can't be used as the render target of CompositorVk.";
     }
-    m_swapChainStateVk =
+    auto replacementSwapchain =
         SwapChainStateVk::createSwapChainVk(m_vk, m_vkDevice, swapChainCi->mCreateInfo);
-    if (m_swapChainStateVk == nullptr) return false;
+    if (replacementSwapchain == nullptr) {
+        recordHdSwapchainRecreation(false);
+        m_swapChainStateVk = std::move(previousSwapchain);
+        return false;
+    }
+    m_swapChainStateVk = std::move(replacementSwapchain);
+    // A successful vkCreateSwapchainKHR retires the old chain but does not require its immediate
+    // destruction. Retaining it until the next recreation/unbind keeps DWM's last complete image
+    // available while postImpl submits the first frame to the replacement.
+    m_retiredSwapChainStateVk = std::move(previousSwapchain);
     int numSwapChainImages = m_swapChainStateVk->getVkImages().size();
 
     m_postResourceFutures.resize(numSwapChainImages, std::nullopt);
@@ -164,7 +265,12 @@ bool DisplayVk::recreateSwapchain() {
     }
 
     m_inFlightFrameIndex = 0;
+    m_appliedSwapchainWidth.store(surfaceWidth, std::memory_order_relaxed);
+    m_appliedSwapchainHeight.store(surfaceHeight, std::memory_order_relaxed);
+    m_appliedSurfaceGeneration.store(surfaceGeneration, std::memory_order_release);
     m_needToRecreateSwapChain = false;
+    publishHdAppliedSwapchainViewport(surfaceVk, surfaceWidth, surfaceHeight);
+    recordHdSwapchainRecreation(true);
     return true;
 }
 
@@ -181,24 +287,11 @@ DisplayVk::PostResult DisplayVk::post(const BorrowedImageInfo* sourceImageInfo) 
         };
     }
 
-    if (m_needToRecreateSwapChain) {
-        INFO("Recreating swapchain...");
-
-        constexpr const int kMaxRecreateSwapchainRetries = 8;
-        int retriesRemaining = kMaxRecreateSwapchainRetries;
-        while (retriesRemaining >= 0 && !recreateSwapchain()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            --retriesRemaining;
-            INFO("Swapchain recreation failed, retrying...");
-        }
-
-        if (retriesRemaining < 0) {
-            GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-                << "Failed to create Swapchain."
-                << " w:" << surface->getWidth() << " h:" << surface->getHeight();
-        }
-
-        INFO("Recreating swapchain completed.");
+    if (!recreateSwapchainIfNeeded()) {
+        return PostResult{
+            .success = false,
+            .postCompletedWaitable = completedFuture,
+        };
     }
 
     auto result = postImpl(sourceImageInfo);
@@ -206,6 +299,41 @@ DisplayVk::PostResult DisplayVk::post(const BorrowedImageInfo* sourceImageInfo) 
         m_needToRecreateSwapChain = true;
     }
     return result;
+}
+
+bool DisplayVk::recreateSwapchainIfNeeded() {
+    const uint64_t surfaceGeneration = m_surfaceGeneration.load(std::memory_order_acquire);
+    if (isSwapchainCurrentForSurface()) {
+        return true;
+    }
+    INFO("Recreating swapchain...");
+    constexpr const int kMaxRecreateSwapchainRetries = 8;
+    int retriesRemaining = kMaxRecreateSwapchainRetries;
+    while (retriesRemaining >= 0 && !recreateSwapchain(surfaceGeneration)) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        --retriesRemaining;
+        INFO("Swapchain recreation failed, retrying...");
+    }
+    if (retriesRemaining < 0) {
+        const auto* surface = getBoundSurface();
+        ERR("Failed to create swapchain for transient surface size %" PRIu32 "x%" PRIu32
+            "; keeping the VM alive and retrying on a later frame.",
+            surface ? surface->getWidth() : 0, surface ? surface->getHeight() : 0);
+        return false;
+    }
+    INFO("Recreating swapchain completed.");
+    return true;
+}
+
+bool DisplayVk::isSwapchainCurrentForSurface() const {
+    const uint64_t surfaceGeneration = m_surfaceGeneration.load(std::memory_order_acquire);
+    const bool needRecreate = m_needToRecreateSwapChain.load(std::memory_order_acquire);
+    const uint64_t appliedGeneration =
+        m_appliedSurfaceGeneration.load(std::memory_order_acquire);
+    const auto* surface = getBoundSurface();
+    return surface != nullptr && !needRecreate && appliedGeneration == surfaceGeneration &&
+           m_appliedSwapchainWidth.load(std::memory_order_acquire) == surface->getWidth() &&
+           m_appliedSwapchainHeight.load(std::memory_order_acquire) == surface->getHeight();
 }
 
 DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageInfo) {
@@ -361,6 +489,8 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
         return PostResult{true, std::move(completedFuture)};
     }
 
+    const auto hdPresentStarted = std::chrono::steady_clock::now();
+
     for (auto& postResourceFutureOpt : m_postResourceFutures) {
         if (!postResourceFutureOpt.has_value()) {
             continue;
@@ -396,6 +526,7 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
         m_vk.vkAcquireNextImageKHR(m_vkDevice, m_swapChainStateVk->getSwapChain(), UINT64_MAX,
                                    imageReadySem, VK_NULL_HANDLE, &imageIndex);
     if (shouldRecreateSwapchain(acquireRes)) {
+        recordHdSwapchainOutOfDate();
         return PostResult{false, std::shared_future<void>()};
     }
     VK_CHECK(acquireRes);
@@ -414,12 +545,18 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
     };
     VK_CHECK(m_vk.vkBeginCommandBuffer(cmdBuff, &beginInfo));
 
+    // Track the swapchain image state explicitly.  In particular, access masks are VkAccessFlags,
+    // not pipeline-stage bits.  Intel's Windows Vulkan driver does not reliably make the transfer
+    // write visible to presentation when the old, mismatched barrier is used.
+    VkImageLayout currentSwapchainLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    VkAccessFlags currentSwapchainAccess = 0;
+
     VkImageMemoryBarrier acquireSwapchainImageBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
         .pNext = nullptr,
-        .srcAccessMask = VK_PIPELINE_STAGE_TRANSFER_BIT,
-        .dstAccessMask = VK_PIPELINE_STAGE_TRANSFER_BIT,
-        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .srcAccessMask = currentSwapchainAccess,
+        .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+        .oldLayout = currentSwapchainLayout,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
         .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -436,6 +573,8 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
     m_vk.vkCmdPipelineBarrier(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT,
                               VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1,
                               &acquireSwapchainImageBarrier);
+    currentSwapchainLayout = acquireSwapchainImageBarrier.newLayout;
+    currentSwapchainAccess = acquireSwapchainImageBarrier.dstAccessMask;
 
     // Note: The extent used during swapchain creation must be used here and not the
     // current surface's extent as the swapchain may not have been updated after the
@@ -482,14 +621,14 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
         filter = VK_FILTER_LINEAR;
     }
     m_vk.vkCmdBlitImage(cmdBuff, sourceImageInfoVk->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                        m_swapChainStateVk->getVkImages()[imageIndex],
-                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region, filter);
+                        m_swapChainStateVk->getVkImages()[imageIndex], currentSwapchainLayout, 1,
+                        &region, filter);
 
     VkImageMemoryBarrier releaseSwapchainImageBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .srcAccessMask = VK_PIPELINE_STAGE_TRANSFER_BIT,
+        .srcAccessMask = currentSwapchainAccess,
         .dstAccessMask = VK_ACCESS_MEMORY_READ_BIT,
-        .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        .oldLayout = currentSwapchainLayout,
         .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
         .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -555,10 +694,21 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
         presentRes = m_vk.vkQueuePresentKHR(m_swapChainVkQueue, &presentInfo);
     }
     if (shouldRecreateSwapchain(presentRes)) {
+        recordHdSwapchainOutOfDate();
         postResourceFuture.wait();
         return PostResult{false, std::shared_future<void>()};
     }
     VK_CHECK(presentRes);
+    const auto hostPresentLatencyNs = static_cast<uint64_t>(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() -
+                                                             hdPresentStarted)
+            .count());
+    const auto* displaySurface = static_cast<const DisplaySurfaceVk*>(surface->getImpl());
+    recordHdSuccessfulPresent(presentModeName(m_swapChainStateVk->getPresentMode()),
+                              hostPresentLatencyNs, hdCadenceProbeEpoch(displaySurface),
+                              sourceImageInfoVk->imageCreateInfo.extent.width,
+                              sourceImageInfoVk->imageCreateInfo.extent.height,
+                              swapchainImageExtent.width, swapchainImageExtent.height);
     return PostResult{true, std::async(std::launch::deferred, [postResourceFuture] {
                                 // We can't directly wait for the VkFence here, because we
                                 // share the VkFences on different frames, but we don't share

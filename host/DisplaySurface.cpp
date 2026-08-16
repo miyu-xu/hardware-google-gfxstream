@@ -48,12 +48,22 @@ uint32_t DisplaySurface::getHeight() const {
 }
 
 void DisplaySurface::updateSize(uint32_t newWidth, uint32_t newHeight) {
+    bool changed = false;
     {
         std::lock_guard<std::mutex> lock(mParamsMutex);
         if (mWidth != newWidth || mHeight != newHeight) {
             mWidth = newWidth;
             mHeight = newHeight;
+            changed = true;
         }
+    }
+    // updateSize is called from both the crosvm viewport acknowledgement and the host attach
+    // repair path. A same-size notification has no state to publish, but forcing Vulkan users to
+    // rebuild their swapchain can invalidate a Win32 surface while DWM is composing the retained
+    // frame. Keep the mutation boundary idempotent so ordinary WebView/titlebar activity cannot
+    // turn into a redundant native presentation transaction.
+    if (!changed) {
+        return;
     }
     for (auto & users : mBoundUsers) {
         users->surfaceUpdated(this);

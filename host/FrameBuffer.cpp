@@ -15,6 +15,11 @@
 */
 
 #include "FrameBuffer.h"
+#include "HdDisplaySelection.h"
+
+#if defined(__APPLE__) || defined(_WIN32)
+#include "HdHostRecorder.h"
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -62,6 +67,7 @@
 #include "host-common/vm_operations.h"
 #include "render-utils/MediaNative.h"
 #include "vulkan/DisplayVk.h"
+#include "vulkan/HdDisplayTelemetry.h"
 #include "vulkan/PostWorkerVk.h"
 #include "vulkan/VkCommonOperations.h"
 #include "vulkan/VkDecoderGlobalState.h"
@@ -572,6 +578,9 @@ bool FrameBuffer::initialize(int width, int height, gfxstream::host::FeatureSet 
     // Keep the singleton framebuffer pointer
     //
     s_theFrameBuffer = fb.release();
+#if defined(__APPLE__) || defined(_WIN32)
+    startHdHostRecorderControl();
+#endif
     {
         AutoLock lock(sGlobals()->lock);
         sInitialized.store(true, std::memory_order_release);
@@ -620,6 +629,9 @@ FrameBuffer::FrameBuffer(int p_width, int p_height, gfxstream::host::FeatureSet 
 }
 
 FrameBuffer::~FrameBuffer() {
+#if defined(__APPLE__) || defined(_WIN32)
+    stopHdHostRecorderControl();
+#endif
     AutoLock fbLock(m_lock);
 
     m_perfStats = false;
@@ -716,6 +728,9 @@ WorkerProcessingResult FrameBuffer::postWorkerFunc(Post& post) {
                         .build();
     switch (post.cmd) {
         case PostCmd::Post: {
+            const uint64_t postWorkerStartNs =
+                static_cast<uint64_t>(android::base::getHighResTimeUs()) * 1000;
+            vk::recordHdPostWorkerFrameStart(post.hdEnqueueTimestampNs, postWorkerStartNs);
             // We wrap the callback like this to workaround a bug in the MS STL implementation.
             auto packagePostCmdCallback =
                 std::shared_ptr<Post::CompletionCallback>(std::move(post.completionCallback));
@@ -818,8 +833,9 @@ std::future<void> FrameBuffer::sendPostWorkerCmd(Post post) {
     return res;
 }
 
-void FrameBuffer::setPostCallback(Renderer::OnPostCallback onPost, void* onPostContext,
-                                  uint32_t displayId, bool useBgraReadback) {
+bool FrameBuffer::setPostCallback(Renderer::OnPostCallback onPost, void* onPostContext,
+                                  uint32_t displayId, bool useBgraReadback,
+                                  uint32_t maxReadbackFps) {
     AutoLock lock(m_lock);
     if (onPost) {
         uint32_t w, h;
@@ -831,11 +847,11 @@ void FrameBuffer::setPostCallback(Renderer::OnPostCallback onPost, void* onPostC
                                                                          nullptr,
                                                                          nullptr)) {
             ERR("display %d not exist, cancelling OnPost callback", displayId);
-            return;
+            return false;
         }
         if (m_onPost.find(displayId) != m_onPost.end()) {
             ERR("display %d already configured for recording", displayId);
-            return;
+            return false;
         }
         m_onPost[displayId].cb = onPost;
         m_onPost[displayId].context = onPostContext;
@@ -844,19 +860,40 @@ void FrameBuffer::setPostCallback(Renderer::OnPostCallback onPost, void* onPostC
         m_onPost[displayId].height = h;
         m_onPost[displayId].img = new unsigned char[4 * w * h];
         m_onPost[displayId].readBgra = useBgraReadback;
-        bool expectedReadbackThreadStarted = false;
-        if (m_readbackThreadStarted.compare_exchange_strong(expectedReadbackThreadStarted, true)) {
-            m_readbackThread.start();
-            m_readbackThread.enqueue({ ReadbackCmd::Init });
+        m_onPost[displayId].usesAsyncReadback = asyncReadbackSupported();
+        m_onPost[displayId].minimumReadbackIntervalUs =
+            maxReadbackFps == 0 ? 0 : 1'000'000 / maxReadbackFps;
+        m_onPost[displayId].nextReadbackUs = 0;
+        if (m_onPost[displayId].usesAsyncReadback) {
+            bool expectedReadbackThreadStarted = false;
+            if (m_readbackThreadStarted.compare_exchange_strong(expectedReadbackThreadStarted,
+                                                                 true)) {
+                INFO("HD readback worker thread starting for display %u", displayId);
+                m_readbackThread.start();
+                m_readbackThread.enqueue({ReadbackCmd::Init});
+            }
+            INFO("HD readback worker registering display %u (%ux%u)", displayId, w, h);
+            std::future<void> completeFuture = m_readbackThread.enqueue(
+                {ReadbackCmd::AddRecordDisplay, displayId, nullptr, 0, w, h});
+            completeFuture.wait();
+            INFO("HD readback worker registered display %u", displayId);
+        } else {
+            INFO("HD bounded synchronous color-buffer readback registered for display %u (%ux%u)",
+                 displayId, w, h);
         }
-        std::future<void> completeFuture = m_readbackThread.enqueue(
-            {ReadbackCmd::AddRecordDisplay, displayId, nullptr, 0, w, h});
-        completeFuture.wait();
+        return true;
     } else {
-        std::future<void> completeFuture = m_readbackThread.enqueue(
-            {ReadbackCmd::DelRecordDisplay, displayId});
-        completeFuture.wait();
+        const auto callback = m_onPost.find(displayId);
+        if (callback == m_onPost.end()) {
+            return false;
+        }
+        if (callback->second.usesAsyncReadback) {
+            std::future<void> completeFuture = m_readbackThread.enqueue(
+                {ReadbackCmd::DelRecordDisplay, displayId});
+            completeFuture.wait();
+        }
         m_onPost.erase(displayId);
+        return true;
     }
 }
 
@@ -888,6 +925,17 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
     // do anything here.
 
     const bool shouldCreateSubWindow = !m_subWin || deleteExisting;
+    const uint32_t targetSurfaceWidth = static_cast<uint32_t>(ww * dpr);
+    const uint32_t targetSurfaceHeight = static_cast<uint32_t>(wh * dpr);
+    // A Win32 child can inherit its new client extent as soon as HD resizes the parent viewport.
+    // That can make the native window/cache path look current while DisplaySurface still carries
+    // the previous orientation and DisplayVk keeps presenting the old swapchain. Include the
+    // rendering extent in the no-op invariant so an authoritative host viewport transaction can
+    // repair exactly that split without forcing healthy same-size titlebar clicks to rebuild.
+    const bool displaySurfaceSizeChanged =
+        m_displaySurface &&
+        (m_displaySurface->getWidth() != targetSurfaceWidth ||
+         m_displaySurface->getHeight() != targetSurfaceHeight);
 
     // On Mac, since window coordinates are Y-up and not Y-down, the
     // subwindow may not change dimensions, but because the main window
@@ -907,7 +955,8 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
 
     const bool redrawSubwindow =
         shouldCreateSubWindow || shouldMoveSubWindow || m_zRot != zRot || m_dpr != dpr ||
-        m_windowContentFullWidth != fbw || m_windowContentFullHeight != fbh;
+        m_windowContentFullWidth != fbw || m_windowContentFullHeight != fbh ||
+        displaySurfaceSizeChanged;
     if (!shouldCreateSubWindow && !shouldMoveSubWindow && !redrawSubwindow) {
         assert(sInitialized.load(std::memory_order_relaxed));
         GL_LOG("Exit setupSubWindow (nothing to do)");
@@ -1005,6 +1054,8 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
             }
 
             if (m_displaySurface) {
+                m_hdCommittedSurfaceWidth = targetSurfaceWidth;
+                m_hdCommittedSurfaceHeight = targetSurfaceHeight;
                 // Some backends use a default display surface. Unbind from that before
                 // binding the new display surface. which potentially needs to be unbound.
                 for (auto* displaySurfaceUser : m_displaySurfaceUsers) {
@@ -1046,8 +1097,12 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
     // in the first place or the EGLSurface couldn't be created.
     if (m_subWin) {
         if (!shouldMoveSubWindow) {
-            // Ensure that at least viewport parameters are properly updated.
             success = true;
+            if (displaySurfaceSizeChanged) {
+                m_displaySurface->updateSize(targetSurfaceWidth, targetSurfaceHeight);
+                m_hdCommittedSurfaceWidth = targetSurfaceWidth;
+                m_hdCommittedSurfaceHeight = targetSurfaceHeight;
+            }
         } else {
             // Only attempt to update window geometry if anything has actually
             // changed.
@@ -1061,7 +1116,9 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
                 success = moveSubWindow(m_nativeWindow, m_subWin, m_x, m_y, m_windowWidth,
                                         m_windowHeight, dpr);
             }
-            m_displaySurface->updateSize(m_windowWidth * dpr, m_windowHeight * dpr);
+            m_displaySurface->updateSize(targetSurfaceWidth, targetSurfaceHeight);
+            m_hdCommittedSurfaceWidth = targetSurfaceWidth;
+            m_hdCommittedSurfaceHeight = targetSurfaceHeight;
         }
         // We are safe to unblock the PostWorker thread now, because we have completed all the
         // operations that could modify the state of the m_subWin. We need to unblock the PostWorker
@@ -1081,16 +1138,23 @@ bool FrameBuffer::setupSubWindow(FBNativeWindowType p_window,
                 postCmd.viewport.width = fbw;
                 postCmd.viewport.height = fbh;
                 sendPostWorkerCmd(std::move(postCmd));
+            }
 
-                if (m_lastPostedColorBuffer) {
-                    GL_LOG("setupSubwindow: draw last posted cb");
-                    postImpl(m_lastPostedColorBuffer,
-                        [](std::shared_future<void> waitForGpu) {}, false);
-                } else {
-                    Post postCmd;
-                    postCmd.cmd = PostCmd::Clear;
-                    sendPostWorkerCmd(std::move(postCmd));
-                }
+            // Resizing a native Vulkan surface invalidates its swapchain. Repost the last selected
+            // scanout immediately so DisplayVk recreates the swapchain at the new size; otherwise a
+            // static Android screen remains black until the guest happens to submit another frame.
+            if (m_lastPostedColorBuffer) {
+                GL_LOG("setupSubwindow: draw last posted cb");
+                // setupSubWindow holds FrameBuffer's recursive state lock while the PostWorker
+                // has only just been released above. Waiting synchronously here creates a lock
+                // cycle on Win32 resize. Queue the retained complete frame and let the normal
+                // PostWorker ordering recreate/present the replacement swapchain.
+                postImpl(m_lastPostedColorBuffer,
+                         [](std::shared_future<void> waitForGpu) {}, false);
+            } else if (m_displayVk == nullptr) {
+                Post postCmd;
+                postCmd.cmd = PostCmd::Clear;
+                sendPostWorkerCmd(std::move(postCmd));
             }
             m_windowContentFullWidth = fbw;
             m_windowContentFullHeight = fbh;
@@ -1140,6 +1204,8 @@ bool FrameBuffer::removeSubWindow_locked() {
             displaySurfaceUser->unbindFromSurface();
         }
         m_displaySurface.reset();
+        m_hdCommittedSurfaceWidth = 0;
+        m_hdCommittedSurfaceHeight = 0;
 
         destroySubWindow(m_subWin);
 
@@ -1817,6 +1883,8 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer, Post::CompletionCall
 #endif
     }
     AsyncResult ret = AsyncResult::FAIL_AND_CALLBACK_NOT_SCHEDULED;
+    uint32_t hdScanoutId = kHdInvalidScanout;
+    bool shouldPresent = true;
 
     ColorBufferPtr colorBuffer = nullptr;
     {
@@ -1832,14 +1900,34 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer, Post::CompletionCall
         goto EXIT;
     }
 
-    m_lastPostedColorBuffer = p_colorbuffer;
+    if (hdDisplaySelectionEnabled()) {
+        hdScanoutId = hdScanoutForResource(p_colorbuffer);
+        shouldPresent =
+            hdScanoutId != kHdInvalidScanout && hdScanoutId == hdSelectedScanout();
+        if (hdScanoutId != kHdInvalidScanout) {
+            (void)setDisplayColorBuffer(hdPhysicalDisplayIdForScanout(hdScanoutId),
+                                        p_colorbuffer);
+        } else {
+            // This is a product-visible frame loss, not recorder backpressure: set-scanout must
+            // retain every buffer whose asynchronous post is still in flight. Keep a stable log
+            // contract so the real-guest gate catches black, flickering, or compressed Player
+            // output before release.
+            ERR("HD display selection rejected unmapped color buffer %u", p_colorbuffer);
+        }
+    }
+
+    if (shouldPresent) {
+        m_lastPostedColorBuffer = p_colorbuffer;
+    }
 
     colorBuffer->touch();
-    if (m_subWin) {
+    if (m_subWin && shouldPresent) {
         Post postCmd;
         postCmd.cmd = PostCmd::Post;
         postCmd.cb = colorBuffer.get();
         postCmd.cbHandle = p_colorbuffer;
+        postCmd.hdEnqueueTimestampNs =
+            static_cast<uint64_t>(android::base::getHighResTimeUs()) * 1000;
         postCmd.completionCallback = std::make_unique<Post::CompletionCallback>(callback);
         sendPostWorkerCmd(std::move(postCmd));
         ret = AsyncResult::OK_AND_CALLBACK_SCHEDULED;
@@ -1852,7 +1940,7 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer, Post::CompletionCall
     //
     // output FPS and performance usage statistics
     //
-    if (m_fpsStats) {
+    if (m_fpsStats && shouldPresent) {
         long long currTime = android::base::getHighResTimeUs() / 1000;
         m_statsNumFrames++;
         if (currTime - m_statsStartTime >= 1000) {
@@ -1872,6 +1960,17 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer, Post::CompletionCall
         goto DEC_REFCOUNT_AND_EXIT;
     }
     for (auto& iter : m_onPost) {
+        if (hdDisplaySelectionEnabled() &&
+            (hdScanoutId == kHdInvalidScanout ||
+             iter.first != hdPhysicalDisplayIdForScanout(hdScanoutId))) {
+            continue;
+        }
+        const uint64_t nowUs = android::base::getHighResTimeUs();
+        if (iter.second.minimumReadbackIntervalUs != 0 &&
+            nowUs < iter.second.nextReadbackUs) {
+            continue;
+        }
+        iter.second.nextReadbackUs = nowUs + iter.second.minimumReadbackIntervalUs;
         ColorBufferPtr cb;
         if (iter.first == 0) {
             cb = colorBuffer;
@@ -1889,7 +1988,7 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer, Post::CompletionCall
             }
         }
 
-        if (asyncReadbackSupported()) {
+        if (iter.second.usesAsyncReadback) {
             ensureReadbackWorker();
             const auto status = m_readbackWorker->doNextReadback(
                 iter.first, cb.get(), iter.second.img, repaint, iter.second.readBgra);
@@ -1897,14 +1996,18 @@ AsyncResult FrameBuffer::postImpl(HandleType p_colorbuffer, Post::CompletionCall
                 doPostCallback(iter.second.img, iter.first);
             }
         } else {
-#if GFXSTREAM_ENABLE_HOST_GLES
-            cb->glOpReadback(iter.second.img, iter.second.readBgra);
-#endif
-            doPostCallback(iter.second.img, iter.first);
+            int yDirection = -1;
+            if (cb->getWidth() != iter.second.width || cb->getHeight() != iter.second.height ||
+                !cb->readToBytesForHostRecording(iter.second.img, iter.second.readBgra,
+                                                  &yDirection)) {
+                ERR("Failed bounded host-recording readback for display %u", iter.first);
+                continue;
+            }
+            doPostCallback(iter.second.img, iter.first, yDirection);
         }
     }
 DEC_REFCOUNT_AND_EXIT:
-    if (!m_subWin) {  // m_subWin is supposed to be false
+    if (!m_subWin || !shouldPresent) {
         decColorBufferRefCountLocked(p_colorbuffer);
     }
 
@@ -1916,14 +2019,129 @@ EXIT:
     return ret;
 }
 
-void FrameBuffer::doPostCallback(void* pixels, uint32_t displayId) {
+void FrameBuffer::doPostCallback(void* pixels, uint32_t displayId, int yDirection) {
     const auto& iter = m_onPost.find(displayId);
     if (iter == m_onPost.end()) {
         ERR("Cannot find post callback function for display %d", displayId);
         return;
     }
-    iter->second.cb(iter->second.context, displayId, iter->second.width, iter->second.height, -1,
-                    GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)pixels);
+    if (pixels != nullptr) {
+        vk::recordHdCpuReadbackBytes(static_cast<uint64_t>(iter->second.width) *
+                                     static_cast<uint64_t>(iter->second.height) * 4);
+    }
+    iter->second.cb(iter->second.context, displayId, iter->second.width, iter->second.height,
+                    yDirection, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)pixels);
+}
+
+bool FrameBuffer::commitSubWindowSurfaceSizeForHd(uint32_t scanoutId, uint32_t width,
+                                                   uint32_t height) {
+    if (width == 0 || height == 0) {
+        return false;
+    }
+    bool surfaceSizeChanged = false;
+    bool alreadyCommitted = false;
+    {
+        AutoLock mutex(m_lock);
+        if (!m_subWin || !m_displaySurface) {
+            return false;
+        }
+        surfaceSizeChanged = m_displaySurface->getWidth() != width ||
+                             m_displaySurface->getHeight() != height;
+        const bool swapchainCurrent =
+            m_displayVk == nullptr || m_displayVk->isSwapchainCurrentForSurface();
+        alreadyCommitted = !surfaceSizeChanged && m_hdCommittedSurfaceWidth == width &&
+                           m_hdCommittedSurfaceHeight == height && swapchainCurrent;
+        INFO("HD DisplaySurface commit scanout=%" PRIu32 " current=%" PRIu32 "x%" PRIu32
+             " target=%" PRIu32 "x%" PRIu32 " changed=%d swapchainCurrent=%d action=%s",
+             scanoutId, m_displaySurface->getWidth(), m_displaySurface->getHeight(), width, height,
+             surfaceSizeChanged ? 1 : 0, swapchainCurrent ? 1 : 0,
+             alreadyCommitted ? "noop" : "publish");
+    }
+    // setupSubWindow already queues the retained frame whenever it mutates the Win32 surface.
+    // Repeating the same viewport transaction adds a second present and makes titlebar/layout
+    // clicks disturb frame pacing even though the Android viewport did not change.
+    if (alreadyCommitted) return true;
+    // DisplayVk::surfaceUpdated marks a real resize as already drained. Preserve setupSubWindow's
+    // queue/lock ordering, but do not drain or publish a new surface generation for an idempotent
+    // titlebar/layout commit.
+    if (surfaceSizeChanged && m_displayVk) {
+        m_displayVk->drainQueues();
+    }
+    HandleType retainedColorBuffer = 0;
+    {
+        AutoLock mutex(m_lock);
+        if (!m_subWin || !m_displaySurface) {
+            return false;
+        }
+        // setupSubWindow normally publishes the size mutation. Repair a stale DisplaySurface only
+        // when the native HWND changed without reaching that path; same-size commits still queue
+        // the retained frame below, but never rebuild the swapchain.
+        if (m_displaySurface->getWidth() != width || m_displaySurface->getHeight() != height) {
+            m_displaySurface->updateSize(width, height);
+        }
+        m_hdCommittedSurfaceWidth = width;
+        m_hdCommittedSurfaceHeight = height;
+        retainedColorBuffer = hdLatestScanoutResource(scanoutId);
+        if (retainedColorBuffer == 0 && scanoutId == 0) {
+            retainedColorBuffer = m_lastPostedColorBuffer;
+        }
+    }
+    Post viewportCmd;
+    viewportCmd.cmd = PostCmd::Viewport;
+    viewportCmd.viewport.width = static_cast<int>(width);
+    viewportCmd.viewport.height = static_cast<int>(height);
+    auto viewportComplete = sendPostWorkerCmd(std::move(viewportCmd));
+    viewportComplete.wait();
+    // Do not acknowledge crosvm from DisplaySurface metadata alone. PostWorker is the sole owner
+    // of DisplayVk's native swapchain; its completed command must confirm both the surface
+    // generation and the actual applied extent before host input/projection state advances.
+    if (m_displayVk && !m_displayVk->isSwapchainCurrentForSurface()) {
+        return false;
+    }
+    // A static guest may submit no new damage after host rotation. Queue its retained selected
+    // buffer directly so PostWorker consumes the new surface generation even if ordinary window
+    // setup had already updated all Win32 geometry and taken its no-op path.
+    if (retainedColorBuffer != 0) {
+        hdSetScanoutResource(scanoutId, retainedColorBuffer);
+        postImpl(retainedColorBuffer, [](std::shared_future<void> waitForGpu) {}, false);
+    }
+    return true;
+}
+
+bool FrameBuffer::capturePostCallbackFrame(uint32_t displayId) {
+    std::unique_ptr<RecursiveScopedContextBind> bind;
+    m_lock.lock();
+#if GFXSTREAM_ENABLE_HOST_GLES
+    if (m_emulationGl) {
+        bind = std::make_unique<RecursiveScopedContextBind>(getPbufferSurfaceContextHelper());
+    }
+#endif
+    const bool captured = [&] {
+        const auto callback = m_onPost.find(displayId);
+        if (callback == m_onPost.end()) {
+            return false;
+        }
+
+        uint32_t colorBufferHandle = m_lastPostedColorBuffer;
+        if (displayId != 0 && getDisplayColorBuffer(displayId, &colorBufferHandle) < 0) {
+            return false;
+        }
+        ColorBufferPtr colorBuffer = findColorBuffer(colorBufferHandle);
+        int yDirection = -1;
+        if (!colorBuffer || colorBuffer->getWidth() != callback->second.width ||
+            colorBuffer->getHeight() != callback->second.height ||
+            !colorBuffer->readToBytesForHostRecording(
+                callback->second.img, callback->second.readBgra, &yDirection)) {
+            return false;
+        }
+        INFO("HD host recording initial frame captured for display %u with y-direction %d",
+             displayId, yDirection);
+        doPostCallback(callback->second.img, displayId, yDirection);
+        return true;
+    }();
+    bind.reset();
+    m_lock.unlock();
+    return captured;
 }
 
 void FrameBuffer::getPixels(void* pixels, uint32_t bytes, uint32_t displayId) {
@@ -1935,6 +2153,7 @@ void FrameBuffer::getPixels(void* pixels, uint32_t bytes, uint32_t displayId) {
     std::future<void> completeFuture =
         m_readbackThread.enqueue({ReadbackCmd::GetPixels, displayId, pixels, bytes});
     completeFuture.wait();
+    vk::recordHdCpuReadbackBytes(bytes);
 }
 
 void FrameBuffer::flushReadPipeline(int displayId) {
@@ -1989,12 +2208,11 @@ Renderer::FlushReadPixelPipeline FrameBuffer::getFlushReadPixelPipeline() {
 
 bool FrameBuffer::repost(bool needLockAndBind) {
     GL_LOG("Reposting framebuffer.");
-    if (m_displayVk) {
-        setGuestPostedAFrame();
-        return true;
-    }
     if (m_lastPostedColorBuffer && sInitialized.load(std::memory_order_relaxed)) {
-        GL_LOG("Has last posted colorbuffer and is initialized; post.");
+        // Native Vulkan used to report a successful repost without submitting the retained
+        // ColorBuffer. That left the Player stale after WM_PAINT, recorder teardown, or other
+        // host-only redraws until Android happened to damage the screen again.
+        GL_LOG("Has last posted colorbuffer and is initialized; post to the bound surface.");
         auto res = postImplSync(m_lastPostedColorBuffer, needLockAndBind, true);
         if (res) setGuestPostedAFrame();
         return res;
@@ -2005,6 +2223,44 @@ bool FrameBuffer::repost(bool needLockAndBind) {
         }
     }
     return false;
+}
+
+int32_t FrameBuffer::selectDisplayForHd(uint32_t scanoutId) {
+    if (!hdDisplaySelectionEnabled() || scanoutId >= kHdMaxScanouts ||
+        !sInitialized.load(std::memory_order_relaxed)) {
+        return 0;
+    }
+
+    hdSelectDisplay(scanoutId);
+    const uint32_t displayId = hdPhysicalDisplayIdForScanout(scanoutId);
+    uint32_t colorBuffer = hdLatestScanoutResource(scanoutId);
+    if (colorBuffer == 0) {
+        // Retain compatibility with gfxstream callers that configured the multi-display registry
+        // before crosvm's explicit set-scanout bridge became available.
+        (void)getDisplayColorBuffer(displayId, &colorBuffer);
+    }
+    if (colorBuffer == 0 && scanoutId == 0) {
+        // ComposeDevice_v2 stores explicit ColorBuffers only for non-primary displays. The
+        // primary's retained presentation buffer is FrameBuffer's normal last-posted buffer.
+        colorBuffer = m_lastPostedColorBuffer;
+    }
+    if (colorBuffer == 0) {
+        INFO("HD selected scanout %u; awaiting its first ColorBuffer", scanoutId);
+        return 1;
+    }
+
+    // Keep the retained multi-display buffer authoritative even if set-scanout arrived before
+    // the resource mapping callback. postImplSync then applies the regular selection filter,
+    // updates m_lastPostedColorBuffer, and synchronously submits the static frame to subWin.
+    hdSetScanoutResource(scanoutId, colorBuffer);
+    const bool posted = postImplSync(colorBuffer, true, true);
+    if (posted) {
+        setGuestPostedAFrame();
+        INFO("HD selected scanout %u and reposted ColorBuffer %u", scanoutId, colorBuffer);
+    } else {
+        ERR("HD failed to repost ColorBuffer %u for selected scanout %u", colorBuffer, scanoutId);
+    }
+    return posted ? 2 : 0;
 }
 
 template <class Collection>
@@ -2183,6 +2439,19 @@ bool FrameBuffer::decColorBufferRefCountLocked(HandleType p_colorbuffer) {
 }
 
 bool FrameBuffer::compose(uint32_t bufferSize, void* buffer, bool needPost) {
+    ComposeDevice* composeDevice = static_cast<ComposeDevice*>(buffer);
+    if (hdDisplaySelectionEnabled() && composeDevice->version == 2) {
+        const auto* composeDeviceV2 = static_cast<const ComposeDevice_v2*>(buffer);
+        if (composeDeviceV2->targetHandle == 0) {
+            // A DEVICE-only transition can arrive without a composition result buffer. Treat it
+            // as a protocol-level no-op: enqueueing it in PostWorker and then posting handle zero
+            // creates noisy borrow failures, while accepting an incomplete composition can expose
+            // an uninitialized target as a black frame. The last complete swapchain image remains
+            // authoritative until Android supplies the next real target.
+            return true;
+        }
+    }
+
     std::promise<void> promise;
     std::future<void> completeFuture = promise.get_future();
     auto composeRes =
@@ -2202,8 +2471,6 @@ bool FrameBuffer::compose(uint32_t bufferSize, void* buffer, bool needPost) {
     const bool is_pixel_fold = multiDisplay.isPixelFold();
     if (needPost) {
         // AEMU with -no-window mode uses this code path.
-        ComposeDevice* composeDevice = (ComposeDevice*)buffer;
-
         switch (composeDevice->version) {
             case 1: {
                 post(composeDevice->targetHandle, true);
@@ -2244,7 +2511,15 @@ AsyncResult FrameBuffer::composeWithCallback(uint32_t bufferSize, void* buffer,
         case 2: {
             // support for multi-display
             ComposeDevice_v2* p2 = (ComposeDevice_v2*)buffer;
-            if (p2->displayId != 0) {
+            if (hdDisplaySelectionEnabled() && p2->targetHandle != 0) {
+                // Vulkan/composer guests can bypass virtio SET_SCANOUT entirely. ComposeDevice_v2
+                // is then the authoritative association between the HWC display/scanout id and
+                // its current zero-copy ColorBuffer. A zero target means this composition has no
+                // client target; it must not clear the last valid scanout while pointer-driven
+                // DEVICE-layer updates are in flight, or the native Player briefly presents black.
+                hdSetScanoutResource(p2->displayId, p2->targetHandle);
+            }
+            if (p2->displayId != 0 && p2->targetHandle != 0) {
                 mutex.unlock();
                 setDisplayColorBuffer(p2->displayId, p2->targetHandle);
                 mutex.lock();
@@ -2741,8 +3016,19 @@ int FrameBuffer::destroyDisplay(uint32_t displayId) {
 }
 
 int FrameBuffer::setDisplayColorBuffer(uint32_t displayId, uint32_t colorBuffer) {
-    return emugl::get_emugl_multi_display_operations().setDisplayColorBuffer(displayId,
-                                                                             colorBuffer);
+    const int result = emugl::get_emugl_multi_display_operations().setDisplayColorBuffer(
+        displayId, colorBuffer);
+    if (result == 0 && hdDisplaySelectionEnabled() && colorBuffer != 0) {
+        ColorBufferPtr buffer = findColorBuffer(colorBuffer);
+        if (buffer) {
+            const uint32_t scanoutId = hdScanoutForDisplayBuffer(
+                displayId, buffer->getWidth(), buffer->getHeight());
+            if (scanoutId != kHdInvalidScanout) {
+                hdSetScanoutResource(scanoutId, colorBuffer);
+            }
+        }
+    }
+    return result;
 }
 
 int FrameBuffer::getDisplayColorBuffer(uint32_t displayId, uint32_t* colorBuffer) {

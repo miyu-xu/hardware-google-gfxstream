@@ -177,6 +177,27 @@ TEST_F(SwapChainStateVkTest, init) {
         SwapChainStateVk::createSwapChainVk(*k_vk, m_vkDevice, swapChainCi->mCreateInfo);
 }
 
+TEST(SwapChainPresentModeTest, VsyncOnRequiresFifo) {
+    const std::unordered_set<VkPresentModeKHR> modes = {VK_PRESENT_MODE_FIFO_KHR,
+                                                        VK_PRESENT_MODE_IMMEDIATE_KHR};
+    EXPECT_EQ(SwapChainStateVk::selectPresentMode(modes, true), VK_PRESENT_MODE_FIFO_KHR);
+    EXPECT_EQ(SwapChainStateVk::selectPresentMode({VK_PRESENT_MODE_IMMEDIATE_KHR}, true),
+              std::nullopt);
+}
+
+TEST(SwapChainPresentModeTest, VsyncOffUsesImmediateThenMailboxThenFifo) {
+    EXPECT_EQ(SwapChainStateVk::selectPresentMode(
+                  {VK_PRESENT_MODE_FIFO_KHR, VK_PRESENT_MODE_MAILBOX_KHR,
+                   VK_PRESENT_MODE_IMMEDIATE_KHR},
+                  false),
+              VK_PRESENT_MODE_IMMEDIATE_KHR);
+    EXPECT_EQ(SwapChainStateVk::selectPresentMode(
+                  {VK_PRESENT_MODE_FIFO_KHR, VK_PRESENT_MODE_MAILBOX_KHR}, false),
+              VK_PRESENT_MODE_MAILBOX_KHR);
+    EXPECT_EQ(SwapChainStateVk::selectPresentMode({VK_PRESENT_MODE_FIFO_KHR}, false),
+              VK_PRESENT_MODE_FIFO_KHR);
+}
+
 }  // namespace
 }  // namespace vk
 }  // namespace gfxstream

@@ -1,5 +1,7 @@
 #include "SwapChainStateVk.h"
 
+#include "HdDisplayTelemetry.h"
+
 #include <cinttypes>
 #include <unordered_set>
 
@@ -92,6 +94,7 @@ SwapChainStateVk::SwapChainStateVk(const VulkanDispatch& vk, VkDevice vkDevice)
       m_vkImageViews(0) {}
 
 VkResult SwapChainStateVk::initSwapChainStateVk(const VkSwapchainCreateInfoKHR& swapChainCi) {
+    m_presentMode = swapChainCi.presentMode;
     VkResult res = m_vk.vkCreateSwapchainKHR(m_vkDevice, &swapChainCi, nullptr, &m_vkSwapChain);
     if (res == VK_ERROR_INITIALIZATION_FAILED) return res;
     VK_CHECK(res);
@@ -163,6 +166,19 @@ bool SwapChainStateVk::validateQueueFamilyProperties(const VulkanDispatch& vk,
     return presentSupport;
 }
 
+std::optional<VkPresentModeKHR> SwapChainStateVk::selectPresentMode(
+    const std::unordered_set<VkPresentModeKHR>& presentModes, bool vsyncEnabled) {
+    if (vsyncEnabled) {
+        if (presentModes.count(VK_PRESENT_MODE_FIFO_KHR)) return VK_PRESENT_MODE_FIFO_KHR;
+        return std::nullopt;
+    }
+    for (const auto candidate : {VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_MAILBOX_KHR,
+                                 VK_PRESENT_MODE_FIFO_KHR}) {
+        if (presentModes.count(candidate)) return candidate;
+    }
+    return std::nullopt;
+}
+
 std::optional<SwapchainCreateInfoWrapper> SwapChainStateVk::createSwapChainCi(
     const VulkanDispatch& vk, VkSurfaceKHR surface, VkPhysicalDevice physicalDevice, uint32_t width,
     uint32_t height, const std::unordered_set<uint32_t>& queueFamilyIndices) {
@@ -212,10 +228,17 @@ std::optional<SwapchainCreateInfoWrapper> SwapChainStateVk::createSwapChainCi(
     VK_CHECK(vk.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,
                                                           &presentModeCount, presentModes_.data()));
     std::unordered_set<VkPresentModeKHR> presentModes(presentModes_.begin(), presentModes_.end());
-    VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
-    if (!presentModes.count(VK_PRESENT_MODE_FIFO_KHR)) {
-        SWAPCHAINSTATE_VK_ERROR("Fail to create swapchain: FIFO present mode not supported.");
+    const bool vsyncEnabled = isHdVsyncEnabled();
+    const auto maybePresentMode = selectPresentMode(presentModes, vsyncEnabled);
+    if (!maybePresentMode.has_value()) {
+        SWAPCHAINSTATE_VK_ERROR("Fail to create swapchain: no compatible present mode.");
         return std::nullopt;
+    }
+    const VkPresentModeKHR presentMode = maybePresentMode.value();
+    if (!vsyncEnabled && presentMode == VK_PRESENT_MODE_FIFO_KHR) {
+        WARN(
+            "VSync off requested, but IMMEDIATE and MAILBOX are unavailable; falling back to "
+            "FIFO.");
     }
     VkFormatProperties formatProperties = {};
     vk.vkGetPhysicalDeviceFormatProperties(physicalDevice, k_vkFormat, &formatProperties);
@@ -241,9 +264,20 @@ std::optional<SwapchainCreateInfoWrapper> SwapChainStateVk::createSwapChainCi(
         return std::nullopt;
     }
     std::optional<VkExtent2D> maybeExtent = std::nullopt;
-    if (surfaceCaps.currentExtent.width != UINT32_MAX && surfaceCaps.currentExtent.width == width &&
-        surfaceCaps.currentExtent.height == height) {
-        maybeExtent = surfaceCaps.currentExtent;
+    if (surfaceCaps.currentExtent.width != UINT32_MAX) {
+        // Win32 surfaces normally have a driver-defined extent. It can briefly differ from the
+        // size delivered by the window message thread while a crosvm child is being reparented or
+        // resized. Vulkan requires the swapchain to use currentExtent in this case; rejecting it
+        // makes Intel's WSI path fail during an otherwise valid HD detach/re-attach.
+        if (surfaceCaps.currentExtent.width != width ||
+            surfaceCaps.currentExtent.height != height) {
+            INFO("Using Win32 surface extent %" PRIu32 "x%" PRIu32 " instead of requested %" PRIu32
+                 "x%" PRIu32 ".",
+                 surfaceCaps.currentExtent.width, surfaceCaps.currentExtent.height, width, height);
+        }
+        if (surfaceCaps.currentExtent.width != 0 && surfaceCaps.currentExtent.height != 0) {
+            maybeExtent = surfaceCaps.currentExtent;
+        }
     } else if (width >= surfaceCaps.minImageExtent.width &&
                width <= surfaceCaps.maxImageExtent.width &&
                height >= surfaceCaps.minImageExtent.height &&
@@ -304,6 +338,8 @@ const std::vector<VkImage>& SwapChainStateVk::getVkImages() const { return m_vkI
 const std::vector<VkImageView>& SwapChainStateVk::getVkImageViews() const { return m_vkImageViews; }
 
 VkSwapchainKHR SwapChainStateVk::getSwapChain() const { return m_vkSwapChain; }
+
+VkPresentModeKHR SwapChainStateVk::getPresentMode() const { return m_presentMode; }
 
 }  // namespace vk
 }  // namespace gfxstream

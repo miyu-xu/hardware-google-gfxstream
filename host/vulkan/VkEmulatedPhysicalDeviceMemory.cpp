@@ -29,10 +29,12 @@ static constexpr const uint32_t kInvalidMemoryTypeIndex = std::numeric_limits<ui
 
 EmulatedPhysicalDeviceMemoryProperties::EmulatedPhysicalDeviceMemoryProperties(
     const VkPhysicalDeviceMemoryProperties& hostMemoryProperties,
-    const uint32_t hostColorBufferMemoryTypeIndex, const gfxstream::host::FeatureSet& features) {
+    const uint32_t hostColorBufferMemoryTypeIndex, const gfxstream::host::FeatureSet& features,
+    CoherentHostMemoryProbeResult coherentProbeResult) {
     // Start with the original host memory properties:
     mHostMemoryProperties = hostMemoryProperties;
     mGuestMemoryProperties = hostMemoryProperties;
+    mCoherentHostMemoryTypeMask = coherentProbeResult.coherentHostMemoryTypeMask;
     std::fill_n(mGuestToHostMemoryTypeIndexMap, VK_MAX_MEMORY_TYPES, kInvalidMemoryTypeIndex);
     std::fill_n(mHostToGuestMemoryTypeIndexMap, VK_MAX_MEMORY_TYPES, kInvalidMemoryTypeIndex);
     for (uint32_t i = 0; i < mHostMemoryProperties.memoryTypeCount; i++) {
@@ -61,8 +63,19 @@ EmulatedPhysicalDeviceMemoryProperties::EmulatedPhysicalDeviceMemoryProperties(
         }
     }
 
-    // Coherent memory in the guest requires one of these features:
-    if (!features.GlDirectMem.enabled && !features.VirtioGpuNext.enabled) {
+    // Only expose HOST_COHERENT for guest types whose mapped host type passed the runtime probe.
+    // Hosts without a successful probe retain the feature-gated fallback behavior.
+    if (coherentProbeResult.success && mCoherentHostMemoryTypeMask != 0) {
+        for (uint32_t i = 0; i < mGuestMemoryProperties.memoryTypeCount; i++) {
+            uint32_t hostTypeIndex = mGuestToHostMemoryTypeIndexMap[i];
+            if (hostTypeIndex != kInvalidMemoryTypeIndex &&
+                !(mCoherentHostMemoryTypeMask & (1u << hostTypeIndex))) {
+                mGuestMemoryProperties.memoryTypes[i].propertyFlags =
+                    mGuestMemoryProperties.memoryTypes[i].propertyFlags &
+                    ~(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            }
+        }
+    } else if (!features.GlDirectMem.enabled && !features.VirtioGpuNext.enabled) {
         for (uint32_t i = 0; i < mGuestMemoryProperties.memoryTypeCount; i++) {
             mGuestMemoryProperties.memoryTypes[i].propertyFlags =
                 mGuestMemoryProperties.memoryTypes[i].propertyFlags &

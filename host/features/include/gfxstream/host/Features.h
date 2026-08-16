@@ -55,6 +55,12 @@ struct FeatureSet {
 
     FeatureMap map;
 
+    FeatureInfo AngleIndirect = {
+        "AngleIndirect",
+        "If enabled, the guest uses ANGLE to translate OpenGL ES to Vulkan before "
+        "sending commands to the host renderer.",
+        &map,
+    };
     FeatureInfo AsyncComposeSupport = {
         "AsyncComposeSupport",
         "If enabled, allows the guest to use asynchronous render control commands "

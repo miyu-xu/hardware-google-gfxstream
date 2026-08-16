@@ -14,6 +14,11 @@
 
 #include "DisplaySurfaceVk.h"
 
+#ifdef __APPLE__
+#include <vulkan/vulkan_metal.h>
+#include "NativeSubWindow.h"
+#endif
+
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
 #include "vk_util.h"
@@ -37,21 +42,47 @@ std::unique_ptr<DisplaySurfaceVk> DisplaySurfaceVk::create(const VulkanDispatch&
         .hwnd = window,
     };
     VK_CHECK(vk.vkCreateWin32SurfaceKHR(instance, &surfaceCi, nullptr, &surface));
-#else
-    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-        << "Unimplemented.";
+#elif defined(__linux__)
+    xcbConnection = xcb_connect(nullptr, nullptr);
+    if (!xcbConnection || xcb_connection_has_error(xcbConnection)) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+            << "Failed to connect to X server for Vulkan XCB surface.";
+    }
+
+    const VkXcbSurfaceCreateInfoKHR surfaceCi = {
+        .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+        .pNext = nullptr,
+        .flags = 0,
+        .connection = xcbConnection,
+        .window = static_cast<xcb_window_t>(window),
+    };
+    VK_CHECK(vk.vkCreateXcbSurfaceKHR(instance, &surfaceCi, nullptr, &surface));
+#elif defined(__APPLE__)
+    const auto* metalLayer =
+        reinterpret_cast<const CAMetalLayer*>(getNativeSubWindowMetalLayer(window));
+    if (!metalLayer || !vk.vkCreateMetalSurfaceEXT) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+            << "Cocoa subwindow has no CAMetalLayer or VK_EXT_metal_surface is unavailable.";
+    }
+    const VkMetalSurfaceCreateInfoEXT surfaceCi = {
+        .sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT,
+        .pNext = nullptr,
+        .flags = 0,
+        .pLayer = metalLayer,
+    };
+    VK_CHECK(vk.vkCreateMetalSurfaceEXT(instance, &surfaceCi, nullptr, &surface));
 #endif
     if (surface == VK_NULL_HANDLE) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "No VkSurfaceKHR created?";
     }
 
-    return std::unique_ptr<DisplaySurfaceVk>(new DisplaySurfaceVk(vk, instance, surface));
+    return std::unique_ptr<DisplaySurfaceVk>(new DisplaySurfaceVk(vk, instance, surface, window));
 }
 
 DisplaySurfaceVk::DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance instance,
-                                   VkSurfaceKHR surface)
-    : mVk(vk), mInstance(instance), mSurface(surface) {}
+                                   VkSurfaceKHR surface, FBNativeWindowType nativeWindow)
+    : mVk(vk), mInstance(instance), mSurface(surface), mNativeWindow(nativeWindow) {}
 
 DisplaySurfaceVk::~DisplaySurfaceVk() {
     if (mSurface != VK_NULL_HANDLE) {

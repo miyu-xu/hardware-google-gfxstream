@@ -71,6 +71,11 @@ class ColorBuffer : public android::snapshot::LazySnapshotObj<ColorBuffer> {
                      void* outPixels);
     void readToBytesScaled(int pixelsWidth, int pixelsHeight, GLenum pixelsFormat,
                            GLenum pixelsType, int pixelsRotation, Rect rect, void* outPixels);
+    // Bounded host recording may run while GL/EGL emulation is disabled. Read the native GL or
+    // Vulkan color buffer into a deterministic RGBA/BGRA byte layout without changing the live
+    // display transport.
+    bool readToBytesForHostRecording(unsigned char* outPixels, bool readbackBgra,
+                                     int* outYDirection = nullptr);
     void readYuvToBytes(int x, int y, int width, int height, void* outPixels, uint32_t pixelsSize);
 
     bool updateFromBytes(int x, int y, int width, int height, GLenum pixelsFormat,

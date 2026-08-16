@@ -100,9 +100,18 @@ std::shared_future<void> PostWorker::composeImpl(const FlatComposeRequest& compo
             auto& compositorLayer = compositorRequest.layers.emplace_back();
             compositorLayer.props = guestLayer;
         } else {
+            if (guestLayer.cbHandle == 0) {
+                // Cursor and DEVICE transitions may temporarily publish a non-solid layer with no
+                // backing buffer. It is absent from this composition, not a reason to reject the
+                // valid target or to issue a failing ColorBuffer lookup on the hot path.
+                continue;
+            }
             auto source = mFb->borrowColorBufferForComposition(guestLayer.cbHandle,
                                                             /*colorBufferIsTarget=*/false);
             if (!source) {
+                // Keep gfxstream's normal per-layer behavior: rejecting the whole request leaves
+                // its result target unwritten even though FrameBuffer will post it, which turns
+                // pointer-driven transitions into black frames and animation jitter.
                 continue;
             }
 

@@ -82,6 +82,7 @@ cc_library(
         "DisplaySurfaceUser.cpp",
         "ExternalObjectManager.cpp",
         "FrameBuffer.cpp",
+        "HdDisplaySelection.cpp",
         "GfxStreamAgents.cpp",
         "Hwc2.cpp",
         "PostWorker.cpp",

@@ -177,6 +177,49 @@ VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
                 << "Unhandled VkExternalMemoryImageCreateInfo in the pNext chain.";
         }
+
+        const auto cbInfo = getColorBufferInfo(out->colorBufferHandle);
+#ifdef _WIN32
+        // OPAQUE_WIN32 does not expose a valid handle-properties query. A dedicated import must
+        // instead recreate an image compatible with the image that exported the allocation.
+        // Intel's Windows driver enforces this strictly: differing usage/flags can change both
+        // allocation size and memory-type bits even when format and extent are identical.
+        if (!cbInfo.initialized || cbInfo.image == VK_NULL_HANDLE) {
+            VK_ANB_ERR("ColorBuffer:%d has no Vulkan backing for Win32 import.",
+                       out->colorBufferHandle);
+            return VK_ERROR_INITIALIZATION_FAILED;
+        }
+        const auto& backingCi = cbInfo.imageCreateInfoShallow;
+        if (backingCi.format != createImageCi.format ||
+            backingCi.extent.width != createImageCi.extent.width ||
+            backingCi.extent.height != createImageCi.extent.height) {
+            VK_ANB_ERR("ColorBuffer:%d backing image does not match guest ANB format/extent.",
+                       out->colorBufferHandle);
+            return VK_ERROR_FORMAT_NOT_SUPPORTED;
+        }
+        if (backingCi.flags != createImageCi.flags || backingCi.tiling != createImageCi.tiling ||
+            backingCi.usage != createImageCi.usage) {
+            INFO(
+                "ColorBuffer:%d aligning Win32 ANB image flags 0x%x->0x%x, tiling %u->%u, "
+                "usage 0x%x->0x%x for OPAQUE_WIN32 import",
+                out->colorBufferHandle, createImageCi.flags, backingCi.flags,
+                static_cast<uint32_t>(createImageCi.tiling),
+                static_cast<uint32_t>(backingCi.tiling), createImageCi.usage, backingCi.usage);
+        }
+        createImageCi.flags = backingCi.flags;
+        createImageCi.imageType = backingCi.imageType;
+        createImageCi.format = backingCi.format;
+        createImageCi.extent = backingCi.extent;
+        createImageCi.mipLevels = backingCi.mipLevels;
+        createImageCi.arrayLayers = backingCi.arrayLayers;
+        createImageCi.samples = backingCi.samples;
+        createImageCi.tiling = backingCi.tiling;
+        createImageCi.usage = backingCi.usage;
+        createImageCi.sharingMode = backingCi.sharingMode;
+        createImageCi.queueFamilyIndexCount = 0;
+        createImageCi.pQueueFamilyIndices = nullptr;
+        createImageCi.initialLayout = backingCi.initialLayout;
+#endif
         // Create the image with extension structure about external backing.
         VkExternalMemoryImageCreateInfo extImageCi = {
             VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO,
@@ -211,10 +254,20 @@ VkResult prepareAndroidNativeBufferImage(VulkanDispatch* vk, VkDevice device,
         if (createResult != VK_SUCCESS) return createResult;
 
         // Now import the backing memory.
-        const auto& cbInfo = getColorBufferInfo(out->colorBufferHandle);
         const auto& memInfo = cbInfo.memory;
 
         vk->vkGetImageMemoryRequirements(device, out->image, &out->memReqs);
+
+        if (out->memReqs.size > memInfo.size) {
+            VK_ANB_ERR(
+                "Failed to prepare ANB image: ColorBuffer:%d allocation is too small for the "
+                "compatible host image (required:%llu actual:%llu, format:%s, extent:%ux%u).",
+                out->colorBufferHandle, static_cast<unsigned long long>(out->memReqs.size),
+                static_cast<unsigned long long>(memInfo.size),
+                string_VkFormat(createImageCi.format), createImageCi.extent.width,
+                createImageCi.extent.height);
+            return VK_ERROR_INITIALIZATION_FAILED;
+        }
 
         if (out->memReqs.size < memInfo.size) {
             out->memReqs.size = memInfo.size;

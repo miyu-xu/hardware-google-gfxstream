@@ -70,6 +70,11 @@ int moveSubWindow(FBNativeWindowType p_parent_window,
                   int height,
                   float dpr);
 
+#ifdef __APPLE__
+// Returns the CAMetalLayer backing a Cocoa subwindow.
+void* getNativeSubWindowMetalLayer(EGLNativeWindowType win);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

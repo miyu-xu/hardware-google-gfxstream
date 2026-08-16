@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include "VkCommonOperations.h"
+#include "CoherentMemoryBacking.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
+#include <cstdlib>
+#ifdef _WIN32
+#include <malloc.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <vulkan/vk_enum_string_helper.h>
@@ -50,6 +55,8 @@
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
+#include <objc/message.h>
+#include <objc/runtime.h>
 #include <vulkan/vulkan_beta.h>  // for MoltenVK portability extensions
 #endif
 
@@ -117,6 +124,13 @@ VK_EXT_MEMORY_HANDLE dupExternalMemory(VK_EXT_MEMORY_HANDLE h) {
 }
 #endif
 
+CoherentHostMemoryProbeResult probeCoherentHostMemory(VulkanDispatch* vk, VkPhysicalDevice physdev,
+                                                      uint32_t /*compatibleMemoryTypeMask*/) {
+    VkPhysicalDeviceMemoryProperties hostMemProps;
+    vk->vkGetPhysicalDeviceMemoryProperties(physdev, &hostMemProps);
+    auto backing = CoherentMemoryBacking::createForPlatform(vk, physdev, hostMemProps);
+    return backing ? backing->probeResult() : CoherentHostMemoryProbeResult{};
+}
 bool getStagingMemoryTypeIndex(VulkanDispatch* vk, VkDevice device,
                                const VkPhysicalDeviceMemoryProperties* memProps,
                                uint32_t* typeIndex) {
@@ -1299,11 +1313,13 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
             "VK_NV_device_diagnostic_checkpoints extension is not supported.");
     }
 
-    ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
+    const VkResult deviceCreateRes =
+        ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
 
-    if (res != VK_SUCCESS) {
-        VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, "Failed to create Vulkan device. Error %s.",
-                                             string_VkResult(res));
+    if (deviceCreateRes != VK_SUCCESS) {
+        VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(deviceCreateRes,
+                                             "Failed to create Vulkan device. Error %s.",
+                                             string_VkResult(deviceCreateRes));
     }
 
     // device created; populate dispatch table
@@ -1823,6 +1839,20 @@ bool allocExternalMemory(VulkanDispatch* vk, VkEmulation::ExternalMemoryInfo* in
         validHandle = (nullptr != info->externalMetalHandle);
         if (validHandle) {
             CFRetain(info->externalMetalHandle);
+
+            // Record whether the exported Metal allocation can satisfy coherent host access.
+            // MTLStorageMode: 0=Shared, 1=Managed, 2=Private.
+            long storageMode = ((long (*)(id, SEL))objc_msgSend)(
+                (id)info->externalMetalHandle, sel_getUid("storageMode"));
+            const char* storageModeName = "Unknown";
+            switch (storageMode) {
+                case 0: storageModeName = "Shared (coherent-capable)"; break;
+                case 1: storageModeName = "Managed (needs flush)"; break;
+                case 2: storageModeName = "Private (GPU-only)"; break;
+            }
+            INFO("Metal allocation storageMode=%ld (%s), memory type=%u, coherent=%s",
+                 storageMode, storageModeName, info->typeIndex,
+                 (storageMode == 0) ? "yes" : "no");
             exportRes = VK_SUCCESS;
         } else {
             exportRes = VK_ERROR_INVALID_EXTERNAL_HANDLE;
@@ -2435,6 +2465,13 @@ bool initializeVkColorBufferLocked(
         vk->vkGetImageMemoryRequirements2KHR(sVkEmulation->device, &info, &reqs);
         useDedicated = dedicated_reqs.requiresDedicatedAllocation;
         infoPtr->memReqs = reqs.memoryRequirements;
+        if (infoPtr->memReqs.memoryTypeBits == 0) {
+            WARN(
+                "vkGetImageMemoryRequirements2KHR returned no memory types; falling back to "
+                "vkGetImageMemoryRequirements.");
+            vk->vkGetImageMemoryRequirements(sVkEmulation->device, infoPtr->image,
+                                             &infoPtr->memReqs);
+        }
     } else {
         vk->vkGetImageMemoryRequirements(sVkEmulation->device, infoPtr->image, &infoPtr->memReqs);
     }
@@ -2665,13 +2702,38 @@ std::optional<VkColorBufferMemoryExport> exportColorBufferMemory(uint32_t colorB
     return VkColorBufferMemoryExport{
         .descriptor = std::move(descriptor),
         .size = info->memory.size,
+        .memoryTypeIndex = info->memory.typeIndex,
         .streamHandleType = info->memory.streamHandleType,
         .linearTiling = info->imageCreateInfoShallow.tiling == VK_IMAGE_TILING_LINEAR,
         .dedicatedAllocation = info->memory.dedicatedAllocation,
+        .imageCreateFlags = info->imageCreateInfoShallow.flags,
+        .imageUsage = info->imageCreateInfoShallow.usage,
+        .imageFormat = info->imageCreateInfoShallow.format,
     };
 #else
     return std::nullopt;
 #endif
+}
+
+void getVkPhysicalDeviceLuid(uint8_t* luid, size_t luidSize, bool* valid) {
+    if (valid) {
+        *valid = false;
+    }
+    if (!luid || luidSize < VK_LUID_SIZE) {
+        return;
+    }
+    AutoLock lock(sVkEmulationLock);
+    if (!sVkEmulation || !sVkEmulation->live) {
+        return;
+    }
+    const auto& id = sVkEmulation->deviceInfo.idProps;
+    if (!id.deviceLUIDValid) {
+        return;
+    }
+    std::memcpy(luid, id.deviceLUID, VK_LUID_SIZE);
+    if (valid) {
+        *valid = true;
+    }
 }
 
 bool teardownVkColorBufferLocked(uint32_t colorBufferHandle) {
@@ -3452,11 +3514,17 @@ bool setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulkanOnly, uint32
             VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS, nullptr};
         VkMemoryRequirements2 reqs{VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2, &dedicated_reqs};
 
-        VkBufferMemoryRequirementsInfo2 info{VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2,
+        VkBufferMemoryRequirementsInfo2 info{VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2,
                                              nullptr, res.buffer};
         vk->vkGetBufferMemoryRequirements2KHR(sVkEmulation->device, &info, &reqs);
         useDedicated = dedicated_reqs.requiresDedicatedAllocation;
         res.memReqs = reqs.memoryRequirements;
+        if (res.memReqs.memoryTypeBits == 0) {
+            WARN(
+                "vkGetBufferMemoryRequirements2KHR returned no memory types; falling back to "
+                "vkGetBufferMemoryRequirements.");
+            vk->vkGetBufferMemoryRequirements(sVkEmulation->device, res.buffer, &res.memReqs);
+        }
     } else {
         vk->vkGetBufferMemoryRequirements(sVkEmulation->device, res.buffer, &res.memReqs);
     }
@@ -4175,8 +4243,14 @@ findRepresentativeColorBufferMemoryTypeIndexLocked() {
         return std::nullopt;
     }
 
+    const CoherentHostMemoryProbeResult coherentProbe = probeCoherentHostMemory(
+        sVkEmulation->physdev, sVkEmulation->device, sVkEmulation->dvk,
+        sVkEmulation->deviceInfo.memProps, sVkEmulation->deviceInfo.supportsExternalMemoryHostProps,
+        sVkEmulation->deviceInfo.externalMemoryHostProps.minImportedHostPointerAlignment,
+        sVkEmulation->features);
     EmulatedPhysicalDeviceMemoryProperties helper(sVkEmulation->deviceInfo.memProps,
-                                                  hostMemoryTypeIndex, sVkEmulation->features);
+                                                  hostMemoryTypeIndex, sVkEmulation->features,
+                                                  coherentProbe);
     uint32_t guestMemoryTypeIndex = helper.getGuestColorBufferMemoryTypeIndex();
 
     return VkEmulation::RepresentativeColorBufferMemoryTypeInfo{
@@ -4185,5 +4259,83 @@ findRepresentativeColorBufferMemoryTypeIndexLocked() {
     };
 }
 
+CoherentHostMemoryProbeResult probeCoherentHostMemory(
+    VkPhysicalDevice physicalDevice, VkDevice device, const VulkanDispatch* vk,
+    const VkPhysicalDeviceMemoryProperties& hostMemoryProperties,
+    bool supportsExternalMemoryHostProps, VkDeviceSize minImportedHostPointerAlignment,
+    const gfxstream::host::FeatureSet& features) {
+    CoherentHostMemoryProbeResult result;
+
+    if (!features.VulkanAllocateHostMemory.enabled) {
+        return result;
+    }
+    if (!sVkEmulation || physicalDevice == VK_NULL_HANDLE || physicalDevice != sVkEmulation->physdev) {
+        return result;
+    }
+    if (device == VK_NULL_HANDLE || !vk || !vk->vkGetMemoryHostPointerPropertiesEXT) {
+        ERR("VK_EXT_external_memory_host function not available, cannot probe coherent host "
+            "memory");
+        return result;
+    }
+    if (!supportsExternalMemoryHostProps) {
+        return result;
+    }
+
+    VkDeviceSize alignment = minImportedHostPointerAlignment;
+    if (alignment == 0) {
+        alignment = 4096;
+    }
+
+    void* dummyPtr = nullptr;
+#ifdef _WIN32
+    dummyPtr = _aligned_malloc(static_cast<size_t>(alignment), static_cast<size_t>(alignment));
+#else
+    if (posix_memalign(&dummyPtr, static_cast<size_t>(alignment), static_cast<size_t>(alignment)) !=
+        0) {
+        dummyPtr = nullptr;
+    }
+#endif
+    if (!dummyPtr) {
+        ERR("Failed to allocate dummy pointer for coherent host memory probe");
+        return result;
+    }
+
+    VkMemoryHostPointerPropertiesEXT memoryHostPointerProperties = {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT,
+        .pNext = nullptr,
+        .memoryTypeBits = 0,
+    };
+
+    const VkResult probeResult = vk->vkGetMemoryHostPointerPropertiesEXT(
+        device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT, dummyPtr,
+        &memoryHostPointerProperties);
+
+#ifdef _WIN32
+    _aligned_free(dummyPtr);
+#else
+    free(dummyPtr);
+#endif
+
+    if (probeResult != VK_SUCCESS) {
+        ERR("vkGetMemoryHostPointerPropertiesEXT failed during coherent host memory probe: %d",
+            probeResult);
+        return result;
+    }
+
+    for (uint32_t i = 0; i < hostMemoryProperties.memoryTypeCount; ++i) {
+        if ((memoryHostPointerProperties.memoryTypeBits & (1u << i)) == 0) {
+            continue;
+        }
+
+        const VkMemoryPropertyFlags flags = hostMemoryProperties.memoryTypes[i].propertyFlags;
+        if ((flags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+            (flags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            result.coherentHostMemoryTypeMask |= (1u << i);
+        }
+    }
+
+    VERBOSE("Coherent host memory probe result: typeBits=0x%x", result.coherentHostMemoryTypeMask);
+    return result;
+}
 }  // namespace vk
 }  // namespace gfxstream

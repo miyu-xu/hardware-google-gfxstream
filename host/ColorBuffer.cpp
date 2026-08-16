@@ -21,6 +21,7 @@
 #include "host-common/GfxstreamFatalError.h"
 #include "host-common/logging.h"
 #include "vulkan/ColorBufferVk.h"
+#include "vulkan/HdDisplayTelemetry.h"
 #include "vulkan/VkCommonOperations.h"
 
 using android::base::ManagedDescriptor;
@@ -196,6 +197,41 @@ void ColorBuffer::readToBytesScaled(int pixelsWidth, int pixelsHeight, GLenum pi
 #endif
 
     GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER)) << "Unimplemented.";
+}
+
+bool ColorBuffer::readToBytesForHostRecording(unsigned char* outPixels, bool readbackBgra,
+                                              int* outYDirection) {
+    if (!outPixels) {
+        return false;
+    }
+
+#if GFXSTREAM_ENABLE_HOST_GLES
+    if (mColorBufferGl) {
+        mColorBufferGl->readback(outPixels, readbackBgra);
+        if (outYDirection) *outYDirection = -1;
+        return true;
+    }
+#endif
+
+    if (!mColorBufferVk ||
+        (mFormat != GL_RGBA && mFormat != GL_RGBA8 && mFormat != GL_BGRA_EXT &&
+         mFormat != GL_BGRA8_EXT)) {
+        return false;
+    }
+    if (!mColorBufferVk->readToBytes(0, 0, mWidth, mHeight, outPixels)) {
+        return false;
+    }
+    if (outYDirection) *outYDirection = 1;
+
+    const bool nativeBgra = mFormat == GL_BGRA_EXT || mFormat == GL_BGRA8_EXT;
+    if (nativeBgra != readbackBgra) {
+        vk::recordHdSoftwareBlit();
+        const size_t pixelCount = static_cast<size_t>(mWidth) * mHeight;
+        for (size_t pixel = 0; pixel < pixelCount; ++pixel) {
+            std::swap(outPixels[pixel * 4], outPixels[pixel * 4 + 2]);
+        }
+    }
+    return true;
 }
 
 void ColorBuffer::readYuvToBytes(int x, int y, int width, int height, void* outPixels,

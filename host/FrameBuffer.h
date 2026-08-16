@@ -164,6 +164,11 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
                         int wh, int fbw, int fbh, float dpr, float zRot,
                         bool deleteExisting, bool hideWindow);
 
+    // Publishes one HD-owned viewport transaction to DisplaySurface even when Win32 has already
+    // resized the native child behind gfxstream's cached geometry. The dimensions are deduplicated
+    // here so an unchanged host layout never recreates the Vulkan swapchain.
+    bool commitSubWindowSurfaceSizeForHd(uint32_t scanoutId, uint32_t width, uint32_t height);
+
     // Remove the sub-window created by setupSubWindow(), if any.
     // Return true on success, false otherwise.
     bool removeSubWindow();
@@ -186,8 +191,10 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // Set a callback that will be called each time the emulated GPU content
     // is updated. This can be relatively slow with host-based GPU emulation,
     // so only do this when you need to.
-    void setPostCallback(Renderer::OnPostCallback onPost, void* onPostContext, uint32_t displayId,
-                         bool useBgraReadback = false);
+    // Returns true when the callback was registered or removed. A failed registration must not
+    // be treated as an active recording because the callback is the only owner of readback.
+    bool setPostCallback(Renderer::OnPostCallback onPost, void* onPostContext, uint32_t displayId,
+                         bool useBgraReadback = false, uint32_t maxReadbackFps = 0);
 
     // Tests and reports if the host supports the format through the allocator
     bool isFormatSupported(GLenum format);
@@ -325,7 +332,12 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
 
     // Runs the post callback with |pixels| (good for when the readback
     // happens in a separate place)
-    void doPostCallback(void* pixels, uint32_t displayId);
+    void doPostCallback(void* pixels, uint32_t displayId, int yDirection = -1);
+
+    // Immediately reads the currently displayed ColorBuffer into an already registered post
+    // callback. Host recording uses this once at start so a static Android screen still produces
+    // a complete recording without waiting for unrelated Guest damage.
+    bool capturePostCallbackFrame(uint32_t displayId);
 
     void getPixels(void* pixels, uint32_t bytes, uint32_t displayId);
     void flushReadPipeline(int displayId);
@@ -339,6 +351,13 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     // This is useful if you detect that the sub-window content needs to
     // be re-displayed for any reason.
     bool repost(bool needLockAndBind = true);
+
+    // Selects one HD/crosvm scanout for the single native Player surface and immediately posts
+    // that display's retained ColorBuffer. Unlike merely changing the selected scanout atomically,
+    // this also switches a static Android screen that has no new guest damage.
+    // Returns 0 on failure, 1 when selection succeeded but the scanout has not produced a frame,
+    // and 2 after synchronously reposting the retained frame.
+    int32_t selectDisplayForHd(uint32_t scanoutId);
 
     // Change the rotation of the displayed GPU sub-window.
     void setDisplayRotation(float zRot) {
@@ -731,6 +750,8 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
     int m_framebufferHeight = 0;
     std::atomic_int m_windowWidth = 0;
     std::atomic_int m_windowHeight = 0;
+    uint32_t m_hdCommittedSurfaceWidth = 0;
+    uint32_t m_hdCommittedSurfaceHeight = 0;
     // When zoomed in, the size of the content is bigger than the window size, and we only
     // display / store a portion of it.
     int m_windowContentFullWidth = 0;
@@ -805,6 +826,9 @@ class FrameBuffer : public android::base::EventNotificationSupport<FrameBufferCh
         uint32_t height;
         unsigned char* img = nullptr;
         bool readBgra;
+        bool usesAsyncReadback = false;
+        uint64_t minimumReadbackIntervalUs = 0;
+        uint64_t nextReadbackUs = 0;
         ~onPost() {
             if (img) {
                 delete[] img;

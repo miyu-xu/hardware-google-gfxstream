@@ -7197,7 +7197,7 @@ class VkDecoderGlobalState::Impl {
     AsyncResult registerQsriCallback(VkImage boxed_image, VkQsriTimeline::Callback callback) {
         std::lock_guard<std::recursive_mutex> lock(mLock);
 
-        VkImage image = unbox_VkImage(boxed_image);
+        VkImage image = try_unbox_VkImage(boxed_image);
         if (image == VK_NULL_HANDLE) return AsyncResult::FAIL_AND_CALLBACK_NOT_SCHEDULED;
 
         auto imageInfoIt = mImageInfo.find(image);
@@ -7494,6 +7494,11 @@ class VkDecoderGlobalState::Impl {
         if (!elt) return VK_NULL_HANDLE;                                                          \
         return (type)elt->underlying;                                                             \
     }                                                                                             \
+    type try_unbox_##type(type boxed) {                                                           \
+        auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
+        if (!elt) return VK_NULL_HANDLE;                                                          \
+        return (type)elt->underlying;                                                             \
+    }                                                                                             \
     OrderMaintenanceInfo* ordmaint_##type(type boxed) {                                           \
         auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
         if (!elt) return 0;                                                                       \
@@ -7553,6 +7558,14 @@ class VkDecoderGlobalState::Impl {
                 GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))                                   \
                     << "Unbox " << boxed << " failed, not found.";                                \
             }                                                                                     \
+            return VK_NULL_HANDLE;                                                                \
+        }                                                                                         \
+        return (type)elt->underlying;                                                             \
+    }                                                                                             \
+    type try_unbox_##type(type boxed) {                                                           \
+        AutoLock lock(sBoxedHandleManager.lock);                                                  \
+        auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
+        if (!elt) {                                                                               \
             return VK_NULL_HANDLE;                                                                \
         }                                                                                         \
         return (type)elt->underlying;                                                             \
@@ -9737,6 +9750,9 @@ LIST_TRANSFORMED_TYPES(DEFINE_TRANSFORMED_TYPE_IMPL)
     }                                                                                          \
     void VkDecoderGlobalState::delete_##type(type boxed) { mImpl->delete_##type(boxed); }      \
     type VkDecoderGlobalState::unbox_##type(type boxed) { return mImpl->unbox_##type(boxed); } \
+    type VkDecoderGlobalState::try_unbox_##type(type boxed) {                                  \
+        return mImpl->try_unbox_##type(boxed);                                                 \
+    }                                                                                          \
     type VkDecoderGlobalState::unboxed_to_boxed_##type(type unboxed) {                         \
         return mImpl->unboxed_to_boxed_##type(unboxed);                                        \
     }                                                                                          \
@@ -9750,6 +9766,9 @@ LIST_TRANSFORMED_TYPES(DEFINE_TRANSFORMED_TYPE_IMPL)
     }                                                                                          \
     void VkDecoderGlobalState::delete_##type(type boxed) { mImpl->delete_##type(boxed); }      \
     type VkDecoderGlobalState::unbox_##type(type boxed) { return mImpl->unbox_##type(boxed); } \
+    type VkDecoderGlobalState::try_unbox_##type(type boxed) {                                  \
+        return mImpl->try_unbox_##type(boxed);                                                 \
+    }                                                                                          \
     type VkDecoderGlobalState::unboxed_to_boxed_non_dispatchable_##type(type unboxed) {        \
         return mImpl->unboxed_to_boxed_non_dispatchable_##type(unboxed);                       \
     }
@@ -9759,6 +9778,11 @@ GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HAN
 
 #define DEFINE_BOXED_DISPATCHABLE_HANDLE_GLOBAL_API_DEF(type)                                     \
     type unbox_##type(type boxed) {                                                               \
+        auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
+        if (!elt) return VK_NULL_HANDLE;                                                          \
+        return (type)elt->underlying;                                                             \
+    }                                                                                             \
+    type try_unbox_##type(type boxed) {                                                           \
         auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
         if (!elt) return VK_NULL_HANDLE;                                                          \
         return (type)elt->underlying;                                                             \
@@ -9804,6 +9828,14 @@ GOLDFISH_VK_LIST_NON_DISPATCHABLE_HANDLE_TYPES(DEFINE_BOXED_NON_DISPATCHABLE_HAN
         if (!elt) {                                                                               \
             GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))                                       \
                 << "Unbox " << boxed << " failed, not found.";                                    \
+            return VK_NULL_HANDLE;                                                                \
+        }                                                                                         \
+        return (type)elt->underlying;                                                             \
+    }                                                                                             \
+    type try_unbox_##type(type boxed) {                                                           \
+        if (!boxed) return boxed;                                                                 \
+        auto elt = sBoxedHandleManager.get((uint64_t)(uintptr_t)boxed);                           \
+        if (!elt) {                                                                               \
             return VK_NULL_HANDLE;                                                                \
         }                                                                                         \
         return (type)elt->underlying;                                                             \

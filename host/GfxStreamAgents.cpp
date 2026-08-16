@@ -19,6 +19,11 @@
 #include <map>      // for map, __ma...
 #include <utility>  // for pair
 
+#ifdef __APPLE__
+#include <dispatch/dispatch.h>
+#include <pthread.h>
+#endif
+
 #include "host-common/HostmemIdMapping.h"             // for android_e...
 #include "host-common/MultiDisplay.h"                 // for MultiDisp...
 #include "host-common/multi_display_agent.h"  // for QAndroidM...
@@ -334,6 +339,24 @@ static const QAndroidEmulatorWindowAgent sQAndroidEmulatorWindowAgent = {
                         *h = 1600;
                     return true;
                 },
+#ifdef __APPLE__
+        .runOnUiThread =
+                [](UiUpdateFunc function, void* data, bool wait) {
+                    if (!function) {
+                        return;
+                    }
+                    if (pthread_main_np()) {
+                        function(data);
+                        return;
+                    }
+                    if (wait) {
+                        dispatch_sync_f(dispatch_get_main_queue(), data, function);
+                    } else {
+                        dispatch_async_f(dispatch_get_main_queue(), data, function);
+                    }
+                },
+        .isRunningInUiThread = []() -> bool { return pthread_main_np() != 0; },
+#endif
 };
 
 static const QAndroidVmOperations sQAndroidVmOperations =

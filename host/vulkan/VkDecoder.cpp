@@ -3842,7 +3842,7 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                 *readStreamPtrPtr += 1 * 8;
                 *(VkImage*)&image = (VkImage)(VkImage)((VkImage)(*&cgen_var_1));
                 boxed_image_preserve = image;
-                image = unbox_VkImage(image);
+                image = try_unbox_VkImage(image);
                 // WARNING PTR CHECK
                 memcpy((VkAllocationCallbacks**)&pAllocator, (*readStreamPtrPtr), 8);
                 android::base::Stream::fromBe64((uint8_t*)&pAllocator);

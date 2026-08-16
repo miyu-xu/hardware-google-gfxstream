@@ -68,7 +68,38 @@ typedef void (*stream_renderer_param_metrics_callback_abort)();
 VG_EXPORT void gfxstream_backend_setup_window(void* native_window_handle, int32_t window_x,
                                               int32_t window_y, int32_t window_width,
                                               int32_t window_height, int32_t fb_width,
-                                              int32_t fb_height);
+                                               int32_t fb_height);
+
+// HD multi-display variant. Only the selected scanout may bind or resize gfxstream's single
+// native Vulkan presentation surface.
+VG_EXPORT void gfxstream_backend_setup_window_for_display(
+    uint32_t scanout_id, void* native_window_handle, int32_t window_x, int32_t window_y,
+    int32_t window_width, int32_t window_height, int32_t fb_width, int32_t fb_height);
+
+// Commits an HD host viewport after the regular native-window update. Unlike the ordinary setup
+// call, this also repairs a stale Vulkan presentation extent when Win32 has already resized the
+// child HWND. The return value is a status bitmask: 1 repaired display selection, 2 updated the
+// renderer window, 4 found FrameBuffer, and 8 committed the surface generation.
+VG_EXPORT int32_t gfxstream_backend_commit_window_for_display(
+    uint32_t scanout_id, void* native_window_handle, int32_t window_x, int32_t window_y,
+    int32_t window_width, int32_t window_height, int32_t fb_width, int32_t fb_height);
+
+// Registers one crosvm scanout in gfxstream's multi-display registry. Crosvm owns the stable
+// scanout numbering; gfxstream converts it to Android's HWC2 physical-display handle internally.
+// This is dormant unless HD_DISPLAY_SELECTION is enabled by the verified host launch plan.
+VG_EXPORT int32_t gfxstream_backend_configure_display(uint32_t scanout_id, uint32_t width,
+                                                      uint32_t height, uint32_t dpi);
+
+// Associates the current virtio-gpu resource with a configured scanout. Resource zero clears the
+// active association while retaining the last valid frame for native-window reattachment. HD uses
+// this to present and record only the selected scanout.
+VG_EXPORT void gfxstream_backend_set_scanout_resource(uint32_t scanout_id, uint32_t resource_id);
+
+// Selects the crosvm scanout composed into HD's single native zero-copy presentation surface.
+// This is dormant unless HD_DISPLAY_SELECTION is enabled by the verified host launch plan.
+// Returns zero on failure, one when selected before its first frame, or two after synchronously
+// reposting the scanout's retained static frame.
+VG_EXPORT int32_t gfxstream_backend_select_display(uint32_t scanout_id);
 
 VG_EXPORT void stream_renderer_flush(uint32_t res_handle);
 

@@ -49,6 +49,7 @@ cc_library_static {
     srcs: [
         "BorrowedImageVk.cpp",
         "BufferVk.cpp",
+        "CoherentMemoryBacking.cpp",
         "ColorBufferVk.cpp",
         "CompositorVk.cpp",
         "DebugUtilsHelper.cpp",
@@ -56,6 +57,7 @@ cc_library_static {
         "DeviceOpTracker.cpp",
         "DisplaySurfaceVk.cpp",
         "DisplayVk.cpp",
+        "HdDisplayTelemetry.cpp",
         "PostWorkerVk.cpp",
         "RenderThreadInfoVk.cpp",
         "SwapChainStateVk.cpp",
